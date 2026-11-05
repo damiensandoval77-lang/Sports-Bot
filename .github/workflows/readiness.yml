@@ -1,0 +1,23 @@
+name: NBA Bot Readiness Check
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+permissions:
+  contents: read
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check NBA scanner prerequisites
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          required = ['src/sports/nba/scanner.py', 'src/sports/nba/train.py', 'src/core/odds_providers/fanduel.py']
+          print('NBA scanner source:', 'present' if all(Path(p).exists() for p in required) else 'incomplete')
+          print('Odds API credential:', 'configured' if os.getenv('ODDS_API_KEY') else 'not available in readiness job')
+          print('Note: this workflow checks repository readiness only; it does not fetch live props, train models, or send alerts.')
+          PY
