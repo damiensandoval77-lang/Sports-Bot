@@ -313,6 +313,18 @@ function renderAI(){
    body.append(node("div","mini","Research minutes estimate: "+fmt(minutesResearch.expected_minutes)+
      " (recent-form estimate, not a confirmed rotation; last five average "+fmt(minutesResearch.observed_l5)+")."));
   else body.append(node("div","mini","Projected minutes unavailable: insufficient recent observations."));
+  const minuteScenario=p.injury_minutes_research;
+  if(minuteScenario?.status==="HISTORICAL_SCENARIO_RESEARCH_ONLY"){
+   body.append(node("div","research-note","Verified OUT teammate: "+
+     minuteScenario.teammate+". Hypothetical minutes scenario: "+
+     fmt(minuteScenario.scenario_minutes)+" vs recent baseline "+
+     fmt(minuteScenario.baseline_minutes)+" ("+
+     (minuteScenario.delta_minutes>0?"+":"")+fmt(minuteScenario.delta_minutes)+
+     " minutes). Based on "+minuteScenario.with_games+" historical games together and "+
+     minuteScenario.without_games+" without. Observational only; NOT applied to the AI projection."));
+  }else if(minuteScenario?.status==="INSUFFICIENT_TEAMMATE_SPLITS"){
+   body.append(node("div","mini","A teammate is officially OUT, but historical rotation samples are insufficient to calculate a reliable minutes scenario."));
+  }
   const positional=p.position_group_context;
   if(positional)
    body.append(node("div","mini","Opponent "+p.opponent+" vs "+positional.position_group+
