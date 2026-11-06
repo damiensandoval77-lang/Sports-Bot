@@ -1,0 +1,52 @@
+name: Grade actual completed NBA paper picks (no paid odds calls)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 12 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prop-feed
+  cancel-in-progress: false
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install game log and settlement dependencies
+        run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
+      - name: Refresh completed real NBA player game logs
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Settle previously locked predictions from actual completed games
+        run: python -u iphone_bot/paper_pick_pipeline.py
+      - name: Verify no predictions were retroactively changed
+        run: |
+          python - <<'PY'
+          import json
+          from iphone_bot.paper_pick_pipeline import identity
+          data=json.load(open('docs/paper_pick_ledger.json'))['records']
+          report=json.load(open('docs/paper_results.json'))
+          assert len(data)==len({identity(x) for x in data})
+          assert all(x['paper_only'] is True for x in data)
+          assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in data)
+          assert report['real_money_wagered'] is False
+          print('Real completed-game paper results:', report['settled'], 'pending:', report['pending'])
+          PY
+      - name: Publish finished real-game paper grades
+        run: |
+          git add docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json
+          if git diff --cached --quiet; then echo "No new grades"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Publish settled NBA paper picks from actual completed games"
+          git reset --hard HEAD
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
