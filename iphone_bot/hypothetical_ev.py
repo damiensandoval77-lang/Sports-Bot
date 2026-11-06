@@ -54,7 +54,13 @@ def approximate_discrete_probabilities(projection,line,residuals):
     n=len(outcome)
     over=(float(np.sum(outcome>float(line)))+0.5)/(n+1.5)
     under=(float(np.sum(outcome<float(line)))+0.5)/(n+1.5)
-    push=(float(np.sum(outcome==float(line)))+0.5)/(n+1.5)
+    if float(line).is_integer():
+        push=(float(np.sum(outcome==float(line)))+0.5)/(n+1.5)
+    else:
+        # Non-integer market thresholds cannot push against integer NBA stats.
+        over=(float(np.sum(outcome>float(line)))+0.5)/(n+1.0)
+        under=(float(np.sum(outcome<float(line)))+0.5)/(n+1.0)
+        push=0.0
     return {"over":over,"under":under,"push":push}
 
 def hypothetical_quote_analysis(quote,projection,residuals):
