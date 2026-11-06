@@ -55,6 +55,34 @@ class ResearchUpgradeTests(unittest.TestCase):
         self.assertEqual(parsed[0]["status"],"Questionable")
         self.assertNotIn("12",{x["player_id"] for x in parsed})
 
+    def test_official_pdf_matches_team_and_correct_game_date(self):
+        roster=[{"player":"Jaylen Williams","player_id":"101","team":"BOS"},
+                {"player":"Jaylen Williams","player_id":"102","team":"CHA"},
+                {"player":"Anthony Davis","player_id":"103","team":"WAS"}]
+        pdf_text=(
+            "Game Date Game Time Matchup Team Player Name Current Status Reason\\n"
+            "11/06/2026 07:00 (ET) BOS@CHA Boston Celtics Williams, Jaylen Out Injury\\n"
+            "Charlotte Hornets Williams, Jaylen Available -\\n"
+            "WAS@ATL Washington Wizards Davis, Anthony Questionable Injury\\n"
+            "11/07/2026 08:00 (ET) WAS@OKC Washington Wizards Davis, Anthony Out Injury\\n"
+        )
+        rows=parse_rows(pdf_text,roster)
+        statuses={(r["player_id"],r["game_date"],r["team"]):r["status"] for r in rows}
+        self.assertEqual(statuses[("101","2026-11-06","BOS")],"Out")
+        self.assertEqual(statuses[("102","2026-11-06","CHA")],"Available")
+        self.assertEqual(statuses[("103","2026-11-06","WAS")],"Questionable")
+        self.assertEqual(statuses[("103","2026-11-07","WAS")],"Out")
+        self.assertEqual(len(rows),4)
+
+    def test_official_pdf_does_not_infer_unlisted_player(self):
+        roster=[{"player":"Anthony Davis","player_id":"103","team":"WAS"},
+                {"player":"Jalen Johnson","player_id":"104","team":"ATL"}]
+        text="11/06/2026 WAS@ATL Washington Wizards Davis, Anthony Questionable Injury\\nAtlanta Hawks NOT YET SUBMITTED\\n"
+        rows=parse_rows(text,roster)
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]["game_date"],"2026-11-06")
+        self.assertEqual(rows[0]["player_id"],"103")
+
     def test_espn_backup_is_third_party_and_team_matched(self):
         roster=[{"player":"Sample Player","player_id":"7","team":"BOS"},
                 {"player":"Another Player","player_id":"8","team":"NYK"}]
