@@ -11,8 +11,10 @@ from pathlib import Path
 from collections import defaultdict
 try:
     from .model_performance import compute_performance
+    from .weight_research import walkforward_weights
 except ImportError:
     from model_performance import compute_performance
+    from weight_research import walkforward_weights
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -203,6 +205,7 @@ def summary(rows,now=None,source=None):
        "method":METHOD,"real_money_wagered":False,
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
        "performance":compute_performance(rows),
+       "weight_research":walkforward_weights(rows),
        "pipeline_health":pipeline_health(rows,source,now),
        "independent_player_game_markets":unique_games,
        "wins":wins,"losses":losses,"pushes":pushes,
