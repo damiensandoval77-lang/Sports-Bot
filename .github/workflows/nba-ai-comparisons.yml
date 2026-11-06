@@ -25,9 +25,11 @@ jobs:
           python -u -m src.sports.nba.features
       - name: Train provisional models
         run: python -u iphone_bot/train_provisional.py
+      - name: Train opponent-aware shadow (research only)
+        run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
         run: |
-          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py
+          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
       - name: Fetch 2026-27 current-season player games
         run: python -u iphone_bot/fetch_current_form.py
@@ -38,6 +40,8 @@ jobs:
         run: python -u iphone_bot/fetch_props.py
       - name: Preserve observed pregame sportsbook snapshots
         run: python -u iphone_bot/archive_observed_props.py
+      - name: Audit archived bookmaker quotes against completed current games
+        run: python -u iphone_bot/audit_archived_real_lines.py
       - name: Compare AI projections with verified pregame sportsbook markets
         run: python -u iphone_bot/compare_live_models.py
       - name: Validate analysis and publish
@@ -52,10 +56,12 @@ jobs:
           assert all(x['sample_games']>=5 for x in d['comparisons'])
           assert d['injury_data_verified'] is False
           assert d['opponent_defense_applied_to_model'] is False
+          assert d['shadow_is_primary'] is False
+          assert all(x.get('shadow_status') in ('RESEARCH_SHADOW_ONLY','INSUFFICIENT_DEFENSE_DATA','SHADOW_MODEL_NOT_TRAINED') for x in d['comparisons'])
           assert all(x['injury_status']=='NOT_VERIFIED' and x['requires_lineup_review'] is True for x in d['comparisons'])
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
           PY
-          git add docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv
+          git add docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json
           if git diff --cached --quiet; then
             echo "No new results"; exit 0
           fi
