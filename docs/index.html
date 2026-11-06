@@ -7,7 +7,40 @@
 @media(max-width:520px){main{padding:12px 10px 65px}.summary{gap:6px}.metric{padding:9px 8px}.metric b{font-size:17px}.metric small{font-size:10px}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.head strong{font-size:13px}}
 .compact-prop .mainline{padding:12px 13px}.compact-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.compact-identity{min-width:0;flex:1}.compact-identity strong{font-size:15px;font-weight:750;display:block}.compact-identity .match{line-height:1.55}.compact-right{display:flex;align-items:center;gap:9px;justify-content:flex-end;flex-shrink:0}.compact-right .tag{font-size:11px;min-width:53px;text-align:center}.compact-percent{font-size:19px;font-variant-numeric:tabular-nums;font-weight:800;min-width:59px;text-align:right}.compact-caption{margin-top:7px;font-size:10px;color:var(--sub)}.compact-details summary{padding:7px 13px;font-size:11px;color:#a9c7f5}.detail-highlight{margin-top:10px;padding:9px 10px;background:var(--panel2);border-radius:8px;color:#e6efff;font-size:12px}.detail-heading{font-weight:800;color:var(--text);margin-top:15px}.compact-details .vals{margin-bottom:9px}.compact-details .detailbody{padding-top:4px}.dashboard-summary{margin:10px 0}.tabs .tab{font-size:11px;padding:9px 3px}.source{margin:5px 0 10px;line-height:1.4}
 @media(max-width:520px){.compact-prop .mainline{padding:10px 11px}.compact-identity strong{font-size:13px}.compact-right{gap:6px}.compact-percent{font-size:17px;min-width:51px}.compact-head{gap:5px}.dashboard-summary .metric{padding:8px}.dashboard-summary .metric b{font-size:15px}}
-.compact-projections{display:flex;align-items:center;gap:8px;margin-top:10px}.compact-projection{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:1;min-width:0;background:var(--panel2);padding:8px 10px;border-radius:8px}.compact-projection span{font-size:11px;color:var(--sub)}.compact-projection strong{font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap}@media(max-width:520px){.compact-projection{padding:7px 8px;gap:5px}.compact-projection span{font-size:10px}.compact-projection strong{font-size:15px}}.compact-final{padding:10px 12px;background:#1b2c43;border:1px solid #354d71}.compact-final span{font-weight:650;color:#d7e6ff}.compact-final strong{font-size:21px;color:#f8fbff}@media(max-width:520px){.compact-final strong{font-size:20px}}.reasoning-panel{padding:12px;margin:3px 0 11px;border:1px solid #385273;border-radius:10px;background:#17263a}.reasoning-panel strong{display:block;color:#eef5ff;font-size:13px;margin-bottom:7px}.reasoning-sentence{font-size:12px;color:#d9e5f7;line-height:1.55;margin:5px 0}.reasoning-panel .mini{margin-top:9px;font-size:10px}</style></head>
+.compact-projections{display:flex;align-items:center;gap:8px;margin-top:10px}.compact-projection{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:1;min-width:0;background:var(--panel2);padding:8px 10px;border-radius:8px}.compact-projection span{font-size:11px;color:var(--sub)}.compact-projection strong{font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap}@media(max-width:520px){.compact-projection{padding:7px 8px;gap:5px}.compact-projection span{font-size:10px}.compact-projection strong{font-size:15px}}.compact-final{padding:10px 12px;background:#1b2c43;border:1px solid #354d71}.compact-final span{font-weight:650;color:#d7e6ff}.compact-final strong{font-size:21px;color:#f8fbff}@media(max-width:520px){.compact-final strong{font-size:20px}}.reasoning-panel{padding:12px;margin:3px 0 11px;border:1px solid #385273;border-radius:10px;background:#17263a}.reasoning-panel strong{display:block;color:#eef5ff;font-size:13px;margin-bottom:7px}.reasoning-sentence{font-size:12px;color:#d9e5f7;line-height:1.55;margin:5px 0}.reasoning-panel .mini{margin-top:9px;font-size:10px}
+/* Clear, original prop-board layout: big market number, no third-party branding. */
+.compact-prop{border-color:#34455b;box-shadow:0 2px 12px #00000018}
+.compact-prop .mainline{padding:15px}
+.compact-prop .compact-head{align-items:flex-start}
+.compact-prop .compact-identity strong{font-size:17px;line-height:1.2}
+.compact-prop .compact-identity .match{font-size:11px;line-height:1.5;max-width:100%;overflow-wrap:anywhere}
+.model-chance{display:block;font-size:12px;color:#cbdcff;background:#243653;padding:6px 8px;border-radius:7px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.prop-hero{display:grid;grid-template-columns:minmax(0,1fr) 112px;align-items:stretch;gap:10px;margin-top:13px}
+.prop-market{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0}
+.prop-line-label{font-size:10px;font-weight:800;letter-spacing:.9px;color:#91add5}
+.prop-line-number{font-weight:850;font-size:42px;line-height:1.16;letter-spacing:-1.8px;font-variant-numeric:tabular-nums;color:#f8fbff;margin-top:3px}
+.prop-stat-name{font-weight:700;font-size:13px;color:#d8e5f9;margin-top:1px}
+.prop-signal{background:#1c2a3d;border:1px solid #35475f;border-radius:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:9px 6px}
+.signal-title{font-size:9px;letter-spacing:.5px;color:#9eb4cf;font-weight:700}
+.signal-choice{display:block;width:100%;text-align:center;padding:10px 2px;border-radius:8px;font-size:13px;font-weight:850;white-space:nowrap}
+.signal-choice.over{background:#1f5648;color:#a8ffda}
+.signal-choice.under{background:#66412a;color:#ffe0b8}
+.signal-choice.neutral{background:#35455b;color:#dce8f7}
+.compact-prop .compact-projections{margin-top:12px}
+.compact-prop .compact-final{border:1px solid #405a7a;background:#1c2f47;padding:12px}
+.compact-prop .compact-final span{font-size:12px}
+.compact-prop .compact-final strong{font-size:25px}
+.compact-prop .compact-details summary{font-size:12px;padding:11px 15px}
+@media(max-width:520px){
+.compact-prop .mainline{padding:13px}
+.compact-prop .compact-identity strong{font-size:16px}
+.prop-hero{grid-template-columns:minmax(0,1fr) 103px;gap:8px}
+.prop-line-number{font-size:40px}
+.signal-choice{font-size:12px}
+.compact-prop .compact-final strong{font-size:23px}
+.model-chance{font-size:11px}
+}
+</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -81,12 +114,21 @@ function renderAI(){
  const list=entries.slice(0,60).map((p,index)=>{
   const outer=node("article","prop compact-prop"),main=node("div","mainline");
   const head=node("div","compact-head"),identity=node("div","compact-identity");
+  const shortStats={PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"};
   identity.append(node("strong","",p.player),
-    node("div","match",p.stat+" · "+p.line+" · "+p.team+" · "+formatTime(p.start)));
-  const mainSide=primaryDirection(p),right=node("div","compact-right");
-  right.append(node("span","tag "+sideClass(mainSide),mainSide));
-  right.append(node("strong","compact-percent",validEstimate(p)?chance(p)+"*":"—"));
+    node("div","match",p.team+" · "+formatTime(p.start)+" · "+p.game));
+  const side=primaryDirection(p),right=node("div","compact-right");
+  right.append(node("span","model-chance",validEstimate(p)?"Est. "+chance(p)+"*":"Probability N/A"));
   head.append(identity,right);main.append(head);
+  const hero=node("div","prop-hero");
+  const market=node("div","prop-market");
+  market.append(node("div","prop-line-label","LIVE SPORTSBOOK LINE"));
+  market.append(node("div","prop-line-number",fmt(Number(p.line))));
+  market.append(node("div","prop-stat-name",shortStats[p.stat]||p.stat));
+  const signal=node("div","prop-signal");
+  signal.append(node("span","signal-title","AI DIRECTION"),
+    node("span","signal-choice "+sideClass(side),side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS":"NO LEAN"));
+  hero.append(market,signal);main.append(hero);
   const available=Number.isFinite(p.combined_projection);
   const projection=node("div","compact-projections");
   const single=node("div","compact-projection compact-final");
