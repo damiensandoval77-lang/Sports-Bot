@@ -77,7 +77,7 @@ def parse_rows(text,roster):
         except ValueError:continue
         events.append((match.start(),0,"DATE",date))
     for abbr,full in TEAM_NAMES.items():
-        for match in re.finditer(r"(?<!\\w)"+re.escape(full)+r"(?!\\w)",normalized,re.I):
+        for match in re.finditer(r"(?<!\w)"+re.escape(full)+r"(?!\w)",normalized,re.I):
             events.append((match.start(),1,"TEAM",abbr))
     for player in roster:
         team=str(player.get("team","")).upper()
@@ -87,8 +87,8 @@ def parse_rows(text,roster):
         forms=[(parts[-1]," ".join(parts[:-1]))]
         if len(parts)>=3:forms.append((" ".join(parts[-2:])," ".join(parts[:-2])))
         for last,first in forms:
-            expression=(r"(?<!\\w)"+re.escape(last)+r",\\s*"+re.escape(first)
-                        +r"\\s+(Out|Doubtful|Questionable|Probable|Available)\\b")
+            expression=(r"(?<!\w)"+re.escape(last)+r",\s*"+re.escape(first)
+                        +r"\s+(Out|Doubtful|Questionable|Probable|Available)\b")
             for match in re.finditer(expression,normalized,re.I):
                 events.append((match.start(),2,"PLAYER",(player,match.group(1).title())))
     # The official table repeats dates/teams only at the start of sections.
