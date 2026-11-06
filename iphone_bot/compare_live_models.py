@@ -13,6 +13,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from matchup_context import team_allowances, defense_context, minutes_context
+from defense_training import COLS
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -122,6 +123,14 @@ def main():
     for target in ("PTS","REB","AST","PRA"):
         models[target]=joblib.load(MODELS/f"{target}_model.joblib")
     defense_cache={}
+    shadow_dir=ROOT/"models/nba/defense_shadow"
+    shadow_models={}
+    for stat in ("PTS","REB","AST","PRA"):
+        file=shadow_dir/f"{stat}_model.joblib"
+        if file.exists():
+            shadow_models[stat]=joblib.load(file)
+            if shadow_models[stat].get("status")!="SHADOW_ONLY_NOT_CALIBRATED":
+                raise ValueError("Unrecognized opponent shadow model provenance")
     for row in valid:
         target=row["stat"];model=models[target]
         features=model["features"];fill=model["fill_values"]
@@ -137,6 +146,31 @@ def main():
         opponent=pair[0] if pair[1]==row["team"] else pair[1]
         row["opponent"]=opponent
         row["opponent_defense"]=defense_context(defense_cache[upcoming_date],opponent,target)
+        # Shadow forecast consumes opponent TEAM totals allowed before game date
+        # with the same five defensively lagged inputs used in research training.
+        # Do not infer a projection if the defensive record is missing.
+        row["shadow_projection"]=None
+        row["shadow_difference"]=None
+        row["shadow_status"]="INSUFFICIENT_DEFENSE_DATA"
+        opp_games=defense_cache[upcoming_date].get(opponent,[])
+        if target in shadow_models and len(opp_games)>=3:
+            sample=opp_games[-5:]
+            def_values={f"OPP_{stat}_ALLOWED_L5":float(np.mean([v[stat] for _,v in sample]))
+                        for stat in ("PTS","REB","AST","PRA")}
+            def_values["OPP_DEF_SAMPLE_GAMES"]=min(5,len(opp_games))
+            model_shadow=shadow_models[target]
+            required=set(COLS)
+            if required.issubset(model_shadow["features"]):
+                all_features=dict(row["features"],**def_values)
+                features_s=model_shadow["features"]
+                x_shadow=pd.DataFrame([{name:all_features.get(name,model_shadow["fill_values"].get(name,0))
+                                      for name in features_s}])[features_s].apply(pd.to_numeric,errors="coerce").fillna(0)
+                shadow=max(0,float(model_shadow["model"].predict(x_shadow)[0]))
+                row["shadow_projection"]=round(shadow,1)
+                row["shadow_difference"]=round(shadow-row["line"],1)
+                row["shadow_status"]="RESEARCH_SHADOW_ONLY"
+        elif target not in shadow_models:
+            row["shadow_status"]="SHADOW_MODEL_NOT_TRAINED"
         history=sorted(by_id.get(str(row["player_id"]),{}).values(),key=lambda x:x["date"])
         history=[g for g in history if g["date"]<upcoming_date]
         row["minutes_context"]=minutes_context(history)
@@ -153,7 +187,8 @@ def main():
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
        "verified_current_matchups":True,"is_prizepicks":False,
        "injury_data_verified":False,"opponent_defense_applied_to_model":False,
-       "disclaimer":"Experimental historical-model point estimates with DESCRIPTIVE recent opponent team totals and observed minutes context. Defense is not a trained input or projection adjustment. Injury status is not verified; lineup review required. Not calibrated hit probabilities, +EV, or PrizePicks lines.",
+       "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
+       "disclaimer":"Original historical-model predictions remain primary. Opponent-aware shadow model is separately trained and research-only; not calibrated on real sportsbook lines. Team defensive totals come from incomplete third-party current-season game logs. Injury status is not verified; lineup review required. No +EV or PrizePicks probability claim.",
        "comparisons":valid[:150],"skipped":skipped}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
     print("Wrote",len(valid),"team-verified experimental model comparisons",flush=True)
