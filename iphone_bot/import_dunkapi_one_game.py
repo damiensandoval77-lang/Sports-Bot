@@ -46,20 +46,6 @@ def main():
     if not key:raise SystemExit("DUNKAPI_KEY GitHub secret missing")
     if CREDIT_LIMIT<0 or CREDIT_LIMIT>20:raise SystemExit("Credit cap must be 0..20")
     if not GAME_ID.isdigit():raise SystemExit("Game ID should contain digits only")
-    body={"game_id":GAME_ID,"league":"nba","snapshot_type":"closing"}
-    estimate=request(key,{**body,"estimate_only":True})
-    credits=estimate.get("credits")
-    print("Estimate for game",GAME_ID,":",credits,"credits",flush=True)
-    if not isinstance(credits,(int,float)) or credits>CREDIT_LIMIT:
-        raise SystemExit("Cost estimate missing or over configured limit; purchase aborted.")
-    if credits<=0:
-        raise SystemExit("Unusual cost estimate; purchase aborted.")
-    # One paid provider request only. No fallback that could spend extra credits.
-    result=request(key,body)
-    props=result.get("props",[])
-    if not isinstance(props,list):
-        raise ValueError("Invalid props payload")
-    print("Provider returned",len(props),"prop records",flush=True)
     # Fail closed unless a provider game ID is verified against NBA box-score ID.
     verified_ids={"401810837":("0022500982","2026-03-15")}
     if GAME_ID not in verified_ids:
@@ -75,6 +61,20 @@ def main():
     if len(allowed)<8:
         raise SystemExit("Verified box-score roster missing or unexpectedly small; refusing import.")
     print("Verified NBA game",nba_game_id,"with",len(allowed),"player names")
+    body={"game_id":GAME_ID,"league":"nba","snapshot_type":"closing"}
+    estimate=request(key,{**body,"estimate_only":True})
+    credits=estimate.get("credits")
+    print("Estimate for game",GAME_ID,":",credits,"credits",flush=True)
+    if not isinstance(credits,(int,float)) or credits>CREDIT_LIMIT:
+        raise SystemExit("Cost estimate missing or over configured limit; purchase aborted.")
+    if credits<=0:
+        raise SystemExit("Unusual cost estimate; purchase aborted.")
+    # One paid provider request only. No fallback that could spend extra credits.
+    result=request(key,body)
+    props=result.get("props",[])
+    if not isinstance(props,list):
+        raise ValueError("Invalid props payload")
+    print("Provider returned",len(props),"prop records",flush=True)
     new=[]
     rejected={"missing":0,"post_tipoff":0,"bad_price":0,"market":0,"wrong_game_player":0}
     for p in props:
