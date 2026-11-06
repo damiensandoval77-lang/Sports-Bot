@@ -71,6 +71,7 @@
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
 <div class="performance-selector"><label for="perf-market">Performance market</label><select id="perf-market"><option value="">All markets</option><option value="PTS">Points</option><option value="REB">Rebounds</option><option value="AST">Assists</option><option value="PRA">PRA</option></select></div>
 <div class="source" id="weight-experiment">Chronological weighting research: waiting for independently settled outcomes.</div>
+<div class="source" id="paired-model-comparison" aria-live="polite">Same-games model comparison: awaiting settled picks.</div>
 <div class="performance-comparison" id="performance-comparison"><div class="empty">Loading real model performance…</div></div>
 <div class="source" id="performance-caveat">Hit rate excludes pushes; paper ROI requires a recorded sportsbook price for each model's exact direction. No result is proof of profitable betting.</div>
 <div class="bar performance-heading"><h2>Individual paper picks</h2><small>Actual game results</small></div>
@@ -411,6 +412,21 @@ function renderModelPerformance(){
  const selectedMarket=$("perf-market").value;
  const data=selectedMarket?(report.by_stat?.[selectedMarket]||{}):report.models;
  const weight=selectedMarket?paper?.weight_research?.weights?.[selectedMarket]:null;
+ const paired=report.paired_comparison;
+ const pairedData=selectedMarket?paired?.by_stat?.[selectedMarket]:paired?.overall;
+ const pairedNode=$("paired-model-comparison");
+ if(!pairedData||pairedData.sample_size===0){
+  pairedNode.textContent="Same-games model comparison: awaiting completed picks with all three locked forecasts.";
+ }else{
+  const delta=pairedData.combined_mae_change_vs_original;
+  pairedNode.textContent="Same-games model comparison ("+pairedData.sample_size+" player/game/market observations): "+
+   "Original MAE "+fmt(pairedData.mae.original)+", Opponent AI MAE "+fmt(pairedData.mae.opponent_aware)+
+   ", Combined MAE "+fmt(pairedData.mae.combined)+". Combined minus Original: "+
+   (delta>0?"+":"")+fmt(delta)+" (negative is better). "+
+   (pairedData.sufficient_sample?"Descriptive research only; not statistical proof or a betting edge.":
+    "Early sample — fewer than "+paired.minimum_sample_for_display+" observations; no conclusion yet.");
+ }
+
  const exp=$("weight-experiment");
  if(!selectedMarket){
   exp.textContent="Select Points, Rebounds, Assists, or PRA to see per-stat performance and chronological blend-weight research. Existing live predictions remain 50/50.";
