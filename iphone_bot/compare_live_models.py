@@ -18,6 +18,7 @@ from experimental_probability import probability_sides, METHOD
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
+from projection_explanation import explain_projection
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -199,6 +200,10 @@ def main():
         row["combined_method"]=combined["method"]
         row["combined_model_count"]=combined["model_count"]
         row["combined_validated"]=False
+        row["projection_explanation"]=explain_projection(
+            target,row["line"],projection,
+            row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None,
+            combined["projection"],row["features"],row["minutes_context"],row["opponent_defense"])
         row["combined_direction"]=("Over" if combined["projection"]>row["line"]
            else "Under" if combined["projection"]<row["line"] else "Neutral")
         row["difference"]=round(projection-row["line"],1)
