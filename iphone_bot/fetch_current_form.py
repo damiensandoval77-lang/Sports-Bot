@@ -113,8 +113,8 @@ def main():
         for market in ("PTS","REB","AST","PRA","MIN"):
             vals=[r[market] for r in rows]
             item["metrics"][market]={"l3":round(statistics.mean(vals[-3:]),2),
-                "l5":round(statistics.mean(vals[-5:]),2),
-                "l10":round(statistics.mean(vals[-10:]),2),
+                "l5":round(statistics.mean(vals[-5:]),2) if len(vals)>=5 else None,
+                "l10":round(statistics.mean(vals[-10:]),2) if len(vals)>=10 else None,
                 "season":round(statistics.mean(vals),2)}
         players.append(item)
     players.sort(key=lambda x:x["player"])
