@@ -53,6 +53,7 @@ def main():
     if missing:
         raise ValueError("CSV schema changed: missing "+str(sorted(missing)))
     by_player=defaultdict(dict)
+    local_games=[]
     rejected=0
     latest=None
     for row in reader:
@@ -85,6 +86,10 @@ def main():
         if previous and (previous["PTS"],previous["REB"],previous["AST"])!=(pts,reb,ast):
             raise ValueError(f"Conflicting duplicate for player id {ident} on {date}")
         by_player[ident][date]=game
+        game["FGA"]=number(row.get("FGA"))
+        game["FG3A"]=number(row.get("3PA"))
+        game["TOV"]=number(row.get("Turnovers"))
+        local_games.append(game)
         latest=max(latest,date) if latest else date
     if not latest or (today-latest).days>5:
         raise ValueError("Latest player game is too old for current dashboard")
@@ -105,6 +110,10 @@ def main():
                 "season":round(statistics.mean(values),2)}
         players.append(result)
     players.sort(key=lambda x:x["player"])
+    # Local-only input to trained model inference; not published as a player-game database.
+    local_path=ROOT/"data/nba/current/current_games.json"
+    local_path.parent.mkdir(parents=True,exist_ok=True)
+    local_path.write_text(json.dumps(local_games))
     total=sum(len(v) for v in by_player.values())
     if len(players)<80 or total<1000:
         raise ValueError(f"Insufficient observations: {len(players)} players, {total} player-games")
