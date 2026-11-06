@@ -7,7 +7,7 @@
 @media(max-width:520px){main{padding:12px 10px 65px}.summary{gap:6px}.metric{padding:9px 8px}.metric b{font-size:17px}.metric small{font-size:10px}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.head strong{font-size:13px}}
 .compact-prop .mainline{padding:12px 13px}.compact-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.compact-identity{min-width:0;flex:1}.compact-identity strong{font-size:15px;font-weight:750;display:block}.compact-identity .match{line-height:1.55}.compact-right{display:flex;align-items:center;gap:9px;justify-content:flex-end;flex-shrink:0}.compact-right .tag{font-size:11px;min-width:53px;text-align:center}.compact-percent{font-size:19px;font-variant-numeric:tabular-nums;font-weight:800;min-width:59px;text-align:right}.compact-caption{margin-top:7px;font-size:10px;color:var(--sub)}.compact-details summary{padding:7px 13px;font-size:11px;color:#a9c7f5}.detail-highlight{margin-top:10px;padding:9px 10px;background:var(--panel2);border-radius:8px;color:#e6efff;font-size:12px}.detail-heading{font-weight:800;color:var(--text);margin-top:15px}.compact-details .vals{margin-bottom:9px}.compact-details .detailbody{padding-top:4px}.dashboard-summary{margin:10px 0}.tabs .tab{font-size:11px;padding:9px 3px}.source{margin:5px 0 10px;line-height:1.4}
 @media(max-width:520px){.compact-prop .mainline{padding:10px 11px}.compact-identity strong{font-size:13px}.compact-right{gap:6px}.compact-percent{font-size:17px;min-width:51px}.compact-head{gap:5px}.dashboard-summary .metric{padding:8px}.dashboard-summary .metric b{font-size:15px}}
-</style></head>
+.compact-projections{display:flex;align-items:center;gap:8px;margin-top:10px}.compact-projection{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:1;min-width:0;background:var(--panel2);padding:8px 10px;border-radius:8px}.compact-projection span{font-size:11px;color:var(--sub)}.compact-projection strong{font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap}@media(max-width:520px){.compact-projection{padding:7px 8px;gap:5px}.compact-projection span{font-size:10px}.compact-projection strong{font-size:15px}}</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -90,17 +90,22 @@ function renderAI(){
   right.append(node("span","tag "+sideClass(mainSide),mainSide));
   right.append(node("strong","compact-percent",chance(p)));
   head.append(identity,right);main.append(head);
-  main.append(node("div","compact-caption",
-   (p.line_book_count>=2?p.line_book_count+"-book median":"Single book")+
-   " · AI "+fmt(Number(p.projection))+
-   (validEstimate(p)?" · Estimated, not verified":" · Probability unavailable")));
+  const projections=node("div","compact-projections");
+  const original=node("div","compact-projection");
+  original.append(node("span","","Original AI"),node("strong","",fmt(Number(p.projection))));
+  projections.append(original);
+  if(typeof p.shadow_projection==="number"&&Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
+   const shadow=node("div","compact-projection");
+   shadow.append(node("span","","Opponent-aware AI"),node("strong","",fmt(p.shadow_projection)));
+   projections.append(shadow);
+  }
+  main.append(projections);
   outer.append(main);
   const details=node("details","compact-details"),
-        summary=node("summary","","View projections, books & EV"),
+        summary=node("summary","","View matchup, sportsbook odds & EV"),
         body=node("div","detailbody");
   const delta=Number(p.difference);
-  appendValues(body,[["AI projection",fmt(Number(p.projection))],
-   ["Sportsbook line",fmt(Number(p.line))],
+  appendValues(body,[["Sportsbook line",fmt(Number(p.line))],
    ["Projection − line",(delta>0?"+":"")+fmt(delta),"diff "+(delta>0?"over":"under")]]);
   if(validEstimate(p)){
    const likelihood=node("div","formline");
@@ -110,7 +115,7 @@ function renderAI(){
   }
   if(typeof p.shadow_projection==="number"&&Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
    const shadowSide=modelSide(p.shadow_projection,p.line);
-   body.append(node("div","detail-highlight","Opponent-aware shadow: "+fmt(p.shadow_projection)+" · "+shadowSide+" (research only)"));
+   body.append(node("div","detail-highlight","Opponent-aware AI direction: "+shadowSide+" (research only)"));
    body.append(node("div","mini",shadowSide===mainSide?"Models agree on direction, not a verified advantage":"Models differ; review uncertainty"));
   }
   if(formFresh)appendForm(body,currentPerson(p.player,p.team),p.stat);
