@@ -35,6 +35,8 @@ def historical_defense(raw):
     defended=joined[["SEASON_ID","GAME_ID","GAME_DATE","TEAM_ABBREVIATION"]+
                     [f"ALLOW_{s}" for s in STATS]].copy()
     defended=defended.sort_values(["SEASON_ID","TEAM_ABBREVIATION","GAME_DATE","GAME_ID"])
+    if defended.duplicated(["SEASON_ID","TEAM_ABBREVIATION","GAME_DATE"]).any():
+        raise ValueError("Multiple same-day team games; strict pregame date windows require special handling")
     grouped=defended.groupby(["SEASON_ID","TEAM_ABBREVIATION"],sort=False)
     for stat in STATS:
         defended[f"OPP_{stat}_ALLOWED_L5"]=grouped[f"ALLOW_{stat}"].transform(
