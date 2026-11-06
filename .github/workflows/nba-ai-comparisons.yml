@@ -2,7 +2,7 @@ name: Update experimental AI sportsbook comparisons
 on:
   workflow_dispatch:
   schedule:
-    - cron: '12 17 * * *'
+    - cron: '17 20,23 * * *'
 permissions:
   contents: write
 concurrency:
@@ -27,6 +27,13 @@ jobs:
         run: python -u iphone_bot/train_provisional.py
       - name: Fetch 2026-27 current-season player games
         run: python -u iphone_bot/fetch_current_form.py
+      - name: Fetch fresh upcoming sportsbook props (max three games)
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          ODDS_MAX_EVENTS: '3'
+        run: python -u iphone_bot/fetch_props.py
+      - name: Preserve observed pregame sportsbook snapshots
+        run: python -u iphone_bot/archive_observed_props.py
       - name: Compare AI projections with verified pregame sportsbook markets
         run: python -u iphone_bot/compare_live_models.py
       - name: Validate analysis and publish
@@ -41,11 +48,16 @@ jobs:
           assert all(x['sample_games']>=5 for x in d['comparisons'])
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
           PY
-          git add docs/ai_comparisons.json
+          git add docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv
           if git diff --cached --quiet; then
             echo "No new results"; exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Publish experimental NBA model vs sportsbook analysis"
-          git push
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "Push conflict: retrying after rebase"
+            git pull --rebase origin main || exit 1
+          done
+          exit 1
