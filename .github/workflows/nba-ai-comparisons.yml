@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: nba-ai-comparisons
+  group: nba-prop-feed
   cancel-in-progress: false
 jobs:
   compare:
@@ -62,9 +62,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Publish experimental NBA model vs sportsbook analysis"
+          # Training may modify tracked data inputs; only the three validated
+          # output files above are committed. Drop leftover tracked changes
+          # before a safe rebase retry.
+          git reset --hard HEAD
           for attempt in 1 2 3; do
-            if git push; then exit 0; fi
-            echo "Push conflict: retrying after rebase"
-            git pull --rebase origin main || exit 1
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent commit detected; replaying validated output commit"
+            git fetch origin main
+            git rebase origin/main || {
+              git rebase --abort || true
+              echo "Rebase conflict; refusing to overwrite remote data"
+              exit 1
+            }
           done
           exit 1
