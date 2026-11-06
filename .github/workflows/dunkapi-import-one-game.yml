@@ -24,6 +24,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Prepare independent NBA box scores for identity verification
+        run: |
+          pip install -r iphone_bot/requirements-training.txt pyarrow requests
+          python -u iphone_bot/download_archived_nba.py
       - name: Import at most one completed game, with cost estimate cap
         env:
           DUNKAPI_KEY: ${{ secrets.DUNKAPI_KEY }}
