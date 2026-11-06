@@ -10,7 +10,11 @@ import csv
 import json
 import urllib.request
 import pandas as pd
-from position_defense import API,RAW,SEASONS,HEAD
+try:
+    from .position_defense import API,RAW,SEASONS,HEAD
+except ImportError:
+    # Direct execution from iphone_bot/ sets that directory on sys.path.
+    from position_defense import API,RAW,SEASONS,HEAD
 
 ROLES=("PG","SG","SF","PF","C")
 STATS=("PTS","REB","AST","PRA")
