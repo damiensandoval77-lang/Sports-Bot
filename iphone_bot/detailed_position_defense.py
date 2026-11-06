@@ -109,7 +109,7 @@ def build_detailed_dvp(raw,positions):
             for kind in ("AVG","PER36"):
                 name=f"DVP5_{stat}_{kind}_L{n}"
                 games[name]=defense[f"{stat}_{kind}"].transform(
-                    lambda x:x.shift(1).rolling(n,min_periods=max(3,n//2)).mean())
+                    lambda x:x.shift(1).rolling(n,min_periods=n).mean())
         games[f"DVP5_GAMES_L{n}"]=defense.cumcount().clip(upper=n)
     # Exact role used only to join the target offense role to opponent defense.
     right=games.rename(columns={"DEFENSE_TEAM":"OPPONENT"})
