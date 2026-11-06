@@ -19,6 +19,7 @@ from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
 from projection_explanation import explain_projection
+from research_context import minutes_estimate,positional_allowance,teammate_on_off
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -26,6 +27,7 @@ FORM=ROOT/"docs/current_form.json"
 ODDS=ROOT/"docs/data.json"
 MODELS=ROOT/"models/nba/provisional"
 OUTPUT=ROOT/"docs/ai_comparisons.json"
+INJURIES=ROOT/"docs/injury_context.json"
 MARKETS={"Points":"PTS","Rebounds":"REB","Assists":"AST","Points Rebounds Assists":"PRA"}
 TEAM={
 "Atlanta Hawks":"ATL","Boston Celtics":"BOS","Brooklyn Nets":"BKN",
@@ -68,6 +70,16 @@ def main():
     now=datetime.now(timezone.utc)
     form=json.loads(FORM.read_text())
     odds=json.loads(ODDS.read_text())
+    try:
+        injury_feed=json.loads(INJURIES.read_text()) if INJURIES.exists() else {}
+        issued=utc(injury_feed["report_issued_at"])
+        report_fresh=(injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED"
+                      and (now-issued).total_seconds()<=18*3600 and issued<=now)
+    except (ValueError,TypeError,KeyError):
+        injury_feed={}
+        report_fresh=False
+    official_by_id={str(p["player_id"]):p for p in injury_feed.get("players",[])} if report_fresh else {}
+
     if form.get("season")!="2026-27":raise ValueError("Not current season")
     form_time=utc(form["updated_at"])
     market_time=utc(odds["updated_at"])
@@ -186,8 +198,37 @@ def main():
         history=sorted(by_id.get(str(row["player_id"]),{}).values(),key=lambda x:x["date"])
         history=[g for g in history if g["date"]<upcoming_date]
         row["minutes_context"]=minutes_context(history)
-        row["injury_status"]="NOT_VERIFIED"
+        row["minutes_research"]=minutes_estimate(history,upcoming_date)
+        recent_position=next((g.get("position") for g in reversed(history)
+            if g.get("position")),None)
+        row["position_group_context"]=positional_allowance(
+            all_games,upcoming_date,opponent,recent_position,target)
+        row["research_position"]=recent_position
+        # NBA official injury reports may include next-day games not yet
+        # submitted. Do not carry a status to a different game date.
+        game_day_report=report_fresh and issued.astimezone(
+            ZoneInfo("America/New_York")).date().isoformat()==upcoming_date
+        verified_status=official_by_id.get(str(row["player_id"])) if game_day_report else None
+        if verified_status and verified_status.get("team")==row["team"] and verified_status.get("status")!="CONFLICTING_EXTRACT":
+            row["injury_status"]=verified_status["status"].upper()
+            row["injury_status_source"]="OFFICIAL_NBA_REPORT"
+            row["injury_report_url"]=injury_feed.get("source_pdf")
+        else:
+            row["injury_status"]="NOT_VERIFIED"
+            row["injury_status_source"]="UNAVAILABLE_OR_NOT_GAME_DAY"
         row["requires_lineup_review"]=True
+        row["lineup_research_adjustment_applied"]=False
+        row["teammate_absence_splits"]=[]
+        if game_day_report:
+            team_out=[p for p in official_by_id.values()
+                if p.get("team")==row["team"] and p.get("status")=="Out"
+                and str(p["player_id"])!=str(row["player_id"])]
+            for teammate in team_out[:8]:
+                observed=teammate_on_off(history,all_games,upcoming_date,teammate["player_id"],target)
+                if observed:
+                    row["teammate_absence_splits"].append({
+                        "teammate":teammate["player"],**observed})
+                if len(row["teammate_absence_splits"])>=2:break
         row["defense_in_model"]=False
         row["projection"]=round(projection,1)
         # Build a combined median from UNROUNDED original and shadow forecasts.
@@ -261,7 +302,8 @@ def main():
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
        "verified_current_matchups":True,"is_prizepicks":False,
-       "injury_data_verified":False,"opponent_defense_applied_to_model":False,
+       "injury_data_verified":report_fresh,"official_injury_report_url":injury_feed.get("source_pdf") if report_fresh else None,
+       "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
        "line_aggregation_method":"MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
        "markets_with_multiple_books":sum(v["line_book_count"]>=2 for v in valid),
@@ -274,7 +316,7 @@ def main():
        "combined_projection_method":"TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
        "ev_verified":False,
        "ev_method":"PRICE_SPECIFIC_HYPOTHETICAL_EV_NOT_VALIDATED",
-       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. The combined displayed projection is a two-model median (average) where a valid shadow forecast exists, falling back to original otherwise. Probabilities and EV still describe the ORIGINAL model only, not the combined projection; they are uncalibrated and cannot establish profitable picks.",
+       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability requires game-day verification, and research-only positional defense and minutes estimates do not change picks. Opponent-aware shadow is separate and research-only. The combined displayed projection is a two-model median (average) where a valid shadow forecast exists, falling back to original otherwise. Probabilities and EV still describe the ORIGINAL model only, not the combined projection; they are uncalibrated and cannot establish profitable picks.",
        "comparisons":valid[:150],"skipped":skipped}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
     print("Wrote",len(valid),"team-verified experimental model comparisons",flush=True)
