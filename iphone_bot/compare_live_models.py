@@ -16,6 +16,7 @@ from matchup_context import team_allowances, defense_context, minutes_context
 from defense_training import COLS
 from experimental_probability import probability_sides, METHOD
 from sportsbook_consensus import consensus_markets
+from hypothetical_ev import hypothetical_quote_analysis
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -209,6 +210,30 @@ def main():
             row["estimated_probability_side"]=direction
             row["estimated_selected_probability"]=round(max(frequency["over"],frequency["under"]),4)
             row["probability_method"]=METHOD
+        row["ev_status"]="UNAVAILABLE_NO_VALIDATED_PROBABILITY"
+        row["experimental_ev_available"]=False
+        row["experimental_best_quote"]=None
+        if "experimental_residuals" in model and model.get("residual_calibration",{}).get("real_market_calibrated") is False:
+            quoted=[]
+            for quote in row.get("book_quotes",[]):
+                try:
+                    priced=hypothetical_quote_analysis(quote,projection,model["experimental_residuals"])
+                    quoted.append(priced)
+                except (ValueError,TypeError,KeyError,OverflowError):
+                    continue
+            row["book_quotes"]=quoted
+            if quoted:
+                options=[]
+                for quote in quoted:
+                    for side in ("over","under"):
+                        options.append({"book":quote["name"],"line":quote["line"],
+                            "side":side.upper(),"odds":quote[side],
+                            "hypothetical_ev_pct":quote["hypothetical_"+side+"_ev_pct"],
+                            "model_probability":quote[side+"_model_probability"],
+                            "market_no_vig":quote["market_no_vig_"+side]})
+                row["experimental_best_quote"]=max(options,key=lambda item:item["hypothetical_ev_pct"])
+                row["experimental_ev_available"]=True
+                row["ev_status"]="HYPOTHETICAL_ONLY_UNCALIBRATED_PROBABILITIES"
         row["missing_features"]=[name for name in features if name not in row["features"]]
         del row["features"]
     valid.sort(key=lambda r:(
@@ -225,7 +250,10 @@ def main():
        "experimental_probability_ranking":True,
        "experimental_probability_method":METHOD,
        "real_market_probabilities_calibrated":False,
-       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. No EV or profitable-pick claim.",
+       "experimental_ev_available":True,
+       "ev_verified":False,
+       "ev_method":"PRICE_SPECIFIC_HYPOTHETICAL_EV_NOT_VALIDATED",
+       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. Any displayed EV is hypothetical from uncalibrated historical residual estimates, not validated expected betting return, and cannot establish profitable picks.",
        "comparisons":valid[:150],"skipped":skipped}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
     print("Wrote",len(valid),"team-verified experimental model comparisons",flush=True)
