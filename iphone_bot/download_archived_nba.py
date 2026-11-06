@@ -45,7 +45,6 @@ def main():
         # by using a neutral zero placeholder, with provenance flag.
         df["PF"]=0
         df["PF_DATA_AVAILABLE"]=False
-        df["POSITION"]="Unknown"
         df["PLAYER_NAME"]=df.get("player_name",pd.Series("",index=df.index))
         cols=["PLAYER_ID","GAME_ID","GAME_DATE","TEAM_ID","TEAM_ABBREVIATION","MATCHUP","MIN","SEASON_ID","PF","PF_DATA_AVAILABLE","PLAYER_NAME"]+list(STATS.values())
         df=df[cols]
@@ -58,7 +57,9 @@ def main():
     raw_path.parent.mkdir(parents=True,exist_ok=True)
     pos_path.parent.mkdir(parents=True,exist_ok=True)
     all_logs.to_csv(raw_path,index=False)
-    all_logs[["PLAYER_ID","PLAYER_NAME","POSITION"]].drop_duplicates("PLAYER_ID").to_csv(pos_path,index=False)
+    positions=all_logs[["PLAYER_ID","PLAYER_NAME"]].drop_duplicates("PLAYER_ID").copy()
+    positions["POSITION"]="Unknown"  # Position unavailable from source; do not infer.
+    positions.to_csv(pos_path,index=False)
     print("Saved",len(all_logs),"rows",flush=True)
 
 if __name__=="__main__": main()
