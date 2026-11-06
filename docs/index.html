@@ -47,7 +47,7 @@
 .recent-stat-number{font-size:24px;line-height:1.25;color:#f6faff;font-variant-numeric:tabular-nums}
 .recent-stat-subtitle{font-size:10px;color:#a5b8d4}
 @media(max-width:520px){.recent-block-grid{gap:6px}.recent-stat-tile{padding:10px 8px;min-height:88px}.recent-stat-number{font-size:22px}.recent-stat-label{font-size:9px}.recent-stat-subtitle{font-size:9px}}
-.performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}.pipeline-health{padding:11px 12px;background:#15253b;border:1px solid #34516f;border-radius:9px;font-size:12px;line-height:1.55;margin:10px 0}.pipeline-alert{color:#ffd99a;background:#332819;border-color:#765832}.pp-quote{display:flex;justify-content:space-between;gap:9px;align-items:flex-start;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #465378;background:#1d2a44}.pp-quote-left{display:flex;flex-direction:column;gap:3px}.pp-quote-left strong{font-size:20px;font-variant-numeric:tabular-nums}.pp-quote-left span{font-size:10px;color:#b8c5dc}.pp-quote-right{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.pp-selection{font-size:10px;font-weight:800;padding:6px;border-radius:6px;background:#344665;color:#ecf3ff;text-transform:uppercase}.pp-quote+.mini{font-size:11px;margin-bottom:9px}</style></head>
+.performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}.pipeline-health{padding:11px 12px;background:#15253b;border:1px solid #34516f;border-radius:9px;font-size:12px;line-height:1.55;margin:10px 0}.pipeline-alert{color:#ffd99a;background:#332819;border-color:#765832}.pp-quote{display:flex;justify-content:space-between;gap:9px;align-items:flex-start;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #465378;background:#1d2a44}.pp-quote-left{display:flex;flex-direction:column;gap:3px}.pp-quote-left strong{font-size:20px;font-variant-numeric:tabular-nums}.pp-quote-left span{font-size:10px;color:#b8c5dc}.pp-quote-right{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.pp-selection{font-size:10px;font-weight:800;padding:6px;border-radius:6px;background:#344665;color:#ecf3ff;text-transform:uppercase}.pp-quote+.mini{font-size:11px;margin-bottom:9px}.performance-selector{display:flex;align-items:center;gap:9px;margin:13px 0}.performance-selector label{font-size:12px;color:var(--sub)}.performance-selector select{max-width:210px}.research-note{padding:11px;border:1px solid #435c7d;border-radius:8px;background:#1a2b41;font-weight:650;font-size:12px;margin:9px 0}.research-risk{border-color:#9a634d;background:#422b26;color:#ffe1d1}</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -69,6 +69,8 @@
 <div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
+<div class="performance-selector"><label for="perf-market">Performance market</label><select id="perf-market"><option value="">All markets</option><option value="PTS">Points</option><option value="REB">Rebounds</option><option value="AST">Assists</option><option value="PRA">PRA</option></select></div>
+<div class="source" id="weight-experiment">Chronological weighting research: waiting for independently settled outcomes.</div>
 <div class="performance-comparison" id="performance-comparison"><div class="empty">Loading real model performance…</div></div>
 <div class="source" id="performance-caveat">Hit rate excludes pushes; paper ROI requires a recorded sportsbook price for each model's exact direction. No result is proof of profitable betting.</div>
 <div class="bar performance-heading"><h2>Individual paper picks</h2><small>Actual game results</small></div>
@@ -260,6 +262,33 @@ function renderAI(){
    body.append(line);
   }
 
+  body.append(node("div","detail-heading","Availability & matchup research"));
+  const injury=p.injury_status||"NOT_VERIFIED";
+  const notice=injury==="NOT_VERIFIED"?
+   "Official game-day availability not verified for this player. Check the latest NBA report and announced starting lineup.":
+   "Official NBA injury report: "+injury+". Designations can change before tipoff.";
+  body.append(node("div","research-note "+(injury==="OUT"||injury==="DOUBTFUL"?"research-risk":""),notice));
+  if(p.injury_report_url&&injury!=="NOT_VERIFIED")
+   body.append(node("div","mini","Source: NBA official injury report PDF · verify before making a decision."));
+  const minutesResearch=p.minutes_research;
+  if(minutesResearch?.expected_minutes!=null)
+   body.append(node("div","mini","Research minutes estimate: "+fmt(minutesResearch.expected_minutes)+
+     " (recent-form estimate, not a confirmed rotation; last five average "+fmt(minutesResearch.observed_l5)+")."));
+  else body.append(node("div","mini","Projected minutes unavailable: insufficient recent observations."));
+  const positional=p.position_group_context;
+  if(positional)
+   body.append(node("div","mini","Opponent "+p.opponent+" vs "+positional.position_group+
+     " position group: "+fmt(positional.allowed_l5)+" team-group "+p.stat+" allowed over "+
+     positional.games+" recent games, "+(positional.vs_league_pct>=0?"+":"")+fmt(positional.vs_league_pct)+
+     "% versus league group average. Not an individual defender matchup."));
+  else body.append(node("div","mini","Opponent position-group defensive sample unavailable; broad team defense remains below."));
+  if(Array.isArray(p.teammate_absence_splits)){
+   for(const split of p.teammate_absence_splits)
+    body.append(node("div","mini","Observed when "+split.teammate+" played: "+fmt(split.with_avg)+
+      " "+p.stat+" ("+split.with_games+" games); without: "+fmt(split.without_avg)+
+      " ("+split.without_games+" games). Observational only; no causality assumed."));
+  }
+  body.append(node("div","mini","These research inputs do not change the combined AI projection or imply confirmed starters."));
   const why=node("div","reasoning-panel");
   why.append(node("strong","","Why this projection?"));
   for(const sentence of reasoningSentences(p,recentForm)){
@@ -343,9 +372,22 @@ function renderModelPerformance(){
   target.replaceChildren(empty("Model comparison is being initialized. It will update with the next completed grading run."));
   return;
  }
+ const selectedMarket=$("perf-market").value;
+ const data=selectedMarket?(report.by_stat?.[selectedMarket]||{}):report.models;
+ const weight=selectedMarket?paper?.weight_research?.weights?.[selectedMarket]:null;
+ const exp=$("weight-experiment");
+ if(!selectedMarket){
+  exp.textContent="Select Points, Rebounds, Assists, or PRA to see per-stat performance and chronological blend-weight research. Existing live predictions remain 50/50.";
+ }else if(weight?.status==="OUT_OF_SAMPLE_RESEARCH_ONLY"){
+  exp.textContent=selectedMarket+" historical test: "+Math.round(100*weight.selected_original_weight)+"% Original / "+Math.round(100*weight.selected_shadow_weight)+
+    "% Opponent AI; later-game MAE "+weight.test_mae+" versus equal-weight "+weight.equal_weight_test_mae+
+    " ("+weight.training_count+" earlier training, "+weight.test_count+" later test). Research only; not applied to live picks.";
+ }else{
+  exp.textContent=selectedMarket+" blend study: insufficient graded historical observations for a valid chronological comparison. Live 50/50 unchanged.";
+ }
  const models=[["original","Original AI"],["opponent_aware","Opponent-Aware AI"],["combined","Combined AI"]];
  const cards=models.map(([id,label])=>{
-  const m=report.models?.[id],outer=node("article","performance-card");
+  const m=data?.[id],outer=node("article","performance-card");
   outer.append(node("strong","performance-card-title",label));
   if(!m){
    outer.append(node("div","mini","No verified pregame results available."));
@@ -446,6 +488,7 @@ const status=[];
 for(const control of ["ai-search","ai-stat","ai-sort"])$(control).addEventListener("input",renderAI);
 for(const control of ["odds-search","odds-stat","odds-book"])$(control).addEventListener("input",renderOdds);
 for(const control of ["form-search","form-stat","form-sort"])$(control).addEventListener("input",renderForm);
+$("perf-market").addEventListener("change",renderModelPerformance);
 for(const btn of document.querySelectorAll(".tab"))btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b===btn)));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="tab-"+btn.dataset.tab));});
 $("refresh-now").addEventListener("click",()=>refresh().catch(error=>{
  $("data-health").textContent="Refresh failed: "+String(error.message||error);
