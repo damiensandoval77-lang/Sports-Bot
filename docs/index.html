@@ -413,21 +413,21 @@ appendValues(main,[["Last 5",fmt(statVal(p,stat,"l5"))],["Last 10",fmt(statVal(p
 $("form-board").replaceChildren(...(nodes.length?nodes:[empty("No players found. Current-season form may be unavailable.")]))}
 function renderModelPerformance(){
  const v2=$("minutes-v2-validation");
- const study=minutesV2Published||aiMetadata?.minutes_v2_validation;
- if(!study){
+ const minutesV2Study=minutesV2Published||aiMetadata?.minutes_v2_validation;
+ if(!minutesV2Study){
   v2.textContent="Minutes V2: next AI comparison publication will evaluate the research forecast. Live projections unchanged.";
- }else if(study.status!=="CHRONOLOGICAL_RESEARCH_HOLDOUT"){
-  v2.textContent="Minutes V2: only "+(study.eligible_samples??0)+
-   " same-game historical observations across "+(study.distinct_dates??0)+
+ }else if(minutesV2Study.status!=="CHRONOLOGICAL_RESEARCH_HOLDOUT"){
+  v2.textContent="Minutes V2: only "+(minutesV2Study.eligible_samples??0)+
+   " same-game historical observations across "+(minutesV2Study.distinct_dates??0)+
    " dates. Chronological holdout is not ready. Live projections unchanged.";
  }else{
-  const change=study.candidate_minus_baseline_mae;
-  v2.textContent="Minutes V2 later-date holdout ("+study.holdout_samples+
-   " identical player games from "+study.holdout_start+"): existing minutes MAE "+
-   fmt(study.baseline_mae)+" vs robust V2 "+fmt(study.candidate_mae)+
+  const change=minutesV2Study.candidate_minus_baseline_mae;
+  v2.textContent="Minutes V2 later-date holdout ("+minutesV2Study.holdout_samples+
+   " identical player games from "+minutesV2Study.holdout_start+"): existing minutes MAE "+
+   fmt(minutesV2Study.baseline_mae)+" vs robust V2 "+fmt(minutesV2Study.candidate_mae)+
    " min, V2 minus baseline "+(change>0?"+":"")+fmt(change)+
-   " (negative is better). "+study.candidate_improved+" improved, "+
-   study.candidate_worsened+" worsened, "+study.tied+" tied. "+
+   " (negative is better). "+minutesV2Study.candidate_improved+" improved, "+
+   minutesV2Study.candidate_worsened+" worsened, "+minutesV2Study.tied+" tied. "+
    "Research only; NOT applied to prop projections.";
  }
 
