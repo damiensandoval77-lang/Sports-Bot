@@ -117,7 +117,10 @@ def settle(rows,completed_games,now=None):
     return result
 
 def expected_opponents(game,team):
-    from compare_live_models import matchup
+    try:
+        from .compare_live_models import matchup
+    except ImportError:
+        from compare_live_models import matchup
     pair=matchup(game)
     if pair is None or team not in pair:return []
     return [pair[0] if pair[1]==team else pair[1]]
