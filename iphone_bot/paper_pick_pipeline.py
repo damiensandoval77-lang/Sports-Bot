@@ -6,15 +6,18 @@ game/player identity. Settlement NEVER re-runs a model or selects a side after
 observing game results. No money is wagered or assumed.
 """
 import json
+import math
 from datetime import datetime,timezone
 from pathlib import Path
 from collections import defaultdict
 try:
     from .model_performance import compute_performance
     from .weight_research import walkforward_weights
+    from .accuracy_feedback import evaluate as accuracy_feedback
 except ImportError:
     from model_performance import compute_performance
     from weight_research import walkforward_weights
+    from accuracy_feedback import evaluate as accuracy_feedback
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -66,14 +69,22 @@ def snapshot(comparisons,generated_at,existing=None):
         start=utc(market["start"])
         if created>=start:continue
         for book in market.get("book_quotes",[]):
-            chosen_projection=float(market.get("combined_projection",market["projection"]))
-            side="OVER" if chosen_projection>float(book["line"]) else "UNDER"
-            if chosen_projection==float(book["line"]):continue
-            odds=book.get("over" if side=="OVER" else "under")
             try:
-                payout(odds)
+                chosen_projection=float(market.get("combined_projection",market["projection"]))
+                original_projection=float(market["projection"])
                 line=float(book["line"])
-            except (TypeError,ValueError):continue
+                if not (math.isfinite(chosen_projection) and math.isfinite(original_projection)
+                        and math.isfinite(line) and chosen_projection>=0 and
+                        original_projection>=0 and line>=0):
+                    continue
+                if not expected_opponents(market["game"],str(market["team"])):
+                    continue
+                if chosen_projection==line:continue
+                side="OVER" if chosen_projection>line else "UNDER"
+                odds=book.get("over" if side=="OVER" else "under")
+                payout(odds)
+            except (TypeError,ValueError,KeyError,OverflowError):
+                continue
             record={"event_start":start.isoformat(),"captured_at":created.isoformat(),
                 "player_id":str(market["player_id"]),
                 "player":str(market["player"]),"team":str(market["team"]),
@@ -82,7 +93,7 @@ def snapshot(comparisons,generated_at,existing=None):
                 "american_odds":int(odds),
                 "over_odds":int(book["over"]) if book.get("over") is not None else None,
                 "under_odds":int(book["under"]) if book.get("under") is not None else None,
-                "original_projection":float(market["projection"]),
+                "original_projection":original_projection,
                 "combined_projection":chosen_projection,
                 "model":"TWO_MODEL_MEDIAN_RESEARCH" if market.get("combined_model_count")==2 else "PROVISIONAL_ORIGINAL",
                 "projection_method":market.get("combined_method","ORIGINAL_AI_FALLBACK"),
@@ -128,14 +139,26 @@ def settle(rows,completed_games,now=None):
         if len(candidates)!=1:
             result.append(r);continue
         try:
-            actual=float(candidates[0][r["market"]])
+            game=candidates[0]
+            # The source may contain an in-progress, malformed, or duplicate
+            # player row. Require a plausible completed player stat line.
+            minutes=float(game["MIN"])
+            actual=float(game[r["market"]])
             line=float(r["line"])
+            if not (math.isfinite(minutes) and 0<minutes<=60
+                    and math.isfinite(actual) and actual>=0
+                    and math.isfinite(line) and line>=0):
+                result.append(r);continue
+            if r["market"]=="PRA" and all(x in game for x in ("PTS","REB","AST")):
+                parts=[float(game[x]) for x in ("PTS","REB","AST")]
+                if not all(math.isfinite(x) and x>=0 for x in parts) or abs(actual-sum(parts))>0.01:
+                    result.append(r);continue
             payout_unit=payout(r["american_odds"])
             if actual>line:outcome="OVER"
             elif actual<line:outcome="UNDER"
             else:outcome="PUSH"
             profit=0.0 if outcome=="PUSH" else (payout_unit if outcome==r["side"] else -1.0)
-        except (ValueError,TypeError,KeyError):
+        except (ValueError,TypeError,KeyError,OverflowError):
             result.append(r);continue
         r.update({"status":"SETTLED","settled_at":now.isoformat(),
                   "actual":actual,"result":"PUSH" if outcome=="PUSH" else ("WIN" if outcome==r["side"] else "LOSS"),
@@ -205,6 +228,7 @@ def summary(rows,now=None,source=None):
        "method":METHOD,"real_money_wagered":False,
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
        "performance":compute_performance(rows),
+       "accuracy_feedback":accuracy_feedback(rows),
        "weight_research":walkforward_weights(rows),
        "pipeline_health":pipeline_health(rows,source,now),
        "independent_player_game_markets":unique_games,
