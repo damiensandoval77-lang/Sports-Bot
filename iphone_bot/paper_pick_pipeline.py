@@ -9,6 +9,7 @@ import json
 from datetime import datetime,timezone
 from pathlib import Path
 from collections import defaultdict
+from model_performance import compute_performance
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -74,6 +75,8 @@ def snapshot(comparisons,generated_at,existing=None):
                 "game":str(market["game"]),"market":market["stat"],
                 "bookmaker":str(book["name"]),"line":line,"side":side,
                 "american_odds":int(odds),
+                "over_odds":int(book["over"]) if book.get("over") is not None else None,
+                "under_odds":int(book["under"]) if book.get("under") is not None else None,
                 "original_projection":float(market["projection"]),
                 "combined_projection":chosen_projection,
                 "model":"TWO_MODEL_MEDIAN_RESEARCH" if market.get("combined_model_count")==2 else "PROVISIONAL_ORIGINAL",
@@ -169,6 +172,7 @@ def summary(rows,now=None):
        "model":"PROVISIONAL_ORIGINAL",
        "method":METHOD,"real_money_wagered":False,
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
+       "performance":compute_performance(rows),
        "independent_player_game_markets":unique_games,
        "wins":wins,"losses":losses,"pushes":pushes,
        "win_rate_ex_push":round(wins/(wins+losses),4) if wins+losses else None,
