@@ -33,6 +33,16 @@ class DefensiveFeaturesTest(unittest.TestCase):
         self.assertAlmostEqual(reverse["OPP_PTS_ALLOWED_L5"],8*(14+15+16+17)/4)
         self.assertEqual(reverse["OPP_DEF_SAMPLE_GAMES"],4)
 
+    def test_cross_provider_game_ids_still_match_reciprocal_teams(self):
+        df=self.sample()
+        # Some datasets provide a different identifier for each side.
+        df.loc[df.TEAM_ABBREVIATION=="MIA","GAME_ID"]="other-"+df.loc[
+            df.TEAM_ABBREVIATION=="MIA","GAME_ID"].astype(str)
+        features=historical_defense(df)
+        row=features[(features.GAME_ID=="5")&
+                     (features.TEAM_ABBREVIATION=="GSW")].iloc[0]
+        self.assertAlmostEqual(row["OPP_PTS_ALLOWED_L5"],100.0)
+
     def test_first_game_not_exposed_to_own_result(self):
         features=historical_defense(self.sample())
         first=features[features.GAME_ID=="1"]
