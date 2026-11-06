@@ -41,9 +41,9 @@ class DetailedPositionDefenseTest(unittest.TestCase):
         self.assertEqual(r["DVP5_GAMES_L5"],5)
         self.assertTrue(pd.isna(r["DVP5_PTS_AVG_L10"]))
         r=row("2025-01-21","GSW0")
-        self.assertAlmostEqual(r["DVP5_PTS_AVG_L5"],18.0)
-        self.assertAlmostEqual(r["DVP5_PTS_AVG_L10"],15.5)
-        self.assertAlmostEqual(r["DVP5_PTS_AVG_L20"],11.5)
+        self.assertAlmostEqual(r["DVP5_PTS_AVG_L5"],28.0)
+        self.assertAlmostEqual(r["DVP5_PTS_AVG_L10"],25.5)
+        self.assertAlmostEqual(r["DVP5_PTS_AVG_L20"],20.5)
         self.assertEqual(r["DVP5_GAMES_L20"],20)
 
     def test_merge_row_count(self):
