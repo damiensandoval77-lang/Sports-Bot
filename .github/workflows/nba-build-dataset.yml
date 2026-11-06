@@ -4,49 +4,98 @@ on:
 permissions:
   contents: read
 jobs:
-  build:
+  seasons:
+    strategy:
+      fail-fast: false
+      matrix:
+        season: ['2022-23', '2023-24', '2024-25', '2025-26']
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: pip
-          cache-dependency-path: iphone_bot/requirements-training.txt
-      - name: Install dataset dependencies
-        run: pip install -r iphone_bot/requirements-training.txt
-      - name: Download historical NBA games and player positions
-        run: python -m src.sports.nba.builder
-      - name: Validate downloaded input files
+      - run: pip install -r iphone_bot/requirements-training.txt
+      - name: Download one season
+        env:
+          NBA_SEASON: ${{ matrix.season }}
+        run: |
+          python -u - <<'PY'
+          import os
+          from pathlib import Path
+          from src.sports.nba import builder
+          builder.SEASONS=[os.environ['NBA_SEASON']]
+          builder.fetch_all_game_logs()
+          p=Path(builder.OUTPUT_FILE)
+          assert p.exists() and p.stat().st_size>10000, 'NBA API did not return sufficient game data'
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-season-${{ matrix.season }}
+          path: data/nba/raw/raw_game_logs.csv
+          retention-days: 7
+          if-no-files-found: error
+  positions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r iphone_bot/requirements-training.txt
+      - name: Download roster positions
+        run: python -u -c "from src.sports.nba.builder import fetch_player_positions; fetch_player_positions()"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-positions
+          path: data/nba/processed/player_positions.csv
+          retention-days: 7
+          if-no-files-found: error
+  combine:
+    needs: [seasons, positions]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r iphone_bot/requirements-training.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: nba-season-*
+          path: downloaded
+      - uses: actions/download-artifact@v4
+        with:
+          name: nba-positions
+          path: data/nba/processed
+      - name: Merge historical logs
         run: |
           python - <<'PY'
           from pathlib import Path
           import pandas as pd
-          base=Path('data/nba')
-          for name in ['raw/raw_game_logs.csv','processed/player_positions.csv']:
-              p=base/name
-              assert p.exists(), f'Missing {p}'
-              df=pd.read_csv(p)
-              assert len(df)>100, f'Insufficient rows: {p} ({len(df)})'
-              print(f'{p}: {len(df)} rows')
+          files=sorted(Path('downloaded').rglob('raw_game_logs.csv'))
+          assert len(files)==4, f'Expected 4 seasons; got {len(files)}'
+          frames=[pd.read_csv(p) for p in files]
+          assert all(len(f)>1000 for f in frames), 'Insufficient season records'
+          out=Path('data/nba/raw/raw_game_logs.csv')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          pd.concat(frames,ignore_index=True).to_csv(out,index=False)
+          print('Merged',sum(map(len,frames)),'rows')
           PY
-      - name: Generate training features
-        run: python -m src.sports.nba.features
-      - name: Validate dataset
+      - name: Engineer features
+        run: python -u -m src.sports.nba.features
+      - name: Verify training dataset
         run: |
           python - <<'PY'
-          from pathlib import Path
           import pandas as pd
-          p=Path('data/nba/processed/training_dataset.csv')
-          assert p.exists(), 'Feature engineering did not create training dataset'
-          df=pd.read_csv(p)
-          assert len(df)>1000, f'Too few training rows: {len(df)}'
-          assert {'PTS','REB','AST'}.issubset(df.columns), 'Missing basic training targets'
-          print(f'Training dataset: {len(df)} rows, {len(df.columns)} columns')
+          df=pd.read_csv('data/nba/processed/training_dataset.csv')
+          assert len(df)>1000 and {'PTS','REB','AST'}.issubset(df.columns)
+          print('Dataset:',df.shape)
           PY
-      - name: Save dataset as private workflow artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: nba-training-dataset
           path: |
