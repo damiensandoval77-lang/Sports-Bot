@@ -72,6 +72,67 @@ def independent_rows(records):
                                            float(r["line"])))[0]
             for _,group in sorted(groups.items())]
 
+
+def paired_model_comparison(records, minimum_sample=30):
+    """Compare all three frozen models on the exact same completed props.
+
+    This is descriptive evidence, NOT a significance test or a claim of
+    calibrated probabilities. Related props may remain correlated.
+    """
+    eligible=[]
+    for row in independent_rows(records):
+        forecasts=forecast_values(row)
+        actual=finite(row.get("actual"))
+        line=finite(row.get("line"))
+        if actual is None or line is None or any(forecasts[m] is None for m in MODEL_NAMES):
+            continue
+        eligible.append((row,forecasts,actual,line))
+
+    def describe(subset):
+        n=len(subset)
+        if not n:
+            return {"sample_size":0,"sufficient_sample":False,
+                    "mae":{m:None for m in MODEL_NAMES},
+                    "combined_mae_change_vs_original":None,
+                    "combined_mae_change_vs_opponent_aware":None,
+                    "direction":{m:{"wins":0,"losses":0,"pushes":0,"hit_rate":None}
+                                 for m in MODEL_NAMES},
+                    "all_models_direction_eligible":0}
+        maes={m:sum(abs(f[m]-a) for _,f,a,_ in subset)/n for m in MODEL_NAMES}
+        direction={m:{"wins":0,"losses":0,"pushes":0,"hit_rate":None} for m in MODEL_NAMES}
+        common=0
+        for _,forecasts,actual,line in subset:
+            if actual!=line and all(forecasts[m]!=line for m in MODEL_NAMES):
+                common+=1
+            for m in MODEL_NAMES:
+                predicted=forecasts[m]
+                if predicted==line:continue
+                if actual==line:direction[m]["pushes"]+=1
+                elif (predicted>line)==(actual>line):direction[m]["wins"]+=1
+                else:direction[m]["losses"]+=1
+        for m in MODEL_NAMES:
+            d=direction[m]
+            total=d["wins"]+d["losses"]
+            d["hit_rate"]=round(d["wins"]/total,4) if total else None
+        return {
+            "sample_size":n,
+            "sufficient_sample":n>=minimum_sample,
+            "mae":{m:round(v,3) for m,v in maes.items()},
+            "combined_mae_change_vs_original":round(maes["combined"]-maes["original"],3),
+            "combined_mae_change_vs_opponent_aware":round(maes["combined"]-maes["opponent_aware"],3),
+            "direction":direction,
+            "all_models_direction_eligible":common,
+        }
+    return {
+        "status":"DESCRIPTIVE_PAIRED_RESEARCH_ONLY",
+        "minimum_sample_for_display":minimum_sample,
+        "overall":describe(eligible),
+        "by_stat":{stat:describe([r for r in eligible if r[0].get("market")==stat])
+                   for stat in ("PTS","REB","AST","PRA")},
+        "interpretation":"Negative combined MAE change means smaller average error on the SAME games; it does not establish profitability or statistical significance.",
+        "live_model_unchanged":True,
+    }
+
 def compute_performance(records,include_breakdown=True):
     chosen=independent_rows(records)
     models={}
@@ -120,6 +181,7 @@ def compute_performance(records,include_breakdown=True):
             "independent_settled_markets":len(chosen),
             "models":models,
             "by_stat":per_stat,
+            "paired_comparison":paired_model_comparison(records) if include_breakdown else None,
             "limitations":[
                 "Models use their original pregame-locked predictions; no after-game model reruns.",
                 "Legacy combined midpoint may be derived only from two stored pregame forecasts, not postgame data.",
