@@ -47,26 +47,27 @@ def report_links(html,now):
     return sorted(set(candidates),reverse=True)
 
 def parse_rows(text,roster):
-    """Match comma-formatted official names to roster with no guessed healthy statuses."""
-    known={key(p["player"]):p for p in roster}
+    """Identify exact roster names in published table rows, never inferred absences."""
     result={}
-    for line in text.splitlines():
-        if any(token in line.lower() for token in SKIP):continue
-        # The official table puts Last, First immediately before the designation;
-        # extra leading game/team columns are allowed.
-        pattern=r"([\w.'’\-]+(?:\s+[\w.'’\-]+){0,2}),\s*([\w.'’\-]+(?:\s+[\w.'’\-]+){0,2})\s+(Out|Doubtful|Questionable|Probable|Available)\b"
-        for m in re.finditer(pattern,line,re.I):
-            last,first,status=m.groups()
-            p=known.get(key(first+" "+last))
-            if not p:continue
-            # Reject ambiguous contradictory statuses, never pick whichever
-            # happened to appear first/last in a malformed extract.
+    for p in roster:
+        name=str(p.get("player","")).strip()
+        parts=name.split()
+        if len(parts)<2:continue
+        # NBA PDFs format names "Surname, Given". Check both single and
+        # double-token surnames, including e.g. 'Jackson Jr., Jaren'.
+        forms=[(parts[-1]," ".join(parts[:-1]))]
+        if len(parts)>=3:forms.append((" ".join(parts[-2:])," ".join(parts[:-2])))
+        statuses=set()
+        for line in text.splitlines():
+            if any(token in line.lower() for token in SKIP):continue
+            for last,first in forms:
+                expression=r"(?<!\\w)"+re.escape(last)+r",\\s*"+re.escape(first)+r"\\s+(Out|Doubtful|Questionable|Probable|Available)\\b"
+                m=re.search(expression,line,re.I)
+                if m:statuses.add(m.group(1).title())
+        if statuses:
             ident=str(p["player_id"])
-            observation={"player":p["player"],"player_id":ident,
-                         "team":p["team"],"status":status.title()}
-            if ident in result and result[ident]["status"]!=observation["status"]:
-                result[ident]["status"]="CONFLICTING_EXTRACT"
-            else:result[ident]=observation
+            result[ident]={"player":name,"player_id":ident,"team":p["team"],
+                           "status":next(iter(statuses)) if len(statuses)==1 else "CONFLICTING_EXTRACT"}
     return list(result.values())
 
 def read(url):
