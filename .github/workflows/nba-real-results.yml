@@ -1,6 +1,12 @@
 name: Grade actual completed NBA paper picks (no paid odds calls)
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/nba-real-results.yml'
+      - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/tests/test_paper_pick_pipeline.py'
   schedule:
     - cron: '37 12 * * *'
 permissions:
@@ -19,6 +25,17 @@ jobs:
           python-version: '3.11'
       - name: Install game log and settlement dependencies
         run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
+      - name: Validate paper pick invariants and dashboard JavaScript
+        run: |
+          python -m py_compile iphone_bot/paper_pick_pipeline.py
+          python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('docs/index.html').read_text()
+          assert 'tab-results' in html
+          Path('/tmp/sports-bot-live-results.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/sports-bot-live-results.js
       - name: Refresh completed real NBA player game logs
         run: python -u iphone_bot/fetch_current_form.py
       - name: Settle previously locked predictions from actual completed games
