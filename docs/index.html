@@ -113,7 +113,22 @@ function chance(p){return validEstimate(p)?(100*p.estimated_selected_probability
 function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
 function reasoningSentences(p,person){
  const known=Array.isArray(p.projection_explanation?.sentences)?p.projection_explanation.sentences.filter(s=>typeof s==="string"&&s.trim()):[];
- if(known.length)return known.slice(0,3);
+ const opponent=p.opponent||"the scheduled opponent";
+ const d=p.opponent_defense;
+ const marketLabel={PTS:"points",REB:"rebounds",AST:"assists",PRA:"points, rebounds and assists"}[p.stat]||p.stat;
+ let opponentNote="Opponent: "+opponent+".";
+ if(d&&Number.isFinite(Number(d.vs_league_pct))&&Number.isFinite(Number(d.games))&&Number(d.games)>0){
+  const pct=Number(d.vs_league_pct);
+  const comparison=pct>0?"more":pct<0?"fewer":"about the same";
+  opponentNote+=" Their last "+d.games+" games show "+Math.abs(pct).toFixed(1)+"% "+comparison+" team "+marketLabel+" allowed than league average (team-wide, not player-specific).";
+ }else{
+  opponentNote+=" Recent defensive comparison unavailable.";
+ }
+ if(known.length){
+  const opponentAlreadyNamed=known.some(s=>s.includes("Opponent:"));
+  if(opponentAlreadyNamed)return known.slice(0,3);
+  return [known[0],opponentNote,...known.slice(1)].slice(0,4);
+ }
  // Older published AI files do not have the explanation field. Use only
  // observed player form and existing pregame model estimates, never made-up causes.
  const parts=[];
@@ -128,6 +143,7 @@ function reasoningSentences(p,person){
  if(Number.isFinite(minutes)){
   parts.push("Playing time: "+fmt(minutes)+" minutes per game over the last 5"+(p.minutes_context.review_needed?"; recent minutes have varied.":"."));
  }
+ parts.push(opponentNote);
  const base=Number(p.projection);
  const shadow=p.shadow_projection;
  if(Number.isFinite(shadow)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"&&Number.isFinite(base)){
@@ -137,7 +153,7 @@ function reasoningSentences(p,person){
   parts.push("The original AI estimates "+fmt(base)+"; an opponent-aware estimate is not currently available.");
  }
  if(!parts.length)parts.push("The current projection uses historical player-game statistics; detailed recent-form inputs are unavailable for this player.");
- return parts.slice(0,3);
+ return parts.slice(0,4);
 }
 
 function renderAI(){
