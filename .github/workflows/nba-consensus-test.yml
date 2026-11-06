@@ -36,6 +36,10 @@ jobs:
           from pathlib import Path
           page=Path("docs/index.html").read_text()
           script=page.split("<script>",1)[1].split("</script>",1)[0]
+          # Syntax checking alone did not catch the previous runtime ReferenceError.
+          assert "mainSide" not in script, "Stale renamed variable would break AI card rendering"
+          assert 'const side=primaryDirection(p)' in script, "Expected direction calculation missing"
+          assert 'shadowSide===side' in script, "Shadow analysis must use the defined direction"
           Path("/tmp/sports-bot-board.js").write_text(script)
           PY
           node --check /tmp/sports-bot-board.js
