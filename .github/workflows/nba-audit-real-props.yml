@@ -1,0 +1,27 @@
+name: Audit saved real NBA props (no API credits)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install historical-data dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests
+      - name: Download independent historical player box scores
+        run: python -u iphone_bot/download_archived_nba.py
+      - name: Audit game ID, player, date and stat matching
+        run: python -u iphone_bot/audit_real_props.py
+      - name: Save audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: nba-real-quote-identity-audit
+          path: models/nba/real_market/quote_audit.json
+          retention-days: 14
+          if-no-files-found: error
