@@ -45,6 +45,10 @@ jobs:
           assert '["LAST 10",statVal(recentForm,p.stat,"l10")' in script, "L10 average tile missing"
           assert '["MINUTES",p.minutes_context?.observed_l5' in script, "Minutes average tile missing"
           assert "mainSide" not in script, "Stale renamed variable would break AI card rendering"
+          assert 'function reasoningSentences(p,person)' in script, "Legacy data reasoning fallback is missing"
+          assert 'for(const sentence of reasoningSentences(p,recentForm))' in script, "Reasoning does not render unconditionally"
+          assert 'if(known.length)return known.slice(0,3)' in script, "New published reasoning must be preferred"
+
           assert 'const side=primaryDirection(p)' in script, "Expected direction calculation missing"
           assert 'shadowSide===side' in script, "Shadow analysis must use the defined direction"
           Path("/tmp/sports-bot-board.js").write_text(script)
