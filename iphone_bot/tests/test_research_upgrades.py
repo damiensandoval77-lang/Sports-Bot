@@ -3,7 +3,7 @@ import unittest
 from iphone_bot.research_context import minutes_estimate,positional_allowance,teammate_on_off
 from iphone_bot.weight_research import walkforward_weights
 from iphone_bot.model_performance import compute_performance
-from iphone_bot.fetch_official_injuries import parse_rows,report_links
+from iphone_bot.fetch_official_injuries import parse_rows,report_links,parse_espn_injuries
 
 def ledger(day,stat="PTS",original=24,shadow=20,actual=23):
     time=dt.datetime(2026,1,1,tzinfo=dt.timezone.utc)+dt.timedelta(days=day)
@@ -54,6 +54,17 @@ class ResearchUpgradeTests(unittest.TestCase):
         self.assertEqual(len(parsed),1)
         self.assertEqual(parsed[0]["status"],"Questionable")
         self.assertNotIn("12",{x["player_id"] for x in parsed})
+
+    def test_espn_backup_is_third_party_and_team_matched(self):
+        roster=[{"player":"Sample Player","player_id":"7","team":"BOS"},
+                {"player":"Another Player","player_id":"8","team":"NYK"}]
+        payload={"injuries":[{"team":{"abbreviation":"BOS"},"injuries":[
+            {"athlete":{"displayName":"Sample Player"},"status":"Day-To-Day"},
+            {"athlete":{"displayName":"Another Player"},"status":"Out"}]}]}
+        parsed=parse_espn_injuries(payload,roster)
+        self.assertEqual(len(parsed),1)
+        self.assertEqual(parsed[0]["status"],"DAY_TO_DAY")
+        self.assertEqual(parsed[0]["provider"],"ESPN_THIRD_PARTY")
 
     def test_published_pdf_only(self):
         now=dt.datetime(2026,11,6,3,tzinfo=dt.timezone.utc)
