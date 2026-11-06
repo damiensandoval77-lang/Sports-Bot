@@ -1,0 +1,41 @@
+name: Evaluate individual NBA defender rotation signals
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  defender-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install archived box-score and model dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2"
+      - name: Rebuild historical NBA games
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u -m src.sports.nba.features
+      - name: Validate leakage controlled individual defender features
+        run: |
+          python -m py_compile iphone_bot/defender_rotation_features.py iphone_bot/train_defender_rotation_challenger.py
+          python -m unittest discover -s iphone_bot/tests -p "test_defender_rotation_features.py" -v
+      - name: Benchmark opponent player defensive signals versus team defense
+        run: python -u iphone_bot/train_defender_rotation_challenger.py
+      - name: Confirm test is research only
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('models/nba/defender_rotation_challenger/report.json'))
+          assert d['status']=='INDIVIDUAL_DEFENDER_RESEARCH_NOT_DEPLOYED'
+          assert len(d['metrics'])==4
+          print('Historical defender rows:',d['test_rows'])
+          print('No production prediction models changed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-defender-rotation-evaluation
+          path: models/nba/defender_rotation_challenger/report.json
+          if-no-files-found: error
