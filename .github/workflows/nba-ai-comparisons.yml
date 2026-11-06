@@ -29,13 +29,14 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
         run: |
-          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py
+          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_experimental_probability.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_hypothetical_ev.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
       - name: Fetch 2026-27 current-season player games
         run: python -u iphone_bot/fetch_current_form.py
       - name: Fetch fresh upcoming sportsbook props (max three games)
@@ -64,6 +65,8 @@ jobs:
           assert d['injury_data_verified'] is False
           assert d['opponent_defense_applied_to_model'] is False
           assert d['shadow_is_primary'] is False
+          assert all(x['projection_explanation']['status']=='DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION' for x in d['comparisons'])
+          assert all(1<=len(x['projection_explanation']['sentences'])<=3 for x in d['comparisons'])
           assert d['combined_projection_enabled'] is True
           assert d['combined_projection_validated'] is False
           assert all(x['combined_model_count'] in (1,2) and x['combined_projection']>=0 for x in d['comparisons'])
