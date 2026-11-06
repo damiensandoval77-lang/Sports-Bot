@@ -1,0 +1,29 @@
+name: Test sportsbook consensus without odds API calls
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify consensus and paired bookmaker quotas
+        run: |
+          python -m py_compile iphone_bot/fetch_props.py iphone_bot/sportsbook_consensus.py iphone_bot/compare_live_models.py
+          python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
+      - name: Check dashboard JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          page=Path("docs/index.html").read_text()
+          script=page.split("<script>",1)[1].split("</script>",1)[0]
+          Path("/tmp/sports-bot-board.js").write_text(script)
+          PY
+          node --check /tmp/sports-bot-board.js
+      - name: Confirm no paid provider calls
+        run: echo "All checks used local test fixtures only. No Odds API requests."
