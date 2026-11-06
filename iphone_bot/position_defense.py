@@ -72,8 +72,10 @@ def positional_features(raw,positions):
         ["SEASON_ID","GAME_DATE","TEAM_ABBREVIATION","OPPONENT","POSITION_ROLE"],
         as_index=False)[list(STATS)].mean()
     # Grouped values are what the offense of TEAM_ABBREVIATION did vs opponent.
+    # Keep offense and defense as distinct keys. The offense's position
+    # production is credited as an allowance of its OPPONENT defense.
     allowances=grouped.rename(columns={
-        "TEAM_ABBREVIATION":"OPPONENT","OPPONENT":"DEFENSE_TEAM",
+        "TEAM_ABBREVIATION":"OFFENSE_TEAM","OPPONENT":"DEFENSE_TEAM",
         **{s:"ALLOW_"+s for s in STATS}})
     allowances=allowances.sort_values(
         ["SEASON_ID","DEFENSE_TEAM","POSITION_ROLE","GAME_DATE"])
