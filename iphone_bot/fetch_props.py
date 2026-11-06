@@ -4,6 +4,7 @@ Requires ODDS_API_KEY secret. Never writes the key to the public output.
 """
 import datetime as dt
 import json
+import math
 import os
 import pathlib
 import urllib.error
@@ -23,6 +24,55 @@ def request(path, key, **params):
     req = urllib.request.Request(BASE + path + "?" + query, headers={"User-Agent": "Sports-Bot/1.0"})
     with urllib.request.urlopen(req, timeout=25) as response:
         return json.load(response), response.headers.get("x-requests-remaining")
+
+def balanced_bookmaker_rows(bookmakers,event,max_outcomes):
+    """Round-robin COMPLETE two-sided prop quotes across available books."""
+    from collections import deque
+    queues=[]
+    for book in bookmakers:
+        all_pairs=[]
+        for market in book.get("markets",[]):
+            if market.get("key") not in MARKETS:
+                continue
+            pairs={}
+            for outcome in market.get("outcomes",[]):
+                player=outcome.get("description")
+                side=outcome.get("name")
+                point=outcome.get("point")
+                if not player or side not in ("Over","Under") or point is None:
+                    continue
+                try:
+                    line=float(point)
+                    odd=int(outcome.get("price"))
+                except (ValueError,TypeError):
+                    continue
+                if not math.isfinite(line) or odd==0:
+                    continue
+                pairs.setdefault((player,line),{})[side]=odd
+            for (player,line),sides in pairs.items():
+                if "Over" not in sides or "Under" not in sides:
+                    continue
+                common={"player":player,"line":line,"projection":None,
+                    "stat":market["key"].replace("player_","").replace("_"," ").title(),
+                    "source":book.get("title","Unknown"),
+                    "game":event.get("away_team","")+" @ "+event.get("home_team",""),
+                    "start":event.get("commence_time"),
+                    "market_updated":market.get("last_update")}
+                all_pairs.append([
+                    dict(common,direction="More",odds=sides["Over"]),
+                    dict(common,direction="Less",odds=sides["Under"])])
+        if all_pairs:
+            queues.append(deque(all_pairs))
+    result=[]
+    while queues and len(result)+2<=max_outcomes:
+        remaining=[]
+        for q in queues:
+            if q and len(result)+2<=max_outcomes:
+                result.extend(q.popleft())
+            if q:
+                remaining.append(q)
+        queues=remaining
+    return result
 
 def main():
     key = os.environ.get("ODDS_API_KEY", "").strip()
@@ -45,21 +95,11 @@ def main():
             event_rows = []
             payload, remaining = request("/events/" + urllib.parse.quote(event["id"], safe="") + "/odds", key,
                 regions="us", markets=",".join(MARKETS), oddsFormat="american")
-            for book in payload.get("bookmakers", []):
-                for market in book.get("markets", []):
-                    if market.get("key") not in MARKETS:
-                        continue
-                    for outcome in market.get("outcomes", []):
-                        if outcome.get("name") not in ("Over", "Under") or not outcome.get("description"):
-                            continue
-                        event_rows.append({"player": outcome["description"], "stat": market["key"].replace("player_","").replace("_"," ").title(),
-                            "direction": "More" if outcome["name"] == "Over" else "Less",
-                            "line": outcome.get("point"), "projection": None, "odds": outcome.get("price"),
-                            "source": book.get("title","Unknown"), "game": event.get("away_team","") + " @ " + event.get("home_team",""),
-                            "start": event.get("commence_time"), "market_updated": market.get("last_update")})
-            # Fairly distribute the response budget across multiple games, with
-            # a hard cap per game so one game cannot crowd out later matchups.
-            picks.extend(event_rows[:MAX_OUTCOMES_PER_EVENT])
+            event_rows = balanced_bookmaker_rows(
+                payload.get("bookmakers", []), event, MAX_OUTCOMES_PER_EVENT)
+            # Spread a fixed display cap across books while keeping each
+            # Over/Under price pair intact. No additional API calls.
+            picks.extend(event_rows)
         result = {"is_live": True, "updated_at": now.isoformat(timespec="minutes"),
             "disclaimer": "Live sportsbook odds, NOT PrizePicks lines. No AI projections or win probabilities yet. Verify all lines before use.",
             "picks": picks[:MAX_EVENTS * MAX_OUTCOMES_PER_EVENT]}
