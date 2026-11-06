@@ -8,6 +8,8 @@ on:
       - 'iphone_bot/paper_pick_pipeline.py'
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'iphone_bot/model_performance.py'
+      - 'iphone_bot/accuracy_feedback.py'
+      - 'iphone_bot/tests/test_accuracy_feedback.py'
       - 'iphone_bot/weight_research.py'
       - 'iphone_bot/fetch_official_injuries.py'
       - 'iphone_bot/tests/test_research_upgrades.py'
@@ -38,9 +40,10 @@ jobs:
         run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
       - name: Validate paper pick invariants and dashboard JavaScript
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/fetch_current_form.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/accuracy_feedback.py iphone_bot/fetch_current_form.py
           python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_accuracy_feedback.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paired_model_comparison.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_minutes_scenario_validation.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
@@ -85,6 +88,12 @@ jobs:
           assert set(perf['models'])=={'original','opponent_aware','combined'}
           assert set(perf['by_stat'])=={'PTS','REB','AST','PRA'}
           assert report['weight_research']['live_model_unchanged'] is True
+          feedback=report['accuracy_feedback']
+          assert feedback['live_model_unchanged'] is True
+          assert feedback['production_weight_adjustment_applied'] is False
+          assert feedback['overall']['overall']['observations']<=perf['independent_settled_markets']
+          assert set(feedback['by_stat'])=={'PTS','REB','AST','PRA'}
+          assert all(x['validated_for_live_use'] is False for x in feedback['by_stat'].values())
           assert all(x['observations']<=perf['independent_settled_markets'] for x in perf['models'].values())
           print('Real completed-game paper results:', report['settled'], 'pending:', report['pending'])
           PY
