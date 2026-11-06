@@ -9,6 +9,7 @@ from datetime import date
 from statistics import mean, pstdev
 
 STATS=("PTS","REB","AST")
+MARKETS=("PTS","REB","AST","PRA")
 
 def team_allowances(games,as_of):
     """Opponents' recorded player totals by team/date, with reciprocal opponent check."""
@@ -24,8 +25,12 @@ def team_allowances(games,as_of):
         gid=(day,tuple(sorted((team,opponent))))
         if gid in seen or len(first)<7 or len(second)<7:continue
         seen.add(gid)
-        allowed[team].append((day,{k:sum(float(r[k]) for r in second) for k in STATS}))
-        allowed[opponent].append((day,{k:sum(float(r[k]) for r in first) for k in STATS}))
+        sums_a={k:sum(float(r[k]) for r in second) for k in STATS}
+        sums_b={k:sum(float(r[k]) for r in first) for k in STATS}
+        sums_a["PRA"]=sum(sums_a.values())
+        sums_b["PRA"]=sum(sums_b.values())
+        allowed[team].append((day,sums_a))
+        allowed[opponent].append((day,sums_b))
     for team in allowed:
         allowed[team].sort(key=lambda x:x[0])
     return allowed
@@ -33,7 +38,7 @@ def team_allowances(games,as_of):
 def defense_context(allowed,opponent,stat):
     """Return recent points/rebounds/assists allowed compared with league average."""
     items=allowed.get(opponent,[])
-    if len(items)<3 or stat not in STATS:return None
+    if len(items)<3 or stat not in MARKETS:return None
     latest=[v[stat] for _,v in items[-5:]]
     league=[v[stat] for rows in allowed.values() for _,v in rows]
     if len(league)<30:return None
