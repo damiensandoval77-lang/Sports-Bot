@@ -14,7 +14,7 @@ def settled(player="1",book="FanDuel",line=20.5,actual=23,original=22,shadow=19,
 
 class ModelPerformanceTests(unittest.TestCase):
     def test_three_models_same_real_game(self):
-        r=compute_performance([settled()])
+        r=compute_performance([settled(line=20.0)])
         self.assertEqual(r["independent_settled_markets"],1)
         a,b,c=[r["models"][x] for x in ("original","opponent_aware","combined")]
         self.assertEqual([x["observations"] for x in (a,b,c)],[1,1,1])
