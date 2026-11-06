@@ -16,7 +16,7 @@ def _number(value):
         return None
 
 def explain_projection(stat,line,original,shadow,combined,form,
-                       minutes=None,defense=None):
+                       minutes=None,defense=None,opponent=None):
     """Generate at most three concise sentences from verified pregame data."""
     if stat not in STAT_NAMES:
         raise ValueError("Unsupported NBA market")
@@ -32,15 +32,30 @@ def explain_projection(stat,line,original,shadow,combined,form,
             if all(v is not None for v in vals): longer=sum(vals)
     parts=[]
     if previous is not None and longer is not None:
-        parts.append(f"Recent form: {previous:.1f} {market} per game over the last 5, versus {longer:.1f} over up to the last 10 games.")
+        recent=f"Recent form: {previous:.1f} {market} per game over the last 5, versus {longer:.1f} over up to the last 10 games."
     elif previous is not None:
-        parts.append(f"Recent form: {previous:.1f} {market} per game over the last 5.")
+        recent=f"Recent form: {previous:.1f} {market} per game over the last 5."
+    else:
+        recent="Recent player-form history is limited."
     if isinstance(minutes,dict):
         m=_number(minutes.get("observed_l5"))
         if m is not None:
-            phrase=f"Minutes averaged {m:.1f} over the last 5 games"
-            if minutes.get("review_needed") is True:phrase+=" and have varied"
-            parts.append(phrase+".")
+            recent+=f" Minutes averaged {m:.1f} over the last 5 games"
+            recent+=" and varied." if minutes.get("review_needed") is True else "."
+    parts.append(recent)
+    if opponent:
+        opponent_text=f"Opponent: {opponent}."
+        if isinstance(defense,dict):
+            diff=_number(defense.get("vs_league_pct"))
+            sample=defense.get("games")
+            if diff is not None and isinstance(sample,int) and sample>0:
+                direction="more" if diff>0 else "fewer" if diff<0 else "about the same"
+                opponent_text+=f" Across their last {sample} games, they allowed {abs(diff):.1f}% {direction} team {market} than league average (team-wide context, not a direct player matchup)."
+            else:
+                opponent_text+=" Verified team defensive comparison unavailable."
+        else:
+            opponent_text+=" Recent team defensive comparison unavailable."
+        parts.append(opponent_text)
     sh=_number(shadow)
     base=_number(original)
     blend=_number(combined)
@@ -48,8 +63,6 @@ def explain_projection(stat,line,original,shadow,combined,form,
         parts.append(f"The opponent-aware model estimates {sh:.1f} versus the original model's {base:.1f}; their midpoint is {blend:.1f}.")
     else:
         parts.append("Opponent-aware projection unavailable; the original model is used without a matchup adjustment.")
-    # Keep the short summary focused; opponent totals may be offered separately
-    # as descriptive context but do not prove why the model moved.
     return {"sentences":parts[:3],
             "status":"DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
             "injury_verified":False,
