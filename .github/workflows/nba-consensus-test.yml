@@ -12,6 +12,11 @@ on:
       - 'docs/index.html'
       - 'iphone_bot/fetch_prizepicks.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/research_context.py'
+      - 'iphone_bot/fetch_official_injuries.py'
+      - 'iphone_bot/weight_research.py'
+      - 'iphone_bot/model_performance.py'
+      - 'iphone_bot/tests/test_research_upgrades.py'
 permissions:
   contents: read
 jobs:
@@ -32,6 +37,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_hypothetical_ev.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
       - name: Check dashboard JavaScript syntax
         run: |
@@ -48,6 +54,8 @@ jobs:
           assert '["LAST 10",statVal(recentForm,p.stat,"l10")' in script, "L10 average tile missing"
           assert '["MINUTES",p.minutes_context?.observed_l5' in script, "Minutes average tile missing"
           assert "mainSide" not in script, "Stale renamed variable would break AI card rendering"
+          assert 'id="perf-market"' in page and 'weight-experiment' in page, "Per-market research controls missing"
+          assert 'Availability & matchup research' in script, "Pregame research disclosure missing"
           assert 'function reasoningSentences(p,person)' in script, "Legacy data reasoning fallback is missing"
           assert 'for(const sentence of reasoningSentences(p,recentForm))' in script, "Reasoning does not render unconditionally"
           assert 'if(opponentAlreadyNamed)return known.slice(0,3)' in script, "Already-published opponent reasoning should be preserved"
