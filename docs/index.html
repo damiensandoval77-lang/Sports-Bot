@@ -82,7 +82,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let ai=[],odds=[],form=[],paper=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let ai=[],odds=[],form=[],paper=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -246,7 +246,8 @@ function renderAI(){
       " · verify the current line in PrizePicks before entering."));
    }
   }else{
-   const message=ppState==="NOT_CONFIGURED"?"Not connected. Configure the third-party API key to add PrizePicks lines.":
+   const message=ppState==="PROVIDER_RATE_LIMITED"?(ppErrorCode==="MONTHLY_QUOTA_EXCEEDED"?"PrizePicks API monthly quota exhausted. No current lines; upgrade the provider plan or wait for quota reset.":"PrizePicks API is rate-limited. No current lines until access is restored."):
+     ppState==="NOT_CONFIGURED"?"Not connected. Configure the third-party API key to add PrizePicks lines.":
      ppFresh?"No verified matching PrizePicks offer for this player and game.":
      "No current PrizePicks observations available; missing or outdated lines are hidden.";
    body.append(node("div","mini",message));
@@ -416,6 +417,7 @@ else {aiFresh=false;ai=[]}
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
 ppState=pp.status==="fulfilled"?pp.value.status:"UNAVAILABLE";
 ppStamp=pp.status==="fulfilled"?pp.value.generated_at:null;
+ppErrorCode=pp.status==="fulfilled"?pp.value.provider_error_code:null;
 ppFresh=pp.status==="fulfilled"&&pp.value.status==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"&&
  isRecent(pp.value.generated_at,6)&&Array.isArray(pp.value.offers);
 prizepicks=ppFresh?pp.value.offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"):[];
@@ -425,7 +427,7 @@ const status=[];
  status.push(o.status==="fulfilled"?"Odds file loaded"+(oddsFresh?"":" (stale)"):"Odds fetch failed");
  status.push(f.status==="fulfilled"?"Player form loaded":"Form fetch failed");
  status.push(p.status==="fulfilled"?"Results loaded":"Results fetch failed");
- status.push(ppState==="NOT_CONFIGURED"?"PrizePicks not connected":ppFresh?"PrizePicks lines loaded":ppState==="LIVE_NO_MATCHED_PRIZEPICKS_LINES"?"PrizePicks no matches":"PrizePicks unavailable/stale");
+ status.push(ppState==="PROVIDER_RATE_LIMITED"?"PrizePicks provider quota exhausted":ppState==="NOT_CONFIGURED"?"PrizePicks not connected":ppFresh?"PrizePicks lines loaded":ppState==="LIVE_NO_MATCHED_PRIZEPICKS_LINES"?"PrizePicks no matches":"PrizePicks unavailable/stale");
  $("data-health").textContent=status.join(" · ");
  try{
   refreshOverview();
