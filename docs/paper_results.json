@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T22:17:15.199447+00:00",
+  "generated_at": "2026-11-06T22:24:31.525133+00:00",
   "status": "REAL_SPORTSBOOK_QUOTES_PAPER_ONLY",
   "model": "PROVISIONAL_ORIGINAL",
   "method": "PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY",
@@ -203,6 +203,174 @@
         }
       }
     },
+    "paired_comparison": {
+      "status": "DESCRIPTIVE_PAIRED_RESEARCH_ONLY",
+      "minimum_sample_for_display": 30,
+      "overall": {
+        "sample_size": 0,
+        "sufficient_sample": false,
+        "mae": {
+          "original": null,
+          "opponent_aware": null,
+          "combined": null
+        },
+        "combined_mae_change_vs_original": null,
+        "combined_mae_change_vs_opponent_aware": null,
+        "direction": {
+          "original": {
+            "wins": 0,
+            "losses": 0,
+            "pushes": 0,
+            "hit_rate": null
+          },
+          "opponent_aware": {
+            "wins": 0,
+            "losses": 0,
+            "pushes": 0,
+            "hit_rate": null
+          },
+          "combined": {
+            "wins": 0,
+            "losses": 0,
+            "pushes": 0,
+            "hit_rate": null
+          }
+        },
+        "all_models_direction_eligible": 0
+      },
+      "by_stat": {
+        "PTS": {
+          "sample_size": 0,
+          "sufficient_sample": false,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_mae_change_vs_original": null,
+          "combined_mae_change_vs_opponent_aware": null,
+          "direction": {
+            "original": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "opponent_aware": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "combined": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            }
+          },
+          "all_models_direction_eligible": 0
+        },
+        "REB": {
+          "sample_size": 0,
+          "sufficient_sample": false,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_mae_change_vs_original": null,
+          "combined_mae_change_vs_opponent_aware": null,
+          "direction": {
+            "original": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "opponent_aware": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "combined": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            }
+          },
+          "all_models_direction_eligible": 0
+        },
+        "AST": {
+          "sample_size": 0,
+          "sufficient_sample": false,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_mae_change_vs_original": null,
+          "combined_mae_change_vs_opponent_aware": null,
+          "direction": {
+            "original": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "opponent_aware": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "combined": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            }
+          },
+          "all_models_direction_eligible": 0
+        },
+        "PRA": {
+          "sample_size": 0,
+          "sufficient_sample": false,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_mae_change_vs_original": null,
+          "combined_mae_change_vs_opponent_aware": null,
+          "direction": {
+            "original": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "opponent_aware": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            },
+            "combined": {
+              "wins": 0,
+              "losses": 0,
+              "pushes": 0,
+              "hit_rate": null
+            }
+          },
+          "all_models_direction_eligible": 0
+        }
+      },
+      "interpretation": "Negative combined MAE change means smaller average error on the SAME games; it does not establish profitability or statistical significance.",
+      "live_model_unchanged": true
+    },
     "limitations": [
       "Models use their original pregame-locked predictions; no after-game model reruns.",
       "Legacy combined midpoint may be derived only from two stored pregame forecasts, not postgame data.",
@@ -253,7 +421,7 @@
     "status": "OK_AWAITING_MATCHUPS",
     "boxscore_source_version": "2026-11-06",
     "latest_completed_player_game_date": "2026-11-05",
-    "source_last_checked_at": "2026-11-06T22:16:32.131687+00:00",
+    "source_last_checked_at": "2026-11-06T22:23:49.633573+00:00",
     "pending_total": 623,
     "pending_past_game_buffer": 0,
     "pending_over_48_hours": 0,
