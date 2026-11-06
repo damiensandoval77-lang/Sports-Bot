@@ -22,7 +22,7 @@
 <section class="panel" id="tab-form"><div class="bar"><h2>2026–27 form</h2><small id="form-total">—</small></div>
 <div class="filters"><input id="form-search" aria-label="Search player form" placeholder="Search player…" autocomplete="off"><select id="form-stat" aria-label="Form stat"><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option><option>MIN</option></select><select id="form-sort" aria-label="Sort form"><option value="name">Player name</option><option value="avg">Highest L5</option></select></div><div class="source" id="form-source">Observed performance, not an AI forecast. L5/L10 shown only with enough games.</div><div class="board" id="form-board"><div class="empty">Loading current player form…</div></div></section>
 <details class="advanced"><summary>Method, accuracy &amp; tools</summary><div class="advbody">
-<strong>AI Board:</strong> Experimental regression projections trained on archived NBA seasons. Pregame opponent team totals allowed and observed minutes are shown as context, not fitted inputs or applied adjustments. Injuries and lineups have not been verified. Gaps in matchup, position and 2026–27 training can reduce reliability. The difference between a model estimate and a sportsbook line is <strong>not</strong> an edge probability, EV estimate or recommendation.<p><strong>Sportsbook:</strong> When both prices exist, no-vig implied probabilities describe the market's price after removing the vig; they are not the bot's independent chance estimates.</p><p><strong>Sources:</strong> Third-party 2026–27 player logs, the Odds API bookmaker markets, and historical AI models. No PrizePicks connection, correlated slip optimizer, or automatic wagers. Always verify current prices and player availability.</p>
+<strong>AI Board:</strong> Experimental regression projections trained on archived NBA seasons. Pregame opponent team totals allowed and observed minutes are shown as context, not fitted inputs or applied adjustments. Injuries and lineups have not been verified. Gaps in matchup, position and 2026–27 training can reduce reliability. The opponent-aware shadow forecast is shown only when sufficient previous defensive games exist; it does not replace the primary model. The difference between a model estimate and a sportsbook line is <strong>not</strong> an edge probability, EV estimate or recommendation.<p><strong>Sportsbook:</strong> When both prices exist, no-vig implied probabilities describe the market's price after removing the vig; they are not the bot's independent chance estimates.</p><p><strong>Sources:</strong> Third-party 2026–27 player logs, the Odds API bookmaker markets, and historical AI models. No PrizePicks connection, correlated slip optimizer, or automatic wagers. Always verify current prices and player availability.</p>
 <a href="https://github.com/damiensandoval77-lang/Sports-Bot/actions">GitHub workflow status</a></div></details>
 <div class="foot">Research-only NBA prop dashboard. Stale/started games are hidden from the AI board. No automated betting or guaranteed outcomes.</div>
 </main><script>
@@ -55,6 +55,13 @@ left.append(node("strong","",p.player+" · "+p.stat+" "+p.line),node("div","matc
 head.append(left,node("span","tag "+(p.lean==="Over"?"over":"under"),p.lean==="Neutral"?"NEUTRAL":p.lean.toUpperCase()+" LEAN"));main.append(head);
 const delta=Number(p.difference);
 appendValues(main,[["AI projection",fmt(Number(p.projection))],["Book line",fmt(Number(p.line))],["Model − line",(delta>0?"+":"")+fmt(delta),"diff "+(delta>0?"over":"under")]]);
+if(Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
+ const shadowLine=node("div","formline");
+ shadowLine.append(node("span","","Opponent-aware shadow "+fmt(p.shadow_projection)),
+                   node("span","","vs original "+fmt(Number(p.projection))),
+                   node("span","","Research only · not calibrated"));
+ main.append(shadowLine);
+}
 if(formFresh)appendForm(main,currentPerson(p.player,p.team),p.stat);
 const context=node("div","formline");
 if(p.opponent_defense){const d=p.opponent_defense;context.append(node("span","","vs "+p.opponent+": "+d.label+" ("+(d.vs_league_pct>0?"+":"")+d.vs_league_pct+"% team "+p.stat+" allowed, last "+d.games+")"));}
