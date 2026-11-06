@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T06:10:03.970345+00:00",
+  "generated_at": "2026-11-06T06:10:32.061051+00:00",
   "status": "REAL_SPORTSBOOK_QUOTES_PAPER_ONLY",
   "model": "PROVISIONAL_ORIGINAL",
   "method": "PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY",
@@ -214,11 +214,46 @@
       "Paper results are NOT actual placed bets and cannot demonstrate a reliable edge with small samples."
     ]
   },
+  "weight_research": {
+    "status": "CHRONOLOGICAL_RESEARCH_NOT_PRODUCTION",
+    "weights": {
+      "PTS": {
+        "status": "INSUFFICIENT_WALKFORWARD_SAMPLES",
+        "observations": 0,
+        "required": 70,
+        "selected_original_weight": null,
+        "test_mae": null
+      },
+      "REB": {
+        "status": "INSUFFICIENT_WALKFORWARD_SAMPLES",
+        "observations": 0,
+        "required": 70,
+        "selected_original_weight": null,
+        "test_mae": null
+      },
+      "AST": {
+        "status": "INSUFFICIENT_WALKFORWARD_SAMPLES",
+        "observations": 0,
+        "required": 70,
+        "selected_original_weight": null,
+        "test_mae": null
+      },
+      "PRA": {
+        "status": "INSUFFICIENT_WALKFORWARD_SAMPLES",
+        "observations": 0,
+        "required": 70,
+        "selected_original_weight": null,
+        "test_mae": null
+      }
+    },
+    "method": "Choose on earlier dates, test on later dates; 50+ training, 20+ test per market.",
+    "live_model_unchanged": true
+  },
   "pipeline_health": {
     "status": "OK_AWAITING_MATCHUPS",
     "boxscore_source_version": "2026-11-06",
     "latest_completed_player_game_date": "2026-11-05",
-    "source_last_checked_at": "2026-11-06T06:10:03.884155+00:00",
+    "source_last_checked_at": "2026-11-06T06:10:31.974449+00:00",
     "pending_total": 148,
     "pending_past_game_buffer": 0,
     "pending_over_48_hours": 0,
