@@ -1,6 +1,12 @@
 name: Test sportsbook consensus without odds API calls
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/nba-consensus-test.yml'
+      - 'iphone_bot/combined_projection.py'
+      - 'iphone_bot/tests/test_combined_projection.py'
 permissions:
   contents: read
 jobs:
@@ -16,9 +22,10 @@ jobs:
         run: python -m pip install 'numpy>=1.26,<3'
       - name: Verify consensus and paired bookmaker quotas
         run: |
-          python -m py_compile iphone_bot/fetch_props.py iphone_bot/sportsbook_consensus.py iphone_bot/compare_live_models.py iphone_bot/hypothetical_ev.py
+          python -m py_compile iphone_bot/fetch_props.py iphone_bot/sportsbook_consensus.py iphone_bot/compare_live_models.py iphone_bot/hypothetical_ev.py iphone_bot/combined_projection.py
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_hypothetical_ev.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
       - name: Check dashboard JavaScript syntax
         run: |
           python - <<'PY'
