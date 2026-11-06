@@ -171,7 +171,7 @@ function renderAI(){
   if(typeof p.shadow_projection==="number"&&Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
    const shadowSide=modelSide(p.shadow_projection,p.line);
    body.append(node("div","mini","Opponent-aware AI direction: "+shadowSide+" (research only)"));
-   body.append(node("div","mini",shadowSide===mainSide?"Models agree on direction, not a verified advantage":"Models differ; review uncertainty"));
+   body.append(node("div","mini",shadowSide===side?"Models agree on direction, not a verified advantage":"Models differ; review uncertainty"));
   }
   if(formFresh)appendForm(body,currentPerson(p.player,p.team),p.stat);
   if(p.minutes_context)body.append(node("div","mini","Minutes L5 "+fmt(p.minutes_context.observed_l5)+(p.minutes_context.review_needed?" · variable minutes":"")));
