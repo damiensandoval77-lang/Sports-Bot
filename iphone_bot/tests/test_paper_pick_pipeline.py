@@ -56,7 +56,7 @@ class PaperPipelineTests(unittest.TestCase):
         changed["projection"]=11
         changed["book_quotes"][0]["over"]=-200
         after=snapshot([changed],"2026-11-12T22:00:00Z",old)
-        self.assertEqual(len(after),3) # New opposite-side selection at same line is separate, never replaces.
+        self.assertEqual(len(after),2) # One immutable original side per exact book and line.
         original=[r for r in after if r["bookmaker"]=="FanDuel" and r["side"]=="OVER"][0]
         self.assertEqual(original["american_odds"],-110)
         self.assertEqual(original["original_projection"],24.2)
