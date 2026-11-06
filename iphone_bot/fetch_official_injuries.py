@@ -103,7 +103,6 @@ def parse_rows(text,roster):
                 if not m:continue
                 ident=str(p["player_id"])
                 status=m.group(1).title()
-                previous=result.get(ident)
                 # The same player may be listed for multiple upcoming games:
                 # preserve each game-date observation separately.
                 record_key=(ident,current_date)
@@ -237,7 +236,7 @@ def main():
                     (page.extract_text(extraction_mode="layout") if mode=="layout"
                      else page.extract_text()) or ""
                     for page in reader.pages)
-                found=parse_rows(raw,roster)
+                found=[p for p in parse_rows(raw,roster) if p.get("game_date")]
                 parse_diagnostics.append({"mode":mode,"characters":len(raw),
                                           "matches":len(found),
                                           "has_report_header":"Injury Report:" in raw,
