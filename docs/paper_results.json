@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T23:33:33.118551+00:00",
+  "generated_at": "2026-11-06T23:43:14.681519+00:00",
   "status": "REAL_SPORTSBOOK_QUOTES_PAPER_ONLY",
   "model": "PROVISIONAL_ORIGINAL",
   "method": "PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY",
@@ -382,6 +382,158 @@
       "Paper results are NOT actual placed bets and cannot demonstrate a reliable edge with small samples."
     ]
   },
+  "accuracy_feedback": {
+    "status": "RESEARCH_ONLY_CHRONOLOGICAL_ACCURACY_FEEDBACK",
+    "method": "ONE_EARLIEST_LOCKED_BOOK_PER_PLAYER_EVENT_STAT; FULL_DATE_CHRONOLOGICAL_HOLDOUT",
+    "common_sample_only": true,
+    "overall": {
+      "status": "INSUFFICIENT_CHRONOLOGICAL_SAMPLE",
+      "overall": {
+        "observations": 0,
+        "distinct_game_dates": 0,
+        "mae": {
+          "original": null,
+          "opponent_aware": null,
+          "combined": null
+        },
+        "signed_bias": {
+          "original": null,
+          "opponent_aware": null,
+          "combined": null
+        },
+        "combined_minus_original_mae": null
+      },
+      "earlier": null,
+      "later_holdout": null,
+      "later_start_date": null,
+      "earlier_end_date": null,
+      "minimum_earlier": 30,
+      "minimum_later": 15,
+      "minimum_distinct_dates": 6,
+      "heldout_better_model": null,
+      "validated_for_live_use": false
+    },
+    "by_stat": {
+      "PTS": {
+        "status": "INSUFFICIENT_CHRONOLOGICAL_SAMPLE",
+        "overall": {
+          "observations": 0,
+          "distinct_game_dates": 0,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "signed_bias": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_minus_original_mae": null
+        },
+        "earlier": null,
+        "later_holdout": null,
+        "later_start_date": null,
+        "earlier_end_date": null,
+        "minimum_earlier": 30,
+        "minimum_later": 15,
+        "minimum_distinct_dates": 6,
+        "heldout_better_model": null,
+        "validated_for_live_use": false
+      },
+      "REB": {
+        "status": "INSUFFICIENT_CHRONOLOGICAL_SAMPLE",
+        "overall": {
+          "observations": 0,
+          "distinct_game_dates": 0,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "signed_bias": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_minus_original_mae": null
+        },
+        "earlier": null,
+        "later_holdout": null,
+        "later_start_date": null,
+        "earlier_end_date": null,
+        "minimum_earlier": 30,
+        "minimum_later": 15,
+        "minimum_distinct_dates": 6,
+        "heldout_better_model": null,
+        "validated_for_live_use": false
+      },
+      "AST": {
+        "status": "INSUFFICIENT_CHRONOLOGICAL_SAMPLE",
+        "overall": {
+          "observations": 0,
+          "distinct_game_dates": 0,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "signed_bias": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_minus_original_mae": null
+        },
+        "earlier": null,
+        "later_holdout": null,
+        "later_start_date": null,
+        "earlier_end_date": null,
+        "minimum_earlier": 30,
+        "minimum_later": 15,
+        "minimum_distinct_dates": 6,
+        "heldout_better_model": null,
+        "validated_for_live_use": false
+      },
+      "PRA": {
+        "status": "INSUFFICIENT_CHRONOLOGICAL_SAMPLE",
+        "overall": {
+          "observations": 0,
+          "distinct_game_dates": 0,
+          "mae": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "signed_bias": {
+            "original": null,
+            "opponent_aware": null,
+            "combined": null
+          },
+          "combined_minus_original_mae": null
+        },
+        "earlier": null,
+        "later_holdout": null,
+        "later_start_date": null,
+        "earlier_end_date": null,
+        "minimum_earlier": 30,
+        "minimum_later": 15,
+        "minimum_distinct_dates": 6,
+        "heldout_better_model": null,
+        "validated_for_live_use": false
+      }
+    },
+    "live_model_unchanged": true,
+    "production_weight_adjustment_applied": false,
+    "limitations": [
+      "Every observed error uses a forecast saved before the scheduled game.",
+      "Original, opponent-aware and combined projections use identical settled markets.",
+      "All examples from one game date stay on the same side of the chronological boundary.",
+      "The later holdout is descriptive and is never used to select a new production model.",
+      "Player games and points/rebounds/assists/PRA are correlated; samples are not independent wagers.",
+      "No claims of probability calibration, guaranteed pick accuracy, or live model improvement."
+    ]
+  },
   "weight_research": {
     "status": "CHRONOLOGICAL_RESEARCH_NOT_PRODUCTION",
     "weights": {
@@ -421,7 +573,7 @@
     "status": "OK_AWAITING_MATCHUPS",
     "boxscore_source_version": "2026-11-06",
     "latest_completed_player_game_date": "2026-11-05",
-    "source_last_checked_at": "2026-11-06T23:33:31.405469+00:00",
+    "source_last_checked_at": "2026-11-06T23:43:13.130121+00:00",
     "pending_total": 864,
     "pending_past_game_buffer": 0,
     "pending_over_48_hours": 0,
