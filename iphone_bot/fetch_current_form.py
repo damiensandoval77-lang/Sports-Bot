@@ -48,7 +48,7 @@ def main():
         raise ValueError(f"Source export is stale: {version} (more than 5 days)")
     print("Downloading public NBA player logs:",filename,flush=True)
     reader=csv.DictReader(io.StringIO(fetch(RAW+filename).decode("utf-8-sig")))
-    required={"Date","Player","ID","Team","Season","Points","Rebounds","Assists","Minutes"}
+    required={"Date","Player","ID","Team","Opp","Season","Points","Rebounds","Assists","Minutes"}
     missing=required-set(reader.fieldnames or [])
     if missing:
         raise ValueError("CSV schema changed: missing "+str(sorted(missing)))
@@ -67,9 +67,10 @@ def main():
             continue
         player=str(row.get("Player","")).strip()
         ident=str(row.get("ID","")).strip()
-        team=str(row.get("Team","")).strip()
+        team=str(row.get("Team","")).strip().upper()
+        opponent=str(row.get("Opp","")).strip().upper()
         season=str(row.get("Season","")).strip()
-        if not ident or not player or not team or season not in ("2026-27","2026"):
+        if not ident or not player or not team or not opponent or team==opponent or season not in ("2026-27","2026"):
             rejected+=1
             continue
         pts=number(row.get("Points"))
@@ -79,7 +80,7 @@ def main():
         if any(v is None for v in (pts,reb,ast,mins)) or mins<1:
             rejected+=1
             continue
-        game={"player":player,"id":ident,"team":team,"date":date.isoformat(),
+        game={"player":player,"id":ident,"team":team,"opponent":opponent,"date":date.isoformat(),
               "PTS":pts,"REB":reb,"AST":ast,"PRA":pts+reb+ast,"MIN":mins}
         # This dataset is one player per date; reject conflicting duplicate records.
         previous=by_player[ident].get(date)
@@ -89,6 +90,7 @@ def main():
         game["FGA"]=number(row.get("FGA"))
         game["FG3A"]=number(row.get("3PA"))
         game["TOV"]=number(row.get("Turnovers"))
+        game["position"]=str(row.get("Pos","")).strip()
         local_games.append(game)
         latest=max(latest,date) if latest else date
     if not latest or (today-latest).days>5:
