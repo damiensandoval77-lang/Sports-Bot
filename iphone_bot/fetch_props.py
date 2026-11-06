@@ -14,7 +14,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "data.json"
 BASE = "https://api.the-odds-api.com/v4/sports/basketball_nba"
 MARKETS = ("player_points", "player_rebounds", "player_assists", "player_points_rebounds_assists")
-MAX_EVENTS = 2  # Keep quota usage bounded; tune after reviewing remaining credits.
+MAX_EVENTS = min(3, max(1, int(os.environ.get('ODDS_MAX_EVENTS', '2'))))
+MAX_OUTCOMES_PER_EVENT = 450
+MIN_REMAINING_CREDITS = 12  # Stop before the account is nearly depleted.
 
 def request(path, key, **params):
     query = urllib.parse.urlencode({"apiKey": key, **params})
@@ -34,7 +36,13 @@ def main():
         upcoming.sort(key=lambda e: e["commence_time"])
         picks = []
         remaining = None
+        inspected = 0
         for event in upcoming[:MAX_EVENTS]:
+            if remaining is not None and int(remaining) < MIN_REMAINING_CREDITS:
+                print('Stopping early to preserve Odds API credits.', flush=True)
+                break
+            inspected += 1
+            event_rows = []
             payload, remaining = request("/events/" + urllib.parse.quote(event["id"], safe="") + "/odds", key,
                 regions="us", markets=",".join(MARKETS), oddsFormat="american")
             for book in payload.get("bookmakers", []):
@@ -44,16 +52,19 @@ def main():
                     for outcome in market.get("outcomes", []):
                         if outcome.get("name") not in ("Over", "Under") or not outcome.get("description"):
                             continue
-                        picks.append({"player": outcome["description"], "stat": market["key"].replace("player_","").replace("_"," ").title(),
+                        event_rows.append({"player": outcome["description"], "stat": market["key"].replace("player_","").replace("_"," ").title(),
                             "direction": "More" if outcome["name"] == "Over" else "Less",
                             "line": outcome.get("point"), "projection": None, "odds": outcome.get("price"),
                             "source": book.get("title","Unknown"), "game": event.get("away_team","") + " @ " + event.get("home_team",""),
                             "start": event.get("commence_time"), "market_updated": market.get("last_update")})
+            # Fairly distribute the response budget across multiple games, with
+            # a hard cap per game so one game cannot crowd out later matchups.
+            picks.extend(event_rows[:MAX_OUTCOMES_PER_EVENT])
         result = {"is_live": True, "updated_at": now.isoformat(timespec="minutes"),
             "disclaimer": "Live sportsbook odds, NOT PrizePicks lines. No AI projections or win probabilities yet. Verify all lines before use.",
-            "picks": picks[:500]}
+            "picks": picks[:MAX_EVENTS * MAX_OUTCOMES_PER_EVENT]}
         OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-        print(f"Published {len(result['picks'])} sportsbook outcomes from {min(MAX_EVENTS,len(upcoming))} events. Remaining credits: {remaining}")
+        print(f"Published {len(result['picks'])} sportsbook outcomes from {inspected} events. Remaining credits: {remaining}")
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError, KeyError) as exc:
         # Preserve last successful dashboard rather than overwriting it with sample data.
         if isinstance(exc, urllib.error.HTTPError):
