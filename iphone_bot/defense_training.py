@@ -25,12 +25,19 @@ def historical_defense(raw):
     gamecols=["SEASON_ID","GAME_ID","GAME_DATE","TEAM_ABBREVIATION","OPPONENT"]
     team=df.groupby(gamecols,dropna=False,as_index=False)[["PTS","REB","AST"]].sum(min_count=1)
     team["PRA"]=team["PTS"]+team["REB"]+team["AST"]
-    # Strictly require both sides of the same game in the source.
+    # Resolve reciprocal teams by game date rather than requiring matching
+    # provider-specific game IDs for both sides. Reject ambiguous same-day games.
+    join_keys=["SEASON_ID","GAME_DATE","TEAM_ABBREVIATION","OPPONENT"]
+    if team.duplicated(["SEASON_ID","GAME_DATE","TEAM_ABBREVIATION"]).any():
+        raise ValueError("Ambiguous same-day team games")
     opp=team.rename(columns={"TEAM_ABBREVIATION":"OPPONENT",
                              "OPPONENT":"TEAM_ABBREVIATION",
+                             "GAME_ID":"OPP_GAME_ID",
                              **{s:f"ALLOW_{s}" for s in STATS}})
-    opp=opp[gamecols[:-1]+["OPPONENT"]+[f"ALLOW_{s}" for s in STATS]]
-    joined=team.merge(opp,on=gamecols,how="inner",validate="one_to_one")
+    opp=opp[join_keys+["OPP_GAME_ID"]+[f"ALLOW_{s}" for s in STATS]]
+    joined=team.merge(opp,on=join_keys,how="inner",validate="one_to_one")
+    if joined.empty:
+        raise ValueError("No reciprocal team games matched; unusable defense source")
     # Defensive rows represent what *this team* allowed against the opponent.
     defended=joined[["SEASON_ID","GAME_ID","GAME_DATE","TEAM_ABBREVIATION"]+
                     [f"ALLOW_{s}" for s in STATS]].copy()
@@ -43,7 +50,7 @@ def historical_defense(raw):
             lambda x:x.shift(1).rolling(5,min_periods=3).mean())
     defended["OPP_DEF_SAMPLE_GAMES"]=grouped.cumcount().clip(upper=5)
     # For target player, map their upcoming opponent team to its prior defensive record.
-    feature_cols=["SEASON_ID","GAME_ID","GAME_DATE","OPPONENT"]
+    feature_cols=["SEASON_ID","GAME_DATE","OPPONENT"]
     mapped=defended.rename(columns={"TEAM_ABBREVIATION":"OPPONENT"})
     result=team[gamecols].merge(mapped[feature_cols+list(COLS)],
         on=feature_cols,how="left",validate="many_to_one")
@@ -51,6 +58,8 @@ def historical_defense(raw):
     # For early games rolling data is missing; model can use training-only medians.
     if result.duplicated(["SEASON_ID","GAME_ID","TEAM_ABBREVIATION"]).any():
         raise ValueError("Nonunique opponent defense mapping")
+    print("Defense coverage:",len(joined),"reciprocal team-games out of",len(team),
+          "and",int(result[COLS[0]].notna().sum()),"with prior-game records",flush=True)
     return result
 
 
