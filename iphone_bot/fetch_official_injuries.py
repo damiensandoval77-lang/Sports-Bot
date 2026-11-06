@@ -226,11 +226,27 @@ def main():
         if not pdf_bytes:
             raise RuntimeError("Official static PDF not accessible: "+str(last_error or "not found"))
         reader=PdfReader(io.BytesIO(pdf_bytes))
-        raw="\n".join(page.extract_text(extraction_mode="layout") or "" for page in reader.pages)
-        if not raw or "Injury Report:" not in raw:raise ValueError("Official injury PDF could not be extracted")
+        # pypdf layout mode and normal mode arrange PDF table columns
+        # differently. Accept only verified team+player matches, but try both.
         roster=json.loads((ROOT/"docs/current_form.json").read_text()).get("players",[])
-        players=parse_rows(raw,roster)
-        if not players:raise ValueError("No roster status reliably identified in official PDF")
+        players=[]
+        parse_diagnostics=[]
+        for mode in ("layout","plain"):
+            try:
+                raw="\n".join(
+                    (page.extract_text(extraction_mode="layout") if mode=="layout"
+                     else page.extract_text()) or ""
+                    for page in reader.pages)
+                found=parse_rows(raw,roster)
+                parse_diagnostics.append({"mode":mode,"characters":len(raw),
+                                          "matches":len(found),
+                                          "has_report_header":"Injury Report:" in raw,
+                                          "has_game_date":bool(GAME_DATE_PATTERN.search(raw))})
+                if len(found)>len(players):players=found
+            except (ValueError,TypeError) as extraction_error:
+                parse_diagnostics.append({"mode":mode,"failure":type(extraction_error).__name__})
+        diagnostics["pdf_parse"]=parse_diagnostics
+        if not players:raise ValueError("No team-matched roster statuses extracted from official PDF")
         base.update(status="OFFICIAL_NBA_REPORT_VERIFIED",injury_data_verified=True,
                     source_pdf=url,source_method=source,report_issued_at=issued.isoformat(),
                     extracted_statuses=len(players),players=players)
