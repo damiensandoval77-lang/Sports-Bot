@@ -5,10 +5,12 @@
 :root{color-scheme:dark;--bg:#080d18;--panel:#111b2a;--panel2:#19263a;--border:#293952;--text:#f1f6ff;--sub:#9db0cb;--accent:#70a5ff;--green:#57d8ab;--amber:#f3c177}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}main{max-width:1000px;margin:auto;padding:14px 12px 72px}h1{font-size:24px;margin:0;letter-spacing:-.6px}h2{font-size:16px;margin:0}small,.muted{color:var(--sub)}small{font-size:11px}.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-weight:800}.eyebrow{color:var(--accent);font-size:10px;font-weight:800;letter-spacing:1.6px}.status{font-size:10px;font-weight:750;border:1px solid #465b7c;background:#263b57;border-radius:8px;padding:6px 8px;white-space:nowrap}.status.ok{color:var(--green);border-color:#24785f;background:#12362f}.status.warn{color:var(--amber)}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.metric{border:1px solid var(--border);border-radius:11px;background:var(--panel);padding:11px 10px}.metric b{display:block;font-size:20px;line-height:1.2}.metric small{display:block;margin-top:4px}.tabs{display:flex;gap:4px;padding:5px;background:#152236;border:1px solid var(--border);border-radius:12px;position:sticky;top:0;z-index:4;margin-bottom:12px}.tab{flex:1;min-width:0;background:transparent;color:var(--sub);font-weight:750;border:0;border-radius:8px;padding:10px 5px;font-size:12px;cursor:pointer}.tab[aria-selected=true]{color:#fff;background:#315b9a}.panel{display:none}.panel.active{display:block}.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 10px}.bar small{white-space:nowrap}.filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:7px;margin-bottom:10px}input,select{min-width:0;width:100%;color:#edf4ff;background:#121d30;border:1px solid #354865;padding:11px 9px;border-radius:9px;font:inherit}input::placeholder{color:#758aa9}.board{display:grid;gap:7px}.prop{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}.mainline{padding:11px}.head{display:flex;justify-content:space-between;align-items:center;gap:9px}.head strong{font-size:14px}.match{color:var(--sub);font-size:11px;margin-top:3px}.tag{font-size:10px;padding:4px 7px;border-radius:6px;background:#253751;color:#d6e6ff;font-weight:800;white-space:nowrap}.tag.over{background:#153e35;color:#8df3c6}.tag.under{background:#403020;color:#ffd29a}.tag.neutral{background:#303b51;color:#bed0e7}.pickbar{margin-top:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #2e415c;border-radius:9px;padding:9px 10px;background:#162337}.pickbar strong{font-size:13px}.pickbar small{font-size:10px}.pickbar .tag{font-size:12px;padding:6px 9px}.shadowbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;margin-top:7px;border:1px solid #35415b;border-radius:9px;background:#142032}.shadowbar small{display:block}.shadowbar strong{font-size:12px}.vals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.val{background:var(--panel2);border-radius:8px;padding:8px 7px}.val b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.val small{font-size:10px}.diff.over{color:var(--green)}.diff.under{color:var(--amber)}.formline{display:flex;gap:10px;flex-wrap:wrap;color:var(--sub);font-size:11px;margin-top:9px}.formline b{color:#e8f3ff}.prop details{border-top:1px solid var(--border)}summary{cursor:pointer;padding:9px 11px;color:var(--accent);font-size:12px;font-weight:700}details[open] summary{border-bottom:1px solid var(--border)}.detailbody{padding:10px 11px;font-size:12px;color:#cbd8eb}.bookrow{display:flex;justify-content:space-between;border-bottom:1px solid #28374d;padding:7px 0;gap:8px}.bookrow:last-child{border-bottom:0}.mono{font-variant-numeric:tabular-nums}.empty{border:1px dashed #39506e;border-radius:12px;padding:30px 16px;color:var(--sub);text-align:center;background:#101b2c}.notice{font-size:12px;color:#e8c58b;background:#34291c;border:1px solid #654b28;border-radius:10px;padding:10px 12px;margin-bottom:10px}.foot{color:#8ea2be;font-size:11px;margin-top:14px}.foot a{color:#a3c7ff}.advanced{margin-top:15px;background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}.advanced summary{padding:13px}.advbody{padding:10px 13px;color:var(--sub);font-size:12px;line-height:1.65}.mini{margin-top:6px;color:var(--sub);font-size:11px}.btn{background:#274576;border:1px solid #3e67a5;color:white;border-radius:8px;font-size:11px;padding:7px 10px;cursor:pointer}.source{font-size:11px;color:var(--sub);margin:6px 0 12px}
 @media(max-width:520px){main{padding:12px 10px 65px}.summary{gap:6px}.metric{padding:9px 8px}.metric b{font-size:17px}.metric small{font-size:10px}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.head strong{font-size:13px}}
+.compact-prop .mainline{padding:12px 13px}.compact-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.compact-identity{min-width:0;flex:1}.compact-identity strong{font-size:15px;font-weight:750;display:block}.compact-identity .match{line-height:1.55}.compact-right{display:flex;align-items:center;gap:9px;justify-content:flex-end;flex-shrink:0}.compact-right .tag{font-size:11px;min-width:53px;text-align:center}.compact-percent{font-size:19px;font-variant-numeric:tabular-nums;font-weight:800;min-width:59px;text-align:right}.compact-caption{margin-top:7px;font-size:10px;color:var(--sub)}.compact-details summary{padding:7px 13px;font-size:11px;color:#a9c7f5}.detail-highlight{margin-top:10px;padding:9px 10px;background:var(--panel2);border-radius:8px;color:#e6efff;font-size:12px}.detail-heading{font-weight:800;color:var(--text);margin-top:15px}.compact-details .vals{margin-bottom:9px}.compact-details .detailbody{padding-top:4px}.dashboard-summary{margin:10px 0}.tabs .tab{font-size:11px;padding:9px 3px}.source{margin:5px 0 10px;line-height:1.4}
+@media(max-width:520px){.compact-prop .mainline{padding:10px 11px}.compact-identity strong{font-size:13px}.compact-right{gap:6px}.compact-percent{font-size:17px;min-width:51px}.compact-head{gap:5px}.dashboard-summary .metric{padding:8px}.dashboard-summary .metric b{font-size:15px}}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
-<div class="summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
+<div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
 <nav class="tabs" aria-label="Dashboard sections">
 <button class="tab" data-tab="ai" aria-selected="true">AI Board</button>
 <button class="tab" data-tab="odds" aria-selected="false">Sportsbook</button>
@@ -17,7 +19,7 @@
 <div id="global-warning" class="notice">Loading current market and player data…</div>
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
-<div class="source">Sorted by experimental estimated likelihood against median sportsbook lines when multiple books are available. Single-book fallback is labeled. Estimates are NOT verified sportsbook hit rates. Tap for book quotes and hypothetical EV.</div><div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
+<div class="source">Highest experimental estimates first. Not verified hit rates. Tap any card for full analysis and sportsbook prices.</div><div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="source">Current two-sided sportsbook lines only. These are not PrizePicks lines.</div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
 <section class="panel" id="tab-form"><div class="bar"><h2>2026–27 form</h2><small id="form-total">—</small></div>
@@ -71,77 +73,70 @@ function primaryDirection(p){
  return validEstimate(p)&&["Over","Under"].includes(p.estimated_probability_side)
   ?p.estimated_probability_side.toUpperCase():modelSide(p.projection,p.line);
 }
-function renderAI(){const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
-const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&Date.parse(p.start)>Date.now());
-entries.sort((a,b)=>sort==="time"?Date.parse(a.start)-Date.parse(b.start):
-sort==="name"?a.player.localeCompare(b.player):
-sort==="edge"?Math.abs(b.difference)-Math.abs(a.difference):
-(validEstimate(b)?b.estimated_selected_probability:-1)-(validEstimate(a)?a.estimated_selected_probability:-1) || Math.abs(b.difference)-Math.abs(a.difference));
-$("ai-total").textContent=entries.length+" props";const list=entries.slice(0,60).map(p=>{const outer=node("article","prop");const main=node("div","mainline"),head=node("div","head"),left=node("div");
-left.append(node("strong","",p.player+" · "+p.stat+" "+p.line),node("div","match",p.team+" · "+formatTime(p.start)+" · "+p.game));
-left.append(node("div","mini",p.line_book_count>=2?"Consensus median · "+p.line_book_count+" sportsbooks":p.line_type==="SINGLE_BOOK_FALLBACK"?"Single-book line · not consensus":"Sportsbook comparison"));
-head.append(left);main.append(head);
-const baseSide=primaryDirection(p);
-const pickbar=node("div","pickbar"),pickLeft=node("div");
-pickLeft.append(node("strong","","ORIGINAL AI · "+(validEstimate(p)?"ESTIMATED DIRECTION":"PROJECTION DIRECTION")),
-  node("div","mini",validEstimate(p)?"Historical prediction-error estimate · uncalibrated":"Projection vs sportsbook line · no probability available"));
-const lead=node("div","");
-lead.append(node("span","tag "+sideClass(baseSide),baseSide));
-if(validEstimate(p))lead.append(node("div","mini","Est. "+chance(p)+" · not verified"));
-pickbar.append(pickLeft,lead);
-main.append(pickbar);
-if(validEstimate(p)){
- const likelihood=node("div","formline");
- likelihood.append(node("span","","Over estimate "+(100*p.estimated_over_probability).toFixed(1)+"%"),
-                   node("span","","Under estimate "+(100*p.estimated_under_probability).toFixed(1)+"%"),
-                   node("span","","Historical-error estimate only"));
- main.append(likelihood);
+function renderAI(){
+ const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
+ const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&Date.parse(p.start)>Date.now());
+ entries.sort((a,b)=>sort==="time"?Date.parse(a.start)-Date.parse(b.start):
+  sort==="name"?a.player.localeCompare(b.player):
+  sort==="edge"?Math.abs(b.difference)-Math.abs(a.difference):
+  (validEstimate(b)?b.estimated_selected_probability:-1)-(validEstimate(a)?a.estimated_selected_probability:-1)||Math.abs(b.difference)-Math.abs(a.difference));
+ $("ai-total").textContent=entries.length+" props";
+ const list=entries.slice(0,60).map((p,index)=>{
+  const outer=node("article","prop compact-prop"),main=node("div","mainline");
+  const head=node("div","compact-head"),identity=node("div","compact-identity");
+  identity.append(node("strong","",p.player),
+    node("div","match",p.stat+" · "+p.line+" · "+p.team+" · "+formatTime(p.start)));
+  const mainSide=primaryDirection(p),right=node("div","compact-right");
+  right.append(node("span","tag "+sideClass(mainSide),mainSide));
+  right.append(node("strong","compact-percent",chance(p)));
+  head.append(identity,right);main.append(head);
+  main.append(node("div","compact-caption",
+   (p.line_book_count>=2?p.line_book_count+"-book median":"Single book")+
+   " · AI "+fmt(Number(p.projection))+
+   (validEstimate(p)?" · Estimated, not verified":" · Probability unavailable")));
+  outer.append(main);
+  const details=node("details","compact-details"),
+        summary=node("summary","","View projections, books & EV"),
+        body=node("div","detailbody");
+  const delta=Number(p.difference);
+  appendValues(body,[["AI projection",fmt(Number(p.projection))],
+   ["Sportsbook line",fmt(Number(p.line))],
+   ["Projection − line",(delta>0?"+":"")+fmt(delta),"diff "+(delta>0?"over":"under")]]);
+  if(validEstimate(p)){
+   const likelihood=node("div","formline");
+   likelihood.append(node("span","","Over estimate "+(100*p.estimated_over_probability).toFixed(1)+"%"),
+      node("span","","Under estimate "+(100*p.estimated_under_probability).toFixed(1)+"%"));
+   body.append(likelihood);
+  }
+  if(typeof p.shadow_projection==="number"&&Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
+   const shadowSide=modelSide(p.shadow_projection,p.line);
+   body.append(node("div","detail-highlight","Opponent-aware shadow: "+fmt(p.shadow_projection)+" · "+shadowSide+" (research only)"));
+   body.append(node("div","mini",shadowSide===mainSide?"Models agree on direction, not a verified advantage":"Models differ; review uncertainty"));
+  }
+  if(formFresh)appendForm(body,currentPerson(p.player,p.team),p.stat);
+  if(p.minutes_context)body.append(node("div","mini","Minutes L5 "+fmt(p.minutes_context.observed_l5)+(p.minutes_context.review_needed?" · variable minutes":"")));
+  if(p.opponent_defense)body.append(node("div","mini","Opponent "+p.opponent+" · "+p.opponent_defense.label+" · last "+p.opponent_defense.games+" games (team context only)"));
+  if(p.experimental_best_quote&&p.experimental_ev_available){
+   const b=p.experimental_best_quote;
+   body.append(node("div","detail-highlight","Highest hypothetical EV: "+b.book+" · "+b.side+" "+fmt(Number(b.line))+" · "+price(Number(b.odds))+" · "+(Number(b.hypothetical_ev_pct)>0?"+":"")+Number(b.hypothetical_ev_pct).toFixed(1)+"%"));
+   body.append(node("div","mini","Experimental and uncalibrated; this is NOT a validated betting edge."));
+  }
+  body.append(node("div","detail-heading","Actual sportsbook quotes ("+p.books.length+")"));
+  for(const b of p.books){
+   const line=node("div","bookrow");
+   line.append(node("span","",b.name+" · "+fmt(Number(b.line))),
+     node("span","mono","O "+price(b.over)+" / U "+price(b.under)));
+   body.append(line);
+   if(b.ev_method==="UNCALIBRATED_MODEL_HYPOTHETICAL_EV"){
+    body.append(node("div","mini","Hypothetical EV · Over "+b.hypothetical_over_ev_pct+"% / Under "+b.hypothetical_under_ev_pct+"% (not verified)"));
+   }
+  }
+  body.append(node("div","mini","Injury and lineup status not verified. Projections are independent of book prices."));
+  if(p.missing_features?.length)body.append(node("div","mini","Training feature substitutes: "+p.missing_features.join(", ")));
+  details.append(summary,body);outer.append(details);return outer;
+ });
+ $("ai-board").replaceChildren(...(list.length?list:[empty(aiFresh?"No upcoming AI comparisons match your filters.":"AI comparisons are unavailable or outdated.")]));
 }
-const delta=Number(p.difference);
-appendValues(main,[["AI projection",fmt(Number(p.projection))],["Book line"+(p.line_book_count>=2?" · median":""),fmt(Number(p.line))],["Model − line",(delta>0?"+":"")+fmt(delta),"diff "+(delta>0?"over":"under")]]);
-if(typeof p.shadow_projection==="number"&&Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
- const shadowSide=modelSide(p.shadow_projection,p.line);
- const shadowLine=node("div","shadowbar"),shadowLeft=node("div");
- shadowLeft.append(node("strong","","OPPONENT-AWARE AI DIRECTION"),
-                   node("small","","Shadow projection "+fmt(p.shadow_projection)+" · research only"));
- shadowLine.append(shadowLeft,node("span","tag "+sideClass(shadowSide),shadowSide));
- main.append(shadowLine);
- const consensus=node("div","mini",baseSide===shadowSide&&["OVER","UNDER"].includes(baseSide)
-     ?"Models agree on "+baseSide+" (not a validated betting pick)"
-     :["OVER","UNDER"].includes(baseSide)&&["OVER","UNDER"].includes(shadowSide)
-       ?"Models disagree · no consensus"
-       :"At least one model has no directional lean");
- main.append(consensus);
-}
-if(formFresh)appendForm(main,currentPerson(p.player,p.team),p.stat);
-const context=node("div","formline");
-if(p.opponent_defense){const d=p.opponent_defense;context.append(node("span","","vs "+p.opponent+": "+d.label+" ("+(d.vs_league_pct>0?"+":"")+d.vs_league_pct+"% team "+p.stat+" allowed, last "+d.games+")"));}
-if(p.minutes_context){context.append(node("span","","Minutes L5 "+fmt(p.minutes_context.observed_l5)+(p.minutes_context.review_needed?" · variable minutes":"")));}
-if(context.childNodes.length)main.append(context);
-outer.append(main);const details=node("details"),summary=node("summary","","Book prices & context ("+p.books.length+")"),body=node("div","detailbody");
-body.append(node("div","mini","Experimental estimate · "+p.sample_games+" current-season games · last game "+p.last_game+". Not a calibrated probability."));
-body.append(node("div","mini","Injury / lineup: NOT VERIFIED. Opponent defense shown for context only; not applied to the trained projection."));
-if(p.minutes_context){body.append(node("div","mini","Observed minutes: L3 "+fmt(p.minutes_context.observed_l3)+" · L5 "+fmt(p.minutes_context.observed_l5)+" · L5 SD "+fmt(p.minutes_context.volatility_l5)+". Future minutes not confirmed."));}
-if(p.opponent_defense){body.append(node("div","mini",p.opponent+" allowed "+fmt(p.opponent_defense.allowed_l5)+" "+p.stat+" per recent game vs league "+fmt(p.opponent_defense.league_avg)+" (team totals, not individual or positional defense)."));}
-if(p.experimental_ev_available&&p.experimental_best_quote){
- const b=p.experimental_best_quote;
- const ev=node("div","mini","HYPOTHETICAL EV · highest arithmetic result: "+b.book+" · "+b.side+" "+fmt(Number(b.line))+" ("+price(b.odds)+") · "+(Number(b.hypothetical_ev_pct)>0?"+":"")+Number(b.hypothetical_ev_pct).toFixed(1)+"% per unit staked. UNCALIBRATED; NOT A VERIFIED EDGE.");
- main.append(ev);
-}
-for(const b of p.books){
- const line=node("div","bookrow");
- const info=node("span","",b.name+" · "+fmt(Number(b.line)));
- const costs=node("span","mono","O "+price(b.over)+"  /  U "+price(b.under));
- line.append(info,costs);
- body.append(line);
- if(b.ev_method==="UNCALIBRATED_MODEL_HYPOTHETICAL_EV"){
-  const estimate=node("div","mini","Hypothetical EV: Over "+(b.hypothetical_over_ev_pct>0?"+":"")+b.hypothetical_over_ev_pct+"% · Under "+(b.hypothetical_under_ev_pct>0?"+":"")+b.hypothetical_under_ev_pct+"% · no-vig market Over "+(100*b.market_no_vig_over).toFixed(1)+"% · experimental model only");
-  body.append(estimate);
- }
-}
-if(p.missing_features?.length)body.append(node("div","mini","Substituted training features: "+p.missing_features.join(", ")));
-details.append(summary,body);outer.append(details);return outer});
-$("ai-board").replaceChildren(...(list.length?list:[empty(aiFresh?"No verified upcoming prop comparisons. Try another market or the next pregame scan.":"AI comparisons are unavailable or outdated. Refresh the GitHub workflow.")]))}
 function groupOdds(picks){const groups=new Map();for(const x of picks){if(!x?.player||!Number.isFinite(Number(x.line))||!x.source||!S[x.stat])continue;const id=[norm(x.player),S[x.stat],x.line,x.source,x.game,x.start].join("|");if(!groups.has(id))groups.set(id,{player:x.player,stat:S[x.stat],line:Number(x.line),book:x.source,game:x.game,start:x.start,over:null,under:null});const r=groups.get(id);if(x.direction==="More")r.over=x.odds;else if(x.direction==="Less")r.under=x.odds;}return [...groups.values()].filter(x=>Number.isFinite(x.over)&&Number.isFinite(x.under))}
 function implied(odd){return odd>0?100/(odd+100):Math.abs(odd)/(Math.abs(odd)+100)}
 function renderOdds(){const q=norm($("odds-search").value),stat=$("odds-stat").value,book=$("odds-book").value;
