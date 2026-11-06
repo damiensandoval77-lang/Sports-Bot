@@ -1,6 +1,6 @@
 import unittest
 import pandas as pd
-from iphone_bot.defense_training import historical_defense
+from iphone_bot.defense_training import historical_defense, add_historical_defense
 
 
 class DefensiveFeaturesTest(unittest.TestCase):
@@ -42,6 +42,17 @@ class DefensiveFeaturesTest(unittest.TestCase):
         row=features[(features.GAME_ID=="5")&
                      (features.TEAM_ABBREVIATION=="GSW")].iloc[0]
         self.assertAlmostEqual(row["OPP_PTS_ALLOWED_L5"],100.0)
+
+    def test_training_game_id_leading_zeros_normalized(self):
+        raw=self.sample()
+        sample=raw.loc[(raw.GAME_ID=="5")&(raw.TEAM_ABBREVIATION=="GSW"),
+                       ["SEASON_ID","GAME_ID","TEAM_ABBREVIATION"]].head(1).copy()
+        # Processing converts 0005 to integer 5 in feature dataset.
+        raw["GAME_ID"]=raw["GAME_ID"].astype(str).str.zfill(10)
+        sample["GAME_ID"]=5
+        enriched=add_historical_defense(sample,raw)
+        self.assertEqual(len(enriched),1)
+        self.assertAlmostEqual(float(enriched.iloc[0]["OPP_PTS_ALLOWED_L5"]),100.0)
 
     def test_first_game_not_exposed_to_own_result(self):
         features=historical_defense(self.sample())
