@@ -1,0 +1,24 @@
+name: Probe DunkAPI historical NBA props
+on:
+  workflow_dispatch:
+    inputs:
+      game_date:
+        description: 'Completed NBA regular-season game date (YYYY-MM-DD)'
+        required: true
+        default: '2026-03-15'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify DunkAPI key and estimate historical data coverage
+        env:
+          DUNKAPI_KEY: ${{ secrets.DUNKAPI_KEY }}
+          DUNK_GAME_DATE: ${{ inputs.game_date }}
+        run: python -u iphone_bot/probe_dunkapi.py
