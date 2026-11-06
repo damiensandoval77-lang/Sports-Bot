@@ -1,0 +1,22 @@
+name: NBA AI model readiness
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 16 * * *'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect model files and training prerequisites
+        run: python3 iphone_bot/check_models.py
+      - name: Publish readiness report
+        run: |
+          if git diff --quiet -- docs/model_status.json && git ls-files --error-unmatch docs/model_status.json >/dev/null 2>&1; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/model_status.json
+          git commit -m "Update AI model readiness status"
+          git push
