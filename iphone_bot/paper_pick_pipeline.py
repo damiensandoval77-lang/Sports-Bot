@@ -28,8 +28,18 @@ def payout(american):
     raise ValueError("Invalid American odds")
 
 def identity(row):
-    return "|".join((str(row[x]) for x in
-       ("event_start","player_id","team","market","bookmaker","line")))
+    # JSON and Python represent the SAME UTC instant differently:
+    # 2026-11-07T00:40:00.000Z vs 2026-11-07T00:40:00+00:00.
+    # Canonicalize timestamps and lines so repeated workflow runs never
+    # double-count a previously locked sportsbook offer.
+    return "|".join((
+        utc(row["event_start"]).isoformat(),
+        str(row["player_id"]).strip(),
+        str(row["team"]).strip().upper(),
+        str(row["market"]).strip().upper(),
+        str(row["bookmaker"]).strip().casefold(),
+        format(float(row["line"]),".10g")
+    ))
 
 def snapshot(comparisons,generated_at,existing=None):
     """Freeze quoted side, observed price, projection and estimated P at capture.
@@ -38,8 +48,13 @@ def snapshot(comparisons,generated_at,existing=None):
     The first saved quote and side win; later opposite-side forecasts do not replace it.
     """
     created=utc(generated_at)
-    rows=list(existing or [])
-    seen={identity(x) for x in rows}
+    rows=[]
+    seen=set()
+    for prior in sorted(existing or [],key=lambda r:utc(r["captured_at"])):
+        ident=identity(prior)
+        if ident in seen:continue
+        rows.append(prior)
+        seen.add(ident)
     for market in comparisons:
         if market.get("stat") not in STATS:continue
         start=utc(market["start"])
