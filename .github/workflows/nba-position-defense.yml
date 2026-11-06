@@ -20,10 +20,13 @@ jobs:
           python -u -m src.sports.nba.features
       - name: Validate DvP feature construction
         run: |
-          python -m py_compile iphone_bot/position_defense.py iphone_bot/train_position_challenger.py
+          python -m py_compile iphone_bot/position_defense.py iphone_bot/train_position_challenger.py iphone_bot/detailed_position_defense.py iphone_bot/train_detailed_position_challenger.py
+          python -m unittest discover -s iphone_bot/tests -p "test_detailed_position_defense.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_position_defense.py" -v
       - name: Benchmark team defensive model versus positional defense model
         run: python -u iphone_bot/train_position_challenger.py
+      - name: Benchmark five exact positions, longer windows and per36 rates
+        run: python -u iphone_bot/train_detailed_position_challenger.py
       - name: Verify no position model was automatically promoted
         run: |
           python - <<'PY'
@@ -31,10 +34,16 @@ jobs:
           data=json.load(open('models/nba/position_challenger/report.json'))
           assert data['status']=='POSITION_RESEARCH_NOT_DEPLOYED'
           assert len(data['metrics'])==4
+          detailed=json.load(open('models/nba/detailed_position_challenger/report.json'))
+          assert detailed['status']=='DETAILED_DVP_RESEARCH_ONLY_NOT_DEPLOYED'
+          assert len(detailed['metrics'])==4
+          print('Exact positional role coverage:',detailed['coverage_pct']['exact_position_pct'])
           print('Evaluated markets:', [x['market'] for x in data['metrics']])
           PY
       - uses: actions/upload-artifact@v4
         with:
           name: nba-positional-defense-research
-          path: models/nba/position_challenger/report.json
+          path: |
+            models/nba/position_challenger/report.json
+            models/nba/detailed_position_challenger/report.json
           if-no-files-found: error
