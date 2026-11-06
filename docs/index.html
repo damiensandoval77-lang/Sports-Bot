@@ -71,6 +71,7 @@
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
 <div class="source" id="chronological-accuracy-feedback" aria-live="polite">Chronological AI accuracy feedback: awaiting verified completed-game observations.</div>
+<div class="source" id="minutes-v2-validation" aria-live="polite">Minutes V2 research: waiting for same-game chronological validation.</div>
 <div class="source" id="injury-minutes-validation" aria-live="polite">Injury-minute research: waiting for locked pregame scenarios and completed-game evaluations.</div>
 <div class="performance-selector"><label for="perf-market">Performance market</label><select id="perf-market"><option value="">All markets</option><option value="PTS">Points</option><option value="REB">Rebounds</option><option value="AST">Assists</option><option value="PRA">PRA</option></select></div>
 <div class="source" id="weight-experiment">Chronological weighting research: waiting for independently settled outcomes.</div>
@@ -88,7 +89,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -315,6 +316,14 @@ function renderAI(){
    body.append(node("div","mini","Research minutes estimate: "+fmt(minutesResearch.expected_minutes)+
      " (recent-form estimate, not a confirmed rotation; last five average "+fmt(minutesResearch.observed_l5)+")."));
   else body.append(node("div","mini","Projected minutes unavailable: insufficient recent observations."));
+  const minuteV2=p.minutes_v2_research;
+  if(minuteV2?.status==="RESEARCH_FORECAST_UNVALIDATED"){
+   body.append(node("div","mini","Minutes V2 research: "+
+    fmt(minuteV2.expected_minutes)+" vs current baseline "+
+    fmt(minutesResearch?.expected_minutes)+
+    " · recent minutes volatility "+fmt(minuteV2.last5_volatility)+
+    ". Historical estimate only; NOT used in live prop projections."));
+  }
   const minuteScenario=p.injury_minutes_research;
   if(minuteScenario?.status==="HISTORICAL_SCENARIO_RESEARCH_ONLY"){
    body.append(node("div","research-note","Verified OUT teammate: "+
@@ -403,6 +412,25 @@ const left=node("div");left.append(node("strong","",p.player),node("div","match"
 appendValues(main,[["Last 5",fmt(statVal(p,stat,"l5"))],["Last 10",fmt(statVal(p,stat,"l10"))],["Season",fmt(statVal(p,stat,"season"))]]);box.append(main);return box});
 $("form-board").replaceChildren(...(nodes.length?nodes:[empty("No players found. Current-season form may be unavailable.")]))}
 function renderModelPerformance(){
+ const v2=$("minutes-v2-validation");
+ const study=aiMetadata?.minutes_v2_validation;
+ if(!study){
+  v2.textContent="Minutes V2: next AI comparison publication will evaluate the research forecast. Live projections unchanged.";
+ }else if(study.status!=="CHRONOLOGICAL_RESEARCH_HOLDOUT"){
+  v2.textContent="Minutes V2: only "+(study.eligible_samples??0)+
+   " same-game historical observations across "+(study.distinct_dates??0)+
+   " dates. Chronological holdout is not ready. Live projections unchanged.";
+ }else{
+  const change=study.candidate_minus_baseline_mae;
+  v2.textContent="Minutes V2 later-date holdout ("+study.holdout_samples+
+   " identical player games from "+study.holdout_start+"): existing minutes MAE "+
+   fmt(study.baseline_mae)+" vs robust V2 "+fmt(study.candidate_mae)+
+   " min, V2 minus baseline "+(change>0?"+":"")+fmt(change)+
+   " (negative is better). "+study.candidate_improved+" improved, "+
+   study.candidate_worsened+" worsened, "+study.tied+" tied. "+
+   "Research only; NOT applied to prop projections.";
+ }
+
  const minutesNode=$("injury-minutes-validation");
  const minutes=injuryMinutesValidation?.same_game_comparison;
  if(!injuryMinutesValidation){
@@ -564,8 +592,9 @@ if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.pla
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
 else {oddsFresh=false;odds=[]}
-if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
-else {aiFresh=false;ai=[]}
+if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
+ aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
+else {aiFresh=false;ai=[];aiMetadata=null}
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
 injuryMinutesValidation=im.status==="fulfilled"&&im.value.status==="PREGAME_LOCKED_INJURY_MINUTES_RESEARCH"?im.value:null;
 ppState=pp.status==="fulfilled"?pp.value.status:"UNAVAILABLE";
