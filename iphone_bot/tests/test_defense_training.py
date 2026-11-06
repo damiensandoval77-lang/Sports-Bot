@@ -21,10 +21,17 @@ class DefensiveFeaturesTest(unittest.TestCase):
         features=historical_defense(self.sample())
         row=features[(features.GAME_ID=="5")&
                      (features.TEAM_ABBREVIATION=="GSW")].iloc[0]
-        # Previous opponent MIA scored 14,15,16,17 points x 8
-        # in games 1-4. At game 5 rolling last 3/4 average.
-        self.assertAlmostEqual(row["OPP_PTS_ALLOWED_L5"],8*(14+15+16+17)/4)
+        # GSW faces Miami: Miami previously ALLOWED GSW to score
+        # 11,12,13,14 points per player in games 1-4.
+        self.assertAlmostEqual(row["OPP_PTS_ALLOWED_L5"],8*(11+12+13+14)/4)
         self.assertEqual(row["OPP_DEF_SAMPLE_GAMES"],4)
+        # Reverse matchup: Miami faces GSW; GSW allowed Miami's
+        # 14,15,16,17 points per player. Do not confuse points
+        # allowed with the defensive team's own points scored.
+        reverse=features[(features.GAME_ID=="5")&
+                         (features.TEAM_ABBREVIATION=="MIA")].iloc[0]
+        self.assertAlmostEqual(reverse["OPP_PTS_ALLOWED_L5"],8*(14+15+16+17)/4)
+        self.assertEqual(reverse["OPP_DEF_SAMPLE_GAMES"],4)
 
     def test_first_game_not_exposed_to_own_result(self):
         features=historical_defense(self.sample())
