@@ -57,6 +57,7 @@
 <button class="tab" data-tab="form" aria-selected="false">Player Form</button>
 <button class="tab" data-tab="results" aria-selected="false">Performance</button></nav>
 <div id="global-warning" class="notice">Loading current market and player data…</div>
+<div id="injury-feed-health" class="notice" aria-live="polite">Checking official NBA injury-report availability…</div>
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
@@ -501,7 +502,7 @@ else {note.textContent="Experimental model projections, NOT verified probabiliti
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
- const [a,o,f,p,pp]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json")]);
+ const [a,o,f,p,pp,inj]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
@@ -516,6 +517,29 @@ ppFresh=pp.status==="fulfilled"&&pp.value.status==="LIVE_THIRD_PARTY_PRIZEPICKS_
  isRecent(pp.value.generated_at,6)&&Array.isArray(pp.value.offers);
 prizepicks=ppFresh?pp.value.offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"):[];
 
+const injuryBox=$("injury-feed-health");
+const injury=inj.status==="fulfilled"?inj.value:null;
+const injuryFresh=injury&&isRecent(injury.generated_at,24);
+const official=injuryFresh&&injury.status==="OFFICIAL_NBA_REPORT_VERIFIED"&&
+ injury.injury_data_verified===true&&isRecent(injury.report_issued_at,24)&&
+ Array.isArray(injury.players)&&injury.players.length>0;
+const thirdParty=injuryFresh&&injury.status==="THIRD_PARTY_ESPN_INJURY_CONTEXT"&&
+ Array.isArray(injury.players)&&injury.players.length>0;
+injuryBox.replaceChildren();
+if(official){
+ injuryBox.append(document.createTextNode("Official NBA injury report retrieved ("+injury.players.length+
+ " roster-matched statuses). An unlisted player is NOT confirmed available. Starting lineups still require game-day checks. "));
+}else if(thirdParty){
+ injuryBox.append(document.createTextNode("ESPN injury research available ("+injury.players.length+
+ " matched players), but NOT official NBA confirmation. Player status and starting lineups must be checked. "));
+}else{
+ injuryBox.append(document.createTextNode("INJURY DATA NOT VERIFIED: official NBA report is unavailable or stale. All player availability and starting lineups require manual verification. "));
+}
+const injuryLink=document.createElement("a");
+injuryLink.href="https://official.nba.com/nba-injury-report-2026-27-season/";
+injuryLink.target="_blank";injuryLink.rel="noopener noreferrer";
+injuryLink.textContent="Open official NBA injury report";
+injuryBox.append(injuryLink);
 const status=[];
  status.push(a.status==="fulfilled"?"AI file loaded"+(aiFresh?"":" (stale)"):"AI fetch failed");
  status.push(o.status==="fulfilled"?"Odds file loaded"+(oddsFresh?"":" (stale)"):"Odds fetch failed");
