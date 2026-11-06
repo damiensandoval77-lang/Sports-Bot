@@ -79,7 +79,7 @@ def main():
         calibration_eval = cal_dates & y.notna()
         if calibration_fit.sum()<5000 or calibration_eval.sum()<2000:
             raise ValueError("Insufficient chronological calibration observations")
-        calibration_fill = X.loc[calibration_fit].median().fillna(0)
+        calibration_fill = df[cols].apply(pd.to_numeric,errors="coerce").replace([np.inf,-np.inf],np.nan).loc[calibration_fit].median().fillna(0)
         # X has already been imputed with first-80%-training medians; build
         # calibration matrix from raw features to prevent that subtle leak.
         x_cal = df[cols].apply(pd.to_numeric,errors="coerce").replace([np.inf,-np.inf],np.nan)
