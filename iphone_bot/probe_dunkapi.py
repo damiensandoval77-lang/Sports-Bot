@@ -17,7 +17,8 @@ def request(endpoint, data):
         headers={"x-api-key": KEY, "Content-Type": "application/json"},
         method="POST")
     with urllib.request.urlopen(req, timeout=30) as r:
-        return json.load(r)
+        payload = json.load(r)
+        return payload.get("data", payload) if isinstance(payload, dict) else payload
 
 def main():
     if not KEY:
@@ -36,7 +37,7 @@ def main():
         if games:
             break
     if not games:
-        print("AUTH REQUEST ACCEPTED but the provider returned no games for either query.")
+        print("The unwrapped provider response returned no games for either query.")
         print("This does not prove historical coverage or prop access. Check DunkAPI account and list_games documentation.")
         return
     completed = [g for g in games if g.get("game_id") and g.get("status") == "final"]
