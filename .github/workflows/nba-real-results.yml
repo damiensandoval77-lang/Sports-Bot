@@ -8,6 +8,8 @@ on:
       - 'iphone_bot/paper_pick_pipeline.py'
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'iphone_bot/model_performance.py'
+      - 'iphone_bot/weight_research.py'
+      - 'iphone_bot/tests/test_research_upgrades.py'
       - 'iphone_bot/tests/test_model_performance.py'
       - 'iphone_bot/fetch_current_form.py'
       - 'iphone_bot/tests/test_pipeline_health.py'
@@ -35,9 +37,10 @@ jobs:
         run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
       - name: Validate paper pick invariants and dashboard JavaScript
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/fetch_current_form.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/fetch_current_form.py
           python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python - <<'PY'
           from pathlib import Path
@@ -71,6 +74,8 @@ jobs:
           print('Overdue ungraded quotes:',health['pending_over_48_hours'])
           assert perf['independent_settled_markets']<=report['settled']
           assert set(perf['models'])=={'original','opponent_aware','combined'}
+          assert set(perf['by_stat'])=={'PTS','REB','AST','PRA'}
+          assert report['weight_research']['live_model_unchanged'] is True
           assert all(x['observations']<=perf['independent_settled_markets'] for x in perf['models'].values())
           print('Real completed-game paper results:', report['settled'], 'pending:', report['pending'])
           PY
