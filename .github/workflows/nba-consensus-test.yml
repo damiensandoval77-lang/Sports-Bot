@@ -38,6 +38,9 @@ jobs:
           script=page.split("<script>",1)[1].split("</script>",1)[0]
           # Syntax checking alone did not catch the previous runtime ReferenceError.
           assert "recent-block-grid" in page and "recent-stat-tile" in page, "Recent performance cards missing"
+          details=script.split('const details=node("details","compact-details")',1)[1].split("details.append(summary,body)",1)[0]
+          assert details.index('Recent performance') < details.index('Actual sportsbook quotes') < details.index('Why this projection?'), "Featured recent stats and actual book prices must precede analysis"
+
           assert '["LAST 5",statVal(recentForm,p.stat,"l5")' in script, "L5 average tile missing"
           assert '["LAST 10",statVal(recentForm,p.stat,"l10")' in script, "L10 average tile missing"
           assert '["MINUTES",p.minutes_context?.observed_l5' in script, "Minutes average tile missing"
