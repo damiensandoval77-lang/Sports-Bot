@@ -40,6 +40,16 @@ def main():
         if not {"SEASON_ID","GAME_ID","TEAM_ABBREVIATION","GAME_DATE"}.issubset(data):
             raise ValueError(f"{label}: game/team key missing")
     df=add_historical_defense(df,raw)
+    # Identical predictions across every target can mean the opponent inputs
+    # are all NaN and imputed to constants. Reject that silently broken test.
+    coverage={}
+    for feature in COLS:
+        values=pd.to_numeric(df[feature],errors="coerce")
+        coverage[feature]={"coverage_pct":round(float(values.notna().mean()*100),2),
+                           "distinct":int(values.nunique(dropna=True))}
+    print("Defensive feature diagnostics:",json.dumps(coverage),flush=True)
+    if any(v["coverage_pct"]<50 or v["distinct"]<8 for v in coverage.values()):
+        raise ValueError("Opponent challenger lacks sufficient non-constant matchup data; comparison invalid")
     df["GAME_DATE"]=pd.to_datetime(df["GAME_DATE"])
     df=df.sort_values(["GAME_DATE","PLAYER_ID"]).reset_index(drop=True)
     dates=np.sort(df.GAME_DATE.unique())
@@ -94,7 +104,7 @@ def main():
        "status":"RESEARCH_CHALLENGER_NOT_DEPLOYED",
        "dataset_rows":len(df),"train_end":str(first.date()),
        "validation_end":str(second.date()),"test_start":str(second.date()),
-       "new_features":list(COLS),
+       "new_features":list(COLS),"feature_coverage":coverage,
        "lines":"SYNTHETIC_L10_PROXY_NOT_REAL_SPORTSBOOK_ODDS",
        "probability_method":"validation residual empirical CDF, unvalidated on real lines",
        "metrics":report,
