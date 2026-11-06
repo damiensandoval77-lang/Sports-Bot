@@ -87,6 +87,31 @@ def fallback_links(now):
         out.append((issued.astimezone(UTC),"https://"+HOST+"/referee/injury/"+filename))
     return out
 
+def parse_espn_injuries(payload,roster):
+    """Match ESPN league injury records by exact name and matching team."""
+    indexed={(key(p.get("player")),str(p.get("team","")).upper()):p for p in roster}
+    result={}
+    groups=payload.get("injuries",[])
+    if not isinstance(groups,list):return []
+    for group in groups:
+        if not isinstance(group,dict):continue
+        team=group.get("team",{})
+        abbr=str(team.get("abbreviation","")).upper() if isinstance(team,dict) else ""
+        if len(abbr)!=3:continue
+        for item in group.get("injuries",[]):
+            if not isinstance(item,dict):continue
+            athlete=item.get("athlete",{})
+            name=athlete.get("displayName") if isinstance(athlete,dict) else ""
+            p=indexed.get((key(name),abbr))
+            if not p:continue
+            status=str(item.get("status","")).upper().replace("-","_").replace(" ","_")
+            if status not in ("OUT","DOUBTFUL","QUESTIONABLE","PROBABLE","DAY_TO_DAY"):continue
+            ident=str(p["player_id"])
+            if ident in result and result[ident]["status"]!=status:result[ident]["status"]="CONFLICTING_EXTRACT"
+            else:result[ident]={"player":p["player"],"player_id":ident,
+                                "team":abbr,"status":status,"provider":"ESPN_THIRD_PARTY"}
+    return list(result.values())
+
 def main():
     now=dt.datetime.now(UTC)
     base={"generated_at":now.isoformat(),"status":"UNAVAILABLE","injury_data_verified":False,
@@ -130,9 +155,25 @@ def main():
                     extracted_statuses=len(players),players=players)
         print("Official NBA injury report:",url,"matched player statuses:",len(players),flush=True)
     except (OSError,ValueError,KeyError,ImportError,RuntimeError) as error:
-        base["failure_type"]=type(error).__name__
-        base["failure_stage"]=str(error)[:120] if isinstance(error,RuntimeError) else "official report access or parsing"
+        base["official_unavailable_reason"]=type(error).__name__
         print("Official NBA injury report unavailable:",type(error).__name__,flush=True)
+        try:
+            url="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries"
+            response=json.loads(read(url,timeout=12))
+            if not isinstance(response,dict) or not isinstance(response.get("injuries"),list):
+                raise ValueError("Invalid ESPN injury response")
+            roster=json.loads((ROOT/"docs/current_form.json").read_text()).get("players",[])
+            observed=parse_espn_injuries(response,roster)
+            if not observed:raise ValueError("No matching third-party injury data")
+            base.update(status="THIRD_PARTY_ESPN_INJURY_CONTEXT",
+                        injury_data_verified=False,players=observed,
+                        report_issued_at=now.isoformat(),source_url=url,
+                        extracted_statuses=len(observed),
+                        notice="ESPN injury listing: NOT official NBA game-day confirmation. Recheck official report and starting lineup.")
+            print("Third-party ESPN injury context:",len(observed),"players",flush=True)
+        except (OSError,TimeoutError,ValueError,KeyError,TypeError) as fallback:
+            base["failure_type"]=type(fallback).__name__
+            print("Third-party injury backup unavailable:",type(fallback).__name__,flush=True)
     OUT.write_text(json.dumps(base,indent=2)+"\n")
 
 if __name__=="__main__":main()
