@@ -47,7 +47,7 @@
 .recent-stat-number{font-size:24px;line-height:1.25;color:#f6faff;font-variant-numeric:tabular-nums}
 .recent-stat-subtitle{font-size:10px;color:#a5b8d4}
 @media(max-width:520px){.recent-block-grid{gap:6px}.recent-stat-tile{padding:10px 8px;min-height:88px}.recent-stat-number{font-size:22px}.recent-stat-label{font-size:9px}.recent-stat-subtitle{font-size:9px}}
-</style></head>
+.performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -55,7 +55,7 @@
 <button class="tab" data-tab="ai" aria-selected="true">AI Board</button>
 <button class="tab" data-tab="odds" aria-selected="false">Sportsbook</button>
 <button class="tab" data-tab="form" aria-selected="false">Player Form</button>
-<button class="tab" data-tab="results" aria-selected="false">Real Results</button></nav>
+<button class="tab" data-tab="results" aria-selected="false">Performance</button></nav>
 <div id="global-warning" class="notice">Loading current market and player data…</div>
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
@@ -65,7 +65,12 @@
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="source">Current two-sided sportsbook lines only. These are not PrizePicks lines.</div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
 <section class="panel" id="tab-form"><div class="bar"><h2>2026–27 form</h2><small id="form-total">—</small></div>
 <div class="filters"><input id="form-search" aria-label="Search player form" placeholder="Search player…" autocomplete="off"><select id="form-stat" aria-label="Form stat"><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option><option>MIN</option></select><select id="form-sort" aria-label="Sort form"><option value="name">Player name</option><option value="avg">Highest L5</option></select></div><div class="source" id="form-source">Observed performance, not an AI forecast. L5/L10 shown only with enough games.</div><div class="board" id="form-board"><div class="empty">Loading current player form…</div></div></section>
-<section class="panel" id="tab-results"><div class="bar"><h2>Real outcomes · paper tracked</h2><small id="real-update">Awaiting grades</small></div>
+<section class="panel" id="tab-results">
+<div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
+<div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
+<div class="performance-comparison" id="performance-comparison"><div class="empty">Loading real model performance…</div></div>
+<div class="source" id="performance-caveat">Hit rate excludes pushes; paper ROI requires a recorded sportsbook price for each model's exact direction. No result is proof of profitable betting.</div>
+<div class="bar performance-heading"><h2>Individual paper picks</h2><small>Actual game results</small></div>
 <div class="summary"><div class="metric"><b id="real-settled">—</b><small>Settled quoted picks</small></div><div class="metric"><b id="real-record">—</b><small>Paper W / L / Push</small></div><div class="metric"><b id="real-roi">—</b><small>Paper return per graded unit</small></div></div>
 <div class="source" id="real-explanation">Only real archived sportsbook prices and model picks locked before tipoff are graded. Paper results, not actual wagers, and multiple sportsbooks on one matchup are correlated.</div>
 <div class="board" id="real-board"><div class="empty">No completed, verified paper picks yet. The scheduled next-day grading process will populate this as actual game results arrive.</div></div></section>
@@ -280,7 +285,44 @@ $("form-total").textContent=matches.length+" players";const nodes=matches.slice(
 const left=node("div");left.append(node("strong","",p.player),node("div","match",p.team+" · "+p.games+" games · last "+p.latest_game));head.append(left,node("span","tag",stat));main.append(head);
 appendValues(main,[["Last 5",fmt(statVal(p,stat,"l5"))],["Last 10",fmt(statVal(p,stat,"l10"))],["Season",fmt(statVal(p,stat,"season"))]]);box.append(main);return box});
 $("form-board").replaceChildren(...(nodes.length?nodes:[empty("No players found. Current-season form may be unavailable.")]))}
+function renderModelPerformance(){
+ const target=$("performance-comparison");
+ const report=paper?.performance;
+ if(!report||report.status!=="PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES"){
+  target.replaceChildren(empty("Model comparison is being initialized. It will update with the next completed grading run."));
+  return;
+ }
+ const models=[["original","Original AI"],["opponent_aware","Opponent-Aware AI"],["combined","Combined AI"]];
+ const cards=models.map(([id,label])=>{
+  const m=report.models?.[id],outer=node("article","performance-card");
+  outer.append(node("strong","performance-card-title",label));
+  if(!m){
+   outer.append(node("div","mini","No verified pregame results available."));
+   return outer;
+  }
+  const primary=node("div","performance-stats");
+  const specs=[
+    ["Settled sample",String(m.observations??0)],
+    ["Avg error (MAE)",m.mae===null?"—":fmt(Number(m.mae))],
+    ["O/U hit rate",m.direction_hit_rate===null?"—":(100*m.direction_hit_rate).toFixed(1)+"%"],
+    ["Paper ROI",m.paper_roi_per_priced_unit===null?"—":((m.paper_roi_per_priced_unit>=0?"+":"")+(100*m.paper_roi_per_priced_unit).toFixed(1)+"%")]
+  ];
+  for(const [name,value] of specs){
+    const cell=node("div","performance-stat");
+    cell.append(node("span","",name),node("strong","",value));
+    primary.append(cell);
+  }
+  outer.append(primary);
+  outer.append(node("div","performance-meta",(m.direction_wins??0)+" wins / "+(m.direction_losses??0)+" losses · "+(m.direction_pushes??0)+" pushes · "+(m.priced_paper_selections??0)+" priced selections"));
+  if(m.observations===0)outer.append(node("div","performance-pending","Awaiting completed games"));
+  return outer;
+ });
+ target.replaceChildren(...cards);
+ $("performance-caveat").textContent="Independent settled player/game/stat markets: "+report.independent_settled_markets+
+ ". Model projections were saved before tipoff. Hit rate excludes pushes; paper ROI uses only valid pregame prices for that model's direction. Missing opposite-side odds are excluded, never assumed. Results are not actual wagers.";
+}
 function renderPaper(){
+ renderModelPerformance();
  if(!paper||paper.status!=="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"){
   $("real-explanation").textContent="The live paper ledger has not been published yet. It will store locked pregame predictions and actual completed NBA results.";
   return;
