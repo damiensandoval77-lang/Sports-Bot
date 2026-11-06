@@ -106,10 +106,34 @@ def match(offer,comparison):
     if offer["opponent"]:return offer["opponent"] in verified
     return abs((start-other).total_seconds())<=30*60
 
+def rejection_hint(row,now):
+    """Count rejection categories without publishing private provider rows."""
+    if not isinstance(row,dict):return "non_object"
+    if row.get("is_demo") is not False:return "missing_real_provenance"
+    if row.get("status")!="active" or str(row.get("league","")).upper()!="NBA":return "inactive_or_not_nba"
+    event=row.get("event") if isinstance(row.get("event"),dict) else {}
+    start=timeparse(event.get("starts_at") or row.get("event_starts_at"))
+    if start is None:return "missing_event_time"
+    if start<=now:return "game_already_started"
+    observed=timeparse(row.get("observed_at"))
+    if observed is None:return "missing_observed_time"
+    if now-observed>dt.timedelta(hours=6):return "observation_older_than_six_hours"
+    market=row.get("market") if isinstance(row.get("market"),dict) else {}
+    period=str(market.get("period") or row.get("period") or "").strip().lower()
+    if period not in ("full game","full_game","fullgame"):return "not_full_game_market"
+    stat=str(market.get("stat") or row.get("stat") or "").lower().strip()
+    if stat not in STAT:return "unsupported_stat"
+    player=row.get("player")
+    team=player.get("team") if isinstance(player,dict) else row.get("team")
+    if not team or len(team_abbrev(team))!=3:return "missing_team"
+    return "invalid_or_unavailable_selection"
+
 def publish(raw_pages,comparisons,now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     offers=[]
     raw_count=0
+    from collections import Counter
+    rejection_reasons=Counter()
     statuses=[]
     cursors=[]
     for page in raw_pages:
@@ -122,7 +146,10 @@ def publish(raw_pages,comparisons,now=None):
         rows=page.get("data",[])
         if not isinstance(rows,list):raise ValueError("Invalid projection rows")
         raw_count+=len(rows)
-        offers.extend(x for r in rows if (x:=clean(r,now)))
+        for row in rows:
+            cleaned=clean(row,now)
+            if cleaned:offers.append(cleaned)
+            else:rejection_reasons[rejection_hint(row,now)]+=1
     distinct={o["id"]:o for o in offers if o["id"]}
     matched=[]
     unmatched=0
@@ -146,6 +173,7 @@ def publish(raw_pages,comparisons,now=None):
         "provider_status":statuses[0] if statuses else "unknown",
         "pages_read":len(raw_pages),"partial_board":bool(cursors and cursors[-1]),
         "raw_rows_read":raw_count,"eligible_upcoming_offers":len(distinct),
+        "filtered_out_reasons":dict(sorted(rejection_reasons.items())),
         "match_method":"EXACT_PLAYER_TEAM_STAT_AND_VERIFIED_SCHEDULE_OR_30_MIN_TIPOFF",
         "matched_count":len(matched),"unmatched_ai_comparisons":unmatched,
         "offers":matched,
@@ -187,6 +215,7 @@ def main():
     DEST.write_text(json.dumps(out,indent=2)+"\n")
     print("PrizePicks matched observations:",out["matched_count"],
           "raw rows:",out["raw_rows_read"],"eligible:",out["eligible_upcoming_offers"],
-          "pages:",out["pages_read"],"partial board:",out["partial_board"],flush=True)
+          "pages:",out["pages_read"],"partial board:",out["partial_board"],
+          "rejections:",out["filtered_out_reasons"],flush=True)
 
 if __name__=="__main__":main()
