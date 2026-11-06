@@ -17,6 +17,7 @@ from defense_training import COLS
 from experimental_probability import probability_sides, METHOD
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
+from combined_projection import combine_projections
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -188,6 +189,18 @@ def main():
         row["requires_lineup_review"]=True
         row["defense_in_model"]=False
         row["projection"]=round(projection,1)
+        # Build a combined median from UNROUNDED original and shadow forecasts.
+        # Shadow model JSON stores a rounded research projection, so the
+        # combination is approximately accurate to its displayed precision.
+        combined=combine_projections(projection,
+            row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
+        row["combined_projection"]=round(combined["projection"],1)
+        row["combined_difference"]=round(combined["projection"]-row["line"],1)
+        row["combined_method"]=combined["method"]
+        row["combined_model_count"]=combined["model_count"]
+        row["combined_validated"]=False
+        row["combined_direction"]=("Over" if combined["projection"]>row["line"]
+           else "Under" if combined["projection"]<row["line"] else "Neutral")
         row["difference"]=round(projection-row["line"],1)
         row["lean"]="Over" if row["difference"]>0 else "Under" if row["difference"]<0 else "Neutral"
         # This frequency is an experimental tail estimate from held-out
@@ -251,9 +264,12 @@ def main():
        "experimental_probability_method":METHOD,
        "real_market_probabilities_calibrated":False,
        "experimental_ev_available":True,
+       "combined_projection_enabled":True,
+       "combined_projection_validated":False,
+       "combined_projection_method":"TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
        "ev_verified":False,
        "ev_method":"PRICE_SPECIFIC_HYPOTHETICAL_EV_NOT_VALIDATED",
-       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. Any displayed EV is hypothetical from uncalibrated historical residual estimates, not validated expected betting return, and cannot establish profitable picks.",
+       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. The combined displayed projection is a two-model median (average) where a valid shadow forecast exists, falling back to original otherwise. Probabilities and EV still describe the ORIGINAL model only, not the combined projection; they are uncalibrated and cannot establish profitable picks.",
        "comparisons":valid[:150],"skipped":skipped}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
     print("Wrote",len(valid),"team-verified experimental model comparisons",flush=True)
