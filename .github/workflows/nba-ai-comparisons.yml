@@ -70,7 +70,7 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
         run: |
-          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/fetch_prizepicks.py
+          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/fetch_prizepicks.py iphone_bot/fetch_official_injuries.py iphone_bot/research_context.py iphone_bot/weight_research.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_experimental_probability.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
@@ -78,11 +78,16 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
       - name: Fetch 2026-27 current-season player games
         run: python -u iphone_bot/fetch_current_form.py
+      - name: Read official NBA injury report
+        run: |
+          python -m pip install "pypdf>=5,<7"
+          python -u iphone_bot/fetch_official_injuries.py
       - name: Fetch fresh upcoming sportsbook props (max three games)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -115,7 +120,10 @@ jobs:
           assert d['verified_current_matchups'] is True
           assert d['is_prizepicks'] is False
           assert all(x['sample_games']>=5 for x in d['comparisons'])
-          assert d['injury_data_verified'] is False
+          assert type(d['injury_data_verified']) is bool
+          assert d['lineup_research_adjustments_applied'] is False
+          assert all(x['lineup_research_adjustment_applied'] is False for x in d['comparisons'])
+          assert all(x['injury_status'] in ('OUT','DOUBTFUL','QUESTIONABLE','PROBABLE','AVAILABLE','NOT_VERIFIED') for x in d['comparisons'])
           assert d['opponent_defense_applied_to_model'] is False
           assert d['shadow_is_primary'] is False
           assert all(x['projection_explanation']['status']=='DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION' for x in d['comparisons'])
@@ -147,12 +155,14 @@ jobs:
           assert paper['pipeline_health']['pending_total']==paper['pending']
           assert paper['pipeline_health']['latest_completed_player_game_date'] is not None
           assert set(paper['performance']['models'])=={'original','opponent_aware','combined'}
+          assert set(paper['performance']['by_stat'])=={'PTS','REB','AST','PRA'}
+          assert paper['weight_research']['live_model_unchanged'] is True
           assert paper['method']=='PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY'
           assert paper['captured']>=paper['settled']+paper['pending']
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
           print('Locked paper picks:',paper['captured'],'Settled:',paper['settled'])
           PY
-          git add docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/paper_pick_ledger.json docs/paper_results.json
+          git add docs/injury_context.json docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/paper_pick_ledger.json docs/paper_results.json
           if git diff --cached --quiet; then
             echo "No new results"; exit 0
           fi
