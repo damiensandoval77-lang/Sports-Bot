@@ -16,7 +16,7 @@ STATS={"pts":"PTS","reb":"REB","ast":"AST","fgm":"FGM","fga":"FGA","fg3m":"FG3M"
 def main():
     from nba_api.stats.static import teams
     team_ids={t["abbreviation"]:t["id"] for t in teams.get_teams()}
-    frames=[]
+    # Historical archive codes sometimes differ from official NBA abbreviations.\n    aliases={"SAN":"SAS","SA":"SAS","GS":"GSW","GOL":"GSW","PHO":"PHX","BRK":"BKN","NY":"NYK","NO":"NOP","NOR":"NOP","UTH":"UTA"}\n    frames=[]
     for season in SEASONS:
         url=SOURCE.format(season)
         print("Downloading",season,flush=True)
@@ -31,12 +31,12 @@ def main():
         df["PLAYER_ID"]=pd.to_numeric(df["player_id"],errors="raise").astype("int64")
         df["GAME_ID"]=df["game_id"].astype(str)
         df["GAME_DATE"]=pd.to_datetime(df["game_date"],errors="raise").dt.strftime("%Y-%m-%d")
-        df["TEAM_ABBREVIATION"]=df["team"].astype(str).str.upper()
+        df["TEAM_ABBREVIATION"]=df["team"].astype(str).str.upper().str.strip().replace(aliases)
         df["TEAM_ID"]=df["TEAM_ABBREVIATION"].map(team_ids)
         if df["TEAM_ID"].isna().any(): raise ValueError(f"Unknown team codes: {df.loc[df.TEAM_ID.isna(),'TEAM_ABBREVIATION'].unique().tolist()}")
-        df["MATCHUP"]=df["TEAM_ABBREVIATION"]+df["home"].map({True:" vs. ",False:" @ ",1:" vs. ",0:" @ "})+df["opponent"].astype(str).str.upper()
+        df["MATCHUP"]=df["TEAM_ABBREVIATION"]+df["home"].map({True:" vs. ",False:" @ ",1:" vs. ",0:" @ "})+df["opponent"].astype(str).str.upper().str.strip().replace(aliases)
         if df["MATCHUP"].isna().any(): raise ValueError("Unrecognized home/away values")
-        df["MIN"]=pd.to_numeric(df["minutes"],errors="raise")
+        df["WL"]=pd.NA  # This archive does not provide verified W/L; never invent a result.\n        df["MIN"]=pd.to_numeric(df["minutes"],errors="raise")
         df["SEASON_ID"]=season
         # Original dataset has no personal fouls. Do not fabricate them.
         # The existing feature pipeline needs PF; exclude PF-dependent features
@@ -45,7 +45,7 @@ def main():
         df["PF_DATA_AVAILABLE"]=False
         df["POSITION"]="Unknown"
         df["PLAYER_NAME"]=df.get("player_name",pd.Series("",index=df.index))
-        cols=["PLAYER_ID","GAME_ID","GAME_DATE","TEAM_ID","TEAM_ABBREVIATION","MATCHUP","MIN","SEASON_ID","PF","PF_DATA_AVAILABLE","PLAYER_NAME"]+list(STATS.values())
+        cols=["PLAYER_ID","GAME_ID","GAME_DATE","TEAM_ID","TEAM_ABBREVIATION","MATCHUP","WL","MIN","SEASON_ID","PF","PF_DATA_AVAILABLE","PLAYER_NAME"]+list(STATS.values())
         df=df[cols]
         if df.duplicated(["PLAYER_ID","GAME_ID"]).any(): raise ValueError(f"Duplicate player/game records in {season}")
         frames.append(df)
