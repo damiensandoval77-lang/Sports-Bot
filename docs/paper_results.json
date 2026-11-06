@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T04:51:17.353085+00:00",
+  "generated_at": "2026-11-06T05:25:43.278405+00:00",
   "status": "REAL_SPORTSBOOK_QUOTES_PAPER_ONLY",
   "model": "PROVISIONAL_ORIGINAL",
   "method": "PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY",
@@ -7,6 +7,59 @@
   "captured": 76,
   "pending": 76,
   "settled": 0,
+  "performance": {
+    "status": "PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES",
+    "method": "ONE_EARLIEST_QUOTED_BOOK_PER_PLAYER_EVENT_MARKET",
+    "independent_settled_markets": 0,
+    "models": {
+      "original": {
+        "observations": 0,
+        "mae": null,
+        "direction_eligible": 0,
+        "direction_wins": 0,
+        "direction_losses": 0,
+        "direction_pushes": 0,
+        "direction_hit_rate": null,
+        "priced_paper_selections": 0,
+        "paper_profit_units": 0,
+        "paper_roi_per_priced_unit": null
+      },
+      "opponent_aware": {
+        "observations": 0,
+        "mae": null,
+        "direction_eligible": 0,
+        "direction_wins": 0,
+        "direction_losses": 0,
+        "direction_pushes": 0,
+        "direction_hit_rate": null,
+        "priced_paper_selections": 0,
+        "paper_profit_units": 0,
+        "paper_roi_per_priced_unit": null
+      },
+      "combined": {
+        "observations": 0,
+        "mae": null,
+        "direction_eligible": 0,
+        "direction_wins": 0,
+        "direction_losses": 0,
+        "direction_pushes": 0,
+        "direction_hit_rate": null,
+        "priced_paper_selections": 0,
+        "paper_profit_units": 0,
+        "paper_roi_per_priced_unit": null
+      }
+    },
+    "limitations": [
+      "Models use their original pregame-locked predictions; no after-game model reruns.",
+      "Legacy combined midpoint may be derived only from two stored pregame forecasts, not postgame data.",
+      "Each player/event/stat is counted once; related player props remain statistically correlated.",
+      "Paper ROI uses actual recorded pregame prices for the model's exact direction; unavailable prices are excluded.",
+      "An unpriced opposite side is not assumed to have the stored originally selected side's odds.",
+      "A model tied with the market line has no directional selection.",
+      "Outcomes tied to the market line are pushes and excluded from hit-rate denominator.",
+      "Paper results are NOT actual placed bets and cannot demonstrate a reliable edge with small samples."
+    ]
+  },
   "independent_player_game_markets": 0,
   "wins": 0,
   "losses": 0,
