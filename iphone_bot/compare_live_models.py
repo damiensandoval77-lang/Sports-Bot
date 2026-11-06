@@ -15,6 +15,7 @@ import pandas as pd
 from matchup_context import team_allowances, defense_context, minutes_context
 from defense_training import COLS
 from experimental_probability import probability_sides, METHOD
+from sportsbook_consensus import consensus_markets
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -116,10 +117,17 @@ def main():
         market_key=(person["player_id"],stat,line,r.get("source",""),r["start"])
         market=raw_markets.setdefault(market_key,{"player":person["player"],"player_id":str(person["player_id"]),"team":person["team"],
            "stat":stat,"line":line,"sportsbook":r.get("source",""),"game":r.get("game",""),
-           "start":r["start"],"over_odds":None,"under_odds":None,"features":features,
+           "start":r["start"],"market_updated":r.get("market_updated") or odds["updated_at"],"over_odds":None,"under_odds":None,"features":features,
            "sample_games":len(history),"last_game":history[-1]["date"]})
         market["over_odds" if side=="More" else "under_odds"]=r.get("odds")
-    valid=[v for v in raw_markets.values() if isinstance(v["over_odds"],int) and isinstance(v["under_odds"],int)]
+    paired=[v for v in raw_markets.values() if isinstance(v["over_odds"],int) and isinstance(v["under_odds"],int)]
+    # The model projection remains independent. Evaluate it against the
+    # median of independent real sportsbook prop lines instead of selecting
+    # whichever book appears first. Preserve all source quotes for inspection.
+    valid=consensus_markets(paired)
+    print("Matched paired sportsbook quotes:",len(paired),
+          "unique consensus markets:",len(valid),
+          "markets with 2+ bookmakers:",sum(v["line_book_count"]>=2 for v in valid),flush=True)
     models={}
     for target in ("PTS","REB","AST","PRA"):
         models[target]=joblib.load(MODELS/f"{target}_model.joblib")
@@ -212,10 +220,12 @@ def main():
        "verified_current_matchups":True,"is_prizepicks":False,
        "injury_data_verified":False,"opponent_defense_applied_to_model":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
+       "line_aggregation_method":"MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
+       "markets_with_multiple_books":sum(v["line_book_count"]>=2 for v in valid),
        "experimental_probability_ranking":True,
        "experimental_probability_method":METHOD,
        "real_market_probabilities_calibrated":False,
-       "disclaimer":"Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. No EV or profitable-pick claim.",
+       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. No EV or profitable-pick claim.",
        "comparisons":valid[:150],"skipped":skipped}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
     print("Wrote",len(valid),"team-verified experimental model comparisons",flush=True)
