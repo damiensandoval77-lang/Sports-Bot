@@ -46,28 +46,72 @@ def report_links(html,now):
         if issued<=now and (now-issued).total_seconds()<48*3600:candidates.append((issued,url))
     return sorted(set(candidates),reverse=True)
 
+TEAM_NAMES={
+    "ATL":"Atlanta Hawks","BOS":"Boston Celtics","BKN":"Brooklyn Nets",
+    "CHA":"Charlotte Hornets","CHI":"Chicago Bulls","CLE":"Cleveland Cavaliers",
+    "DAL":"Dallas Mavericks","DEN":"Denver Nuggets","DET":"Detroit Pistons",
+    "GSW":"Golden State Warriors","HOU":"Houston Rockets","IND":"Indiana Pacers",
+    "LAC":"Los Angeles Clippers","LAL":"Los Angeles Lakers","MEM":"Memphis Grizzlies",
+    "MIA":"Miami Heat","MIL":"Milwaukee Bucks","MIN":"Minnesota Timberwolves",
+    "NOP":"New Orleans Pelicans","NYK":"New York Knicks","OKC":"Oklahoma City Thunder",
+    "ORL":"Orlando Magic","PHI":"Philadelphia 76ers","PHX":"Phoenix Suns",
+    "POR":"Portland Trail Blazers","SAC":"Sacramento Kings","SAS":"San Antonio Spurs",
+    "TOR":"Toronto Raptors","UTA":"Utah Jazz","WAS":"Washington Wizards",
+}
+GAME_DATE_PATTERN=re.compile(r"\b(\d{2})/(\d{2})/(\d{4})\b")
+
+
 def parse_rows(text,roster):
-    """Identify exact roster names in published table rows, never inferred absences."""
+    """Read official table by game date and team; never match a name alone.
+
+    Layout-extracted PDF cells may omit repeated date/team labels. Keep the
+    most recently printed date and team across continuation rows/pages.
+    """
     result={}
+    players={}
     for p in roster:
+        team=str(p.get("team","")).upper()
         name=str(p.get("player","")).strip()
+        if team not in TEAM_NAMES or len(name.split())<2:continue
         parts=name.split()
-        if len(parts)<2:continue
-        # NBA PDFs format names "Surname, Given". Check both single and
-        # double-token surnames, including e.g. 'Jackson Jr., Jaren'.
         forms=[(parts[-1]," ".join(parts[:-1]))]
         if len(parts)>=3:forms.append((" ".join(parts[-2:])," ".join(parts[:-2])))
-        statuses=set()
-        for line in text.splitlines():
-            if any(token in line.lower() for token in SKIP):continue
+        players.setdefault(team,[]).append((p,forms))
+    current_date=None
+    current_team=None
+    for line in text.splitlines():
+        if any(token in line.lower() for token in SKIP):continue
+        date_match=GAME_DATE_PATTERN.search(line)
+        if date_match:
+            month,day,year=map(int,date_match.groups())
+            try:current_date=dt.date(year,month,day).isoformat()
+            except ValueError:current_date=None
+            current_team=None
+        # Full official team names are printed once per team section, then
+        # omitted from that team's subsequent player rows.
+        team_hits=[(line.casefold().find(full.casefold()),abbr)
+                   for abbr,full in TEAM_NAMES.items()
+                   if full.casefold() in line.casefold()]
+        if team_hits:
+            current_team=min(team_hits)[1]
+        if current_team not in players:continue
+        for p,forms in players[current_team]:
             for last,first in forms:
                 expression=r"(?<!\w)"+re.escape(last)+r",\s*"+re.escape(first)+r"\s+(Out|Doubtful|Questionable|Probable|Available)\b"
                 m=re.search(expression,line,re.I)
-                if m:statuses.add(m.group(1).title())
-        if statuses:
-            ident=str(p["player_id"])
-            result[ident]={"player":name,"player_id":ident,"team":p["team"],
-                           "status":next(iter(statuses)) if len(statuses)==1 else "CONFLICTING_EXTRACT"}
+                if not m:continue
+                ident=str(p["player_id"])
+                status=m.group(1).title()
+                previous=result.get(ident)
+                # The same player may be listed for multiple upcoming games:
+                # preserve each game-date observation separately.
+                record_key=(ident,current_date)
+                previous=result.get(record_key)
+                if previous and previous["status"]!=status:status="CONFLICTING_EXTRACT"
+                result[record_key]={"player":p["player"],"player_id":ident,
+                                    "team":current_team,"game_date":current_date,
+                                    "status":status}
+                break
     return list(result.values())
 
 def read(url,timeout=12):
@@ -76,11 +120,16 @@ def read(url,timeout=12):
         return response.read()
 
 def fallback_links(now):
-    """Predict at most four recently published NBA static report filenames."""
+    """Bounded official static URL candidates when the injury index is blocked.
+
+    The NBA publishes multiple quarter-hour updates. Check recent slots first,
+    followed by older hourly slots to survive delayed publication.
+    """
     local=now.astimezone(ZoneInfo("America/New_York")).replace(second=0,microsecond=0)
     local=local.replace(minute=(local.minute//15)*15)
+    slots=(0,1,2,3,4,6,8,12,16,24,32,48)
     out=[]
-    for slot in range(4):
+    for slot in slots:
         issued=local-dt.timedelta(minutes=15*slot)
         suffix=issued.strftime("%I_%M%p").lstrip("0")
         filename="Injury-Report_"+issued.strftime("%Y-%m-%d")+"_"+suffix+".pdf"
@@ -126,13 +175,16 @@ def main():
             links=[]
         if not links:
             source="official_static_pdf_fallback"
-            links=fallback_links(now)
+        # Try index links first, then a bounded static-URL fallback if stale
+        # HTML or a transient host error blocks the first PDF.
+        links=(links[:5]+fallback_links(now))
+        links=list(dict((url,(timestamp,url)) for timestamp,url in links).values())
         from pypdf import PdfReader
         pdf_bytes=None
         issued=None
         url=None
         last_error=None
-        for timestamp,link in links[:4]:
+        for timestamp,link in links[:12]:
             try:
                 result=read(link,timeout=10)
                 if not result.startswith(b"%PDF"):continue
