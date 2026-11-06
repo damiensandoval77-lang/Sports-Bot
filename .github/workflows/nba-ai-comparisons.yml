@@ -33,6 +33,7 @@ jobs:
       - name: Refresh PrizePicks lines independently of FanDuel
         env:
           PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+          PRIZEPICKS_FORCE_REFRESH: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: python -u iphone_bot/fetch_prizepicks.py
       - name: Publish verified third-party board
         run: |
@@ -96,6 +97,7 @@ jobs:
       - name: Update optional third-party PrizePicks research lines
         env:
           PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+          PRIZEPICKS_FORCE_REFRESH: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: |
           # Once daily for free-tier request budgets; FanDuel continues on both runs.
           if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || [ "$(date -u +%H)" = "20" ]; then
