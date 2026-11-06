@@ -74,7 +74,7 @@ class ResearchUpgradeTests(unittest.TestCase):
         out=walkforward_weights(records)
         v=out["weights"]["PTS"]
         self.assertEqual(v["status"],"OUT_OF_SAMPLE_RESEARCH_ONLY")
-        self.assertEqual(v["selected_original_weight"],1)
+        self.assertEqual(v["selected_original_weight"],0.75)  # tied MAE favors weight closest to 50/50
         self.assertGreaterEqual(v["training_count"],50)
         self.assertGreaterEqual(v["test_count"],20)
         self.assertFalse(v["applied_to_live_model"])
