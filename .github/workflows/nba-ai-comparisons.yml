@@ -122,6 +122,12 @@ jobs:
           assert all(x['sample_games']>=5 for x in d['comparisons'])
           assert type(d['injury_data_verified']) is bool
           assert d['lineup_research_adjustments_applied'] is False
+          assert d['injury_minutes_research_status']=='DESCRIPTIVE_ONLY_NOT_APPLIED'
+          assert d['minutes_baseline_validation']['live_model_unchanged'] is True
+          assert all(x['injury_minutes_research']['live_adjustment_applied'] is False for x in d['comparisons'])
+          assert all(x['injury_minutes_research']['scenario_minutes'] is None or
+                     0 <= x['injury_minutes_research']['scenario_minutes'] <= 48 for x in d['comparisons'])
+
           assert all(x['lineup_research_adjustment_applied'] is False for x in d['comparisons'])
           assert all(x['injury_status'] in ('OUT','DOUBTFUL','QUESTIONABLE','PROBABLE','AVAILABLE','DAY_TO_DAY','NOT_VERIFIED') for x in d['comparisons'])
           assert d['opponent_defense_applied_to_model'] is False
