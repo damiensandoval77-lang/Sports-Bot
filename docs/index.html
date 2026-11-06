@@ -237,9 +237,13 @@ function renderAI(){
     if(q.more_tier)right.append(node("span","pp-selection","MORE · "+q.more_tier));
     if(q.less_tier)right.append(node("span","pp-selection","LESS · "+q.less_tier));
     row.append(left,right);body.append(row);
-    body.append(node("div","mini","Combined AI: "+fmt(Number(q.combined_projection))+
-      " · "+(q.ai_direction||"NO LEAN")+" by "+fmt(Math.abs(Number(q.difference)))+
-      " · check the current PrizePicks app before entering."));
+    const activeProjection=Number.isFinite(p.combined_projection)?p.combined_projection:Number(p.projection);
+    const ppDelta=activeProjection-Number(q.line);
+    const ppSide=modelSide(activeProjection,q.line);
+    body.append(node("div","mini","Current Combined AI: "+fmt(activeProjection)+
+      " · "+(ppSide==="OVER"?"MORE":ppSide==="UNDER"?"LESS":"NO LEAN")+
+      " · difference "+(ppDelta>0?"+":"")+fmt(ppDelta)+
+      " · verify the current line in PrizePicks before entering."));
    }
   }else{
    const message=ppState==="NOT_CONFIGURED"?"Not connected. Configure the third-party API key to add PrizePicks lines.":
