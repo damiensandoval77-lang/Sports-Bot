@@ -31,6 +31,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_hypothetical_ev.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
       - name: Check dashboard JavaScript syntax
         run: |
