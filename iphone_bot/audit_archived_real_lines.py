@@ -42,6 +42,11 @@ def main():
     for g in games:history[str(g["id"])].append(g)
     for ident in history:history[ident].sort(key=lambda x:x["date"])
     records=list(csv.DictReader(ARCHIVE.open(newline=""))) if ARCHIVE.exists() else []
+    latest_completed=max((g["date"] for g in games),default=None)
+    earliest_completed=min((g["date"] for g in games),default=None)
+    date_counts=defaultdict(int)
+    for record in records:
+        date_counts[record.get("game_date","unknown")]+=1
     base_models={stat:joblib.load(BASE/f"{stat}_model.joblib") for stat in ("PTS","REB","AST","PRA")}
     shadow_models={stat:joblib.load(SHADOW/f"{stat}_model.joblib") for stat in ("PTS","REB","AST","PRA")}
     skips=defaultdict(int)
@@ -60,6 +65,14 @@ def main():
             if not r.get("over_odds") or not r.get("under_odds"):skips["incomplete_prices"]+=1;continue
         except (KeyError,TypeError,ValueError,OverflowError):
             skips["bad_quote"]+=1;continue
+        # Preserve valid market quotes while their game outcomes are pending.
+        # Prior-season odds require separate historical player/game matching.
+        if earliest_completed and day.isoformat()<earliest_completed:
+            skips["different_season_requires_historical_grading"]+=1
+            continue
+        if not latest_completed or day.isoformat()>latest_completed:
+            skips["awaiting_completed_boxscores"]+=1
+            continue
         pair=matchup(r.get("game",""))
         people=by_name[key(r["player_name"])]
         if not pair or len(people)!=1 or people[0]["team"] not in pair:
@@ -109,6 +122,9 @@ def main():
             "shadow_direction_accuracy":round(float(np.mean([x["shadow_side_correct"] for x in nonpush])),3) if nonpush else None}
     report={"generated_at":now.isoformat(),"status":"REAL_BOOKMAKER_QUOTES_RESEARCH_ONLY",
         "archived_quotes_seen":len(records),"verified_quote_rows":len(outcomes),
+        "latest_completed_game_date":latest_completed,
+        "earliest_completed_game_date":earliest_completed,
+        "archived_quotes_by_game_date":dict(sorted(date_counts.items())),
         "independent_games":len({(x["player"],x["game_date"],x["market"]) for x in outcomes}),
         "skipped":dict(skips),"metrics":metrics,
         "limitations":["Quotes can repeat across books, so observed rows are correlated and not independent bets.",
@@ -120,6 +136,8 @@ def main():
     OUT.write_text(json.dumps(report,indent=2)+"\n")
     print("Real-line audit:",len(records),"archived quotes;",len(outcomes),
           "validated rows;",report["independent_games"],"distinct player/date/market units",flush=True)
+    print("Reason counts:",json.dumps(dict(skips)),flush=True)
+    print("Latest completed player-game date:",latest_completed,flush=True)
     print(json.dumps(metrics),flush=True)
 
 if __name__=="__main__":main()
