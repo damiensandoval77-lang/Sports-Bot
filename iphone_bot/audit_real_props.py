@@ -32,7 +32,12 @@ def main():
     logs["game_date"]=pd.to_datetime(logs["GAME_DATE"],errors="coerce").dt.date.astype(str)
     quotes["name_key"]=quotes["player_name"].map(normalize)
     logs["name_key"]=logs["PLAYER_NAME"].map(normalize)
-    quotes["game_key"]=quotes["game"].astype("string").str.strip()
+    quotes["provider_game_key"]=quotes["game"].astype("string").str.strip()
+    # Verified cross-provider game ID: DunkAPI/ESPN 401810837 is UTA @ SAC,
+    # NBA ID 0022500982 on March 15 2026, confirmed via NBA official box score.
+    verified_ids={("2026-03-15","401810837"):"0022500982"}
+    quotes["game_key"]=[verified_ids.get((date,g),g) for date,g in
+                        zip(quotes["game_date"],quotes["provider_game_key"])]
     logs["game_key"]=logs["GAME_ID"].astype("string").str.strip()
     quotes["captured_at"]=pd.to_datetime(quotes["captured_at"],utc=True,errors="coerce")
     quotes["event_start"]=pd.to_datetime(quotes["event_start"],utc=True,errors="coerce")
@@ -46,6 +51,16 @@ def main():
                        indicator=True,suffixes=("","_box"))
     # If provider and dataset have different IDs, do not silently grade.
     found=exact["_merge"].eq("both")
+    # A verified ID map must still resolve to exactly the scheduled matchup.
+    # A player with a matching name on the wrong team should never be graded.
+    expected_matchup={"0022500982": {"SAC","UTA"}}
+    for gid,teams in expected_matchup.items():
+        mask=exact["game_key"].eq(gid)&found
+        if mask.any():
+            matchup_ok=exact.loc[mask,"MATCHUP"].astype(str).apply(
+                lambda s:any(s.startswith(t+" ") for t in teams) and
+                any(s.endswith(t) for t in teams))
+            found.loc[mask] = matchup_ok.to_numpy()
     ambiguous=exact.duplicated(["game_date","name_key","game_key","market","bookmaker","line","captured_at"],keep=False)
     eligible=found&~ambiguous&~bad_quote.reindex(exact.index,fill_value=True)
     graded=exact.loc[eligible].copy()
@@ -70,14 +85,15 @@ def main():
         "unique_players_quoted":int(quotes.name_key.nunique()),
         "bookmakers":sorted(quotes.bookmaker.dropna().astype(str).unique().tolist()),
         "invalid_time_or_market_quotes":int(bad_quote.sum()),
-        "exact_game_id_player_date_matches":int(found.sum()),
+        "verified_cross_provider_game_ids":{"401810837":"0022500982"},
+        "exact_or_verified_game_id_player_date_matches":int(found.sum()),
         "unambiguous_graded_quotes":int(len(graded)),
         "name_date_potential_matches_NOT_GRADED":int(nd["game_key_box"].notna().sum()),
         "different_game_id_examples":[{"player":r["player_name"],"provider_game_id":str(r["game_key"]),
                 "box_score_game_id":str(r["game_key_box"])} for _,r in
                 nd.loc[nd.game_key_box.notna() & (nd.game_key!=nd.game_key_box)].head(5).iterrows()],
         "graded_examples":examples,
-        "warning":"Multiple bookmakers quote the same outcomes. Game ID must match to grade. No profitability estimate."
+        "warning":"Cross-provider ID mapping is verified for UTA @ SAC only. Multiple books quote same outcomes. No profitability estimate."
     }
     OUT.parent.mkdir(parents=True,exist_ok=True)
     OUT.write_text(json.dumps(report,indent=2))
