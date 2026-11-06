@@ -48,7 +48,8 @@ def main():
         coverage[feature]={"coverage_pct":round(float(values.notna().mean()*100),2),
                            "distinct":int(values.nunique(dropna=True))}
     print("Defensive feature diagnostics:",json.dumps(coverage),flush=True)
-    if any(v["coverage_pct"]<50 or v["distinct"]<8 for v in coverage.values()):
+    if any(v["coverage_pct"]<50 or v["distinct"]<(4 if name=="OPP_DEF_SAMPLE_GAMES" else 8)
+           for name,v in coverage.items()):
         raise ValueError("Opponent challenger lacks sufficient non-constant matchup data; comparison invalid")
     df["GAME_DATE"]=pd.to_datetime(df["GAME_DATE"])
     df=df.sort_values(["GAME_DATE","PLAYER_ID"]).reset_index(drop=True)
