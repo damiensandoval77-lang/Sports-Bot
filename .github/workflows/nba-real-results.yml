@@ -7,6 +7,8 @@ on:
       - '.github/workflows/nba-real-results.yml'
       - 'iphone_bot/paper_pick_pipeline.py'
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
+      - 'iphone_bot/model_performance.py'
+      - 'iphone_bot/tests/test_model_performance.py'
   schedule:
     - cron: '37 12 * * *'
 permissions:
@@ -31,7 +33,8 @@ jobs:
         run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
       - name: Validate paper pick invariants and dashboard JavaScript
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py
+          python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python - <<'PY'
           from pathlib import Path
@@ -55,6 +58,11 @@ jobs:
           assert all(x['paper_only'] is True for x in data)
           assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in data)
           assert report['real_money_wagered'] is False
+          perf=report['performance']
+          assert perf['status']=='PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES'
+          assert perf['independent_settled_markets']<=report['settled']
+          assert set(perf['models'])=={'original','opponent_aware','combined'}
+          assert all(x['observations']<=perf['independent_settled_markets'] for x in perf['models'].values())
           print('Real completed-game paper results:', report['settled'], 'pending:', report['pending'])
           PY
       - name: Publish finished real-game paper grades
