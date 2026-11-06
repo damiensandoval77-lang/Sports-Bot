@@ -29,13 +29,13 @@ def payout(american):
 
 def identity(row):
     return "|".join((str(row[x]) for x in
-       ("event_start","player_id","team","market","bookmaker","line","side")))
+       ("event_start","player_id","team","market","bookmaker","line")))
 
 def snapshot(comparisons,generated_at,existing=None):
     """Freeze quoted side, observed price, projection and estimated P at capture.
 
-    Deduplication is per event/player/team/market/book/line/selected side.
-    The first saved quote wins; subsequent refreshes do not rewrite it.
+    Deduplication is per event/player/team/market/book/line.
+    The first saved quote and side win; later opposite-side forecasts do not replace it.
     """
     created=utc(generated_at)
     rows=list(existing or [])
