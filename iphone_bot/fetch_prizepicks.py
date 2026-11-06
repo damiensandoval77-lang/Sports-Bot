@@ -59,7 +59,8 @@ def clean(row,now):
     raw_starts=event.get("starts_at") or row.get("event_starts_at")
     starts=timeparse(raw_starts)
     observed=timeparse(row.get("observed_at"))
-    if not starts or not observed or starts<=now or observed>now+dt.timedelta(minutes=10):return None
+    if not observed or observed>now+dt.timedelta(minutes=10):return None
+    if starts and starts<=now:return None
     # Vendor records may be old even if a cached endpoint says active.
     if now-observed>dt.timedelta(hours=6):return None
     if row.get("is_live") is True or row.get("in_game") is True:return None
@@ -88,7 +89,7 @@ def clean(row,now):
     if not name or len(team)!=3 or (opponent and team==opponent):return None
     return {"id":str(row.get("id","")),"player":name,"team":team,
             "opponent":opponent,"stat":stat,"line":line,
-            "starts_at":starts.isoformat(),"observed_at":observed.isoformat(),
+            "starts_at":starts.isoformat() if starts else None,"observed_at":observed.isoformat(),
             "more_tier":picks.get("more"),"less_tier":picks.get("less"),
             "source":"independent_prizepicksapi_com","is_demo":False}
 
@@ -99,12 +100,17 @@ def match(offer,comparison):
     if offer["stat"]!=comparison.get("stat"):return False
     start=timeparse(comparison.get("start"))
     other=timeparse(offer.get("starts_at"))
-    if not start or not other or abs((start-other).total_seconds())>3*3600:return False
+    if not start or start<=dt.datetime.now(dt.timezone.utc):return False
     from iphone_bot.paper_pick_pipeline import expected_opponents
     verified=expected_opponents(comparison.get("game"),offer["team"])
     if not verified:return False
-    if offer["opponent"]:return offer["opponent"] in verified
-    return abs((start-other).total_seconds())<=30*60
+    if offer["opponent"] and offer["opponent"] not in verified:return False
+    if other:
+        if abs((start-other).total_seconds())>3*3600:return False
+        return bool(offer["opponent"]) or abs((start-other).total_seconds())<=30*60
+    # A third-party offer without a game time can only match a fully named
+    # opponent + verified upcoming team game, never player/name alone.
+    return bool(offer["opponent"]) and offer["opponent"] in verified
 
 def rejection_hint(row,now):
     """Count rejection categories without publishing private provider rows."""
@@ -113,8 +119,7 @@ def rejection_hint(row,now):
     if row.get("status")!="active" or str(row.get("league","")).upper()!="NBA":return "inactive_or_not_nba"
     event=row.get("event") if isinstance(row.get("event"),dict) else {}
     start=timeparse(event.get("starts_at") or row.get("event_starts_at"))
-    if start is None:return "missing_event_time"
-    if start<=now:return "game_already_started"
+    if start and start<=now:return "game_already_started"
     observed=timeparse(row.get("observed_at"))
     if observed is None:return "missing_observed_time"
     if now-observed>dt.timedelta(hours=6):return "observation_older_than_six_hours"
@@ -126,6 +131,7 @@ def rejection_hint(row,now):
     player=row.get("player")
     team=player.get("team") if isinstance(player,dict) else row.get("team")
     if not team or len(team_abbrev(team))!=3:return "missing_team"
+    if not start and not (event.get("opponent") or row.get("opponent")):return "missing_game_time_and_opponent"
     return "invalid_or_unavailable_selection"
 
 def publish(raw_pages,comparisons,now=None):
@@ -162,7 +168,9 @@ def publish(raw_pages,comparisons,now=None):
         for o in suitable:
             projection=numeric(comparison.get("combined_projection"))
             if projection is None:projection=numeric(comparison.get("projection"))
-            matched.append(dict(o,combined_projection=projection,
+            matched.append(dict(o,starts_at=o["starts_at"] or comparison["start"],
+                event_start_source="provider" if o["starts_at"] else "verified_internal_schedule",
+                combined_projection=projection,
                 difference=round(projection-o["line"],2) if projection is not None else None,
                 ai_direction="MORE" if projection is not None and projection>o["line"] else
                              "LESS" if projection is not None and projection<o["line"] else "NO LEAN"))
