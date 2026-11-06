@@ -43,8 +43,11 @@ def team_abbrev(s):
         return str(s.get("abbreviation") or s.get("team") or "").strip().upper()
     return str(s or "").strip().upper()
 
-def clean(row,now):
-    if not isinstance(row,dict) or row.get("is_demo") is not False or row.get("status")!="active":return None
+def clean(row,now,verified_live=False):
+    if not isinstance(row,dict) or row.get("is_demo") is True or row.get("status")!="active":return None
+    # Compact production rows may omit is_demo. Only accept that case after
+    # confirming the authenticated production endpoint meta.mode is live.
+    if row.get("is_demo") is None and not verified_live:return None
     if str(row.get("league","")).upper()!="NBA":return None
     player=row.get("player",{})
     event=row.get("event",{})
@@ -112,10 +115,10 @@ def match(offer,comparison):
     # opponent + verified upcoming team game, never player/name alone.
     return bool(offer["opponent"]) and offer["opponent"] in verified
 
-def rejection_hint(row,now):
+def rejection_hint(row,now,verified_live=False):
     """Count rejection categories without publishing private provider rows."""
     if not isinstance(row,dict):return "non_object"
-    if row.get("is_demo") is not False:return "missing_real_provenance"
+    if row.get("is_demo") is True or (row.get("is_demo") is None and not verified_live):return "missing_real_provenance"
     if row.get("status")!="active" or str(row.get("league","")).upper()!="NBA":return "inactive_or_not_nba"
     event=row.get("event") if isinstance(row.get("event"),dict) else {}
     start=timeparse(event.get("starts_at") or row.get("event_starts_at"))
@@ -153,9 +156,9 @@ def publish(raw_pages,comparisons,now=None):
         if not isinstance(rows,list):raise ValueError("Invalid projection rows")
         raw_count+=len(rows)
         for row in rows:
-            cleaned=clean(row,now)
+            cleaned=clean(row,now,verified_live=True)
             if cleaned:offers.append(cleaned)
-            else:rejection_reasons[rejection_hint(row,now)]+=1
+            else:rejection_reasons[rejection_hint(row,now,verified_live=True)]+=1
     distinct={o["id"]:o for o in offers if o["id"]}
     matched=[]
     unmatched=0
