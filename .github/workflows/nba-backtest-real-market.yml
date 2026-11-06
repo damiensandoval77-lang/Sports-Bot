@@ -1,0 +1,36 @@
+name: Backtest NBA against recorded real sportsbook lines
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-market:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure genuine historical quotes exist
+        run: |
+          if [ ! -s data/nba/odds/observed_props.csv ]; then
+            echo "::error::No archived real sportsbook odds yet. Run the NBA odds scanner to collect pregame quotes or import licensed historical odds in the same format."
+            exit 1
+          fi
+      - name: Install dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2"
+      - name: Build historical NBA features
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u -m src.sports.nba.features
+      - name: Evaluate actual recorded sportsbook prices
+        run: python -u iphone_bot/backtest_real_market.py
+      - name: Show report
+        run: cat models/nba/real_market/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-real-market-backtest
+          path: models/nba/real_market/report.json
+          retention-days: 14
+          if-no-files-found: error
