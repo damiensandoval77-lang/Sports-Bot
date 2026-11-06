@@ -292,12 +292,14 @@ function renderAI(){
 
   body.append(node("div","detail-heading","Availability & matchup research"));
   const injury=p.injury_status||"NOT_VERIFIED";
+  const injurySource=p.injury_status_source||"UNAVAILABLE_OR_NOT_GAME_DAY";
   const notice=injury==="NOT_VERIFIED"?
-   "Official game-day availability not verified for this player. Check the latest NBA report and announced starting lineup.":
-   "Official NBA injury report: "+injury+". Designations can change before tipoff.";
+   "Game-day availability is not verified for this player. Check the latest NBA report and announced starting lineup.":
+   (injurySource==="OFFICIAL_NBA_REPORT"?"Official NBA injury report: ":"ESPN third-party injury listing (NOT official game-day confirmation): ")+
+     injury+". Check the latest NBA status and lineup before relying on it.";
   body.append(node("div","research-note "+(injury==="OUT"||injury==="DOUBTFUL"?"research-risk":""),notice));
   if(p.injury_report_url&&injury!=="NOT_VERIFIED")
-   body.append(node("div","mini","Source: NBA official injury report PDF · verify before making a decision."));
+   body.append(node("div","mini",injurySource==="OFFICIAL_NBA_REPORT"?"Source: NBA official injury report PDF · verify before making a decision.":"Source: ESPN injury listing · third-party status; official confirmation unavailable."));
   const minutesResearch=p.minutes_research;
   if(minutesResearch?.expected_minutes!=null)
    body.append(node("div","mini","Research minutes estimate: "+fmt(minutesResearch.expected_minutes)+
