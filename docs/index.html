@@ -47,7 +47,7 @@
 .recent-stat-number{font-size:24px;line-height:1.25;color:#f6faff;font-variant-numeric:tabular-nums}
 .recent-stat-subtitle{font-size:10px;color:#a5b8d4}
 @media(max-width:520px){.recent-block-grid{gap:6px}.recent-stat-tile{padding:10px 8px;min-height:88px}.recent-stat-number{font-size:22px}.recent-stat-label{font-size:9px}.recent-stat-subtitle{font-size:9px}}
-.performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}.pipeline-health{padding:11px 12px;background:#15253b;border:1px solid #34516f;border-radius:9px;font-size:12px;line-height:1.55;margin:10px 0}.pipeline-alert{color:#ffd99a;background:#332819;border-color:#765832}</style></head>
+.performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}.pipeline-health{padding:11px 12px;background:#15253b;border:1px solid #34516f;border-radius:9px;font-size:12px;line-height:1.55;margin:10px 0}.pipeline-alert{color:#ffd99a;background:#332819;border-color:#765832}.pp-quote{display:flex;justify-content:space-between;gap:9px;align-items:flex-start;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #465378;background:#1d2a44}.pp-quote-left{display:flex;flex-direction:column;gap:3px}.pp-quote-left strong{font-size:20px;font-variant-numeric:tabular-nums}.pp-quote-left span{font-size:10px;color:#b8c5dc}.pp-quote-right{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.pp-selection{font-size:10px;font-weight:800;padding:6px;border-radius:6px;background:#344665;color:#ecf3ff;text-transform:uppercase}.pp-quote+.mini{font-size:11px;margin-bottom:9px}</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -82,7 +82,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let ai=[],odds=[],form=[],paper=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let ai=[],odds=[],form=[],paper=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -117,6 +117,14 @@ function sideClass(side){return side==="OVER"?"over":side==="UNDER"?"under":"neu
 function validEstimate(p){return typeof p.estimated_selected_probability==="number"&&Number.isFinite(p.estimated_selected_probability)&&p.probability_method==="CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED"}
 function chance(p){return validEstimate(p)?(100*p.estimated_selected_probability).toFixed(1)+"%":"—"}
 function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
+function matchingPrizepicks(p){
+ if(!ppFresh)return [];
+ const name=norm(p.player),team=String(p.team||"").toUpperCase();
+ const current=Date.parse(p.start);
+ return prizepicks.filter(x=>norm(x.player)===name&&x.team===team&&x.stat===p.stat&&
+   Math.abs(Date.parse(x.starts_at)-current)<=3*3600000&&Date.parse(x.starts_at)>Date.now());
+}
+
 function reasoningSentences(p,person){
  const known=Array.isArray(p.projection_explanation?.sentences)?p.projection_explanation.sentences.filter(s=>typeof s==="string"&&s.trim()):[];
  const opponent=p.opponent||"the scheduled opponent";
@@ -217,6 +225,28 @@ function renderAI(){
   }
   body.append(node("div","detail-heading","Recent performance"));
   body.append(recentBlocks);
+  const ppRows=matchingPrizepicks(p);
+  body.append(node("div","detail-heading","PrizePicks lines (third-party feed)"));
+  if(ppRows.length){
+   for(const q of ppRows){
+    const row=node("div","pp-quote");
+    const left=node("div","pp-quote-left");
+    left.append(node("strong","",fmt(Number(q.line))+" "+(q.stat==="PTS"?"Points":q.stat==="REB"?"Rebounds":q.stat==="AST"?"Assists":"PRA")),
+                node("span","",((q.more_tier||q.less_tier||"standard")+" · observed "+new Date(q.observed_at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}))));
+    const right=node("div","pp-quote-right");
+    if(q.more_tier)right.append(node("span","pp-selection","MORE · "+q.more_tier));
+    if(q.less_tier)right.append(node("span","pp-selection","LESS · "+q.less_tier));
+    row.append(left,right);body.append(row);
+    body.append(node("div","mini","Combined AI: "+fmt(Number(q.combined_projection))+
+      " · "+(q.ai_direction||"NO LEAN")+" by "+fmt(Math.abs(Number(q.difference)))+
+      " · check the current PrizePicks app before entering."));
+   }
+  }else{
+   const message=ppState==="NOT_CONFIGURED"?"Not connected. Configure the third-party API key to add PrizePicks lines.":
+     ppFresh?"No verified matching PrizePicks offer for this player and game.":
+     "No current PrizePicks observations available; missing or outdated lines are hidden.";
+   body.append(node("div","mini",message));
+  }
   body.append(node("div","detail-heading","Actual sportsbook quotes ("+p.books.length+")"));
   for(const b of p.books){
    const line=node("div","bookrow");
@@ -372,7 +402,7 @@ else {note.textContent="Experimental model projections, NOT verified probabiliti
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
- const [a,o,f,p]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json")]);
+ const [a,o,f,p,pp]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
@@ -380,11 +410,18 @@ else {oddsFresh=false;odds=[]}
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[]}
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
+ppState=pp.status==="fulfilled"?pp.value.status:"UNAVAILABLE";
+ppStamp=pp.status==="fulfilled"?pp.value.generated_at:null;
+ppFresh=pp.status==="fulfilled"&&pp.value.status==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"&&
+ isRecent(pp.value.generated_at,6)&&Array.isArray(pp.value.offers);
+prizepicks=ppFresh?pp.value.offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"):[];
+
 const status=[];
  status.push(a.status==="fulfilled"?"AI file loaded"+(aiFresh?"":" (stale)"):"AI fetch failed");
  status.push(o.status==="fulfilled"?"Odds file loaded"+(oddsFresh?"":" (stale)"):"Odds fetch failed");
  status.push(f.status==="fulfilled"?"Player form loaded":"Form fetch failed");
  status.push(p.status==="fulfilled"?"Results loaded":"Results fetch failed");
+ status.push(ppState==="NOT_CONFIGURED"?"PrizePicks not connected":ppFresh?"PrizePicks lines loaded":ppState==="LIVE_NO_MATCHED_PRIZEPICKS_LINES"?"PrizePicks no matches":"PrizePicks unavailable/stale");
  $("data-health").textContent=status.join(" · ");
  try{
   refreshOverview();
