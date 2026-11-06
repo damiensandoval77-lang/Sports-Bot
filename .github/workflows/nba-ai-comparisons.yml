@@ -148,7 +148,19 @@ jobs:
           assert all(0 < x['estimated_selected_probability'] < 1 for x in d['comparisons'])
           assert all(d['comparisons'][i]['estimated_selected_probability'] >= d['comparisons'][i+1]['estimated_selected_probability'] for i in range(len(d['comparisons'])-1))
           assert all(x.get('shadow_status') in ('RESEARCH_SHADOW_ONLY','INSUFFICIENT_DEFENSE_DATA','SHADOW_MODEL_NOT_TRAINED') for x in d['comparisons'])
-          assert all(x['injury_status']=='NOT_VERIFIED' and x['requires_lineup_review'] is True for x in d['comparisons'])
+          # Verified official statuses and explicitly marked ESPN research flags are allowed.
+          # Never claim an unlisted player is healthy, and never treat ESPN as official.
+          assert all(x['requires_lineup_review'] is True for x in d['comparisons'])
+          assert all(
+            (x['injury_status']=='NOT_VERIFIED' and x['injury_status_source']=='UNAVAILABLE_OR_NOT_GAME_DAY')
+            or (x['injury_status']!='NOT_VERIFIED' and
+                x['injury_status_source'] in ('OFFICIAL_NBA_REPORT','ESPN_THIRD_PARTY_NOT_CONFIRMED'))
+            for x in d['comparisons']
+          )
+          assert all(
+            x['injury_status_source']!='OFFICIAL_NBA_REPORT' or d['injury_data_verified'] is True
+            for x in d['comparisons']
+          )
           paper=json.load(open('docs/paper_results.json'))
           assert paper['real_money_wagered'] is False
           assert paper['performance']['status']=='PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES'
