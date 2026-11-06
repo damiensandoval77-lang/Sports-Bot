@@ -1,9 +1,10 @@
 import datetime as dt
 import unittest
+import urllib.error
 from iphone_bot.research_context import minutes_estimate,positional_allowance,teammate_on_off
 from iphone_bot.weight_research import walkforward_weights
 from iphone_bot.model_performance import compute_performance
-from iphone_bot.fetch_official_injuries import parse_rows,report_links,parse_espn_injuries
+from iphone_bot.fetch_official_injuries import parse_rows,report_links,parse_espn_injuries,failure_label,fallback_links
 
 def ledger(day,stat="PTS",original=24,shadow=20,actual=23):
     time=dt.datetime(2026,1,1,tzinfo=dt.timezone.utc)+dt.timedelta(days=day)
@@ -93,6 +94,19 @@ class ResearchUpgradeTests(unittest.TestCase):
         self.assertEqual(len(parsed),1)
         self.assertEqual(parsed[0]["status"],"DAY_TO_DAY")
         self.assertEqual(parsed[0]["provider"],"ESPN_THIRD_PARTY")
+
+    def test_nba_403_is_diagnosed_not_silently_generic(self):
+        error=urllib.error.HTTPError("https://ak-static.cms.nba.com",403,"Forbidden",{},None)
+        self.assertEqual(failure_label(error),"HTTP_403")
+        self.assertEqual(failure_label(urllib.error.URLError("DNS error")),"URL_ERROR")
+
+    def test_official_fallback_urls_are_bounded_and_on_nba_host(self):
+        now=dt.datetime(2026,11,6,22,30,tzinfo=dt.timezone.utc)
+        urls=fallback_links(now)
+        self.assertEqual(len(urls),12)
+        self.assertTrue(all(url.startswith("https://ak-static.cms.nba.com/referee/injury/")
+                            for _,url in urls))
+        self.assertTrue(all(stamp<=now for stamp,_ in urls))
 
     def test_published_pdf_only(self):
         now=dt.datetime(2026,11,6,3,tzinfo=dt.timezone.utc)
