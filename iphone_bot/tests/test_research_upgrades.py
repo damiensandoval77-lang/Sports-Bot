@@ -60,11 +60,11 @@ class ResearchUpgradeTests(unittest.TestCase):
                 {"player":"Jaylen Williams","player_id":"102","team":"CHA"},
                 {"player":"Anthony Davis","player_id":"103","team":"WAS"}]
         pdf_text=(
-            "Game Date Game Time Matchup Team Player Name Current Status Reason\\n"
-            "11/06/2026 07:00 (ET) BOS@CHA Boston Celtics Williams, Jaylen Out Injury\\n"
-            "Charlotte Hornets Williams, Jaylen Available -\\n"
-            "WAS@ATL Washington Wizards Davis, Anthony Questionable Injury\\n"
-            "11/07/2026 08:00 (ET) WAS@OKC Washington Wizards Davis, Anthony Out Injury\\n"
+            "Game Date Game Time Matchup Team Player Name Current Status Reason\n"
+            "11/06/2026 07:00 (ET) BOS@CHA Boston Celtics Williams, Jaylen Out Injury\n"
+            "Charlotte Hornets Williams, Jaylen Available -\n"
+            "WAS@ATL Washington Wizards Davis, Anthony Questionable Injury\n"
+            "11/07/2026 08:00 (ET) WAS@OKC Washington Wizards Davis, Anthony Out Injury\n"
         )
         rows=parse_rows(pdf_text,roster)
         statuses={(r["player_id"],r["game_date"],r["team"]):r["status"] for r in rows}
@@ -77,7 +77,7 @@ class ResearchUpgradeTests(unittest.TestCase):
     def test_official_pdf_does_not_infer_unlisted_player(self):
         roster=[{"player":"Anthony Davis","player_id":"103","team":"WAS"},
                 {"player":"Jalen Johnson","player_id":"104","team":"ATL"}]
-        text="11/06/2026 WAS@ATL Washington Wizards Davis, Anthony Questionable Injury\\nAtlanta Hawks NOT YET SUBMITTED\\n"
+        text="11/06/2026 WAS@ATL Washington Wizards Davis, Anthony Questionable Injury\nAtlanta Hawks NOT YET SUBMITTED\n"
         rows=parse_rows(text,roster)
         self.assertEqual(len(rows),1)
         self.assertEqual(rows[0]["game_date"],"2026-11-06")
