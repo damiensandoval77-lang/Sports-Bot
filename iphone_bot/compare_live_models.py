@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import joblib
 import numpy as np
 import pandas as pd
+from matchup_context import team_allowances, defense_context, minutes_context
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -72,7 +73,8 @@ def main():
         identity=key(player["player"])
         roster.setdefault(identity,[]).append(player)
     by_id={}
-    for r in json.loads(GAMES.read_text()):
+    all_games=json.loads(GAMES.read_text())
+    for r in all_games:
         by_id.setdefault(str(r["id"]),{})[r["date"]]=r
     raw_markets={}
     skipped={"not_upcoming":0,"team_mismatch":0,"player_ambiguous":0,"insufficient_stats":0,
@@ -110,7 +112,7 @@ def main():
         if features is None:
             skipped["insufficient_stats"]+=1;continue
         market_key=(person["player_id"],stat,line,r.get("source",""),r["start"])
-        market=raw_markets.setdefault(market_key,{"player":person["player"],"team":person["team"],
+        market=raw_markets.setdefault(market_key,{"player":person["player"],"player_id":str(person["player_id"]),"team":person["team"],
            "stat":stat,"line":line,"sportsbook":r.get("source",""),"game":r.get("game",""),
            "start":r["start"],"over_odds":None,"under_odds":None,"features":features,
            "sample_games":len(history),"last_game":history[-1]["date"]})
@@ -119,12 +121,28 @@ def main():
     models={}
     for target in ("PTS","REB","AST","PRA"):
         models[target]=joblib.load(MODELS/f"{target}_model.joblib")
+    defense_cache={}
     for row in valid:
         target=row["stat"];model=models[target]
         features=model["features"];fill=model["fill_values"]
         input_data={name:row["features"].get(name,fill.get(name,0)) for name in features}
         x=pd.DataFrame([input_data])[features].apply(pd.to_numeric,errors="coerce").fillna(0)
         projection=max(0,float(model["model"].predict(x)[0]))
+        # Source-derived matchup context is descriptive only: the historical
+        # models were NOT trained with opponent defensive features.
+        pair=matchup(row["game"])
+        upcoming_date=utc(row["start"]).astimezone(ZoneInfo("America/New_York")).date().isoformat()
+        if upcoming_date not in defense_cache:
+            defense_cache[upcoming_date]=team_allowances(all_games,upcoming_date)
+        opponent=pair[0] if pair[1]==row["team"] else pair[1]
+        row["opponent"]=opponent
+        row["opponent_defense"]=defense_context(defense_cache[upcoming_date],opponent,target)
+        history=sorted(by_id.get(str(row["player_id"]),{}).values(),key=lambda x:x["date"])
+        history=[g for g in history if g["date"]<upcoming_date]
+        row["minutes_context"]=minutes_context(history)
+        row["injury_status"]="NOT_VERIFIED"
+        row["requires_lineup_review"]=True
+        row["defense_in_model"]=False
         row["projection"]=round(projection,1)
         row["difference"]=round(projection-row["line"],1)
         row["lean"]="Over" if row["difference"]>0 else "Under" if row["difference"]<0 else "Neutral"
@@ -134,10 +152,12 @@ def main():
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
        "verified_current_matchups":True,"is_prizepicks":False,
-       "disclaimer":"Experimental trained-model point estimates for current-season games matched to verified player teams. Not calibrated hit probabilities, +EV, injury-aware predictions, or PrizePicks lines. Model was trained on archived seasons; in-season form has a short sample.",
+       "injury_data_verified":False,"opponent_defense_applied_to_model":False,
+       "disclaimer":"Experimental historical-model point estimates with DESCRIPTIVE recent opponent team totals and observed minutes context. Defense is not a trained input or projection adjustment. Injury status is not verified; lineup review required. Not calibrated hit probabilities, +EV, or PrizePicks lines.",
        "comparisons":valid[:150],"skipped":skipped}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
     print("Wrote",len(valid),"team-verified experimental model comparisons",flush=True)
+    print("With descriptive opponent defense",sum(v["opponent_defense"] is not None for v in valid),flush=True)
     print("Rejected/unavailable",skipped,flush=True)
 
 if __name__=="__main__":main()
