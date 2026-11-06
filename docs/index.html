@@ -177,7 +177,7 @@ function renderPaper(){
    const win=r.result==="WIN",push=r.result==="PUSH";
    head.append(left,node("span","tag "+(win?"over":push?"neutral":"under"),r.result));
    main.append(head);
-   appendValues(main,[["Pregame projection",fmt(Number(r.original_projection))],
+   appendValues(main,[["Pregame projection",fmt(Number.isFinite(r.combined_projection)?r.combined_projection:Number(r.original_projection))],
                     ["Actual",fmt(Number(r.actual))],
                     ["Paper units",(r.paper_profit_units>0?"+":"")+Number(r.paper_profit_units).toFixed(2)]]);
    main.append(node("div","mini","Locked "+new Date(r.captured_at).toLocaleString()+" · exact quoted odds "+price(Number(r.american_odds))+" · paper only"));
