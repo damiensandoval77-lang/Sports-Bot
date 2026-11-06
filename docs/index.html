@@ -166,7 +166,6 @@ function renderAI(){
   }
   body.append(node("div","detail-heading","Recent performance"));
   body.append(recentBlocks);
-  if(p.minutes_context?.review_needed)body.append(node("div","mini","Minutes have been variable recently; the observed average does not guarantee playing time."));
   body.append(node("div","detail-heading","Actual sportsbook quotes ("+p.books.length+")"));
   for(const b of p.books){
    const line=node("div","bookrow");
@@ -205,6 +204,7 @@ function renderAI(){
    body.append(node("div","mini","Opponent-aware AI direction: "+shadowSide+" (research only)"));
    body.append(node("div","mini",shadowSide===side?"Models agree on direction, not a verified advantage":"Models differ; review uncertainty"));
   }
+  if(p.minutes_context?.review_needed)body.append(node("div","mini","Minutes have been variable recently; the observed average does not guarantee playing time."));
   if(p.opponent_defense)body.append(node("div","mini","Opponent "+p.opponent+" · "+p.opponent_defense.label+" · last "+p.opponent_defense.games+" games (team context only)"));
   if(p.experimental_best_quote&&p.experimental_ev_available){
    const b=p.experimental_best_quote;
