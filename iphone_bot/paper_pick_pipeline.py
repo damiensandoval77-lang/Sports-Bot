@@ -237,6 +237,37 @@ def main():
     source=json.loads(source_path.read_text()) if source_path.exists() else None
     report=summary(rows,source=source)
     RESULTS.write_text(json.dumps(report,indent=2)+"\n")
+    # Diagnostics are observational only: never alter or retroactively grade picks.
+    pending=[r for r in rows if r.get("status")=="PENDING"]
+    now=datetime.now(timezone.utc)
+    diagnostics={"pending_total":len(pending),"within_five_hour_buffer":0,
+                 "awaiting_matching_completed_player_game":0,
+                 "late_capture_invalid":0,"missing_or_ambiguous_player_match":0,
+                 "over_48_hours_unsettled":0}
+    completed=json.loads(games_path.read_text()) if games_path.exists() else []
+    by_id=defaultdict(list)
+    for g in completed:
+        by_id[(str(g.get("id")),str(g.get("date")))].append(g)
+    for r in pending:
+        start=utc(r["event_start"])
+        age=(now-start).total_seconds()
+        if age<5*3600:
+            diagnostics["within_five_hour_buffer"]+=1
+            continue
+        if age>=48*3600:
+            diagnostics["over_48_hours_unsettled"]+=1
+        if utc(r["captured_at"])>=start:
+            diagnostics["late_capture_invalid"]+=1
+            continue
+        day=start.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date().isoformat()
+        opponents=expected_opponents(r["game"],r["team"])
+        matches=[g for g in by_id.get((str(r["player_id"]),day),[])
+                 if g.get("team")==r["team"] and g.get("opponent") in opponents]
+        if len(matches)!=1:
+            diagnostics["missing_or_ambiguous_player_match"]+=1
+        else:
+            diagnostics["awaiting_matching_completed_player_game"]+=1
+    print("SETTLEMENT DIAGNOSTICS:",json.dumps(diagnostics,sort_keys=True),flush=True)
     print("PAPER PIPELINE:",json.dumps({x:report[x] for x in
           ("captured","pending","settled","wins","losses","pushes","paper_roi_per_graded_unit")}),flush=True)
 
