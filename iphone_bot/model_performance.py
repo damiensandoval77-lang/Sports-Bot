@@ -5,7 +5,13 @@ Each player/game/market appears once per model to avoid weighting duplicate book
 as independent predictions. No model refitting, market calibration or real wagers.
 """
 from collections import defaultdict
+from datetime import datetime,timezone
 import math
+
+def utc(value):
+    d=datetime.fromisoformat(str(value).replace('Z','+00:00'))
+    if d.tzinfo is None:raise ValueError('Missing timezone')
+    return d.astimezone(timezone.utc)
 
 MODEL_NAMES=("original","opponent_aware","combined")
 
@@ -55,7 +61,6 @@ def independent_rows(records):
         if r.get("status")!="SETTLED":continue
         if finite(r.get("actual")) is None or finite(r.get("line")) is None:continue
         if not r.get("captured_at") or not r.get("event_start"):continue
-        from .paper_pick_pipeline import utc
         try:
             if utc(r["captured_at"])>=utc(r["event_start"]):continue
             event=utc(r["event_start"]).isoformat()
