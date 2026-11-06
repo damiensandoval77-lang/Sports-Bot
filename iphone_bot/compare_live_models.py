@@ -73,7 +73,8 @@ def main():
     try:
         injury_feed=json.loads(INJURIES.read_text()) if INJURIES.exists() else {}
         issued=utc(injury_feed["report_issued_at"])
-        report_fresh=(injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED"
+        report_fresh=(injury_feed.get("status") in (
+            "OFFICIAL_NBA_REPORT_VERIFIED","THIRD_PARTY_ESPN_INJURY_CONTEXT")
                       and (now-issued).total_seconds()<=18*3600 and issued<=now)
     except (ValueError,TypeError,KeyError):
         injury_feed={}
@@ -211,8 +212,10 @@ def main():
         verified_status=official_by_id.get(str(row["player_id"])) if game_day_report else None
         if verified_status and verified_status.get("team")==row["team"] and verified_status.get("status")!="CONFLICTING_EXTRACT":
             row["injury_status"]=verified_status["status"].upper()
-            row["injury_status_source"]="OFFICIAL_NBA_REPORT"
-            row["injury_report_url"]=injury_feed.get("source_pdf")
+            row["injury_status_source"]=(
+                "OFFICIAL_NBA_REPORT" if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED"
+                else "ESPN_THIRD_PARTY_NOT_CONFIRMED")
+            row["injury_report_url"]=injury_feed.get("source_pdf") or injury_feed.get("source_url")
         else:
             row["injury_status"]="NOT_VERIFIED"
             row["injury_status_source"]="UNAVAILABLE_OR_NOT_GAME_DAY"
@@ -221,7 +224,7 @@ def main():
         row["teammate_absence_splits"]=[]
         if game_day_report:
             team_out=[p for p in official_by_id.values()
-                if p.get("team")==row["team"] and p.get("status")=="Out"
+                if p.get("team")==row["team"] and str(p.get("status","")).upper()=="OUT"
                 and str(p["player_id"])!=str(row["player_id"])]
             for teammate in team_out[:8]:
                 observed=teammate_on_off(history,all_games,upcoming_date,teammate["player_id"],target)
@@ -302,7 +305,9 @@ def main():
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
        "verified_current_matchups":True,"is_prizepicks":False,
-       "injury_data_verified":report_fresh,"official_injury_report_url":injury_feed.get("source_pdf") if report_fresh else None,
+       "injury_data_verified":report_fresh and injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED",
+       "injury_context_source":injury_feed.get("status") if report_fresh else "UNAVAILABLE",
+       "official_injury_report_url":injury_feed.get("source_pdf") if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" else None,
        "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
        "line_aggregation_method":"MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
