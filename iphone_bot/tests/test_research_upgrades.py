@@ -1,7 +1,7 @@
 import datetime as dt
 import unittest
 import urllib.error
-from iphone_bot.research_context import minutes_estimate,positional_allowance,teammate_on_off
+from iphone_bot.research_context import minutes_estimate,positional_allowance,teammate_on_off,injury_minutes_research,minutes_walkforward_backtest
 from iphone_bot.weight_research import walkforward_weights
 from iphone_bot.model_performance import compute_performance
 from iphone_bot.fetch_official_injuries import parse_rows,report_links,parse_espn_injuries,failure_label,fallback_links
@@ -24,6 +24,44 @@ class ResearchUpgradeTests(unittest.TestCase):
         self.assertLess(result["expected_minutes"],40)
         self.assertFalse(result["is_confirmed"])
         self.assertIsNone(minutes_estimate(days,"2026-11-04")["expected_minutes"])
+
+    def test_injury_minutes_scenario_requires_verified_absence_history(self):
+        # 8 prior games: teammate plays four, misses four, both represented
+        # by a well-covered team player log.
+        all_games=[]
+        history=[]
+        for day in range(1,9):
+            date=f"2026-10-{day:02d}"
+            history.append({"id":"100","date":date,"team":"BOS","MIN":26 if day<=4 else 32})
+            for idx in range(7):
+                all_games.append({"id":str(idx+200),"date":date,"team":"BOS","MIN":20})
+            if day<=4:
+                all_games.append({"id":"900","date":date,"team":"BOS","MIN":25})
+        all_games.extend(history)
+        result=injury_minutes_research(history,all_games,"2026-11-01","BOS",
+            [{"player":"Verified Out Teammate","player_id":"900","team":"BOS"}])
+        self.assertEqual(result["status"],"HISTORICAL_SCENARIO_RESEARCH_ONLY")
+        self.assertEqual(result["delta_minutes"],5.0) # capped from +6
+        self.assertFalse(result["live_adjustment_applied"])
+        self.assertEqual(result["with_games"],4)
+        self.assertEqual(result["without_games"],4)
+        no_out=injury_minutes_research(history,all_games,"2026-11-01","BOS",[])
+        self.assertIsNone(no_out["scenario_minutes"])
+
+    def test_minutes_scenario_prevents_future_leakage(self):
+        history=[{"id":"100","team":"BOS","date":f"2026-10-{i:02d}","MIN":30}
+                 for i in range(1,7)]
+        future={"id":"100","team":"BOS","date":"2026-11-10","MIN":55}
+        result=injury_minutes_research(history+[future],history+[future],
+              "2026-11-01","BOS",[])
+        self.assertEqual(result["baseline_minutes"],30)
+        self.assertIsNone(result["scenario_minutes"])
+
+    def test_minutes_holdout_requires_sufficient_pregame_games(self):
+        rows=[{"id":"8","date":f"2026-10-{i:02d}","MIN":28} for i in range(1,8)]
+        result=minutes_walkforward_backtest(rows)
+        self.assertEqual(result["status"],"INSUFFICIENT_HOLDOUT_MINUTES")
+        self.assertIsNone(result["injury_scenario_mae"])
 
     def test_position_is_group_level_not_defender(self):
         games=[]
