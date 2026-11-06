@@ -47,7 +47,7 @@
 .recent-stat-number{font-size:24px;line-height:1.25;color:#f6faff;font-variant-numeric:tabular-nums}
 .recent-stat-subtitle{font-size:10px;color:#a5b8d4}
 @media(max-width:520px){.recent-block-grid{gap:6px}.recent-stat-tile{padding:10px 8px;min-height:88px}.recent-stat-number{font-size:22px}.recent-stat-label{font-size:9px}.recent-stat-subtitle{font-size:9px}}
-.performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}</style></head>
+.performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}.pipeline-health{padding:11px 12px;background:#15253b;border:1px solid #34516f;border-radius:9px;font-size:12px;line-height:1.55;margin:10px 0}.pipeline-alert{color:#ffd99a;background:#332819;border-color:#765832}</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -68,6 +68,7 @@
 <section class="panel" id="tab-results">
 <div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
+<div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
 <div class="performance-comparison" id="performance-comparison"><div class="empty">Loading real model performance…</div></div>
 <div class="source" id="performance-caveat">Hit rate excludes pushes; paper ROI requires a recorded sportsbook price for each model's exact direction. No result is proof of profitable betting.</div>
 <div class="bar performance-heading"><h2>Individual paper picks</h2><small>Actual game results</small></div>
@@ -287,6 +288,21 @@ appendValues(main,[["Last 5",fmt(statVal(p,stat,"l5"))],["Last 10",fmt(statVal(p
 $("form-board").replaceChildren(...(nodes.length?nodes:[empty("No players found. Current-season form may be unavailable.")]))}
 function renderModelPerformance(){
  const target=$("performance-comparison");
+ const health=paper?.pipeline_health;
+ const healthNode=$("pipeline-health");
+ if(health){
+  const last=health.latest_completed_player_game_date||"unknown";
+  const overdue=Number(health.pending_over_48_hours||0);
+  const past=Number(health.pending_past_game_buffer||0);
+  healthNode.textContent="Latest completed player logs: "+last+
+   " · Pending beyond 5h buffer: "+past+
+   " · Over 48h ungraded: "+overdue+
+   (overdue?" · Investigate delayed or missing source records":" · No overdue settlement backlog");
+  healthNode.className="source pipeline-health "+(overdue?"pipeline-alert":"");
+ }else{
+  healthNode.textContent="Box-score source health report not yet published; next grading run will populate it.";
+  healthNode.className="source pipeline-health";
+ }
  const report=paper?.performance;
  if(!report||report.status!=="PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES"){
   target.replaceChildren(empty("Model comparison is being initialized. It will update with the next completed grading run."));
