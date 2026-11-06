@@ -240,7 +240,8 @@ def main():
                 parse_diagnostics.append({"mode":mode,"characters":len(raw),
                                           "matches":len(found),
                                           "has_report_header":"Injury Report:" in raw,
-                                          "has_game_date":bool(GAME_DATE_PATTERN.search(raw))})
+                                          "has_game_date":bool(GAME_DATE_PATTERN.search(raw)),
+                                          "official_text_sample":raw[:1100].replace("\\r"," ")})
                 if len(found)>len(players):players=found
             except (ValueError,TypeError) as extraction_error:
                 parse_diagnostics.append({"mode":mode,"failure":type(extraction_error).__name__})
