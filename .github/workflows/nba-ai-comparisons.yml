@@ -82,6 +82,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_minutes_scenario_validation.py" -v
       - name: Fetch 2026-27 current-season player games
         run: python -u iphone_bot/fetch_current_form.py
       - name: Read official NBA injury report
@@ -110,6 +111,8 @@ jobs:
           fi
       - name: Lock pregame predictions and settle completed paper results
         run: python -u iphone_bot/paper_pick_pipeline.py
+      - name: Lock and evaluate research-only injury minutes scenarios
+        run: python -u iphone_bot/minutes_scenario_validation.py
       - name: Validate analysis and publish
         run: |
           python - <<'PY'
@@ -168,6 +171,11 @@ jobs:
             for x in d['comparisons']
           )
           paper=json.load(open('docs/paper_results.json'))
+          injury_minutes=json.load(open('docs/injury_minutes_results.json'))
+          assert injury_minutes['status']=='PREGAME_LOCKED_INJURY_MINUTES_RESEARCH'
+          assert injury_minutes['live_model_unchanged'] is True
+          assert injury_minutes['captured']>=injury_minutes['pending']+injury_minutes['settled']
+          assert injury_minutes['same_game_comparison']['observations']==injury_minutes['settled']
           assert paper['real_money_wagered'] is False
           assert paper['performance']['status']=='PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES'
           assert paper['pipeline_health']['pending_total']==paper['pending']
@@ -180,7 +188,7 @@ jobs:
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
           print('Locked paper picks:',paper['captured'],'Settled:',paper['settled'])
           PY
-          git add docs/injury_context.json docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/paper_pick_ledger.json docs/paper_results.json
+          git add docs/injury_context.json docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json
           if git diff --cached --quiet; then
             echo "No new results"; exit 0
           fi
