@@ -16,7 +16,9 @@ STATS={"pts":"PTS","reb":"REB","ast":"AST","fgm":"FGM","fga":"FGA","fg3m":"FG3M"
 def main():
     from nba_api.stats.static import teams
     team_ids={t["abbreviation"]:t["id"] for t in teams.get_teams()}
-    # Historical archive codes sometimes differ from official NBA abbreviations.\n    aliases={"SAN":"SAS","SA":"SAS","GS":"GSW","GOL":"GSW","PHO":"PHX","BRK":"BKN","NY":"NYK","NO":"NOP","NOR":"NOP","UTH":"UTA"}\n    frames=[]
+    # Historical archive codes sometimes differ from official NBA abbreviations.
+    aliases={"SAN":"SAS","SA":"SAS","GS":"GSW","GOL":"GSW","PHO":"PHX","BRK":"BKN","NY":"NYK","NO":"NOP","NOR":"NOP","UTH":"UTA"}
+    frames=[]
     for season in SEASONS:
         url=SOURCE.format(season)
         print("Downloading",season,flush=True)
@@ -36,7 +38,7 @@ def main():
         if df["TEAM_ID"].isna().any(): raise ValueError(f"Unknown team codes: {df.loc[df.TEAM_ID.isna(),'TEAM_ABBREVIATION'].unique().tolist()}")
         df["MATCHUP"]=df["TEAM_ABBREVIATION"]+df["home"].map({True:" vs. ",False:" @ ",1:" vs. ",0:" @ "})+df["opponent"].astype(str).str.upper().str.strip().replace(aliases)
         if df["MATCHUP"].isna().any(): raise ValueError("Unrecognized home/away values")
-        df["WL"]=pd.NA  # This archive does not provide verified W/L; never invent a result.\n        df["MIN"]=pd.to_numeric(df["minutes"],errors="raise")
+        df["MIN"]=pd.to_numeric(df["minutes"],errors="raise")
         df["SEASON_ID"]=season
         # Original dataset has no personal fouls. Do not fabricate them.
         # The existing feature pipeline needs PF; exclude PF-dependent features
