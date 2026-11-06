@@ -24,6 +24,14 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_defense_training.py' -v
       - name: Benchmark opponent-aware challenger versus baseline
         run: python -u iphone_bot/train_defense_challenger.py
+      - name: Fit separate historical baseline and opponent shadow
+        run: |
+          python -u iphone_bot/train_provisional.py
+          python -u iphone_bot/train_defense_shadow.py
+      - name: Fetch current-season completed player games
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Audit archived pregame sportsbook quotes with no paid API calls
+        run: python -u iphone_bot/audit_archived_real_lines.py
       - name: Confirm no unvalidated model was promoted
         run: |
           python - <<'PY'
@@ -32,10 +40,19 @@ jobs:
           assert d['status']=='RESEARCH_CHALLENGER_NOT_DEPLOYED'
           assert d['lines']=='SYNTHETIC_L10_PROXY_NOT_REAL_SPORTSBOOK_ODDS'
           assert len(d['metrics'])==4
+          shadow=json.load(open('models/nba/defense_shadow/metadata.json'))
+          assert shadow['status']=='SHADOW_ONLY_NOT_CALIBRATED'
+          audit=json.load(open('docs/real_line_audit.json'))
+          assert audit['status']=='REAL_BOOKMAKER_QUOTES_RESEARCH_ONLY'
+          print('Archived quotes:',audit['archived_quotes_seen'])
+          print('Matched real-line observations:',audit['verified_quote_rows'])
           print('Research-only validation complete; no live deployment')
           PY
       - uses: actions/upload-artifact@v4
         with:
           name: nba-opponent-challenger-evaluation
-          path: models/nba/defense_challenger/report.json
+          path: |
+            models/nba/defense_challenger/report.json
+            models/nba/defense_shadow/metadata.json
+            docs/real_line_audit.json
           if-no-files-found: error
