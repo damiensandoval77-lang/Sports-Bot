@@ -63,56 +63,57 @@ GAME_DATE_PATTERN=re.compile(r"\b(\d{2})/(\d{2})/(\d{4})\b")
 
 
 def parse_rows(text,roster):
-    """Read official table by game date and team; never match a name alone.
+    """Parse NBA PDF regardless of pypdf's line/column layout.
 
-    Layout-extracted PDF cells may omit repeated date/team labels. Keep the
-    most recently printed date and team across continuation rows/pages.
+    pypdf plain extraction often puts EVERY PDF word on a separate line;
+    layout extraction can reverse the table's row order. Normalize whitespace,
+    then process explicit game-date, team and player-status tokens IN ORDER.
     """
-    result={}
-    players={}
-    for p in roster:
-        team=str(p.get("team","")).upper()
-        name=str(p.get("player","")).strip()
+    normalized=" ".join(str(text).split())
+    events=[]
+    for match in GAME_DATE_PATTERN.finditer(normalized):
+        month,day,year=map(int,match.groups())
+        try:date=dt.date(year,month,day).isoformat()
+        except ValueError:continue
+        events.append((match.start(),0,"DATE",date))
+    for abbr,full in TEAM_NAMES.items():
+        for match in re.finditer(r"(?<!\\w)"+re.escape(full)+r"(?!\\w)",normalized,re.I):
+            events.append((match.start(),1,"TEAM",abbr))
+    for player in roster:
+        team=str(player.get("team","")).upper()
+        name=str(player.get("player","")).strip()
         if team not in TEAM_NAMES or len(name.split())<2:continue
         parts=name.split()
         forms=[(parts[-1]," ".join(parts[:-1]))]
         if len(parts)>=3:forms.append((" ".join(parts[-2:])," ".join(parts[:-2])))
-        players.setdefault(team,[]).append((p,forms))
+        for last,first in forms:
+            expression=(r"(?<!\\w)"+re.escape(last)+r",\\s*"+re.escape(first)
+                        +r"\\s+(Out|Doubtful|Questionable|Probable|Available)\\b")
+            for match in re.finditer(expression,normalized,re.I):
+                events.append((match.start(),2,"PLAYER",(player,match.group(1).title())))
+    # The official table repeats dates/teams only at the start of sections.
+    # Preserve that context across PDF page headers and continuation rows.
     current_date=None
     current_team=None
-    for line in text.splitlines():
-        if any(token in line.lower() for token in SKIP):continue
-        date_match=GAME_DATE_PATTERN.search(line)
-        if date_match:
-            month,day,year=map(int,date_match.groups())
-            try:current_date=dt.date(year,month,day).isoformat()
-            except ValueError:current_date=None
+    found={}
+    for _,__,kind,value in sorted(events,key=lambda item:(item[0],item[1])):
+        if kind=="DATE":
+            current_date=value
             current_team=None
-        # Full official team names are printed once per team section, then
-        # omitted from that team's subsequent player rows.
-        team_hits=[(line.casefold().find(full.casefold()),abbr)
-                   for abbr,full in TEAM_NAMES.items()
-                   if full.casefold() in line.casefold()]
-        if team_hits:
-            current_team=min(team_hits)[1]
-        if current_team not in players:continue
-        for p,forms in players[current_team]:
-            for last,first in forms:
-                expression=r"(?<!\w)"+re.escape(last)+r",\s*"+re.escape(first)+r"\s+(Out|Doubtful|Questionable|Probable|Available)\b"
-                m=re.search(expression,line,re.I)
-                if not m:continue
-                ident=str(p["player_id"])
-                status=m.group(1).title()
-                # The same player may be listed for multiple upcoming games:
-                # preserve each game-date observation separately.
-                record_key=(ident,current_date)
-                previous=result.get(record_key)
-                if previous and previous["status"]!=status:status="CONFLICTING_EXTRACT"
-                result[record_key]={"player":p["player"],"player_id":ident,
-                                    "team":current_team,"game_date":current_date,
-                                    "status":status}
-                break
-    return list(result.values())
+        elif kind=="TEAM":
+            current_team=value
+        elif kind=="PLAYER":
+            player,status=value
+            if str(player.get("team","")).upper()!=current_team:continue
+            ident=str(player["player_id"])
+            k=(ident,current_date)
+            previous=found.get(k)
+            if previous and previous["status"]!=status:
+                status="CONFLICTING_EXTRACT"
+            found[k]={"player":player["player"],"player_id":ident,
+                      "team":current_team,"game_date":current_date,
+                      "status":status}
+    return list(found.values())
 
 def read(url,timeout=12):
     """Request public NBA documents with ordinary browser headers.
