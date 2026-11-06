@@ -29,6 +29,14 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_json_and_python_utc_format_are_same_immutable_pick(self):
+        first=snapshot([self.market()],"2026-11-12T20:00:00Z")
+        mixed=[dict(row,event_start=row["event_start"].replace("+00:00",".000Z"))
+               for row in first]
+        new=snapshot([self.market()],"2026-11-12T21:00:00+00:00",mixed+first)
+        self.assertEqual(len(new),2)
+        self.assertEqual({r["bookmaker"] for r in new},{"FanDuel","DraftKings"})
+
     def test_do_not_retrofit_late_predictions(self):
         self.assertEqual(snapshot([self.market()],"2026-11-13T00:31:00Z"),[])
     def test_missing_boxscore_is_pending_not_loss(self):
