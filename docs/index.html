@@ -40,7 +40,14 @@
 .compact-prop .compact-final strong{font-size:23px}
 .model-chance{font-size:11px}
 }
-.load-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-3px 0 12px;color:#b4c6de;font-size:10px;flex-wrap:wrap}.load-toolbar .btn{font-size:12px;padding:9px 11px;min-height:36px}.load-toolbar span{flex:1;min-width:180px;line-height:1.4}@media(max-width:520px){.load-toolbar{align-items:flex-start}.load-toolbar span{font-size:10px}}</style></head>
+.load-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-3px 0 12px;color:#b4c6de;font-size:10px;flex-wrap:wrap}.load-toolbar .btn{font-size:12px;padding:9px 11px;min-height:36px}.load-toolbar span{flex:1;min-width:180px;line-height:1.4}@media(max-width:520px){.load-toolbar{align-items:flex-start}.load-toolbar span{font-size:10px}}
+.recent-block-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 8px}
+.recent-stat-tile{display:flex;flex-direction:column;align-items:flex-start;min-width:0;min-height:94px;gap:5px;padding:12px 10px;border:1px solid #374d6b;border-radius:10px;background:#1b2d45}
+.recent-stat-label{font-size:10px;letter-spacing:.6px;font-weight:800;color:#a8c7ef}
+.recent-stat-number{font-size:24px;line-height:1.25;color:#f6faff;font-variant-numeric:tabular-nums}
+.recent-stat-subtitle{font-size:10px;color:#a5b8d4}
+@media(max-width:520px){.recent-block-grid{gap:6px}.recent-stat-tile{padding:10px 8px;min-height:88px}.recent-stat-number{font-size:22px}.recent-stat-label{font-size:9px}.recent-stat-subtitle{font-size:9px}}
+</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -173,8 +180,23 @@ function renderAI(){
    body.append(node("div","mini","Opponent-aware AI direction: "+shadowSide+" (research only)"));
    body.append(node("div","mini",shadowSide===side?"Models agree on direction, not a verified advantage":"Models differ; review uncertainty"));
   }
-  if(formFresh)appendForm(body,currentPerson(p.player,p.team),p.stat);
-  if(p.minutes_context)body.append(node("div","mini","Minutes L5 "+fmt(p.minutes_context.observed_l5)+(p.minutes_context.review_needed?" · variable minutes":"")));
+  const recentForm=formFresh?currentPerson(p.player,p.team):null;
+  const recentBlocks=node("div","recent-block-grid");
+  const recentStats=[
+    ["LAST 5",statVal(recentForm,p.stat,"l5"),p.stat+" avg"],
+    ["LAST 10",statVal(recentForm,p.stat,"l10"),p.stat+" avg"],
+    ["MINUTES",p.minutes_context?.observed_l5??null,"Last 5 avg"]
+  ];
+  for(const [label,value,subtitle] of recentStats){
+    const tile=node("div","recent-stat-tile");
+    tile.append(node("span","recent-stat-label",label),
+                node("strong","recent-stat-number",fmt(value)),
+                node("span","recent-stat-subtitle",subtitle));
+    recentBlocks.append(tile);
+  }
+  body.append(node("div","detail-heading","Recent performance"));
+  body.append(recentBlocks);
+  if(p.minutes_context?.review_needed)body.append(node("div","mini","Minutes have been variable recently; the observed average does not guarantee playing time."));
   if(p.opponent_defense)body.append(node("div","mini","Opponent "+p.opponent+" · "+p.opponent_defense.label+" · last "+p.opponent_defense.games+" games (team context only)"));
   if(p.experimental_best_quote&&p.experimental_ev_available){
    const b=p.experimental_best_quote;
