@@ -61,7 +61,7 @@ def parse_rows(text,roster):
         for line in text.splitlines():
             if any(token in line.lower() for token in SKIP):continue
             for last,first in forms:
-                expression=r"(?<!\\w)"+re.escape(last)+r",\\s*"+re.escape(first)+r"\\s+(Out|Doubtful|Questionable|Probable|Available)\\b"
+                expression=r"(?<!\w)"+re.escape(last)+r",\s*"+re.escape(first)+r"\s+(Out|Doubtful|Questionable|Probable|Available)\b"
                 m=re.search(expression,line,re.I)
                 if m:statuses.add(m.group(1).title())
         if statuses:
