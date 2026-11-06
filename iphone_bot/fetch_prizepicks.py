@@ -85,7 +85,7 @@ def clean(row,now):
     name=str(player.get("name") or "").strip()
     team=team_abbrev(player.get("team"))
     opponent=team_abbrev(event.get("opponent") or row.get("opponent"))
-    if not name or len(team)!=3 or not opponent or team==opponent:return None
+    if not name or len(team)!=3 or (opponent and team==opponent):return None
     return {"id":str(row.get("id","")),"player":name,"team":team,
             "opponent":opponent,"stat":stat,"line":line,
             "starts_at":starts.isoformat(),"observed_at":observed.isoformat(),
@@ -100,8 +100,11 @@ def match(offer,comparison):
     start=timeparse(comparison.get("start"))
     other=timeparse(offer.get("starts_at"))
     if not start or not other or abs((start-other).total_seconds())>3*3600:return False
-    from paper_pick_pipeline import expected_opponents
-    return offer["opponent"] in expected_opponents(comparison.get("game"),offer["team"])
+    from iphone_bot.paper_pick_pipeline import expected_opponents
+    verified=expected_opponents(comparison.get("game"),offer["team"])
+    if not verified:return False
+    if offer["opponent"]:return offer["opponent"] in verified
+    return abs((start-other).total_seconds())<=30*60
 
 def publish(raw_pages,comparisons,now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
@@ -138,7 +141,7 @@ def publish(raw_pages,comparisons,now=None):
         "generated_at":now.isoformat(),
         "provider_status":statuses[0] if statuses else "unknown",
         "pages_read":len(raw_pages),"partial_board":bool(cursors and cursors[-1]),
-        "match_method":"EXACT_PLAYER_TEAM_STAT_OPPONENT_AND_START_WITHIN_3_HOURS",
+        "match_method":"EXACT_PLAYER_TEAM_STAT_AND_VERIFIED_SCHEDULE_OR_30_MIN_TIPOFF",
         "matched_count":len(matched),"unmatched_ai_comparisons":unmatched,
         "offers":matched,
         "notice":"Read-only third-party observations. May lag the app. FanDuel odds and EV are separate; PrizePicks pick'em lines are NOT American-odds quotes."}
