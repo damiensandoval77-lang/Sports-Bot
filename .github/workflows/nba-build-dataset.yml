@@ -1,0 +1,56 @@
+name: Build NBA historical training dataset
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: iphone_bot/requirements-training.txt
+      - name: Install dataset dependencies
+        run: pip install -r iphone_bot/requirements-training.txt
+      - name: Download historical NBA games and player positions
+        run: python -m src.sports.nba.builder
+      - name: Validate downloaded input files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+          base=Path('data/nba')
+          for name in ['raw/raw_game_logs.csv','processed/player_positions.csv']:
+              p=base/name
+              assert p.exists(), f'Missing {p}'
+              df=pd.read_csv(p)
+              assert len(df)>100, f'Insufficient rows: {p} ({len(df)})'
+              print(f'{p}: {len(df)} rows')
+          PY
+      - name: Generate training features
+        run: python -m src.sports.nba.features
+      - name: Validate dataset
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+          p=Path('data/nba/processed/training_dataset.csv')
+          assert p.exists(), 'Feature engineering did not create training dataset'
+          df=pd.read_csv(p)
+          assert len(df)>1000, f'Too few training rows: {len(df)}'
+          assert {'PTS','REB','AST'}.issubset(df.columns), 'Missing basic training targets'
+          print(f'Training dataset: {len(df)} rows, {len(df.columns)} columns')
+          PY
+      - name: Save dataset as private workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nba-training-dataset
+          path: |
+            data/nba/processed/training_dataset.csv
+            data/nba/processed/player_positions.csv
+          retention-days: 7
+          if-no-files-found: error
