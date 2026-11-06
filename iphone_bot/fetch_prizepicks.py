@@ -207,6 +207,19 @@ def main():
         DEST.write_text(json.dumps(out,indent=2)+"\n")
         print("PrizePicks API key missing; publishing NOT_CONFIGURED status, no vendor request.",flush=True)
         return
+    # Do not re-spend API calls during a confirmed monthly quota lockout.
+    # An explicit workflow_dispatch can opt in after the account is upgraded.
+    if DEST.exists() and os.environ.get("PRIZEPICKS_FORCE_REFRESH")!="1":
+        try:
+            old=json.loads(DEST.read_text())
+            if old.get("status")=="PROVIDER_RATE_LIMITED" and old.get("provider_error_code")=="MONTHLY_QUOTA_EXCEEDED":
+                previous=timeparse(old.get("generated_at"))
+                wait=int(old.get("retry_after_seconds") or 0)
+                if previous and 0<wait and dt.datetime.now(dt.timezone.utc)<previous+dt.timedelta(seconds=wait):
+                    print("Monthly PrizePicks API quota previously exhausted; skipping provider call until reset.",flush=True)
+                    return
+        except (ValueError,TypeError,KeyError):
+            pass
     comp=json.loads((ROOT/"docs/ai_comparisons.json").read_text())
     if comp.get("status")!="EXPERIMENTAL_NON_CALIBRATED":
         raise ValueError("AI comparison source invalid")
