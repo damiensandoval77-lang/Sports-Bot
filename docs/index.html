@@ -89,7 +89,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -413,7 +413,7 @@ appendValues(main,[["Last 5",fmt(statVal(p,stat,"l5"))],["Last 10",fmt(statVal(p
 $("form-board").replaceChildren(...(nodes.length?nodes:[empty("No players found. Current-season form may be unavailable.")]))}
 function renderModelPerformance(){
  const v2=$("minutes-v2-validation");
- const study=aiMetadata?.minutes_v2_validation;
+ const study=minutesV2Published||aiMetadata?.minutes_v2_validation;
  if(!study){
   v2.textContent="Minutes V2: next AI comparison publication will evaluate the research forecast. Live projections unchanged.";
  }else if(study.status!=="CHRONOLOGICAL_RESEARCH_HOLDOUT"){
@@ -587,7 +587,7 @@ else {note.textContent="Experimental model projections, NOT verified probabiliti
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
- const [a,o,f,p,pp,inj,im]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json")]);
+ const [a,o,f,p,pp,inj,im,mv]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
@@ -597,6 +597,7 @@ if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.val
 else {aiFresh=false;ai=[];aiMetadata=null}
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
 injuryMinutesValidation=im.status==="fulfilled"&&im.value.status==="PREGAME_LOCKED_INJURY_MINUTES_RESEARCH"?im.value:null;
+minutesV2Published=mv.status==="fulfilled"&&mv.value?.is_research_only===true?mv.value:null;
 ppState=pp.status==="fulfilled"?pp.value.status:"UNAVAILABLE";
 ppStamp=pp.status==="fulfilled"?pp.value.generated_at:null;
 ppErrorCode=pp.status==="fulfilled"?pp.value.provider_error_code:null;
