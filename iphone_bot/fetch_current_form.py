@@ -13,6 +13,7 @@ import statistics
 import time
 import urllib.parse
 import urllib.request
+from zoneinfo import ZoneInfo
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 OUT=ROOT/"docs/current_form.json"
@@ -65,7 +66,7 @@ def parse_game(event):
                 pid=str(athlete.get("id","")).strip()
                 if not name or not pid:continue
                 result.append({"id":pid,"player":name,"team":abbr,"team_id":teamid,
-                    "event_id":event_id,"game_date":event.get("date","")[:10],
+                    "event_id":event_id,"game_date":dt.datetime.fromisoformat(str(event.get("date","")).replace("Z","+00:00")).astimezone(ZoneInfo("America/New_York")).date().isoformat(),
                     "PTS":pts,"REB":reb,"AST":ast,"PRA":pts+reb+ast,"MIN":mins})
     if len(result)<8:raise ValueError(f"Incomplete player box score for event {event_id}: {len(result)} rows")
     return result
