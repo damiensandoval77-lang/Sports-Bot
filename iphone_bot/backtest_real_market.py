@@ -52,6 +52,13 @@ def main():
         ((quotes["under_odds"]<=-100)|(quotes["under_odds"]>=100))&
         ((quotes["line"]%1)==.5)
     ].copy()
+    # Never join historical props on player name and date alone: one provider game ID
+    # may include quotes from other games. Require a separately verified ID bridge.
+    verified_id_bridge={("2026-03-15","401810837"):"0022500982"}
+    quotes["provider_game"]=quotes["game"].astype("string").str.strip()
+    quotes["game_id_verified"]=[verified_id_bridge.get((str(d.date()),str(g)))
+        for d,g in zip(quotes["game_date"],quotes["provider_game"])]
+    quotes=quotes.loc[quotes["game_id_verified"].notna()].copy()
     quotes["name_key"]=quotes["player_name"].map(norm)
     quotes=quotes.loc[quotes.name_key.str.len()>3]
     # One last observed pregame snapshot per sportsbook/player/stat/line/date.
@@ -63,10 +70,11 @@ def main():
     if "PLAYER_NAME" not in df.columns: raise ValueError("Training dataset has no player names")
     df["game_date"]=pd.to_datetime(df["GAME_DATE"]).dt.normalize()
     df["name_key"]=df["PLAYER_NAME"].map(norm)
+    df["game_id_verified"]=df["GAME_ID"].astype("string").str.strip()
     # Avoid ambiguous player-name/date matches without unique identifiers.
-    duplicates=df.duplicated(["game_date","name_key"],keep=False)
+    duplicates=df.duplicated(["game_date","name_key","game_id_verified"],keep=False)
     games=df.loc[~duplicates].copy()
-    merged=quotes.merge(games,on=["game_date","name_key"],how="inner",validate="many_to_one")
+    merged=quotes.merge(games,on=["game_date","name_key","game_id_verified"],how="inner",validate="many_to_one")
     print(f"Input quotes {original}; valid {len(quotes)}; matched {len(merged)}",flush=True)
     if len(merged)<100:
         raise SystemExit("Insufficient matched historical pregame market lines (need >=100). "
@@ -119,7 +127,7 @@ def main():
         "odds_source":"timestamped historical sportsbook quotes (not PrizePicks)",
         "raw_quote_count":original,"valid_quote_count":int(len(quotes)),
         "matched_quote_count":int(len(merged)),"metrics":results,
-        "cautions":["Odds were matched by exact normalized name and game date; ambiguous matches excluded.",
+        "cautions":["Only verified game-ID bridges and exact player/date matches were used; ambiguous matches excluded.",
                     "One sportsbook can quote multiple lines per game; observations are correlated.",
                     "No trading costs, delays, limits, or line movement are modeled.",
                     "Feature engineering needs an independent point-in-time audit.",
