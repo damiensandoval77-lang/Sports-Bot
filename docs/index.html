@@ -111,6 +111,35 @@ function sideClass(side){return side==="OVER"?"over":side==="UNDER"?"under":"neu
 function validEstimate(p){return typeof p.estimated_selected_probability==="number"&&Number.isFinite(p.estimated_selected_probability)&&p.probability_method==="CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED"}
 function chance(p){return validEstimate(p)?(100*p.estimated_selected_probability).toFixed(1)+"%":"—"}
 function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
+function reasoningSentences(p,person){
+ const known=Array.isArray(p.projection_explanation?.sentences)?p.projection_explanation.sentences.filter(s=>typeof s==="string"&&s.trim()):[];
+ if(known.length)return known.slice(0,3);
+ // Older published AI files do not have the explanation field. Use only
+ // observed player form and existing pregame model estimates, never made-up causes.
+ const parts=[];
+ const l5=statVal(person,p.stat,"l5"),l10=statVal(person,p.stat,"l10");
+ const label={PTS:"points",REB:"rebounds",AST:"assists",PRA:"PRA"}[p.stat]||p.stat;
+ if(Number.isFinite(l5)&&Number.isFinite(l10)){
+  parts.push("Recent form: "+fmt(l5)+" "+label+" per game over the last 5, compared with "+fmt(l10)+" over the last 10.");
+ }else if(Number.isFinite(l5)){
+  parts.push("Recent form: "+fmt(l5)+" "+label+" per game over the last "+Math.min(Number(person?.games)||5,5)+" recorded games.");
+ }
+ const minutes=p.minutes_context?.observed_l5;
+ if(Number.isFinite(minutes)){
+  parts.push("Playing time: "+fmt(minutes)+" minutes per game over the last 5"+(p.minutes_context.review_needed?"; recent minutes have varied.":"."));
+ }
+ const base=Number(p.projection);
+ const shadow=p.shadow_projection;
+ if(Number.isFinite(shadow)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"&&Number.isFinite(base)){
+  const median=(base+shadow)/2;
+  parts.push("The original model estimates "+fmt(base)+" and the opponent-aware model "+fmt(shadow)+". Their median is "+fmt(Number.isFinite(p.combined_projection)?p.combined_projection:median)+".");
+ }else if(Number.isFinite(base)){
+  parts.push("The original AI estimates "+fmt(base)+"; an opponent-aware estimate is not currently available.");
+ }
+ if(!parts.length)parts.push("The current projection uses historical player-game statistics; detailed recent-form inputs are unavailable for this player.");
+ return parts.slice(0,3);
+}
+
 function renderAI(){
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&Date.parse(p.start)>Date.now());
@@ -174,15 +203,13 @@ function renderAI(){
    body.append(line);
   }
 
-  if(p.projection_explanation&&Array.isArray(p.projection_explanation.sentences)){
-   const why=node("div","reasoning-panel");
-   why.append(node("strong","","Why this projection?"));
-   for(const sentence of p.projection_explanation.sentences.slice(0,3)){
-    why.append(node("div","reasoning-sentence",sentence));
-   }
-   why.append(node("div","mini","Observed trends and model arithmetic, not proven causes or verified injuries."));
-   body.append(why);
+  const why=node("div","reasoning-panel");
+  why.append(node("strong","","Why this projection?"));
+  for(const sentence of reasoningSentences(p,recentForm)){
+   why.append(node("div","reasoning-sentence",sentence));
   }
+  why.append(node("div","mini","Historical observations and model arithmetic—not verified causal explanations, injury news, or guaranteed results."));
+  body.append(why);
   body.append(node("div","detail-heading","Underlying AI predictions"));
   body.append(node("div","mini","Original AI: "+fmt(Number(p.projection))));
   if(Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
