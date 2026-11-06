@@ -69,10 +69,7 @@ function modelSide(projection,line){
 function sideClass(side){return side==="OVER"?"over":side==="UNDER"?"under":"neutral"}
 function validEstimate(p){return typeof p.estimated_selected_probability==="number"&&Number.isFinite(p.estimated_selected_probability)&&p.probability_method==="CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED"}
 function chance(p){return validEstimate(p)?(100*p.estimated_selected_probability).toFixed(1)+"%":"—"}
-function primaryDirection(p){
- return validEstimate(p)&&["Over","Under"].includes(p.estimated_probability_side)
-  ?p.estimated_probability_side.toUpperCase():modelSide(p.projection,p.line);
-}
+function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
 function renderAI(){
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&Date.parse(p.start)>Date.now());
@@ -88,21 +85,20 @@ function renderAI(){
     node("div","match",p.stat+" · "+p.line+" · "+p.team+" · "+formatTime(p.start)));
   const mainSide=primaryDirection(p),right=node("div","compact-right");
   right.append(node("span","tag "+sideClass(mainSide),mainSide));
-  right.append(node("strong","compact-percent",chance(p)));
+  right.append(node("strong","compact-percent",validEstimate(p)?chance(p)+"*":"—"));
   head.append(identity,right);main.append(head);
-  const projections=node("div","compact-projections");
-  const original=node("div","compact-projection");
-  original.append(node("span","","Original AI"),node("strong","",fmt(Number(p.projection))));
-  projections.append(original);
-  if(typeof p.shadow_projection==="number"&&Number.isFinite(p.shadow_projection)&&p.shadow_status==="RESEARCH_SHADOW_ONLY"){
-   const shadow=node("div","compact-projection");
-   shadow.append(node("span","","Opponent-aware AI"),node("strong","",fmt(p.shadow_projection)));
-   projections.append(shadow);
-  }
-  main.append(projections);
+  const available=Number.isFinite(p.combined_projection);
+  const projection=node("div","compact-projections");
+  const single=node("div","compact-projection compact-final");
+  single.append(node("span","","Combined AI projection"),
+      node("strong","",fmt(available?p.combined_projection:Number(p.projection))));
+  projection.append(single);main.append(projection);
+  main.append(node("div","compact-caption",available?
+      (p.combined_model_count===2?"Two-model median":"Original-only fallback"):
+      "Older data · original AI"));
   outer.append(main);
   const details=node("details","compact-details"),
-        summary=node("summary","","View matchup, sportsbook odds & EV"),
+        summary=node("summary","","View models, matchup, odds & EV"),
         body=node("div","detailbody");
   const delta=Number(p.difference);
   appendValues(body,[["Sportsbook line",fmt(Number(p.line))],
