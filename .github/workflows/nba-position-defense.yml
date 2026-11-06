@@ -1,0 +1,40 @@
+name: Evaluate defense versus NBA player position
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  position-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install archived data and model dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2"
+      - name: Rebuild historical player-game dataset
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u -m src.sports.nba.features
+      - name: Validate DvP feature construction
+        run: |
+          python -m py_compile iphone_bot/position_defense.py iphone_bot/train_position_challenger.py
+          python -m unittest discover -s iphone_bot/tests -p "test_position_defense.py" -v
+      - name: Benchmark team defensive model versus positional defense model
+        run: python -u iphone_bot/train_position_challenger.py
+      - name: Verify no position model was automatically promoted
+        run: |
+          python - <<'PY'
+          import json
+          data=json.load(open('models/nba/position_challenger/report.json'))
+          assert data['status']=='POSITION_RESEARCH_NOT_DEPLOYED'
+          assert len(data['metrics'])==4
+          print('Evaluated markets:', [x['market'] for x in data['metrics']])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-positional-defense-research
+          path: models/nba/position_challenger/report.json
+          if-no-files-found: error
