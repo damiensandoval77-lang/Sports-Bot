@@ -9,8 +9,10 @@ on:
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'iphone_bot/model_performance.py'
       - 'iphone_bot/tests/test_model_performance.py'
+      - 'iphone_bot/fetch_current_form.py'
+      - 'iphone_bot/tests/test_pipeline_health.py'
   schedule:
-    - cron: '37 12 * * *'
+    - cron: '37 12,18 * * *'
 permissions:
   contents: write
 concurrency:
@@ -33,7 +35,8 @@ jobs:
         run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
       - name: Validate paper pick invariants and dashboard JavaScript
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/fetch_current_form.py
+          python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python - <<'PY'
@@ -60,6 +63,12 @@ jobs:
           assert report['real_money_wagered'] is False
           perf=report['performance']
           assert perf['status']=='PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES'
+          health=report['pipeline_health']
+          assert health['pending_total']==report['pending']
+          assert health['pending_over_48_hours']<=health['pending_past_game_buffer']<=report['pending']
+          assert health['latest_completed_player_game_date'] is not None
+          print('Completed boxscore date:',health['latest_completed_player_game_date'])
+          print('Overdue ungraded quotes:',health['pending_over_48_hours'])
           assert perf['independent_settled_markets']<=report['settled']
           assert set(perf['models'])=={'original','opponent_aware','combined'}
           assert all(x['observations']<=perf['independent_settled_markets'] for x in perf['models'].values())
