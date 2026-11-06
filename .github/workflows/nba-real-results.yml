@@ -10,6 +10,7 @@ on:
       - 'iphone_bot/model_performance.py'
       - 'iphone_bot/accuracy_feedback.py'
       - 'iphone_bot/minutes_model_v2.py'
+      - 'iphone_bot/publish_minutes_v2.py'
       - 'iphone_bot/tests/test_minutes_model_v2.py'
       - 'iphone_bot/tests/test_accuracy_feedback.py'
       - 'iphone_bot/weight_research.py'
@@ -42,7 +43,7 @@ jobs:
         run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
       - name: Validate paper pick invariants and dashboard JavaScript
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/accuracy_feedback.py iphone_bot/minutes_model_v2.py iphone_bot/fetch_current_form.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/accuracy_feedback.py iphone_bot/minutes_model_v2.py iphone_bot/publish_minutes_v2.py iphone_bot/fetch_current_form.py
           python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_accuracy_feedback.py" -v
@@ -60,6 +61,8 @@ jobs:
           node --check /tmp/sports-bot-live-results.js
       - name: Refresh completed real NBA player game logs
         run: python -u iphone_bot/fetch_current_form.py
+      - name: Publish minutes V2 research from completed games
+        run: python -u iphone_bot/publish_minutes_v2.py
       - name: Refresh official NBA injury report (not a betting adjustment)
         run: |
           python -m pip install "pypdf>=5,<7"
@@ -78,6 +81,11 @@ jobs:
           assert len(data)==len({identity(x) for x in data})
           assert all(x['paper_only'] is True for x in data)
           assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in data)
+          minutes_v2=json.load(open('docs/minutes_v2_validation.json'))
+          assert minutes_v2['live_model_unchanged'] is True
+          assert minutes_v2['production_adjustment_applied'] is False
+          assert minutes_v2['candidate_mae'] is None or minutes_v2['holdout_samples']>=30
+          assert minutes_v2['status'] in ('CHRONOLOGICAL_RESEARCH_HOLDOUT','INSUFFICIENT_CHRONOLOGICAL_MINUTES_SAMPLES')
           assert report['real_money_wagered'] is False
           perf=report['performance']
           assert perf['status']=='PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES'
@@ -102,7 +110,7 @@ jobs:
           PY
       - name: Publish finished real-game paper grades
         run: |
-          git add docs/injury_context.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json
+          git add docs/injury_context.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json docs/minutes_v2_validation.json
           if git diff --cached --quiet; then echo "No new grades"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
