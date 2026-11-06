@@ -32,7 +32,7 @@ def explain_projection(stat,line,original,shadow,combined,form,
             if all(v is not None for v in vals): longer=sum(vals)
     parts=[]
     if previous is not None and longer is not None:
-        parts.append(f"Recent form: {previous:.1f} {market} per game over the last 5, versus {longer:.1f} over the last 10.")
+        parts.append(f"Recent form: {previous:.1f} {market} per game over the last 5, versus {longer:.1f} over up to the last 10 games.")
     elif previous is not None:
         parts.append(f"Recent form: {previous:.1f} {market} per game over the last 5.")
     if isinstance(minutes,dict):
