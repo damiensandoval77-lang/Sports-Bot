@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install EV test dependencies
+        run: python -m pip install 'numpy>=1.26,<3'
       - name: Verify consensus and paired bookmaker quotas
         run: |
           python -m py_compile iphone_bot/fetch_props.py iphone_bot/sportsbook_consensus.py iphone_bot/compare_live_models.py iphone_bot/hypothetical_ev.py
