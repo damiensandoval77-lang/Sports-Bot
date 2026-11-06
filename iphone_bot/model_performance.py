@@ -72,7 +72,7 @@ def independent_rows(records):
                                            float(r["line"])))[0]
             for _,group in sorted(groups.items())]
 
-def compute_performance(records):
+def compute_performance(records,include_breakdown=True):
     chosen=independent_rows(records)
     models={}
     for name in MODEL_NAMES:
@@ -110,10 +110,16 @@ def compute_performance(records):
             "paper_profit_units":round(sum(priced),4),
             "paper_roi_per_priced_unit":round(sum(priced)/len(priced),4) if priced else None,
         }
+    per_stat={}
+    if include_breakdown:
+        for stat in ("PTS","REB","AST","PRA"):
+            matches=[row for row in chosen if row.get("market")==stat]
+            per_stat[stat]=compute_performance(matches,include_breakdown=False)["models"]
     return {"status":"PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES",
             "method":"ONE_EARLIEST_QUOTED_BOOK_PER_PLAYER_EVENT_MARKET",
             "independent_settled_markets":len(chosen),
             "models":models,
+            "by_stat":per_stat,
             "limitations":[
                 "Models use their original pregame-locked predictions; no after-game model reruns.",
                 "Legacy combined midpoint may be derived only from two stored pregame forecasts, not postgame data.",
