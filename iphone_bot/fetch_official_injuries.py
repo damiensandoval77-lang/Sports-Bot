@@ -70,10 +70,22 @@ def parse_rows(text,roster):
                            "status":next(iter(statuses)) if len(statuses)==1 else "CONFLICTING_EXTRACT"}
     return list(result.values())
 
-def read(url):
-    req=urllib.request.Request(url,headers={"User-Agent":"Sports-Bot/1.0 (+official public injury report)"})
-    with urllib.request.urlopen(req,timeout=25) as response:
+def read(url,timeout=12):
+    req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 (compatible; Sports-Bot-Research/1.0)"})
+    with urllib.request.urlopen(req,timeout=timeout) as response:
         return response.read()
+
+def fallback_links(now):
+    """Predict at most four recently published NBA static report filenames."""
+    local=now.astimezone(ZoneInfo("America/New_York")).replace(second=0,microsecond=0)
+    local=local.replace(minute=(local.minute//15)*15)
+    out=[]
+    for slot in range(4):
+        issued=local-dt.timedelta(minutes=15*slot)
+        suffix=issued.strftime("%I_%M%p").lstrip("0")
+        filename="Injury-Report_"+issued.strftime("%Y-%m-%d")+"_"+suffix+".pdf"
+        out.append((issued.astimezone(UTC),"https://"+HOST+"/referee/injury/"+filename))
+    return out
 
 def main():
     now=dt.datetime.now(UTC)
@@ -81,23 +93,45 @@ def main():
           "players":[],"source_page":PAGE,
           "notice":"No NBA status is inferred for an unlisted player; manual lineup verification is still required."}
     try:
-        html=read(PAGE).decode("utf-8","replace")
-        links=report_links(html,now)
-        if not links:raise ValueError("No recent official PDF linked from NBA report page")
-        issued,url=links[0]
+        source="official_index"
+        try:
+            html=read(PAGE).decode("utf-8","replace")
+            links=report_links(html,now)
+        except (OSError,TimeoutError,ValueError):
+            links=[]
+        if not links:
+            source="official_static_pdf_fallback"
+            links=fallback_links(now)
         from pypdf import PdfReader
-        reader=PdfReader(io.BytesIO(read(url)))
-        text="\n".join(page.extract_text(extraction_mode="layout") or "" for page in reader.pages)
-        if not text or "Injury Report:" not in text:raise ValueError("Official injury PDF could not be extracted")
+        pdf_bytes=None
+        issued=None
+        url=None
+        last_error=None
+        for timestamp,link in links[:4]:
+            try:
+                result=read(link,timeout=10)
+                if not result.startswith(b"%PDF"):continue
+                pdf_bytes=result
+                issued,url=timestamp,link
+                break
+            except (OSError,TimeoutError,ValueError) as error:
+                last_error=type(error).__name__
+                continue
+        if not pdf_bytes:
+            raise RuntimeError("Official static PDF not accessible: "+str(last_error or "not found"))
+        reader=PdfReader(io.BytesIO(pdf_bytes))
+        raw="\n".join(page.extract_text(extraction_mode="layout") or "" for page in reader.pages)
+        if not raw or "Injury Report:" not in raw:raise ValueError("Official injury PDF could not be extracted")
         roster=json.loads((ROOT/"docs/current_form.json").read_text()).get("players",[])
-        players=parse_rows(text,roster)
+        players=parse_rows(raw,roster)
         if not players:raise ValueError("No roster status reliably identified in official PDF")
         base.update(status="OFFICIAL_NBA_REPORT_VERIFIED",injury_data_verified=True,
-                    source_pdf=url,report_issued_at=issued.isoformat(),
+                    source_pdf=url,source_method=source,report_issued_at=issued.isoformat(),
                     extracted_statuses=len(players),players=players)
         print("Official NBA injury report:",url,"matched player statuses:",len(players),flush=True)
     except (OSError,ValueError,KeyError,ImportError,RuntimeError) as error:
         base["failure_type"]=type(error).__name__
+        base["failure_stage"]=str(error)[:120] if isinstance(error,RuntimeError) else "official report access or parsing"
         print("Official NBA injury report unavailable:",type(error).__name__,flush=True)
     OUT.write_text(json.dumps(base,indent=2)+"\n")
 
