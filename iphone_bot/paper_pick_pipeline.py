@@ -9,7 +9,10 @@ import json
 from datetime import datetime,timezone
 from pathlib import Path
 from collections import defaultdict
-from model_performance import compute_performance
+try:
+    from .model_performance import compute_performance
+except ImportError:
+    from model_performance import compute_performance
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
