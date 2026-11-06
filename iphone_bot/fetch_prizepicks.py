@@ -220,13 +220,34 @@ def main():
         if len(names)>=3:break
     pages=[]
     requested=[]
-    for name in names:
-        url=BASE+"?"+urllib.parse.urlencode({
-            "league":"NBA","status":"active","search":name,"limit":200})
-        page=read_url(url,key)
-        if not isinstance(page,dict):raise ValueError("Invalid response")
-        pages.append(page)
-        requested.append(name)
+    try:
+        for name in names:
+            url=BASE+"?"+urllib.parse.urlencode({
+                "league":"NBA","status":"active","search":name,"limit":200})
+            page=read_url(url,key)
+            if not isinstance(page,dict):raise ValueError("Invalid response")
+            pages.append(page)
+            requested.append(name)
+    except urllib.error.HTTPError as err:
+        # Do not retry 429: it can signal monthly credits, not just a minute.
+        if err.code!=429:raise
+        try:
+            problem=json.loads(err.read().decode("utf-8"))
+        except (ValueError,UnicodeError):
+            problem={}
+        detail=problem.get("error",{})
+        code=detail.get("code","HTTP_429") if isinstance(detail,dict) else "HTTP_429"
+        retry_after=err.headers.get("Retry-After")
+        out={"status":"PROVIDER_RATE_LIMITED","generated_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+             "offers":[],"matched_count":0,
+             "provider_error_code":str(code)[:80],
+             "retry_after_seconds":retry_after if retry_after and str(retry_after).isdigit() else None,
+             "pages_read":len(pages),
+             "notice":"Independent PrizePicks provider returned 429; no live lines displayed. Check plan quota or Retry-After. FanDuel remains separate."}
+        DEST.write_text(json.dumps(out,indent=2)+"\n")
+        print("Independent PrizePicks rate limited:",out["provider_error_code"],
+              "retry after:",out["retry_after_seconds"],flush=True)
+        return
     out=publish(pages,comp["comparisons"])
     out["searched_player_count"]=len(requested)
     out["searched_players"]=requested
