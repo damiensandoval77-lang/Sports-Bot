@@ -203,7 +203,7 @@ def main():
         row["projection_explanation"]=explain_projection(
             target,row["line"],projection,
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None,
-            combined["projection"],row["features"],row["minutes_context"],row["opponent_defense"])
+            combined["projection"],row["features"],row["minutes_context"],row["opponent_defense"],opponent=row["opponent"])
         row["combined_direction"]=("Over" if combined["projection"]>row["line"]
            else "Under" if combined["projection"]<row["line"] else "Neutral")
         row["difference"]=round(projection-row["line"],1)
