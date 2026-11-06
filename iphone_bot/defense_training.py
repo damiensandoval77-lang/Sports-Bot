@@ -65,8 +65,30 @@ def historical_defense(raw):
 
 def add_historical_defense(training,raw):
     defense=historical_defense(raw)
-    result=training.merge(defense,on=["SEASON_ID","GAME_ID","TEAM_ABBREVIATION"],
-                          how="left",validate="many_to_one")
+    # The existing training pipeline reads raw CSVs without GAME_ID dtype,
+    # so an official ID like 0022500982 becomes integer 22500982.
+    # Normalize numeric IDs on both sides without changing the saved files.
+    left=training.copy()
+    right=defense.copy()
+    def canonical_game_id(s):
+        values=s.astype("string").str.strip()
+        if not values.str.fullmatch(r"[0-9]+").fillna(False).all():
+            raise ValueError("Game ID contains nonnumeric or missing records")
+        return values.str.lstrip("0").replace("", "0")
+    for frame in (left,right):
+        frame["GAME_ID_JOIN"]=canonical_game_id(frame["GAME_ID"])
+        frame["SEASON_ID"]=frame["SEASON_ID"].astype("string").str.strip()
+        frame["TEAM_ABBREVIATION"]=frame["TEAM_ABBREVIATION"].astype("string").str.strip().str.upper()
+    keys=["SEASON_ID","GAME_ID_JOIN","TEAM_ABBREVIATION"]
+    overlap=left[keys].drop_duplicates().merge(right[keys].drop_duplicates(),
+        on=keys,how="inner")
+    total=left[keys].drop_duplicates()
+    print("Defensive training join:",len(overlap),"matched unique player-team games of",
+          len(total),"training fixtures",flush=True)
+    if len(overlap)<int(.60*len(total)):
+        raise ValueError("Historical defense join keys have insufficient overlap")
+    result=left.merge(right[keys+list(COLS)],on=keys,how="left",validate="many_to_one")
+    result=result.drop(columns=["GAME_ID_JOIN"])
     if len(result)!=len(training):
         raise ValueError("Defensive feature merge changed player-game count")
     return result
