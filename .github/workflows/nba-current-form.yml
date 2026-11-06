@@ -1,0 +1,42 @@
+name: Update 2026-27 NBA player recent form
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 14 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-current-form
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download verified completed-game NBA box scores
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Validate source and player coverage
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('docs/current_form.json'))
+          assert d["season"]=="2026-27"
+          assert d["is_ai"] is False and d["is_prizepicks"] is False
+          assert d["box_score_games"]>=5 and len(d["players"])>=80
+          print('Verified player form feed',len(d['players']),'players',d['box_score_games'],'completed games')
+          PY
+      - name: Publish current-season form to iPhone dashboard
+        run: |
+          git add docs/current_form.json
+          if git diff --cached --quiet; then
+            echo "No current-form changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh verified 2026-27 NBA player current form"
+          git push
