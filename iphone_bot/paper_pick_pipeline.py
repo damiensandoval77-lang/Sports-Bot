@@ -60,8 +60,9 @@ def snapshot(comparisons,generated_at,existing=None):
         start=utc(market["start"])
         if created>=start:continue
         for book in market.get("book_quotes",[]):
-            side="OVER" if float(market["projection"])>float(book["line"]) else "UNDER"
-            if float(market["projection"])==float(book["line"]):continue
+            chosen_projection=float(market.get("combined_projection",market["projection"]))
+            side="OVER" if chosen_projection>float(book["line"]) else "UNDER"
+            if chosen_projection==float(book["line"]):continue
             odds=book.get("over" if side=="OVER" else "under")
             try:
                 payout(odds)
@@ -74,10 +75,13 @@ def snapshot(comparisons,generated_at,existing=None):
                 "bookmaker":str(book["name"]),"line":line,"side":side,
                 "american_odds":int(odds),
                 "original_projection":float(market["projection"]),
-                "model":"PROVISIONAL_ORIGINAL",
+                "combined_projection":chosen_projection,
+                "model":"TWO_MODEL_MEDIAN_RESEARCH" if market.get("combined_model_count")==2 else "PROVISIONAL_ORIGINAL",
+                "projection_method":market.get("combined_method","ORIGINAL_AI_FALLBACK"),
                 "status":"PENDING",
                 "method":METHOD,
                 "paper_only":True,
+                "experimental_estimate_model":"PROVISIONAL_ORIGINAL_ONLY",
                 "experimental_estimate":book.get(
                     "over_model_probability" if side=="OVER" else "under_model_probability"),
                 "hypothetical_ev_pct":book.get("hypothetical_over_ev_pct" if side=="OVER" else "hypothetical_under_ev_pct"),
