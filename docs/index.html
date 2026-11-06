@@ -70,6 +70,7 @@
 <div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
+<div class="source" id="chronological-accuracy-feedback" aria-live="polite">Chronological AI accuracy feedback: awaiting verified completed-game observations.</div>
 <div class="source" id="injury-minutes-validation" aria-live="polite">Injury-minute research: waiting for locked pregame scenarios and completed-game evaluations.</div>
 <div class="performance-selector"><label for="perf-market">Performance market</label><select id="perf-market"><option value="">All markets</option><option value="PTS">Points</option><option value="REB">Rebounds</option><option value="AST">Assists</option><option value="PRA">PRA</option></select></div>
 <div class="source" id="weight-experiment">Chronological weighting research: waiting for independently settled outcomes.</div>
@@ -444,6 +445,29 @@ function renderModelPerformance(){
   return;
  }
  const selectedMarket=$("perf-market").value;
+ const feedback=paper?.accuracy_feedback;
+ const feedbackSection=$("chronological-accuracy-feedback");
+ const study=selectedMarket?feedback?.by_stat?.[selectedMarket]:feedback?.overall;
+ if(!study){
+  feedbackSection.textContent="Chronological accuracy feedback not yet published. Live projections unchanged.";
+ }else if(study.status!=="DESCRIPTIVE_CHRONOLOGICAL_HOLDOUT"){
+  const observations=study.overall?.observations??0;
+  feedbackSection.textContent=(selectedMarket||"All stats")+
+   " chronology: "+observations+" shared locked player/game/stat observations across "+
+   (study.overall?.distinct_game_dates??0)+" dates. Need 30 earlier and 15 later observations across at least 6 game dates. No model changes.";
+ }else{
+  const later=study.later_holdout;
+  const delta=later.combined_minus_original_mae;
+  feedbackSection.textContent=(selectedMarket||"All stats")+
+   " chronological evaluation: "+study.earlier.observations+" earlier / "+
+   later.observations+" later shared observations (from "+study.later_start_date+
+   "). Later MAE: Original "+fmt(later.mae.original)+
+   ", Opponent "+fmt(later.mae.opponent_aware)+
+   ", Combined "+fmt(later.mae.combined)+
+   "; Combined minus Original "+(delta>0?"+":"")+fmt(delta)+
+   " (negative is better). Descriptive evaluation only; no live model or weight adjustment.";
+ }
+
  const data=selectedMarket?(report.by_stat?.[selectedMarket]||{}):report.models;
  const weight=selectedMarket?paper?.weight_research?.weights?.[selectedMarket]:null;
  const paired=report.paired_comparison;
