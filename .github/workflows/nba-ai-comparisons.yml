@@ -29,8 +29,9 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
         run: |
-          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py
+          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_experimental_probability.py" -v
       - name: Fetch 2026-27 current-season player games
         run: python -u iphone_bot/fetch_current_form.py
       - name: Fetch fresh upcoming sportsbook props (max three games)
@@ -57,6 +58,11 @@ jobs:
           assert d['injury_data_verified'] is False
           assert d['opponent_defense_applied_to_model'] is False
           assert d['shadow_is_primary'] is False
+          assert d['experimental_probability_ranking'] is True
+          assert d['real_market_probabilities_calibrated'] is False
+          assert all(x['probability_method']=='CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED' for x in d['comparisons'])
+          assert all(0 < x['estimated_selected_probability'] < 1 for x in d['comparisons'])
+          assert all(d['comparisons'][i]['estimated_selected_probability'] >= d['comparisons'][i+1]['estimated_selected_probability'] for i in range(len(d['comparisons'])-1))
           assert all(x.get('shadow_status') in ('RESEARCH_SHADOW_ONLY','INSUFFICIENT_DEFENSE_DATA','SHADOW_MODEL_NOT_TRAINED') for x in d['comparisons'])
           assert all(x['injury_status']=='NOT_VERIFIED' and x['requires_lineup_review'] is True for x in d['comparisons'])
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
