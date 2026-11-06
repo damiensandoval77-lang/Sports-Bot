@@ -29,7 +29,7 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
         run: |
-          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py
+          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/fetch_prizepicks.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_experimental_probability.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
@@ -37,6 +37,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
       - name: Fetch 2026-27 current-season player games
@@ -52,6 +53,14 @@ jobs:
         run: python -u iphone_bot/audit_archived_real_lines.py
       - name: Compare AI projections with verified pregame sportsbook markets
         run: python -u iphone_bot/compare_live_models.py
+      - name: Update optional third-party PrizePicks research lines
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+        run: |
+          # Once daily for free-tier request budgets; FanDuel continues on both runs.
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || [ "$(date -u +%H)" = "20" ]; then
+            python -u iphone_bot/fetch_prizepicks.py || echo "Independent pickem provider unavailable; FanDuel unaffected."
+          fi
       - name: Lock pregame predictions and settle completed paper results
         run: python -u iphone_bot/paper_pick_pipeline.py
       - name: Validate analysis and publish
@@ -101,7 +110,7 @@ jobs:
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
           print('Locked paper picks:',paper['captured'],'Settled:',paper['settled'])
           PY
-          git add docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/paper_pick_ledger.json docs/paper_results.json
+          git add docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/paper_pick_ledger.json docs/paper_results.json
           if git diff --cached --quiet; then
             echo "No new results"; exit 0
           fi
