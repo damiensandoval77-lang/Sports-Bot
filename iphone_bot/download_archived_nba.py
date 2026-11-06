@@ -47,7 +47,7 @@ def main():
         df["PF_DATA_AVAILABLE"]=False
         df["POSITION"]="Unknown"
         df["PLAYER_NAME"]=df.get("player_name",pd.Series("",index=df.index))
-        cols=["PLAYER_ID","GAME_ID","GAME_DATE","TEAM_ID","TEAM_ABBREVIATION","MATCHUP","WL","MIN","SEASON_ID","PF","PF_DATA_AVAILABLE","PLAYER_NAME"]+list(STATS.values())
+        cols=["PLAYER_ID","GAME_ID","GAME_DATE","TEAM_ID","TEAM_ABBREVIATION","MATCHUP","MIN","SEASON_ID","PF","PF_DATA_AVAILABLE","PLAYER_NAME"]+list(STATS.values())
         df=df[cols]
         if df.duplicated(["PLAYER_ID","GAME_ID"]).any(): raise ValueError(f"Duplicate player/game records in {season}")
         frames.append(df)
