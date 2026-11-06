@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 from matchup_context import team_allowances, defense_context, minutes_context
 from defense_training import COLS
+from experimental_probability import probability_sides, METHOD
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -180,15 +181,41 @@ def main():
         row["projection"]=round(projection,1)
         row["difference"]=round(projection-row["line"],1)
         row["lean"]="Over" if row["difference"]>0 else "Under" if row["difference"]<0 else "Neutral"
+        # This frequency is an experimental tail estimate from held-out
+        # historical box-score errors; not market-validated odds or hit rates.
+        row["estimated_over_probability"]=None
+        row["estimated_under_probability"]=None
+        row["estimated_push_probability"]=None
+        row["estimated_selected_probability"]=None
+        row["estimated_probability_side"]=None
+        row["probability_method"]="UNAVAILABLE_NO_CHRONOLOGICAL_RESIDUALS"
+        if "experimental_residuals" in model and model.get("residual_calibration",{}).get("real_market_calibrated") is False:
+            frequency=probability_sides(projection,row["line"],model["experimental_residuals"])
+            row["estimated_over_probability"]=round(frequency["over"],4)
+            row["estimated_under_probability"]=round(frequency["under"],4)
+            row["estimated_push_probability"]=round(frequency["push"],4)
+            # Sort on the side suggested by the model's better estimated tail,
+            # not the largest point gap. This side can differ from rounded
+            # display projections near a market line.
+            direction="Over" if frequency["over"]>frequency["under"] else "Under" if frequency["under"]>frequency["over"] else "Neutral"
+            row["estimated_probability_side"]=direction
+            row["estimated_selected_probability"]=round(max(frequency["over"],frequency["under"]),4)
+            row["probability_method"]=METHOD
         row["missing_features"]=[name for name in features if name not in row["features"]]
         del row["features"]
-    valid.sort(key=lambda r:abs(r["difference"]),reverse=True)
+    valid.sort(key=lambda r:(
+        r["estimated_selected_probability"] is not None,
+        r["estimated_selected_probability"] if r["estimated_selected_probability"] is not None else -1,
+        abs(r["difference"])),reverse=True)
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
        "verified_current_matchups":True,"is_prizepicks":False,
        "injury_data_verified":False,"opponent_defense_applied_to_model":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
-       "disclaimer":"Original historical-model predictions remain primary. Opponent-aware shadow model is separately trained and research-only; not calibrated on real sportsbook lines. Team defensive totals come from incomplete third-party current-season game logs. Injury status is not verified; lineup review required. No +EV or PrizePicks probability claim.",
+       "experimental_probability_ranking":True,
+       "experimental_probability_method":METHOD,
+       "real_market_probabilities_calibrated":False,
+       "disclaimer":"Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability unverified. Opponent-aware shadow is separate and research-only. No EV or profitable-pick claim.",
        "comparisons":valid[:150],"skipped":skipped}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
     print("Wrote",len(valid),"team-verified experimental model comparisons",flush=True)
