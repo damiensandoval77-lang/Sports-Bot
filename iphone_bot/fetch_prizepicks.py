@@ -18,7 +18,7 @@ ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/"docs/prizepicks.json"
 BASE="https://prizepicksapi.com/api/v1/projections"
 STAT={"points":"PTS","rebounds":"REB","assists":"AST",
-      "pts+rebs+asts":"PRA","points rebounds assists":"PRA",
+      "pts+rebs+asts":"PRA","pts+reb+ast":"PRA","points rebounds assists":"PRA",
       "points+rebounds+assists":"PRA","pts reb ast":"PRA"}
 MAX_PAGES=3  # Limit free-plan API requests; a partial result is clearly labeled.
 
@@ -109,6 +109,7 @@ def match(offer,comparison):
 def publish(raw_pages,comparisons,now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     offers=[]
+    raw_count=0
     statuses=[]
     cursors=[]
     for page in raw_pages:
@@ -118,7 +119,10 @@ def publish(raw_pages,comparisons,now=None):
             raise ValueError("Provider source is not fresh")
         statuses.append(meta.get("source_status","unknown"))
         cursors.append(meta.get("next_cursor"))
-        offers.extend(x for r in page.get("data",[]) if (x:=clean(r,now)))
+        rows=page.get("data",[])
+        if not isinstance(rows,list):raise ValueError("Invalid projection rows")
+        raw_count+=len(rows)
+        offers.extend(x for r in rows if (x:=clean(r,now)))
     distinct={o["id"]:o for o in offers if o["id"]}
     matched=[]
     unmatched=0
@@ -141,6 +145,7 @@ def publish(raw_pages,comparisons,now=None):
         "generated_at":now.isoformat(),
         "provider_status":statuses[0] if statuses else "unknown",
         "pages_read":len(raw_pages),"partial_board":bool(cursors and cursors[-1]),
+        "raw_rows_read":raw_count,"eligible_upcoming_offers":len(distinct),
         "match_method":"EXACT_PLAYER_TEAM_STAT_AND_VERIFIED_SCHEDULE_OR_30_MIN_TIPOFF",
         "matched_count":len(matched),"unmatched_ai_comparisons":unmatched,
         "offers":matched,
@@ -181,6 +186,7 @@ def main():
     out=publish(pages,comp["comparisons"])
     DEST.write_text(json.dumps(out,indent=2)+"\n")
     print("PrizePicks matched observations:",out["matched_count"],
+          "raw rows:",out["raw_rows_read"],"eligible:",out["eligible_upcoming_offers"],
           "pages:",out["pages_read"],"partial board:",out["partial_board"],flush=True)
 
 if __name__=="__main__":main()
