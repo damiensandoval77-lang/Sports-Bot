@@ -7,6 +7,9 @@ on:
       - '.github/workflows/nba-consensus-test.yml'
       - 'iphone_bot/combined_projection.py'
       - 'iphone_bot/tests/test_combined_projection.py'
+      - 'iphone_bot/projection_explanation.py'
+      - 'iphone_bot/tests/test_projection_explanation.py'
+      - 'docs/index.html'
 permissions:
   contents: read
 jobs:
@@ -26,6 +29,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_hypothetical_ev.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
       - name: Check dashboard JavaScript syntax
         run: |
           python - <<'PY'
