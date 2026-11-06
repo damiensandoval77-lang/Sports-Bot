@@ -44,6 +44,9 @@ def main():
     if len(dates) < 150:
         raise ValueError("Not enough historical game dates")
     cutoff = pd.Timestamp(dates[int(len(dates) * 0.8)])
+    calibration_start = pd.Timestamp(dates[int(len(dates) * 0.6)])
+    cal_train = df["GAME_DATE"] < calibration_start
+    cal_dates = (df["GAME_DATE"] >= calibration_start) & (df["GAME_DATE"] < cutoff)
     tr = df["GAME_DATE"] < cutoff
     te = ~tr
     if tr.sum() < 5000 or te.sum() < MIN_TEST:
@@ -65,6 +68,27 @@ def main():
             min_samples_leaf=65, learning_rate=0.055,
             l2_regularization=4.0, early_stopping=False, random_state=42
         )
+        # Fit a separate earlier model for out-of-time residuals; never
+        # derive residuals from rows the calibration model was trained on.
+        calibration_model = HistGradientBoostingRegressor(
+            max_iter=180, max_leaf_nodes=21, max_depth=5,
+            min_samples_leaf=65, learning_rate=0.055,
+            l2_regularization=4.0, early_stopping=False, random_state=42
+        )
+        calibration_fit = cal_train & y.notna()
+        calibration_eval = cal_dates & y.notna()
+        if calibration_fit.sum()<5000 or calibration_eval.sum()<2000:
+            raise ValueError("Insufficient chronological calibration observations")
+        calibration_fill = X.loc[calibration_fit].median().fillna(0)
+        # X has already been imputed with first-80%-training medians; build
+        # calibration matrix from raw features to prevent that subtle leak.
+        x_cal = df[cols].apply(pd.to_numeric,errors="coerce").replace([np.inf,-np.inf],np.nan)
+        x_cal = x_cal.fillna(calibration_fill).fillna(0)
+        calibration_model.fit(x_cal.loc[calibration_fit],y.loc[calibration_fit])
+        cal_pred = np.maximum(0,calibration_model.predict(x_cal.loc[calibration_eval]))
+        residuals = (y.loc[calibration_eval].to_numpy(dtype=float)-cal_pred)
+        if not np.isfinite(residuals).all():
+            raise ValueError("Calibration contains nonfinite residuals")
         model.fit(X.loc[train_mask], y.loc[train_mask])
         pred = np.maximum(0, model.predict(X.loc[test_mask]))
         actual = y.loc[test_mask]
@@ -86,7 +110,16 @@ def main():
         }
         joblib.dump({"model": model, "features": cols,
                      "fill_values": medians.to_dict(), "target": target,
-                     "cutoff": cutoff.strftime("%Y-%m-%d")},
+                     "cutoff": cutoff.strftime("%Y-%m-%d"),
+                     "experimental_residuals": residuals.tolist(),
+                     "residual_calibration": {
+                         "method": "CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED",
+                         "train_before": str(calibration_start.date()),
+                         "calibration_from": str(calibration_start.date()),
+                         "calibration_through": str(df.loc[calibration_eval,"GAME_DATE"].max().date()),
+                         "calibration_rows": int(calibration_eval.sum()),
+                         "real_market_calibrated": False
+                     }},
                     OUT / f"{target}_model.joblib", compress=3)
         results.append(result)
         print(result, flush=True)
@@ -102,7 +135,8 @@ def main():
         "limitations": [
             "Archive lacks verified player position, personal fouls, and first-half data.",
             "This is a chronological offline holdout, not a live betting backtest.",
-            "Models are not calibrated probabilities and are not connected to PrizePicks lines.",
+            "Model residual distributions are derived from a separate chronological 60%-80% slice, not from sportsbook prop outcomes.",
+            "Experimental error-frequency estimates are not calibrated probabilities or verified betting hit rates.",
             "Some existing upstream engineered features may reflect future information; only the explicit lagged-feature allowlist is used here."
         ]
     }
