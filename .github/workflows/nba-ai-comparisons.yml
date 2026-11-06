@@ -123,7 +123,7 @@ jobs:
           assert type(d['injury_data_verified']) is bool
           assert d['lineup_research_adjustments_applied'] is False
           assert all(x['lineup_research_adjustment_applied'] is False for x in d['comparisons'])
-          assert all(x['injury_status'] in ('OUT','DOUBTFUL','QUESTIONABLE','PROBABLE','AVAILABLE','NOT_VERIFIED') for x in d['comparisons'])
+          assert all(x['injury_status'] in ('OUT','DOUBTFUL','QUESTIONABLE','PROBABLE','AVAILABLE','DAY_TO_DAY','NOT_VERIFIED') for x in d['comparisons'])
           assert d['opponent_defense_applied_to_model'] is False
           assert d['shadow_is_primary'] is False
           assert all(x['projection_explanation']['status']=='DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION' for x in d['comparisons'])
