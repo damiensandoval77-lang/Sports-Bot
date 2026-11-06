@@ -17,15 +17,17 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python3 iphone_bot/fetch_props.py
+      - name: Archive pregame bookmaker quotes
+        run: python3 iphone_bot/archive_observed_props.py
       - name: Publish changed dashboard data
         shell: bash
         run: |
-          if git diff --quiet -- docs/data.json; then
+          if git diff --quiet -- docs/data.json data/nba/odds/observed_props.csv && [ -z "$(git ls-files --others --exclude-standard -- data/nba/odds/observed_props.csv)" ]; then
             echo "No data changes"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data.json
+          git add docs/data.json data/nba/odds/observed_props.csv
           git commit -m "Update NBA sportsbook prop data"
           git push
