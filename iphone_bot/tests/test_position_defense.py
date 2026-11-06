@@ -34,9 +34,11 @@ class PositionDefenseTests(unittest.TestCase):
                          (enriched.PLAYER_ID=="GSW0")].iloc[0]
         # Miami allowed Golden State PG production of 11,12,13,14
         self.assertAlmostEqual(float(current["DVP_PTS_L5"]),12.5)
-        # Golden State PG faces Miami: GSW allowed Miami PG totals
-        # (21,22,23,24) in prior four games.
-        self.assertAlmostEqual(float(current["DVP_PTS_L5"]),22.5)
+        # Reverse direction: Miami PG faces GSW defense, whose preceding
+        # four opponent PG allowances were 21,22,23,24.
+        reverse=enriched[(enriched.GAME_DATE==pd.Timestamp("2025-01-05"))&
+                         (enriched.PLAYER_ID=="MIA0")].iloc[0]
+        self.assertAlmostEqual(float(reverse["DVP_PTS_L5"]),22.5)
 
     def test_merge_does_not_expand_game_rows(self):
         raw,positions=self.sample()
