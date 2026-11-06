@@ -161,7 +161,34 @@ def expected_opponents(game,team):
     if None in pair or pair[0]==pair[1] or team not in pair:return []
     return [pair[0] if pair[1]==team else pair[1]]
 
-def summary(rows,now=None):
+def pipeline_health(rows,source=None,now=None):
+    """Operational visibility, never inferred game results or retroactive grades."""
+    now=utc(now or datetime.now(timezone.utc).isoformat())
+    pending=[r for r in rows if r.get("status")=="PENDING"]
+    # A gap is actionable only when the matchup has passed the 5-hour buffer.
+    # Source-date lag does not prove that any individual player's game is final.
+    eligible=[r for r in pending if (now-utc(r["event_start"])).total_seconds()>=5*3600]
+    old=[r for r in eligible if (now-utc(r["event_start"])).total_seconds()>=48*3600]
+    late_teams={identity(r) for r in old}
+    meta=source if isinstance(source,dict) else {}
+    version=meta.get("source_version")
+    latest=meta.get("latest_game_date")
+    status="OK_AWAITING_MATCHUPS"
+    if old:status="OVERDUE_UNSETTLED_PICKS"
+    elif eligible:status="WAITING_FOR_COMPLETED_PLAYER_LOGS"
+    if not latest:status="NO_VALIDATED_BOXSCORE_SOURCE"
+    return {
+        "status":status,
+        "boxscore_source_version":version,
+        "latest_completed_player_game_date":latest,
+        "source_last_checked_at":meta.get("updated_at"),
+        "pending_total":len(pending),
+        "pending_past_game_buffer":len(eligible),
+        "pending_over_48_hours":len(late_teams),
+        "notice":"Overdue does not mean a loss; missing or delayed box scores must not be guessed."
+    }
+
+def summary(rows,now=None,source=None):
     now=utc(now or datetime.now(timezone.utc).isoformat())
     settled=[r for r in rows if r.get("status")=="SETTLED"]
     pending=[r for r in rows if r.get("status")=="PENDING"]
@@ -176,6 +203,7 @@ def summary(rows,now=None):
        "method":METHOD,"real_money_wagered":False,
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
        "performance":compute_performance(rows),
+       "pipeline_health":pipeline_health(rows,source,now),
        "independent_player_game_markets":unique_games,
        "wins":wins,"losses":losses,"pushes":pushes,
        "win_rate_ex_push":round(wins/(wins+losses),4) if wins+losses else None,
@@ -202,7 +230,9 @@ def main():
     if games_path.exists():
         rows=settle(rows,json.loads(games_path.read_text()))
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
-    report=summary(rows)
+    source_path=ROOT/"docs/current_form.json"
+    source=json.loads(source_path.read_text()) if source_path.exists() else None
+    report=summary(rows,source=source)
     RESULTS.write_text(json.dumps(report,indent=2)+"\n")
     print("PAPER PIPELINE:",json.dumps({x:report[x] for x in
           ("captured","pending","settled","wins","losses","pushes","paper_roi_per_graded_unit")}),flush=True)
