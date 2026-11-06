@@ -10,6 +10,7 @@ import re
 import unicodedata
 import urllib.parse
 import urllib.request
+import urllib.error
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -115,9 +116,26 @@ def parse_rows(text,roster):
     return list(result.values())
 
 def read(url,timeout=12):
-    req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 (compatible; Sports-Bot-Research/1.0)"})
+    """Request public NBA documents with ordinary browser headers.
+
+    Keep requests bounded; upstream 403/429 responses must never be treated as
+    valid official injury data or bypassed through undocumented APIs.
+    """
+    req=urllib.request.Request(url,headers={
+        "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
+        "Accept":"application/pdf,text/html;q=0.9,*/*;q=0.8",
+        "Accept-Language":"en-US,en;q=0.9",
+    })
     with urllib.request.urlopen(req,timeout=timeout) as response:
         return response.read()
+
+
+def failure_label(error):
+    if isinstance(error,urllib.error.HTTPError):
+        return "HTTP_"+str(error.code)
+    if isinstance(error,urllib.error.URLError):
+        return "URL_ERROR"
+    return type(error).__name__
 
 def fallback_links(now):
     """Bounded official static URL candidates when the injury index is blocked.
@@ -168,31 +186,42 @@ def main():
           "notice":"No NBA status is inferred for an unlisted player; manual lineup verification is still required."}
     try:
         source="official_index"
+        diagnostics={"index":"NOT_ATTEMPTED","pdf_attempts":0,"pdf_http_errors":{}}
         try:
             html=read(PAGE).decode("utf-8","replace")
             links=report_links(html,now)
-        except (OSError,TimeoutError,ValueError):
+            diagnostics["index"]="OK_"+str(len(links))+"_LINKS"
+        except (OSError,TimeoutError,ValueError) as error:
             links=[]
+            diagnostics["index"]=failure_label(error)
         if not links:
             source="official_static_pdf_fallback"
-        # Try index links first, then a bounded static-URL fallback if stale
-        # HTML or a transient host error blocks the first PDF.
-        links=(links[:5]+fallback_links(now))
+        # Use dated URLs explicitly published by the NBA first.
+        # Static filenames are merely candidate URLs, never proof of a report.
+        links=links[:5]+fallback_links(now)
         links=list(dict((url,(timestamp,url)) for timestamp,url in links).values())
+        base["retrieval_diagnostics"]=diagnostics
         from pypdf import PdfReader
         pdf_bytes=None
         issued=None
         url=None
         last_error=None
         for timestamp,link in links[:12]:
+            diagnostics["pdf_attempts"]+=1
             try:
-                result=read(link,timeout=10)
-                if not result.startswith(b"%PDF"):continue
+                result=read(link,timeout=7)
+                if not result.startswith(b"%PDF"):
+                    diagnostics["pdf_http_errors"]["NON_PDF_RESPONSE"]=diagnostics["pdf_http_errors"].get("NON_PDF_RESPONSE",0)+1
+                    continue
                 pdf_bytes=result
                 issued,url=timestamp,link
                 break
             except (OSError,TimeoutError,ValueError) as error:
-                last_error=type(error).__name__
+                last_error=failure_label(error)
+                diagnostics["pdf_http_errors"][last_error]=diagnostics["pdf_http_errors"].get(last_error,0)+1
+                # Do not spend the whole CI budget retrying the same forbidden host.
+                if last_error in ("HTTP_401","HTTP_403","HTTP_429"):
+                    break
                 continue
         if not pdf_bytes:
             raise RuntimeError("Official static PDF not accessible: "+str(last_error or "not found"))
@@ -208,7 +237,8 @@ def main():
         print("Official NBA injury report:",url,"matched player statuses:",len(players),flush=True)
     except (OSError,ValueError,KeyError,ImportError,RuntimeError) as error:
         base["official_unavailable_reason"]=type(error).__name__
-        print("Official NBA injury report unavailable:",type(error).__name__,flush=True)
+        print("Official NBA injury report unavailable:",type(error).__name__,
+              "details:",json.dumps(base.get("retrieval_diagnostics",{}),sort_keys=True),flush=True)
         try:
             url="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries"
             response=json.loads(read(url,timeout=12))
@@ -224,7 +254,7 @@ def main():
                         notice="ESPN injury listing: NOT official NBA game-day confirmation. Recheck official report and starting lineup.")
             print("Third-party ESPN injury context:",len(observed),"players",flush=True)
         except (OSError,TimeoutError,ValueError,KeyError,TypeError) as fallback:
-            base["failure_type"]=type(fallback).__name__
+            base["failure_type"]=failure_label(fallback)
             print("Third-party injury backup unavailable:",type(fallback).__name__,flush=True)
     OUT.write_text(json.dumps(base,indent=2)+"\n")
 
