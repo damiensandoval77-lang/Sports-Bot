@@ -19,7 +19,7 @@ from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
 from projection_explanation import explain_projection
-from research_context import minutes_estimate,positional_allowance,teammate_on_off
+from research_context import minutes_estimate,positional_allowance,teammate_on_off,injury_minutes_research,minutes_walkforward_backtest
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -243,6 +243,11 @@ def main():
                     row["teammate_absence_splits"].append({
                         "teammate":teammate["player"],**observed})
                 if len(row["teammate_absence_splits"])>=2:break
+        # Hypothetical injury-minute research requires an actual official NBA
+        # game-date match. Third-party labels cannot trigger this scenario.
+        row["injury_minutes_research"]=injury_minutes_research(
+            history,all_games,upcoming_date,row["team"],
+            team_out if official_report else [])
         row["defense_in_model"]=False
         row["projection"]=round(projection,1)
         # Build a combined median from UNROUNDED original and shadow forecasts.
@@ -320,6 +325,8 @@ def main():
        "injury_context_source":injury_feed.get("status") if report_fresh else "UNAVAILABLE",
        "official_injury_report_url":injury_feed.get("source_pdf") if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" else None,
        "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":False,
+       "injury_minutes_research_status":"DESCRIPTIVE_ONLY_NOT_APPLIED",
+       "minutes_baseline_validation":minutes_walkforward_backtest(all_games),
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
        "line_aggregation_method":"MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
        "markets_with_multiple_books":sum(v["line_book_count"]>=2 for v in valid),
