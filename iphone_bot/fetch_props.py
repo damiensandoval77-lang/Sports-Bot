@@ -62,7 +62,18 @@ def balanced_bookmaker_rows(bookmakers,event,max_outcomes):
                     dict(common,direction="More",odds=sides["Over"]),
                     dict(common,direction="Less",odds=sides["Under"])])
         if all_pairs:
-            queues.append(deque(all_pairs))
+            # Balance market TYPES inside a book as well; otherwise a points
+            # block can exhaust the cap before rebounds, assists or PRA.
+            types={}
+            for pair in all_pairs:
+                types.setdefault(pair[0]["stat"],deque()).append(pair)
+            mixed=[]
+            while any(types.values()):
+                for market in MARKETS:
+                    label=market.replace("player_","").replace("_"," ").title()
+                    if types.get(label):
+                        mixed.append(types[label].popleft())
+            queues.append(deque(mixed))
     result=[]
     while queues and len(result)+2<=max_outcomes:
         remaining=[]
