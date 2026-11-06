@@ -41,6 +41,7 @@ jobs:
           python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/fetch_current_form.py
           python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_paired_model_comparison.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python - <<'PY'
