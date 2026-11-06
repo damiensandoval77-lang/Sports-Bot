@@ -4,11 +4,7 @@ on:
 permissions:
   contents: read
 jobs:
-  seasons:
-    strategy:
-      fail-fast: false
-      matrix:
-        season: ['2022-23', '2023-24', '2024-25', '2025-26']
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -16,84 +12,30 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r iphone_bot/requirements-training.txt
-      - name: Download one season
-        env:
-          NBA_SEASON: ${{ matrix.season }}
-        run: |
-          python -u - <<'PY'
-          import os
-          from pathlib import Path
-          from src.sports.nba import builder
-          builder.SEASONS=[os.environ['NBA_SEASON']]
-          builder.fetch_all_game_logs()
-          p=Path(builder.OUTPUT_FILE)
-          assert p.exists() and p.stat().st_size>10000, 'NBA API did not return sufficient game data'
-          PY
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nba-season-${{ matrix.season }}
-          path: data/nba/raw/raw_game_logs.csv
-          retention-days: 7
-          if-no-files-found: error
-  positions:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install -r iphone_bot/requirements-training.txt
-      - name: Download roster positions
-        run: python -u -c "from src.sports.nba.builder import fetch_player_positions; fetch_player_positions()"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nba-positions
-          path: data/nba/processed/player_positions.csv
-          retention-days: 7
-          if-no-files-found: error
-  combine:
-    needs: [seasons, positions]
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install -r iphone_bot/requirements-training.txt
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: nba-season-*
-          path: downloaded
-      - uses: actions/download-artifact@v4
-        with:
-          name: nba-positions
-          path: data/nba/processed
-      - name: Merge historical logs
+      - name: Install dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests
+      - name: Download archived NBA box scores (no NBA API calls)
+        run: python -u iphone_bot/download_archived_nba.py
+      - name: Validate archived game logs
         run: |
           python - <<'PY'
-          from pathlib import Path
           import pandas as pd
-          files=sorted(Path('downloaded').rglob('raw_game_logs.csv'))
-          assert len(files)==4, f'Expected 4 seasons; got {len(files)}'
-          frames=[pd.read_csv(p) for p in files]
-          assert all(len(f)>1000 for f in frames), 'Insufficient season records'
-          out=Path('data/nba/raw/raw_game_logs.csv')
-          out.parent.mkdir(parents=True,exist_ok=True)
-          pd.concat(frames,ignore_index=True).to_csv(out,index=False)
-          print('Merged',sum(map(len,frames)),'rows')
+          df=pd.read_csv('data/nba/raw/raw_game_logs.csv')
+          assert len(df)>80000, f'Insufficient game rows: {len(df)}'
+          assert df.SEASON_ID.nunique()==4, 'Expected four seasons'
+          assert not df.duplicated(['PLAYER_ID','GAME_ID']).any()
+          print('Validated',len(df),'rows')
           PY
-      - name: Engineer features
+      - name: Build historical features
         run: python -u -m src.sports.nba.features
-      - name: Verify training dataset
+      - name: Verify nonempty training dataset
         run: |
           python - <<'PY'
           import pandas as pd
           df=pd.read_csv('data/nba/processed/training_dataset.csv')
-          assert len(df)>1000 and {'PTS','REB','AST'}.issubset(df.columns)
-          print('Dataset:',df.shape)
+          assert len(df)>1000, f'Insufficient training rows: {len(df)}'
+          assert {'PTS','REB','AST','PRA'}.issubset(df.columns)
+          print('Dataset shape:',df.shape)
           PY
       - uses: actions/upload-artifact@v4
         with:
