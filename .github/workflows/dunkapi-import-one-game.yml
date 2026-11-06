@@ -1,0 +1,47 @@
+name: Import one DunkAPI historical NBA game
+on:
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'Verified completed DunkAPI NBA game ID'
+        required: true
+        default: '401810837'
+      credit_limit:
+        description: 'Maximum allowed credits for this single game (0-20)'
+        required: true
+        default: '20'
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: dunkapi-historical-import
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Import at most one completed game, with cost estimate cap
+        env:
+          DUNKAPI_KEY: ${{ secrets.DUNKAPI_KEY }}
+          DUNK_GAME_ID: ${{ inputs.game_id }}
+          DUNK_CREDIT_LIMIT: ${{ inputs.credit_limit }}
+        run: python -u iphone_bot/import_dunkapi_one_game.py
+      - name: Commit new validated historical quotes
+        run: |
+          if [ ! -f data/nba/odds/observed_props.csv ]; then
+            echo "No valid quotes to archive"
+            exit 0
+          fi
+          git add data/nba/odds/observed_props.csv
+          if git diff --cached --quiet; then
+            echo "No new records"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Archive DunkAPI historical NBA bookmaker lines"
+          git push
