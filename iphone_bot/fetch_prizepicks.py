@@ -210,19 +210,26 @@ def main():
     comp=json.loads((ROOT/"docs/ai_comparisons.json").read_text())
     if comp.get("status")!="EXPERIMENTAL_NON_CALIBRATED":
         raise ValueError("AI comparison source invalid")
-    url=BASE+"?"+urllib.parse.urlencode({"league":"NBA","status":"active","view":"compact","limit":1000})
+    # Search only players we can actually compare, rather than consuming
+    # monthly credits on 3,000 unrelated rows from the ID-ordered board.
+    # The full JSON shape retains event/selection context missing in compact.
+    names=[]
+    for comparison in comp["comparisons"]:
+        name=str(comparison.get("player","")).strip()
+        if name and name not in names:names.append(name)
+        if len(names)>=3:break
     pages=[]
-    seen=set()
-    for _ in range(MAX_PAGES):
+    requested=[]
+    for name in names:
+        url=BASE+"?"+urllib.parse.urlencode({
+            "league":"NBA","status":"active","search":name,"limit":200})
         page=read_url(url,key)
         if not isinstance(page,dict):raise ValueError("Invalid response")
         pages.append(page)
-        cursor=page.get("meta",{}).get("next_cursor")
-        if cursor is None:break
-        if cursor in seen:raise ValueError("Repeated pagination cursor")
-        seen.add(cursor)
-        url=BASE+"?"+urllib.parse.urlencode({"league":"NBA","status":"active","view":"compact","limit":1000,"cursor":cursor})
+        requested.append(name)
     out=publish(pages,comp["comparisons"])
+    out["searched_player_count"]=len(requested)
+    out["searched_players"]=requested
     DEST.write_text(json.dumps(out,indent=2)+"\n")
     print("PrizePicks matched observations:",out["matched_count"],
           "raw rows:",out["raw_rows_read"],"eligible:",out["eligible_upcoming_offers"],
