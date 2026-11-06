@@ -12,7 +12,7 @@ class PaperPipelineTests(unittest.TestCase):
                           "under_model_probability":.57,"hypothetical_under_ev_pct":6.3}]}
     def game(self,points=23):
         return {"id":"123","date":"2026-11-12","team":"BOS","opponent":"MIA",
-                "PTS":points,"REB":5,"AST":4,"PRA":points+9}
+                "PTS":points,"REB":5,"AST":4,"PRA":points+9,"MIN":30}
     def test_freeze_before_start_and_settle_real_book_price(self):
         market=self.market()
         at="2026-11-12T18:00:00Z"
@@ -29,6 +29,34 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_nonfinite_and_incomplete_boxscores_never_get_graded(self):
+        rows=snapshot([self.market()],"2026-11-12T20:00:00Z")
+        for bad in (dict(self.game(),MIN=0),
+                    dict(self.game(),MIN=75),
+                    dict(self.game(),PTS=float("nan")),
+                    dict(self.game(),PTS=-2)):
+            settled=settle(rows,[bad],"2026-11-13T07:00:00Z")
+            self.assertTrue(all(x["status"]=="PENDING" for x in settled))
+
+    def test_pra_inconsistency_remains_pending(self):
+        market=self.market()
+        market["stat"]="PRA"
+        rows=snapshot([market],"2026-11-12T20:00:00Z")
+        bad=dict(self.game(),PRA=100)
+        settled=settle(rows,[bad],"2026-11-13T07:00:00Z")
+        self.assertTrue(all(x["status"]=="PENDING" for x in settled))
+
+    def test_ambiguous_duplicate_player_games_not_graded(self):
+        rows=snapshot([self.market()],"2026-11-12T20:00:00Z")
+        settled=settle(rows,[self.game(23),self.game(24)],"2026-11-13T07:00:00Z")
+        self.assertTrue(all(x["status"]=="PENDING" for x in settled))
+
+    def test_nonfinite_pregame_forecast_is_not_locked(self):
+        for forecast in (float("nan"),float("inf"),-1):
+            market=self.market()
+            market["projection"]=forecast
+            self.assertEqual(snapshot([market],"2026-11-12T20:00:00Z"),[])
+
     def test_json_and_python_utc_format_are_same_immutable_pick(self):
         first=snapshot([self.market()],"2026-11-12T20:00:00Z")
         mixed=[dict(row,event_start=row["event_start"].replace("+00:00",".000Z"))
