@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T22:52:46.230917+00:00",
+  "generated_at": "2026-11-06T22:55:30.357312+00:00",
   "status": "UNAVAILABLE",
   "injury_data_verified": false,
   "players": [],
@@ -8,7 +8,23 @@
   "retrieval_diagnostics": {
     "index": "OK_72_LINKS",
     "pdf_attempts": 1,
-    "pdf_http_errors": {}
+    "pdf_http_errors": {},
+    "pdf_parse": [
+      {
+        "mode": "layout",
+        "characters": 34200,
+        "matches": 0,
+        "has_report_header": false,
+        "has_game_date": true
+      },
+      {
+        "mode": "plain",
+        "characters": 7871,
+        "matches": 0,
+        "has_report_header": false,
+        "has_game_date": true
+      }
+    ]
   },
   "official_unavailable_reason": "ValueError",
   "failure_type": "ValueError"
