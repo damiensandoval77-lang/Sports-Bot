@@ -79,7 +79,13 @@ def main():
     except (ValueError,TypeError,KeyError):
         injury_feed={}
         report_fresh=False
-    official_by_id={str(p["player_id"]):p for p in injury_feed.get("players",[])} if report_fresh else {}
+    # Game-specific official report rows cannot leak into a different fixture.
+    # ESPN's generic league listing has no game date and remains nonofficial.
+    official_by_event={(str(p["player_id"]),str(p.get("game_date"))):p
+                       for p in injury_feed.get("players",[])
+                       if p.get("game_date") and p.get("status")!="CONFLICTING_EXTRACT"} if report_fresh else {}
+    espn_by_id={str(p["player_id"]):p for p in injury_feed.get("players",[])
+                if p.get("provider")=="ESPN_THIRD_PARTY"} if report_fresh else {}
 
     if form.get("season")!="2026-27":raise ValueError("Not current season")
     form_time=utc(form["updated_at"])
@@ -205,15 +211,19 @@ def main():
         row["position_group_context"]=positional_allowance(
             all_games,upcoming_date,opponent,recent_position,target)
         row["research_position"]=recent_position
-        # NBA official injury reports may include next-day games not yet
-        # submitted. Do not carry a status to a different game date.
-        game_day_report=report_fresh and issued.astimezone(
+        # Match official injury status by BOTH exact player ID and game date.
+        # An NBA PDF can contain multiple dates and multiple team sections.
+        official_report=report_fresh and injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED"
+        generic_espn=report_fresh and injury_feed.get("status")=="THIRD_PARTY_ESPN_INJURY_CONTEXT"
+        espn_same_day=generic_espn and issued.astimezone(
             ZoneInfo("America/New_York")).date().isoformat()==upcoming_date
-        verified_status=official_by_id.get(str(row["player_id"])) if game_day_report else None
+        verified_status=(official_by_event.get((str(row["player_id"]),upcoming_date))
+                         if official_report else
+                         espn_by_id.get(str(row["player_id"])) if espn_same_day else None)
         if verified_status and verified_status.get("team")==row["team"] and verified_status.get("status")!="CONFLICTING_EXTRACT":
             row["injury_status"]=verified_status["status"].upper()
             row["injury_status_source"]=(
-                "OFFICIAL_NBA_REPORT" if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED"
+                "OFFICIAL_NBA_REPORT" if official_report
                 else "ESPN_THIRD_PARTY_NOT_CONFIRMED")
             row["injury_report_url"]=injury_feed.get("source_pdf") or injury_feed.get("source_url")
         else:
@@ -222,10 +232,11 @@ def main():
         row["requires_lineup_review"]=True
         row["lineup_research_adjustment_applied"]=False
         row["teammate_absence_splits"]=[]
-        if game_day_report:
-            team_out=[p for p in official_by_id.values()
-                if p.get("team")==row["team"] and str(p.get("status","")).upper()=="OUT"
-                and str(p["player_id"])!=str(row["player_id"])]
+        if official_report:
+            team_out=[p for (player_id,game_date),p in official_by_event.items()
+                if game_date==upcoming_date and p.get("team")==row["team"]
+                and str(p.get("status","")).upper()=="OUT"
+                and player_id!=str(row["player_id"])]
             for teammate in team_out[:8]:
                 observed=teammate_on_off(history,all_games,upcoming_date,teammate["player_id"],target)
                 if observed:
