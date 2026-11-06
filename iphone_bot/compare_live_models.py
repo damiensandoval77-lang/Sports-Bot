@@ -20,6 +20,7 @@ from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
 from projection_explanation import explain_projection
 from research_context import minutes_estimate,positional_allowance,teammate_on_off,injury_minutes_research,minutes_walkforward_backtest
+from minutes_model_v2 import forecast as minutes_v2_forecast,backtest as minutes_v2_backtest
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -206,6 +207,8 @@ def main():
         history=[g for g in history if g["date"]<upcoming_date]
         row["minutes_context"]=minutes_context(history)
         row["minutes_research"]=minutes_estimate(history,upcoming_date)
+        row["minutes_v2_research"]=minutes_v2_forecast(
+            history,upcoming_date,row["team"])
         recent_position=next((g.get("position") for g in reversed(history)
             if g.get("position")),None)
         row["position_group_context"]=positional_allowance(
@@ -327,6 +330,8 @@ def main():
        "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":False,
        "injury_minutes_research_status":"DESCRIPTIVE_ONLY_NOT_APPLIED",
        "minutes_baseline_validation":minutes_walkforward_backtest(all_games),
+       "minutes_v2_validation":minutes_v2_backtest(all_games),
+       "minutes_v2_applied_to_live_model":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
        "line_aggregation_method":"MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
        "markets_with_multiple_books":sum(v["line_book_count"]>=2 for v in valid),
