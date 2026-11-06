@@ -11,6 +11,8 @@ import json
 import pathlib
 import re
 import statistics
+import time
+import urllib.error
 import urllib.request
 from collections import defaultdict
 
@@ -22,14 +24,25 @@ PATTERN=re.compile(r"^NBA_players_game_log_2026-27_as_of_(\d{4}-\d{2}-\d{2})\.cs
 HEADERS={"User-Agent":"Sports-Bot-NBA-Research/1.0","Accept":"application/vnd.github+json"}
 
 def fetch(url):
+    """Retry transient provider/network errors; never silently substitute old logs."""
     request=urllib.request.Request(url,headers=HEADERS)
-    with urllib.request.urlopen(request,timeout=30) as response:
-        return response.read()
+    last_error=None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request,timeout=30) as response:
+                return response.read()
+        except (urllib.error.URLError,TimeoutError,ConnectionError) as error:
+            last_error=error
+            if isinstance(error,urllib.error.HTTPError) and error.code not in (429,500,502,503,504):
+                raise
+            if attempt<2:
+                time.sleep(2**attempt)
+    raise RuntimeError(f"NBA public game-log source unavailable after three attempts: {last_error}")
 
 def number(value):
     try:
         f=float(str(value).strip())
-        return f if f>=0 else None
+        return f if __import__("math").isfinite(f) and f>=0 else None
     except (ValueError,TypeError):
         return None
 
