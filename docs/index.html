@@ -70,6 +70,7 @@
 <div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
+<div class="source" id="injury-minutes-validation" aria-live="polite">Injury-minute research: waiting for locked pregame scenarios and completed-game evaluations.</div>
 <div class="performance-selector"><label for="perf-market">Performance market</label><select id="perf-market"><option value="">All markets</option><option value="PTS">Points</option><option value="REB">Rebounds</option><option value="AST">Assists</option><option value="PRA">PRA</option></select></div>
 <div class="source" id="weight-experiment">Chronological weighting research: waiting for independently settled outcomes.</div>
 <div class="source" id="paired-model-comparison" aria-live="polite">Same-games model comparison: awaiting settled picks.</div>
@@ -86,7 +87,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let ai=[],odds=[],form=[],paper=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -401,6 +402,26 @@ const left=node("div");left.append(node("strong","",p.player),node("div","match"
 appendValues(main,[["Last 5",fmt(statVal(p,stat,"l5"))],["Last 10",fmt(statVal(p,stat,"l10"))],["Season",fmt(statVal(p,stat,"season"))]]);box.append(main);return box});
 $("form-board").replaceChildren(...(nodes.length?nodes:[empty("No players found. Current-season form may be unavailable.")]))}
 function renderModelPerformance(){
+ const minutesNode=$("injury-minutes-validation");
+ const minutes=injuryMinutesValidation?.same_game_comparison;
+ if(!injuryMinutesValidation){
+  minutesNode.textContent="Injury minutes: pregame snapshot evaluation has not yet been published.";
+ }else if(!minutes?.observations){
+  minutesNode.textContent="Injury minutes (research only): "+
+    injuryMinutesValidation.captured+" locked before tipoff · "+
+    injuryMinutesValidation.pending+" awaiting completed-game minutes. No adjustment applied to live AI.";
+ }else{
+  const delta=minutes.scenario_minus_baseline_mae;
+  minutesNode.textContent="Injury minutes (research only; same "+minutes.observations+
+   " games): baseline MAE "+fmt(minutes.baseline_mae)+
+   " min · injury scenario MAE "+fmt(minutes.injury_scenario_mae)+
+   " min · scenario minus baseline "+(delta>0?"+":"")+fmt(delta)+
+   " min (negative is better). "+minutes.scenario_better_games+" improved, "+
+   minutes.baseline_better_games+" worsened, "+minutes.tied_games+" tied. "+
+   (minutes.sufficient_sample?"Observational; not proof of improvement.":
+    "Early sample; no reliable conclusion yet.")+" Live AI unchanged.";
+ }
+
  const target=$("performance-comparison");
  const health=paper?.pipeline_health;
  const healthNode=$("pipeline-health");
@@ -514,7 +535,7 @@ else {note.textContent="Experimental model projections, NOT verified probabiliti
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
- const [a,o,f,p,pp,inj]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json")]);
+ const [a,o,f,p,pp,inj,im]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
@@ -522,6 +543,7 @@ else {oddsFresh=false;odds=[]}
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[]}
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
+injuryMinutesValidation=im.status==="fulfilled"&&im.value.status==="PREGAME_LOCKED_INJURY_MINUTES_RESEARCH"?im.value:null;
 ppState=pp.status==="fulfilled"?pp.value.status:"UNAVAILABLE";
 ppStamp=pp.status==="fulfilled"?pp.value.generated_at:null;
 ppErrorCode=pp.status==="fulfilled"?pp.value.provider_error_code:null;
