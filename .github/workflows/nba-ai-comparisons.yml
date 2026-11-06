@@ -29,12 +29,13 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
         run: |
-          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py
+          python -m py_compile iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_experimental_probability.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_hypothetical_ev.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
       - name: Fetch 2026-27 current-season player games
@@ -90,6 +91,8 @@ jobs:
           assert all(x['injury_status']=='NOT_VERIFIED' and x['requires_lineup_review'] is True for x in d['comparisons'])
           paper=json.load(open('docs/paper_results.json'))
           assert paper['real_money_wagered'] is False
+          assert paper['performance']['status']=='PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES'
+          assert set(paper['performance']['models'])=={'original','opponent_aware','combined'}
           assert paper['method']=='PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY'
           assert paper['captured']>=paper['settled']+paper['pending']
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
