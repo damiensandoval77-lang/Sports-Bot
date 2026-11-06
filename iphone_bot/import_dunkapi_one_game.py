@@ -7,6 +7,8 @@ import csv
 import datetime as dt
 import json
 import os
+import re
+import pandas as pd
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
@@ -58,8 +60,23 @@ def main():
     if not isinstance(props,list):
         raise ValueError("Invalid props payload")
     print("Provider returned",len(props),"prop records",flush=True)
+    # Fail closed unless a provider game ID is verified against NBA box-score ID.
+    verified_ids={"401810837":("0022500982","2026-03-15")}
+    if GAME_ID not in verified_ids:
+        raise SystemExit("Game ID not yet independently verified; no paid import should be requested.")
+    nba_game_id,verified_date=verified_ids[GAME_ID]
+    box_path=ROOT/"data/nba/raw/raw_game_logs.csv"
+    if not box_path.exists():
+        raise SystemExit("NBA box-score archive missing; cannot validate player/game identity.")
+    boxes=pd.read_csv(box_path,dtype={"GAME_ID":"string"},low_memory=False)
+    subset=boxes.loc[(boxes["GAME_ID"].astype(str)==nba_game_id)&(boxes["GAME_DATE"].astype(str)==verified_date)]
+    def normalize_name(x):return re.sub(r"[^a-z0-9]","",str(x).casefold())
+    allowed={normalize_name(n) for n in subset["PLAYER_NAME"].dropna()}
+    if len(allowed)<8:
+        raise SystemExit("Verified box-score roster missing or unexpectedly small; refusing import.")
+    print("Verified NBA game",nba_game_id,"with",len(allowed),"player names")
     new=[]
-    rejected={"missing":0,"post_tipoff":0,"bad_price":0,"market":0}
+    rejected={"missing":0,"post_tipoff":0,"bad_price":0,"market":0,"wrong_game_player":0}
     for p in props:
         market=MARKETS.get(p.get("market"))
         if market is None:
@@ -88,6 +105,9 @@ def main():
         date=str(p.get("game_date","")).strip()
         if not name or not book or not date:
             rejected["missing"]+=1
+            continue
+        if date!=verified_date or normalize_name(name) not in allowed:
+            rejected["wrong_game_player"]+=1
             continue
         new.append({
             "game_date":date,"player_name":name,"market":market,
