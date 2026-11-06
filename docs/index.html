@@ -24,7 +24,7 @@ const nodes=results.map(p=>{const box=document.createElement('div');box.classNam
 const title=document.createElement('div');title.className='name';title.textContent=p.player+' · '+p.team+' · '+p.games+' games';box.append(title);
 const sub=document.createElement('small');sub.textContent='Latest completed game: '+p.latest_game+' · observed averages (NOT AI picks)';box.append(sub);
 const pills=document.createElement('div');pills.className='pills';
-for(const k of ['PTS','REB','AST','PRA']){const v=p.metrics?.[k];if(!v)continue;const d=document.createElement('div');d.className='pill';d.textContent=k+' L5 '+v.l5+' · L10 '+v.l10;pills.append(d)}
+for(const k of ['PTS','REB','AST','PRA']){const v=p.metrics?.[k];if(!v)continue;const d=document.createElement('div');d.className='pill';d.textContent=k+' · '+(v.l5===null?'L5 unavailable':'L5 '+v.l5)+' · '+(v.l10===null?'L10 unavailable':'L10 '+v.l10);pills.append(d)}
 box.append(pills);return box});
 el.replaceChildren(...nodes);if(!nodes.length)el.textContent='No matching player in current-season completed games.'}
 async function loadCurrent(){try{const res=await fetch('./current_form.json?cache='+Date.now());if(!res.ok)throw Error('Not available');const data=await res.json();if(data.season!=='2026-27'||data.is_ai!==false||!Array.isArray(data.players))throw Error('Invalid source');
