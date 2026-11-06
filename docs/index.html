@@ -40,7 +40,7 @@
 .compact-prop .compact-final strong{font-size:23px}
 .model-chance{font-size:11px}
 }
-</style></head>
+.load-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-3px 0 12px;color:#b4c6de;font-size:10px;flex-wrap:wrap}.load-toolbar .btn{font-size:12px;padding:9px 11px;min-height:36px}.load-toolbar span{flex:1;min-width:180px;line-height:1.4}@media(max-width:520px){.load-toolbar{align-items:flex-start}.load-toolbar span{font-size:10px}}</style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
@@ -50,6 +50,7 @@
 <button class="tab" data-tab="form" aria-selected="false">Player Form</button>
 <button class="tab" data-tab="results" aria-selected="false">Real Results</button></nav>
 <div id="global-warning" class="notice">Loading current market and player data…</div>
+<div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
 <div class="source">Combined AI projection is the midpoint of two models. *Percentage ranking still uses original-model experimental estimates, not validated combined hit rates. Expand for details.</div><div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
@@ -243,7 +244,9 @@ const note=$("global-warning");if(!aiFresh){note.textContent="AI board unavailab
 else if(ai.length===0){note.textContent="No upcoming team-matched AI comparisons yet. This can happen when markets are closed or no valid props are available."}
 else {note.textContent="Experimental model projections, NOT verified probabilities or +EV picks. Sportsbook prices change; check injuries and game status."}}
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
-async function refresh(){const [a,o,f,p]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json")]);
+async function refresh(){
+ $("data-health").textContent="Checking feeds…";
+ const [a,o,f,p]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
@@ -251,10 +254,36 @@ else {oddsFresh=false;odds=[]}
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[]}
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
-refreshOverview();renderAI();renderOdds();renderForm();renderPaper()}
+const status=[];
+ status.push(a.status==="fulfilled"?"AI file loaded"+(aiFresh?"":" (stale)"):"AI fetch failed");
+ status.push(o.status==="fulfilled"?"Odds file loaded"+(oddsFresh?"":" (stale)"):"Odds fetch failed");
+ status.push(f.status==="fulfilled"?"Player form loaded":"Form fetch failed");
+ status.push(p.status==="fulfilled"?"Results loaded":"Results fetch failed");
+ $("data-health").textContent=status.join(" · ");
+ try{
+  refreshOverview();
+  renderAI();
+  renderOdds();
+  renderForm();
+  renderPaper();
+ }catch(error){
+  $("status").textContent="DISPLAY ERROR";
+  $("status").className="status warn";
+  $("global-warning").textContent="Dashboard display problem: "+String(error.message||error)+". Tap Refresh data or reopen the page.";
+  $("data-health").textContent+=" · Display error";
+  console.error("Sports-Bot render error",error);
+ }
+}
 for(const control of ["ai-search","ai-stat","ai-sort"])$(control).addEventListener("input",renderAI);
 for(const control of ["odds-search","odds-stat","odds-book"])$(control).addEventListener("input",renderOdds);
 for(const control of ["form-search","form-stat","form-sort"])$(control).addEventListener("input",renderForm);
 for(const btn of document.querySelectorAll(".tab"))btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b===btn)));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="tab-"+btn.dataset.tab));});
-refresh();
+$("refresh-now").addEventListener("click",()=>refresh().catch(error=>{
+ $("data-health").textContent="Refresh failed: "+String(error.message||error);
+}));
+refresh().catch(error=>{
+ $("status").textContent="LOAD ERROR";
+ $("global-warning").textContent="Data request failed: "+String(error.message||error);
+ $("data-health").textContent="Try Refresh data";
+});
 </script></body></html>
