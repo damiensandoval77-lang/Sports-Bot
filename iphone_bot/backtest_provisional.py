@@ -7,7 +7,6 @@ from rolling statistics; NEVER label them as historical sportsbook odds.
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from math import floor
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import HistGradientBoostingRegressor
@@ -83,7 +82,14 @@ def main():
         probabilities=empirical_probability(residual,pred_test,proxy_line)
         predicted_side=(probabilities>=.5).astype(int)
         correct=(predicted_side==actual)
-        baseline_prob=np.full(len(actual),actual.mean())
+        if f"{target}_L10" in X:
+            valid_proxy=X.loc[va,f"{target}_L10"].to_numpy()
+        else:
+            valid_proxy=(X.loc[va,"PTS_L10"]+X.loc[va,"REB_L10"]+
+                         X.loc[va,"AST_L10"]).to_numpy()
+        valid_line=np.floor(np.maximum(valid_proxy,0))+.5
+        historical_over_rate=float((y.loc[va].to_numpy()>valid_line).mean())
+        baseline_prob=np.full(len(actual),historical_over_rate)
         result={
             "target":target,
             "train_rows":int(tr.sum()),"validation_rows":int(va.sum()),
