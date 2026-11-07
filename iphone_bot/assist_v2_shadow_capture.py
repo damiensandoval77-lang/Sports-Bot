@@ -9,11 +9,11 @@ from pathlib import Path
 try:
     from .assist_v2_research import forecast
     from .opportunity_backtest import histories, opportunity
-    from .paper_pick_pipeline import utc, expected_opponents, identity, settle
+    from .paper_pick_pipeline import utc, expected_opponents, identity, settle, payout
 except ImportError:
     from assist_v2_research import forecast
     from opportunity_backtest import histories, opportunity
-    from paper_pick_pipeline import utc, expected_opponents, identity, settle
+    from paper_pick_pipeline import utc, expected_opponents, identity, settle, payout
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/"docs/assist_v2_shadow_ledger.json"
@@ -50,10 +50,6 @@ def capture(board,games,existing,now=None):
                 if prediction["projection"]==line:continue
                 side="OVER" if prediction["projection"]>line else "UNDER"
                 odds=quote.get("over" if side=="OVER" else "under")
-                try:
-                    from .paper_pick_pipeline import payout
-                except ImportError:
-                    from paper_pick_pipeline import payout
                 try:payout(odds)
                 except (TypeError,ValueError):continue
                 result.append({"side":side,"american_odds":int(odds),"event_start":start.isoformat(),"captured_at":stamp.isoformat(),
@@ -77,20 +73,38 @@ def grade(records,completed_games,now=None):
     return settle(records,completed_games,now=now)
 
 def summary(records):
+    """One observation per event/player/stat/line; same locked V2 and baseline."""
     unique={}
-    for r in records:
+    for r in sorted(records,key=lambda r:r.get("captured_at","")):
         if r.get("status")!="SETTLED":continue
-        key=(r["event_start"],r["player_id"],r["team"],r["market"],r["line"])
+        key=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["team"],
+             r["market"],float(r["line"]))
         unique.setdefault(key,r)
-    rows=list(unique.values())
-    decisions=[r for r in rows if r.get("result") in ("WIN","LOSS")]
+    decisions=[r for r in unique.values() if r.get("result") in ("WIN","LOSS")]
+    baseline_wins=baseline_losses=0
+    v2_error=baseline_error=0.
+    for r in decisions:
+        actual=float(r["actual"]);line=float(r["line"])
+        v2_error+=abs(float(r["v2_projection"])-actual)
+        baseline_error+=abs(float(r["baseline_projection"])-actual)
+        b=float(r["baseline_projection"])
+        if b==line:continue
+        if (actual>line)==(b>line):baseline_wins+=1
+        else:baseline_losses+=1
+    n=len(decisions)
+    bn=baseline_wins+baseline_losses
     return {"captured":len(records),"settled":sum(r.get("status")=="SETTLED" for r in records),
             "pending":sum(r.get("status")=="PENDING" for r in records),
-            "independent_settled_markets":len(rows),
+            "independent_settled_markets":len(unique),
+            "v2_direction_eligible":n,
             "wins":sum(r["result"]=="WIN" for r in decisions),
             "losses":sum(r["result"]=="LOSS" for r in decisions),
-            "hit_rate":round(sum(r["result"]=="WIN" for r in decisions)/len(decisions),4) if decisions else None,
-            "research_only":True}
+            "hit_rate":round(sum(r["result"]=="WIN" for r in decisions)/n,4) if n else None,
+            "v2_mae":round(v2_error/n,4) if n else None,
+            "baseline_wins":baseline_wins,"baseline_losses":baseline_losses,
+            "baseline_hit_rate":round(baseline_wins/bn,4) if bn else None,
+            "baseline_mae":round(baseline_error/n,4) if n else None,
+            "research_only":True,"prospective_pretip_locked":True}
 
 def main():
     parser=argparse.ArgumentParser()
@@ -100,7 +114,13 @@ def main():
     if args.mode=="capture":
         if not BOARD.exists() or not GAMES.exists():
             raise RuntimeError("Missing pregame board or history")
-        records=capture(json.loads(BOARD.read_text()),json.loads(GAMES.read_text()),old)
+        board=json.loads(BOARD.read_text())
+        try:
+            records=capture(board,json.loads(GAMES.read_text()),old)
+        except ValueError as exc:
+            if str(exc)!="Board is not fresh":raise
+            print("SKIP_STALE_BOARD: retaining locked predictions")
+            records=old
     else:
         try:
             from .fetch_final_boxscores import gather
