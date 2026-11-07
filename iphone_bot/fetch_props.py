@@ -15,8 +15,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "data.json"
 BASE = "https://api.the-odds-api.com/v4/sports/basketball_nba"
 MARKETS = ("player_points", "player_rebounds", "player_assists", "player_points_rebounds_assists")
-MAX_EVENTS = min(3, max(1, int(os.environ.get('ODDS_MAX_EVENTS', '2'))))
-MAX_OUTCOMES_PER_EVENT = 450
+MAX_EVENTS = min(20, max(1, int(os.environ.get('ODDS_MAX_EVENTS', '15'))))
+MAX_OUTCOMES_PER_EVENT = min(1600, max(100, int(os.environ.get('ODDS_OUTCOMES_PER_EVENT', '1000'))))
 MIN_REMAINING_CREDITS = 12  # Stop before the account is nearly depleted.
 
 def request(path, key, **params):
@@ -67,12 +67,23 @@ def balanced_bookmaker_rows(bookmakers,event,max_outcomes):
             types={}
             for pair in all_pairs:
                 types.setdefault(pair[0]["stat"],deque()).append(pair)
+            # Round-robin distinct PLAYERS within each market, not only the
+            # four stat types. This prevents a few stars or alphabetical
+            # provider ordering from consuming all available row slots.
             mixed=[]
-            while any(types.values()):
+            player_queues={}
+            for label,pairs in types.items():
+                by_player={}
+                for pair in pairs:
+                    by_player.setdefault(pair[0]["player"].casefold(),deque()).append(pair)
+                player_queues[label]=by_player
+            while any(any(by_player.values()) for by_player in player_queues.values()):
                 for market in MARKETS:
                     label=market.replace("player_","").replace("_"," ").title()
-                    if types.get(label):
-                        mixed.append(types[label].popleft())
+                    by_player=player_queues.get(label,{})
+                    for player in sorted(by_player):
+                        if by_player[player]:
+                            mixed.append(by_player[player].popleft())
             queues.append(deque(mixed))
     result=[]
     while queues and len(result)+2<=max_outcomes:
@@ -98,6 +109,7 @@ def main():
         picks = []
         remaining = None
         inspected = 0
+        covered_events=[]
         for event in upcoming[:MAX_EVENTS]:
             if remaining is not None and int(remaining) < MIN_REMAINING_CREDITS:
                 print('Stopping early to preserve Odds API credits.', flush=True)
@@ -111,7 +123,21 @@ def main():
             # Spread a fixed display cap across books while keeping each
             # Over/Under price pair intact. No additional API calls.
             picks.extend(event_rows)
+            covered_events.append({"id":event["id"],
+                "game":event.get("away_team","")+" @ "+event.get("home_team",""),
+                "start":event.get("commence_time"),
+                "two_sided_outcomes":len(event_rows),
+                "players_quoted":len({x["player"] for x in event_rows})})
         result = {"is_live": True, "updated_at": now.isoformat(timespec="minutes"),
+            "slate_events_available":len(upcoming),
+            "slate_events_checked":inspected,
+            "slate_event_limit":MAX_EVENTS,
+            "slate_events_not_checked":max(0,len(upcoming)-inspected),
+            "events_covered":covered_events,
+            "coverage_warning":("PARTIAL_PROVIDER_EVENT_OR_CREDIT_COVERAGE"
+                if inspected<len(upcoming) else
+                "ALL_PROVIDER_LISTED_EVENTS_CHECKED"),
+            "remaining_provider_credits":int(remaining) if remaining is not None else None,
             "disclaimer": "Live sportsbook odds, NOT PrizePicks lines. No AI projections or win probabilities yet. Verify all lines before use.",
             "picks": picks[:MAX_EVENTS * MAX_OUTCOMES_PER_EVENT]}
         OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
