@@ -44,3 +44,35 @@ jobs:
           print('Game strip and filters verified')
           PY
           node --check /tmp/sports-bot-game-strip.js
+      - name: Regression test scoreboard survives unscored ESPN schedule
+        run: |
+          node <<'JS'
+          const fs=require('node:fs');
+          const script=fs.readFileSync('/tmp/sports-bot-game-strip.js','utf8');
+          const from=script.indexOf('function hasVerifiedPair(');
+          const to=script.indexOf('async function refreshScoresOnly()',from);
+          if(from<0||to<0)throw Error('Score merge helper missing');
+          const {mergeScoreSchedules}=new Function(
+            script.slice(from,to)+';return {mergeScoreSchedules};')();
+          const game={id:'nba1',game:'Boston Celtics @ Charlotte Hornets',
+            away:'Boston Celtics',home:'Charlotte Hornets',
+            date_eastern:'2026-11-06',start:'2026-11-07T00:11:00Z',
+            game_state:'in',away_score:42,home_score:20,
+            score_updated_at:'2026-11-07T00:42:06Z'};
+          const verified={generated_at:'2026-11-07T00:42:11Z',
+            games:[game],coverage_complete:false};
+          const unscored={generated_at:'2026-11-07T00:44:00Z',
+            games:[{...game,id:'espn2',away_score:null,home_score:null,
+              score_updated_at:null,game_state:'pre'}],coverage_complete:true};
+          const retained=mergeScoreSchedules(verified,unscored);
+          if(retained.games.length!==1 || retained.games[0].away_score!==42 ||
+             retained.games[0].home_score!==20 ||
+             retained.games[0].game_state!=='in')throw Error('Verified scores lost');
+          const updated={generated_at:'2026-11-07T00:46:00Z',
+            games:[{...game,away_score:51,home_score:44,
+              score_updated_at:'2026-11-07T00:45:00Z'}]};
+          const latest=mergeScoreSchedules(retained,updated);
+          if(latest.games[0].away_score!==51||latest.games[0].home_score!==44)
+            throw Error('Newer valid score did not win');
+          console.log('Score merge regression: PASS');
+          JS
