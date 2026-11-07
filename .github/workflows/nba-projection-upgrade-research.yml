@@ -5,6 +5,8 @@ on:
     paths:
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/opportunity_backtest.py'
+      - 'iphone_bot/selection_gate_shadow.py'
+      - 'iphone_bot/tests/test_selection_gate_shadow.py'
       - 'iphone_bot/tests/test_opportunity_backtest.py'
       - 'iphone_bot/tests/test_projection_upgrade_research.py'
       - '.github/workflows/nba-projection-upgrade-research.yml'
@@ -36,6 +38,12 @@ jobs:
           python -m py_compile iphone_bot/projection_upgrade_research.py
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_selection_gate_shadow.py' -v
+          python - <<'PY'
+          from iphone_bot.projection_upgrade_research import SIMULATIONS
+          assert SIMULATIONS==20000, 'Research simulation budget must be 20,000'
+          print('Validated research simulation draws:',SIMULATIONS)
+          PY
       - name: Refresh research snapshots or audit existing snapshots
         run: python -u iphone_bot/projection_upgrade_research.py
       - name: Protect existing Combined AI and probability outputs
