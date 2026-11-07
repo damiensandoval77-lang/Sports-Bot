@@ -24,7 +24,8 @@ except ImportError:
     from weight_research import walkforward_weights
     from accuracy_feedback import evaluate as accuracy_feedback
     from probability_audit import audit as probability_audit
-    from selective_challenger import screen as research_screen, evaluate as selective_evaluate
+    from selective_challenger import screen as research_screen, evaluate as selective_evaluate, minutes_risk
+    from season_average_research import report as season_average_report
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
