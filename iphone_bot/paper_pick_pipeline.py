@@ -140,7 +140,7 @@ def settle(rows,completed_games,now=None):
     by_id=defaultdict(list)
     by_name=defaultdict(list)
     for g in completed_games:
-        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL","CBS_FINAL_VERIFIED","FANTASYDATA_FINAL_CROSSCHECKED"):
+        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL","CBS_FINAL_VERIFIED","FANTASYDATA_FINAL_CROSSCHECKED","CBS_SPORTS_LIVE_FINAL"):
             if g.get("final_confirmed") is True:
                 key=(strict_player_name(g.get("player")),str(g.get("date")))
                 if key[0]:by_name[key].append(g)
@@ -165,6 +165,23 @@ def settle(rows,completed_games,now=None):
         direct=[g for g in by_name.get((strict_player_name(r["player"]),gameday),[])
                 if g.get("team")==r["team"] and g.get("opponent") in opponents
                 and g.get("final_confirmed") is True]
+        # Multiple providers can observe the same final game.
+        # Identical pts/reb/ast are corroboration, not ambiguity.
+        # Conflicting providers must not be graded arbitrarily.
+        if len(direct)>1:
+            signatures={(float(g["PTS"]),float(g["REB"]),float(g["AST"]))
+                        for g in direct if all(g.get(k) is not None
+                        for k in ("PTS","REB","AST"))}
+            if len(signatures)==1 and len(direct)==len([
+                g for g in direct if all(g.get(k) is not None
+                for k in ("PTS","REB","AST"))]):
+                priority={"NBA_CDN_FINAL":0,"ESPN_FINAL":1,
+                          "CBS_FINAL_VERIFIED":2,
+                          "FANTASYDATA_FINAL_CROSSCHECKED":3,
+                          "CBS_SPORTS_LIVE_FINAL":4}
+                direct=[min(direct,key=lambda g:priority.get(g.get("source"),99))]
+            else:
+                direct=[]
         csv=[g for g in by_id.get((str(r["player_id"]),gameday),[])
              if g.get("team")==r["team"] and g.get("opponent") in opponents]
         if age>=2*3600 and len(direct)==1:
@@ -396,6 +413,9 @@ def main():
         completed.extend(json.loads(direct_path.read_text()))
     completed.extend(cross_checked_final_boxscores(ROOT/"docs/verified_postgame_boxscores.json"))
     completed.extend(fantasydata_cross_checked_final(ROOT/"docs/verified_wizards_hawks_boxscores.json"))
+    cbs_path=ROOT/"data/nba/current/cbs_final_boxscores.json"
+    if cbs_path.exists():
+        completed.extend(json.loads(cbs_path.read_text()))
     rows=settle(rows,completed)
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
     source_path=ROOT/"docs/current_form.json"
