@@ -22,8 +22,9 @@ class AssignmentTests(unittest.TestCase):
         self.assertLessEqual(sum(r["estimated_exposure_share"] for r in allocation["candidate_defenders"]),.75+.0001)
 
     def test_wrong_team_future_or_old_pair_is_excluded(self):
+        # 2025-11-01 is 71 days before 2026-01-11; Jan 10 is valid history.
         rotation=[("21",35.),("22",30.),("23",20.)]
-        for kwargs in ({"team":"BOS"},{"day":"2026-02-01"},{"day":"2026-01-10"}):
+        for kwargs in ({"team":"BOS"},{"day":"2026-02-01"},{"day":"2025-11-01"}):
             prior=past(**kwargs)
             result=projected_assignment("10","NYK",rotation,prior,{},"2026-01-11")
             self.assertEqual(result["status"],"NO_RECENT_DIRECT_ASSIGNMENT_EVIDENCE")
