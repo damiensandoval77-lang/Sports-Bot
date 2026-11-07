@@ -98,6 +98,12 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 .data-notes-body{border-top:1px solid #303030;padding:10px 12px;font-size:11px;line-height:1.6;color:#b9b9b9}
 .data-note-text+.data-note-text{margin-top:9px;padding-top:9px;border-top:1px solid #2b2b2b}
 .data-notes a{color:#a7c6ff;text-decoration:underline;text-underline-offset:2px}
+.bottom-controls{margin:24px 0 14px;padding-top:16px;border-top:1px solid #292929;display:flex;flex-direction:column;gap:10px}
+.bottom-controls .data-notes{margin:0;order:2}
+.bottom-controls .load-toolbar{margin:0;order:1;align-items:center}
+.bottom-controls #refresh-now{flex:0 0 auto}
+@media(max-width:520px){.bottom-controls{margin-top:20px}.bottom-controls .load-toolbar{gap:10px;align-items:flex-start}.bottom-controls .load-toolbar span{min-width:0;overflow-wrap:anywhere}}
+
 /* Never render the old amber disclaimer cards on the AI Board.
    Their text remains available only from the collapsed Data notes section. */
 #board-data-notes:not([open]) .data-notes-body{display:none!important}
@@ -203,14 +209,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <button class="tab" data-tab="odds" aria-selected="false">Sportsbook</button>
 <button class="tab" data-tab="form" aria-selected="false">Player Form</button>
 <button class="tab" data-tab="results" aria-selected="false">Performance</button></nav>
-<details class="data-notes" id="board-data-notes">
-  <summary>Data notes <span class="data-notes-chevron" aria-hidden="true">⌄</span></summary>
-  <div class="data-notes-body">
-    <div id="global-warning" class="data-note-text">Loading current market and player data…</div>
-    <div id="injury-feed-health" class="data-note-text" aria-live="polite">Checking official NBA injury-report availability…</div>
-  </div>
-</details>
-<div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
+
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
 <div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
@@ -259,6 +258,16 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <details class="advanced"><summary>Method, accuracy &amp; tools</summary><div class="advbody">
 <strong>AI Board:</strong> Experimental regression projections trained on archived NBA seasons. Pregame opponent team totals allowed and observed minutes are shown as context, not fitted inputs or applied adjustments. Injuries and lineups have not been verified. Gaps in matchup, position and 2026–27 training can reduce reliability. Bookmaker consensus is the median available two-sided prop line from distinct sportsbooks. It is a comparison benchmark, not a feature used to train AI projections. The original model displays a research-only estimated OVER or UNDER chance based on chronological held-out historical prediction errors, not verified sportsbook outcomes. Estimated direction may differ from projection-versus-line direction. Highest estimates sort first by default. Each actual sportsbook price is evaluated separately for research-only hypothetical EV = estimated win chance × net winnings per dollar − estimated loss chance. A push contributes zero return. These calculations rely on uncalibrated player estimates and must not be presented as verified +EV opportunities. Large percentages are NOT proven hit rates. Agreement between models is not a validated betting signal. The opponent-aware shadow forecast is shown only when sufficient previous defensive games exist; it does not replace the primary model. The difference between a model estimate and a sportsbook line is <strong>not</strong> an edge probability, EV estimate or recommendation.<p><strong>Sportsbook:</strong> When both prices exist, no-vig implied probabilities describe the market's price after removing the vig; they are not the bot's independent chance estimates.</p><p><strong>Sources:</strong> Third-party 2026–27 player logs, the Odds API bookmaker markets, and historical AI models. No PrizePicks connection, correlated slip optimizer, or automatic wagers. The Real Results tab uses real pregame book quotes locked before a game and grades only completed box scores; paper returns are not real cash profit. Always verify current prices and player availability.</p>
 <a href="https://github.com/damiensandoval77-lang/Sports-Bot/actions">GitHub workflow status</a></div></details>
+<div class="bottom-controls" aria-label="Dashboard utilities">
+<details class="data-notes" id="board-data-notes">
+  <summary>Data notes <span class="data-notes-chevron" aria-hidden="true">⌄</span></summary>
+  <div class="data-notes-body">
+    <div id="global-warning" class="data-note-text">Loading current market and player data…</div>
+    <div id="injury-feed-health" class="data-note-text" aria-live="polite">Checking official NBA injury-report availability…</div>
+  </div>
+</details>
+<div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
+</div>
 <div class="foot">Research-only NBA prop dashboard. Stale/started games are hidden from the AI board. No automated betting or guaranteed outcomes.</div>
 </main><script>
 "use strict";
