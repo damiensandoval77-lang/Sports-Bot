@@ -8,6 +8,7 @@ def record(player="10",market="AST",actual=7,status="SETTLED",
         "event_start":start,"captured_at":"2026-11-06T21:00:00Z",
         "bookmaker":"FanDuel","actual":actual,"line":line,
         "original_projection":projection-1,
+        "opponent_shadow_projection":projection+1,
         "combined_projection":projection}
 
 class SelectionQualityTests(unittest.TestCase):
