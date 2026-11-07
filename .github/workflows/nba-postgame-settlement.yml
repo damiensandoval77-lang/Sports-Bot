@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/settlement_merge.py'
+      - 'iphone_bot/missed_game_audit.py'
+      - 'iphone_bot/tests/test_missed_game_audit.py'
       - 'iphone_bot/fetch_final_boxscores.py'
       - 'iphone_bot/tests/test_fetch_final_boxscores.py'
       - 'iphone_bot/tests/test_settlement_merge.py'
@@ -32,6 +34,7 @@ jobs:
       - name: Test pregame integrity and settlement merging
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_missed_game_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_final_boxscores.py' -v
       - name: Verify actual immutable pregame captures exist
@@ -53,6 +56,8 @@ jobs:
         run: python -u iphone_bot/fetch_final_boxscores.py
       - name: Settle only actual verified matchups and saved pregame quotes
         run: python -u iphone_bot/paper_pick_pipeline.py
+      - name: Explain missing Celtics and all historical pregame matchups
+        run: python -u iphone_bot/missed_game_audit.py
       - name: Protect settlement and capture integrity
         run: |
           python - <<'PY'
@@ -78,6 +83,7 @@ jobs:
           mkdir -p "$temp"
           cp docs/paper_pick_ledger.json "$temp/new_ledger.json"
           cp docs/final_boxscores_status.json "$temp/source_status.json"
+          cp docs/missed_game_audit.json "$temp/missed_game_audit.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
@@ -85,7 +91,8 @@ jobs:
             git reset --hard origin/main
             python iphone_bot/settlement_merge.py               docs/paper_pick_ledger.json "$temp/new_ledger.json"               docs/paper_pick_ledger.json docs/paper_results.json docs/current_form.json
             cp "$temp/source_status.json" docs/final_boxscores_status.json
-            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json
+            cp "$temp/missed_game_audit.json" docs/missed_game_audit.json
+            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json docs/missed_game_audit.json
             if git diff --cached --quiet; then echo 'Latest results already published'; exit 0; fi
             git commit -m 'Settle real pregame NBA props from verified completed player box scores'
             if git push origin HEAD:main; then echo 'Postgame settlement successfully published'; exit 0; fi
