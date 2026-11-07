@@ -6,6 +6,8 @@ on:
     paths:
       - 'iphone_bot/compare_live_models.py'
       - 'iphone_bot/capture_ai_board.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
       - 'iphone_bot/tests/test_capture_ai_board.py'
       - '.github/workflows/nba-trained-ai-board.yml'
   schedule:
@@ -29,6 +31,7 @@ jobs:
       - name: Test immutable pregame captures and paper settlement
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
       - name: Confirm actual current market coverage and quote freshness
@@ -95,6 +98,18 @@ jobs:
           PY
       - name: Freeze every eligible AI comparison before scheduled tipoff
         run: python -u iphone_bot/capture_ai_board.py
+      - name: Lock opportunity, official injury, V4 shadow and 10k calibration research
+        run: |
+          python -u iphone_bot/projection_upgrade_research.py
+          python - <<'PY'
+          import json
+          r=json.load(open("docs/projection_upgrade_status.json"))
+          assert r["live_combined_ai_unchanged"] is True
+          assert r["live_simulated_hit_percentages_unchanged"] is True
+          assert r["defender_v4"]["v4_live_applied"] is False
+          assert all(x["changes_live_probabilities"] is False for x in r["simulation_audit"].values())
+          print("Pregame opportunity and V4 research locked:",r["locked_samples"])
+          PY
       - name: Verify frozen pregame model snapshots exist
         run: |
           python - <<'PY'
@@ -112,7 +127,7 @@ jobs:
       - name: Publish AI board and immutable pregame paper records immediately
         run: |
           git fetch origin main
-          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json
+          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
