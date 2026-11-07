@@ -281,7 +281,30 @@ def main():
     injury=json.loads(INJURY.read_text()) if INJURY.exists() else {}
     paper=json.loads(PAPER.read_text()).get("records",[]) if PAPER.exists() else []
     existing=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
-    ledger,report=run(board,injury,paper,existing,datetime.now(timezone.utc).isoformat())
+    now=datetime.now(timezone.utc).isoformat()
+    try:
+        ledger,report=run(board,injury,paper,existing,now)
+    except ValueError as error:
+        # A scheduled research-only refresh can update settlement diagnostics
+        # even if there is no fresh pregame AI feed to freeze. It may never
+        # fabricate a historical capture from a stale postgame board.
+        if "within 45 minutes" not in str(error) and "Board must be" not in str(error):
+            raise
+        ledger=list(existing)
+        report={"generated_at":utc(now).isoformat(),
+            "status":"RESEARCH_AUDIT_ONLY_NO_FRESH_PREGAME_BOARD",
+            "capture_notice":str(error),
+            "locked_samples":len(ledger),"new_samples":0,
+            "features_covered":{},
+            "settled_independent_paper_markets":len(finished_unique(paper)),
+            "injury_context":"VERIFIED_SAME_GAME_OFFICIAL_REPORT_ONLY",
+            "lineup_confirmations_automated":False,
+            "teammate_splits":"OBSERVATIONAL_AND_SAMPLE_GATED",
+            "defender_v4":grade_shadow(ledger,paper),
+            "simulation_audit":research_simulations(paper),
+            "live_combined_ai_unchanged":True,
+            "live_simulated_hit_percentages_unchanged":True,
+            "promotion_gate":"NO_LIVE_ADJUSTMENT_WITHOUT_PRE_GAME_VALIDATION"}
     LEDGER.write_text(json.dumps({"version":1,"records":ledger},indent=2)+"\n")
     STATUS.write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report,sort_keys=True),flush=True)
