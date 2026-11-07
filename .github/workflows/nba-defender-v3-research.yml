@@ -7,6 +7,8 @@ on:
       - 'iphone_bot/defender_matchup_v3.py'
       - 'iphone_bot/fetch_defender_matchups.py'
       - 'iphone_bot/import_archived_defender_matchups.py'
+      - 'iphone_bot/defender_v3_holdout.py'
+      - 'iphone_bot/tests/test_defender_v3_holdout.py'
       - 'iphone_bot/tests/test_import_archived_defender_matchups.py'
       - 'iphone_bot/tests/test_fetch_defender_matchups.py'
       - 'iphone_bot/tests/test_defender_matchup_v3.py'
@@ -29,12 +31,15 @@ jobs:
         run: pip install "pyarrow>=15,<24"
       - name: Verify defender matchup research and no leakage
         run: |
-          python -m py_compile iphone_bot/defender_matchup_v3.py iphone_bot/fetch_defender_matchups.py iphone_bot/import_archived_defender_matchups.py
+          python -m py_compile iphone_bot/defender_matchup_v3.py iphone_bot/fetch_defender_matchups.py iphone_bot/import_archived_defender_matchups.py iphone_bot/defender_v3_holdout.py
           python -m unittest discover -s iphone_bot/tests -p 'test_defender_matchup_v3.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_defender_matchups.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_import_archived_defender_matchups.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_defender_v3_holdout.py' -v
       - name: Download historical 2025-26 matchups from public Parquet archive
         run: python -u iphone_bot/import_archived_defender_matchups.py
+      - name: Compare frozen defender efficiency against later historical game results
+        run: python -u iphone_bot/defender_v3_holdout.py
       - name: Publish source readiness only; never inject V3 into live projections
         run: python -u iphone_bot/defender_matchup_v3.py
       - name: Check model isolation
@@ -52,7 +57,7 @@ jobs:
       - name: Commit research diagnostics
         run: |
           git fetch origin main
-          git add docs/defender_v3_research.json docs/defender_v3_source_status.json
+          git add docs/defender_v3_research.json docs/defender_v3_source_status.json docs/defender_v3_holdout.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
