@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.model_performance import compute_performance,forecast_values
+from iphone_bot.model_performance import compute_performance,forecast_values,directional_diagnostics
 
 def settled(player="1",book="FanDuel",line=20.5,actual=23,original=22,shadow=19,combined=None,
             over=-110,under=-110,captured="2026-11-12T19:00:00Z"):
@@ -64,5 +64,25 @@ class ModelPerformanceTests(unittest.TestCase):
     def test_no_retrained_forecast_overwrite(self):
         row=settled(original=22,shadow=18,combined=20)
         self.assertEqual(forecast_values(row),{"original":22,"opponent_aware":18,"combined":20})
+
+    def test_directional_diagnostics_preserve_earliest_market_and_bias(self):
+        a=settled(line=20.5,actual=23,original=22,shadow=19)
+        duplicate=settled(book="DraftKings",line=20.5,actual=23,original=22,shadow=19,
+                          captured="2026-11-12T20:00:00Z")
+        r=directional_diagnostics([duplicate,a])
+        d=r["by_stat"]["PTS"]
+        self.assertEqual(d["distinct_event_dates"],1)
+        self.assertEqual(d["models"]["original"]["observations"],1)
+        self.assertEqual(d["models"]["original"]["signed_bias"],-1.)
+        self.assertEqual(d["models"]["original"]["by_side"]["OVER"]["wins"],1)
+        self.assertEqual(d["models"]["opponent_aware"]["by_side"]["UNDER"]["losses"],1)
+        self.assertEqual(r["status"],"RESEARCH_ONLY_NO_LIVE_CORRECTION")
+
+    def test_directional_diagnostics_exclude_missing_actual_and_pretip_invalid(self):
+        row=settled()
+        row["status"]="PENDING"
+        out=directional_diagnostics([row])
+        self.assertEqual(out["by_stat"]["PTS"]["models"]["combined"]["observations"],0)
+        self.assertIsNone(out["by_stat"]["PTS"]["models"]["combined"]["signed_bias"])
 
 if __name__=="__main__":unittest.main()
