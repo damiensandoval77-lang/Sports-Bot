@@ -1,0 +1,39 @@
+name: Sanity Shadow V1 Research (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/sanity_shadow_research.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_sanity_shadow_research.py'
+      - '.github/workflows/sanity-shadow-v1-research.yml'
+  push:
+    branches: [research/20261107-sanity-shadow-v1]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile offline shadow
+        run: python -m py_compile iphone_bot/sanity_shadow_research.py
+      - name: Validate shadow and past-only season challenger
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_sanity_shadow_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_season_average_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+      - name: Confirm research script only reads board and game history
+        run: |
+          python - <<'PY'
+          from iphone_bot.sanity_shadow_research import METHOD,report
+          x=report([])
+          assert x['no_picks_changed'] is True
+          assert x['no_probabilities_changed'] is True
+          assert x['no_verified_accuracy_improvement'] is True
+          print('Research-only method:', METHOD)
+          PY

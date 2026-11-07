@@ -35,6 +35,11 @@ try:
 except ImportError:
     from assist_shadow_v1 import assist_shadow
 
+try:
+    from .sanity_shadow_research import shadow as sanity_shadow
+except ImportError:
+    from sanity_shadow_research import shadow as sanity_shadow
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -159,6 +164,18 @@ def snapshot(board,injury,existing,at,game_history=None):
                 counters["selection_gate_paper_eligible"]+=1
             else:
                 counters["selection_gate_abstained"]+=1
+            verified_player = next((p for p in all_statuses
+                if str(p.get("player_id"))==pid
+                and str(p.get("team"))==row["team"]
+                and str(p.get("status","")).upper()=="AVAILABLE"),None)
+            row["sanity_shadow_v1"]=sanity_shadow(
+                indexed.get((pid,row["team"]),[]),team=row["team"],
+                market=row["market"],baseline=combined,
+                event_start=start,captured_at=captured,
+                minutes_context=item.get("minutes_research"),
+                injury_status="AVAILABLE" if verified_player else "NOT_VERIFIED",
+                injury_source="OFFICIAL_NBA_REPORT" if verified_player and
+                    status=="OFFICIAL_SAME_DAY_VERIFIED" else None)
             row["injury_report_status"]=status
             # Only teammates explicitly marked OUT with the correct verified
             # report game date may be used to label a conditional scenario.
@@ -462,6 +479,51 @@ def grade_opportunity_shadows(ledger,paper_rows):
             "by_market":{m:metrics(bymarket[m]) for m in MARKETS},
             "live_applied":False,"eligible_for_live_promotion":False}
 
+def grade_sanity_shadow(ledger,paper_rows):
+    """Forward-only paired audit: compare frozen shadow to the same settled markets."""
+    actuals={}
+    for row in finished_unique(paper_rows):
+        try:
+            key=(utc(row["event_start"]).isoformat(),str(row["player_id"]),row["market"])
+            actuals[key]=float(row["actual"])
+        except (KeyError,ValueError,TypeError):continue
+    seen=set()
+    matched=defaultdict(list)
+    blocked=Counter()
+    for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
+        info=row.get("sanity_shadow_v1")
+        if not isinstance(info,dict):continue
+        try:
+            event=utc(row["event_start"])
+            if utc(row["captured_at"])>=event:continue
+            key=(event.isoformat(),str(row["player_id"]),row["market"])
+            if key in seen:continue
+            seen.add(key)
+            if key not in actuals:continue
+            candidate=valid(info.get("shadow_projection"))
+            baseline=valid(row.get("combined_projection"))
+            if candidate is None or baseline is None:
+                blocked[str(info.get("status","UNKNOWN"))]+=1
+                continue
+            actual=actuals[key]
+            matched[row["market"]].append((
+                abs(candidate-actual),abs(baseline-actual),
+                event.astimezone(ZoneInfo("America/New_York")).date().isoformat()))
+        except (ValueError,KeyError,TypeError):continue
+    def score(rows):
+        n=len(rows)
+        return {"paired_markets":n,
+                "distinct_game_dates":len({r[2] for r in rows}),
+                "shadow_mae":round(sum(r[0] for r in rows)/n,4) if n else None,
+                "combined_mae":round(sum(r[1] for r in rows)/n,4) if n else None}
+    allrows=[v for group in matched.values() for v in group]
+    return {"status":"UNVALIDATED_PREGAME_SANITY_SHADOW",
+            "overall":score(allrows),"by_market":{m:score(matched[m]) for m in MARKETS},
+            "excluded_uncertain_by_status":dict(blocked),
+            "prospective_validation_needed":True,
+            "live_applied":False,"accuracy_gain_established":False}
+
+
 def grade_shadow(ledger,paper_rows):
     """Paired MAE only for actually captured V4 shadows; never backfill."""
     graded={}
@@ -501,6 +563,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
         "defender_v4":grade_shadow(ledger,paper_rows),
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
+        "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
         "selection_gate_shadow":grade_selection_gate(ledger,paper_rows),
         "assist_shadow_v1":grade_assist_shadow(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
@@ -538,6 +601,7 @@ def main():
             "defender_v4":grade_shadow(ledger,paper),
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
+            "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
             "selection_gate_shadow":grade_selection_gate(ledger,paper),
             "assist_shadow_v1":grade_assist_shadow(ledger,paper),
             "simulation_audit":research_simulations(paper),

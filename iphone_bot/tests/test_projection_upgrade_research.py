@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_sanity_shadow,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -61,6 +61,35 @@ class ResearchTests(unittest.TestCase):
         b["generated_at"]="2026-11-07T02:00:00Z"
         with self.assertRaises(ValueError):
             snapshot(b,injury(),[],NOW)
+
+    def test_sanity_shadow_locks_only_verified_pregame_and_grades_pair(self):
+        past=[{"id":"10","team":"BOS","date":f"2026-10-{day:02d}",
+               "MIN":30.,"PTS":40.,"REB":6.,"AST":5.,"FGA":20.}
+              for day in range(20,30)]
+        b=board()
+        b["comparisons"][0]["minutes_research"]["expected_minutes"]=30.
+        b["comparisons"][0]["injury_status"]="AVAILABLE"
+        b["comparisons"][0]["injury_status_source"]="OFFICIAL_NBA_REPORT"
+        official=injury()
+        official["players"].append({"player":"Target Player","player_id":"10",
+                                   "team":"BOS","game_date":"2026-11-06",
+                                   "status":"Available"})
+        locked,_=snapshot(b,official,[],NOW,past)
+        sanity=locked[0]["sanity_shadow_v1"]
+        self.assertEqual(sanity["status"],"SHADOW_CANDIDATE_UNVALIDATED")
+        self.assertGreater(sanity["shadow_projection"],22.)
+        self.assertFalse(sanity["live_applied"])
+        self.assertEqual(b["comparisons"][0]["combined_projection"],22.)
+        actual=[{"status":"SETTLED","event_start":START,
+                 "captured_at":NOW,"player_id":"10","market":"PTS",
+                 "original_projection":21.,"line":20.5,"actual":40.}]
+        grade=grade_sanity_shadow(locked,actual)
+        self.assertEqual(grade["overall"]["paired_markets"],1)
+        self.assertFalse(grade["accuracy_gain_established"])
+        nofeed,_=snapshot(b,injury(verified=False),[],NOW,past)
+        self.assertEqual(nofeed[0]["sanity_shadow_v1"]["status"],
+                         "REVIEW_ONLY_UNCERTAIN_INPUTS")
+        self.assertEqual(grade_sanity_shadow(nofeed,actual)["overall"]["paired_markets"],0)
 
     def test_no_simulations_without_settled_prior_residuals(self):
         info=research_simulations([])
