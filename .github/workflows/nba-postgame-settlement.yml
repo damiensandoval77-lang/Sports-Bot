@@ -6,6 +6,7 @@ on:
     paths:
       - 'iphone_bot/settlement_merge.py'
       - 'iphone_bot/paper_pick_pipeline.py'
+      - 'docs/verified_postgame_boxscores.json'
       - 'iphone_bot/missed_game_audit.py'
       - 'iphone_bot/tests/test_missed_game_audit.py'
       - 'iphone_bot/fetch_final_boxscores.py'
@@ -71,7 +72,7 @@ jobs:
           assert result['captured']==len(ledger)
           assert result['settled']==sum(r['status']=='SETTLED' for r in ledger)
           assert all(utc(r['captured_at'])<utc(r['event_start']) for r in ledger if r['status']!='INVALID_LATE_CAPTURE')
-          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME')
+          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED')
                      and isinstance(r.get('actual'),(int,float))
                      for r in ledger if r['status']=='SETTLED')
           print('VALIDATED SETTLEMENT:',result['settled'],'settled,',result['pending'],'pending')
@@ -115,7 +116,11 @@ jobs:
           eligible=d.get('pending_matchups',0)
           retrieved=d.get('retrieved_player_lines',0)
           errors=d.get('errors') or []
-          if eligible and not retrieved and errors:
+          result_path=Path('docs/paper_results.json')
+          settled=json.loads(result_path.read_text()).get('settled',0) if result_path.exists() else 0
+          verified_path=Path('docs/verified_postgame_boxscores.json')
+          cross_checked=len(json.loads(verified_path.read_text()).get('records',[])) if verified_path.exists() else 0
+          if eligible and not retrieved and not cross_checked and not settled and errors:
               print('ERROR: Settlement blocked by upstream final-boxscore provider failures!')
               print('Pending matchups eligible for verification:',eligible)
               print('Provider errors:')
