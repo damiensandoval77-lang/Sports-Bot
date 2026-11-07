@@ -40,6 +40,11 @@ try:
 except ImportError:
     from sanity_shadow_research import shadow as sanity_shadow
 
+try:
+    from .stress_test_20k_research import check as stress_check
+except ImportError:
+    from stress_test_20k_research import check as stress_check
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -176,6 +181,21 @@ def snapshot(board,injury,existing,at,game_history=None):
                 injury_status="AVAILABLE" if verified_player else "NOT_VERIFIED",
                 injury_source="OFFICIAL_NBA_REPORT" if verified_player and
                     status=="OFFICIAL_SAME_DAY_VERIFIED" else None)
+            row["stress_test_20k_v1"]=stress_check(
+                indexed.get((pid,row["team"]),[]),team=row["team"],
+                market=row["market"],projection=combined,line=line,
+                event_start=start,captured_at=captured,
+                expected_minutes=(item.get("minutes_research") or {}).get("expected_minutes"),
+                injury_status="AVAILABLE" if verified_player else "NOT_VERIFIED",
+                injury_source="OFFICIAL_NBA_REPORT" if verified_player and
+                    status=="OFFICIAL_SAME_DAY_VERIFIED" else None,
+                player_id=pid)
+            if row["stress_test_20k_v1"]["status"]=="CONDITIONAL_STRESS_RESEARCH_ONLY":
+                counters["stress_scenarios_locked"]+=1
+                if row["stress_test_20k_v1"]["fragile_high_confidence"]:
+                    counters["stress_high_confidence_fragile"]+=1
+            else:
+                counters["stress_insufficient_inputs"]+=1
             row["injury_report_status"]=status
             # Only teammates explicitly marked OUT with the correct verified
             # report game date may be used to label a conditional scenario.
@@ -479,6 +499,53 @@ def grade_opportunity_shadows(ledger,paper_rows):
             "by_market":{m:metrics(bymarket[m]) for m in MARKETS},
             "live_applied":False,"eligible_for_live_promotion":False}
 
+def stress_research_report(ledger,paper_rows):
+    """Only pregame frozen warnings; settlements count market identities once."""
+    settled=set()
+    for p in finished_unique(paper_rows):
+        try:
+            settled.add((utc(p["event_start"]).isoformat(),str(p["player_id"]),p["market"]))
+        except (KeyError,TypeError,ValueError):continue
+    seen=set()
+    bystatus=Counter()
+    bywarning=Counter()
+    covered=0
+    fragile=0
+    matched=0
+    matched_fragile=0
+    for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
+        saved=row.get("stress_test_20k_v1")
+        if not isinstance(saved,dict):continue
+        try:
+            event=utc(row["event_start"])
+            if utc(row["captured_at"])>=event:continue
+            key=(event.isoformat(),str(row["player_id"]),row["market"])
+            if key in seen:continue
+            seen.add(key)
+            bystatus[str(saved.get("status","UNKNOWN"))]+=1
+            for w in saved.get("warnings",[]):
+                bywarning[str(w)]+=1
+            if saved.get("status")=="CONDITIONAL_STRESS_RESEARCH_ONLY":
+                covered+=1
+                isfragile=saved.get("fragile_high_confidence") is True
+                fragile+=int(isfragile)
+                if key in settled:
+                    matched+=1
+                    matched_fragile+=int(isfragile)
+        except (KeyError,ValueError,TypeError):continue
+    return {"status":"PRETIP_CONDITIONAL_STRESS_DESCRIPTIVE_ONLY",
+            "capture_statuses":dict(bystatus),"warnings":dict(bywarning),
+            "independent_stress_tested_markets":covered,
+            "fragile_high_confidence_flags":fragile,
+            "paired_settled_stress_markets":matched,
+            "paired_settled_fragile_flags":matched_fragile,
+            "simulation_draws_per_scenario":20000,
+            "calibrated_probability":False,
+            "live_probabilities_changed":False,
+            "live_picks_changed":False,
+            "performance_improvement_established":False}
+
+
 def grade_sanity_shadow(ledger,paper_rows):
     """Prospective paired MAE, separating actual adjustments from copied forecasts.
 
@@ -590,6 +657,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
         "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
+        "stress_test_20k_v1":stress_research_report(ledger,paper_rows),
         "selection_gate_shadow":grade_selection_gate(ledger,paper_rows),
         "assist_shadow_v1":grade_assist_shadow(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
@@ -628,6 +696,7 @@ def main():
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
             "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
+            "stress_test_20k_v1":stress_research_report(ledger,paper),
             "selection_gate_shadow":grade_selection_gate(ledger,paper),
             "assist_shadow_v1":grade_assist_shadow(ledger,paper),
             "simulation_audit":research_simulations(paper),
