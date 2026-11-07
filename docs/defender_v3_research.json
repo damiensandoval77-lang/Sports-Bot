@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-11-07T01:54:08.305719+00:00",
+  "status": "AWAITING_VERIFIED_NBA_DEFENDER_MATCHUP_SOURCE",
+  "source": "NBA LeagueSeasonMatchups endpoint schema",
+  "documentation": "https://github.com/swar/nba_api/blob/master/docs/nba_api/stats/endpoints/leagueseasonmatchups.md",
+  "live_model_unchanged": true,
+  "original_probability_unchanged": true,
+  "defender_assignments_confirmed": false,
+  "validation": "PENDING_CHRONOLOGICAL_HOLDOUT",
+  "scenarios_computed": 0,
+  "minimum_pair_possessions": 20,
+  "minimum_total_possessions": 75,
+  "limitations": [
+    "Tracking availability from GitHub Actions and historical date coverage not yet proven.",
+    "LeagueSeasonMatchups summarizes historical encounters, not projected next-game assignments.",
+    "Defended FG percentage alone does not identify causal defensive ability or possession usage.",
+    "No live adjustment without verified rotation and later-game accuracy improvement."
+  ]
+}
