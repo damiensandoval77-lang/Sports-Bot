@@ -39,6 +39,8 @@ jobs:
           assert report['has_verified_player_availability'] is False
           assert len(report['games'])==report['total_games']
           assert len({x['id'] for x in report['games']})==report['total_games']
+          assert all(x['game_state'] in ('pre','in','post','unknown') for x in report['games'])
+          assert all(x['date_eastern'] in report['dates_eastern'] for x in report['games'])
           print('Complete NBA schedule games:', report['total_games'])
           PY
       - name: Publish schedule feed
