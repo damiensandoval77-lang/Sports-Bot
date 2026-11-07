@@ -35,7 +35,7 @@ class PrizePicksTests(unittest.TestCase):
     def test_unknown_opponent_uses_exact_tipoff(self):
         data=fixture();data["event"].pop("opponent")
         offer=clean(data,NOW)
-        self.assertTrue(match(offer,COMP))
+        self.assertTrue(match(offer,COMP,NOW))
         later=dict(COMP,start="2026-11-07T01:10:00Z")
         self.assertFalse(match(offer,later,NOW))
 
