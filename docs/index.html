@@ -62,6 +62,7 @@
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
 <div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
+<div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
 <div class="source">Combined AI projection is the midpoint of two models. *Percentage ranking still uses original-model experimental estimates, not validated combined hit rates. Expand for details.</div><div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="source">Current two-sided sportsbook lines only. These are not PrizePicks lines.</div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
@@ -92,7 +93,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -640,7 +641,7 @@ else {note.textContent="Experimental model projections, NOT verified probabiliti
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
- const [a,o,f,p,pp,inj,im,mv,hist,shot]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){slateCoverage=o.value;oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
@@ -648,10 +649,31 @@ else {oddsFresh=false;odds=[];slateCoverage=null}
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[];aiMetadata=null}
+nbaSchedule=sch.status==="fulfilled"&&sch.value.status==="THIRD_PARTY_NBA_SCHEDULE_ONLY"&&
+ isRecent(sch.value.generated_at,12)?sch.value:null;
+const scheduledGames=nbaSchedule?.games||[];
+const easternDay=new Intl.DateTimeFormat("en-CA",{
+ timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const todaysGames=scheduledGames.filter(x=>x.date_eastern===easternDay);
+const scheduleNode=$("full-nba-slate");
+if(nbaSchedule){
+ const withLines=new Set(odds.map(x=>x.game));
+ const withAI=new Set(ai.map(x=>x.game));
+ const stat=(g)=>g.game_state==="post"?"Final":g.game_state==="in"?"Live":"Upcoming";
+ const chunks=todaysGames.map(g=>g.away_abbreviation+" @ "+g.home_abbreviation+
+  " ("+stat(g)+", "+(withAI.has(g.game)?"AI props":
+   withLines.has(g.game)?"Sportsbook only":"No verified props")+")");
+ scheduleNode.textContent="TODAY'S NBA SLATE (Eastern, third-party schedule): "+
+  todaysGames.length+" games. "+(chunks.join(" · ")||"No games listed today.")+
+  " A scheduled game does not guarantee any sportsbook has player lines.";
+}else{
+ scheduleNode.textContent="Full NBA schedule feed unavailable or stale; showing only games found in verified sportsbook data.";
+}
 const availableGames=[...(slateCoverage?.events_covered||[])].filter(x=>Date.parse(x.start)>Date.now());
 for(const [selectId,rows] of [["ai-game",ai],["odds-game",odds]]){
  const selector=$(selectId),prior=selector.value;
- const games=[...new Set([...availableGames.map(x=>x.game),...rows.map(x=>x.game)])].sort();
+ const games=[...new Set([...scheduledGames.filter(x=>x.game_state!=="post").map(x=>x.game),
+  ...availableGames.map(x=>x.game),...rows.map(x=>x.game)])].sort();
  selector.replaceChildren(new Option("All games",""),...games.map(game=>new Option(game,game)));
  selector.value=games.includes(prior)?prior:"";
 }
