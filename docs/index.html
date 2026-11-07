@@ -746,7 +746,9 @@ function renderGameStrip(){
   const oddsTotal=odds.filter(x=>x.game===name).length;
   const state=g.game_state==="post"?"Final":g.game_state==="in"?"Live":
     Date.parse(g.start)<=Date.now()?"Started":formatTime(g.start);
-  const detail=total?total+" AI props":oddsTotal?oddsTotal+" sportsbook lines":"No verified props";
+  const playersWithLines=new Set(odds.filter(x=>x.game===name).map(x=>norm(x.player))).size;
+  const detail=oddsTotal?playersWithLines+" players · "+oddsTotal+" lines":
+    total?total+" AI props":"No verified lines";
   const scoreReady=["in","post"].includes(g.game_state)&&
     validScore(g.away_score)&&validScore(g.home_score);
   const tile=node("button","game-tile score-tile");
