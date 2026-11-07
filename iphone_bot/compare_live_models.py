@@ -7,6 +7,7 @@ matches one of the game's teams. Training feature gaps are flagged.
 import json
 import os
 import re
+import unicodedata
 from datetime import datetime,timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -44,7 +45,15 @@ TEAM={
 "Philadelphia 76ers":"PHI","Phoenix Suns":"PHX","Portland Trail Blazers":"POR",
 "Sacramento Kings":"SAC","San Antonio Spurs":"SAS","Toronto Raptors":"TOR",
 "Utah Jazz":"UTA","Washington Wizards":"WAS"}
-def key(x):return re.sub(r"[^a-z0-9]","",str(x).casefold())
+def key(x):
+    """Match legitimate ASCII sportsbook spellings to accented roster names.
+
+    Keep identity strict: remove accents, spacing and punctuation ONLY.
+    Never match substrings or surnames alone; ambiguity fails closed later.
+    """
+    normalized=unicodedata.normalize("NFKD",str(x or "")).casefold()
+    ascii_name="".join(c for c in normalized if not unicodedata.combining(c))
+    return re.sub(r"[^a-z0-9]","",ascii_name)
 def utc(s):return datetime.fromisoformat(str(s).replace("Z","+00:00")).astimezone(timezone.utc)
 def matchup(x):
     parts=str(x).split(" @ ")
