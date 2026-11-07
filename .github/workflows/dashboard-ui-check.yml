@@ -54,6 +54,31 @@ jobs:
           print('Game strip and filters verified')
           PY
           node --check /tmp/sports-bot-game-strip.js
+      - name: Regression test actual browser scoreboard score parsing
+        run: |
+          node <<'JS'
+          const fs=require('node:fs');
+          const script=fs.readFileSync('/tmp/sports-bot-game-strip.js','utf8');
+          const from=script.indexOf('async function browserScoreboard(day){');
+          const to=script.indexOf('function hasVerifiedPair(',from);
+          if(from<0||to<0)throw Error('Browser scoreboard parser unavailable');
+          const event={id:'espn-live-1',date:'2026-11-07T00:30:00Z',
+            status:{type:{state:'in',shortDetail:'Q3 8:32'},period:3,displayClock:'8:32'},
+            competitions:[{competitors:[
+              {homeAway:'away',score:'87',team:{displayName:'Boston Celtics',abbreviation:'BOS'}},
+              {homeAway:'home',score:'53',team:{displayName:'Charlotte Hornets',abbreviation:'CHA'}}
+            ]}]};
+          const fetchMock=async()=>({ok:true,json:async()=>({events:[event]})});
+          const browserScoreboard=new Function('fetch',script.slice(from,to)+
+            ';return browserScoreboard;')(fetchMock);
+          browserScoreboard('2026-11-06').then(rows=>{
+            if(rows.length!==1||rows[0].away_score!==87||rows[0].home_score!==53||
+                rows[0].game_state!=='in'||rows[0].period!==3){
+              throw Error('Real numeric live score strings were not parsed');
+            }
+            console.log('ESPN browser numeric score regression: PASS');
+          }).catch(error=>{console.error(error);process.exitCode=1;});
+          JS
       - name: Regression test scoreboard survives unscored ESPN schedule
         run: |
           node <<'JS'
