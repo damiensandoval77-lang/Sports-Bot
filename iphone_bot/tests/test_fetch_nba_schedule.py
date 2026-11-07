@@ -1,7 +1,10 @@
 """Third-party NBA schedule parses Eastern calendar and live/finished games."""
 import datetime as dt
+import json
+import tempfile
 import unittest
-from iphone_bot.fetch_nba_schedule import collect,parse_event,parse_nba_game,nba_season_schedule,EASTERN
+from pathlib import Path
+from iphone_bot.fetch_nba_schedule import collect,parse_event,parse_nba_game,nba_season_schedule,odds_schedule_fallback,EASTERN
 
 
 def event(id="1",start="2026-11-07T00:30:00Z",state="pre"):
@@ -64,6 +67,25 @@ class ScheduleTests(unittest.TestCase):
         self.assertEqual(len(urls),2)
         self.assertEqual(len(result["events"]),1)
         self.assertEqual(result["events"][0]["away_abbreviation"],"BOS")
+
+    def test_cached_odds_fallback_is_partial_and_deduplicated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"odds.json"
+            record={"game":"Boston Celtics @ Charlotte Hornets",
+                    "start":"2026-11-07T00:30:00Z"}
+            path.write_text(json.dumps({"picks":[record,record]}))
+            result=odds_schedule_fallback([dt.date(2026,11,6)],path)
+            self.assertEqual(len(result["events"]),1)
+            self.assertIn("partial",result["source"])
+            self.assertEqual(result["events"][0]["game_state"],"unknown")
+            self.assertIsNone(result["events"][0]["home_abbreviation"])
+
+    def test_cached_odds_does_not_claim_empty_full_schedule(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/"odds.json"
+            path.write_text(json.dumps({"picks":[]}))
+            with self.assertRaises(ValueError):
+                odds_schedule_fallback([dt.date(2026,11,6)],path)
 
     def test_next_day_is_separate(self):
         today=dt.date(2026,11,6)
