@@ -111,6 +111,10 @@ def snapshot(comparisons,generated_at,existing=None):
                     "under_model_probability" if original_projection<line else
                     "unavailable_probability"),
                 "original_probability_method":"CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED",
+                "combined_probability_proxy_side":side,
+                "combined_probability_proxy_estimate":book.get(
+                    "over_model_probability" if side=="OVER" else "under_model_probability"),
+                "combined_probability_proxy_method":"ORIGINAL_RESIDUAL_PROXY_FOR_COMBINED_DIRECTION_UNCALIBRATED",
                 "experimental_estimate_model":"PROVISIONAL_ORIGINAL_ONLY",
                 "experimental_estimate":book.get(
                     "over_model_probability" if side=="OVER" else "under_model_probability"),
