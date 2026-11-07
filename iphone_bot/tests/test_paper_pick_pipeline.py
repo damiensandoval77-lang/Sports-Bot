@@ -44,6 +44,22 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertEqual(combined["direction_wins"]+combined["direction_losses"],1)
         self.assertEqual(combined["observations"],1)
 
+    def test_snapshot_freezes_quote_specific_original_probability(self):
+        data=self.market()
+        data["projection"]=24.2
+        data["combined_projection"]=18.0
+        data["combined_model_count"]=2
+        data["book_quotes"][0]["over_model_probability"]=0.72
+        data["book_quotes"][0]["under_model_probability"]=0.28
+        locked=snapshot([data],"2026-11-12T20:00:00Z")
+        fanduel=next(x for x in locked if x["bookmaker"]=="FanDuel")
+        self.assertEqual(fanduel["side"],"UNDER")
+        self.assertEqual(fanduel["original_probability_side"],"OVER")
+        self.assertEqual(fanduel["original_probability_estimate"],0.72)
+        second=snapshot([data],"2026-11-12T21:00:00Z",locked)
+        self.assertEqual(second[0]["captured_at"],locked[0]["captured_at"])
+        self.assertEqual(second[0]["original_probability_estimate"],locked[0]["original_probability_estimate"])
+
     def test_nonfinite_and_incomplete_boxscores_never_get_graded(self):
         rows=snapshot([self.market()],"2026-11-12T20:00:00Z")
         for bad in (dict(self.game(),MIN=0),
