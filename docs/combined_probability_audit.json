@@ -1,0 +1,171 @@
+{
+  "status": "UNVALIDATED_COMBINED_DIRECTION_RESIDUAL_PROXY",
+  "probability_kind": "ORIGINAL_AI_RESIDUAL_SIMULATION_FOR_COMBINED_CHOSEN_SIDE",
+  "is_calibrated": false,
+  "show_as_verified_confidence": false,
+  "minimum_per_band": 100,
+  "minimum_distinct_dates_per_band": 10,
+  "overall": {
+    "sample_size": 0,
+    "wins": 0,
+    "losses": 0,
+    "distinct_game_dates": 0,
+    "observed_hit_rate": null,
+    "mean_proxy_probability": null,
+    "calibration_gap": null,
+    "brier_score": null,
+    "observed_hit_rate_wilson95": null
+  },
+  "bands": [
+    {
+      "label": "0\u201350%",
+      "lower": 0,
+      "upper": 0.5,
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null,
+      "reliable": false
+    },
+    {
+      "label": "50\u201360%",
+      "lower": 0.5,
+      "upper": 0.6,
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null,
+      "reliable": false
+    },
+    {
+      "label": "60\u201370%",
+      "lower": 0.6,
+      "upper": 0.7,
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null,
+      "reliable": false
+    },
+    {
+      "label": "70\u201380%",
+      "lower": 0.7,
+      "upper": 0.8,
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null,
+      "reliable": false
+    },
+    {
+      "label": "80\u201390%",
+      "lower": 0.8,
+      "upper": 0.9,
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null,
+      "reliable": false
+    },
+    {
+      "label": "90\u2013100%",
+      "lower": 0.9,
+      "upper": 1.0,
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null,
+      "reliable": false
+    }
+  ],
+  "by_stat": {
+    "PTS": {
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null
+    },
+    "REB": {
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null
+    },
+    "AST": {
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null
+    },
+    "PRA": {
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "distinct_game_dates": 0,
+      "observed_hit_rate": null,
+      "mean_proxy_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "observed_hit_rate_wilson95": null
+    }
+  },
+  "excluded": {
+    "no_pregame_frozen_proxy": 233,
+    "unsettled": 961
+  },
+  "prospective_validation_required": true,
+  "limitations": [
+    "This is the ORIGINAL AI residual probability for the direction selected by Combined AI, not a calibrated Combined AI simulation.",
+    "A probability must be frozen pregame for the exact book and line; missing historical probabilities are never reconstructed.",
+    "A single game's markets and player statistics are strongly correlated.",
+    "Wilson intervals are approximate and do not correct cross-player or within-game correlation.",
+    "Observed win rates are descriptive. No adjustment is deployed or justified from small buckets.",
+    "Verified probability calibration requires future holdout dates and pre-registered fit rules."
+  ],
+  "generated_at": "2026-11-07T03:36:24.002193+00:00"
+}
