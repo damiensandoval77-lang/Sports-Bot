@@ -23,7 +23,7 @@ try:
     from .defender_matchup_v3 import ROOT
     from .shot_profile_research import predict_points
     from .import_archived_defender_matchups import PARQUET_URL,archive_minutes
-    from .defender_v3_assignment import projected_assignment,assignment_points_scenario
+    from .defender_v3_assignment import projected_assignment,assignment_points_scenario,assignment_points_v4_scenario
 except ImportError:
     from defender_matchup_v3 import ROOT
     from shot_profile_research import predict_points
@@ -61,14 +61,14 @@ def number(x):
     except (ValueError,TypeError):return None
 
 
-def load_player_games(table):
+def load_player_games(table,season_start=2025):
     missing=set(COLS)-set(table.column_names)
     if missing:raise ValueError("Missing actual box score fields: "+str(sorted(missing)))
     by_key={}
     for row in table.select(COLS).to_pylist():
         try:
             date=dt.date.fromisoformat(str(row["game_date"])[:10])
-            if not dt.date(2025,10,1)<=date<=dt.date(2026,7,1):continue
+            if not dt.date(season_start,10,1)<=date<=dt.date(season_start+1,7,1):continue
             p=uid(row["player_id"]);gid=uid(row["game_id"])
             tm=team(row["team"]);opp=team(row["opponent"])
             if not p.isdigit() or not gid.isdigit() or tm==opp or not tm or not opp:continue
@@ -88,7 +88,7 @@ def load_player_games(table):
     return sorted(by_key.values(),key=lambda r:(r["date"],r["game_id"],r["id"]))
 
 
-def load_defender_games(table,box_games):
+def load_defender_games(table,box_games,season_start=2025):
     required={"game_id","person_id","matchups_person_id","team_tricode",
       "matchup_minutes","partial_possessions","matchup_field_goals_attempted",
       "matchup_field_goals_made","matchup_three_pointers_attempted",
@@ -101,7 +101,7 @@ def load_defender_games(table,box_games):
     failed=collections.Counter()
     for r in selected.to_pylist():
         try:
-            if r["_season"]!=2025 or r["_season_type"]!="rg":continue
+            if r["_season"]!=season_start or r["_season_type"]!="rg":continue
             gid=uid(r["game_id"]);off=uid(r["matchups_person_id"]);def_id=uid(r["person_id"])
             defender_ident=identity.get((gid,def_id))
             offense_ident=identity.get((gid,off))
@@ -243,6 +243,15 @@ def evaluate(box_games,def_rows):
          "assignment_top_defender_sample":0,
          "assignment_source":"HISTORICAL_PAIR_EXPOSURE_RECENT_ROTATIONS_POSITION_AND_SWITCHES",
          "assignment_is_confirmed":False,
+         "volume_mismatch_games_scored":0,
+         "volume_mismatch_baseline_points_mae":None,
+         "volume_mismatch_points_mae":None,
+         "volume_mismatch_delta_mae":None,
+         "volume_mismatch_delta_interval":None,
+         "volume_mismatch_high_volume_games":0,
+         "volume_mismatch_high_volume_baseline_mae":None,
+         "volume_mismatch_high_volume_v4_mae":None,
+         "volume_mismatch_validated_for_live_use":False,
          "head_to_head_mae_delta_95pct_date_cluster_interval":None,
          "head_to_head_improvement_statistically_supported":False,
          "expected_exposure_source":"PREVIOUS_5_TEAM_GAMES_DEFENDER_MINUTES",
@@ -267,6 +276,10 @@ def evaluate(box_games,def_rows):
     base_error=def_error=0.
     h2h_base_error=h2h_error=0.
     assign_base_error=assign_error=0.
+    volume_base_error=volume_error=0.
+    volume_count=high_volume_count=0
+    high_volume_base_error=high_volume_v4_error=0.
+    volume_by_day=collections.defaultdict(lambda:[0.,0])
     assignment_count=assignment_success=minutes_success=actual_assignment_count=0
     n_with=n_without=h2h_count=h2h_pairs=0
     assignment_by_day=collections.defaultdict(lambda:[0.,0])
@@ -309,6 +322,18 @@ def evaluate(box_games,def_rows):
                     [(pid,mins) for pid,mins,_ in projected_rotation],
                     pair_hist,defense_positions,day)
                 assigned=assignment_points_scenario(baseline,allocation,pair_hist,r["id"])
+                volume_v4=assignment_points_v4_scenario(
+                    baseline,allocation,pair_hist,r["id"],defense,defense_positions)
+                if volume_v4 is not None:
+                    volume_count+=1
+                    volume_base_error+=abs(r["PTS"]-baseline_points)
+                    volume_error+=abs(r["PTS"]-volume_v4)
+                    volume_by_day[day][0]+=abs(r["PTS"]-volume_v4)-abs(r["PTS"]-baseline_points)
+                    volume_by_day[day][1]+=1
+                    if baseline["expected_2pa"]+baseline["expected_3pa"]>=15:
+                        high_volume_count+=1
+                        high_volume_base_error+=abs(r["PTS"]-baseline_points)
+                        high_volume_v4_error+=abs(r["PTS"]-volume_v4)
                 if assigned is not None:
                     assignment_count+=1
                     assign_base_error+=abs(r["PTS"]-baseline_points)
@@ -370,6 +395,22 @@ def evaluate(box_games,def_rows):
                games_scored=n_with,example_predictions=examples,
                head_to_head_games_scored=h2h_count,
                head_to_head_pair_coverage=h2h_pairs)
+    if volume_count:
+        vb=volume_base_error/volume_count
+        va=volume_error/volume_count
+        out.update(
+            volume_mismatch_games_scored=volume_count,
+            volume_mismatch_baseline_points_mae=round(vb,4),
+            volume_mismatch_points_mae=round(va,4),
+            volume_mismatch_delta_mae=round(va-vb,4),
+            volume_mismatch_delta_interval=date_cluster_interval(volume_by_day),
+            volume_mismatch_high_volume_games=high_volume_count,
+            volume_mismatch_high_volume_baseline_mae=(
+                round(high_volume_base_error/high_volume_count,4)
+                if high_volume_count else None),
+            volume_mismatch_high_volume_v4_mae=(
+                round(high_volume_v4_error/high_volume_count,4)
+                if high_volume_count else None))
     if assignment_count:
         assignment_base=assign_base_error/assignment_count
         assignment_mae=assign_error/assignment_count
