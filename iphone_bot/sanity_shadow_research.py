@@ -9,7 +9,7 @@ import math
 from collections import defaultdict, Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from statistics import mean
+from statistics import mean, pstdev
 from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -77,7 +77,8 @@ def shadow(history,*,team,market,baseline,event_start,captured_at,
     result={"method":METHOD,"status":"INSUFFICIENT_PREGAME_HISTORY",
         "original_combined_projection":p,"shadow_projection":None,
         "season_average":None,"last5_average":None,"last10_average":None,
-        "history_games":0,"minutes_l5":None,"projected_minutes":None,
+        "history_games":0,"minutes_l5":None,"minutes_volatility_l5":None,
+        "projected_minutes":None,
         "deviation_pct":None,"warnings":[],"research_only":True,
         "live_applied":False,"simulated_probability_changed":False}
     if market not in MARKETS:return dict(result,status="UNSUPPORTED_MARKET")
@@ -97,12 +98,20 @@ def shadow(history,*,team,market,baseline,event_start,captured_at,
     l5=mean(vals[-5:])
     l10=mean(vals[-10:])
     minutes_l5=mean(r[2] for r in games[-5:])
+    minutes_volatility=pstdev(r[2] for r in games[-5:])
     context=minutes_context if isinstance(minutes_context,dict) else {}
     expected=finite(context.get("expected_minutes"))
     result.update(season_average=round(season,3),last5_average=round(l5,3),
                   last10_average=round(l10,3),minutes_l5=round(minutes_l5,2),
+                  minutes_volatility_l5=round(minutes_volatility,2),
                   projected_minutes=expected)
     warnings=[]
+    last_day=datetime.strptime(games[-1][0],"%Y-%m-%d").date()
+    capture_day=datetime.fromisoformat(utc(captured_at).astimezone(ET).date().isoformat()).date()
+    if (capture_day-last_day).days>14:
+        warnings.append("STALE_PLAYER_HISTORY")
+    if minutes_volatility>6:
+        warnings.append("HIGH_RECENT_MINUTES_VOLATILITY")
     deviation=(p-season)/season if season>0 else None
     result["deviation_pct"]=round(deviation*100,2) if deviation is not None else None
     if deviation is not None and abs(deviation)>=DEVIATION_THRESHOLD:
@@ -118,7 +127,9 @@ def shadow(history,*,team,market,baseline,event_start,captured_at,
     # Minutes disagreement/unknown injury blocks adjustment; flags still surface.
     blocked=("EXPECTED_MINUTES_UNVERIFIED" in warnings or
              "EXPECTED_MINUTES_DISAGREE_WITH_RECENT" in warnings or
-             "INJURY_OR_LINEUP_UNCERTAINTY" in warnings)
+             "INJURY_OR_LINEUP_UNCERTAINTY" in warnings or
+             "HIGH_RECENT_MINUTES_VOLATILITY" in warnings or
+             "STALE_PLAYER_HISTORY" in warnings)
     if deviation is None or abs(deviation)<DEVIATION_THRESHOLD:
         status="NO_LARGE_DEVIATION"
         candidate=p
