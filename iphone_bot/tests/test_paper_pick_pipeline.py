@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.paper_pick_pipeline import snapshot,settle,summary
+from iphone_bot.paper_pick_pipeline import snapshot,settle,summary,cross_checked_final_boxscores
 
 class PaperPipelineTests(unittest.TestCase):
     def market(self):
@@ -29,6 +29,25 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_verified_third_party_final_settles_celtics_only(self):
+        from pathlib import Path
+        verified=Path(__file__).resolve().parents[2]/"docs/verified_postgame_boxscores.json"
+        checked=cross_checked_final_boxscores(verified)
+        tatum=next(x for x in checked if x["player"]=="Jayson Tatum")
+        self.assertEqual((tatum["PTS"],tatum["REB"],tatum["AST"]),(34,8,9))
+        p=self.market()
+        p.update(player="Jayson Tatum",player_id="1628369",
+                 game="Boston Celtics @ Charlotte Hornets",
+                 start="2026-11-07T00:10:00Z",
+                 projection=30,combined_projection=31)
+        items=snapshot([p],"2026-11-06T22:00:00Z")
+        graded=settle(items,checked,"2026-11-07T03:10:00Z")
+        self.assertEqual(len(graded),2)
+        self.assertTrue(all(row["status"]=="SETTLED" for row in graded))
+        self.assertTrue(all(row["settlement_source"]=="CBS_FINAL_VERIFIED" for row in graded))
+        before=settle(items,checked,"2026-11-07T01:00:00Z")
+        self.assertTrue(all(row["status"]=="PENDING" for row in before))
+
     def test_official_final_can_settle_before_three_hour_delay(self):
         picks=snapshot([self.market()],"2026-11-12T20:00:00Z")
         game={**self.game(24),"player":"Sample Player","source":"NBA_CDN_FINAL",
