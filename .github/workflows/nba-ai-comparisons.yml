@@ -186,6 +186,9 @@ jobs:
           assert d['shadow_is_primary'] is False
           assert all(x['projection_explanation']['status']=='DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION' for x in d['comparisons'])
           assert all(1<=len(x['projection_explanation']['sentences'])<=3 for x in d['comparisons'])
+          assert all(r['season_feature_method']=='RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI' for r in d['comparisons'])
+          assert all(r['season_average_challenger']['production_applied'] is False for r in d['comparisons'])
+          assert all(r['season_average_challenger']['season_games']>=5 for r in d['comparisons'] if r['season_average_challenger']['research_projection'] is not None)
           assert d['combined_projection_enabled'] is True
           assert d['combined_projection_validated'] is False
           assert all(x['combined_model_count'] in (1,2) and x['combined_projection']>=0 for x in d['comparisons'])
