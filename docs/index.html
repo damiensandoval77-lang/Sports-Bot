@@ -834,6 +834,22 @@ async function browserScoreboard(day){
 }
 async function refreshScoresOnly(){
  if(document.visibilityState==="hidden")return;
+ // Server-published scores need no browser credential or cross-origin NBA API.
+ // Prefer them to preserve score freshness when ESPN blocks browser access.
+ try{
+  const provider=await fetchJSON("nba_schedule.json");
+  if(provider?.status==="PROVIDER_NBA_SCORES_PARTIAL_SLATE" &&
+     isRecent(provider.generated_at,3) &&
+     (!nbaSchedule || Date.parse(provider.generated_at)>Date.parse(nbaSchedule.generated_at||0))){
+   const byIdentity=new Map((nbaSchedule?.games||[]).map(g=>[g.game+"|"+g.start,g]));
+   for(const fresh of provider.games||[]){
+    const id=fresh.game+"|"+fresh.start;
+    byIdentity.set(id,{...(byIdentity.get(id)||{}),...fresh});
+   }
+   nbaSchedule={...provider,games:[...byIdentity.values()]};
+   renderGameStrip();
+  }
+ }catch(_){}
  const dateParts=new Intl.DateTimeFormat("en-US",{
   timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"
  }).formatToParts(new Date());
@@ -841,8 +857,9 @@ async function refreshScoresOnly(){
  const today=val("year")+"-"+val("month")+"-"+val("day");
  try{
   const current=await browserScoreboard(today);
+  if(!current.length)return;
   const other=(nbaSchedule?.games||[]).filter(x=>x.date_eastern!==today);
-  const games=new Map([...other,...current].map(g=>[g.id,g]));
+  const games=new Map([...other,...current].map(g=>[g.game+"|"+g.start,g]));
   nbaSchedule={...(nbaSchedule||{}),games:[...games.values()],
    total_games:games.size,status:"THIRD_PARTY_NBA_SCHEDULE_ONLY",
    source:"Browser-direct ESPN scoreboard",
@@ -850,8 +867,7 @@ async function refreshScoresOnly(){
    coverage_complete:true};
   renderGameStrip();
  }catch(_){
-  // A blocked score provider never removes last known games or
-  // fabricates a final score. Refresh data still works manually.
+  // A blocked source never erases previously verified scores.
  }
 }
 async function refresh(){
@@ -866,7 +882,8 @@ if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.val
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[];aiMetadata=null}
 nbaSchedule=sch.status==="fulfilled"&&
- ["THIRD_PARTY_NBA_SCHEDULE_ONLY","PARTIAL_CACHED_SPORTSBOOK_SCHEDULE"].includes(sch.value.status)&&
+ ["THIRD_PARTY_NBA_SCHEDULE_ONLY","PARTIAL_CACHED_SPORTSBOOK_SCHEDULE",
+  "PROVIDER_NBA_SCORES_PARTIAL_SLATE"].includes(sch.value.status)&&
  isRecent(sch.value.generated_at,12)?sch.value:null;
 
 const easternParts=new Intl.DateTimeFormat("en-US",{
