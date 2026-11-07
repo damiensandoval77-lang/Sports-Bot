@@ -68,7 +68,7 @@ def eligible(records):
         grouped[key].append((capture,str(row.get("bookmaker","")).casefold(),row,p,side,actual,line))
     result=[]
     for group in grouped.values():
-        capture,book,row,p,side,actual,line=min(group,key=lambda x:(x[0],x[1],x[7]))
+        capture,book,row,p,side,actual,line=min(group,key=lambda x:(x[0],x[1],x[6]))
         outcome=int((actual>line)==(side=="OVER"))
         result.append({"date":utc(row["event_start"]).date().isoformat(),
                        "market":str(row["market"]),"estimated":p,"won":outcome,
