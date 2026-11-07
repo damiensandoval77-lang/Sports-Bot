@@ -7,6 +7,8 @@ on:
       - 'iphone_bot/fetch_prizepicks.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
       - 'docs/data.json'
+      - 'iphone_bot/minutes_early_season_research.py'
+      - 'iphone_bot/tests/test_minutes_early_season_research.py'
       - 'iphone_bot/season_average_research.py'
       - 'iphone_bot/tests/test_season_average_research.py'
       - 'iphone_bot/compare_live_models.py'
@@ -74,7 +76,7 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
         run: |
-          python -m py_compile iphone_bot/season_average_research.py iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/fetch_prizepicks.py iphone_bot/fetch_official_injuries.py iphone_bot/research_context.py iphone_bot/minutes_model_v2.py iphone_bot/shot_profile_research.py iphone_bot/weight_research.py
+          python -m py_compile iphone_bot/minutes_early_season_research.py iphone_bot/season_average_research.py iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/fetch_prizepicks.py iphone_bot/fetch_official_injuries.py iphone_bot/research_context.py iphone_bot/minutes_model_v2.py iphone_bot/shot_profile_research.py iphone_bot/weight_research.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_experimental_probability.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v
@@ -90,6 +92,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_season_average_research.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_minutes_early_season_research.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_minutes_scenario_validation.py" -v
       - name: Fetch 2026-27 current-season player games
@@ -169,6 +172,12 @@ jobs:
                      abs(x['shot_profile_research']['expected_fga']-
                          x['shot_profile_research']['expected_2pa']-
                          x['shot_profile_research']['expected_3pa'])<0.03
+                     for x in d['comparisons'])
+          assert d['minutes_early_season_applied_to_live_model'] is False
+          assert d['minutes_early_season_validation']['live_model_unchanged'] is True
+          assert all(x['minutes_early_season_research']['production_applied'] is False for x in d['comparisons'])
+          assert all(x['minutes_early_season_research']['expected_minutes'] is None or
+                     0 <= x['minutes_early_season_research']['expected_minutes'] <= 48
                      for x in d['comparisons'])
           assert d['minutes_v2_validation']['live_model_unchanged'] is True
           assert d['minutes_v2_validation']['production_adjustment_applied'] is False
