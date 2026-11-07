@@ -127,7 +127,7 @@ def shadow(history,*,team,market,baseline,event_start,captured_at,
         candidate=None
     else:
         delta=BLEND*(season-p)
-        capped=max(-MAX_ADJUSTMENT*max(p,1.0),min(MAX_ADJUSTMENT*max(p,1.0),delta))
+        capped=max(-MAX_ADJUSTMENT*p,min(MAX_ADJUSTMENT*max(p,1.0),delta))
         candidate=max(0,p+capped)
         status="SHADOW_CANDIDATE_UNVALIDATED"
     result.update(status=status,shadow_projection=round(candidate,3) if candidate is not None else None,
