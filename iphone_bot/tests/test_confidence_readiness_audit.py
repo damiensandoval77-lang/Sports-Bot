@@ -56,6 +56,58 @@ class ConfidenceReadinessTests(unittest.TestCase):
         self.assertEqual(diag["settled_without_proxy"], 1)
         self.assertEqual(r["overall"]["sample_size"], 0)
 
+    def test_full_pregame_capture_to_verified_final_to_confidence_audit(self):
+        from iphone_bot.paper_pick_pipeline import snapshot, settle
+        market = {
+            "player": "Sample Player", "player_id": "123", "team": "BOS",
+            "game": "Boston Celtics @ Miami Heat",
+            "start": "2026-11-13T00:30:00Z", "stat": "PTS",
+            "projection": 26, "combined_projection": 25, "combined_model_count": 2,
+            "book_quotes": [{"name": "FanDuel", "line": 22.5,
+                             "over": -110, "under": -110,
+                             "over_model_probability": .93,
+                             "under_model_probability": .07}]
+        }
+        frozen = snapshot([market], "2026-11-12T20:00:00Z")
+        self.assertEqual(len(frozen), 1)
+        self.assertEqual(frozen[0]["combined_probability_proxy_estimate"], .93)
+        before = audit(frozen, now="2026-11-12T21:00:00Z")
+        self.assertEqual(before["overall"]["sample_size"], 0)
+        self.assertEqual(before["coverage"]["pregame_quotes_with_valid_frozen_proxy"], 1)
+        final = {"player": "Sample Player", "team": "BOS", "opponent": "MIA",
+                 "date": "2026-11-12", "PTS": 25, "REB": 4, "AST": 2,
+                 "PRA": 31, "MIN": 32, "source": "NBA_CDN_FINAL",
+                 "final_confirmed": True, "source_game_id": "0022600030"}
+        graded = settle(frozen, [final], "2026-11-13T03:00:00Z")
+        self.assertEqual(graded[0]["status"], "SETTLED")
+        after = audit(graded, now="2026-11-13T03:01:00Z")
+        self.assertEqual(after["overall"]["sample_size"], 1)
+        self.assertEqual(after["high_confidence_90_plus"]["wins"], 1)
+        self.assertFalse(after["calibrated"])
+
+    def test_unconfirmed_or_mismatched_final_does_not_create_grades(self):
+        from iphone_bot.paper_pick_pipeline import snapshot, settle
+        market = {
+            "player": "Sample Player", "player_id": "123", "team": "BOS",
+            "game": "Boston Celtics @ Miami Heat",
+            "start": "2026-11-13T00:30:00Z", "stat": "AST",
+            "projection": 6, "combined_projection": 6, "combined_model_count": 2,
+            "book_quotes": [{"name": "FanDuel", "line": 4.5,
+                             "over": -110, "under": -110,
+                             "over_model_probability": .85,
+                             "under_model_probability": .15}]
+        }
+        frozen = snapshot([market], "2026-11-12T20:00:00Z")
+        final = {"player": "Sample Player", "team": "BOS", "opponent": "MIA",
+                 "date": "2026-11-12", "PTS": 10, "REB": 3, "AST": 6,
+                 "PRA": 19, "MIN": 31, "source": "NBA_CDN_FINAL",
+                 "final_confirmed": False, "source_game_id": "0022600030"}
+        self.assertEqual(settle(frozen, [final], "2026-11-13T03:00:00Z")[0]["status"], "PENDING")
+        final["final_confirmed"] = True
+        final["opponent"] = "NYK"
+        self.assertEqual(settle(frozen, [final], "2026-11-13T03:00:00Z")[0]["status"], "PENDING")
+        self.assertEqual(audit(frozen)["overall"]["sample_size"], 0)
+
     def test_single_date_large_sample_never_ready(self):
         r=audit([pick(player_id=str(i)) for i in range(1000)])
         self.assertEqual(r["overall"]["sample_size"],1000)
