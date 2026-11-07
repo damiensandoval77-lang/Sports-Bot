@@ -15,6 +15,7 @@ import io
 import json
 import math
 import pathlib
+import random
 import urllib.request
 from statistics import mean
 
@@ -190,6 +191,22 @@ def head_to_head_adjustment(baseline,defenders,pair_history,off_id):
     return round(max(0,baseline["expected_points"]+shift),3),round(shift,3),covered
 
 
+def date_cluster_interval(day_errors,iterations=1200,seed=2026):
+    """Date-clustered percentile interval for (challenger MAE - baseline MAE)."""
+    if len(day_errors)<15:return None
+    ordered=[day_errors[k] for k in sorted(day_errors)]
+    rng=random.Random(seed)
+    distribution=[]
+    for _ in range(iterations):
+        picked=[ordered[rng.randrange(len(ordered))] for _ in ordered]
+        n=sum(x[1] for x in picked)
+        if n:distribution.append(sum(x[0] for x in picked)/n)
+    if not distribution:return None
+    distribution.sort()
+    return [round(distribution[int(.025*(len(distribution)-1))],4),
+            round(distribution[int(.975*(len(distribution)-1))],4)]
+
+
 def evaluate(box_games,def_rows):
     dates=sorted({x["date"] for x in box_games})
     out={"status":"INSUFFICIENT_SAME_GAME_POINTS_SAMPLE",
@@ -209,6 +226,8 @@ def evaluate(box_games,def_rows):
          "head_to_head_minus_baseline_mae":None,
          "head_to_head_better_on_holdout":None,
          "head_to_head_pair_coverage":0,
+         "head_to_head_mae_delta_95pct_date_cluster_interval":None,
+         "head_to_head_improvement_statistically_supported":False,
          "expected_exposure_source":"PREVIOUS_5_TEAM_GAMES_DEFENDER_MINUTES",
          "not_a_sportsbook_prop_backtest":True}
     if len(dates)<MIN_TEST_DATES+20:return out
@@ -230,6 +249,7 @@ def evaluate(box_games,def_rows):
     base_error=def_error=0.
     h2h_base_error=h2h_error=0.
     n_with=n_without=h2h_count=h2h_pairs=0
+    h2h_by_day=collections.defaultdict(lambda:[0.,0])
     examples=[]
     for day in dates:
         if day>=boundary:
@@ -259,6 +279,8 @@ def evaluate(box_games,def_rows):
                     h2h_pairs+=h2h_covered
                     h2h_base_error+=abs(r["PTS"]-baseline_points)
                     h2h_error+=abs(r["PTS"]-h2h_pred)
+                    h2h_by_day[day][0]+=abs(r["PTS"]-h2h_pred)-abs(r["PTS"]-baseline_points)
+                    h2h_by_day[day][1]+=1
                 # Paired-sample comparison: only score games with valid
                 # defender context, and count unavailable context separately.
                 if adjustment is None:
@@ -292,6 +314,14 @@ def evaluate(box_games,def_rows):
                    head_to_head_points_mae=round(h2h_mae,4),
                    head_to_head_minus_baseline_mae=round(h2h_mae-h2h_base,4),
                    head_to_head_better_on_holdout=h2h_mae<h2h_base)
+        interval=date_cluster_interval(h2h_by_day)
+        out["head_to_head_mae_delta_95pct_date_cluster_interval"]=interval
+        out["head_to_head_improvement_statistically_supported"]=(
+            interval is not None and interval[1]<0)
+        out["head_to_head_promotion_gate"]=(
+            "RESEARCH_ONLY_MORE_EVIDENCE_REQUIRED" if interval is None or
+            interval[1]>=0 or h2h_base-h2h_mae<.1 else
+            "OUT_OF_SAMPLE_GAIN_PENDING_INDEPENDENT_SEASON_REPLICATION")
     if n_with:
         base=base_error/n_with;adj=def_error/n_with
         out.update(status="SAME_GAME_DEFENDER_POINTS_HOLDOUT",
