@@ -677,7 +677,7 @@ function renderGameStrip(){
  const rows=[...games.values()].sort((a,b)=>Date.parse(a.start)-Date.parse(b.start));
  if(selectedGame&&!games.has(selectedGame))selectedGame="";
  const tiles=[];
- function makeTile(game,label,start,sub,n,style){
+ function makeTile(game,label,start,sub,style){
   const tile=node("button","game-tile"+(!game?" all-games":""));
   tile.type="button";
   tile.setAttribute("aria-pressed",String(selectedGame===game));
@@ -712,7 +712,7 @@ function renderGameStrip(){
   const state=g.game_state==="post"?"Final":g.game_state==="in"?"Live":
     Date.parse(g.start)<=Date.now()?"Started":formatTime(g.start);
   const detail=total?total+" AI props":oddsTotal?oddsTotal+" sportsbook lines":"No verified props";
-  tiles.push(makeTile(name,away+"  @  "+home,state,detail,0,
+  tiles.push(makeTile(name,away+"  @  "+home,state,detail,
     total?"":oddsTotal?"partial":"no-lines"));
  }
  strip.replaceChildren(...tiles);
