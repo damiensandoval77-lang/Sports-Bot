@@ -88,6 +88,17 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 .game-strip{scrollbar-color:#555 transparent}
 .notice{background:#221b13;border-color:#4a3925;color:#e9c894}
 .notice:not(.pipeline-alert){font-size:11px}
+/* Compact disclosure instead of stacked amber banners; original safety/data
+   notes remain accessible and refresh in place through their unchanged IDs. */
+.data-notes{margin:1px 0 10px;border:1px solid #303030;border-radius:10px;background:#151515;color:#b7b7b7;overflow:hidden}
+.data-notes>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;color:#b8b8b8;font-size:11px;letter-spacing:.2px;font-weight:650;cursor:pointer;list-style:none}
+.data-notes>summary::-webkit-details-marker{display:none}
+.data-notes-chevron{font-size:16px;color:#777;line-height:1}
+.data-notes[open] .data-notes-chevron{transform:rotate(180deg)}
+.data-notes-body{border-top:1px solid #303030;padding:10px 12px;font-size:11px;line-height:1.6;color:#b9b9b9}
+.data-note-text+.data-note-text{margin-top:9px;padding-top:9px;border-top:1px solid #2b2b2b}
+.data-notes a{color:#a7c6ff;text-decoration:underline;text-underline-offset:2px}
+
 .source{color:#a2a2a2}
 /* Schedule + roster information is already represented by swipeable matchup tiles.
    Keep nodes for existing refresh logic but remove visual clutter entirely. */
@@ -174,8 +185,13 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <button class="tab" data-tab="odds" aria-selected="false">Sportsbook</button>
 <button class="tab" data-tab="form" aria-selected="false">Player Form</button>
 <button class="tab" data-tab="results" aria-selected="false">Performance</button></nav>
-<div id="global-warning" class="notice">Loading current market and player data…</div>
-<div id="injury-feed-health" class="notice" aria-live="polite">Checking official NBA injury-report availability…</div>
+<details class="data-notes" id="board-data-notes">
+  <summary>Data notes <span class="data-notes-chevron" aria-hidden="true">⌄</span></summary>
+  <div class="data-notes-body">
+    <div id="global-warning" class="data-note-text">Loading current market and player data…</div>
+    <div id="injury-feed-health" class="data-note-text" aria-live="polite">Checking official NBA injury-report availability…</div>
+  </div>
+</details>
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
