@@ -1,0 +1,54 @@
+{
+  "status": "ARCHIVED_SHOT_OPPORTUNITY_HOLDOUT",
+  "seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "holdout_season": "2025-26",
+  "archive_valid_player_games": 104588,
+  "earlier_seasons": {
+    "observations": 63590,
+    "players": 672,
+    "dates": 443,
+    "fga_mae": 2.915,
+    "two_pa_mae": 2.14,
+    "three_pa_mae": 1.552,
+    "fta_mae": 1.681,
+    "points_mae": 4.795,
+    "simple_points_mae": 4.88,
+    "points_mae_change": -0.085,
+    "opportunity_better": 33480,
+    "simple_better": 30053
+  },
+  "holdout": {
+    "observations": 21734,
+    "players": 510,
+    "dates": 149,
+    "fga_mae": 2.883,
+    "two_pa_mae": 2.082,
+    "three_pa_mae": 1.579,
+    "fta_mae": 1.707,
+    "points_mae": 4.746,
+    "simple_points_mae": 4.83,
+    "points_mae_change": -0.084,
+    "opportunity_better": 11494,
+    "simple_better": 10222
+  },
+  "live_model_unchanged": true,
+  "production_adjustment_applied": false,
+  "injury_usage_change_applied": false,
+  "shot_location_detail": "TWO_POINT_VERSUS_THREE_POINT_ONLY",
+  "limitations": [
+    "2PA is reconstructed as FGA-3PA; no rim/midrange/corner data.",
+    "2PM is FGM-3PM and points are reconstructed as 2*2PM+3*3PM+FTM.",
+    "Free throws are projected separately; points are not just field goals.",
+    "Only earlier same-player same-team same-season games determine shot mix and rates.",
+    "2025-26 entire season is held out from any research candidate tuning.",
+    "Bench status, DNP, and true player-tracking shot opportunities are unavailable.",
+    "No direct impact on current NBA AI predictions or betting decisions."
+  ],
+  "generated_at": "2026-11-07T00:10:07.841028+00:00",
+  "quality_rejections": {}
+}
