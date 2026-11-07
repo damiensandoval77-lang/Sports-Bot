@@ -23,6 +23,7 @@ from combined_projection import combine_projections
 from projection_explanation import explain_projection
 from research_context import minutes_estimate,positional_allowance,teammate_on_off,injury_minutes_research,minutes_walkforward_backtest
 from minutes_model_v2 import forecast as minutes_v2_forecast,backtest as minutes_v2_backtest
+from minutes_early_season_research import forecast as early_minutes_forecast,backtest as early_minutes_backtest
 from shot_profile_research import predict_attempts as shot_attempt_profile
 from season_average_research import season_candidate
 
@@ -222,6 +223,8 @@ def main():
         row["minutes_research"]=minutes_estimate(history,upcoming_date)
         row["minutes_v2_research"]=minutes_v2_forecast(
             history,upcoming_date,row["team"])
+        row["minutes_early_season_research"]=early_minutes_forecast(
+            history,upcoming_date,row["team"])
         row["shot_profile_research"]=shot_attempt_profile(
             history,upcoming_date,row["team"],
             row["minutes_v2_research"].get("expected_minutes"))
@@ -352,6 +355,8 @@ def main():
        "injury_minutes_research_status":"DESCRIPTIVE_ONLY_NOT_APPLIED",
        "minutes_baseline_validation":minutes_walkforward_backtest(all_games),
        "minutes_v2_validation":minutes_v2_backtest(all_games),
+       "minutes_early_season_validation":early_minutes_backtest(all_games),
+       "minutes_early_season_applied_to_live_model":False,
        "minutes_v2_applied_to_live_model":False,
        "shot_profile_applied_to_live_model":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
