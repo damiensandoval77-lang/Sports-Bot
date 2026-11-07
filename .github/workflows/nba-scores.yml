@@ -8,9 +8,10 @@ on:
       - 'iphone_bot/tests/test_fetch_odds_scores.py'
       - '.github/workflows/nba-scores.yml'
   schedule:
-    # 7:08, 9:08, 11:08 PM Eastern (winter) / 8:08, 10:08, midnight (summer).
-    # Two credits per fetch; modest schedule protects free API credits.
-    - cron: '8 0,2,4 * * *'
+    # Every 15 minutes during the main NBA evening window in UTC.
+    # Provider requests have a cost (~2 credits); manual runs are available
+    # outside these hours. GitHub Actions cron can be delayed.
+    - cron: '3,18,33,48 23,0,1,2,3,4,5 * * *'
 permissions:
   contents: write
 concurrency:
