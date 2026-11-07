@@ -111,7 +111,9 @@ def main():
     players=[]
     for ident,dates in by_player.items():
         games=[dates[k] for k in sorted(dates)]
-        if len(games)<3:
+        # Keep all players with at least one recorded current-season game for
+        # roster discovery. Models still separately require >=5 prior games.
+        if not games:
             continue
         recent=games[-1]
         result={"player":recent["player"],"player_id":ident,"team":recent["team"],
@@ -119,7 +121,7 @@ def main():
         for stat in ("PTS","REB","AST","PRA","MIN"):
             values=[g[stat] for g in games]
             result["metrics"][stat]={
-                "l3":round(statistics.mean(values[-3:]),2),
+                "l3":round(statistics.mean(values[-3:]),2) if len(values)>=3 else None,
                 "l5":round(statistics.mean(values[-5:]),2) if len(values)>=5 else None,
                 "l10":round(statistics.mean(values[-10:]),2) if len(values)>=10 else None,
                 "season":round(statistics.mean(values),2)}
