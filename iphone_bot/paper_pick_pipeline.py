@@ -17,7 +17,7 @@ try:
     from .weight_research import walkforward_weights
     from .accuracy_feedback import evaluate as accuracy_feedback
     from .probability_audit import audit as probability_audit
-    from .selective_challenger import screen as research_screen, evaluate as selective_evaluate
+    from .selective_challenger import screen as research_screen, evaluate as selective_evaluate, minutes_risk
 except ImportError:
     from model_performance import compute_performance
     from weight_research import walkforward_weights
@@ -123,7 +123,9 @@ def snapshot(comparisons,generated_at,existing=None):
                 "hypothetical_ev_pct":book.get("hypothetical_over_ev_pct" if side=="OVER" else "hypothetical_under_ev_pct"),
                 "opponent_shadow_projection":market.get("shadow_projection"),
                 "research_selective_v1":research_screen(market["stat"],line,
-                    original_projection,market.get("shadow_projection"),chosen_projection)}
+                    original_projection,market.get("shadow_projection"),chosen_projection),
+                "research_minutes_risk_v1":minutes_risk(market.get("minutes_research"),
+                    market.get("minutes_v2_research"),market.get("injury_status"))}
             ident=identity(record)
             if ident not in seen:
                 rows.append(record)
