@@ -6,6 +6,8 @@ on:
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/opportunity_backtest.py'
       - 'iphone_bot/selection_gate_shadow.py'
+      - 'iphone_bot/assist_shadow_v1.py'
+      - 'iphone_bot/tests/test_assist_shadow_v1.py'
       - 'iphone_bot/tests/test_selection_gate_shadow.py'
       - 'iphone_bot/tests/test_opportunity_backtest.py'
       - 'iphone_bot/tests/test_projection_upgrade_research.py'
@@ -39,6 +41,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selection_gate_shadow.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_assist_shadow_v1.py' -v
           python - <<'PY'
           from iphone_bot.projection_upgrade_research import SIMULATIONS
           assert SIMULATIONS==20000, 'Research simulation budget must be 20,000'
