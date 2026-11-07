@@ -43,7 +43,7 @@ jobs:
         run: pip install numpy pandas joblib "scikit-learn>=1.4,<2"
       - name: Validate paper pick invariants and dashboard JavaScript
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/accuracy_feedback.py iphone_bot/minutes_model_v2.py iphone_bot/publish_minutes_v2.py iphone_bot/fetch_current_form.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/weight_research.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py iphone_bot/minutes_model_v2.py iphone_bot/publish_minutes_v2.py iphone_bot/fetch_current_form.py
           python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_accuracy_feedback.py" -v
@@ -52,6 +52,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_minutes_model_v2.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_probability_audit.py" -v
           python - <<'PY'
           from pathlib import Path
           html=Path('docs/index.html').read_text()
@@ -100,6 +101,10 @@ jobs:
           assert perf['independent_settled_markets']<=report['settled']
           assert set(perf['models'])=={'original','opponent_aware','combined'}
           assert set(perf['by_stat'])=={'PTS','REB','AST','PRA'}
+          calibration=report['probability_audit']
+          assert calibration['no_live_calibration_applied'] is True
+          assert calibration['original_model_only'] is True
+          assert sum(b['sample_size'] for b in calibration['bins'])==calibration['overall']['sample_size']
           assert report['weight_research']['live_model_unchanged'] is True
           feedback=report['accuracy_feedback']
           assert feedback['live_model_unchanged'] is True
