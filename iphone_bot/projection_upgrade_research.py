@@ -12,6 +12,7 @@ import math
 import random
 from collections import Counter,defaultdict
 from datetime import datetime,timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 try:
@@ -57,7 +58,7 @@ def official_injuries(feed,game_start,capture):
     except (ValueError,KeyError,TypeError):
         return [],"UNVERIFIED_REPORT_DATE"
     # NBA injury rows must explicitly carry the calendar date of the game.
-    game_day=game_start.date().isoformat()
+    game_day=game_start.astimezone(ZoneInfo("America/New_York")).date().isoformat()
     rows=[p for p in feed.get("players",[]) if p.get("game_date")==game_day
           and str(p.get("status","")).lower() in
           ("out","doubtful","questionable","probable","available")]
@@ -197,7 +198,7 @@ def research_simulations(paper_rows):
                     original=float(r["original_projection"]);line=float(r["line"])
                     if original==line or float(r["actual"])==line:continue
                     want_over=original>line
-                    prob=(sum((original+x>line)==want_over for x in errors)+.5)/(SIMULATIONS+1)
+                    prob=(sum((original+x>line) if want_over else (original+x<line) for x in errors)+.5)/(SIMULATIONS+1)
                     hit=int((float(r["actual"])>line)==want_over)
                     results.append((prob,hit))
             # SAME-DATE outcomes become available only after scoring the day.
