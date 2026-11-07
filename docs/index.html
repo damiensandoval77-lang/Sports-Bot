@@ -98,6 +98,24 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 .data-notes-body{border-top:1px solid #303030;padding:10px 12px;font-size:11px;line-height:1.6;color:#b9b9b9}
 .data-note-text+.data-note-text{margin-top:9px;padding-top:9px;border-top:1px solid #2b2b2b}
 .data-notes a{color:#a7c6ff;text-decoration:underline;text-underline-offset:2px}
+/* Never render the old amber disclaimer cards on the AI Board.
+   Their text remains available only from the collapsed Data notes section. */
+#board-data-notes:not([open]) .data-notes-body{display:none!important}
+#board-data-notes #global-warning,
+#board-data-notes #injury-feed-health{
+  display:block!important;
+  background:transparent!important;
+  color:#b9b9b9!important;
+  border:0!important;
+  border-radius:0!important;
+  margin:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  font-size:11px!important;
+  font-weight:400!important;
+}
+#board-data-notes #injury-feed-health{margin-top:8px!important;padding-top:8px!important;border-top:1px solid #303030!important}
+
 
 .source{color:#a2a2a2}
 /* Schedule + roster information is already represented by swipeable matchup tiles.
