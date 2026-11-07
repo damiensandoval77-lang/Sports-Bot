@@ -1,0 +1,67 @@
+name: Refresh verified NBA sportsbook game moneylines
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/fetch_game_moneylines.py'
+      - 'iphone_bot/tests/test_fetch_game_moneylines.py'
+      - '.github/workflows/nba-moneylines.yml'
+  schedule:
+    # Hourly 10:27 AM–11:27 PM Eastern (EST); conserve paid h2h API requests.
+    - cron: '27 15-23,0-4 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-moneyline-feed
+  cancel-in-progress: false
+jobs:
+  nba-moneylines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Refresh from latest main
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+      - name: Validate quotes cannot be made up
+        run: |
+          python -m py_compile iphone_bot/fetch_game_moneylines.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_game_moneylines.py' -v
+      - name: Fetch real NBA h2h sportsbook moneyline prices
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python -u iphone_bot/fetch_game_moneylines.py
+      - name: Validate feed and identify timestamps
+        run: |
+          python - <<'PY'
+          import json,os
+          path='docs/game_moneylines.json'
+          if os.path.exists(path):
+              data=json.load(open(path))
+              assert data['status']=='VERIFIED_PREGAME_NBA_MONEYLINES'
+              for g in data['games']:
+                  assert g['away']!=g['home']
+                  for b in g['books']:
+                      assert b['away_ml']<=-100 or b['away_ml']>=100
+                      assert b['home_ml']<=-100 or b['home_ml']>=100
+                      assert b['updated_at']
+          PY
+      - name: Publish verified h2h odds to GitHub Pages
+        run: |
+          git fetch origin main
+          git add docs/game_moneylines.json docs/game_moneylines_status.json
+          if git diff --cached --quiet; then echo 'No moneyline changes'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update real NBA sportsbook moneyline quotes'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
