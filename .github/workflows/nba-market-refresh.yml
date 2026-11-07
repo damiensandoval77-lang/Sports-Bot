@@ -6,8 +6,6 @@ on:
     paths:
       - 'iphone_bot/fetch_props.py'
       - 'iphone_bot/tests/test_fetch_props.py'
-      - 'iphone_bot/publish_form_fallback.py'
-      - 'iphone_bot/tests/test_publish_form_fallback.py'
       - '.github/workflows/nba-market-refresh.yml'
   schedule:
     # Two quick refreshes before major evening tipoff; independent of ML retraining.
@@ -30,7 +28,6 @@ jobs:
         run: |
           python -m py_compile iphone_bot/fetch_props.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v
-          python -m unittest discover -s iphone_bot/tests -p "test_publish_form_fallback.py" -v
       - name: Retrieve as many current NBA player prop markets as provider credits allow
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -64,16 +61,11 @@ jobs:
           else:
               print('No successful refresh:',status['status'])
           PY
-      - name: Generate independent recent-form projections for all priced games
-        if: success()
-        run: |
-          python -u iphone_bot/fetch_current_form.py
-          python -u iphone_bot/publish_form_fallback.py
       - name: Publish NBA sportsbook market coverage and provider health
         if: always()
         run: |
           git fetch origin main
-          git add docs/data.json docs/odds_compact.json docs/odds_fetch_status.json docs/ai_form_fallback.json docs/current_form.json
+          git add docs/data.json docs/odds_compact.json docs/odds_fetch_status.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
