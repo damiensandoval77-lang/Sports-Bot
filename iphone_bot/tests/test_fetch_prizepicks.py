@@ -20,7 +20,7 @@ COMP={"player":"Sample Player","team":"BOS","game":"Boston Celtics @ Miami Heat"
 class PrizePicksTests(unittest.TestCase):
     def test_real_board_match(self):
         offer=clean(fixture(),NOW)
-        self.assertTrue(match(offer,COMP))
+        self.assertTrue(match(offer,COMP,NOW))
         p=publish([{"data":[fixture()],"meta":{"mode":"live","source_status":"fresh","next_cursor":None}}],[COMP],NOW)
         self.assertEqual(p["matched_count"],1)
         self.assertEqual(p["offers"][0]["ai_direction"],"MORE")
@@ -37,7 +37,7 @@ class PrizePicksTests(unittest.TestCase):
         offer=clean(data,NOW)
         self.assertTrue(match(offer,COMP))
         later=dict(COMP,start="2026-11-07T01:10:00Z")
-        self.assertFalse(match(offer,later))
+        self.assertFalse(match(offer,later,NOW))
 
     def test_demon_one_way(self):
         data=fixture();data["selections"]=[{"side":"more","available":True,"tier":"demon"}]
