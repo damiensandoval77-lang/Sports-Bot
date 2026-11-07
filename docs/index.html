@@ -194,8 +194,8 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="source" id="paired-model-comparison" aria-live="polite">Same-games model comparison: awaiting settled picks.</div>
 <div class="performance-comparison" id="performance-comparison"><div class="empty">Loading real model performance…</div></div>
 <div class="source" id="performance-caveat">Hit rate excludes pushes; paper ROI requires a recorded sportsbook price for each model's exact direction. No result is proof of profitable betting.</div>
-<div class="bar performance-heading"><h2>Individual paper picks</h2><small>Actual game results</small></div>
-<div class="summary"><div class="metric"><b id="real-settled">—</b><small>Settled quoted picks</small></div><div class="metric"><b id="real-record">—</b><small>Paper W / L / Push</small></div><div class="metric"><b id="real-roi">—</b><small>Paper return per graded unit</small></div></div>
+<div class="bar performance-heading"><h2>Bookmaker quote ledger</h2><small>Offers, not independent calls</small></div>
+<div class="summary"><div class="metric"><b id="real-settled">—</b><small>Settled book offers</small></div><div class="metric"><b id="real-record">—</b><small>Book offers W / L / Push</small></div><div class="metric"><b id="real-roi">—</b><small>Paper return per graded unit</small></div></div>
 <div class="source" id="real-explanation">Only real archived sportsbook prices and model picks locked before tipoff are graded. Paper results, not actual wagers, and multiple sportsbooks on one matchup are correlated.</div>
 <div class="board" id="real-board"><div class="empty">No completed, verified paper picks yet. The scheduled next-day grading process will populate this as actual game results arrive.</div></div></section>
 <details class="advanced"><summary>Method, accuracy &amp; tools</summary><div class="advbody">
@@ -646,7 +646,7 @@ function renderModelPerformance(){
  }
  const overallCombined=report.models?.combined;
  const totalIndependent=report.independent_settled_markets??0;
- const pendingUnique=paper?.pipeline_health?.pending_total??paper?.pending??0;
+ const pendingUnique=paper?.independent_pending_player_game_markets??0;
  const wins=overallCombined?.direction_wins??0;
  const losses=overallCombined?.direction_losses??0;
  const pushes=overallCombined?.direction_pushes??0;
@@ -654,7 +654,7 @@ function renderModelPerformance(){
  $("ai-record-wl").textContent=wins+"–"+losses;
  $("ai-record-hit").textContent=hit==null?"—":(100*hit).toFixed(1)+"%";
  $("ai-record-mae").textContent=overallCombined?.mae==null?"—":fmt(overallCombined.mae);
- $("ai-record-coverage").textContent=totalIndependent+" / "+pendingUnique+" offers pending";
+ $("ai-record-coverage").textContent=totalIndependent+" / "+pendingUnique;
  $("ai-record-description").textContent="Combined AI, "+totalIndependent+
   " unique completed player/game/stat markets · "+pushes+
   " pushes. Hit rate = wins ÷ (wins + losses). Pending quotes aren't losses; sportsbook duplicates aren't extra wins.";
