@@ -764,7 +764,9 @@ function renderGameStrip(){
   tile.addEventListener("click",()=>setGameFilter(name));
   tiles.push(tile);
  }
+ const previousScroll=strip.scrollLeft;
  strip.replaceChildren(...tiles);
+ strip.scrollLeft=previousScroll;
  count.textContent=rows.length+" game"+(rows.length===1?"":"s")+" · Swipe to browse";
  note.textContent=(nbaSchedule?.coverage_complete===true?
   "Game schedule source available. ":"Partial game coverage: missing games may not be listed. ")+
@@ -829,6 +831,28 @@ async function browserScoreboard(day){
   }catch(_){}
  }
  return rows;
+}
+async function refreshScoresOnly(){
+ if(document.visibilityState==="hidden")return;
+ const dateParts=new Intl.DateTimeFormat("en-US",{
+  timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"
+ }).formatToParts(new Date());
+ const val=t=>dateParts.find(x=>x.type===t)?.value||"";
+ const today=val("year")+"-"+val("month")+"-"+val("day");
+ try{
+  const current=await browserScoreboard(today);
+  const other=(nbaSchedule?.games||[]).filter(x=>x.date_eastern!==today);
+  const games=new Map([...other,...current].map(g=>[g.id,g]));
+  nbaSchedule={...(nbaSchedule||{}),games:[...games.values()],
+   total_games:games.size,status:"THIRD_PARTY_NBA_SCHEDULE_ONLY",
+   source:"Browser-direct ESPN scoreboard",
+   generated_at:new Date().toISOString(),
+   coverage_complete:true};
+  renderGameStrip();
+ }catch(_){
+  // A blocked score provider never removes last known games or
+  // fabricates a final score. Refresh data still works manually.
+ }
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
@@ -989,6 +1013,7 @@ for(const btn of document.querySelectorAll(".tab"))btn.addEventListener("click",
 $("refresh-now").addEventListener("click",()=>refresh().catch(error=>{
  $("data-health").textContent="Refresh failed: "+String(error.message||error);
 }));
+setInterval(refreshScoresOnly,90000);
 refresh().catch(error=>{
  $("status").textContent="LOAD ERROR";
  $("global-warning").textContent="Data request failed: "+String(error.message||error);
