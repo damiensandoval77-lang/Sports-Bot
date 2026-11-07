@@ -118,7 +118,8 @@ def load_defender_games(table,box_games):
             key=(day,gid,def_id,off)
             agg=grouped.setdefault(key,{"date":day,"game_id":gid,
               "def_id":def_id,"off_id":off,"def_team":def_team,
-              "two_a":0.,"two_m":0.,"three_a":0.,"three_m":0.})
+              "poss":0.,"two_a":0.,"two_m":0.,"three_a":0.,"three_m":0.})
+            agg["poss"]+=possessions
             for name,value in zip(("two_a","two_m","three_a","three_m"),
                                   (two_a,two_m,three_a,three_m)):
                 agg[name]+=value
@@ -278,7 +279,7 @@ def evaluate(box_games,def_rows):
             totals=defense[r["def_id"]]
             for k in ("two_a","two_m","three_a","three_m"):totals[k]+=r[k]
             pair=pair_hist[(r["off_id"],r["def_id"])]
-            pair["poss"]+=r["two_a"]+r["three_a"]
+            pair["poss"]+=r["poss"]
             for k in ("two_a","two_m","three_a","three_m"):pair[k]+=r[k]
     out.update(games_with_defender_context=n_with,games_without_defender_context=n_without,
                games_scored=n_with,example_predictions=examples,
