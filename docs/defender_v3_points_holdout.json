@@ -1,8 +1,102 @@
 {
-  "status": "DEFENDER_POINTS_HOLDOUT_UNAVAILABLE",
+  "status": "SAME_GAME_DEFENDER_POINTS_HOLDOUT",
   "is_live_model": false,
   "validated_for_live_use": false,
-  "error_type": "KeyError",
-  "error_detail": "'switches'",
-  "generated_at": "2026-11-07T02:13:54.985182+00:00"
+  "method": "2025-26 heldout player game dates; strict earlier-date rolling histories",
+  "models_compared": "HISTORICAL_SHOT_OPPORTUNITY_VS_MINUTES_WEIGHTED_DEFENDER_SCENARIO",
+  "defender_assignment": "UNVERIFIED_MINUTES_PROXY_NOT_CONFIRMED",
+  "independent_boxscore_target": "ACTUAL_COMPLETED_PLAYER_POINTS",
+  "features_use_same_day_results": false,
+  "training_on_holdout": false,
+  "promotion_gate": "NO_MEANINGFUL_POINTS_MAE_GAIN",
+  "dates_total": 164,
+  "test_dates": 33,
+  "baseline_points_mae": 4.8966,
+  "defender_points_mae": 4.9069,
+  "defender_minus_baseline_mae": 0.0103,
+  "games_scored": 5342,
+  "games_with_defender_context": 5342,
+  "games_without_defender_context": 0,
+  "head_to_head_games_scored": 2516,
+  "head_to_head_points_mae": 5.1811,
+  "head_to_head_baseline_points_mae": 5.1832,
+  "head_to_head_minus_baseline_mae": -0.0021,
+  "head_to_head_better_on_holdout": true,
+  "head_to_head_pair_coverage": 5027,
+  "assignment_projection_games_scored": 1871,
+  "assignment_projection_baseline_points_mae": 5.1298,
+  "assignment_projection_points_mae": 5.1271,
+  "assignment_projection_delta_mae": -0.0026,
+  "assignment_projection_delta_interval": [
+    -0.0047,
+    -0.0009
+  ],
+  "assignment_top_defender_accuracy": 0.3515,
+  "assignment_minutes_only_accuracy": 0.1471,
+  "assignment_top_defender_sample": 1502,
+  "assignment_source": "HISTORICAL_PAIR_EXPOSURE_RECENT_ROTATIONS_POSITION_AND_SWITCHES",
+  "assignment_is_confirmed": false,
+  "head_to_head_mae_delta_95pct_date_cluster_interval": [
+    -0.0038,
+    -0.0005
+  ],
+  "head_to_head_improvement_statistically_supported": true,
+  "expected_exposure_source": "PREVIOUS_5_TEAM_GAMES_DEFENDER_MINUTES",
+  "not_a_sportsbook_prop_backtest": true,
+  "example_predictions": [
+    {
+      "date": "2026-03-10",
+      "player_id": "1626162",
+      "opponent": "MEM",
+      "baseline_points": 13.82,
+      "defender_points": 13.871,
+      "actual_points": 30.0,
+      "adjustment_points": 0.051
+    },
+    {
+      "date": "2026-03-10",
+      "player_id": "1626166",
+      "opponent": "MEM",
+      "baseline_points": 5.42,
+      "defender_points": 5.448,
+      "actual_points": 32.0,
+      "adjustment_points": 0.028
+    },
+    {
+      "date": "2026-03-10",
+      "player_id": "1629656",
+      "opponent": "MEM",
+      "baseline_points": 15.57,
+      "defender_points": 15.623,
+      "actual_points": 23.0,
+      "adjustment_points": 0.053
+    },
+    {
+      "date": "2026-03-10",
+      "player_id": "1629660",
+      "opponent": "PHI",
+      "baseline_points": 20.25,
+      "defender_points": 20.289,
+      "actual_points": 26.0,
+      "adjustment_points": 0.039
+    },
+    {
+      "date": "2026-03-10",
+      "player_id": "1630570",
+      "opponent": "MEM",
+      "baseline_points": 7.35,
+      "defender_points": 7.381,
+      "actual_points": 11.0,
+      "adjustment_points": 0.031
+    }
+  ],
+  "assignment_promotion_gate": "RESEARCH_ONLY_INDEPENDENT_SEASON_REPLICATION_REQUIRED",
+  "head_to_head_promotion_gate": "RESEARCH_ONLY_MORE_EVIDENCE_REQUIRED",
+  "defender_better_on_holdout": false,
+  "source_games": 26648,
+  "joined_defender_records": 229809,
+  "join_rejections": {
+    "missing_boxscore_identity": 59
+  },
+  "generated_at": "2026-11-07T02:19:36.030460+00:00"
 }
