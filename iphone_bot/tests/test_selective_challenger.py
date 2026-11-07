@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.selective_challenger import screen,evaluate,RULE
+from iphone_bot.selective_challenger import screen,evaluate,RULE,minutes_risk
 
 class SelectiveChallengerTests(unittest.TestCase):
     def test_agreement_and_margin(self):
@@ -32,5 +32,20 @@ class SelectiveChallengerTests(unittest.TestCase):
         self.assertEqual(report["rule"],RULE)
         self.assertIsNone(report["by_stat"]["PTS"]["hit_rate"])
         self.assertEqual(report["considered_markets"],0)
+
+    def test_minutes_risk_fails_closed_on_unknown_availability(self):
+        unknown=minutes_risk({}, {}, "NOT_VERIFIED")
+        self.assertTrue(unknown["needs_manual_review"])
+        self.assertIn("GAME_DAY_AVAILABILITY_UNCONFIRMED",unknown["issues"])
+        self.assertFalse(unknown["live_adjustment_applied"])
+        stable=minutes_risk({"expected_minutes":29},
+                            {"expected_minutes":30,"last5_volatility":2,
+                             "history_games":12},"AVAILABLE")
+        self.assertFalse(stable["needs_manual_review"])
+        mismatch=minutes_risk({"expected_minutes":36},
+                              {"expected_minutes":27,"last5_volatility":7,
+                               "history_games":12},"QUESTIONABLE")
+        self.assertIn("MINUTES_MODELS_DISAGREE",mismatch["issues"])
+        self.assertIn("VOLATILE_RECENT_MINUTES",mismatch["issues"])
 
 if __name__=="__main__":unittest.main()
