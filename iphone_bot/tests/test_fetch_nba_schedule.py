@@ -51,6 +51,41 @@ class ScheduleTests(unittest.TestCase):
         self.assertEqual(row["game_state"],"in")
         self.assertIsNone(parse_nba_game(game,{dt.date(2026,11,7)}))
 
+    def test_espn_scores_only_for_live_and_final_games(self):
+        day=dt.date(2026,11,6)
+        live=event(state="in")
+        live["competitions"][0]["competitors"][0]["score"]="108"
+        live["competitions"][0]["competitors"][1]["score"]="112"
+        live["status"]["period"]=4
+        live["status"]["displayClock"]="2:33"
+        row=parse_event(live,day)
+        self.assertEqual((row["away_score"],row["home_score"]),(108,112))
+        self.assertEqual((row["period"],row["clock"]),(4,"2:33"))
+        pre=event(state="pre")
+        pre["competitions"][0]["competitors"][0]["score"]="0"
+        pre["competitions"][0]["competitors"][1]["score"]="0"
+        row=parse_event(pre,day)
+        self.assertIsNone(row["away_score"])
+        self.assertIsNone(row["home_score"])
+        invalid=event(state="post")
+        invalid["competitions"][0]["competitors"][0]["score"]="not-a-score"
+        invalid["competitions"][0]["competitors"][1]["score"]="100"
+        row=parse_event(invalid,day)
+        self.assertIsNone(row["away_score"])
+        self.assertEqual(row["home_score"],100)
+
+    def test_nba_cdn_final_scores_preserved(self):
+        game={"gameId":"0022600042","gameDateTimeUTC":"2026-11-07T00:30:00Z",
+              "gameStatus":3,
+              "awayTeam":{"teamCity":"Boston","teamName":"Celtics",
+                          "teamTricode":"BOS","score":120},
+              "homeTeam":{"teamCity":"Charlotte","teamName":"Hornets",
+                          "teamTricode":"CHA","score":116}}
+        result=parse_nba_game(game,{dt.date(2026,11,6)})
+        self.assertEqual(result["game_state"],"post")
+        self.assertEqual(result["away_score"],120)
+        self.assertEqual(result["home_score"],116)
+
     def test_nba_cdn_first_endpoint_failure_falls_back_to_second(self):
         day=dt.date(2026,11,6)
         game={"gameId":"001","gameDateTimeUTC":"2026-11-07T00:30:00Z",
