@@ -105,7 +105,7 @@ def save_status(status, **detail):
             "details":detail}
     STATUS.write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
 
-def compact_for_dashboard(report,max_pairs_per_event=240):
+def compact_for_dashboard(report,max_pairs_per_event=60):
     """Keep compact, real two-sided quotes across EVERY fetched NBA matchup.
 
     Prefer player breadth and market variety over bookmaker duplication.
