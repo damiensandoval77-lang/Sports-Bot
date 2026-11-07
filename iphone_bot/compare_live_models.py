@@ -24,6 +24,7 @@ from projection_explanation import explain_projection
 from research_context import minutes_estimate,positional_allowance,teammate_on_off,injury_minutes_research,minutes_walkforward_backtest
 from minutes_model_v2 import forecast as minutes_v2_forecast,backtest as minutes_v2_backtest
 from shot_profile_research import predict_attempts as shot_attempt_profile
+from season_average_research import season_candidate
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -274,6 +275,9 @@ def main():
         combined=combine_projections(projection,
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
         row["combined_projection"]=round(combined["projection"],1)
+        row["season_average_challenger"]=season_candidate(
+            history,upcoming_date,row["team"],target,combined["projection"])
+        row["season_feature_method"]="RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI"
         row["combined_difference"]=round(combined["projection"]-row["line"],1)
         row["combined_method"]=combined["method"]
         row["combined_model_count"]=combined["model_count"]
