@@ -195,6 +195,13 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 @media(max-width:520px){.prob-audit-bars{grid-template-columns:1fr}}
 .upgrade-research-status{margin:12px 0;padding:12px;border:1px solid #383838;border-radius:11px;background:#171717;color:#bbb;font-size:11px;line-height:1.6}
 .upgrade-research-status strong{display:block;color:#eee;font-size:12px;margin-bottom:3px}
+.error-review{margin:12px 0;border:1px solid #333;border-radius:11px;background:#141414;color:#ddd;overflow:hidden}
+.error-review summary{padding:13px;font-size:12px;font-weight:700;cursor:pointer}
+.error-review-note{font-size:10px;font-weight:400;color:#999;margin-left:5px}
+#error-review-summary{padding:0 13px 9px;font-size:11px;color:#bcbcbc}
+#error-review-misses{padding:0 13px 13px;font-size:11px;color:#bbb}
+.error-review-row{padding:8px 0;border-top:1px solid #303030;display:flex;justify-content:space-between;gap:14px}
+.error-review-row strong{color:#eee}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -229,6 +236,11 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  <strong>Projection upgrade research</strong>
  <div id="upgrade-research-summary">Reading injury-aware opportunity, V4 shadow and probability validation reports…</div>
 </div>
+<details class="error-review">
+ <summary>Projection error review <span class="error-review-note">Verified completed player games</span></summary>
+ <div id="error-review-summary">Loading error analysis…</div>
+ <div id="error-review-misses"></div>
+</details>
 <div class="ai-record-scoreboard" aria-label="Combined AI verified direction record">
   <div class="ai-record-top"><strong>COMBINED AI RECORD</strong><span>One player · game · stat = one call</span></div>
   <div class="ai-record-metrics">
@@ -1206,6 +1218,33 @@ async function refreshScoresOnly(){
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
+ fetchJSON("projection_error_analysis.json").then(a=>{
+  const n=$("error-review-summary"), list=$("error-review-misses");
+  const c=a.combined||{};
+  n.textContent=(a.sample_independent_combined_markets||0)+" graded independent props · "+
+   (c.direction_hit_rate===null?"Awaiting direction results":
+    ((100*c.direction_hit_rate).toFixed(1)+"% directional accuracy"))+
+   " · MAE "+(c.mae==null?"—":c.mae.toFixed(2))+
+   " · Mean bias "+(c.mean_bias==null?"—":(c.mean_bias>0?"+":"")+c.mean_bias.toFixed(2));
+  list.replaceChildren();
+  const misses=Object.entries(a.largest_combined_misses_by_market||{})
+   .flatMap(([market,items])=>(items||[]).slice(0,2).map(p=>({...p,market})))
+   .sort((x,y)=>y.absolute_error-x.absolute_error).slice(0,6);
+  for(const p of misses){
+   const div=document.createElement("div");
+   div.className="error-review-row";
+   const who=document.createElement("span"),vals=document.createElement("span");
+   who.textContent=(p.player||"Player")+" · "+p.market;
+   vals.textContent="AI "+p.projection+" / actual "+p.actual+" · "+p.result;
+   vals.style.textAlign="right";
+   div.append(who,vals);list.append(div);
+  }
+  if(!misses.length)list.textContent="Waiting for settled, matched player stats.";
+ }).catch(()=>{
+  $("error-review-summary").textContent="Error analysis not published yet.";
+  $("error-review-misses").textContent="";
+ });
+
  // Keep research status on the Performance tab only; it cannot override
  // the live Combined AI, prop card probabilities or sportsbook quotes.
  fetchJSON("projection_upgrade_status.json").then(report=>{
