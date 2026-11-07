@@ -6,6 +6,7 @@ on:
     paths:
       - 'iphone_bot/fetch_prizepicks.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'docs/data.json'
       - '.github/workflows/nba-ai-comparisons.yml'
   schedule:
     - cron: '17 20,23 * * *'
@@ -16,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   prizepicks_check:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && !contains(github.event.head_commit.message, 'Update NBA full slate player prop coverage')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -50,7 +51,7 @@ jobs:
           done
           exit 1
   compare:
-    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[refresh-research-once]')
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[refresh-research-once]') || contains(github.event.head_commit.message, 'Update NBA full slate player prop coverage')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -94,6 +95,7 @@ jobs:
           python -m pip install "pypdf>=5,<7"
           python -u iphone_bot/fetch_official_injuries.py
       - name: Fetch all available upcoming sportsbook events within API credit budget
+        if: ${{ !contains(github.event.head_commit.message, 'Update NBA full slate player prop coverage') }}
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           ODDS_MAX_EVENTS: '15'
