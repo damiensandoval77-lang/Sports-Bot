@@ -1,4 +1,4 @@
-"""Research-only opportunity, injury, defender V4 and 10k-simulation validation.
+"""Research-only opportunity, injury, defender V4 and 20k-simulation validation.
 
 All snapshots are captured before tipoff and immutable. A same-game injury
 status must be sourced from a report published before the prediction and
@@ -38,7 +38,7 @@ LEDGER=ROOT/"docs/projection_upgrade_ledger.json"
 STATUS=ROOT/"docs/projection_upgrade_status.json"
 MARKETS=("PTS","REB","AST","PRA")
 MIN_RESIDUALS=1000
-SIMULATIONS=10000
+SIMULATIONS=20000
 SOURCE="RESEARCH_ONLY_PREGAME_LOCKED_CONDITIONAL_PROJECTIONS"
 
 
@@ -262,7 +262,7 @@ def grade_injury_scenarios(ledger,paper_rows):
 
 
 def research_simulations(paper_rows):
-    """10,000 seeded residual-bootstrap runs only if past out-of-time samples exist.
+    """20,000 seeded residual-bootstrap runs only if past out-of-time samples exist.
 
     For each chronological date, past settled outcomes are the ONLY eligible
     calibration distribution. Evaluation is prospective relative to the game,
@@ -284,7 +284,7 @@ def research_simulations(paper_rows):
                 seed=int(hashlib.sha256((stat+day).encode()).hexdigest()[:15],16)
                 rng=random.Random(seed)
                 errors=rng.choices(residuals,k=SIMULATIONS)
-                # Same 10k draw for all rows from this event date. Predictions
+                # Same 20k draw for all rows from this event date. Predictions
                 # are evaluated against independently completed outcomes.
                 for r in current:
                     original=float(r["original_projection"]);line=float(r["line"])
@@ -296,7 +296,7 @@ def research_simulations(paper_rows):
             # SAME-DATE outcomes become available only after scoring the day.
             past.extend(current)
         n=len(results)
-        report[stat]={"status":"PREGAME_CHRONOLOGICAL_10K_SIM_AUDIT" if n>=30 else
+        report[stat]={"status":"PREGAME_CHRONOLOGICAL_20K_SIM_AUDIT" if n>=30 else
             "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
             "completed_independent_markets":len(rows),
             "evaluated_later_markets":n,
@@ -429,7 +429,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
     ledger,counts=snapshot(board,injury,existing,at,game_history)
     settled=finished_unique(paper_rows)
     return ledger,{"generated_at":utc(at).isoformat(),
-        "status":"OPPORTUNITY_V4_SHADOW_AND_10K_CALIBRATION_RESEARCH_ONLY",
+        "status":"OPPORTUNITY_V4_SHADOW_AND_20K_CALIBRATION_RESEARCH_ONLY",
         "locked_samples":len(ledger),"new_samples":counts.get("new",0),
         "features_covered":counts,
         "settled_independent_paper_markets":len(settled),
