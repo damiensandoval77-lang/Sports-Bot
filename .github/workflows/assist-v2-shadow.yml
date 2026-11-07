@@ -1,0 +1,66 @@
+name: Assist V2 pregame shadow capture and verified settlement
+on:
+  workflow_dispatch:
+  schedule:
+    # UTC, after regular board refreshes plus overnight final-boxscore checks.
+    - cron: '35 0,3,6,10,20,23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prop-feed
+  cancel-in-progress: false
+jobs:
+  shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checkout latest durable main-branch shadow ledger
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+      - name: Verify V2 research safety checks
+        run: |
+          python -m py_compile iphone_bot/assist_v2_research.py iphone_bot/assist_v2_shadow_capture.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_assist_v2_*.py' -v
+      - name: Load current player form for strictly prior game logs
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Lock research-only pretip projections from fresh verified board
+        run: python -u -m iphone_bot.assist_v2_shadow_capture --mode capture
+      - name: Grade only verified final player box scores
+        run: python -u -m iphone_bot.assist_v2_shadow_capture --mode settle
+      - name: Assert research isolation and independent scoring
+        run: |
+          python - <<'PY'
+          import json
+          from iphone_bot.paper_pick_pipeline import identity,utc
+          p=json.load(open('docs/assist_v2_shadow_ledger.json'))['records']
+          r=json.load(open('docs/assist_v2_shadow_results.json'))
+          assert len(p)==len({identity(x) for x in p}), 'Duplicate market snapshots'
+          assert all(x['model']=='ASSIST_V2_SHADOW_RESEARCH' and x['production_applied'] is False for x in p)
+          assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in p)
+          assert all(utc(x['captured_at'])<utc(x['event_start']) for x in p if x['status']!='INVALID_LATE_CAPTURE')
+          assert r['research_only'] is True and r['prospective_pretip_locked'] is True
+          assert r['captured']==len(p) and r['settled']+r['pending']<=len(p)
+          print('Independent settled Assist V2 markets:',r['independent_settled_markets'])
+          PY
+      - name: Commit only the research ledger and scoring summary
+        run: |
+          git add docs/assist_v2_shadow_ledger.json docs/assist_v2_shadow_results.json
+          if git diff --cached --quiet; then
+            echo 'No new V2 snapshots or final games'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Persist immutable Assist V2 research-only snapshots and grades'
+          git reset --hard HEAD
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
