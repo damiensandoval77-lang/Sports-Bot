@@ -28,7 +28,7 @@ def capture(board,games,existing,now=None):
         raise ValueError("Board is not fresh")
     index=histories(games)
     result=list(existing)
-    seen={identity(r) for r in result}
+    seen={identity({**r,"market":r.get("market","AST")}) for r in result}
     for row in board.get("comparisons",[]):
         if row.get("stat")!="AST":continue
         try:
