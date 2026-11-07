@@ -147,6 +147,27 @@ class PaperPipelineTests(unittest.TestCase):
         r=settle(pending,[self.game(23)],"2026-11-13T12:00:00Z")
         self.assertEqual(r[0]["result"],"PUSH")
         self.assertEqual(r[0]["paper_profit_units"],0)
+    def test_freezes_original_residual_proxy_for_combined_direction_before_tip(self):
+        data=self.market()
+        data["projection"]=18.0
+        data["combined_projection"]=26.0
+        data["combined_model_count"]=2
+        data["book_quotes"][0]["over_model_probability"]=.31
+        data["book_quotes"][0]["under_model_probability"]=.69
+        rows=snapshot([data],"2026-11-12T20:00:00Z")
+        fanduel=next(x for x in rows if x["bookmaker"]=="FanDuel")
+        self.assertEqual(fanduel["side"],"OVER")
+        self.assertEqual(fanduel["combined_probability_proxy_side"],"OVER")
+        self.assertEqual(fanduel["combined_probability_proxy_estimate"],.31)
+        self.assertEqual(fanduel["original_probability_side"],"UNDER")
+        self.assertEqual(fanduel["original_probability_estimate"],.69)
+        changed=self.market()
+        changed["projection"]=40
+        changed["combined_projection"]=10
+        still=snapshot([changed],"2026-11-12T21:00:00Z",rows)
+        saved=next(x for x in still if x["bookmaker"]=="FanDuel")
+        self.assertEqual(saved["combined_probability_proxy_estimate"],.31)
+
     def test_snapshot_keeps_original_prediction_when_changed_later(self):
         old=snapshot([self.market()],"2026-11-12T20:00:00Z")
         changed=self.market()
