@@ -68,7 +68,10 @@ def eligible(records):
         grouped[key].append((capture,str(row.get("bookmaker","")).casefold(),row,p,side,actual,line))
     result=[]
     for group in grouped.values():
-        capture,book,row,p,side,actual,line=min(group,key=lambda x:(x[0],x[1],x[6]))
+        # Earliest actual capture wins. For simultaneous captures, Python's
+        # stable min retains the first immutable ledger entry; bookmaker name,
+        # projected probability and outcome must not influence selection.
+        capture,book,row,p,side,actual,line=min(group,key=lambda x:x[0])
         outcome=int((actual>line)==(side=="OVER"))
         result.append({"date":utc(row["event_start"]).date().isoformat(),
                        "market":str(row["market"]),"estimated":p,"won":outcome,
