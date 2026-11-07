@@ -116,6 +116,64 @@ def assignment_points_scenario(baseline,assignment,pair_history,off_id):
     return round(max(0,baseline["expected_points"]+adjusted),3)
 
 
+
+def assignment_points_v4_scenario(baseline,assignment,pair_history,off_id,
+                                  defender_history,positions):
+    """Frozen research alternative: shot volume + prior defensive efficiency.
+
+    Same-game opponent defensive information is NEVER consumed. Only prior
+    historical attempts, shot mixes and independent rotation allocations.
+    Differentiates baseline 2P/3P volume, applies defensively-smoothed
+    estimates to historical pairs, and conservatively gates mismatches when
+    both source-reported positions are actually available.
+    """
+    if assignment.get("status")!="HISTORICAL_ASSIGNMENT_PROJECTION_RESEARCH_ONLY":
+        return None
+    p2=baseline.get("expected_2p_pct")
+    p3=baseline.get("expected_3p_pct")
+    a2=baseline.get("expected_2pa")
+    a3=baseline.get("expected_3pa")
+    base=baseline.get("expected_points")
+    if any(v is None or not math.isfinite(v) or v<0 for v in (p2,p3,a2,a3,base)):
+        return None
+    # No offense volume -> no alleged defender-only scoring effect.
+    if a2+a3<3:return round(base,3)
+    delta=0.
+    contributed=False
+    for candidate in assignment["candidate_defenders"]:
+        d=candidate["def_player_id"]
+        exposure=candidate["estimated_exposure_share"]
+        prior=pair_history.get((str(off_id),str(d)))
+        dh=defender_history.get(str(d))
+        if not prior or not dh or prior.get("poss",0)<10:continue
+        # 2P and 3P are separately stabilized around THIS player's expected
+        # percentages; defensive rates get larger historical priors.
+        def_a2=dh.get("two_a",0)
+        def_a3=dh.get("three_a",0)
+        if def_a2<80 or def_a3<20:continue
+        opponent2=(dh["two_m"]+300*p2)/(def_a2+300)
+        opponent3=(dh["three_m"]+220*p3)/(def_a3+220)
+        pair_a2=prior.get("two_a",0)
+        pair_a3=prior.get("three_a",0)
+        pair2=(prior["two_m"]+100*opponent2)/(pair_a2+100)
+        pair3=(prior["three_m"]+80*opponent3)/(pair_a3+80)
+        if pair_a2+pair_a3<3:continue
+        # Mismatch multiplier only from observed source positions; never
+        # manufacture an offensive position when not in the archive.
+        off_pos=positional_group(positions.get(str(off_id)))
+        def_pos=positional_group(positions.get(str(d)))
+        role_weight=1.0 if not off_pos or not def_pos else (
+            1.15 if off_pos!=def_pos else 1.0)
+        # Fixed conservative gain; high volume has a bigger dollar/point
+        # impact naturally through shot attempts, not invented usage.
+        delta+=exposure*role_weight*(
+            2*a2*(pair2-p2)+3*a3*(pair3-p3))
+        contributed=True
+    if not contributed:return None
+    delta=max(-MAX_ADJUSTMENT,min(MAX_ADJUSTMENT,0.75*delta))
+    return round(max(0,base+delta),3)
+
+
 def evaluate_assignment(actual_by_player,precomputed_forecasts):
     """Paired diagnostics; no model tuning or inferred win rate."""
     n=0
