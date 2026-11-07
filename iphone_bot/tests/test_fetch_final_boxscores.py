@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone
 from iphone_bot.fetch_final_boxscores import (
-    pending_games,box_player,espn_final_events,minutes,gather)
+    pending_games,box_player,espn_final_events,minutes,gather,verified_schedule_ids,final_schedule_boxscore,NBA_BOX
 
 def pick(start="2026-11-06T00:00:00Z",status="PENDING"):
     return {"event_start":start,"game":"Boston Celtics @ Charlotte Hornets",
@@ -40,6 +40,29 @@ class FinalBoxscoreSettlementTests(unittest.TestCase):
             "2026-11-06",24,8,7,30,"ESPN_FINAL","123"))
         self.assertIsNone(box_player("Real Player","BOS","CHA",
             "2026-11-06",24,8,7,None,"ESPN_FINAL","123"))
+
+    def test_verified_official_schedule_finds_exact_2026_nba_matchup(self):
+        wanted={("2026-11-06","BOS","CHA")}
+        payload={"leagueSchedule":{"seasonYear":"2026-27","gameDates":[
+            {"gameDate":"2026-11-06","games":[
+              {"gameId":"0022600011","awayTeam":{"teamTricode":"BOS"},
+               "homeTeam":{"teamTricode":"CHA"}},
+              {"gameId":"0022600012","awayTeam":{"teamTricode":"NYK"},
+               "homeTeam":{"teamTricode":"CHA"}}]}]}}
+        self.assertEqual(verified_schedule_ids(payload,wanted),
+                         {("2026-11-06","BOS","CHA"):"0022600011"})
+        payload["leagueSchedule"]["seasonYear"]="2025-26"
+        with self.assertRaises(ValueError):verified_schedule_ids(payload,wanted)
+
+    def test_schedule_is_not_a_final_result_without_final_boxscore(self):
+        key=("2026-11-06","BOS","CHA")
+        def request(url):
+            self.assertEqual(url,NBA_BOX.format("0022600011"))
+            return {"game":{"gameId":"0022600011","gameStatus":2,
+                    "gameTimeUTC":"2026-11-07T00:00:00Z",
+                    "awayTeam":{"teamTricode":"BOS"},
+                    "homeTeam":{"teamTricode":"CHA"}}}
+        self.assertEqual(final_schedule_boxscore("0022600011",key,request),[])
 
     def test_no_pending_matches_never_calls_provider(self):
         def blocked(_):
