@@ -57,17 +57,26 @@ def inspect(records,boxscores=None,now=None):
         pending=[r for r in rows if r.get("status")=="PENDING"]
         pregame=[r for r in rows if utc(r["captured_at"])<utc(r["event_start"])]
         age=(now-start).total_seconds()/3600
-        if settled:reason="AT_LEAST_ONE_VERIFIED_SETTLEMENT"
-        elif age<3:reason="TOO_RECENT_FOR_VERIFIED_DIRECT_BOX_SCORE"
-        elif not pregame:reason="NO_ELIGIBLE_PRETIP_CAPTURE"
-        elif boxes:reason="MATCHED_PLAYER_LOGS_AVAILABLE_BUT_NOT_YET_GRADED"
-        else:reason="WAITING_FOR_VERIFIED_COMPLETED_PLAYER_BOXSCORES"
+        if not pending:
+            reason="FULLY_SETTLED_VERIFIED_GAME"
+        elif settled:
+            reason="PARTIALLY_SETTLED_MISSING_PLAYER_BOXES_OR_DNP"
+        elif age<3:
+            reason="GAME_TOO_RECENT_FINAL_NOT_VERIFIED"
+        elif not pregame:
+            reason="NO_ELIGIBLE_PRETIP_CAPTURE"
+        elif boxes:
+            reason="MATCHED_PLAYER_LOGS_AVAILABLE_BUT_NOT_YET_GRADED"
+        else:
+            reason="WAITING_FOR_VERIFIED_COMPLETED_PLAYER_BOXSCORES"
         result.append({"game_date_eastern":day,"matchup":game,
           "scheduled_start_utc":start.isoformat(),
           "bookmaker_captures":len(rows),
           "unique_player_stat_markets":len(unique),
           "pregame_captures":len(pregame),
           "settled":len(settled),"pending":len(pending),
+          "pending_unique_players":len({str(r["player_id"]) for r in pending}),
+          "hours_since_scheduled_tipoff":round(age,2),
           "available_player_boxscore_rows":len(boxes),
           "diagnosis":reason})
     dates=sorted({g["game_date_eastern"] for g in result})
