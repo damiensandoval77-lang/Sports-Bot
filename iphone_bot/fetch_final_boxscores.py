@@ -200,7 +200,11 @@ def pending_games(records,now=None):
             day=local_date(r["event_start"])
             pair=r["game"].split(" @ ")
             if len(pair)!=2:continue
-            games.add((day,pair[0].strip(),pair[1].strip()))
+            from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS
+            away=TEAM_ABBREVIATIONS.get(pair[0].strip())
+            home=TEAM_ABBREVIATIONS.get(pair[1].strip())
+            if away and home and away!=home:
+                games.add((day,away,home))
         except (ValueError,KeyError,TypeError):continue
     return games
 
@@ -241,8 +245,6 @@ def gather(records,now=None,request=request_json):
             board=request(ESPN_SCORE+"?"+urllib.parse.urlencode({"dates":date.replace("-",""),"limit":100}))
             for event in espn_final_events(board):
                 try:
-                    ateam,hteam=({c["homeAway"]:team(c.get("team",{}).get("abbreviation"))
-                                for c in event["competitions"][0]["competitors"]}).get("away"),None
                     teams={c["homeAway"]:team(c.get("team",{}).get("abbreviation"))
                            for c in event["competitions"][0]["competitors"]}
                     ateam,hteam=teams.get("away"),teams.get("home")
