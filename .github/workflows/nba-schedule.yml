@@ -27,7 +27,9 @@ jobs:
         run: |
           python -m py_compile iphone_bot/fetch_nba_schedule.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_nba_schedule.py' -v
-      - name: Fetch today's and tomorrow's full NBA schedule
+      - name: Publish labeled cached fixture coverage without blocked GitHub-hosted providers
+        env:
+          NBA_SCHEDULE_SOURCE_MODE: cached
         run: python -u iphone_bot/fetch_nba_schedule.py
       - name: Publish diagnostic if all schedule providers reject GitHub Actions
         if: failure()
@@ -50,7 +52,11 @@ jobs:
           python - <<'PY'
           import json
           report=json.load(open('docs/nba_schedule.json'))
-          assert report['status']=='THIRD_PARTY_NBA_SCHEDULE_ONLY'
+          assert report['status'] in ('THIRD_PARTY_NBA_SCHEDULE_ONLY',
+                                     'PARTIAL_CACHED_SPORTSBOOK_SCHEDULE',
+                                     'SCHEDULE_UNAVAILABLE')
+          assert type(report['coverage_complete']) is bool
+          assert not report['coverage_complete'] if report['status']=='PARTIAL_CACHED_SPORTSBOOK_SCHEDULE' else True
           assert report['has_sportsbook_props'] is False
           assert report['has_verified_player_availability'] is False
           assert len(report['games'])==report['total_games']
