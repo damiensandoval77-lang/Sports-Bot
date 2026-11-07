@@ -17,11 +17,13 @@ try:
     from .weight_research import walkforward_weights
     from .accuracy_feedback import evaluate as accuracy_feedback
     from .probability_audit import audit as probability_audit
+    from .selective_challenger import screen as research_screen, evaluate as selective_evaluate
 except ImportError:
     from model_performance import compute_performance
     from weight_research import walkforward_weights
     from accuracy_feedback import evaluate as accuracy_feedback
     from probability_audit import audit as probability_audit
+    from selective_challenger import screen as research_screen, evaluate as selective_evaluate
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -119,7 +121,9 @@ def snapshot(comparisons,generated_at,existing=None):
                 "experimental_estimate":book.get(
                     "over_model_probability" if side=="OVER" else "under_model_probability"),
                 "hypothetical_ev_pct":book.get("hypothetical_over_ev_pct" if side=="OVER" else "hypothetical_under_ev_pct"),
-                "opponent_shadow_projection":market.get("shadow_projection")}
+                "opponent_shadow_projection":market.get("shadow_projection"),
+                "research_selective_v1":research_screen(market["stat"],line,
+                    original_projection,market.get("shadow_projection"),chosen_projection)}
             ident=identity(record)
             if ident not in seen:
                 rows.append(record)
