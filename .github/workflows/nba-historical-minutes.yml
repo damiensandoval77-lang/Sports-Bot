@@ -41,11 +41,13 @@ jobs:
           with open('docs/historical_minutes_validation.json') as f: report=json.load(f)
           assert report['live_model_unchanged'] is True
           assert report['production_adjustment_applied'] is False
+          assert report['rotation_scenario_live_applied'] is False
           assert report['injury_effect_claimed'] is False
           assert report['holdout_season']=='2025-26'
           assert report['seasons']==['2022-23','2023-24','2024-25','2025-26']
           assert report['holdout']['observations']<=report['archive_player_games']
           assert report['holdout']['candidate_better']+report['holdout']['baseline_better']+report['holdout']['tied']==report['holdout']['observations']
+          assert report['holdout']['rotation_better_than_v2']+report['holdout']['rotation_worse_than_v2']+report['holdout']['rotation_tied_v2']==report['holdout']['observations']
           assert report['archive_player_games']>=60000
           print('Historical seasons validated:',report['seasons'])
           print('Held-out 2025-26 minutes:',report['holdout'])
