@@ -35,6 +35,11 @@ try:
 except ImportError:
     from assist_shadow_v1 import assist_shadow
 
+try:
+    from .sanity_shadow_research import shadow as sanity_shadow
+except ImportError:
+    from sanity_shadow_research import shadow as sanity_shadow
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -159,6 +164,18 @@ def snapshot(board,injury,existing,at,game_history=None):
                 counters["selection_gate_paper_eligible"]+=1
             else:
                 counters["selection_gate_abstained"]+=1
+            verified_player = next((p for p in all_statuses
+                if str(p.get("player_id"))==pid
+                and str(p.get("team"))==row["team"]
+                and str(p.get("status","")).upper()=="AVAILABLE"),None)
+            row["sanity_shadow_v1"]=sanity_shadow(
+                indexed.get((pid,row["team"]),[]),team=row["team"],
+                market=row["market"],baseline=combined,
+                event_start=start,captured_at=captured,
+                minutes_context=item.get("minutes_research"),
+                injury_status="AVAILABLE" if verified_player else "NOT_VERIFIED",
+                injury_source="OFFICIAL_NBA_REPORT" if verified_player and
+                    status=="OFFICIAL_SAME_DAY_VERIFIED" else None)
             row["injury_report_status"]=status
             # Only teammates explicitly marked OUT with the correct verified
             # report game date may be used to label a conditional scenario.
