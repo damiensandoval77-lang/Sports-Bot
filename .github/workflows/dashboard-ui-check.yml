@@ -28,7 +28,9 @@ jobs:
               'renderAI();', 'renderOdds();',
               'tile-scoreboard', 'tile-team-logo', 'tile-team-score',
               'away_score', 'home_score', 'refreshScoresOnly',
-              'setInterval(refreshScoresOnly,90000)'):
+              'setInterval(refreshScoresOnly,45000)',
+              'game_moneylines.json', 'tile-moneyline',
+              'VERIFIED_PREGAME_NBA_MONEYLINES'):
               assert feature in html, f'Missing dashboard feature: {feature}'
           assert html.index('id="game-strip"')<html.index('class="summary dashboard-summary"')
           assert '--bg:#070707' in html
@@ -43,6 +45,8 @@ jobs:
           assert 'function renderProbabilityAudit()' in html
           assert 'renderProbabilityAudit();' in html
           assert 'function chance(p)' in html, 'Live experimental probability display must not disappear'
+          assert '/^\\\\d+$/' not in html, 'Double-escaped score pattern would suppress ESPN live scores'
+          assert '/^\\d+$/' in html, 'Scoreboard must accept integer score strings'
 
 
           script=html.split('<script>',1)[1].split('</script>',1)[0]
