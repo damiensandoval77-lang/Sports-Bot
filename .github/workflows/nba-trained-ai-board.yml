@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/tests/test_player_name_matching.py'
       - 'iphone_bot/capture_ai_board.py'
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/opportunity_backtest.py'
@@ -64,6 +65,8 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Download verified current-season NBA player games
         run: python -u iphone_bot/fetch_current_form.py
+      - name: Check Unicode player identity matching across sportsbook and NBA roster
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_player_name_matching.py' -v
       - name: Preserve the exact original trained-model projection and probability pipeline
         env:
           NBA_AI_ODDS_INPUT: odds_compact.json
