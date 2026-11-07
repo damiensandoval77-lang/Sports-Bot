@@ -5,7 +5,6 @@ confidence. This module never backfills probabilities or changes live picks.
 """
 import json
 import math
-from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -51,9 +50,45 @@ def valid_pregame_proxy(row):
             and row.get("combined_probability_proxy_method") == METHOD)
 
 
-def audit(records):
+def pending_diagnostics(records, now):
+    """Classify frozen candidates without guessing whether box scores are final."""
+    current = utc(now)
+    buckets = {"before_tipoff": 0, "tipped_off_under_two_hours": 0,
+               "past_two_hours_unsettled": 0, "settled_with_proxy": 0,
+               "settled_without_proxy": 0, "invalid_capture_or_proxy": 0}
+    dates = {}
+    for row in records:
+        status = row.get("status")
+        if status == "SETTLED":
+            bucket = "settled_with_proxy" if valid_pregame_proxy(row) else "settled_without_proxy"
+        elif status != "PENDING" or not valid_pregame_proxy(row):
+            bucket = "invalid_capture_or_proxy"
+        else:
+            try:
+                start = utc(row["event_start"])
+            except (KeyError, TypeError, ValueError):
+                bucket = "invalid_capture_or_proxy"
+            else:
+                delta = (current - start).total_seconds()
+                bucket = ("before_tipoff" if delta < 0 else
+                          "tipped_off_under_two_hours" if delta < 7200 else
+                          "past_two_hours_unsettled")
+                day = start.date().isoformat()
+                date_counts = dates.setdefault(day, {"before_tipoff": 0,
+                    "tipped_off_under_two_hours": 0, "past_two_hours_unsettled": 0})
+                date_counts[bucket] += 1
+        buckets[bucket] += 1
+    return {"counts": buckets, "pending_by_utc_event_date": dates,
+            "notes": ["Elapsed time does not confirm game-final status.",
+                      "A settled row without a frozen proxy cannot be backfilled.",
+                      "Past-two-hour pending rows require verified final box-score inspection, not automatic grading."]}
+
+
+def audit(records, now=None):
     """Only first eligible quote per player/game/stat gets a graded observation."""
     observations, excluded = locked(records)
+    if now is None:
+        now = datetime.now(timezone.utc).isoformat()
     settled = [r for r in records if r.get("status") == "SETTLED"]
     bands = {}
     for label, lo, hi in BANDS:
@@ -85,6 +120,7 @@ def audit(records):
             "eligible_distinct_game_dates": dates,
         },
         "excluded": excluded,
+        "pending_diagnostics": pending_diagnostics(records, now),
         "ready_to_fit_calibration": (
             len(observations) >= 500 and dates >= 20 and
             all(by_stat[s]["sample_size"] >= 50 for s in STATS)),
