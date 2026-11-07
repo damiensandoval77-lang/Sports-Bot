@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -68,6 +68,33 @@ class ResearchTests(unittest.TestCase):
             self.assertEqual(info[stat]["simulation_count"],10000)
             self.assertIsNone(info[stat]["brier_score"])
             self.assertEqual(info[stat]["evaluated_later_markets"],0)
+
+    def test_10k_calibration_requires_prior_settled_markets(self):
+        # One thousand earlier actuals train a residual distribution; all
+        # later games must be scored without observing their same-day result.
+        observations=[]
+        for i in range(1040):
+            day="2026-10-01T19:00:00Z" if i<1000 else "2026-10-02T19:00:00Z"
+            observations.append({"status":"SETTLED","event_start":day,
+                "captured_at":"2026-09-30T18:00:00Z",
+                "player_id":str(i),"market":"PTS",
+                "original_projection":22.,"line":20.5,"actual":22.})
+        result=research_simulations(observations)
+        self.assertEqual(result["PTS"]["evaluated_later_markets"],40)
+        self.assertEqual(result["PTS"]["simulation_count"],10000)
+        self.assertEqual(result["PTS"]["brier_score"],0.0)
+        self.assertEqual(result["REB"]["evaluated_later_markets"],0)
+
+    def test_injury_candidate_only_graded_against_matching_locked_actual(self):
+        pregame,_=snapshot(board(),injury(),[],NOW)
+        actual=[{"status":"SETTLED","event_start":START,
+                 "captured_at":NOW,"player_id":"10","market":"PTS",
+                 "original_projection":21.,"line":20.5,"actual":24.}]
+        grade=grade_injury_scenarios(pregame,actual)
+        self.assertEqual(grade["overall"]["paired_observations"],1)
+        self.assertLess(grade["overall"]["injury_candidate_mae"],
+                        grade["overall"]["baseline_mae"])
+        self.assertTrue(grade["no_live_adjustment"])
 
     def test_shadow_only_scores_actual_immutable_capture(self):
         rows,_=snapshot(board(),injury(),[],NOW)
