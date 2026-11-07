@@ -1,7 +1,7 @@
 """Third-party NBA schedule parses Eastern calendar and live/finished games."""
 import datetime as dt
 import unittest
-from iphone_bot.fetch_nba_schedule import collect,parse_event,EASTERN
+from iphone_bot.fetch_nba_schedule import collect,parse_event,parse_nba_game,nba_season_schedule,EASTERN
 
 
 def event(id="1",start="2026-11-07T00:30:00Z",state="pre"):
@@ -36,6 +36,34 @@ class ScheduleTests(unittest.TestCase):
         result=collect([day],lambda _: [event(),{"id":"bad"}])
         self.assertEqual(result["total_games"],1)
         self.assertEqual(result["source_records_rejected"],1)
+
+    def test_nba_cdn_games_use_correct_eastern_date_and_status(self):
+        day=dt.date(2026,11,6)
+        game={"gameId":"0022600042","gameDateTimeUTC":"2026-11-07T00:30:00Z",
+              "gameStatus":2,
+              "awayTeam":{"teamCity":"Boston","teamName":"Celtics","teamTricode":"BOS"},
+              "homeTeam":{"teamCity":"Charlotte","teamName":"Hornets","teamTricode":"CHA"}}
+        row=parse_nba_game(game,{day})
+        self.assertEqual(row["game"],"Boston Celtics @ Charlotte Hornets")
+        self.assertEqual(row["game_state"],"in")
+        self.assertIsNone(parse_nba_game(game,{dt.date(2026,11,7)}))
+
+    def test_nba_cdn_first_endpoint_failure_falls_back_to_second(self):
+        day=dt.date(2026,11,6)
+        game={"gameId":"001","gameDateTimeUTC":"2026-11-07T00:30:00Z",
+              "gameStatus":1,
+              "awayTeam":{"teamCity":"Boston","teamName":"Celtics","teamTricode":"BOS"},
+              "homeTeam":{"teamCity":"Charlotte","teamName":"Hornets","teamTricode":"CHA"}}
+        urls=[]
+        def reader(url):
+            urls.append(url)
+            if len(urls)==1:raise ValueError("bad first endpoint")
+            return {"leagueSchedule":{"seasonYear":"2026-27",
+                    "gameDates":[{"games":[game]}]*30}}
+        result=nba_season_schedule([day],reader)
+        self.assertEqual(len(urls),2)
+        self.assertEqual(len(result["events"]),1)
+        self.assertEqual(result["events"][0]["away_abbreviation"],"BOS")
 
     def test_next_day_is_separate(self):
         today=dt.date(2026,11,6)
