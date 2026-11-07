@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/settlement_merge.py'
+      - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/tests/test_fetch_final_boxscores.py'
       - 'iphone_bot/tests/test_settlement_merge.py'
       - '.github/workflows/nba-postgame-settlement.yml'
   schedule:
