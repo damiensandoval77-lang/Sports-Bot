@@ -359,7 +359,10 @@ def evaluate(box_games,def_rows):
             pair["def_team"]=r["def_team"]
             pair["last_seen"]=day
             pair["poss"]+=r["poss"]
-            pair["switches"]+=r.get("switches",0.)
+            # Older locally loaded pair histories may lack the new switch
+            # feature; missing historical tracking must mean zero observed,
+            # not crash a full research run.
+            pair["switches"]=pair.get("switches",0.)+r.get("switches",0.)
             if r.get("position"):
                 defense_positions[r["def_id"]]=r["position"]
             for k in ("two_a","two_m","three_a","three_m"):pair[k]+=r[k]
