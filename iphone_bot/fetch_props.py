@@ -111,14 +111,30 @@ def main():
         print("ODDS_API_KEY not set; retaining old sportsbook snapshot.")
         return
     try:
-        events, _ = request("/events", key)
+        events, start_credits = request("/events", key)
         now = dt.datetime.now(dt.timezone.utc)
         upcoming = [e for e in events if dt.datetime.fromisoformat(e["commence_time"].replace("Z","+00:00")) > now]
         upcoming.sort(key=lambda e: e["commence_time"])
         picks = []
-        remaining = None
+        remaining = start_credits
         inspected = 0
         covered_events=[]
+        # Spread limited credits across as many games as possible before
+        # purchasing four markets for the first few fixtures only.
+        # The event listing is free and exposes current credit balance.
+        try:
+            credits=int(start_credits)
+        except (TypeError,ValueError):
+            credits=None
+        slots=min(MAX_EVENTS,len(upcoming))
+        if credits is None:
+            selected_markets=MARKETS
+        else:
+            per_event=max(1,(max(0,credits-MIN_REMAINING_CREDITS))//max(1,slots))
+            selected_markets=MARKETS[:min(len(MARKETS),per_event)]
+        print("NBA odds coverage plan:",slots,"events;",
+              len(selected_markets),"markets per event;",
+              "credits remaining:",start_credits,flush=True)
         for event in upcoming[:MAX_EVENTS]:
             if remaining is not None and int(remaining) < MIN_REMAINING_CREDITS:
                 print('Stopping early to preserve Odds API credits.', flush=True)
@@ -126,7 +142,7 @@ def main():
             inspected += 1
             event_rows = []
             payload, remaining = request("/events/" + urllib.parse.quote(event["id"], safe="") + "/odds", key,
-                regions="us", markets=",".join(MARKETS), oddsFormat="american")
+                regions="us", markets=",".join(selected_markets), oddsFormat="american")
             event_rows = balanced_bookmaker_rows(
                 payload.get("bookmakers", []), event, MAX_OUTCOMES_PER_EVENT)
             # Spread a fixed display cap across books while keeping each
@@ -136,9 +152,12 @@ def main():
                 "game":event.get("away_team","")+" @ "+event.get("home_team",""),
                 "start":event.get("commence_time"),
                 "two_sided_outcomes":len(event_rows),
+                "markets_requested":list(selected_markets),
                 "players_quoted":len({x["player"] for x in event_rows})})
         result = {"is_live": True, "updated_at": now.isoformat(timespec="minutes"),
             "slate_events_available":len(upcoming),
+            "market_types_requested":list(selected_markets),
+            "market_coverage_limited":len(selected_markets)<len(MARKETS),
             "slate_events_checked":inspected,
             "slate_event_limit":MAX_EVENTS,
             "slate_events_not_checked":max(0,len(upcoming)-inspected),
