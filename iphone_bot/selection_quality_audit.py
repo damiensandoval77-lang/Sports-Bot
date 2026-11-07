@@ -13,9 +13,9 @@ from datetime import datetime,timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 try:
-    from .model_performance import independent_rows,utc,finite
+    from .model_performance import independent_rows,utc,finite,forecast_values
 except ImportError:
-    from model_performance import independent_rows,utc,finite
+    from model_performance import independent_rows,utc,finite,forecast_values
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -57,7 +57,7 @@ def analyze(records):
         try:
             actual=finite(r.get("actual"))
             line=finite(r.get("line"))
-            projection=finite(r.get("combined_projection"))
+            projection=forecast_values(r)["combined"]
             if actual is None or line is None or projection is None:
                 missing["incomplete_quote_or_projection"]+=1;continue
             if actual==line:
