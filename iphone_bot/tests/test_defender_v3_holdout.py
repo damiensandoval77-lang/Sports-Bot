@@ -17,6 +17,9 @@ class DefenderHoldoutTests(unittest.TestCase):
         self.assertEqual(result["eligible_test_fga"],300.)
         self.assertIsInstance(result["defender_brier_minus_baseline"],float)
         self.assertFalse(result["applied_to_live_ai"])
+        self.assertFalse(result["validated_for_live_use"])
+        self.assertTrue(result["promotion_gate"].startswith("INSUFFICIENT") or
+                        result["promotion_gate"].startswith("SHOT_EFFICIENCY_RESEARCH"))
 
     def test_no_invented_improvement_when_small_sample(self):
         rows=[]
