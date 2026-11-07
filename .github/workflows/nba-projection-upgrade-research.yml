@@ -1,5 +1,11 @@
 name: NBA Projection Upgrade Research Audit (research only)
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
+      - '.github/workflows/nba-projection-upgrade-research.yml'
   workflow_dispatch:
   workflow_run:
     workflows: ["Publish trained NBA AI props for every available game"]
