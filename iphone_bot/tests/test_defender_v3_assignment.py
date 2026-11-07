@@ -1,7 +1,7 @@
 """Validate predicted defensive assignments are historical and explicitly unverified."""
 import unittest
 from iphone_bot.defender_v3_assignment import (
-    projected_assignment,assignment_points_scenario,position_affinity,evaluate_assignment
+    projected_assignment,assignment_points_scenario,assignment_points_v4_scenario,position_affinity,evaluate_assignment
 )
 
 
@@ -49,6 +49,25 @@ class AssignmentTests(unittest.TestCase):
         estimate=assignment_points_scenario(baseline,alloc,past(),"10")
         self.assertLess(estimate,25.)
         self.assertGreaterEqual(estimate,23.)
+
+    def test_volume_and_position_scorer_uses_only_prior_defender_data(self):
+        base={"expected_points":28.,"expected_2pa":13.,"expected_3pa":9.,
+              "expected_2p_pct":.52,"expected_3p_pct":.36}
+        allocation=projected_assignment("10","NYK",
+            [("21",32.),("22",28.),("23",24.)],
+            past(),{"10":"G","21":"C"},"2026-01-10")
+        self.assertIsNone(assignment_points_v4_scenario(base,allocation,past(),"10",{},{}))
+        history={"21":{"two_a":300.,"two_m":100.,"three_a":100.,"three_m":25.}}
+        projected=assignment_points_v4_scenario(
+            base,allocation,past(),"10",history,{"10":"G","21":"C"})
+        self.assertIsNotNone(projected)
+        self.assertLess(projected,base["expected_points"])
+        self.assertGreaterEqual(projected,26.)
+        # No claim of true mismatch if either verified position is absent.
+        neutral=assignment_points_v4_scenario(base,allocation,past(),"10",history,{})
+        self.assertIsNotNone(neutral)
+        self.assertLessEqual(abs(neutral-base["expected_points"]),
+                             abs(projected-base["expected_points"]))
 
     def test_top_defender_accuracy_uses_separate_true_outcomes(self):
         forecast={"status":"HISTORICAL_ASSIGNMENT_PROJECTION_RESEARCH_ONLY",
