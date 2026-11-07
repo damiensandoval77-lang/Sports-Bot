@@ -52,9 +52,11 @@ class FinalBoxscoreTests(unittest.TestCase):
     def test_wrong_player_team_date_or_ambiguous_match_does_not_grade(self):
         event,box=nba_fixture()
         row=nba_boxscore_rows(event,box)[0]
+        # 03:00 UTC on Nov 13 is 10:00 PM EST on Nov 12.
+        self.assertEqual(row["date"],"2026-11-12")
         locked=snapshot([market()],"2026-11-13T00:00:00Z")
         for changed in ({"player":"Similar Player"},{"team":"MIA"},
-                        {"date":"2026-11-12"},{"opponent":"NYK"}):
+                        {"date":"2026-11-11"},{"opponent":"NYK"}):
             self.assertEqual(settle(locked,[{**row,**changed}],
                 "2026-11-13T07:00:00Z")[0]["status"],"PENDING")
         self.assertEqual(settle(locked,[row,row],
