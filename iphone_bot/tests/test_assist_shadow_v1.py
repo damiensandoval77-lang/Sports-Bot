@@ -16,7 +16,8 @@ def board():
          "line":4.5,"projection":5.,"combined_projection":5.5}]}
 def final_stat(line=4.5,actual=7):
     return [{"status":"SETTLED","event_start":EVENT,"captured_at":NOW,
-      "player_id":"10","market":"AST","line":line,"actual":actual}]
+      "player_id":"10","market":"AST","line":line,"actual":actual,
+      "original_projection":5.}]
 
 class AssistResearchTests(unittest.TestCase):
     def test_only_prior_same_team_games(self):
