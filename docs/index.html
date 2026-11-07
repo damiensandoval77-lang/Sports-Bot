@@ -202,6 +202,11 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 #error-review-misses{padding:0 13px 13px;font-size:11px;color:#bbb}
 .error-review-row{padding:8px 0;border-top:1px solid #303030;display:flex;justify-content:space-between;gap:14px}
 .error-review-row strong{color:#eee}
+#opportunity-review-summary,#opportunity-review-market,#opportunity-review-shadow{padding:0 13px 10px;font-size:11px;color:#bbb;line-height:1.6}
+#opportunity-review-market{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#opportunity-review-market>div{border:1px solid #303030;border-radius:7px;padding:7px;min-width:0}
+#opportunity-review-market b{color:#e6e6e6}
+#opportunity-review-shadow{border-top:1px solid #303030;padding-top:8px}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -240,6 +245,12 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  <summary>Projection error review <span class="error-review-note">Verified completed player games</span></summary>
  <div id="error-review-summary">Loading error analysis…</div>
  <div id="error-review-misses"></div>
+</details>
+<details class="error-review" id="opportunity-review">
+ <summary>Minutes + usage research <span class="error-review-note">Shadow test, not live AI</span></summary>
+ <div id="opportunity-review-summary">Reading the historical opportunity test…</div>
+ <div id="opportunity-review-market"></div>
+ <div id="opportunity-review-shadow">Future pregame-locked shadow results are being collected separately.</div>
 </details>
 <div class="ai-record-scoreboard" aria-label="Combined AI verified direction record">
   <div class="ai-record-top"><strong>COMBINED AI RECORD</strong><span>One player · game · stat = one call</span></div>
@@ -1218,6 +1229,36 @@ async function refreshScoresOnly(){
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
+ fetchJSON("opportunity_backtest.json").then(r=>{
+  const n=$("opportunity-review-summary"),cells=$("opportunity-review-market");
+  const v=r.overall||{};
+  n.textContent=(v.sample_size||0)+" retrospectively evaluated markets · "+
+    "Combined MAE "+(v.baseline_mae??"—")+" vs challenger "+(v.candidate_mae??"—")+
+    " · Correct directions "+(v.baseline_wins||0)+"→"+(v.candidate_wins||0)+
+    ". Tested on historical pregame inputs; not prospective validation.";
+  cells.replaceChildren();
+  for(const m of ["PTS","REB","AST","PRA"]){
+   const x=r.by_market?.[m]||{};
+   const div=document.createElement("div");
+   const head=document.createElement("b"),body=document.createElement("div");
+   head.textContent=m+" · "+(x.sample_size||0)+" markets";
+   body.textContent="MAE "+(x.baseline_mae??"—")+" → "+(x.candidate_mae??"—")+
+     " · Wins "+(x.baseline_wins||0)+" → "+(x.candidate_wins||0);
+   div.append(head,body);cells.append(div);
+  }
+ }).catch(()=>{
+  $("opportunity-review-summary").textContent="Awaiting retrospective opportunity report.";
+ });
+ fetchJSON("projection_upgrade_status.json").then(r=>{
+  const o=r.opportunity_shadow?.overall||{};
+  $("opportunity-review-shadow").textContent="True pregame-locked shadow: "+
+   (o.paired_markets||0)+" graded paired props · Combined MAE "+(o.baseline_mae??"—")+
+   " vs shadow "+(o.opportunity_mae??"—")+
+   ". Live projections and simulated hit percentages unchanged.";
+ }).catch(()=>{
+  $("opportunity-review-shadow").textContent="Pregame shadow validation report not yet published.";
+ });
+
  fetchJSON("projection_error_analysis.json").then(a=>{
   const n=$("error-review-summary"), list=$("error-review-misses");
   const c=a.combined||{};
