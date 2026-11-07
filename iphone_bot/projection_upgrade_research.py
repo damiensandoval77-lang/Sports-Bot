@@ -120,6 +120,23 @@ def snapshot(board,injury,existing,at):
                 str(p.get("player_id",""))!=pid and
                 str(p.get("status","")).lower()=="out"]
             row["verified_out_teammate_ids"]=sorted({str(p["player_id"]) for p in out_team})
+            # These are *observed* historical teammate on/off production
+            # splits already computed pregame; retain provenance and coverage,
+            # not a fabricated causal boost or a same-day learned outcome.
+            observed=[]
+            for split in item.get("teammate_absence_splits",[]):
+                if not isinstance(split,dict):continue
+                with_count=split.get("with_games")
+                without_count=split.get("without_games")
+                if not isinstance(with_count,int) or not isinstance(without_count,int):continue
+                if min(with_count,without_count)<3:continue
+                observed.append({"status":"OBSERVED_NON_CAUSAL_SPLIT",
+                    "teammate":split.get("teammate"),
+                    "with_games":with_count,"without_games":without_count,
+                    "with_avg":valid(split.get("with_avg")),
+                    "without_avg":valid(split.get("without_avg"))})
+            row["teammate_on_off_observed"]=observed
+            if observed:counters["observed_teammate_on_off"]+=1
             scenario=valid(injury_minutes.get("scenario_minutes"))
             scenario_id=str(injury_minutes.get("teammate_id") or "")
             scenario_ok=(status=="OFFICIAL_SAME_DAY_VERIFIED" and
