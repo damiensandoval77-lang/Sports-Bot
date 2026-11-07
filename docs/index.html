@@ -485,6 +485,25 @@ function renderAI(){
   }
   body.append(node("div","detail-heading","Recent performance & season averages"));
   body.append(recentBlocks);
+  const seasonResearch=p.season_average_challenger;
+  if(seasonResearch?.status==="RESEARCH_CANDIDATE_NOT_VALIDATED"){
+    body.append(node("div","mini",
+      "AI season input: recent games + recency-weighted season averages. " +
+      "Research only: true season avg "+fmt(seasonResearch.season_average)+" over "+
+      seasonResearch.season_games+" prior same-team games; alternative projection "+
+      fmt(seasonResearch.research_projection)+". Not applied to live AI."));
+  }else{
+    body.append(node("div","mini",
+      "AI uses last 5 / last 10 and recency-weighted season features. " +
+      "True season-average challenger unavailable for this market."));
+  }
+  const earlyMinutes=p.minutes_early_season_research;
+  if(earlyMinutes?.status==="RESEARCH_FORECAST_UNVALIDATED"){
+    body.append(node("div","mini","Minutes research: "+fmt(earlyMinutes.expected_minutes)+
+      " projected from prior same-team games ("+earlyMinutes.history_games+
+      " games, "+earlyMinutes.history_confidence.replaceAll("_"," ").toLowerCase()+
+      "). Lineup not verified; not applied to live AI."));
+  }
   if(recentForm){
     body.append(node("div","mini","Season average: observed 2026–27 games through "+
       recentForm.latest_game+" ("+recentForm.games+" games). Last 5 / Last 10 require enough completed games."));
