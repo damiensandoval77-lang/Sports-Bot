@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T01:19:46.032203+00:00",
+  "generated_at": "2026-11-07T01:26:46.527261+00:00",
   "status": "REAL_SPORTSBOOK_QUOTES_PAPER_ONLY",
   "model": "PROVISIONAL_ORIGINAL",
   "method": "PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY",
@@ -534,6 +534,175 @@
       "No claims of probability calibration, guaranteed pick accuracy, or live model improvement."
     ]
   },
+  "probability_audit": {
+    "status": "DESCRIPTIVE_PROBABILITY_CALIBRATION_ONLY",
+    "method": "ORIGINAL_MODEL_LOCKED_QUOTE_PROBABILITY_VS_COMPLETED_REAL_PROP",
+    "probability_source": "LOCKED_ORIGINAL_AI_EXPERIMENTAL_RESIDUAL_PROBABILITY",
+    "original_model_only": true,
+    "not_combined_model_probability": true,
+    "no_live_calibration_applied": true,
+    "sufficient_overall_sample": false,
+    "overall": {
+      "sample_size": 0,
+      "wins": 0,
+      "losses": 0,
+      "observed_hit_rate": null,
+      "average_estimated_probability": null,
+      "calibration_gap": null,
+      "brier_score": null,
+      "mean_absolute_probability_error": null,
+      "distinct_event_dates": 0
+    },
+    "bins": [
+      {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0,
+        "label": "0\u201350%",
+        "lower": 0,
+        "upper": 0.5,
+        "sufficient_sample": false
+      },
+      {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0,
+        "label": "50\u201360%",
+        "lower": 0.5,
+        "upper": 0.6,
+        "sufficient_sample": false
+      },
+      {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0,
+        "label": "60\u201370%",
+        "lower": 0.6,
+        "upper": 0.7,
+        "sufficient_sample": false
+      },
+      {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0,
+        "label": "70\u201380%",
+        "lower": 0.7,
+        "upper": 0.8,
+        "sufficient_sample": false
+      },
+      {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0,
+        "label": "80\u201390%",
+        "lower": 0.8,
+        "upper": 0.9,
+        "sufficient_sample": false
+      },
+      {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0,
+        "label": "90\u2013100%",
+        "lower": 0.9,
+        "upper": 1.0,
+        "sufficient_sample": false
+      }
+    ],
+    "by_stat": {
+      "PTS": {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0
+      },
+      "REB": {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0
+      },
+      "AST": {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0
+      },
+      "PRA": {
+        "sample_size": 0,
+        "wins": 0,
+        "losses": 0,
+        "observed_hit_rate": null,
+        "average_estimated_probability": null,
+        "calibration_gap": null,
+        "brier_score": null,
+        "mean_absolute_probability_error": null,
+        "distinct_event_dates": 0
+      }
+    },
+    "excluded": {
+      "unsettled": 1194
+    },
+    "limitations": [
+      "Original-model probabilities are evaluated only against the original-model predicted direction.",
+      "The Combined AI uses a different directional forecast; its win-loss record is reported separately.",
+      "One earliest pregame eligible sportsbook quote represents each player/game/stat.",
+      "Unsettled games, tied lines, missing or invalid probabilities, and late picks are excluded.",
+      "Observed frequencies are descriptive; small buckets can vary greatly by chance.",
+      "No probability recalibration or changes to the live model are performed."
+    ]
+  },
   "weight_research": {
     "status": "CHRONOLOGICAL_RESEARCH_NOT_PRODUCTION",
     "weights": {
@@ -573,7 +742,7 @@
     "status": "OK_AWAITING_MATCHUPS",
     "boxscore_source_version": "2026-11-06",
     "latest_completed_player_game_date": "2026-11-05",
-    "source_last_checked_at": "2026-11-07T01:19:45.946252+00:00",
+    "source_last_checked_at": "2026-11-07T01:26:46.431949+00:00",
     "pending_total": 1194,
     "pending_past_game_buffer": 0,
     "pending_over_48_hours": 0,
