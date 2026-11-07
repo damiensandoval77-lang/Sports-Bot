@@ -74,20 +74,32 @@ def _summary(samples):
     n=len(samples)
     if not n:return {"observations":0,"dates":0,"players":0,"baseline_mae":None,
                      "candidate_mae":None,"candidate_minus_baseline_mae":None,
+                     "rotation_candidate_mae":None,"rotation_minus_v2_mae":None,
                      "candidate_better":0,"baseline_better":0,"tied":0,
+                     "rotation_better_than_v2":0,"rotation_worse_than_v2":0,
+                     "rotation_tied_v2":0,
                      "baseline_bias":None,"candidate_bias":None}
     old_errors=[x["baseline"]-x["actual"] for x in samples]
     new_errors=[x["candidate"]-x["actual"] for x in samples]
+    role_errors=[x["rotation_candidate"]-x["actual"] for x in samples]
     old_mae=mean(abs(x) for x in old_errors)
     new_mae=mean(abs(x) for x in new_errors)
+    rotation_mae=mean(abs(x) for x in role_errors)
     better=sum(abs(b)<abs(a) for a,b in zip(old_errors,new_errors))
     worse=sum(abs(b)>abs(a) for a,b in zip(old_errors,new_errors))
+    role_better=sum(abs(c)<abs(b) for b,c in zip(new_errors,role_errors))
+    role_worse=sum(abs(c)>abs(b) for b,c in zip(new_errors,role_errors))
     return {"observations":n,"dates":len({x["date"] for x in samples}),
             "players":len({x["player_id"] for x in samples}),
             "baseline_mae":round(old_mae,3),
             "candidate_mae":round(new_mae,3),
             "candidate_minus_baseline_mae":round(new_mae-old_mae,3),
+            "rotation_candidate_mae":round(rotation_mae,3),
+            "rotation_minus_v2_mae":round(rotation_mae-new_mae,3),
             "candidate_better":better,"baseline_better":worse,"tied":n-better-worse,
+            "rotation_better_than_v2":role_better,
+            "rotation_worse_than_v2":role_worse,
+            "rotation_tied_v2":n-role_better-role_worse,
             "baseline_bias":round(mean(old_errors),3),
             "candidate_bias":round(mean(new_errors),3)}
 
@@ -113,11 +125,16 @@ def evaluate(records, rejected=None):
                 trend=last3-previous5
                 role="RECENT_MINUTES_UP" if trend>=4 else (
                      "RECENT_MINUTES_DOWN" if trend<=-4 else "STABLE")
+                # Third, separately scored research model: a bounded trend
+                # scenario. All inputs precede this game; no outcome tuning.
+                rotation_candidate=round(max(0,min(48,
+                    v2+max(-2,min(2,.35*trend)))),2)
                 observations.append({
                     "season":g["season"],"date":g["date"],
                     "player_id":g["id"],"team":g["team"],
                     "actual":g["MIN"],"baseline":baseline,
-                    "candidate":v2,"rotation_trend":role})
+                    "candidate":v2,"rotation_candidate":rotation_candidate,
+                    "rotation_trend":role})
         # Same-day doubleheaders, if ever present, cannot inform each other.
         histories[key].append(g)
     seasons={season:_summary([x for x in observations if x["season"]==season])
@@ -139,6 +156,8 @@ def evaluate(records, rejected=None):
         "holdout":overall,
         "by_season":seasons,
         "holdout_by_pregame_rotation_trend":by_trend,
+        "rotation_scenario_method":"V2 + clamp(0.35 * (last 3 prior minutes minus previous 5 prior minutes), -2, +2)",
+        "rotation_scenario_live_applied":False,
         "live_model_unchanged":True,
         "production_adjustment_applied":False,
         "injury_effect_claimed":False,
@@ -147,6 +166,7 @@ def evaluate(records, rejected=None):
             "Histories reset on season and team changes; trades and offseason transitions are not merged.",
             "Only players who played positive minutes are evaluated; DNP and start predictions are not covered.",
             "Rotation trend is inferred from earlier logged minutes, not confirmed future lineup availability.",
+            "Rotation scenario is a fixed bounded research candidate; selecting on the reported holdout would bias any future accuracy claim.",
             "Historical samples may be correlated across players/games; no injury causal claim.",
             "This evaluation cannot by itself validate any betting or live model improvement."
         ]}
