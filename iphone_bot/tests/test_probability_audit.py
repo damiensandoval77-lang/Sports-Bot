@@ -13,6 +13,17 @@ def record(player="1",book="FanDuel",p=.72,actual=25,line=20.5,
 
 
 class CalibrationTests(unittest.TestCase):
+    def test_settled_records_with_multiple_books_do_not_crash(self):
+        # Seven-item candidate tuples must use the last valid index,
+        # not a non-existent eighth field.
+        rows=[record(player="777",book="FanDuel",p=.71,actual=26),
+              record(player="777",book="DraftKings",p=.69,actual=26),
+              record(player="778",book="FanDuel",p=.62,actual=15)]
+        result=audit(rows)
+        self.assertEqual(result["overall"]["sample_size"],2)
+        self.assertEqual(result["overall"]["wins"],1)
+        self.assertEqual(result["overall"]["losses"],1)
+
     def test_duplicate_books_are_one_independent_prediction(self):
         rows=[record(),record(book="DraftKings",p=.99)]
         result=audit(rows)
