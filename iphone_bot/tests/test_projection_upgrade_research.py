@@ -34,7 +34,9 @@ class ResearchTests(unittest.TestCase):
         r=rows[0]
         self.assertEqual(r["injury_scenario"]["status"],"PREGAME_CONDITIONAL_NOT_CAUSAL")
         self.assertEqual(r["injury_scenario"]["scenario_minutes"],32.)
-        self.assertIsNone(r["injury_scenario"]["scenario_points_projection"])
+        self.assertAlmostEqual(r["injury_scenario"]["scenario_points_projection"],
+                               22*(32/30),places=2)
+        self.assertTrue(r["injury_scenario"]["research_only"])
         self.assertEqual(r["opportunity"]["expected_fga_unverified"],16.)
         self.assertEqual(len(r["teammate_on_off_observed"]),1)
         self.assertIsNone(r["v4_shadow_projection"])
