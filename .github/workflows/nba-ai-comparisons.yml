@@ -92,10 +92,11 @@ jobs:
         run: |
           python -m pip install "pypdf>=5,<7"
           python -u iphone_bot/fetch_official_injuries.py
-      - name: Fetch fresh upcoming sportsbook props (max three games)
+      - name: Fetch all available upcoming sportsbook events within API credit budget
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          ODDS_MAX_EVENTS: '3'
+          ODDS_MAX_EVENTS: '15'
+          ODDS_OUTCOMES_PER_EVENT: '1000'
         run: python -u iphone_bot/fetch_props.py
       - name: Preserve observed pregame sportsbook snapshots
         run: python -u iphone_bot/archive_observed_props.py
