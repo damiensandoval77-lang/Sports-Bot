@@ -193,6 +193,8 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 .prob-audit-row-values,.prob-audit-foot{font-size:10px;color:#b1b1b1}
 .prob-audit-foot{margin-top:11px}
 @media(max-width:520px){.prob-audit-bars{grid-template-columns:1fr}}
+.upgrade-research-status{margin:12px 0;padding:12px;border:1px solid #383838;border-radius:11px;background:#171717;color:#bbb;font-size:11px;line-height:1.6}
+.upgrade-research-status strong{display:block;color:#eee;font-size:12px;margin-bottom:3px}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -223,6 +225,10 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="filters"><input id="form-search" aria-label="Search player form" placeholder="Search player…" autocomplete="off"><select id="form-stat" aria-label="Form stat"><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option><option>MIN</option></select><select id="form-sort" aria-label="Sort form"><option value="name">Player name</option><option value="avg">Highest L5</option></select></div><div class="source" id="form-source" style="display:none">Observed player form.</div><div class="board" id="form-board"><div class="empty">Loading current player form…</div></div></section>
 <section class="panel" id="tab-results">
 <div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
+<div class="upgrade-research-status" aria-label="Research upgrade validation status">
+ <strong>Projection upgrade research</strong>
+ <div id="upgrade-research-summary">Reading injury-aware opportunity, V4 shadow and probability validation reports…</div>
+</div>
 <div class="ai-record-scoreboard" aria-label="Combined AI verified direction record">
   <div class="ai-record-top"><strong>COMBINED AI RECORD</strong><span>One player · game · stat = one call</span></div>
   <div class="ai-record-metrics">
@@ -1200,6 +1206,24 @@ async function refreshScoresOnly(){
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
+ // Keep research status on the Performance tab only; it cannot override
+ // the live Combined AI, prop card probabilities or sportsbook quotes.
+ fetchJSON("projection_upgrade_status.json").then(report=>{
+   const node=$("upgrade-research-summary");
+   const total=report.locked_samples||0;
+   const completed=report.settled_independent_paper_markets||0;
+   const v4=report.defender_v4||{};
+   const sims=report.simulation_audit||{};
+   const calibrated=Object.entries(sims)
+     .filter(([_,r])=>r.status==="PREGAME_CHRONOLOGICAL_10K_SIM_AUDIT")
+     .map(([name])=>name);
+   node.textContent=total+" pregame research snapshots · "+completed+
+     " settled reference markets · V4 paired tests: "+(v4.paired_markets||0)+
+     " · 10k simulation audits ready: "+(calibrated.join(", ")||"awaiting sample")+
+     ". Research-only; current Combined AI unchanged.";
+ }).catch(()=>{$("upgrade-research-summary").textContent=
+   "Research report not published yet. Combined AI and current estimates unchanged.";});
+
  const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
