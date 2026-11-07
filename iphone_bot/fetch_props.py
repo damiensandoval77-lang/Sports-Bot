@@ -173,7 +173,11 @@ def main():
     try:
         events, start_credits = request("/events", key)
         now = dt.datetime.now(dt.timezone.utc)
-        upcoming = [e for e in events if dt.datetime.fromisoformat(e["commence_time"].replace("Z","+00:00")) > now]
+        # Provider event listings can include holidays many weeks away with
+        # no player markets. Only spend prop-market credits on near-term NBA.
+        cutoff=now+dt.timedelta(hours=48)
+        upcoming = [e for e in events if now <
+            dt.datetime.fromisoformat(e["commence_time"].replace("Z","+00:00")) <= cutoff]
         upcoming.sort(key=lambda e: e["commence_time"])
         picks = []
         remaining = start_credits
