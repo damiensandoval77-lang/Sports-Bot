@@ -223,6 +223,9 @@ def gather(records,now=None,request=request_json):
             "source":"NBA live CDN; ESPN completed boxscore fallback"}
     def needed(date,a,h):
         return (date,a,h) in pending
+    if not pending:
+        report["status"]="NO_ELIGIBLE_PENDING_MATCHUPS"
+        return [],report
     nba_complete=set()
     try:
         board=request(NBA_SCOREBOARD)
@@ -237,9 +240,9 @@ def gather(records,now=None,request=request_json):
                 from_nba.extend(rows)
                 nba_complete.add((day,a,h))
                 report["final_nba_games"]+=1
-            except (ValueError,KeyError,TypeError,urllib.error.URLError) as exc:
+            except (ValueError,KeyError,TypeError,OSError) as exc:
                 report["errors"].append("NBA boxscore unavailable: "+str(exc)[:140])
-    except (ValueError,KeyError,TypeError,urllib.error.URLError) as exc:
+    except (ValueError,KeyError,TypeError,OSError) as exc:
         report["errors"].append("NBA scoreboard unavailable: "+str(exc)[:140])
     # ESPN is a fallback for missed games (e.g. NBA daily scoreboard has rolled).
     for date in sorted(days):
@@ -257,13 +260,14 @@ def gather(records,now=None,request=request_json):
                     if not rows:continue
                     from_espn.extend(rows)
                     report["final_espn_games"]+=1
-                except (ValueError,KeyError,TypeError,urllib.error.URLError) as exc:
+                except (ValueError,KeyError,TypeError,OSError) as exc:
                     report["errors"].append("ESPN game unavailable: "+str(exc)[:140])
-        except (ValueError,KeyError,TypeError,urllib.error.URLError) as exc:
+        except (ValueError,KeyError,TypeError,OSError) as exc:
             report["errors"].append("ESPN scoreboard unavailable: "+str(exc)[:140])
     # Never overwrite an NBA result with a second provider's same game.
     found=from_nba+from_espn
     report["retrieved_player_lines"]=len(found)
+    report["status"]="FINAL_BOXSCORES_FOUND" if found else "NO_FINAL_BOXSCORES_AVAILABLE"
     return found,report
 
 
