@@ -937,43 +937,78 @@ async function browserScoreboard(day){
  }
  return rows;
 }
+function hasVerifiedPair(game){
+ return ["in","post"].includes(game?.game_state)&&
+  Number.isInteger(game?.away_score)&&Number.isInteger(game?.home_score)&&
+  game.away_score>=0&&game.home_score>=0&&game.away_score<=250&&game.home_score<=250;
+}
+function scoreTimestamp(game,feed){
+ const value=game?.score_updated_at||feed?.generated_at;
+ const parsed=Date.parse(value||"");
+ return Number.isFinite(parsed)?parsed:0;
+}
+function mergeScoreSchedules(existing,incoming){
+ if(!incoming||!Array.isArray(incoming.games))return existing;
+ if(!existing||!Array.isArray(existing.games))return incoming;
+ const joined=new Map();
+ const key=g=>[g.away||String(g.game||"").split(" @ ")[0],
+               g.home||String(g.game||"").split(" @ ")[1],
+               g.date_eastern].join("|").toLowerCase();
+ for(const g of existing.games)joined.set(key(g),{...g});
+ for(const newer of incoming.games){
+  const id=key(newer),old=joined.get(id);
+  if(!old){joined.set(id,{...newer});continue}
+  const oldPair=hasVerifiedPair(old),newPair=hasVerifiedPair(newer);
+  const useIncomingScore=newPair&&(!oldPair||
+    scoreTimestamp(newer,incoming)>=scoreTimestamp(old,existing));
+  const merged={...old,...newer,
+   away_score:useIncomingScore?newer.away_score:oldPair?old.away_score:null,
+   home_score:useIncomingScore?newer.home_score:oldPair?old.home_score:null,
+   score_updated_at:useIncomingScore?
+    newer.score_updated_at||incoming.generated_at:
+    oldPair?old.score_updated_at||existing.generated_at:null};
+  if(!useIncomingScore&&oldPair){
+   merged.game_state=old.game_state;
+   merged.status_detail=old.status_detail||null;
+   merged.period=old.period??null;
+   merged.clock=old.clock??null;
+  }
+  // Never turn a completed game back into a live game or a pregame state.
+  if(old.game_state==="post"&&newer.game_state!=="post"){
+   merged.game_state="post";
+   merged.status_detail=old.status_detail||null;
+  }
+  joined.set(id,merged);
+ }
+ return {...existing,...incoming,
+  games:[...joined.values()].sort((a,b)=>Date.parse(a.start)-Date.parse(b.start)),
+  total_games:joined.size,
+  coverage_complete:Boolean(existing.coverage_complete||incoming.coverage_complete)};
+}
 async function refreshScoresOnly(){
  if(document.visibilityState==="hidden")return;
- // Server-published scores need no browser credential or cross-origin NBA API.
- // Prefer them to preserve score freshness when ESPN blocks browser access.
+ // The server-published score is preferred when it has a verified paired score.
+ // Browser schedule results are allowed to add fixtures without erasing it.
  try{
   const provider=await fetchJSON("nba_schedule.json");
-  if(provider?.status==="PROVIDER_NBA_SCORES_PARTIAL_SLATE" &&
-     isRecent(provider.generated_at,3) &&
-     (!nbaSchedule || Date.parse(provider.generated_at)>Date.parse(nbaSchedule.generated_at||0))){
-   const byIdentity=new Map((nbaSchedule?.games||[]).map(g=>[g.game+"|"+g.start,g]));
-   for(const fresh of provider.games||[]){
-    const id=fresh.game+"|"+fresh.start;
-    byIdentity.set(id,{...(byIdentity.get(id)||{}),...fresh});
-   }
-   nbaSchedule={...provider,games:[...byIdentity.values()]};
+  if(["PROVIDER_NBA_SCORES_PARTIAL_SLATE","THIRD_PARTY_NBA_SCHEDULE_ONLY"].includes(provider?.status)){
+   nbaSchedule=mergeScoreSchedules(nbaSchedule,provider);
    renderGameStrip();
   }
  }catch(_){}
- const dateParts=new Intl.DateTimeFormat("en-US",{
-  timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"
- }).formatToParts(new Date());
- const val=t=>dateParts.find(x=>x.type===t)?.value||"";
- const today=val("year")+"-"+val("month")+"-"+val("day");
  try{
-  const current=await browserScoreboard(today);
-  if(!current.length)return;
-  const other=(nbaSchedule?.games||[]).filter(x=>x.date_eastern!==today);
-  const games=new Map([...other,...current].map(g=>[g.game+"|"+g.start,g]));
-  nbaSchedule={...(nbaSchedule||{}),games:[...games.values()],
-   total_games:games.size,status:"THIRD_PARTY_NBA_SCHEDULE_ONLY",
-   source:"Browser-direct ESPN scoreboard",
-   generated_at:new Date().toISOString(),
-   coverage_complete:true};
-  renderGameStrip();
- }catch(_){
-  // A blocked source never erases previously verified scores.
- }
+  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",
+   year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+  const p=x=>parts.find(y=>y.type===x)?.value||"";
+  const today=p("year")+"-"+p("month")+"-"+p("day");
+  const browser=await browserScoreboard(today);
+  if(browser.length){
+   const observed={games:browser,generated_at:new Date().toISOString(),
+    source:"Browser-direct ESPN scoreboard",coverage_complete:true};
+   nbaSchedule=mergeScoreSchedules(nbaSchedule,observed);
+   renderGameStrip();
+  }
+ }catch(_){}
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
@@ -1021,9 +1056,10 @@ const browserResults=await Promise.allSettled([browserScoreboard(easternDay),bro
 if(browserResults.every(x=>x.status==="fulfilled")){
  const games=new Map();
  for(const result of browserResults)for(const g of result.value)games.set(g.id,g);
- nbaSchedule={status:"THIRD_PARTY_NBA_SCHEDULE_ONLY",
+ nbaSchedule=mergeScoreSchedules(nbaSchedule,{
+  status:"THIRD_PARTY_NBA_SCHEDULE_ONLY",
   source:"Browser-direct ESPN scoreboard",coverage_complete:true,
-  generated_at:new Date().toISOString(),total_games:games.size,games:[...games.values()]};
+  generated_at:new Date().toISOString(),total_games:games.size,games:[...games.values()]});
 }
 const scheduledGames=nbaSchedule?.games||[];
 
