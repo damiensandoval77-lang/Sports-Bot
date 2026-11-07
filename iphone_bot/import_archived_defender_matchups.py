@@ -66,7 +66,10 @@ def convert_table(table):
     subset=table.select(list(mapping.values())).rename_columns(list(mapping))
     grouped={}
     for raw in subset.to_pylist():
-        raw["MATCHUP_MIN"]=archive_minutes(raw["MATCHUP_MIN"])
+        try:
+            raw["MATCHUP_MIN"]=archive_minutes(raw["MATCHUP_MIN"])
+        except (ValueError,TypeError):
+            continue
         clean=clean_matchup(raw)
         if clean is None:continue
         key=(clean["off_id"],clean["def_id"])
