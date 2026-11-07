@@ -646,7 +646,7 @@ function renderModelPerformance(){
  }
  const overallCombined=report.models?.combined;
  const totalIndependent=report.independent_settled_markets??0;
- const pendingUnique=paper?.independent_pending_player_game_markets??0;
+ const pendingUnique=paper?.independent_pending_player_game_markets;
  const wins=overallCombined?.direction_wins??0;
  const losses=overallCombined?.direction_losses??0;
  const pushes=overallCombined?.direction_pushes??0;
