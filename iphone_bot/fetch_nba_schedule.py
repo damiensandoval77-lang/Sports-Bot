@@ -212,6 +212,18 @@ def main():
     days=[today,today+dt.timedelta(days=1)]
     errors=[]
     source_mode=os.environ.get("NBA_SCHEDULE_SOURCE_MODE","auto")
+    # Preserve a newer verified-score provider snapshot instead of replacing
+    # it with old sportsbook fixtures from the repository checkout.
+    if source_mode=="cached" and OUTPUT.exists():
+        try:
+            previous=json.loads(OUTPUT.read_text())
+            issued=dt.datetime.fromisoformat(previous["generated_at"])
+            age=(dt.datetime.now(dt.timezone.utc)-issued).total_seconds()
+            if previous.get("status")=="PROVIDER_NBA_SCORES_PARTIAL_SLATE" and 0<=age<=12*3600:
+                print("Preserving fresh provider-score slate, refusing cached odds overwrite",flush=True)
+                return
+        except (KeyError,ValueError,TypeError):
+            pass
     report=collect(days,lambda _: [])
     schedule=None
     if source_mode=="auto":
