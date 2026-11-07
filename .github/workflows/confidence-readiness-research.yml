@@ -1,0 +1,46 @@
+name: Research Confidence Readiness (offline)
+on:
+  workflow_dispatch:
+  schedule:
+    # Read-only diagnostic, starts on default branch only after merge.
+    - cron: '17 */4 * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/confidence_readiness_audit.py'
+      - 'iphone_bot/tests/test_confidence_readiness_audit.py'
+      - '.github/workflows/confidence-readiness-research.yml'
+  push:
+    branches:
+      - 'research/confidence-readiness-audit-20261107'
+permissions:
+  contents: read
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile confidence audit
+        run: python -m py_compile iphone_bot/confidence_readiness_audit.py
+      - name: Test confidence audit and existing combined proxy validation
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_confidence_readiness_audit.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_combined_probability_audit.py' -v
+      - name: Audit existing ledger without publishing or paid requests
+        run: |
+          python -m iphone_bot.confidence_readiness_audit
+          python - <<'PY'
+          import json
+          report = json.load(open('docs/confidence_readiness_research.json'))
+          assert report['calibrated'] is False
+          assert report['publish_as_verified_confidence'] is False
+          print('Research confidence coverage:', report['coverage'])
+          PY
+      - name: Retain research-only audit (no main push)
+        uses: actions/upload-artifact@v4
+        with:
+          name: confidence-readiness-offline
+          path: docs/confidence_readiness_research.json
+          retention-days: 7
