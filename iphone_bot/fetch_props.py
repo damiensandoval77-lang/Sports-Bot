@@ -105,7 +105,7 @@ def save_status(status, **detail):
             "details":detail}
     STATUS.write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
 
-def compact_for_dashboard(report,max_pairs_per_event=60):
+def compact_for_dashboard(report,max_pairs_per_event=140):
     """Keep compact, real two-sided quotes across EVERY fetched NBA matchup.
 
     Prefer player breadth and market variety over bookmaker duplication.
@@ -133,11 +133,20 @@ def compact_for_dashboard(report,max_pairs_per_event=60):
             k=(pair["More"]["player"].casefold(),pair["More"]["stat"])
             by_player[k].append(pair)
         selected=[]
-        keys=sorted(by_player)
+        # Cycle markets and players together. Never let an alphabetically
+        # early market monopolize the compact feed and hide points/PRA.
+        by_market=defaultdict(list)
+        for k in by_player:
+            by_market[k[1]].append(k)
+        market_order=("Points","Rebounds","Assists","Points Rebounds Assists")
+        for market in by_market:
+            by_market[market].sort()
         while len(selected)<max_pairs_per_event and any(by_player.values()):
-            for k in keys:
-                if by_player[k] and len(selected)<max_pairs_per_event:
-                    selected.append(by_player[k].pop(0))
+            for market in market_order:
+                keys=by_market.get(market,[])
+                for key in keys:
+                    if by_player[key] and len(selected)<max_pairs_per_event:
+                        selected.append(by_player[key].pop(0))
         for pair in selected:published.extend((pair["More"],pair["Less"]))
         per_event.append({"game":game,"start":event.get("start"),
                           "source_two_sided_pairs":len(pairs),
