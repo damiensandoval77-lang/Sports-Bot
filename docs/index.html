@@ -1036,8 +1036,8 @@ async function browserScoreboard(day){
  const rows=[];
  for(const event of data.events){
   try{
-   const teams=Object.fromEntries(event.competitions[0].competitors.map(x=>[x.homeAway,x.team]));
-   const away=teams.away,home=teams.home,date=new Date(event.date);
+   const competitors=Object.fromEntries(event.competitions[0].competitors.map(x=>[x.homeAway,x]));
+   const away=competitors.away?.team,home=competitors.home?.team,date=new Date(event.date);
    if(!Number.isFinite(date.getTime()))continue;
    const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",
     year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);
@@ -1047,8 +1047,8 @@ async function browserScoreboard(day){
    rows.push({id:String(event.id),game:away.displayName+" @ "+home.displayName,
     away:away.displayName,home:home.displayName,
     away_abbreviation:away.abbreviation,home_abbreviation:home.abbreviation,
-    away_score:["in","post"].includes(state)&&/^\d+$/.test(String(teams.away?.score??""))?Number(teams.away.score):null,
-    home_score:["in","post"].includes(state)&&/^\d+$/.test(String(teams.home?.score??""))?Number(teams.home.score):null,
+    away_score:["in","post"].includes(state)&&/^\d+$/.test(String(competitors.away?.score??""))?Number(competitors.away.score):null,
+    home_score:["in","post"].includes(state)&&/^\d+$/.test(String(competitors.home?.score??""))?Number(competitors.home.score):null,
     away_logo:away.logo||null,home_logo:home.logo||null,
     period:state==="in"?event.status?.period:null,
     clock:state==="in"?event.status?.displayClock:null,
