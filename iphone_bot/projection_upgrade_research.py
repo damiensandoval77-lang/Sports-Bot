@@ -20,6 +20,11 @@ try:
 except ImportError:
     from paper_pick_pipeline import utc
 
+try:
+    from .opportunity_backtest import histories as opportunity_histories,opportunity as opportunity_forecast,candidate as opportunity_candidate
+except ImportError:
+    from opportunity_backtest import histories as opportunity_histories,opportunity as opportunity_forecast,candidate as opportunity_candidate
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -65,7 +70,7 @@ def official_injuries(feed,game_start,capture):
     return rows,"OFFICIAL_SAME_DAY_VERIFIED" if rows else "NO_SAME_DAY_PLAYER_STATUS"
 
 
-def snapshot(board,injury,existing,at):
+def snapshot(board,injury,existing,at,game_history=None):
     captured=utc(at)
     if board.get("status")!="EXPERIMENTAL_NON_CALIBRATED" or board.get("verified_current_matchups") is not True:
         raise ValueError("Board not verified")
@@ -74,6 +79,7 @@ def snapshot(board,injury,existing,at):
     old=list(existing)
     seen={identity(r) for r in old}
     counters=Counter()
+    indexed=opportunity_histories(game_history or [])
     for item in board.get("comparisons",[]):
         try:
             if item.get("stat") not in MARKETS:continue
@@ -97,6 +103,20 @@ def snapshot(board,injury,existing,at):
                  "applied_to_live_ai":False,"simulated_probability_modified":False}
             k=identity(row)
             if k in seen:continue
+            # True forward shadow prediction: all feature rows are known
+            # completed games strictly before this event's Eastern date.
+            day=start.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+            opp=opportunity_forecast(indexed.get((pid,row["team"]),[]),day,row["team"])
+            frozen=(opportunity_candidate(combined,opp["raw_stat_projections"][row["market"]])
+                    if opp["status"]=="HISTORICAL_OPPORTUNITY_CANDIDATE" else None)
+            row["opportunity_shadow_projection"]=frozen
+            row["opportunity_shadow_status"]=("PREGAME_LOCKED_UNVALIDATED_CHALLENGER"
+               if frozen is not None else "INSUFFICIENT_PAST_PLAYER_GAMES")
+            row["opportunity_shadow_prior_games"]=opp["history_games"]
+            row["opportunity_shadow_last_game"]=opp.get("prior_latest_game_date")
+            row["opportunity_shadow_minutes"]=opp.get("expected_minutes")
+            row["opportunity_shadow_method"]="FIXED_25PCT_BLEND_BOUNDED_15PCT"
+            if frozen is not None:counters["opportunity_shadow_locked"]+=1
             # Historical research data only, not evidence of current assignments.
             minutes=item.get("minutes_research") or {}
             injury_minutes=item.get("injury_minutes_research") or {}
@@ -274,6 +294,52 @@ def research_simulations(paper_rows):
     return report
 
 
+def grade_opportunity_shadows(ledger,paper_rows):
+    """Only score candidate projections that were actually locked before tipoff.
+
+    Results may be generated on a later date; never reconstruct an alternative
+    for an already completed game and call it a pregame shadow.
+    """
+    outcomes={}
+    for r in finished_unique(paper_rows):
+        outcomes[(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])]=(
+            float(r["actual"]),float(r["line"]))
+    done=set()
+    bymarket=defaultdict(list)
+    for row in ledger:
+        shadow=valid(row.get("opportunity_shadow_projection"))
+        if shadow is None:continue
+        try:
+            event=utc(row["event_start"]).isoformat()
+            if utc(row["captured_at"])>=utc(row["event_start"]):continue
+            key=(event,str(row["player_id"]),row["market"])
+            if key in done or key not in outcomes:continue
+            done.add(key)
+            actual,line=outcomes[key]
+            base=valid(row.get("combined_projection"))
+            if base is None:continue
+            bymarket[row["market"]].append((abs(base-actual),abs(shadow-actual),
+                base,shadow,actual,line))
+        except (KeyError,ValueError,TypeError):continue
+    def metrics(rows):
+        n=len(rows)
+        wins=[0,0]
+        for _,__,b,s,a,l in rows:
+            if a==l:continue
+            if b!=l and (b>l)==(a>l):wins[0]+=1
+            if s!=l and (s>l)==(a>l):wins[1]+=1
+        return {"paired_markets":n,
+          "baseline_mae":round(sum(x[0] for x in rows)/n,3) if n else None,
+          "opportunity_mae":round(sum(x[1] for x in rows)/n,3) if n else None,
+          "baseline_correct_directions":wins[0],
+          "opportunity_correct_directions":wins[1]}
+    all_rows=[r for g in bymarket.values() for r in g]
+    return {"status":"PREGAME_SHADOW_DESCRIPTIVE_ONLY" if len(all_rows)>=30
+                    else "AWAITING_PRETIP_LOCKED_SHADOW_AND_SETTLED_GAMES",
+            "overall":metrics(all_rows),
+            "by_market":{m:metrics(bymarket[m]) for m in MARKETS},
+            "live_applied":False,"eligible_for_live_promotion":False}
+
 def grade_shadow(ledger,paper_rows):
     """Paired MAE only for actually captured V4 shadows; never backfill."""
     graded={}
@@ -299,8 +365,8 @@ def grade_shadow(ledger,paper_rows):
             "v4_live_applied":False}
 
 
-def run(board,injury,paper_rows,existing,at):
-    ledger,counts=snapshot(board,injury,existing,at)
+def run(board,injury,paper_rows,existing,at,game_history=None):
+    ledger,counts=snapshot(board,injury,existing,at,game_history)
     settled=finished_unique(paper_rows)
     return ledger,{"generated_at":utc(at).isoformat(),
         "status":"OPPORTUNITY_V4_SHADOW_AND_10K_CALIBRATION_RESEARCH_ONLY",
@@ -312,6 +378,7 @@ def run(board,injury,paper_rows,existing,at):
         "teammate_splits":"OBSERVATIONAL_AND_SAMPLE_GATED",
         "defender_v4":grade_shadow(ledger,paper_rows),
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
+        "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
         "live_combined_ai_unchanged":True,
         "live_simulated_hit_percentages_unchanged":True,
@@ -324,8 +391,10 @@ def main():
     paper=json.loads(PAPER.read_text()).get("records",[]) if PAPER.exists() else []
     existing=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
     now=datetime.now(timezone.utc).isoformat()
+    games_path=ROOT/"data/nba/current/current_games.json"
+    game_history=json.loads(games_path.read_text()) if games_path.exists() else []
     try:
-        ledger,report=run(board,injury,paper,existing,now)
+        ledger,report=run(board,injury,paper,existing,now,game_history)
     except ValueError as error:
         # A scheduled research-only refresh can update settlement diagnostics
         # even if there is no fresh pregame AI feed to freeze. It may never
@@ -344,6 +413,7 @@ def main():
             "teammate_splits":"OBSERVATIONAL_AND_SAMPLE_GATED",
             "defender_v4":grade_shadow(ledger,paper),
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
+            "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
             "simulation_audit":research_simulations(paper),
             "live_combined_ai_unchanged":True,
             "live_simulated_hit_percentages_unchanged":True,
