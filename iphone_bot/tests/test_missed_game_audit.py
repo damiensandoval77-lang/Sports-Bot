@@ -1,0 +1,29 @@
+import unittest
+from iphone_bot.missed_game_audit import inspect
+
+def record(date="2026-11-07T00:00:00Z",game="Boston Celtics @ Charlotte Hornets",status="PENDING"):
+    return {"event_start":date,"captured_at":"2026-11-06T22:00:00Z",
+      "game":game,"market":"PTS","player_id":"9","team":"BOS",
+      "status":status}
+
+class MissedGames(unittest.TestCase):
+    def test_celtics_saved_game_is_reported_not_fabricated(self):
+        rows=[record()]
+        report=inspect(rows,now="2026-11-07T06:00:00Z")
+        self.assertEqual(report["unique_matchups_with_captures"],1)
+        self.assertEqual(report["earliest_saved_game_date"],"2026-11-06")
+        self.assertEqual(report["celtics_matchups"][0]["pregame_captures"],1)
+        self.assertEqual(report["celtics_matchups"][0]["diagnosis"],
+                         "WAITING_FOR_VERIFIED_COMPLETED_PLAYER_BOXSCORES")
+        self.assertEqual(report["total_saved_bookmaker_captures"],1)
+    def test_reports_stored_outcomes(self):
+        x=record(status="SETTLED")
+        report=inspect([x],now="2026-11-07T06:00:00Z")
+        self.assertEqual(report["matchups"][0]["settled"],1)
+        self.assertEqual(report["matchups"][0]["diagnosis"],"AT_LEAST_ONE_VERIFIED_SETTLEMENT")
+    def test_empty_ledger_has_no_fake_historical_games(self):
+        report=inspect([],now="2026-11-07T06:00:00Z")
+        self.assertEqual(report["celtics_matchups"],[])
+        self.assertIsNone(report["earliest_saved_game_date"])
+
+if __name__=="__main__":unittest.main()
