@@ -35,9 +35,12 @@ def player_history(history,as_of,team=None):
         minutes=numeric_minutes(row.get("MIN"))
         if minutes is None:continue
         # Conflicting repeated observations cannot safely be reconciled.
-        existing=valid.get(day)
-        if existing is None:valid[day]=minutes
-        elif existing!=minutes:valid[day]=None
+        # A conflicting duplicate must stay excluded even if later rows
+        # repeat one of the two values (do not silently restore that date).
+        if day not in valid:
+            valid[day]=minutes
+        elif valid[day] is not None and valid[day]!=minutes:
+            valid[day]=None
     return [(d,m) for d,m in sorted(valid.items()) if m is not None]
 
 
