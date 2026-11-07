@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/capture_ai_board.py'
+      - 'iphone_bot/tests/test_capture_ai_board.py'
       - '.github/workflows/nba-trained-ai-board.yml'
   schedule:
     # Market-refresh job runs at :12. This job reads its published compact feed
@@ -13,7 +15,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: nba-trained-ai-board-publish
+  group: nba-prop-feed
   cancel-in-progress: false
 jobs:
   trained_board:
@@ -24,6 +26,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Test immutable pregame captures and paper settlement
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
       - name: Confirm actual current market coverage and quote freshness
         run: |
           python - <<'PY'
@@ -86,10 +92,26 @@ jobs:
           # No requirement for a predetermined number of games: never invent
           # projections for roster mismatches, missing logs or closed markets.
           PY
-      - name: Publish trained AI board IMMEDIATELY (no paper settlement dependency)
+      - name: Freeze every eligible AI comparison before scheduled tipoff
+        run: python -u iphone_bot/capture_ai_board.py
+      - name: Verify frozen pregame model snapshots exist
+        run: |
+          python - <<'PY'
+          import json
+          from iphone_bot.paper_pick_pipeline import identity,utc
+          ledger=json.load(open('docs/paper_pick_ledger.json'))['records']
+          result=json.load(open('docs/paper_results.json'))
+          assert len(ledger)==len({identity(x) for x in ledger})
+          assert all(utc(x['captured_at'])<utc(x['event_start']) for x in ledger if x['status']!='INVALID_LATE_CAPTURE')
+          assert result['captured']==len(ledger)
+          assert result['performance']['status']=='PREGAME_FORECASTS_GRADED_AGAINST_REAL_BOXSCORES'
+          print('Locked individual bookmaker offers:',len(ledger))
+          print('Already settled:',result['settled'],'awaiting outcome:',result['pending'])
+          PY
+      - name: Publish AI board and immutable pregame paper records immediately
         run: |
           git fetch origin main
-          git add docs/ai_comparisons.json docs/current_form.json
+          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
