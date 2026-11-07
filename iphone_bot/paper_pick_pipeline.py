@@ -218,6 +218,7 @@ def summary(rows,now=None,source=None):
     settled=[r for r in rows if r.get("status")=="SETTLED"]
     pending=[r for r in rows if r.get("status")=="PENDING"]
     unique_games=len({(r["player_id"],r["event_start"],r["market"]) for r in settled})
+    unique_pending=len({(r["player_id"],r["event_start"],r["market"]) for r in pending})
     wins=sum(r["result"]=="WIN" for r in settled)
     losses=sum(r["result"]=="LOSS" for r in settled)
     pushes=sum(r["result"]=="PUSH" for r in settled)
@@ -232,6 +233,7 @@ def summary(rows,now=None,source=None):
        "weight_research":walkforward_weights(rows),
        "pipeline_health":pipeline_health(rows,source,now),
        "independent_player_game_markets":unique_games,
+       "independent_pending_player_game_markets":unique_pending,
        "wins":wins,"losses":losses,"pushes":pushes,
        "win_rate_ex_push":round(wins/(wins+losses),4) if wins+losses else None,
        "paper_profit_units":profits,
