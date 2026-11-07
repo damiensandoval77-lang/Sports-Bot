@@ -34,6 +34,14 @@ jobs:
           assert r['baseline']['observations'] == r['v2']['observations']
           print('Paired assist V2 comparisons:',r['v2']['observations'])
           PY
+      - name: Verify shadow settlement imports and invariants
+        run: |
+          python - <<'PY'
+          from iphone_bot.assist_v2_shadow_capture import grade,summary
+          assert summary([])['hit_rate'] is None
+          assert summary([])['research_only'] is True
+          print('Research-only shadow settlement ready; no historical backfill')
+          PY
       - name: Upload retrospective report without changing production
         uses: actions/upload-artifact@v4
         with:
