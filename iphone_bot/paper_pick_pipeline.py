@@ -18,6 +18,7 @@ try:
     from .accuracy_feedback import evaluate as accuracy_feedback
     from .probability_audit import audit as probability_audit
     from .selective_challenger import screen as research_screen, evaluate as selective_evaluate, minutes_risk
+    from .season_average_research import report as season_average_report
 except ImportError:
     from model_performance import compute_performance
     from weight_research import walkforward_weights
@@ -125,7 +126,8 @@ def snapshot(comparisons,generated_at,existing=None):
                 "research_selective_v1":research_screen(market["stat"],line,
                     original_projection,market.get("shadow_projection"),chosen_projection),
                 "research_minutes_risk_v1":minutes_risk(market.get("minutes_research"),
-                    market.get("minutes_v2_research"),market.get("injury_status"))}
+                    market.get("minutes_v2_research"),market.get("injury_status")),
+                "season_average_challenger":market.get("season_average_challenger")}
             ident=identity(record)
             if ident not in seen:
                 rows.append(record)
@@ -290,6 +292,7 @@ def summary(rows,now=None,source=None):
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
        "performance":compute_performance(rows),
        "selective_challenger":selective_evaluate(rows),
+       "season_average_research":season_average_report(rows),
        "accuracy_feedback":accuracy_feedback(rows),
        "probability_audit":probability_audit(rows),
        "weight_research":walkforward_weights(rows),
