@@ -6,7 +6,10 @@ unmodified. Only completed prior games from the same player TEAM are used.
 from collections import defaultdict
 from datetime import date
 from statistics import mean,median,pstdev
-from .minutes_model_v2 import numeric_minutes,player_history
+try:
+    from .minutes_model_v2 import numeric_minutes,player_history
+except ImportError:
+    from minutes_model_v2 import numeric_minutes,player_history
 
 METHOD="EARLY_SEASON_ROBUST_MINUTES_V3_RESEARCH_ONLY"
 MIN_HISTORY=5
