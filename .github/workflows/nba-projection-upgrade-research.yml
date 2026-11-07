@@ -6,6 +6,8 @@ on:
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/sanity_shadow_research.py'
       - 'iphone_bot/stress_test_20k_research.py'
+      - 'iphone_bot/model_disagreement_research.py'
+      - 'iphone_bot/tests/test_model_disagreement_research.py'
       - 'iphone_bot/tests/test_stress_test_20k_research.py'
       - 'iphone_bot/tests/test_sanity_shadow_research.py'
       - 'iphone_bot/opportunity_backtest.py'
@@ -41,10 +43,11 @@ jobs:
           python-version: '3.11'
       - name: Verify pregame isolation, injury dates and calibration
         run: |
-          python -m py_compile iphone_bot/projection_upgrade_research.py iphone_bot/sanity_shadow_research.py iphone_bot/stress_test_20k_research.py
+          python -m py_compile iphone_bot/projection_upgrade_research.py iphone_bot/sanity_shadow_research.py iphone_bot/stress_test_20k_research.py iphone_bot/model_disagreement_research.py
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_sanity_shadow_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_stress_test_20k_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_model_disagreement_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selection_gate_shadow.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_shadow_v1.py' -v
@@ -68,6 +71,9 @@ jobs:
           assert r['stress_test_20k_v1']['live_probabilities_changed'] is False
           assert r['stress_test_20k_v1']['live_picks_changed'] is False
           assert r['stress_test_20k_v1']['calibrated_probability'] is False
+          assert r['model_disagreement_v1']['live_picks_changed'] is False
+          assert r['model_disagreement_v1']['live_probabilities_changed'] is False
+          assert r['model_disagreement_v1']['model_improvement_established'] is False
           assert r['sanity_shadow_v1']['adjusted_only']['paired_markets'] <= r['sanity_shadow_v1']['overall']['paired_markets']
           assert all(v['changes_live_probabilities'] is False for v in r['simulation_audit'].values())
           print('Research records:',r['locked_samples'],'settled:',r['settled_independent_paper_markets'])
