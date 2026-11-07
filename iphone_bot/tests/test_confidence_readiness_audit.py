@@ -43,6 +43,19 @@ class ConfidenceReadinessTests(unittest.TestCase):
         r=audit([pick(actual=20.5),pick(player_id="2",combined_probability_proxy_estimate=1.2)])
         self.assertEqual(r["overall"]["sample_size"],0)
 
+    def test_pending_age_is_not_equated_with_final_boxscore(self):
+        rows = [pick(status="PENDING", player_id="a", event_start="2026-11-08T00:00:00Z"),
+                pick(status="PENDING", player_id="b", event_start="2026-11-07T22:00:00Z"),
+                pick(status="PENDING", player_id="c", event_start="2026-11-07T18:00:00Z"),
+                pick(player_id="d", combined_probability_proxy_estimate=None)]
+        r = audit(rows, now="2026-11-07T23:00:00Z")
+        diag = r["pending_diagnostics"]["counts"]
+        self.assertEqual(diag["before_tipoff"], 1)
+        self.assertEqual(diag["tipped_off_under_two_hours"], 1)
+        self.assertEqual(diag["past_two_hours_unsettled"], 1)
+        self.assertEqual(diag["settled_without_proxy"], 1)
+        self.assertEqual(r["overall"]["sample_size"], 0)
+
     def test_single_date_large_sample_never_ready(self):
         r=audit([pick(player_id=str(i)) for i in range(1000)])
         self.assertEqual(r["overall"]["sample_size"],1000)
