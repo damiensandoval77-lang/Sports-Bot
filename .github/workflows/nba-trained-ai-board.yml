@@ -6,6 +6,8 @@ on:
     paths:
       - 'iphone_bot/compare_live_models.py'
       - 'iphone_bot/tests/test_player_name_matching.py'
+      - 'iphone_bot/market_coverage_audit.py'
+      - 'iphone_bot/tests/test_market_coverage_audit.py'
       - 'iphone_bot/capture_ai_board.py'
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/opportunity_backtest.py'
@@ -73,6 +75,10 @@ jobs:
         run: |
           python -m py_compile iphone_bot/compare_live_models.py
           python -u iphone_bot/compare_live_models.py
+      - name: Audit which sportsbook-listed players and stats lack AI cards
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_market_coverage_audit.py' -v
+          python -u iphone_bot/market_coverage_audit.py
       - name: Verify real line and unchanged empirical probability semantics
         run: |
           python - <<'PY'
@@ -133,7 +139,7 @@ jobs:
       - name: Publish AI board and immutable pregame paper records immediately
         run: |
           git fetch origin main
-          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json
+          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json docs/ai_market_coverage.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
