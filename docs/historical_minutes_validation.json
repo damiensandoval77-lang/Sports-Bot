@@ -1,0 +1,146 @@
+{
+  "status": "HISTORICAL_HOLDOUT_RESEARCH_ONLY",
+  "source": "ARCHIVED_REGULAR_SEASON_PLAYER_GAME_LOGS",
+  "seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "holdout_season": "2025-26",
+  "archive_player_games": 104588,
+  "quality_rejections": {},
+  "earlier_seasons": {
+    "observations": 63590,
+    "dates": 443,
+    "players": 672,
+    "baseline_mae": 5.048,
+    "candidate_mae": 4.963,
+    "candidate_minus_baseline_mae": -0.085,
+    "candidate_better": 35271,
+    "baseline_better": 27936,
+    "tied": 383,
+    "baseline_bias": -0.095,
+    "candidate_bias": -0.146
+  },
+  "holdout": {
+    "observations": 21734,
+    "dates": 149,
+    "players": 510,
+    "baseline_mae": 4.986,
+    "candidate_mae": 4.908,
+    "candidate_minus_baseline_mae": -0.077,
+    "candidate_better": 11918,
+    "baseline_better": 9657,
+    "tied": 159,
+    "baseline_bias": -0.073,
+    "candidate_bias": -0.105
+  },
+  "by_season": {
+    "2022-23": {
+      "observations": 21108,
+      "dates": 149,
+      "players": 476,
+      "baseline_mae": 5.129,
+      "candidate_mae": 5.044,
+      "candidate_minus_baseline_mae": -0.084,
+      "candidate_better": 11711,
+      "baseline_better": 9273,
+      "tied": 124,
+      "baseline_bias": -0.071,
+      "candidate_bias": -0.107
+    },
+    "2023-24": {
+      "observations": 21235,
+      "dates": 146,
+      "players": 502,
+      "baseline_mae": 4.988,
+      "candidate_mae": 4.903,
+      "candidate_minus_baseline_mae": -0.085,
+      "candidate_better": 11829,
+      "baseline_better": 9301,
+      "tied": 105,
+      "baseline_bias": -0.086,
+      "candidate_bias": -0.136
+    },
+    "2024-25": {
+      "observations": 21247,
+      "dates": 148,
+      "players": 509,
+      "baseline_mae": 5.028,
+      "candidate_mae": 4.942,
+      "candidate_minus_baseline_mae": -0.086,
+      "candidate_better": 11731,
+      "baseline_better": 9362,
+      "tied": 154,
+      "baseline_bias": -0.127,
+      "candidate_bias": -0.194
+    },
+    "2025-26": {
+      "observations": 21734,
+      "dates": 149,
+      "players": 510,
+      "baseline_mae": 4.986,
+      "candidate_mae": 4.908,
+      "candidate_minus_baseline_mae": -0.077,
+      "candidate_better": 11918,
+      "baseline_better": 9657,
+      "tied": 159,
+      "baseline_bias": -0.073,
+      "candidate_bias": -0.105
+    }
+  },
+  "holdout_by_pregame_rotation_trend": {
+    "RECENT_MINUTES_UP": {
+      "observations": 4118,
+      "dates": 149,
+      "players": 468,
+      "baseline_mae": 5.476,
+      "candidate_mae": 5.365,
+      "candidate_minus_baseline_mae": -0.111,
+      "candidate_better": 2313,
+      "baseline_better": 1801,
+      "tied": 4,
+      "baseline_bias": 1.475,
+      "candidate_bias": 0.291
+    },
+    "STABLE": {
+      "observations": 13673,
+      "dates": 149,
+      "players": 503,
+      "baseline_mae": 4.685,
+      "candidate_mae": 4.649,
+      "candidate_minus_baseline_mae": -0.036,
+      "candidate_better": 7291,
+      "baseline_better": 6229,
+      "tied": 153,
+      "baseline_bias": 0.039,
+      "candidate_bias": 0.025
+    },
+    "RECENT_MINUTES_DOWN": {
+      "observations": 3943,
+      "dates": 149,
+      "players": 472,
+      "baseline_mae": 5.516,
+      "candidate_mae": 5.33,
+      "candidate_minus_baseline_mae": -0.186,
+      "candidate_better": 2314,
+      "baseline_better": 1627,
+      "tied": 2,
+      "baseline_bias": -2.078,
+      "candidate_bias": -0.969
+    }
+  },
+  "live_model_unchanged": true,
+  "production_adjustment_applied": false,
+  "injury_effect_claimed": false,
+  "limitations": [
+    "The 2025-26 season is held out by calendar season, and no outcomes are read before tipoff.",
+    "Histories reset on season and team changes; trades and offseason transitions are not merged.",
+    "Only players who played positive minutes are evaluated; DNP and start predictions are not covered.",
+    "Rotation trend is inferred from earlier logged minutes, not confirmed future lineup availability.",
+    "Historical samples may be correlated across players/games; no injury causal claim.",
+    "This evaluation cannot by itself validate any betting or live model improvement."
+  ],
+  "generated_at": "2026-11-07T00:03:57.297230+00:00"
+}
