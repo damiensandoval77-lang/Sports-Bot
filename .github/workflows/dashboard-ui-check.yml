@@ -38,6 +38,12 @@ jobs:
               assert hidden in html, f'Missing clutter-hiding rule: {hidden}'
           assert 'id="ai-board"' in html and 'id="odds-board"' in html
           assert 'model-chance' in html, 'Do not remove simulated hit percentage cards'
+          for calibration_id in ('prob-audit-summary','prob-audit-bins','prob-audit-sample'):
+              assert ('id="'+calibration_id+'"') in html, f'Missing calibration UI {calibration_id}'
+          assert 'function renderProbabilityAudit()' in html
+          assert 'renderProbabilityAudit();' in html
+          assert 'function chance(p)' in html, 'Live experimental probability display must not disappear'
+
 
           script=html.split('<script>',1)[1].split('</script>',1)[0]
           Path('/tmp/sports-bot-game-strip.js').write_text(script)
