@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1020"><link rel="manifest" href="./manifest.webmanifest">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080808"><link rel="manifest" href="./manifest.webmanifest">
 <title>Sports-Bot · NBA Prop Board</title>
 <style>
 :root{color-scheme:dark;--bg:#080d18;--panel:#111b2a;--panel2:#19263a;--border:#293952;--text:#f1f6ff;--sub:#9db0cb;--accent:#70a5ff;--green:#57d8ab;--amber:#f3c177}
@@ -49,6 +49,57 @@
 @media(max-width:520px){.recent-block-grid{gap:6px}.recent-stat-tile{padding:10px 8px;min-height:88px}.recent-stat-number{font-size:22px}.recent-stat-label{font-size:9px}.recent-stat-subtitle{font-size:9px}}
 .performance-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0 12px}.performance-card{background:var(--panel);border:1px solid #38516d;border-radius:12px;padding:12px;min-width:0}.performance-card-title{font-size:14px;display:block;margin-bottom:11px}.performance-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.performance-stat{background:var(--panel2);border-radius:8px;padding:8px;display:flex;flex-direction:column;min-width:0;gap:4px}.performance-stat span{font-size:10px;color:var(--sub)}.performance-stat strong{font-size:19px;font-variant-numeric:tabular-nums}.performance-meta{font-size:10px;color:var(--sub);margin-top:9px}.performance-pending{font-size:11px;color:var(--amber);margin-top:7px}.performance-heading{margin-top:22px}@media(max-width:780px){.performance-comparison{grid-template-columns:1fr}.performance-card{padding:12px}.performance-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.performance-stat{padding:9px 6px}.performance-stat strong{font-size:17px}}@media(max-width:480px){.performance-stat span{font-size:9px}.performance-stat strong{font-size:16px}}.pipeline-health{padding:11px 12px;background:#15253b;border:1px solid #34516f;border-radius:9px;font-size:12px;line-height:1.55;margin:10px 0}.pipeline-alert{color:#ffd99a;background:#332819;border-color:#765832}.pp-quote{display:flex;justify-content:space-between;gap:9px;align-items:flex-start;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #465378;background:#1d2a44}.pp-quote-left{display:flex;flex-direction:column;gap:3px}.pp-quote-left strong{font-size:20px;font-variant-numeric:tabular-nums}.pp-quote-left span{font-size:10px;color:#b8c5dc}.pp-quote-right{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.pp-selection{font-size:10px;font-weight:800;padding:6px;border-radius:6px;background:#344665;color:#ecf3ff;text-transform:uppercase}.pp-quote+.mini{font-size:11px;margin-bottom:9px}.performance-selector{display:flex;align-items:center;gap:9px;margin:13px 0}.performance-selector label{font-size:12px;color:var(--sub)}.performance-selector select{max-width:210px}.research-note{padding:11px;border:1px solid #435c7d;border-radius:8px;background:#1a2b41;font-weight:650;font-size:12px;margin:9px 0}.research-risk{border-color:#9a634d;background:#422b26;color:#ffe1d1}.manual-pp{border:1px solid #51688a;background:#152740;border-radius:11px;padding:11px;margin:12px 0}.manual-pp strong{display:block;font-size:12px;margin-bottom:6px}.manual-pp-controls{display:flex;gap:8px;margin-top:8px}.manual-pp input{flex:1;min-width:0;max-width:190px}.manual-pp .btn{flex:0 0 auto}.manual-pp-result{font-size:11px;line-height:1.5;margin-top:8px;color:#d9eaff}.official-injury-link{display:inline-block;margin:3px 0 10px;font-size:12px;color:#97bfff;text-decoration:underline;text-underline-offset:3px}.game-strip-shell{margin:12px 0 10px}.game-strip-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}.game-strip-heading strong{font-size:12px;letter-spacing:.3px}.game-strip-heading small{font-size:10px}.game-strip{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#415676 transparent;padding:2px 1px 10px}.game-tile{scroll-snap-align:start;flex:0 0 150px;min-height:91px;text-align:left;border-radius:12px;padding:10px 11px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:5px;font:inherit}.game-tile[aria-pressed=true]{border-color:var(--accent);background:#1b3455;box-shadow:inset 0 0 0 1px var(--accent)}.game-tile:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.game-tile .tile-matchup{font-size:13px;font-weight:800;letter-spacing:.25px}.game-tile .tile-time{font-size:11px;color:var(--sub)}.game-tile .tile-props{font-size:10px;color:#a6caff}.game-tile .tile-props.no-lines{color:#a9b4c6}.game-tile .tile-props.partial{color:var(--amber)}.game-tile.all-games{flex-basis:123px}.game-strip-note{color:var(--sub);font-size:10px;line-height:1.4;margin-top:-2px}@media(max-width:520px){.game-tile{flex-basis:139px;min-height:86px}.game-tile.all-games{flex-basis:110px}}
 .game-tile.score-tile{flex-basis:174px;min-height:114px;padding:10px 11px}.tile-scoreboard{display:grid;grid-template-columns:1fr auto;gap:5px;width:100%}.tile-team{display:flex;align-items:center;gap:6px;min-width:0}.tile-team-logo{height:24px;width:24px;object-fit:contain;flex:none}.tile-team-code{font-size:12px;font-weight:800;letter-spacing:.4px}.tile-team-score{font-size:15px;font-weight:850;font-variant-numeric:tabular-nums;line-height:24px}.game-tile .tile-live{color:#64e3b0;font-weight:750}.game-tile .tile-final{color:#bdc9de;font-weight:750}.game-tile .tile-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px}.game-tile .tile-top .tile-time{font-size:10px}.game-tile .tile-game-state{color:#a8b9d2;font-size:10px}.game-tile .tile-game-state.live{color:#65e3b0}.game-tile .tile-game-state.final{color:#c8d4e8}@media(max-width:520px){.game-tile.score-tile{flex-basis:163px;min-height:109px}.tile-team-logo{width:22px;height:22px}}
+
+/* 2026 monochrome redesign: black canvas, graphite cards, white typography. */
+:root{color-scheme:dark;--bg:#070707;--panel:#121212;--panel2:#1c1c1c;--border:#303030;--text:#f5f5f5;--sub:#a4a4a4;--accent:#e0e0e0;--green:#65dba7;--amber:#efbf79}
+html,body{background:#070707;color:var(--text)}
+body{background:var(--bg)}
+.top .eyebrow{color:#a7a7a7}
+.status{background:#1b1b1b;border-color:#393939;color:#e6e6e6}
+.status.ok{background:#10231c;border-color:#285a45}
+.tabs{background:#111;border-color:#2a2a2a}
+.tab{color:#b0b0b0}
+.tab[aria-selected=true]{color:#fff;background:#303030}
+input,select{color:#f1f1f1;background:#171717;border-color:#3b3b3b}
+input::placeholder{color:#898989}
+input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offset:1px}
+.btn{background:#282828;border-color:#4b4b4b;color:#fff}
+.metric,.prop,.advanced,.performance-card{background:#121212;border-color:#303030}
+.tag{background:#252525;color:#ddd}
+.tag.neutral{background:#292929;color:#d6d6d6}
+.pickbar,.shadowbar,.compact-final,.reasoning-panel,.prop-signal,.detail-highlight,.pipeline-health,.pp-quote,.research-note,.manual-pp{background:#191919;border-color:#373737}
+.val,.compact-projection,.recent-stat-tile,.performance-stat{background:#202020;border-color:#383838}
+.recent-stat-label,.prop-line-label,.signal-title{color:#a8a8a8}
+.prop-line-number,.compact-final strong,.recent-stat-number{color:#f8f8f8}
+.prop-stat-name,.compact-final span,.reasoning-sentence,.detailbody,.detail-highlight,.model-chance{color:#e2e2e2}
+.model-chance{background:#292929}
+.signal-choice.neutral,.pp-selection{background:#2d2d2d;color:#eaeaea}
+.bookrow{border-color:#333}
+.compact-prop{border-color:#353535;box-shadow:none}
+.compact-details summary,.prop details summary,.official-injury-link,.foot a{color:#d0d0d0}
+.empty{background:#121212;border-color:#414141}
+.load-toolbar{color:#aaa}
+.game-tile,.game-tile.score-tile{background:#141414;border-color:#353535}
+.game-tile[aria-pressed=true]{background:#282828;border-color:#d0d0d0;box-shadow:inset 0 0 0 1px #777}
+.game-tile:focus-visible{outline-color:#e5e5e5}
+.game-tile .tile-props{color:#bdbdbd}
+.game-tile .tile-game-state,.game-tile .tile-game-state.final{color:#bcbcbc}
+.game-strip{scrollbar-color:#555 transparent}
+.notice{background:#221b13;border-color:#4a3925;color:#e9c894}
+.notice:not(.pipeline-alert){font-size:11px}
+.source{color:#a2a2a2}
+/* Schedule + roster information is already represented by swipeable matchup tiles.
+   Keep nodes for existing refresh logic but remove visual clutter entirely. */
+#slate-coverage,#full-nba-slate,#schedule-players,
+.schedule-roster-control,#game-strip-note{display:none!important}
+#ai-game,#odds-game{display:none!important}
+#tab-ai>.filters,#tab-odds>.filters{grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr))}
+@media(max-width:520px){
+ #tab-ai>.filters,#tab-odds>.filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #tab-ai>.filters input,#tab-odds>.filters input{grid-column:1/-1}
+ .game-strip-shell{margin-bottom:6px}
+ .dashboard-summary{margin-top:6px}
+}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -72,13 +123,13 @@
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
 <div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
 <div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
-<div class="filters"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
+<div class="filters schedule-roster-control" aria-hidden="true"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
 <div class="source" id="schedule-players">Players from current-season game logs will appear here; this is not an official active roster.</div>
-<div class="source">Combined AI projection is the midpoint of two models. *Percentage ranking still uses original-model experimental estimates, not validated combined hit rates. Expand for details.</div><div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
+<div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
-<div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="source">Current two-sided sportsbook lines only. These are not PrizePicks lines.</div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
+<div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
 <section class="panel" id="tab-form"><div class="bar"><h2>2026–27 form</h2><small id="form-total">—</small></div>
-<div class="filters"><input id="form-search" aria-label="Search player form" placeholder="Search player…" autocomplete="off"><select id="form-stat" aria-label="Form stat"><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option><option>MIN</option></select><select id="form-sort" aria-label="Sort form"><option value="name">Player name</option><option value="avg">Highest L5</option></select></div><div class="source" id="form-source">Observed performance, not an AI forecast. L5/L10 shown only with enough games.</div><div class="board" id="form-board"><div class="empty">Loading current player form…</div></div></section>
+<div class="filters"><input id="form-search" aria-label="Search player form" placeholder="Search player…" autocomplete="off"><select id="form-stat" aria-label="Form stat"><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option><option>MIN</option></select><select id="form-sort" aria-label="Sort form"><option value="name">Player name</option><option value="avg">Highest L5</option></select></div><div class="source" id="form-source" style="display:none">Observed player form.</div><div class="board" id="form-board"><div class="empty">Loading current player form…</div></div></section>
 <section class="panel" id="tab-results">
 <div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
