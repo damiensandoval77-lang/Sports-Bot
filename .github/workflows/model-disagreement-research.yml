@@ -1,0 +1,38 @@
+name: Model Disagreement Research Tests (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/model_disagreement_research.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_model_disagreement_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
+      - '.github/workflows/model-disagreement-research.yml'
+  push:
+    branches: ['research/20261107-model-disagreement-v1']
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile
+        run: python -m py_compile iphone_bot/model_disagreement_research.py iphone_bot/projection_upgrade_research.py
+      - name: Test research classifier and pregame capture integration
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_model_disagreement_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+      - name: Verify report cannot advertise live improvements
+        run: |
+          python - <<'PY'
+          from iphone_bot.model_disagreement_research import report
+          from iphone_bot.paper_pick_pipeline import utc
+          d=report([],[],lambda x: x,utc)
+          assert d['model_improvement_established'] is False
+          assert d['live_picks_changed'] is False
+          assert d['live_probabilities_changed'] is False
+          print('Read-only disagreement research verified')
+          PY
