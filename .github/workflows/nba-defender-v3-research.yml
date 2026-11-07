@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/defender_matchup_v3.py'
+      - 'iphone_bot/fetch_defender_matchups.py'
+      - 'iphone_bot/tests/test_fetch_defender_matchups.py'
       - 'iphone_bot/tests/test_defender_matchup_v3.py'
       - '.github/workflows/nba-defender-v3-research.yml'
 permissions:
@@ -23,8 +25,11 @@ jobs:
           python-version: '3.11'
       - name: Verify defender matchup research and no leakage
         run: |
-          python -m py_compile iphone_bot/defender_matchup_v3.py
+          python -m py_compile iphone_bot/defender_matchup_v3.py iphone_bot/fetch_defender_matchups.py
           python -m unittest discover -s iphone_bot/tests -p 'test_defender_matchup_v3.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_defender_matchups.py' -v
+      - name: Probe historical NBA player-on-defender matchup source
+        run: python -u iphone_bot/fetch_defender_matchups.py
       - name: Publish source readiness only; never inject V3 into live projections
         run: python -u iphone_bot/defender_matchup_v3.py
       - name: Check model isolation
@@ -42,7 +47,7 @@ jobs:
       - name: Commit research diagnostics
         run: |
           git fetch origin main
-          git add docs/defender_v3_research.json
+          git add docs/defender_v3_research.json docs/defender_v3_source_status.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
