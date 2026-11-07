@@ -1,0 +1,81 @@
+name: NBA Projection Upgrade Research Audit (research only)
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Publish trained NBA AI props for every available game"]
+    types: [completed]
+  schedule:
+    - cron: '17 12 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-projection-upgrade-audit
+  cancel-in-progress: false
+jobs:
+  projection_research:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify pregame isolation, injury dates and calibration
+        run: |
+          python -m py_compile iphone_bot/projection_upgrade_research.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+      - name: Refresh research snapshots or audit existing snapshots
+        run: python -u iphone_bot/projection_upgrade_research.py
+      - name: Protect existing Combined AI and probability outputs
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/projection_upgrade_status.json'))
+          assert r['live_combined_ai_unchanged'] is True
+          assert r['live_simulated_hit_percentages_unchanged'] is True
+          assert r['defender_v4']['v4_live_applied'] is False
+          assert all(v['changes_live_probabilities'] is False for v in r['simulation_audit'].values())
+          print('Research records:',r['locked_samples'],'settled:',r['settled_independent_paper_markets'])
+          PY
+      - name: Publish independent research diagnostics without merging old ledger over new
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/research-publish"
+          cp docs/projection_upgrade_ledger.json "$RUNNER_TEMP/research-publish/ledger.json"
+          cp docs/projection_upgrade_status.json "$RUNNER_TEMP/research-publish/status.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python - "$RUNNER_TEMP/research-publish" <<'PY'
+          import json,sys,pathlib,datetime
+          directory=pathlib.Path(sys.argv[1])
+          target=pathlib.Path('docs/projection_upgrade_ledger.json')
+          fresh=json.loads((directory/'ledger.json').read_text()).get('records',[])
+          existing=json.loads(target.read_text()).get('records',[]) if target.exists() else []
+          from iphone_bot.projection_upgrade_research import identity
+          # Never overwrite the original immutable earliest pregame record.
+          saved={}
+          for r in sorted(existing+fresh,key=lambda r:r['captured_at']):
+              saved.setdefault(identity(r),r)
+          target.write_text(json.dumps({'version':1,'records':list(saved.values())},indent=2)+'\n')
+          status=pathlib.Path('docs/projection_upgrade_status.json')
+          latest=json.loads((directory/'status.json').read_text())
+          if status.exists():
+              older=json.loads(status.read_text())
+              if older.get('generated_at','')>=latest.get('generated_at',''):
+                  print('Keeping newer published research status',flush=True)
+                  raise SystemExit(0)
+          status.write_text(json.dumps(latest,indent=2)+'\n')
+          PY
+            git add docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json
+            if git diff --cached --quiet; then echo 'Already published'; exit 0; fi
+            git commit -m 'Publish immutable research-only NBA projection and calibration diagnostics'
+            if git push origin HEAD:main; then exit 0; fi
+            echo 'main updated concurrently; safely rebuilding research-only commit'
+          done
+          exit 1
