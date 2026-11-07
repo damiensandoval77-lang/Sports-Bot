@@ -136,7 +136,7 @@ def settle(rows,completed_games,now=None):
     by_id=defaultdict(list)
     by_name=defaultdict(list)
     for g in completed_games:
-        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL"):
+        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL","CBS_FINAL_VERIFIED"):
             if g.get("final_confirmed") is True:
                 key=(strict_player_name(g.get("player")),str(g.get("date")))
                 if key[0]:by_name[key].append(g)
@@ -282,6 +282,54 @@ def summary(rows,now=None,source=None):
          "No real-money execution or gambling automation."]}
     return record
 
+def cross_checked_final_boxscores(path):
+    """Read only explicitly transcribed, matchup-locked third-party FINAL games.
+
+    Do not accept this as official NBA data. The source, score, complete
+    identity and player totals are preserved for post-hoc auditing.
+    """
+    if not path.exists():return []
+    payload=json.loads(path.read_text())
+    if payload.get("status")!="THIRD_PARTY_FINAL_BOXSCORE_MANUALLY_CROSS_CHECKED":
+        raise ValueError("Manual final-game audit not verified")
+    if not str(payload.get("source_url","")).startswith("https://qa.img.cbssports.com/nba/gametracker/"):
+        raise ValueError("Unexpected final boxscore attribution")
+    if not payload.get("cross_check_url") or not payload.get("game_id"):
+        raise ValueError("Missing independent final-game verification")
+    date=payload.get("game_date_eastern")
+    matchup=payload.get("matchup")
+    if not isinstance(date,str) or not isinstance(matchup,str) or " @ " not in matchup:
+        raise ValueError("Missing completed matchup identity")
+    away,home=matchup.split(" @ ")
+    a=TEAM_ABBREVIATIONS.get(away)
+    h=TEAM_ABBREVIATIONS.get(home)
+    if not a or not h or a==h:
+        raise ValueError("Unknown confirmed matchup teams")
+    totals={}
+    rows=payload.get("records") or []
+    seen=set()
+    for row in rows:
+        if (row.get("date")!=date or row.get("source")!="CBS_FINAL_VERIFIED"
+            or str(row.get("source_game_id"))!=str(payload["game_id"])
+            or row.get("final_confirmed") is not True):
+            raise ValueError("Unverified individual player identity")
+        team=row.get("team")
+        if team not in (a,h) or row.get("opponent")!=(h if team==a else a):
+            raise ValueError("Player team/opponent mismatch")
+        k=(strict_player_name(row.get("player")),team)
+        if not k[0] or k in seen:raise ValueError("Ambiguous verified player")
+        seen.add(k)
+        if not (0<float(row["MIN"])<=60 and
+                all(float(row[x])>=0 for x in ("PTS","REB","AST")) and
+                abs(float(row["PRA"])-(float(row["PTS"])+float(row["REB"])+float(row["AST"])))<.001):
+            raise ValueError("Invalid verified final stat line")
+        totals[team]=totals.get(team,0)+float(row["PTS"])
+    # A partial player list is allowed, but must not exceed final team points.
+    for team,total in totals.items():
+        if total>float(payload["final_team_score"][team]):
+            raise ValueError("Player points exceed verified team final")
+    return rows
+
 def main():
     # Settlement is strictly read-only with respect to the pregame forecast
     # set. Only capture_ai_board.py may add records using the ACTUAL capture
@@ -292,6 +340,7 @@ def main():
     direct_path=ROOT/"data/nba/current/final_boxscores.json"
     if direct_path.exists():
         completed.extend(json.loads(direct_path.read_text()))
+    completed.extend(cross_checked_final_boxscores(ROOT/"docs/verified_postgame_boxscores.json"))
     rows=settle(rows,completed)
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
     source_path=ROOT/"docs/current_form.json"
