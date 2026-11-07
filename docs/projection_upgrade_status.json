@@ -1,10 +1,11 @@
 {
-  "generated_at": "2026-11-07T04:09:56.937581+00:00",
-  "status": "OPPORTUNITY_V4_SHADOW_AND_20K_CALIBRATION_RESEARCH_ONLY",
+  "generated_at": "2026-11-07T08:43:58.237416+00:00",
+  "status": "RESEARCH_AUDIT_ONLY_NO_FRESH_PREGAME_BOARD",
+  "capture_notice": "Board must be captured within 45 minutes of generation",
   "locked_samples": 0,
   "new_samples": 0,
   "features_covered": {},
-  "settled_independent_paper_markets": 178,
+  "settled_independent_paper_markets": 273,
   "injury_context": "VERIFIED_SAME_GAME_OFFICIAL_REPORT_ONLY",
   "lineup_confirmations_automated": false,
   "teammate_splits": "OBSERVATIONAL_AND_SAMPLE_GATED",
@@ -183,10 +184,23 @@
     "wagers_recommended": 0,
     "no_backfilling_older_game_gates": true
   },
+  "assist_shadow_v1": {
+    "status": "PREGAME_LOCKED_ASSIST_SHADOW_RESEARCH_ONLY",
+    "paired_assist_markets": 0,
+    "distinct_game_dates": 0,
+    "baseline_mae": null,
+    "shadow_mae": null,
+    "baseline_correct_direction": 0,
+    "shadow_correct_direction": 0,
+    "prospectively_ready_for_review": false,
+    "promoted": false,
+    "production_probabilities_changed": false,
+    "no_retroactive_shadow_generation": true
+  },
   "simulation_audit": {
     "PTS": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 47,
+      "completed_independent_markets": 75,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,
@@ -196,7 +210,7 @@
     },
     "REB": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 46,
+      "completed_independent_markets": 71,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,
@@ -206,7 +220,7 @@
     },
     "AST": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 42,
+      "completed_independent_markets": 61,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,
@@ -216,7 +230,7 @@
     },
     "PRA": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 43,
+      "completed_independent_markets": 66,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,
