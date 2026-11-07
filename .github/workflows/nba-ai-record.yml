@@ -67,7 +67,12 @@ jobs:
           assert result['pending']==sum(r['status']=='PENDING' for r in rows)
           assert result['independent_player_game_markets']<=result['settled']
           assert result['independent_pending_player_game_markets']<=result['pending']
-          assert perf['independent_settled_markets']==result['independent_player_game_markets']
+          assert perf['independent_settled_markets']<=result['independent_player_game_markets']
+          from iphone_bot.model_performance import independent_rows
+          assert perf['independent_settled_markets']==len(independent_rows(rows))
+          print('Settled market groups:',result['independent_player_game_markets'])
+          print('Eligible independent performance groups:',perf['independent_settled_markets'])
+          print('Excluded from performance due to pretip/quote/data checks:',result['independent_player_game_markets']-perf['independent_settled_markets'])
           assert set(perf['models'])=={'original','opponent_aware','combined'}
           for model in perf['models'].values():
               assert model['direction_eligible']==model['direction_wins']+model['direction_losses']
