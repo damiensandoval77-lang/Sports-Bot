@@ -206,7 +206,7 @@ def verified_schedule_ids(payload,pending):
         day=str(block.get("gameDate") or "")[:10]
         for game in block.get("games",[]):
             gid=str(game.get("gameId") or "")
-            if not re.fullmatch(r"00226\\d{5}",gid):continue
+            if not re.fullmatch(r"00226\d{5}",gid):continue
             away=team(game.get("awayTeam",{}).get("teamTricode"))
             home=team(game.get("homeTeam",{}).get("teamTricode"))
             key=(day,away,home)
