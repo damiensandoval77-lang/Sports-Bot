@@ -1,0 +1,68 @@
+name: Refresh full-slate NBA sportsbook props (lightweight)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/fetch_props.py'
+      - 'iphone_bot/tests/test_fetch_props.py'
+      - '.github/workflows/nba-market-refresh.yml'
+  schedule:
+    # Two quick refreshes before major evening tipoff; independent of ML retraining.
+    - cron: '12 20,23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prop-feed
+  cancel-in-progress: false
+jobs:
+  markets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check event and player quote coverage
+        run: |
+          python -m py_compile iphone_bot/fetch_props.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v
+      - name: Retrieve as many current NBA player prop markets as provider credits allow
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          ODDS_MAX_EVENTS: '15'
+          ODDS_OUTCOMES_PER_EVENT: '1200'
+        run: python -u iphone_bot/fetch_props.py
+      - name: Validate coverage counters and no fabricated quotes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status=json.load(open('docs/odds_fetch_status.json'))
+          if status['status']=='FETCHED':
+              report=json.load(open('docs/data.json'))
+              assert report['slate_events_checked']<=report['slate_events_available']
+              assert report['slate_events_not_checked']==report['slate_events_available']-report['slate_events_checked']
+              assert report['slate_event_limit']>=15
+              assert all(x['two_sided_outcomes']%2==0 for x in report['events_covered'])
+              print('Markets:',report['market_types_requested'],'Checked:',report['slate_events_checked'],
+                    'Provider available:',report['slate_events_available'])
+          else:
+              print('No successful refresh:',status['status'])
+          PY
+      - name: Publish NBA sportsbook market coverage and provider health
+        if: always()
+        run: |
+          git fetch origin main
+          git add docs/data.json docs/odds_fetch_status.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update NBA full slate player prop coverage and quota status'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
