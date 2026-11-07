@@ -5,6 +5,7 @@ Only show upcoming two-sided sportsbook markets where the player roster team
 matches one of the game's teams. Training feature gaps are flagged.
 """
 import json
+import os
 import re
 from datetime import datetime,timezone
 from pathlib import Path
@@ -26,7 +27,7 @@ from shot_profile_research import predict_attempts as shot_attempt_profile
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
 FORM=ROOT/"docs/current_form.json"
-ODDS=ROOT/"docs/data.json"
+ODDS=ROOT/"docs"/os.environ.get("NBA_AI_ODDS_INPUT","data.json")
 MODELS=ROOT/"models/nba/provisional"
 OUTPUT=ROOT/"docs/ai_comparisons.json"
 INJURIES=ROOT/"docs/injury_context.json"
@@ -72,6 +73,7 @@ def main():
     now=datetime.now(timezone.utc)
     form=json.loads(FORM.read_text())
     odds=json.loads(ODDS.read_text())
+    print("AI sportsbook quote input:",ODDS.name,"outcomes:",len(odds.get("picks",[])),flush=True)
     try:
         injury_feed=json.loads(INJURIES.read_text()) if INJURIES.exists() else {}
         issued=utc(injury_feed["report_issued_at"])
@@ -328,6 +330,8 @@ def main():
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
        "verified_current_matchups":True,"is_prizepicks":False,
+       "odds_input_file":ODDS.name,
+       "games_with_ai_props":len({r["game"] for r in valid}),
        "injury_data_verified":report_fresh and injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED",
        "injury_context_source":injury_feed.get("status") if report_fresh else "UNAVAILABLE",
        "official_injury_report_url":injury_feed.get("source_pdf") if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" else None,
