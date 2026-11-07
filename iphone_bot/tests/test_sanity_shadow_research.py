@@ -12,7 +12,8 @@ def games(values=(40,42,44,41,43,42,40,44,41,43),team="DEN"):
 def run(history=None,**kw):
     x={"team":"DEN","market":"PTS","baseline":28,
        "event_start":TIP,"captured_at":CAPTURE,
-       "minutes_context":{"expected_minutes":34},"injury_status":"AVAILABLE"}
+       "minutes_context":{"expected_minutes":34},"injury_status":"AVAILABLE",
+       "injury_source":"OFFICIAL_NBA_REPORT"}
     x.update(kw)
     return shadow(games() if history is None else history,**x)
 
@@ -44,6 +45,15 @@ class SanityShadowTests(unittest.TestCase):
 
     def test_missing_minutes_stops_adjustment(self):
         self.assertEqual(run(minutes_context={})["status"],"REVIEW_ONLY_UNCERTAIN_INPUTS")
+
+    def test_unverified_available_does_not_allow_adjustment(self):
+        r=run(injury_source="ESPN_THIRD_PARTY_NOT_CONFIRMED")
+        self.assertEqual(r["status"],"REVIEW_ONLY_UNCERTAIN_INPUTS")
+
+    def test_previous_season_is_not_used_as_current_season(self):
+        old=[{**g,"date":g["date"].replace("2026","2025")} for g in games()]
+        r=run(history=old)
+        self.assertEqual(r["status"],"INSUFFICIENT_PREGAME_HISTORY")
 
     def test_future_and_same_day_games_excluded(self):
         future=games()+[{"id":"p1","team":"DEN","date":"2026-11-07","PTS":150,"MIN":34}]
@@ -85,7 +95,7 @@ class SanityShadowTests(unittest.TestCase):
                "comparisons":[{"player_id":"p1","player":"Player","team":"DEN",
                  "stat":"PTS","start":TIP,"game":"Denver Nuggets @ Indiana Pacers",
                  "combined_projection":28,"line":31.5,"minutes_research":{"expected_minutes":34},
-                 "injury_status":"AVAILABLE"}]}
+                 "injury_status":"AVAILABLE","injury_status_source":"OFFICIAL_NBA_REPORT"}]}
         before=capture(board,games(),[],CAPTURE)
         self.assertEqual(len(before),1)
         board["comparisons"][0]["combined_projection"]=5
