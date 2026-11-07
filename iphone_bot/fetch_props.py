@@ -73,19 +73,24 @@ def balanced_bookmaker_rows(bookmakers,event,max_outcomes):
             # four stat types. This prevents a few stars or alphabetical
             # provider ordering from consuming all available row slots.
             mixed=[]
-            player_queues={}
+            # Rotate across markets and then across players. Taking ALL
+            # players from Points in one pass used to exhaust small event
+            # caps before Rebounds/Assists/PRA were considered.
+            market_players={}
             for label,pairs in types.items():
                 by_player={}
                 for pair in pairs:
                     by_player.setdefault(pair[0]["player"].casefold(),deque()).append(pair)
-                player_queues[label]=by_player
-            while any(any(by_player.values()) for by_player in player_queues.values()):
+                market_players[label]=(by_player,deque(sorted(by_player)))
+            while any(names for _,names in market_players.values()):
                 for market in MARKETS:
                     label=market.replace("player_","").replace("_"," ").title()
-                    by_player=player_queues.get(label,{})
-                    for player in sorted(by_player):
-                        if by_player[player]:
-                            mixed.append(by_player[player].popleft())
+                    if label not in market_players:continue
+                    by_player,names=market_players[label]
+                    if not names:continue
+                    player=names.popleft()
+                    mixed.append(by_player[player].popleft())
+                    if by_player[player]:names.append(player)
             queues.append(deque(mixed))
     result=[]
     while queues and len(result)+2<=max_outcomes:
