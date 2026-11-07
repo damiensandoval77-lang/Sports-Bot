@@ -1353,11 +1353,11 @@ async function refresh(){
    const v4=report.defender_v4||{};
    const sims=report.simulation_audit||{};
    const calibrated=Object.entries(sims)
-     .filter(([_,r])=>r.status==="PREGAME_CHRONOLOGICAL_10K_SIM_AUDIT")
+     .filter(([_,r])=>r.status==="PREGAME_CHRONOLOGICAL_20K_SIM_AUDIT")
      .map(([name])=>name);
    node.textContent=total+" pregame research snapshots · "+completed+
      " settled reference markets · V4 paired tests: "+(v4.paired_markets||0)+
-     " · 10k simulation audits ready: "+(calibrated.join(", ")||"awaiting sample")+
+     " · 20k simulation audits ready: "+(calibrated.join(", ")||"awaiting sample")+
      ". Research-only; current Combined AI unchanged.";
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
