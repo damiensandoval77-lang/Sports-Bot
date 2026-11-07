@@ -43,6 +43,20 @@ class SanityShadowTests(unittest.TestCase):
         self.assertEqual(r["status"],"REVIEW_ONLY_UNCERTAIN_INPUTS")
         self.assertIn("EXPECTED_MINUTES_DISAGREE_WITH_RECENT",r["warnings"])
 
+    def test_volatile_minutes_blocks_shadow_even_when_mean_matches(self):
+        history=games()
+        for i,g in enumerate(history[-5:]):
+            g["MIN"]=[20,40,20,40,30][i]
+        r=run(history=history,minutes_context={"expected_minutes":30})
+        self.assertEqual(r["status"],"REVIEW_ONLY_UNCERTAIN_INPUTS")
+        self.assertIn("HIGH_RECENT_MINUTES_VOLATILITY",r["warnings"])
+
+    def test_stale_player_history_blocks_shadow(self):
+        r=run(captured_at="2026-11-10T16:00:00Z",
+              event_start="2026-11-11T01:00:00Z")
+        self.assertEqual(r["status"],"REVIEW_ONLY_UNCERTAIN_INPUTS")
+        self.assertIn("STALE_PLAYER_HISTORY",r["warnings"])
+
     def test_missing_minutes_stops_adjustment(self):
         self.assertEqual(run(minutes_context={})["status"],"REVIEW_ONLY_UNCERTAIN_INPUTS")
 
