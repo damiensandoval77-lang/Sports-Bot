@@ -32,6 +32,32 @@ class FetchPropsTests(unittest.TestCase):
         self.assertTrue(all(sum(row["direction"]==side for row in got)==10
                             for side in ("More","Less")))
 
+    def test_compact_feed_keeps_verified_pairs_from_all_games(self):
+        events=[fixture_event(i) for i in range(5)]
+        picks=[]
+        covered=[]
+        for event in events:
+            rows=fetch_props.balanced_bookmaker_rows(
+                [bookmaker([f"Player {event['id']}",f"Bench {event['id']}"])],
+                event,100)
+            picks.extend(rows)
+            covered.append({"game":event["away_team"]+" @ "+event["home_team"],
+                            "start":event["commence_time"],
+                            "two_sided_outcomes":len(rows)})
+        report={"is_live":True,"updated_at":"2026-11-07T00:00+00:00",
+                "slate_events_available":5,"slate_events_checked":5,
+                "slate_events_not_checked":0,"events_covered":covered,"picks":picks}
+        compact=fetch_props.compact_for_dashboard(report,max_pairs_per_event=1)
+        self.assertEqual(len(compact["events_covered"]),5)
+        self.assertEqual(len(compact["picks"]),10)
+        self.assertEqual({x["game"] for x in compact["picks"]},
+                         {x["game"] for x in covered})
+        self.assertTrue(all(x["published_two_sided_pairs"]==1
+                            for x in compact["events_covered"]))
+        self.assertTrue(all(compact["picks"][i]["direction"]=="More" and
+                            compact["picks"][i+1]["direction"]=="Less"
+                            for i in range(0,len(compact["picks"]),2)))
+
     def test_no_one_sided_markets_are_fabricated(self):
         event=fixture_event(0)
         book=bookmaker(["Player 1","Player 2"])
