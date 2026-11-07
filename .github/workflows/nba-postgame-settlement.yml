@@ -9,6 +9,8 @@ on:
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'docs/verified_postgame_boxscores.json'
       - 'docs/verified_wizards_hawks_boxscores.json'
+      - 'docs/verified_spurs_kings_boxscores.json'
+      - 'iphone_bot/tests/test_official_web_final_boxscores.py'
       - 'iphone_bot/missed_game_audit.py'
       - 'iphone_bot/projection_error_analysis.py'
       - 'iphone_bot/selection_quality_audit.py'
@@ -56,6 +58,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_combined_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_official_web_final_boxscores.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_final_boxscores.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_cbs_final_boxscores.py' -v
       - name: Verify actual immutable pregame captures exist
@@ -101,7 +104,7 @@ jobs:
           assert result['captured']==len(ledger)
           assert result['settled']==sum(r['status']=='SETTLED' for r in ledger)
           assert all(utc(r['captured_at'])<utc(r['event_start']) for r in ledger if r['status']!='INVALID_LATE_CAPTURE')
-          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED','FANTASYDATA_FINAL_CROSSCHECKED','CBS_SPORTS_LIVE_FINAL')
+          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED','FANTASYDATA_FINAL_CROSSCHECKED','CBS_SPORTS_LIVE_FINAL','NBA_OFFICIAL_WEB_FINAL_CROSSCHECKED')
                      and isinstance(r.get('actual'),(int,float))
                      for r in ledger if r['status']=='SETTLED')
           print('VALIDATED SETTLEMENT:',result['settled'],'settled,',result['pending'],'pending')
