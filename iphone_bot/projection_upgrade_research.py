@@ -480,35 +480,54 @@ def grade_opportunity_shadows(ledger,paper_rows):
             "live_applied":False,"eligible_for_live_promotion":False}
 
 def grade_sanity_shadow(ledger,paper_rows):
-    """Forward-only paired audit: compare frozen shadow to the same settled markets."""
+    """Prospective paired MAE, separating actual adjustments from copied forecasts.
+
+    The earliest immutable pregame observation wins. Old records cannot be
+    retroactively reconstructed as predictions. Pending, uncertain and unchanged
+    estimates are reported, never presented as evidence of uplift.
+    """
     actuals={}
-    for row in finished_unique(paper_rows):
+    for paper in finished_unique(paper_rows):
         try:
-            key=(utc(row["event_start"]).isoformat(),str(row["player_id"]),row["market"])
-            actuals[key]=float(row["actual"])
+            key=(utc(paper["event_start"]).isoformat(),
+                 str(paper["player_id"]),paper["market"])
+            if paper.get("status")=="SETTLED":
+                actuals[key]=float(paper["actual"])
         except (KeyError,ValueError,TypeError):continue
     seen=set()
     matched=defaultdict(list)
-    blocked=Counter()
+    adjusted=defaultdict(list)
+    captured=Counter()
+    pending=Counter()
+    excluded=Counter()
     for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
         info=row.get("sanity_shadow_v1")
         if not isinstance(info,dict):continue
         try:
             event=utc(row["event_start"])
-            if utc(row["captured_at"])>=event:continue
+            if utc(row["captured_at"])>=event:
+                excluded["late_capture"]+=1
+                continue
             key=(event.isoformat(),str(row["player_id"]),row["market"])
             if key in seen:continue
             seen.add(key)
-            if key not in actuals:continue
+            kind=str(info.get("status","UNKNOWN"))
+            captured[kind]+=1
+            if key not in actuals:
+                pending[kind]+=1
+                continue
             candidate=valid(info.get("shadow_projection"))
             baseline=valid(row.get("combined_projection"))
             if candidate is None or baseline is None:
-                blocked[str(info.get("status","UNKNOWN"))]+=1
+                excluded[kind]+=1
                 continue
             actual=actuals[key]
-            matched[row["market"]].append((
-                abs(candidate-actual),abs(baseline-actual),
-                event.astimezone(ZoneInfo("America/New_York")).date().isoformat()))
+            date=event.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+            pair=(abs(candidate-actual),abs(baseline-actual),date)
+            matched[row["market"]].append(pair)
+            # Unchanged projections are controls, not adjusted-shadow victories.
+            if kind=="SHADOW_CANDIDATE_UNVALIDATED" and candidate!=baseline:
+                adjusted[row["market"]].append(pair)
         except (ValueError,KeyError,TypeError):continue
     def score(rows):
         n=len(rows)
@@ -517,9 +536,16 @@ def grade_sanity_shadow(ledger,paper_rows):
                 "shadow_mae":round(sum(r[0] for r in rows)/n,4) if n else None,
                 "combined_mae":round(sum(r[1] for r in rows)/n,4) if n else None}
     allrows=[v for group in matched.values() for v in group]
+    changed=[v for group in adjusted.values() for v in group]
     return {"status":"UNVALIDATED_PREGAME_SANITY_SHADOW",
-            "overall":score(allrows),"by_market":{m:score(matched[m]) for m in MARKETS},
-            "excluded_uncertain_by_status":dict(blocked),
+            "captured_independent_markets":sum(captured.values()),
+            "captured_by_status":dict(captured),
+            "pending_by_status":dict(pending),
+            "overall":score(allrows),
+            "adjusted_only":score(changed),
+            "by_market":{m:score(matched[m]) for m in MARKETS},
+            "adjusted_by_market":{m:score(adjusted[m]) for m in MARKETS},
+            "excluded_uncertain_by_status":dict(excluded),
             "prospective_validation_needed":True,
             "live_applied":False,"accuracy_gain_established":False}
 

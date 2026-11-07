@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/sanity_shadow_research.py'
+      - 'iphone_bot/tests/test_sanity_shadow_research.py'
       - 'iphone_bot/opportunity_backtest.py'
       - 'iphone_bot/selection_gate_shadow.py'
       - 'iphone_bot/assist_shadow_v1.py'
@@ -14,7 +16,7 @@ on:
       - '.github/workflows/nba-projection-upgrade-research.yml'
   workflow_dispatch:
   workflow_run:
-    workflows: ["Publish trained NBA AI props for every available game"]
+    workflows: ["Publish trained NBA AI props for every available game", "Settle saved NBA props using verified final player box scores"]
     types: [completed]
   schedule:
     - cron: '17 12 * * *'
@@ -37,8 +39,9 @@ jobs:
           python-version: '3.11'
       - name: Verify pregame isolation, injury dates and calibration
         run: |
-          python -m py_compile iphone_bot/projection_upgrade_research.py
+          python -m py_compile iphone_bot/projection_upgrade_research.py iphone_bot/sanity_shadow_research.py
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_sanity_shadow_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selection_gate_shadow.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_shadow_v1.py' -v
@@ -57,6 +60,9 @@ jobs:
           assert r['live_combined_ai_unchanged'] is True
           assert r['live_simulated_hit_percentages_unchanged'] is True
           assert r['defender_v4']['v4_live_applied'] is False
+          assert r['sanity_shadow_v1']['accuracy_gain_established'] is False
+          assert r['sanity_shadow_v1']['live_applied'] is False
+          assert r['sanity_shadow_v1']['adjusted_only']['paired_markets'] <= r['sanity_shadow_v1']['overall']['paired_markets']
           assert all(v['changes_live_probabilities'] is False for v in r['simulation_audit'].values())
           print('Research records:',r['locked_samples'],'settled:',r['settled_independent_paper_markets'])
           PY

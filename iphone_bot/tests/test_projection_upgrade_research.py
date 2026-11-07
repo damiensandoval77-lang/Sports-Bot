@@ -91,6 +91,45 @@ class ResearchTests(unittest.TestCase):
                          "REVIEW_ONLY_UNCERTAIN_INPUTS")
         self.assertEqual(grade_sanity_shadow(nofeed,actual)["overall"]["paired_markets"],0)
 
+    def test_sanity_shadow_coverage_separates_adjustments_from_copies(self):
+        def rec(pid,kind,candidate,base=25,event=START):
+            return {"status":"PENDING","player_id":str(pid),"team":"BOS",
+                    "market":"PTS","event_start":event,"captured_at":NOW,
+                    "combined_projection":base,"sanity_shadow_v1":{
+                      "status":kind,"shadow_projection":candidate}}
+        originals=[
+            rec("1","SHADOW_CANDIDATE_UNVALIDATED",27),
+            rec("2","NO_LARGE_DEVIATION",25),
+            rec("3","REVIEW_ONLY_UNCERTAIN_INPUTS",None),
+            rec("4","SHADOW_CANDIDATE_UNVALIDATED",26),
+            rec("5","SHADOW_CANDIDATE_UNVALIDATED",28)
+        ]
+        finals=[{"status":"SETTLED","event_start":START,
+                 "captured_at":NOW,"player_id":pid,"market":"PTS",
+                 "original_projection":25.,"line":23.5,"actual":actual}
+                for pid,actual in (("1",28.),("2",23.),("3",24.),("4",29.))]
+        result=grade_sanity_shadow(originals,finals)
+        self.assertEqual(result["captured_independent_markets"],5)
+        self.assertEqual(result["overall"]["paired_markets"],3)
+        self.assertEqual(result["adjusted_only"]["paired_markets"],2)
+        self.assertEqual(result["pending_by_status"]["SHADOW_CANDIDATE_UNVALIDATED"],1)
+        self.assertEqual(result["excluded_uncertain_by_status"]["REVIEW_ONLY_UNCERTAIN_INPUTS"],1)
+        self.assertEqual(result["overall"]["distinct_game_dates"],1)
+        self.assertFalse(result["accuracy_gain_established"])
+        again=grade_sanity_shadow(originals+[dict(originals[0])],finals)
+        self.assertEqual(again["adjusted_only"],result["adjusted_only"])
+
+    def test_missing_legacy_sanity_field_not_rebuilt_after_tipoff(self):
+        row={"status":"PENDING","player_id":"1","team":"BOS",
+             "market":"PTS","event_start":START,"captured_at":NOW,
+             "combined_projection":25}
+        outcomes=[{"status":"SETTLED","event_start":START,
+                   "captured_at":NOW,"player_id":"1","market":"PTS",
+                   "original_projection":25,"line":21.5,"actual":30}]
+        result=grade_sanity_shadow([row],outcomes)
+        self.assertEqual(result["captured_independent_markets"],0)
+        self.assertEqual(result["overall"]["paired_markets"],0)
+
     def test_no_simulations_without_settled_prior_residuals(self):
         info=research_simulations([])
         for stat in ("PTS","REB","AST","PRA"):
