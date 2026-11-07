@@ -46,9 +46,9 @@ class ShadowCaptureTests(unittest.TestCase):
         prediction={"status":"RESEARCH_FORECAST","projection":6.2,
                     "over_probability":0.68,"push_probability":0.,
                     "latest_prior_date":"2026-11-06","simulations":20000}
-        with patch("iphone_bot.assist_v2_shadow_capture.histories",return_value={}), \\
-             patch("iphone_bot.assist_v2_shadow_capture.opportunity",return_value={"expected_minutes":30}), \\
-             patch("iphone_bot.assist_v2_shadow_capture.forecast",return_value=prediction):
+        with (patch("iphone_bot.assist_v2_shadow_capture.histories",return_value={}),
+              patch("iphone_bot.assist_v2_shadow_capture.opportunity",return_value={"expected_minutes":30}),
+              patch("iphone_bot.assist_v2_shadow_capture.forecast",return_value=prediction)):
             rows=capture(board,[],[],now="2026-11-07T18:10:00+00:00")
             repeated=capture(board,[],rows,now="2026-11-07T18:11:00+00:00")
         self.assertEqual(len(rows),1)
