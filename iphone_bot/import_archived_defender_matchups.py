@@ -109,6 +109,11 @@ def main():
         parquet_bytes=download()
         import io
         import pyarrow.parquet as pq
+        # Local-only artifact for same-game chronological research: don't
+        # commit raw tracking rows or overwrite a pregame model.
+        local_parquet=ROOT/"data/nba/research/matchups2025.parquet"
+        local_parquet.parent.mkdir(parents=True,exist_ok=True)
+        local_parquet.write_bytes(parquet_bytes)
         table=pq.read_table(io.BytesIO(parquet_bytes))
         # Provenance: game-level NBA V3 matchup rows list the roster player
         # (person_id) as defender and matchups_person_id as offensive matchup.
