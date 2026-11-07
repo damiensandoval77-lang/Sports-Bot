@@ -231,6 +231,11 @@ jobs:
           assert paper['method']=='PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY'
           assert paper['captured']>=paper['settled']+paper['pending']
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
+          print('NBA games with AI props:',len({x['game'] for x in d['comparisons']}))
+          print('NBA games checked for sportsbook prices:',
+                sportsbook.get('slate_events_checked'),
+                'from',sportsbook.get('slate_events_available'),
+                'provider-listed events')
           print('Locked paper picks:',paper['captured'],'Settled:',paper['settled'])
           PY
           git add docs/injury_context.json docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/odds_fetch_status.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json
