@@ -99,6 +99,16 @@ jobs:
           ODDS_MAX_EVENTS: '15'
           ODDS_OUTCOMES_PER_EVENT: '1000'
         run: python -u iphone_bot/fetch_props.py
+      - name: Publish sportsbook fetch failure diagnostics
+        if: failure()
+        run: |
+          if [ ! -f docs/odds_fetch_status.json ]; then exit 0; fi
+          git add docs/odds_fetch_status.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Report NBA sportsbook provider fetch failure'
+          git push origin HEAD:main || echo 'Could not publish provider failure diagnostics'
       - name: Preserve observed pregame sportsbook snapshots
         run: python -u iphone_bot/archive_observed_props.py
       - name: Audit archived bookmaker quotes against completed current games
@@ -223,7 +233,7 @@ jobs:
           print('Verified',len(d['comparisons']),'matched experimental comparisons')
           print('Locked paper picks:',paper['captured'],'Settled:',paper['settled'])
           PY
-          git add docs/injury_context.json docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json
+          git add docs/injury_context.json docs/prizepicks.json docs/ai_comparisons.json docs/data.json data/nba/odds/observed_props.csv docs/real_line_audit.json docs/odds_fetch_status.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json
           if git diff --cached --quiet; then
             echo "No new results"; exit 0
           fi
