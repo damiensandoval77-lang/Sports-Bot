@@ -7,6 +7,8 @@ on:
       - 'iphone_bot/capture_ai_board.py'
       - 'iphone_bot/paper_pick_pipeline.py'
       - 'iphone_bot/model_performance.py'
+      - 'iphone_bot/probability_audit.py'
+      - 'iphone_bot/tests/test_probability_audit.py'
       - '.github/workflows/nba-ai-record.yml'
   schedule:
     # Two daily checks; completed games are graded only after a five-hour
@@ -32,11 +34,12 @@ jobs:
           git checkout -B main origin/main
       - name: Verify grading and deduplicated per-model direction records
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_model_performance.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_accuracy_feedback.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v
       - name: Download actual NBA completed player-game box scores
         run: python -u iphone_bot/fetch_current_form.py
       - name: Grade locked AI projections against actual results
@@ -63,6 +66,13 @@ jobs:
               assert model['direction_eligible']<=model['observations']
               rate=model['direction_hit_rate']
               if rate is not None:assert 0<=rate<=1
+          calibration=result['probability_audit']
+          assert calibration['original_model_only'] is True
+          assert calibration['no_live_calibration_applied'] is True
+          assert calibration['overall']['sample_size']<=perf['models']['original']['direction_eligible']
+          assert set(calibration['by_stat'])=={'PTS','REB','AST','PRA'}
+          assert sum(bin['sample_size'] for bin in calibration['bins'])==calibration['overall']['sample_size']
+          print('Original probability calibration observations:',calibration['overall']['sample_size'])
           print('Settled unique player/game/stat markets:',perf['independent_settled_markets'])
           print('Independent pending markets:',result['independent_pending_player_game_markets'])
           for key,m in perf['models'].items():
