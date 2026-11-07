@@ -7,6 +7,8 @@ observing game results. No money is wagered or assumed.
 """
 import json
 import math
+import re
+import unicodedata
 from datetime import datetime,timezone
 from pathlib import Path
 from collections import defaultdict
@@ -121,31 +123,50 @@ def snapshot(comparisons,generated_at,existing=None):
     rows.sort(key=lambda x:(x["event_start"],x["player"],x["market"],x["bookmaker"],x["captured_at"]))
     return rows
 
+def strict_player_name(value):
+    """Compare complete player names, allowing only casing, accents and punctuation."""
+    ascii_name=unicodedata.normalize("NFKD",str(value or "")).casefold()
+    ascii_name="".join(x for x in ascii_name if not unicodedata.combining(x))
+    return re.sub(r"[^a-z0-9]","",ascii_name)
+
+
 def settle(rows,completed_games,now=None):
     """Grade ONLY locked pregame snapshots against exact completed player games."""
     now=utc(now or datetime.now(timezone.utc).isoformat())
     by_id=defaultdict(list)
+    by_name=defaultdict(list)
     for g in completed_games:
-        by_id[(str(g["id"]),str(g["date"]))].append(g)
+        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL"):
+            if g.get("final_confirmed") is True:
+                key=(strict_player_name(g.get("player")),str(g.get("date")))
+                if key[0]:by_name[key].append(g)
+        elif "id" in g and "date" in g:
+            by_id[(str(g["id"]),str(g["date"]))].append(g)
     result=[]
     for original in rows:
         r=dict(original)
         if r["status"]!="PENDING":
             result.append(r);continue
         start=utc(r["event_start"])
-        # Avoid interpreting partial in-progress box scores as final. The third
-        # party feed contains completed logs but a 5h buffer adds protection.
-        if now.timestamp()-start.timestamp()<5*3600:
-            result.append(r);continue
         if utc(r["captured_at"])>=start:
             r["status"]="INVALID_LATE_CAPTURE"
             result.append(r);continue
+        age=(now-start).total_seconds()
         gameday=start.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date().isoformat()
-        candidates=[g for g in by_id.get((str(r["player_id"]),gameday),[])
-                    if g.get("team")==r["team"] and g.get("opponent") in [
-                        # Need opposing roster team verification before settlement.
-                        gteam for gteam in expected_opponents(r["game"],r["team"])]]
-        if len(candidates)!=1:
+        opponents=expected_opponents(r["game"],r["team"])
+        # Direct NBA/ESPN rows are usable only when the game is explicitly
+        # FINAL and three hours have passed from scheduled tipoff.
+        # CSV rows retain the more conservative five-hour threshold.
+        direct=[g for g in by_name.get((strict_player_name(r["player"]),gameday),[])
+                if g.get("team")==r["team"] and g.get("opponent") in opponents
+                and g.get("final_confirmed") is True]
+        csv=[g for g in by_id.get((str(r["player_id"]),gameday),[])
+             if g.get("team")==r["team"] and g.get("opponent") in opponents]
+        if age>=3*3600 and len(direct)==1:
+            candidates=direct
+        elif age>=5*3600 and len(csv)==1:
+            candidates=csv
+        else:
             result.append(r);continue
         try:
             game=candidates[0]
@@ -170,6 +191,8 @@ def settle(rows,completed_games,now=None):
         except (ValueError,TypeError,KeyError,OverflowError):
             result.append(r);continue
         r.update({"status":"SETTLED","settled_at":now.isoformat(),
+                  "settlement_source":game.get("source","HISTORICAL_CSV_COMPLETED_GAME"),
+                  "source_game_id":game.get("source_game_id"),
                   "actual":actual,"result":"PUSH" if outcome=="PUSH" else ("WIN" if outcome==r["side"] else "LOSS"),
                   "paper_profit_units":round(profit,6)})
         result.append(r)
@@ -264,8 +287,11 @@ def main():
     # timestamp before tipoff. Never reconstruct historical locks here.
     games_path=ROOT/"data/nba/current/current_games.json"
     rows=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
-    if games_path.exists():
-        rows=settle(rows,json.loads(games_path.read_text()))
+    completed=json.loads(games_path.read_text()) if games_path.exists() else []
+    direct_path=ROOT/"data/nba/current/final_boxscores.json"
+    if direct_path.exists():
+        completed.extend(json.loads(direct_path.read_text()))
+    rows=settle(rows,completed)
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
     source_path=ROOT/"docs/current_form.json"
     source=json.loads(source_path.read_text()) if source_path.exists() else None
