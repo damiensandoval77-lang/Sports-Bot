@@ -1,0 +1,35 @@
+name: Validate Sports-Bot dashboard navigation
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/index.html'
+      - '.github/workflows/dashboard-ui-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dashboard_ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript and horizontal game strip
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('docs/index.html').read_text()
+          for feature in (
+              'id="game-strip"', 'id="game-strip-count"',
+              'id="game-strip-note"', 'class="game-strip"',
+              'scroll-snap-type:x proximity',
+              'function renderGameStrip()', 'function setGameFilter(game)',
+              'aria-pressed', 'renderSchedulePlayers();',
+              'renderAI();', 'renderOdds();'):
+              assert feature in html, f'Missing dashboard feature: {feature}'
+          assert html.index('id="game-strip"')<html.index('class="summary dashboard-summary"')
+          script=html.split('<script>',1)[1].split('</script>',1)[0]
+          Path('/tmp/sports-bot-game-strip.js').write_text(script)
+          print('Game strip and filters verified')
+          PY
+          node --check /tmp/sports-bot-game-strip.js
