@@ -261,7 +261,8 @@ def evaluate(box_games,def_rows):
     team_rotation=collections.defaultdict(lambda:collections.defaultdict(list))
     defense=collections.defaultdict(lambda:{"two_a":0.,"two_m":0.,
                                              "three_a":0.,"three_m":0.})
-    pair_hist=collections.defaultdict(lambda:{"poss":0.,"two_a":0.,"two_m":0.,
+    pair_hist=collections.defaultdict(lambda:{"poss":0.,"switches":0.,
+                                               "two_a":0.,"two_m":0.,
                                                "three_a":0.,"three_m":0.})
     base_error=def_error=0.
     h2h_base_error=h2h_error=0.
@@ -353,6 +354,8 @@ def evaluate(box_games,def_rows):
             # team, never attribute old-team direct assignments to a new one.
             if pair.get("def_team") not in (None,r["def_team"]):
                 pair.clear()
+                pair.update({"poss":0.,"switches":0.,"two_a":0.,
+                             "two_m":0.,"three_a":0.,"three_m":0.})
             pair["def_team"]=r["def_team"]
             pair["last_seen"]=day
             pair["poss"]+=r["poss"]
