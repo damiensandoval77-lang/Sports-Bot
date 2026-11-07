@@ -13,6 +13,7 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "data.json"
+STATUS = ROOT / "docs" / "odds_fetch_status.json"
 BASE = "https://api.the-odds-api.com/v4/sports/basketball_nba"
 MARKETS = ("player_points", "player_rebounds", "player_assists", "player_points_rebounds_assists")
 MAX_EVENTS = min(20, max(1, int(os.environ.get('ODDS_MAX_EVENTS', '15'))))
@@ -96,10 +97,18 @@ def balanced_bookmaker_rows(bookmakers,event,max_outcomes):
         queues=remaining
     return result
 
+def save_status(status, **detail):
+    report={"generated_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+            "status":status,"provider":"The Odds API",
+            "old_lines_may_be_stale":status!="FETCHED",
+            "details":detail}
+    STATUS.write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
+
 def main():
     key = os.environ.get("ODDS_API_KEY", "").strip()
     if not key:
-        print("ODDS_API_KEY not set; leaving sample dashboard unchanged.")
+        save_status("MISSING_ODDS_API_KEY")
+        print("ODDS_API_KEY not set; retaining old sportsbook snapshot.")
         return
     try:
         events, _ = request("/events", key)
@@ -141,11 +150,20 @@ def main():
             "disclaimer": "Live sportsbook odds, NOT PrizePicks lines. No AI projections or win probabilities yet. Verify all lines before use.",
             "picks": picks[:MAX_EVENTS * MAX_OUTCOMES_PER_EVENT]}
         OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        save_status("FETCHED",available_events=len(upcoming),
+                    checked_events=inspected,remaining_credits=remaining,
+                    outcome_rows=len(picks),
+                    coverage=result["coverage_warning"])
         print(f"Published {len(result['picks'])} sportsbook outcomes from {inspected} events. Remaining credits: {remaining}")
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError, KeyError) as exc:
         # Preserve last successful dashboard rather than overwriting it with sample data.
-        if isinstance(exc, urllib.error.HTTPError):
-            print(f"Odds provider returned HTTP {exc.code}; leaving existing dashboard unchanged.")
+        code=exc.code if isinstance(exc,urllib.error.HTTPError) else None
+        save_status("PROVIDER_FAILED",error_type=type(exc).__name__,
+                    http_status=code,
+                    reason="Rate limited or unauthorized" if code in (401,402,403,429)
+                           else "Provider request failed or malformed")
+        if code is not None:
+            print(f"Odds provider returned HTTP {code}; leaving existing dashboard unchanged.")
         else:
             print(f"Odds update failed ({type(exc).__name__}); leaving existing dashboard unchanged.")
         raise SystemExit(1)
