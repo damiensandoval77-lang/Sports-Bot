@@ -69,7 +69,12 @@ def evaluate(rows):
        "baseline_weighted_brier":None,
        "defender_weighted_brier":None,
        "defender_brier_minus_baseline":None,
-       "defender_better_on_holdout":None}
+       "defender_better_on_holdout":None,
+       "minimum_brier_improvement_for_promotion":0.001,
+       "requires_no_absolute_shot_error_regression":True,
+       "statistically_significant":False,
+       "validated_for_live_use":False,
+       "promotion_gate":"NOT_ELIGIBLE_INDEPENDENT_POINTS_PROP_HOLDOUT_REQUIRED"}
     if len(games)<100:return result
     split=max(1,min(len(games)-1,int(.8*len(games))))
     train_ids=set(games[:split])
@@ -114,7 +119,11 @@ def evaluate(rows):
           baseline_weighted_brier=round(base_brier/total_fga,6),
           defender_weighted_brier=round(adj_brier/total_fga,6),
           defender_brier_minus_baseline=round((adj_brier-base_brier)/total_fga,6),
-          defender_better_on_holdout=adj_brier<base_brier)
+          defender_better_on_holdout=adj_brier<base_brier,
+          promotion_gate=("INSUFFICIENT_MEANINGFUL_SHOT_EFFICIENCY_GAIN" if
+                          (base_brier-adj_brier)/total_fga<0.001 or
+                          adj_abs>base_abs else
+                          "SHOT_EFFICIENCY_RESEARCH_POSITIVE_STILL_REQUIRES_POINTS_PROP_HOLDOUT"))
     return result
 
 
