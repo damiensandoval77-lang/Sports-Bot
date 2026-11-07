@@ -100,6 +100,35 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  .game-strip-shell{margin-bottom:6px}
  .dashboard-summary{margin-top:6px}
 }
+
+/* Compact three-number AI card: line / projection / empirical hit estimate. */
+.compact-prop .mainline{padding:14px 14px 12px}
+.compact-prop .compact-head{align-items:center}
+.compact-prop .compact-identity strong{font-size:16px;font-weight:800}
+.compact-prop .compact-identity .match{font-size:10px;line-height:1.45;color:#959595;margin-top:4px}
+.ai-market-name{font-size:11px;color:#c4c4c4;margin-top:11px;margin-bottom:6px;font-weight:650}
+.ai-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.ai-metric{background:#1c1c1c;border:1px solid #333;border-radius:10px;padding:10px 8px;min-width:0}
+.ai-metric-label{display:block;font-size:9px;font-weight:800;letter-spacing:.35px;color:#a0a0a0;line-height:1.35;min-height:24px}
+.ai-metric-value{display:block;font-size:24px;line-height:1.18;color:#f8f8f8;font-weight:850;letter-spacing:-.6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ai-metric.projection{background:#222;border-color:#4b4b4b}
+.ai-metric.chance{background:#202020;border-color:#464646}
+.ai-lean{display:flex;align-items:center;gap:9px;margin-top:10px;min-height:31px}
+.ai-lean-title{font-size:10px;color:#a9a9a9;font-weight:800;letter-spacing:.3px}
+.ai-lean-choice{border-radius:6px;padding:6px 10px;font-size:11px;font-weight:850;white-space:nowrap}
+.ai-lean-choice.over{background:#183c2f;color:#91e5b7}
+.ai-lean-choice.under{background:#433020;color:#ffcd95}
+.ai-lean-choice.neutral{background:#343434;color:#eee}
+.ai-lean-sub{margin-left:auto;color:#8c8c8c;font-size:10px;text-align:right}
+.compact-prop .compact-details summary{border-top:1px solid #2e2e2e;color:#bdbdbd;font-size:11px;padding:10px 14px}
+@media(max-width:520px){
+ .compact-prop .mainline{padding:12px 11px 10px}
+ .ai-metrics{gap:5px}
+ .ai-metric{padding:10px 6px}
+ .ai-metric-label{font-size:8px;letter-spacing:0;min-height:23px}
+ .ai-metric-value{font-size:21px}
+ .ai-lean-sub{font-size:9px}
+}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -258,27 +287,33 @@ function renderAI(){
   const shortStats={PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"};
   identity.append(node("strong","",p.player),
     node("div","match",p.team+" · "+formatTime(p.start)+" · "+p.game));
-  const side=primaryDirection(p),right=node("div","compact-right");
-  right.append(node("span","model-chance",validEstimate(p)?"Est. "+chance(p)+"*":"Probability N/A"));
-  head.append(identity,right);main.append(head);
-  const hero=node("div","prop-hero");
-  const market=node("div","prop-market");
-  market.append(node("div","prop-line-label","LIVE SPORTSBOOK LINE"));
-  market.append(node("div","prop-line-number",fmt(Number(p.line))));
-  market.append(node("div","prop-stat-name",shortStats[p.stat]||p.stat));
-  const signal=node("div","prop-signal");
-  signal.append(node("span","signal-title","AI DIRECTION"),
-    node("span","signal-choice "+sideClass(side),side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS":"NO LEAN"));
-  hero.append(market,signal);main.append(hero);
+  const side=primaryDirection(p);
+  head.append(identity);main.append(head);
+  // Exactly the original validated comparison values and chance calculation.
+  // This is presentation only: never substitute another projection/probability.
   const available=Number.isFinite(p.combined_projection);
-  const projection=node("div","compact-projections");
-  const single=node("div","compact-projection compact-final");
-  single.append(node("span","","Combined AI projection"),
-      node("strong","",fmt(available?p.combined_projection:Number(p.projection))));
-  projection.append(single);main.append(projection);
-  main.append(node("div","compact-caption",available?
-      (p.combined_model_count===2?"Two-model median":"Original-only fallback"):
-      "Older data · original AI"));
+  const projected=available?p.combined_projection:Number(p.projection);
+  const values=node("div","ai-metrics");
+  function metric(label,value,kind){
+   const tile=node("div","ai-metric"+(kind?" "+kind:""));
+   tile.append(node("span","ai-metric-label",label),
+               node("strong","ai-metric-value",value));
+   return tile;
+  }
+  values.append(
+   metric("SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
+   metric("AI PROJECTION",fmt(projected),"projection"),
+   metric("EST. HIT %",validEstimate(p)?chance(p):"N/A","chance")
+  );
+  main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
+  const lean=node("div","ai-lean");
+  lean.append(node("span","ai-lean-title","AI LEAN"),
+    node("span","ai-lean-choice "+sideClass(side),
+       side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS":"NO LEAN"),
+    node("span","ai-lean-sub",available?
+      (p.combined_model_count===2?"Combined two-model projection":"Original AI projection"):
+      "Original AI projection"));
+  main.append(lean);
   outer.append(main);
   const details=node("details","compact-details"),
         summary=node("summary","","View recent stats, sportsbook odds & analysis"),
