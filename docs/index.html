@@ -129,6 +129,17 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  .ai-metric-value{font-size:21px}
  .ai-lean-sub{font-size:9px}
 }
+
+.ai-record-scoreboard{background:#141414;border:1px solid #373737;border-radius:14px;padding:14px;margin:10px 0 14px}
+.ai-record-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.ai-record-top strong{font-size:12px;letter-spacing:.55px}
+.ai-record-top span{color:#9c9c9c;font-size:10px}
+.ai-record-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.ai-record-metrics>div{background:#202020;border:1px solid #383838;border-radius:10px;padding:10px 9px}
+.ai-record-metrics small{display:block;color:#a7a7a7;font-size:9px;min-height:26px}
+.ai-record-metrics strong{font-size:22px;line-height:1.3;font-weight:800;font-variant-numeric:tabular-nums}
+.ai-record-note{color:#9a9a9a;font-size:10px;margin-top:10px;line-height:1.45}
+@media(max-width:520px){.ai-record-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ai-record-metrics strong{font-size:21px}}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -161,6 +172,16 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="filters"><input id="form-search" aria-label="Search player form" placeholder="Search player…" autocomplete="off"><select id="form-stat" aria-label="Form stat"><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option><option>MIN</option></select><select id="form-sort" aria-label="Sort form"><option value="name">Player name</option><option value="avg">Highest L5</option></select></div><div class="source" id="form-source" style="display:none">Observed player form.</div><div class="board" id="form-board"><div class="empty">Loading current player form…</div></div></section>
 <section class="panel" id="tab-results">
 <div class="bar"><h2>AI performance · completed games</h2><small id="real-update">Awaiting grades</small></div>
+<div class="ai-record-scoreboard" aria-label="Combined AI verified direction record">
+  <div class="ai-record-top"><strong>COMBINED AI RECORD</strong><span>One player · game · stat = one call</span></div>
+  <div class="ai-record-metrics">
+    <div><small>Wins – Losses</small><strong id="ai-record-wl">0–0</strong></div>
+    <div><small>Hit rate</small><strong id="ai-record-hit">—</strong></div>
+    <div><small>Avg projection error</small><strong id="ai-record-mae">—</strong></div>
+    <div><small>Graded / Pending</small><strong id="ai-record-coverage">0 / 0</strong></div>
+  </div>
+  <div id="ai-record-description" class="ai-record-note">Pending games never count as losses. Ties at the sportsbook line are pushes.</div>
+</div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
 <div class="source" id="chronological-accuracy-feedback" aria-live="polite">Chronological AI accuracy feedback: awaiting verified completed-game observations.</div>
@@ -623,6 +644,20 @@ function renderModelPerformance(){
   target.replaceChildren(empty("Model comparison is being initialized. It will update with the next completed grading run."));
   return;
  }
+ const overallCombined=report.models?.combined;
+ const totalIndependent=report.independent_settled_markets??0;
+ const pendingUnique=paper?.pipeline_health?.pending_total??paper?.pending??0;
+ const wins=overallCombined?.direction_wins??0;
+ const losses=overallCombined?.direction_losses??0;
+ const pushes=overallCombined?.direction_pushes??0;
+ const hit=overallCombined?.direction_hit_rate;
+ $("ai-record-wl").textContent=wins+"–"+losses;
+ $("ai-record-hit").textContent=hit==null?"—":(100*hit).toFixed(1)+"%";
+ $("ai-record-mae").textContent=overallCombined?.mae==null?"—":fmt(overallCombined.mae);
+ $("ai-record-coverage").textContent=totalIndependent+" / "+pendingUnique+" offers pending";
+ $("ai-record-description").textContent="Combined AI, "+totalIndependent+
+  " unique completed player/game/stat markets · "+pushes+
+  " pushes. Hit rate = wins ÷ (wins + losses). Pending quotes aren't losses; sportsbook duplicates aren't extra wins.";
  const selectedMarket=$("perf-market").value;
  const feedback=paper?.accuracy_feedback;
  const feedbackSection=$("chronological-accuracy-feedback");
