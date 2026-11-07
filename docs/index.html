@@ -60,10 +60,11 @@
 <div id="injury-feed-health" class="notice" aria-live="polite">Checking official NBA injury-report availability…</div>
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
-<div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
+<div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
+<div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
 <div class="source">Combined AI projection is the midpoint of two models. *Percentage ranking still uses original-model experimental estimates, not validated combined hit rates. Expand for details.</div><div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
-<div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="source">Current two-sided sportsbook lines only. These are not PrizePicks lines.</div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
+<div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="source">Current two-sided sportsbook lines only. These are not PrizePicks lines.</div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
 <section class="panel" id="tab-form"><div class="bar"><h2>2026–27 form</h2><small id="form-total">—</small></div>
 <div class="filters"><input id="form-search" aria-label="Search player form" placeholder="Search player…" autocomplete="off"><select id="form-stat" aria-label="Form stat"><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option><option>MIN</option></select><select id="form-sort" aria-label="Sort form"><option value="name">Player name</option><option value="avg">Highest L5</option></select></div><div class="source" id="form-source">Observed performance, not an AI forecast. L5/L10 shown only with enough games.</div><div class="board" id="form-board"><div class="empty">Loading current player form…</div></div></section>
 <section class="panel" id="tab-results">
@@ -91,7 +92,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -181,13 +182,14 @@ function reasoningSentences(p,person){
 
 function renderAI(){
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
- const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&Date.parse(p.start)>Date.now());
+ const gameFilter=$("ai-game").value;
+ const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter)&&Date.parse(p.start)>Date.now());
  entries.sort((a,b)=>sort==="time"?Date.parse(a.start)-Date.parse(b.start):
   sort==="name"?a.player.localeCompare(b.player):
   sort==="edge"?Math.abs(b.difference)-Math.abs(a.difference):
   (validEstimate(b)?b.estimated_selected_probability:-1)-(validEstimate(a)?a.estimated_selected_probability:-1)||Math.abs(b.difference)-Math.abs(a.difference));
  $("ai-total").textContent=entries.length+" props";
- const list=entries.slice(0,60).map((p,index)=>{
+ const list=entries.slice(0,300).map((p,index)=>{
   const outer=node("article","prop compact-prop"),main=node("div","mainline");
   const head=node("div","compact-head"),identity=node("div","compact-identity");
   const shortStats={PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"};
@@ -416,8 +418,9 @@ function renderAI(){
 function groupOdds(picks){const groups=new Map();for(const x of picks){if(!x?.player||!Number.isFinite(Number(x.line))||!x.source||!S[x.stat])continue;const id=[norm(x.player),S[x.stat],x.line,x.source,x.game,x.start].join("|");if(!groups.has(id))groups.set(id,{player:x.player,stat:S[x.stat],line:Number(x.line),book:x.source,game:x.game,start:x.start,over:null,under:null});const r=groups.get(id);if(x.direction==="More")r.over=x.odds;else if(x.direction==="Less")r.under=x.odds;}return [...groups.values()].filter(x=>Number.isFinite(x.over)&&Number.isFinite(x.under))}
 function implied(odd){return odd>0?100/(odd+100):Math.abs(odd)/(Math.abs(odd)+100)}
 function renderOdds(){const q=norm($("odds-search").value),stat=$("odds-stat").value,book=$("odds-book").value;
-const shown=odds.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!book||p.book===book)&&Date.parse(p.start)>Date.now());
-$("odds-total").textContent=shown.length+" book lines";const nodes=shown.slice(0,60).map(p=>{const box=node("article","prop"),main=node("div","mainline"),head=node("div","head"),left=node("div");
+const gameFilter=$("odds-game").value;
+const shown=odds.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!book||p.book===book)&&(!gameFilter||p.game===gameFilter)&&Date.parse(p.start)>Date.now());
+$("odds-total").textContent=shown.length+" book lines";const nodes=shown.slice(0,300).map(p=>{const box=node("article","prop"),main=node("div","mainline"),head=node("div","head"),left=node("div");
 left.append(node("strong","",p.player+" · "+p.stat+" "+p.line),node("div","match",p.book+" · "+formatTime(p.start)+" · "+p.game));head.append(left,node("span","tag","SPORTSBOOK"));main.append(head);
 const a=implied(p.over),b=implied(p.under),total=a+b;appendValues(main,[["Over",price(p.over)],["Under",price(p.under)],["Over no-vig",Number.isFinite(total)?(100*a/total).toFixed(1)+"%":"—"]]);box.append(main);return box});
 $("odds-board").replaceChildren(...(nodes.length?nodes:[empty(oddsFresh?"No upcoming two-sided markets match these filters.":"Sportsbook prices are stale or unavailable.")]))}
@@ -640,11 +643,36 @@ async function refresh(){
  const [a,o,f,p,pp,inj,im,mv,hist,shot]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
-if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
-else {oddsFresh=false;odds=[]}
+if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){slateCoverage=o.value;oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
+else {oddsFresh=false;odds=[];slateCoverage=null}
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[];aiMetadata=null}
+const availableGames=[...(slateCoverage?.events_covered||[])].filter(x=>Date.parse(x.start)>Date.now());
+for(const [selectId,rows] of [["ai-game",ai],["odds-game",odds]]){
+ const selector=$(selectId),prior=selector.value;
+ const games=[...new Set([...availableGames.map(x=>x.game),...rows.map(x=>x.game)])].sort();
+ selector.replaceChildren(new Option("All games",""),...games.map(game=>new Option(game,game)));
+ selector.value=games.includes(prior)?prior:"";
+}
+const coverageNode=$("slate-coverage");
+if(slateCoverage && oddsFresh){
+ const available=slateCoverage.slate_events_available;
+ const checked=slateCoverage.slate_events_checked;
+ const listed=available==null?"unknown":available;
+ const active=availableGames.length;
+ const aiGames=new Set(ai.map(x=>x.game)).size;
+ const hidden=Number(slateCoverage.slate_events_not_checked||0);
+ coverageNode.textContent="Sportsbook provider listed "+listed+
+  " upcoming games; checked "+(checked??"unknown")+
+  " ("+active+" still upcoming). AI has valid priced props for "+aiGames+
+  " games and "+new Set(ai.map(x=>x.player_id+"|"+x.game)).size+
+  " unique player/game combinations. "+
+  (hidden?"Missing "+hidden+" event fetches due to budget or cap. ":"")+
+  "Select a matchup to see more players; markets without available two-sided lines cannot appear here.";
+}else{
+ coverageNode.textContent="Full-slate sportsbook coverage unavailable or stale. Missing games do not imply no NBA game is scheduled.";
+}
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
 injuryMinutesValidation=im.status==="fulfilled"&&im.value.status==="PREGAME_LOCKED_INJURY_MINUTES_RESEARCH"?im.value:null;
 minutesV2Published=mv.status==="fulfilled"&&mv.value?.is_research_only===true?mv.value:null;
@@ -701,8 +729,8 @@ const status=[];
   console.error("Sports-Bot render error",error);
  }
 }
-for(const control of ["ai-search","ai-stat","ai-sort"])$(control).addEventListener("input",renderAI);
-for(const control of ["odds-search","odds-stat","odds-book"])$(control).addEventListener("input",renderOdds);
+for(const control of ["ai-search","ai-stat","ai-sort","ai-game"])$(control).addEventListener("input",renderAI);
+for(const control of ["odds-search","odds-stat","odds-book","odds-game"])$(control).addEventListener("input",renderOdds);
 for(const control of ["form-search","form-stat","form-sort"])$(control).addEventListener("input",renderForm);
 $("perf-market").addEventListener("change",renderModelPerformance);
 for(const btn of document.querySelectorAll(".tab"))btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b===btn)));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="tab-"+btn.dataset.tab));});
