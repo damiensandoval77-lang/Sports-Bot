@@ -7,6 +7,8 @@ on:
       - 'iphone_bot/compare_live_models.py'
       - 'iphone_bot/capture_ai_board.py'
       - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/opportunity_backtest.py'
+      - 'iphone_bot/tests/test_opportunity_backtest.py'
       - 'iphone_bot/tests/test_projection_upgrade_research.py'
       - 'iphone_bot/tests/test_capture_ai_board.py'
       - '.github/workflows/nba-trained-ai-board.yml'
@@ -32,6 +34,7 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
       - name: Confirm actual current market coverage and quote freshness
