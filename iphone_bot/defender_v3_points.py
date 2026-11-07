@@ -28,7 +28,7 @@ except ImportError:
     from defender_matchup_v3 import ROOT
     from shot_profile_research import predict_points
     from import_archived_defender_matchups import PARQUET_URL,archive_minutes
-    from defender_v3_assignment import projected_assignment,assignment_points_scenario
+    from defender_v3_assignment import projected_assignment,assignment_points_scenario,assignment_points_v4_scenario
 
 MATCHUP_FILE=ROOT/"data/nba/research/matchups2025.parquet"
 PLAYER_FILE=ROOT/"data/nba/research/game_logs_2025-26.parquet"
