@@ -1,0 +1,86 @@
+name: Settle immutable NBA AI record from completed box scores
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/capture_ai_board.py'
+      - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/model_performance.py'
+      - '.github/workflows/nba-ai-record.yml'
+  schedule:
+    # Two daily checks; completed games are graded only after a five-hour
+    # post-tipoff buffer and exact player/team/opponent box-score validation.
+    - cron: '17 13,19 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prop-feed
+  cancel-in-progress: false
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Start with latest saved immutable ledger
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+      - name: Verify grading and deduplicated per-model direction records
+        run: |
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_model_performance.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_accuracy_feedback.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
+      - name: Download actual NBA completed player-game box scores
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Grade locked AI projections against actual results
+        run: python -u iphone_bot/paper_pick_pipeline.py
+      - name: Verify record invariants before publication
+        run: |
+          python - <<'PY'
+          import json
+          from iphone_bot.paper_pick_pipeline import identity,utc
+          rows=json.load(open('docs/paper_pick_ledger.json'))['records']
+          result=json.load(open('docs/paper_results.json'))
+          perf=result['performance']
+          assert len(rows)==len({identity(r) for r in rows})
+          assert all(r['status'] in ('SETTLED','PENDING','INVALID_LATE_CAPTURE') for r in rows)
+          assert result['captured']==len(rows)
+          assert result['settled']==sum(r['status']=='SETTLED' for r in rows)
+          assert result['pending']==sum(r['status']=='PENDING' for r in rows)
+          assert result['independent_player_game_markets']<=result['settled']
+          assert result['independent_pending_player_game_markets']<=result['pending']
+          assert perf['independent_settled_markets']==result['independent_player_game_markets']
+          assert set(perf['models'])=={'original','opponent_aware','combined'}
+          for model in perf['models'].values():
+              assert model['direction_eligible']==model['direction_wins']+model['direction_losses']
+              assert model['direction_eligible']<=model['observations']
+              rate=model['direction_hit_rate']
+              if rate is not None:assert 0<=rate<=1
+          print('Settled unique player/game/stat markets:',perf['independent_settled_markets'])
+          print('Independent pending markets:',result['independent_pending_player_game_markets'])
+          for key,m in perf['models'].items():
+              print(key,':',m['direction_wins'],'W',m['direction_losses'],'L',
+                    m['direction_pushes'],'pushes; hit rate',m['direction_hit_rate'],
+                    'MAE',m['mae'])
+          PY
+      - name: Publish verified NBA AI win-loss and projection errors
+        run: |
+          git fetch origin main
+          git add docs/paper_pick_ledger.json docs/paper_results.json docs/current_form.json
+          if git diff --cached --quiet; then echo 'No new boxscores'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Grade locked AI projections against completed NBA games'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
