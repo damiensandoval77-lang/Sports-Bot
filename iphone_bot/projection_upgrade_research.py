@@ -25,6 +25,11 @@ try:
 except ImportError:
     from opportunity_backtest import histories as opportunity_histories,opportunity as opportunity_forecast,candidate as opportunity_candidate
 
+try:
+    from .selection_gate_shadow import pregame_gate
+except ImportError:
+    from selection_gate_shadow import pregame_gate
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -132,6 +137,15 @@ def snapshot(board,injury,existing,at,game_history=None):
                     if estimated is not None and original_min is not None else None),
                 "source":"PREGAME_RECENT_PLAYER_GAMES_NOT_LINEUP_CONFIRMED"}
             all_statuses,status=official_injuries(injury,start,captured)
+            row["selection_gate"]=pregame_gate(
+                item["stat"],line,combined,original,
+                valid(item.get("shadow_projection")),
+                indexed.get((pid,row["team"]),[]),
+                opp,status)
+            if row["selection_gate"]["eligible"]:
+                counters["selection_gate_paper_eligible"]+=1
+            else:
+                counters["selection_gate_abstained"]+=1
             row["injury_report_status"]=status
             # Only teammates explicitly marked OUT with the correct verified
             # report game date may be used to label a conditional scenario.
@@ -294,6 +308,52 @@ def research_simulations(paper_rows):
     return report
 
 
+def grade_selection_gate(ledger,paper_rows):
+    """Prospective abstention effectiveness on frozen identical bookmaker lines.
+
+    Score only selections whose gate result was snapshotted before tipoff,
+    including abstentions, so we cannot cherry-pick or hide skipped losses.
+    """
+    outcomes={}
+    for r in finished_unique(paper_rows):
+        key=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])
+        outcomes[key]=(float(r["actual"]),float(r["line"]))
+    seen=set()
+    selected=[]
+    skipped=[]
+    for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
+        gate=row.get("selection_gate")
+        if not isinstance(gate,dict):continue
+        try:
+            if utc(row["captured_at"])>=utc(row["event_start"]):continue
+            key=(utc(row["event_start"]).isoformat(),str(row["player_id"]),row["market"])
+            if key in seen or key not in outcomes:continue
+            seen.add(key)
+            actual,line=outcomes[key]
+            forecast=valid(row.get("combined_projection"))
+            if forecast is None or forecast==line or actual==line:continue
+            decision={"date":utc(row["event_start"]).astimezone(ZoneInfo("America/New_York")).date().isoformat(),
+              "market":row["market"],
+              "win":int((forecast>line)==(actual>line))}
+            (selected if gate.get("eligible") is True else skipped).append(decision)
+        except (ValueError,KeyError,TypeError):continue
+    def stat(rows):
+        n=len(rows);wins=sum(x["win"] for x in rows)
+        return {"markets":n,"wins":wins,"losses":n-wins,
+           "hit_rate":round(wins/n,4) if n else None,
+           "distinct_game_dates":len({x["date"] for x in rows})}
+    return {"status":"PRETIP_ABSTENTION_RESEARCH_ONLY",
+      "selected":stat(selected),"abstained":stat(skipped),
+      "all_evaluated":stat(selected+skipped),
+      "by_market":{m:{"selected":stat([r for r in selected if r["market"]==m]),
+                        "abstained":stat([r for r in skipped if r["market"]==m])}
+                   for m in MARKETS},
+      "sufficient_prospective_validation":(
+         len(selected)>=200 and len({x["date"] for x in selected})>=10
+         and len(skipped)>=100),
+      "production_applied":False,"wagers_recommended":0,
+      "no_backfilling_older_game_gates":True}
+
 def grade_opportunity_shadows(ledger,paper_rows):
     """Only score candidate projections that were actually locked before tipoff.
 
@@ -379,6 +439,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
         "defender_v4":grade_shadow(ledger,paper_rows),
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
+        "selection_gate_shadow":grade_selection_gate(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
         "live_combined_ai_unchanged":True,
         "live_simulated_hit_percentages_unchanged":True,
@@ -414,6 +475,7 @@ def main():
             "defender_v4":grade_shadow(ledger,paper),
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
+            "selection_gate_shadow":grade_selection_gate(ledger,paper),
             "simulation_audit":research_simulations(paper),
             "live_combined_ai_unchanged":True,
             "live_simulated_hit_percentages_unchanged":True,
