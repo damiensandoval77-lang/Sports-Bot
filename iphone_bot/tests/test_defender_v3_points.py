@@ -2,7 +2,7 @@
 import unittest
 import pyarrow as pa
 from iphone_bot.defender_v3_points import (
-    load_player_games,load_defender_games,defender_adjustment,evaluate)
+    load_player_games,load_defender_games,defender_adjustment,head_to_head_adjustment,evaluate)
 
 
 class DefenderPointsTests(unittest.TestCase):
@@ -15,6 +15,22 @@ class DefenderPointsTests(unittest.TestCase):
         self.assertLess(pred,25)
         self.assertGreaterEqual(delta,-2)
         self.assertEqual(defender_adjustment(baseline,[(30,hard)])[1],None)
+
+    def test_head_to_head_exposure_requires_prior_defender_pair(self):
+        base={"expected_points":25.,"expected_2pa":12.,"expected_3pa":8.,
+              "expected_2p_pct":.52,"expected_3p_pct":.36}
+        defender={"two_a":80,"two_m":20,"three_a":40,"three_m":10}
+        rotated=[("21",30,defender),("22",30,defender),("23",15,defender)]
+        blank=head_to_head_adjustment(base,rotated,{},"10")
+        self.assertEqual(blank,(25.,None,0))
+        history={("10","21"):{"poss":60,"two_a":40,"two_m":10,
+                               "three_a":20,"three_m":5}}
+        estimate,shift,coverage=head_to_head_adjustment(base,rotated,history,"10")
+        self.assertEqual(coverage,1)
+        self.assertLess(estimate,25)
+        self.assertGreaterEqual(shift,-2)
+        other=head_to_head_adjustment(base,rotated,history,"999")
+        self.assertIsNone(other[1])
 
     def test_actual_points_is_independent_and_validated(self):
         table=pa.Table.from_pylist([
