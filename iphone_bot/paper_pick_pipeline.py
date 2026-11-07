@@ -155,14 +155,15 @@ def settle(rows,completed_games,now=None):
         gameday=start.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date().isoformat()
         opponents=expected_opponents(r["game"],r["team"])
         # Direct NBA/ESPN rows are usable only when the game is explicitly
-        # FINAL and three hours have passed from scheduled tipoff.
+        # FINAL and at least two hours have passed from scheduled tipoff.
+        # Final status comes from the verified provider, NOT the elapsed time.
         # CSV rows retain the more conservative five-hour threshold.
         direct=[g for g in by_name.get((strict_player_name(r["player"]),gameday),[])
                 if g.get("team")==r["team"] and g.get("opponent") in opponents
                 and g.get("final_confirmed") is True]
         csv=[g for g in by_id.get((str(r["player_id"]),gameday),[])
              if g.get("team")==r["team"] and g.get("opponent") in opponents]
-        if age>=3*3600 and len(direct)==1:
+        if age>=2*3600 and len(direct)==1:
             candidates=direct
         elif age>=5*3600 and len(csv)==1:
             candidates=csv
