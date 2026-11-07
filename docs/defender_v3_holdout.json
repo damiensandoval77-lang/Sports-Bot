@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T02:02:00.263256+00:00",
+  "generated_at": "2026-11-07T02:02:35.649258+00:00",
   "status": "HISTORICAL_DEFENDER_EFFICIENCY_HOLDOUT",
   "live_model_unchanged": true,
   "applied_to_live_ai": false,
@@ -19,6 +19,11 @@
   "defender_weighted_brier": 0.249976,
   "defender_brier_minus_baseline": -5e-06,
   "defender_better_on_holdout": true,
+  "minimum_brier_improvement_for_promotion": 0.001,
+  "requires_no_absolute_shot_error_regression": true,
+  "statistically_significant": false,
+  "validated_for_live_use": false,
+  "promotion_gate": "INSUFFICIENT_MEANINGFUL_SHOT_EFFICIENCY_GAIN",
   "source": "2025-26 independent historical NBA boxscore matchup archive",
   "historical_rows": 229747
 }
