@@ -7,7 +7,7 @@ import json
 from datetime import datetime,timezone
 from pathlib import Path
 try:
-    from .paper_pick_pipeline import LEDGER,RESULTS,FORM,ROOT,snapshot,summary,utc
+    from .paper_pick_pipeline import LEDGER,RESULTS,ROOT,snapshot,summary,utc
 except ImportError:
     from paper_pick_pipeline import LEDGER,RESULTS,ROOT,snapshot,summary,utc
 
