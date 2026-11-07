@@ -42,6 +42,21 @@ class ImportArchiveTests(unittest.TestCase):
         self.assertEqual(rows[0]["PARTIAL_POSS"],100.0)
         self.assertEqual(rows[0]["MATCHUP_FGM"],14.0)
 
+    def test_real_archived_nba_v3_column_names_and_minutes(self):
+        import pyarrow as pa
+        sample=[]
+        for i in range(100,220):
+            sample.append({"person_id":21,"matchups_person_id":i,
+                "partial_possessions":80.0,"matchup_minutes":"21:30",
+                "matchup_field_goals_attempted":22,
+                "matchup_field_goals_made":10,
+                "_season":2025,"_season_type":"rg"})
+        result=convert_table(pa.Table.from_pylist(sample))
+        self.assertEqual(len(result),120)
+        self.assertEqual(result[0]["DEF_PLAYER_ID"],"21")
+        self.assertEqual(result[0]["OFF_PLAYER_ID"],"100")
+        self.assertEqual(result[0]["MATCHUP_MIN"],21.5)
+
     def test_reject_playoff_or_leaking_season(self):
         import pyarrow as pa
         for season,kind in ((2026,"rg"),(2025,"po")):
