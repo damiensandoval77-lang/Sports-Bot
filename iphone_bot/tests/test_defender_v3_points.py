@@ -2,7 +2,7 @@
 import unittest
 import pyarrow as pa
 from iphone_bot.defender_v3_points import (
-    load_player_games,load_defender_games,defender_adjustment,head_to_head_adjustment,evaluate)
+    load_player_games,load_defender_games,defender_adjustment,head_to_head_adjustment,date_cluster_interval,evaluate)
 
 
 class DefenderPointsTests(unittest.TestCase):
@@ -78,6 +78,15 @@ class DefenderPointsTests(unittest.TestCase):
         tracked,rejected=load_defender_games(wrong,boxes)
         self.assertFalse(tracked)
         self.assertEqual(rejected.get("team_or_day_mismatch"),1)
+
+    def test_date_cluster_interval_reports_uncertainty_not_false_certainty(self):
+        self.assertIsNone(date_cluster_interval({"2026-01-01":[-1.0,10]}))
+        observations={f"2026-01-{i:02d}":[(-1 if i%2 else 1),1]
+                      for i in range(1,21)}
+        bounds=date_cluster_interval(observations)
+        self.assertEqual(len(bounds),2)
+        self.assertLess(bounds[0],0)
+        self.assertGreater(bounds[1],0)
 
     def test_insufficient_samples_fail_closed(self):
         self.assertEqual(evaluate([{"date":"2025-10-25"}],[])["status"],
