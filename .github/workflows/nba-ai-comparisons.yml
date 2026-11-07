@@ -135,6 +135,8 @@ jobs:
                 'checked:',sportsbook['slate_events_checked'],
                 'unavailable:',sportsbook['slate_events_not_checked'])
           assert d['status']=='EXPERIMENTAL_NON_CALIBRATED'
+          assert d['comparison_rows_published']==len(d['comparisons'])
+          assert d['comparison_rows_truncated']==0
           assert d['verified_current_matchups'] is True
           assert d['is_prizepicks'] is False
           assert all(x['sample_games']>=5 for x in d['comparisons'])
