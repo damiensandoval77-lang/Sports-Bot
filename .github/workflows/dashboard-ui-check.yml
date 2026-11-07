@@ -31,6 +31,14 @@ jobs:
               'setInterval(refreshScoresOnly,90000)'):
               assert feature in html, f'Missing dashboard feature: {feature}'
           assert html.index('id="game-strip"')<html.index('class="summary dashboard-summary"')
+          assert '--bg:#070707' in html
+          assert '<meta name="theme-color" content="#080808">' in html
+          for hidden in ('#slate-coverage','#full-nba-slate','#schedule-players',
+                         '.schedule-roster-control','#game-strip-note'):
+              assert hidden in html, f'Missing clutter-hiding rule: {hidden}'
+          assert 'id="ai-board"' in html and 'id="odds-board"' in html
+          assert 'model-chance' in html, 'Do not remove simulated hit percentage cards'
+
           script=html.split('<script>',1)[1].split('</script>',1)[0]
           Path('/tmp/sports-bot-game-strip.js').write_text(script)
           print('Game strip and filters verified')
