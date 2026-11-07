@@ -164,6 +164,31 @@ jobs:
           cbs_path=Path('docs/cbs_final_boxscores_status.json')
           cbs=json.loads(cbs_path.read_text()) if cbs_path.exists() else {}
           cbs_lines=cbs.get('matched_player_lines',0)
+          # An accumulated settled count from yesterday cannot prove that
+          # today's genuinely completed multi-player matchups were graded.
+          # Only flag stale multi-player groups: a single DNP/unknown stat
+          # should remain pending without causing an endless failure alert.
+          from collections import defaultdict
+          from datetime import datetime,timezone
+          from iphone_bot.paper_pick_pipeline import utc
+          now=datetime.now(timezone.utc)
+          pending=json.loads(Path('docs/paper_pick_ledger.json').read_text()).get('records',[])
+          stale=defaultdict(set)
+          for row in pending:
+              if row.get('status')!='PENDING':continue
+              try:
+                  start=utc(row['event_start'])
+                  if (now-start).total_seconds()<5*3600:continue
+                  stale[(row.get('game'),start.isoformat())].add(str(row.get('player_id')))
+              except (ValueError,TypeError,KeyError):continue
+          stale_multiplayer={game:len(players) for game,players in stale.items()
+                            if len(players)>=3}
+          if stale_multiplayer and not retrieved and not cbs_lines and errors:
+              print('ERROR: Stale mult-player matchups not graded despite completed-game window')
+              print('Backlog:',stale_multiplayer)
+              print('Official feed failures:',errors)
+              print('Old grades do not count as fresh grading evidence.')
+              raise SystemExit(1)
           if eligible and not retrieved and not cbs_lines and not cross_checked and not settled and errors:
               print('ERROR: Settlement blocked by upstream final-boxscore provider failures!')
               print('Pending matchups eligible for verification:',eligible)
