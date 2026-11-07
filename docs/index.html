@@ -889,11 +889,27 @@ async function refreshScoresOnly(){
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
-if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){slateCoverage=o.value;oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
-else {oddsFresh=false;odds=[];slateCoverage=null}
+// Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
+// as fallback only when it is newer and complete.
+const compactGood=compact.status==="fulfilled"&&
+ compact.value?.source==="THE_ODDS_API_VERIFIED_COMPACT_PLAYER_PROPS"&&
+ Array.isArray(compact.value.picks);
+const rawGood=o.status==="fulfilled"&&Array.isArray(o.value.picks);
+const feed=compactGood&&(!rawGood||
+ Date.parse(compact.value.updated_at)>=Date.parse(o.value.updated_at))?
+ compact.value:rawGood?o.value:null;
+if(feed){
+ slateCoverage=feed;oddsFresh=feed.is_live===true&&isRecent(feed.updated_at,6);
+ odds=oddsFresh?groupOdds(feed.picks):[];
+ window.lastOdds=feed.updated_at;
+ const books=[...new Set(odds.map(x=>x.book))].sort();
+ const select=$("odds-book"),saved=select.value;
+ select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));
+ select.value=books.includes(saved)?saved:"";
+}else {oddsFresh=false;odds=[];slateCoverage=null}
 oddsHealth=oh.status==="fulfilled"?oh.value:null;
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
