@@ -60,7 +60,9 @@ class FinalBoxscoreTests(unittest.TestCase):
             self.assertEqual(settle(locked,[{**row,**changed}],
                 "2026-11-13T07:00:00Z")[0]["status"],"PENDING")
         self.assertEqual(settle(locked,[row,row],
-            "2026-11-13T07:00:00Z")[0]["status"],"SETTLED")\n        self.assertEqual(settle(locked,[row,{**row,"AST":5}],\n            "2026-11-13T07:00:00Z")[0]["status"],"PENDING")
+            "2026-11-13T07:00:00Z")[0]["status"],"SETTLED")
+        self.assertEqual(settle(locked,[row,{**row,"AST":5}],
+            "2026-11-13T07:00:00Z")[0]["status"],"PENDING")
 
     def test_minutes_and_invalid_players_excluded(self):
         self.assertEqual(minutes("PT23M30S"),23.5)
@@ -115,7 +117,8 @@ class FinalBoxscoreTests(unittest.TestCase):
               "athletes":[{"athlete":{"displayName":"Sample Player"},
                            "stats":["30:12","5","4","26"]}]}]}]}}
         def request(url):
-            if url==NBA_SCOREBOARD:raise TimeoutError("The read operation timed out")\n            if url in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):raise TimeoutError("NBA schedule unavailable")
+            if url==NBA_SCOREBOARD:raise TimeoutError("The read operation timed out")
+            if url in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):raise TimeoutError("NBA schedule unavailable")
             if url.startswith(ESPN_SCORE):return {"events":[event]}
             if url.startswith(ESPN_BOX):return stats
             raise AssertionError(url)
