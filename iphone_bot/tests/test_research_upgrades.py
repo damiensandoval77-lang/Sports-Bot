@@ -89,10 +89,23 @@ class ResearchUpgradeTests(unittest.TestCase):
     def test_official_pdf_names_only_not_assumed_available(self):
         players=[{"player":"Payton Pritchard","player_id":"11","team":"BOS"},
                  {"player":"Jaylen Brown","player_id":"12","team":"BOS"}]
-        parsed=parse_rows("Boston Celtics Pritchard, Payton Questionable Injury/Illness - Eye\n",players)
+        parsed=parse_rows("11/07/2026 BOS@CHA Boston Celtics Pritchard, Payton Questionable Injury/Illness - Eye\n",players)
         self.assertEqual(len(parsed),1)
         self.assertEqual(parsed[0]["status"],"Questionable")
         self.assertNotIn("12",{x["player_id"] for x in parsed})
+
+    def test_official_pdf_rejects_status_without_a_game_date(self):
+        roster=[{"player":"Payton Pritchard","player_id":"11","team":"BOS"}]
+        # A PDF fragment or header can contain the right name and team
+        # without proving which game date the report applies to.
+        self.assertEqual(parse_rows(
+            "Boston Celtics Pritchard, Payton Out Injury/Illness",roster),[])
+        rows=parse_rows(
+            "Boston Celtics Pritchard, Payton Out "
+            "11/07/2026 BOS@CHA Boston Celtics Pritchard, Payton Questionable",roster)
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]["game_date"],"2026-11-07")
+        self.assertEqual(rows[0]["status"],"Questionable")
 
     def test_official_pdf_matches_team_and_correct_game_date(self):
         roster=[{"player":"Jaylen Williams","player_id":"101","team":"BOS"},
