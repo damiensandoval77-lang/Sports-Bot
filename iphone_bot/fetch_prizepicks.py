@@ -96,14 +96,14 @@ def clean(row,now,verified_live=False):
             "more_tier":picks.get("more"),"less_tier":picks.get("less"),
             "source":"independent_prizepicksapi_com","is_demo":False}
 
-def match(offer,comparison):
+def match(offer,comparison,now=None):
     """Require team + complete player name + stat + opponent + close start."""
     if norm(offer["player"])!=norm(comparison.get("player")):return False
     if offer["team"]!=str(comparison.get("team","")).upper():return False
     if offer["stat"]!=comparison.get("stat"):return False
     start=timeparse(comparison.get("start"))
     other=timeparse(offer.get("starts_at"))
-    if not start or start<=dt.datetime.now(dt.timezone.utc):return False
+    if not start or start<=(now or dt.datetime.now(dt.timezone.utc)):return False
     from iphone_bot.paper_pick_pipeline import expected_opponents
     verified=expected_opponents(comparison.get("game"),offer["team"])
     if not verified:return False
@@ -163,7 +163,7 @@ def publish(raw_pages,comparisons,now=None):
     matched=[]
     unmatched=0
     for comparison in comparisons:
-        suitable=[o for o in distinct.values() if match(o,comparison)]
+        suitable=[o for o in distinct.values() if match(o,comparison,now=now)]
         if not suitable:
             unmatched+=1
             continue
