@@ -264,6 +264,12 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 </div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
+<section class="prob-audit" aria-label="Combined direction probability validation">
+  <div class="prob-audit-top"><strong>COMBINED DIRECTION PROBABILITY CHECK</strong><small id="combined-prob-sample">Awaiting frozen estimates</small></div>
+  <div class="prob-audit-summary" id="combined-prob-summary">The displayed simulated estimate is not a calibrated probability for Combined AI. Future pregame-locked estimates will be tested against completed results.</div>
+  <div class="prob-audit-bars" id="combined-prob-bins"></div>
+  <div class="prob-audit-foot">Only pregame-frozen Combined direction proxies · no retrospective probability backfill · 100+ observations across 10 game dates required per band.</div>
+</section>
 <section class="prob-audit" aria-label="Original AI estimated probability accuracy">
   <div class="prob-audit-top"><strong>HIT % ACCURACY</strong><small id="prob-audit-sample">Awaiting results</small></div>
   <div class="prob-audit-summary" id="prob-audit-summary">Comparing saved Original AI percentages to actual completed games.</div>
@@ -434,9 +440,13 @@ function renderAI(){
   values.append(
    metric("SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
    metric("AI PROJECTION",fmt(projected),"projection"),
-   metric("EST. HIT %",validEstimate(p)?chance(p):"N/A","chance")
+   metric("SIM EST. %",validEstimate(p)?chance(p):"N/A","chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
+  const probabilityNote=node("div","match","Uncalibrated Original AI residual simulation · not verified Combined AI confidence");
+  probabilityNote.style.fontSize="10px";
+  probabilityNote.style.margin="2px 0 5px";
+  main.append(probabilityNote);
   const lean=node("div","ai-lean");
   lean.append(node("span","ai-lean-title","AI LEAN"),
     node("span","ai-lean-choice "+sideClass(side),
@@ -1229,6 +1239,30 @@ async function refreshScoresOnly(){
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
+ fetchJSON("combined_probability_audit.json").then(a=>{
+  const overall=a.overall||{}, n=overall.sample_size||0;
+  $("combined-prob-sample").textContent=n+" independent outcomes";
+  const summary=$("combined-prob-summary"),bands=$("combined-prob-bins");
+  summary.textContent=n?
+    "Original residual proxy for Combined AI direction: average estimate "+
+      ((overall.mean_proxy_probability||0)*100).toFixed(1)+"% vs actual "+
+      ((overall.observed_hit_rate||0)*100).toFixed(1)+"%. Research only; not calibrated.":
+    "No eligible historical frozen Combined-direction probability estimates yet. Simulated hit rates are not verified confidence.";
+  bands.replaceChildren();
+  for(const b of a.bands||[]){
+   const div=document.createElement("div");
+   div.className="error-review-row";
+   const l=document.createElement("span"),r=document.createElement("span");
+   l.textContent=b.label+" estimated · "+b.sample_size+" observations";
+   r.textContent=b.sample_size?
+       ((b.observed_hit_rate*100).toFixed(1)+"% hit · "+(b.reliable?"sample threshold met":"insufficient sample")):
+       "Awaiting results";
+   div.append(l,r);bands.append(div);
+  }
+ }).catch(()=>{
+  $("combined-prob-sample").textContent="No audit published";
+ });
+
  fetchJSON("opportunity_backtest.json").then(r=>{
   const n=$("opportunity-review-summary"),cells=$("opportunity-review-market");
   const v=r.overall||{};
