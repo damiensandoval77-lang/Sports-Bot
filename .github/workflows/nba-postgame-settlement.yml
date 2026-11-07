@@ -100,3 +100,27 @@ jobs:
           done
           echo 'Failed to publish settlement after five safe retries'
           exit 1
+      - name: Flag ungraded completed matchups when all final boxscore providers fail
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          source=Path('docs/final_boxscores_status.json')
+          if not source.exists():
+              print('ERROR: final boxscore diagnostics missing')
+              raise SystemExit(1)
+          d=json.loads(source.read_text())
+          eligible=d.get('pending_matchups',0)
+          retrieved=d.get('retrieved_player_lines',0)
+          errors=d.get('errors') or []
+          if eligible and not retrieved and errors:
+              print('ERROR: Settlement blocked by upstream final-boxscore provider failures!')
+              print('Pending matchups eligible for verification:',eligible)
+              print('Provider errors:')
+              for err in errors:print(' -',err)
+              print('No real player outcomes have been invented or graded.')
+              raise SystemExit(1)
+          print('Settlement source health:',d.get('status'),'eligible:',eligible,
+                'final player rows:',retrieved)
+          PY
