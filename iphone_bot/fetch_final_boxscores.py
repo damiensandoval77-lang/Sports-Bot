@@ -27,6 +27,8 @@ STATUS=ROOT/"docs/final_boxscores_status.json"
 ET=ZoneInfo("America/New_York")
 NBA_SCOREBOARD="https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json"
 NBA_BOX="https://cdn.nba.com/static/json/liveData/boxscore/boxscore_{}.json"
+NBA_SCHEDULE="https://cdn.nba.com/static/json/staticData/scheduleLeagueV2.json"
+NBA_SCHEDULE_ALT="https://cdn.nba.com/static/json/staticData/scheduleLeagueV2_1.json"
 ESPN_SCORE="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard"
 ESPN_BOX="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary"
 
@@ -187,6 +189,53 @@ def espn_boxscore_rows(event,summary):
     return rows
 
 
+def verified_schedule_ids(payload,pending):
+    """Find official NBA game IDs for exact scheduled date + opponents only.
+
+    The NBA schedule is a discovery source, never proof of a final score.
+    Each resolved boxscore must separately confirm gameStatus=3.
+    """
+    league=payload.get("leagueSchedule")
+    if not isinstance(league,dict):
+        raise ValueError("Invalid NBA season schedule")
+    season=str(league.get("seasonYear") or "")
+    if not season.startswith("2026"):
+        raise ValueError("NBA schedule is not for 2026-27")
+    matches={}
+    for block in league.get("gameDates",[]):
+        day=str(block.get("gameDate") or "")[:10]
+        for game in block.get("games",[]):
+            gid=str(game.get("gameId") or "")
+            if not re.fullmatch(r"00226\\d{5}",gid):continue
+            away=team(game.get("awayTeam",{}).get("teamTricode"))
+            home=team(game.get("homeTeam",{}).get("teamTricode"))
+            key=(day,away,home)
+            if key not in pending:continue
+            if key in matches and matches[key]!=gid:
+                raise ValueError("Ambiguous NBA game ID for matchup")
+            matches[key]=gid
+    return matches
+
+
+def final_schedule_boxscore(game_id,pending_key,request):
+    """Check identity and final status from the boxscore itself."""
+    box=request(NBA_BOX.format(game_id))
+    g=box.get("game") or {}
+    if str(g.get("gameId"))!=str(game_id) or g.get("gameStatus")!=3:
+        return []
+    day,away,home=pending_key
+    if (team(g.get("awayTeam",{}).get("teamTricode"))!=away or
+        team(g.get("homeTeam",{}).get("teamTricode"))!=home or
+        local_date(g.get("gameTimeUTC"))!=day):
+        raise ValueError("Official NBA boxscore identity mismatched schedule")
+    # Pass final headers from independently matched official boxscore.
+    event={"gameId":game_id,"gameStatus":3,
+           "gameTimeUTC":g["gameTimeUTC"],
+           "awayTeam":{"teamTricode":away},
+           "homeTeam":{"teamTricode":home}}
+    return nba_boxscore_rows(event,box)
+
+
 def pending_games(records,now=None):
     current=now or dt.datetime.now(dt.timezone.utc)
     games=set()
@@ -219,6 +268,7 @@ def gather(records,now=None,request=request_json):
     from_nba=[]
     from_espn=[]
     report={"pending_matchups":len(pending),"final_nba_games":0,
+            "final_schedule_discovered_nba_games":0,
             "final_espn_games":0,"retrieved_player_lines":0,"errors":[],
             "source":"NBA live CDN; ESPN completed boxscore fallback"}
     def needed(date,a,h):
@@ -244,6 +294,28 @@ def gather(records,now=None,request=request_json):
                 report["errors"].append("NBA boxscore unavailable: "+str(exc)[:140])
     except (ValueError,KeyError,TypeError,OSError) as exc:
         report["errors"].append("NBA scoreboard unavailable: "+str(exc)[:140])
+    # The live NBA scoreboard can time out on hosted runners or roll over to
+    # the next day. Discover historical IDs from the official season schedule,
+    # then read each actual final (gameStatus=3) NBA player boxscore.
+    remaining={k for k in pending if k not in nba_complete}
+    if remaining:
+        for endpoint in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):
+            try:
+                candidates=verified_schedule_ids(request(endpoint),remaining)
+                for key,gid in candidates.items():
+                    if key in nba_complete:continue
+                    try:
+                        rows=final_schedule_boxscore(gid,key,request)
+                        if not rows:continue
+                        from_nba.extend(rows)
+                        nba_complete.add(key)
+                        report["final_nba_games"]+=1
+                        report["final_schedule_discovered_nba_games"]+=1
+                    except (OSError,ValueError,KeyError,TypeError) as exc:
+                        report["errors"].append("NBA schedule-boxscore unavailable: "+str(exc)[:130])
+                break
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                report["errors"].append("NBA schedule unavailable: "+str(exc)[:130])
     # ESPN is a fallback for missed games (e.g. NBA daily scoreboard has rolled).
     for date in sorted(days):
         if all(key in nba_complete for key in pending if key[0]==date):continue
