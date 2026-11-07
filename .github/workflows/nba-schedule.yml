@@ -54,9 +54,14 @@ jobs:
           report=json.load(open('docs/nba_schedule.json'))
           assert report['status'] in ('THIRD_PARTY_NBA_SCHEDULE_ONLY',
                                      'PARTIAL_CACHED_SPORTSBOOK_SCHEDULE',
+                                     'PROVIDER_NBA_SCORES_PARTIAL_SLATE',
                                      'SCHEDULE_UNAVAILABLE')
           assert type(report['coverage_complete']) is bool
-          assert not report['coverage_complete'] if report['status']=='PARTIAL_CACHED_SPORTSBOOK_SCHEDULE' else True
+          if report['status'] in ('PARTIAL_CACHED_SPORTSBOOK_SCHEDULE',
+                                  'PROVIDER_NBA_SCORES_PARTIAL_SLATE'):
+              assert report['coverage_complete'] is False
+          if report['status']=='PROVIDER_NBA_SCORES_PARTIAL_SLATE':
+              assert report['source']=='The Odds API NBA scores'
           assert report['has_sportsbook_props'] is False
           assert report['has_verified_player_availability'] is False
           assert len(report['games'])==report['total_games']
