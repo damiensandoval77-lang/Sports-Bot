@@ -1,5 +1,11 @@
 name: Assist V2 pregame shadow capture and verified settlement
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/assist_v2_*.py'
+      - 'iphone_bot/tests/test_assist_v2_*.py'
+      - '.github/workflows/assist-v2-shadow.yml'
   workflow_dispatch:
   schedule:
     # UTC, after regular board refreshes plus overnight final-boxscore checks.
