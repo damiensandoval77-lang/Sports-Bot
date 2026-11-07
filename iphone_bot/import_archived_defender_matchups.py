@@ -90,7 +90,16 @@ def main():
         "source_through":SOURCE_THROUGH,
         "live_model_unchanged":True}
     try:
-        rows,columns,raw_count=import_data(download())
+        parquet_bytes=download()
+        import io
+        import pyarrow.parquet as pq
+        table=pq.read_table(io.BytesIO(parquet_bytes))
+        # Expose column names even when validation rejects an unfamiliar schema.
+        report["source_columns"]=table.column_names
+        report["original_rows"]=table.num_rows
+        rows=convert_table(table)
+        columns=table.column_names
+        raw_count=table.num_rows
         SOURCE.parent.mkdir(parents=True,exist_ok=True)
         SOURCE.write_text(json.dumps({"season":"2025-26",
              "source_through":SOURCE_THROUGH,"source":"HUGGINGFACE_NBA_DATA_ARCHIVE_MATCHUPS",
