@@ -101,7 +101,7 @@ jobs:
           PY
       - name: Freeze every eligible AI comparison before scheduled tipoff
         run: python -u iphone_bot/capture_ai_board.py
-      - name: Lock opportunity, official injury, V4 shadow and 10k calibration research
+      - name: Lock opportunity, official injury, V4 shadow and 20k calibration research
         run: |
           python -u iphone_bot/projection_upgrade_research.py
           python - <<'PY'
