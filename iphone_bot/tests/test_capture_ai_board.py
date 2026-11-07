@@ -33,7 +33,7 @@ class CaptureTests(unittest.TestCase):
         self.assertEqual(later[0]["captured_at"],first[0]["captured_at"])
 
     def test_cannot_capture_after_tipoff_even_if_generated_earlier(self):
-        saved=capture(report(),[],"2026-11-13T00:31:00Z")
+        saved=capture(report("2026-11-13T00:29:00Z"),[],"2026-11-13T00:31:00Z")
         self.assertEqual(len(saved),0)
 
     def test_stale_or_future_timestamp_refused(self):
