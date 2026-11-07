@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T10:28:19.506659+00:00",
+  "generated_at": "2026-11-07T10:40:14.714239+00:00",
   "status": "REAL_SPORTSBOOK_QUOTES_PAPER_ONLY",
   "model": "PROVISIONAL_ORIGINAL",
   "method": "PRE_GAME_LOCKED_PROJECTION_REAL_BOOK_PRICE_PAPER_ONLY",
@@ -370,6 +370,248 @@
       },
       "interpretation": "Negative combined MAE change means smaller average error on the SAME games; it does not establish profitability or statistical significance.",
       "live_model_unchanged": true
+    },
+    "directional_diagnostics": {
+      "status": "RESEARCH_ONLY_NO_LIVE_CORRECTION",
+      "by_stat": {
+        "PTS": {
+          "distinct_event_dates": 1,
+          "models": {
+            "original": {
+              "observations": 75,
+              "signed_bias": 0.92,
+              "over_predictions": 38,
+              "under_predictions": 35,
+              "by_side": {
+                "OVER": {
+                  "wins": 23,
+                  "losses": 19,
+                  "hit_rate": 0.5476
+                },
+                "UNDER": {
+                  "wins": 19,
+                  "losses": 11,
+                  "hit_rate": 0.6333
+                }
+              }
+            },
+            "opponent_aware": {
+              "observations": 75,
+              "signed_bias": 0.907,
+              "over_predictions": 37,
+              "under_predictions": 37,
+              "by_side": {
+                "OVER": {
+                  "wins": 24,
+                  "losses": 20,
+                  "hit_rate": 0.5455
+                },
+                "UNDER": {
+                  "wins": 19,
+                  "losses": 12,
+                  "hit_rate": 0.6129
+                }
+              }
+            },
+            "combined": {
+              "observations": 75,
+              "signed_bias": 0.918,
+              "over_predictions": 38,
+              "under_predictions": 37,
+              "by_side": {
+                "OVER": {
+                  "wins": 24,
+                  "losses": 20,
+                  "hit_rate": 0.5455
+                },
+                "UNDER": {
+                  "wins": 19,
+                  "losses": 12,
+                  "hit_rate": 0.6129
+                }
+              }
+            }
+          }
+        },
+        "REB": {
+          "distinct_event_dates": 1,
+          "models": {
+            "original": {
+              "observations": 71,
+              "signed_bias": 0.199,
+              "over_predictions": 41,
+              "under_predictions": 29,
+              "by_side": {
+                "OVER": {
+                  "wins": 19,
+                  "losses": 22,
+                  "hit_rate": 0.4634
+                },
+                "UNDER": {
+                  "wins": 18,
+                  "losses": 11,
+                  "hit_rate": 0.6207
+                }
+              }
+            },
+            "opponent_aware": {
+              "observations": 71,
+              "signed_bias": 0.239,
+              "over_predictions": 41,
+              "under_predictions": 28,
+              "by_side": {
+                "OVER": {
+                  "wins": 19,
+                  "losses": 21,
+                  "hit_rate": 0.475
+                },
+                "UNDER": {
+                  "wins": 18,
+                  "losses": 12,
+                  "hit_rate": 0.6
+                }
+              }
+            },
+            "combined": {
+              "observations": 71,
+              "signed_bias": 0.219,
+              "over_predictions": 41,
+              "under_predictions": 28,
+              "by_side": {
+                "OVER": {
+                  "wins": 19,
+                  "losses": 22,
+                  "hit_rate": 0.4634
+                },
+                "UNDER": {
+                  "wins": 18,
+                  "losses": 12,
+                  "hit_rate": 0.6
+                }
+              }
+            }
+          }
+        },
+        "AST": {
+          "distinct_event_dates": 1,
+          "models": {
+            "original": {
+              "observations": 61,
+              "signed_bias": 0.426,
+              "over_predictions": 41,
+              "under_predictions": 20,
+              "by_side": {
+                "OVER": {
+                  "wins": 13,
+                  "losses": 24,
+                  "hit_rate": 0.3514
+                },
+                "UNDER": {
+                  "wins": 9,
+                  "losses": 15,
+                  "hit_rate": 0.375
+                }
+              }
+            },
+            "opponent_aware": {
+              "observations": 61,
+              "signed_bias": 0.39,
+              "over_predictions": 41,
+              "under_predictions": 20,
+              "by_side": {
+                "OVER": {
+                  "wins": 13,
+                  "losses": 23,
+                  "hit_rate": 0.3611
+                },
+                "UNDER": {
+                  "wins": 9,
+                  "losses": 15,
+                  "hit_rate": 0.375
+                }
+              }
+            },
+            "combined": {
+              "observations": 61,
+              "signed_bias": 0.402,
+              "over_predictions": 41,
+              "under_predictions": 20,
+              "by_side": {
+                "OVER": {
+                  "wins": 13,
+                  "losses": 24,
+                  "hit_rate": 0.3514
+                },
+                "UNDER": {
+                  "wins": 9,
+                  "losses": 15,
+                  "hit_rate": 0.375
+                }
+              }
+            }
+          }
+        },
+        "PRA": {
+          "distinct_event_dates": 1,
+          "models": {
+            "original": {
+              "observations": 66,
+              "signed_bias": 1.636,
+              "over_predictions": 36,
+              "under_predictions": 30,
+              "by_side": {
+                "OVER": {
+                  "wins": 15,
+                  "losses": 18,
+                  "hit_rate": 0.4545
+                },
+                "UNDER": {
+                  "wins": 16,
+                  "losses": 17,
+                  "hit_rate": 0.4848
+                }
+              }
+            },
+            "opponent_aware": {
+              "observations": 66,
+              "signed_bias": 1.708,
+              "over_predictions": 35,
+              "under_predictions": 31,
+              "by_side": {
+                "OVER": {
+                  "wins": 16,
+                  "losses": 17,
+                  "hit_rate": 0.4848
+                },
+                "UNDER": {
+                  "wins": 17,
+                  "losses": 14,
+                  "hit_rate": 0.5484
+                }
+              }
+            },
+            "combined": {
+              "observations": 66,
+              "signed_bias": 1.669,
+              "over_predictions": 35,
+              "under_predictions": 31,
+              "by_side": {
+                "OVER": {
+                  "wins": 17,
+                  "losses": 18,
+                  "hit_rate": 0.4857
+                },
+                "UNDER": {
+                  "wins": 16,
+                  "losses": 15,
+                  "hit_rate": 0.5161
+                }
+              }
+            }
+          }
+        }
+      },
+      "warning": "One-date directional patterns must not be trained into live picks."
     },
     "limitations": [
       "Models use their original pregame-locked predictions; no after-game model reruns.",
@@ -743,7 +985,7 @@
     "status": "WAITING_FOR_COMPLETED_PLAYER_LOGS",
     "boxscore_source_version": "2026-11-07",
     "latest_completed_player_game_date": "2026-11-06",
-    "source_last_checked_at": "2026-11-07T10:00:08.410073+00:00",
+    "source_last_checked_at": "2026-11-07T10:40:14.578530+00:00",
     "pending_total": 47,
     "pending_past_game_buffer": 47,
     "pending_over_48_hours": 0,
