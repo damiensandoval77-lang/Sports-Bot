@@ -20,7 +20,19 @@ class MissedGames(unittest.TestCase):
         x=record(status="SETTLED")
         report=inspect([x],now="2026-11-07T06:00:00Z")
         self.assertEqual(report["matchups"][0]["settled"],1)
-        self.assertEqual(report["matchups"][0]["diagnosis"],"AT_LEAST_ONE_VERIFIED_SETTLEMENT")
+        self.assertEqual(report["matchups"][0]["diagnosis"],"FULLY_SETTLED_VERIFIED_GAME")
+    def test_partial_game_is_not_marked_fully_settled(self):
+        completed=record(status="SETTLED")
+        pending=record()
+        pending["player_id"]="10"
+        result=inspect([completed,pending],now="2026-11-07T06:00:00Z")
+        match=result["matchups"][0]
+        self.assertEqual(match["settled"],1)
+        self.assertEqual(match["pending"],1)
+        self.assertEqual(match["pending_unique_players"],1)
+        self.assertEqual(match["diagnosis"],
+                         "PARTIALLY_SETTLED_MISSING_PLAYER_BOXES_OR_DNP")
+
     def test_empty_ledger_has_no_fake_historical_games(self):
         report=inspect([],now="2026-11-07T06:00:00Z")
         self.assertEqual(report["celtics_matchups"],[])
