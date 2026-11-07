@@ -29,6 +29,21 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_independent_pending_and_combined_record_excludes_duplicate_books(self):
+        from iphone_bot.model_performance import compute_performance
+        rows=snapshot([self.market()],"2026-11-12T20:00:00Z")
+        pending_report=summary(rows)
+        self.assertEqual(pending_report["pending"],2)
+        self.assertEqual(pending_report["independent_pending_player_game_markets"],1)
+        self.assertIsNone(pending_report["performance"]["models"]["combined"]["direction_hit_rate"])
+        graded=settle(rows,[self.game(23)],"2026-11-13T07:00:00Z")
+        finished=summary(graded)
+        self.assertEqual(finished["independent_player_game_markets"],1)
+        self.assertEqual(finished["independent_pending_player_game_markets"],0)
+        combined=finished["performance"]["models"]["combined"]
+        self.assertEqual(combined["direction_wins"]+combined["direction_losses"],1)
+        self.assertEqual(combined["observations"],1)
+
     def test_nonfinite_and_incomplete_boxscores_never_get_graded(self):
         rows=snapshot([self.market()],"2026-11-12T20:00:00Z")
         for bad in (dict(self.game(),MIN=0),
