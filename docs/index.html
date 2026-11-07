@@ -140,6 +140,23 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 .ai-record-metrics strong{font-size:22px;line-height:1.3;font-weight:800;font-variant-numeric:tabular-nums}
 .ai-record-note{color:#9a9a9a;font-size:10px;margin-top:10px;line-height:1.45}
 @media(max-width:520px){.ai-record-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ai-record-metrics strong{font-size:21px}}
+
+.prob-audit{background:#141414;border:1px solid #373737;border-radius:14px;padding:13px;margin:10px 0 16px}
+.prob-audit-top{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:10px}
+.prob-audit-top strong{font-size:12px;letter-spacing:.4px}
+.prob-audit-top small,.prob-audit-summary,.prob-audit-foot{font-size:10px;color:#ababab}
+.prob-audit-summary{line-height:1.5;margin-bottom:10px}
+.prob-audit-bars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.prob-audit-row{padding:8px;background:#1e1e1e;border:1px solid #363636;border-radius:9px;min-width:0}
+.prob-audit-row-label{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:11px}
+.prob-audit-row-label span,.prob-audit-empty{font-size:10px;color:#999}
+.prob-audit-track{position:relative;height:11px;border-radius:6px;margin:10px 0 7px;background:#323232}
+.prob-audit-predicted,.prob-audit-observed{position:absolute;left:0;height:5px;border-radius:4px}
+.prob-audit-predicted{top:0;background:#aeb4c0}
+.prob-audit-observed{bottom:0;background:#6fd7a1}
+.prob-audit-row-values,.prob-audit-foot{font-size:10px;color:#b1b1b1}
+.prob-audit-foot{margin-top:11px}
+@media(max-width:520px){.prob-audit-bars{grid-template-columns:1fr}}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -184,6 +201,12 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 </div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
+<section class="prob-audit" aria-label="Original AI estimated probability accuracy">
+  <div class="prob-audit-top"><strong>HIT % ACCURACY</strong><small id="prob-audit-sample">Awaiting results</small></div>
+  <div class="prob-audit-summary" id="prob-audit-summary">Comparing saved Original AI percentages to actual completed games.</div>
+  <div class="prob-audit-bars" id="prob-audit-bins"></div>
+  <div class="prob-audit-foot">Original AI probabilities only · Combined AI W–L above · 30+ independent results per band recommended.</div>
+</section>
 <div class="source" id="chronological-accuracy-feedback" aria-live="polite">Chronological AI accuracy feedback: awaiting verified completed-game observations.</div>
 <div class="source" id="minutes-v2-validation" aria-live="polite">Minutes V2 research: waiting for same-game chronological validation.</div>
 <div class="source" id="historical-minutes-validation" aria-live="polite">Four-season rotation and minutes benchmark: awaiting archived evaluation.</div>
@@ -738,8 +761,58 @@ function renderModelPerformance(){
  $("performance-caveat").textContent="Independent settled player/game/stat markets: "+report.independent_settled_markets+
  ". Model projections were saved before tipoff. Hit rate excludes pushes; paper ROI uses only valid pregame prices for that model's direction. Missing opposite-side odds are excluded, never assumed. Results are not actual wagers.";
 }
+function renderProbabilityAudit(){
+ const summaryNode=$("prob-audit-summary");
+ const countNode=$("prob-audit-sample");
+ const binsNode=$("prob-audit-bins");
+ const audit=paper?.probability_audit;
+ if(!audit||audit.status!=="DESCRIPTIVE_PROBABILITY_CALIBRATION_ONLY"){
+  countNode.textContent="Not published yet";
+  summaryNode.textContent="Awaiting saved pregame percentages and completed real NBA games.";
+  binsNode.replaceChildren();
+  return;
+ }
+ const overall=audit.overall;
+ const count=overall?.sample_size??0;
+ countNode.textContent=count+" independently graded";
+ if(!count){
+  summaryNode.textContent="No eligible settled predictions with a locked Original AI percentage yet.";
+  binsNode.replaceChildren();
+  return;
+ }
+ const expected=(100*overall.average_estimated_probability).toFixed(1);
+ const observed=(100*overall.observed_hit_rate).toFixed(1);
+ const gap=100*overall.calibration_gap;
+ summaryNode.textContent="Average predicted "+expected+"% · Actual hit rate "+observed+
+  "% · Gap "+(gap>0?"+":"")+gap.toFixed(1)+" pts · Brier "+overall.brier_score+
+  (audit.sufficient_overall_sample?"":" · Early sample");
+ const rows=(audit.bins||[]).map(bin=>{
+  const row=node("div","prob-audit-row");
+  const heading=node("div","prob-audit-row-label");
+  heading.append(node("strong","",bin.label),
+    node("span","",(bin.sample_size??0)+" graded"));
+  row.append(heading);
+  if(bin.sample_size){
+   const track=node("div","prob-audit-track");
+   const expectedBar=node("div","prob-audit-predicted");
+   const observedBar=node("div","prob-audit-observed");
+   expectedBar.style.width=(100*bin.average_estimated_probability)+"%";
+   observedBar.style.width=(100*bin.observed_hit_rate)+"%";
+   track.append(expectedBar,observedBar);
+   row.append(track,node("div","prob-audit-row-values",
+    (100*bin.average_estimated_probability).toFixed(0)+"% predicted · "+
+    (100*bin.observed_hit_rate).toFixed(0)+"% actual"+
+    (bin.sufficient_sample?"":" · small sample")));
+  }else{
+   row.append(node("span","prob-audit-empty","No results yet"));
+  }
+  return row;
+ });
+ binsNode.replaceChildren(...rows);
+}
 function renderPaper(){
  renderModelPerformance();
+ renderProbabilityAudit();
  if(!paper||paper.status!=="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"){
   $("real-explanation").textContent="The live paper ledger has not been published yet. It will store locked pregame predictions and actual completed NBA results.";
   return;
