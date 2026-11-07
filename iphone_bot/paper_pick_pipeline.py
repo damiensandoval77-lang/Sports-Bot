@@ -140,7 +140,7 @@ def settle(rows,completed_games,now=None):
     by_id=defaultdict(list)
     by_name=defaultdict(list)
     for g in completed_games:
-        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL","CBS_FINAL_VERIFIED","FANTASYDATA_FINAL_CROSSCHECKED","CBS_SPORTS_LIVE_FINAL"):
+        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL","CBS_FINAL_VERIFIED","FANTASYDATA_FINAL_CROSSCHECKED","CBS_SPORTS_LIVE_FINAL","NBA_OFFICIAL_WEB_FINAL_CROSSCHECKED"):
             if g.get("final_confirmed") is True:
                 key=(strict_player_name(g.get("player")),str(g.get("date")))
                 if key[0]:by_name[key].append(g)
@@ -178,7 +178,7 @@ def settle(rows,completed_games,now=None):
                 priority={"NBA_CDN_FINAL":0,"ESPN_FINAL":1,
                           "CBS_FINAL_VERIFIED":2,
                           "FANTASYDATA_FINAL_CROSSCHECKED":3,
-                          "CBS_SPORTS_LIVE_FINAL":4}
+                          "CBS_SPORTS_LIVE_FINAL":4,"NBA_OFFICIAL_WEB_FINAL_CROSSCHECKED":1}
                 direct=[min(direct,key=lambda g:priority.get(g.get("source"),99))]
             else:
                 direct=[]
@@ -401,6 +401,58 @@ def fantasydata_cross_checked_final(path):
         raise ValueError("Player scoring exceeds confirmed final")
     return rows
 
+def official_web_cross_checked_final(path):
+    """Verify a manually transcribed official NBA final player box score.
+
+    Require an official NBA game URL, independent corroboration, game identity,
+    finite played minutes, unique full player names, matching teams, and PRA.
+    This source is explicitly labeled manual official-web cross-check, not CDN.
+    """
+    if not path.exists():return []
+    payload=json.loads(path.read_text())
+    if payload.get("status")!="OFFICIAL_NBA_WEB_FINAL_MANUALLY_CROSS_CHECKED":
+        raise ValueError("Unverified official final boxscore")
+    gameid=str(payload.get("game_id",""))
+    url=str(payload.get("source_url",""))
+    check=str(payload.get("cross_check_url",""))
+    if (not gameid.isdigit() or len(gameid)!=10 or
+        not url.startswith("https://www.nba.com/") or
+        gameid not in url or
+        not check.startswith("https://www.basketusa.com/resultats/boxscore_")):
+        raise ValueError("Official and corroborating sources missing")
+    away,sep,home=str(payload.get("matchup","")).partition(" @ ")
+    a,h=TEAM_ABBREVIATIONS.get(away),TEAM_ABBREVIATIONS.get(home)
+    day=payload.get("game_date_eastern")
+    if not sep or not a or not h or a==h or not day:
+        raise ValueError("Invalid matchup identity")
+    scores=payload.get("final_team_score") or {}
+    if not all(isinstance(scores.get(t),int) and scores[t]>0 for t in (a,h)):
+        raise ValueError("Final team scores missing")
+    rows=payload.get("records") or []
+    if not rows:raise ValueError("Missing completed player lines")
+    seen=set()
+    totals={a:0.,h:0.}
+    for row in rows:
+        team=row.get("team")
+        if (row.get("source")!="NBA_OFFICIAL_WEB_FINAL_CROSSCHECKED" or
+            row.get("source_game_id")!=gameid or
+            row.get("final_confirmed") is not True or
+            row.get("date")!=day or team not in (a,h) or
+            row.get("opponent")!=(h if team==a else a)):
+            raise ValueError("Final boxscore identity mismatch")
+        ident=(strict_player_name(row.get("player")),team)
+        if not ident[0] or ident in seen:raise ValueError("Duplicate or absent player")
+        seen.add(ident)
+        vals=[float(row[k]) for k in ("PTS","REB","AST","PRA","MIN")]
+        if (not all(math.isfinite(v) and v>=0 for v in vals) or
+            not 0<vals[4]<=60 or abs(vals[3]-sum(vals[:3]))>.001):
+            raise ValueError("Malformed official player total")
+        totals[team]+=vals[0]
+    if any(totals[t]>scores[t] for t in (a,h)):
+        raise ValueError("Player points exceed official final score")
+    return rows
+
+
 def main():
     # Settlement is strictly read-only with respect to the pregame forecast
     # set. Only capture_ai_board.py may add records using the ACTUAL capture
@@ -413,6 +465,7 @@ def main():
         completed.extend(json.loads(direct_path.read_text()))
     completed.extend(cross_checked_final_boxscores(ROOT/"docs/verified_postgame_boxscores.json"))
     completed.extend(fantasydata_cross_checked_final(ROOT/"docs/verified_wizards_hawks_boxscores.json"))
+    completed.extend(official_web_cross_checked_final(ROOT/"docs/verified_spurs_kings_boxscores.json"))
     cbs_path=ROOT/"data/nba/current/cbs_final_boxscores.json"
     if cbs_path.exists():
         completed.extend(json.loads(cbs_path.read_text()))
