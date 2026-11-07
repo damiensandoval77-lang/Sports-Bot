@@ -661,6 +661,33 @@ const note=$("global-warning");if(!aiFresh){note.textContent="AI board unavailab
 else if(ai.length===0){note.textContent="No upcoming team-matched AI comparisons yet. This can happen when markets are closed or no valid props are available."}
 else {note.textContent="Experimental model projections, NOT verified probabilities or +EV picks. Sportsbook prices change; check injuries and game status."}}
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
+async function browserScoreboard(day){
+ const url="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates="+day.replaceAll("-","")+"&limit=100";
+ const response=await fetch(url,{mode:"cors",cache:"no-store",
+   signal:typeof AbortSignal!=="undefined"&&AbortSignal.timeout?AbortSignal.timeout(5500):undefined});
+ if(!response.ok)throw Error("Browser NBA schedule "+response.status);
+ const data=await response.json();
+ if(!Array.isArray(data.events))throw Error("Invalid NBA scoreboard");
+ const rows=[];
+ for(const event of data.events){
+  try{
+   const teams=Object.fromEntries(event.competitions[0].competitors.map(x=>[x.homeAway,x.team]));
+   const away=teams.away,home=teams.home,date=new Date(event.date);
+   if(!Number.isFinite(date.getTime()))continue;
+   const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",
+    year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);
+   const part=x=>parts.find(y=>y.type===x)?.value||"";
+   if(part("year")+"-"+part("month")+"-"+part("day")!==day)continue;
+   const state=event.status?.type?.state;
+   rows.push({id:String(event.id),game:away.displayName+" @ "+home.displayName,
+    away:away.displayName,home:home.displayName,
+    away_abbreviation:away.abbreviation,home_abbreviation:home.abbreviation,
+    date_eastern:day,start:date.toISOString(),
+    game_state:["pre","in","post"].includes(state)?state:"unknown"});
+  }catch(_){}
+ }
+ return rows;
+}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
  const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json")]);
@@ -672,14 +699,28 @@ oddsHealth=oh.status==="fulfilled"?oh.value:null;
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[];aiMetadata=null}
-nbaSchedule=sch.status==="fulfilled"&&sch.value.status==="THIRD_PARTY_NBA_SCHEDULE_ONLY"&&
+nbaSchedule=sch.status==="fulfilled"&&
+ ["THIRD_PARTY_NBA_SCHEDULE_ONLY","PARTIAL_CACHED_SPORTSBOOK_SCHEDULE"].includes(sch.value.status)&&
  isRecent(sch.value.generated_at,12)?sch.value:null;
-const scheduledGames=nbaSchedule?.games||[];
+
 const easternParts=new Intl.DateTimeFormat("en-US",{
  timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"
 }).formatToParts(new Date());
 const part=type=>easternParts.find(x=>x.type===type)?.value||"";
 const easternDay=part("year")+"-"+part("month")+"-"+part("day");
+const tomorrow=new Date(easternDay+"T12:00:00Z");
+tomorrow.setUTCDate(tomorrow.getUTCDate()+1);
+const tomorrowDay=tomorrow.toISOString().slice(0,10);
+const browserResults=await Promise.allSettled([browserScoreboard(easternDay),browserScoreboard(tomorrowDay)]);
+if(browserResults.every(x=>x.status==="fulfilled")){
+ const games=new Map();
+ for(const result of browserResults)for(const g of result.value)games.set(g.id,g);
+ nbaSchedule={status:"THIRD_PARTY_NBA_SCHEDULE_ONLY",
+  source:"Browser-direct ESPN scoreboard",coverage_complete:true,
+  generated_at:new Date().toISOString(),total_games:games.size,games:[...games.values()]};
+}
+const scheduledGames=nbaSchedule?.games||[];
+
 const todaysGames=scheduledGames.filter(x=>x.date_eastern===easternDay);
 const scheduleNode=$("full-nba-slate");
 if(nbaSchedule){
@@ -689,9 +730,12 @@ if(nbaSchedule){
  const chunks=todaysGames.map(g=>g.away_abbreviation+" @ "+g.home_abbreviation+
   " ("+stat(g)+", "+(withAI.has(g.game)?"AI props":
    withLines.has(g.game)?"Sportsbook only":"No verified props")+")");
- scheduleNode.textContent="TODAY'S NBA SLATE (Eastern, third-party schedule): "+
+ scheduleNode.textContent=(nbaSchedule.coverage_complete===true?
+ "TODAY'S NBA SLATE (Eastern, direct scoreboard): ":
+ "PARTIAL NBA GAME LIST (Eastern; cached sportsbook events, NOT complete): ")+
   todaysGames.length+" games. "+(chunks.join(" · ")||"No games listed today.")+
-  " A scheduled game does not guarantee any sportsbook has player lines.";
+  " A scheduled game does not guarantee any sportsbook has player lines."+
+  (nbaSchedule.coverage_complete?"":" The upstream full-schedule source is unavailable.");
 }else{
  scheduleNode.textContent="Full NBA schedule feed unavailable or stale; showing only games found in verified sportsbook data.";
 }
