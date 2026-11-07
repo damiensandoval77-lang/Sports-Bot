@@ -18,6 +18,8 @@ jobs:
         with:
           python-version: '3.11'
       - name: Download published 2026-27 NBA player-game CSV
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       - name: Validate source and player coverage
         run: |
