@@ -46,6 +46,16 @@ jobs:
               assert report['slate_events_not_checked']==report['slate_events_available']-report['slate_events_checked']
               assert report['slate_event_limit']>=15
               assert all(x['two_sided_outcomes']%2==0 for x in report['events_covered'])
+              compact=json.load(open('docs/odds_compact.json'))
+              assert compact['slate_events_checked']==report['slate_events_checked']
+              assert len(compact['events_covered'])==report['slate_events_checked']
+              assert all(x['published_two_sided_pairs']<=x['source_two_sided_pairs']
+                         for x in compact['events_covered'])
+              assert all(x['published_two_sided_pairs']>0 or x['source_two_sided_pairs']==0
+                         for x in compact['events_covered'])
+              assert len(compact['picks'])%2==0
+              print('Compact game coverage:',len(compact['events_covered']),
+                    'games; displayed quote rows:',len(compact['picks']))
               print('Markets:',report['market_types_requested'],'Checked:',report['slate_events_checked'],
                     'Provider available:',report['slate_events_available'])
           else:
@@ -55,7 +65,7 @@ jobs:
         if: always()
         run: |
           git fetch origin main
-          git add docs/data.json docs/odds_fetch_status.json
+          git add docs/data.json docs/odds_compact.json docs/odds_fetch_status.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
