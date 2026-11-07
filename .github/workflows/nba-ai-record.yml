@@ -51,8 +51,10 @@ jobs:
       - name: Fetch verified NBA and ESPN FINAL box scores
         run: python -u iphone_bot/fetch_final_boxscores.py
       - name: Refresh completed-game CSV fallback for any missing direct results
+Refresh completed-game CSV fallback for any missing direct results        env:
+          GITHUB_TOKEN: ${{ github.token }}
         continue-on-error: true
-        run: python -u iphone_bot/fetch_current_form.py
+
       - name: Grade locked AI projections against actual results
         run: python -u iphone_bot/paper_pick_pipeline.py
       - name: Verify record invariants before publication
