@@ -62,17 +62,66 @@ jobs:
           assert data['scenarios_computed']==0
           print('Defender V3 data status:',data['status'])
           PY
-      - name: Commit research diagnostics
+      - name: Commit research diagnostics without rebasing generated JSON
         run: |
-          git fetch origin main
-          git add docs/defender_v3_research.json docs/defender_v3_source_status.json docs/defender_v3_holdout.json docs/defender_v3_points_holdout.json
-          if git diff --cached --quiet; then exit 0; fi
+          set -euo pipefail
+          reports=(docs/defender_v3_research.json
+                   docs/defender_v3_source_status.json
+                   docs/defender_v3_holdout.json
+                   docs/defender_v3_points_holdout.json)
+          snapshot="${RUNNER_TEMP}/defender-v3-reports"
+          mkdir -p "$snapshot"
+          for report in "${reports[@]}"; do
+            cp "$report" "$snapshot/$(basename "$report")"
+          done
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Record defender-aware research readiness without changing AI predictions'
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then exit 0; fi
+          for attempt in 1 2 3 4 5; do
+            # Build a FRESH commit from the current main every attempt.
+            # Generated JSON must never be rebased or line-merged.
             git fetch origin main
-            git rebase origin/main || { git rebase --abort || true; exit 1; }
+            git reset --hard origin/main
+            python - "$snapshot" <<'PY'
+          import datetime as dt
+          import json
+          import pathlib
+          import sys
+          snapshot=pathlib.Path(sys.argv[1])
+          for name in ("defender_v3_research.json","defender_v3_source_status.json",
+                       "defender_v3_holdout.json","defender_v3_points_holdout.json"):
+              source=snapshot/name
+              destination=pathlib.Path("docs")/name
+              incoming=json.loads(source.read_text())
+              source_time=incoming.get("generated_at") or incoming.get("updated_at")
+              if not source_time:
+                  raise SystemExit("Missing timestamp on research report: "+name)
+              incoming_date=dt.datetime.fromisoformat(source_time.replace("Z","+00:00"))
+              if incoming_date.tzinfo is None:
+                  raise SystemExit("Timezone missing on research report: "+name)
+              if destination.exists():
+                  previous=json.loads(destination.read_text())
+                  old_time=previous.get("generated_at") or previous.get("updated_at")
+                  if old_time:
+                      old_date=dt.datetime.fromisoformat(old_time.replace("Z","+00:00"))
+                      if old_date.tzinfo is None:
+                          raise SystemExit("Timezone missing on published report: "+name)
+                      if incoming_date<=old_date:
+                          print("Keeping newer/equal published report:",name,flush=True)
+                          continue
+              destination.write_bytes(source.read_bytes())
+              print("Updating:",name,flush=True)
+          PY
+            git add "${reports[@]}"
+            if git diff --cached --quiet; then
+              echo 'Reports already published (or newer reports exist)'
+              exit 0
+            fi
+            git commit -m 'Record defender-aware research readiness without changing AI predictions'
+            if git push origin HEAD:main; then
+              echo 'Published defender V3 reports on attempt' "$attempt"
+              exit 0
+            fi
+            echo 'Concurrent update to main; rebuilding report commit' "$attempt"
           done
+          echo 'Unable to publish after 5 fresh-base attempts'
           exit 1
