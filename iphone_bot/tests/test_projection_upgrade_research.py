@@ -1,4 +1,4 @@
-"""Pregame snapshot integrity, injury dates, opponent V4 gate and 10k auditing."""
+"""Pregame snapshot integrity, injury dates, opponent V4 gate and 20k auditing."""
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
@@ -65,11 +65,11 @@ class ResearchTests(unittest.TestCase):
     def test_no_simulations_without_settled_prior_residuals(self):
         info=research_simulations([])
         for stat in ("PTS","REB","AST","PRA"):
-            self.assertEqual(info[stat]["simulation_count"],10000)
+            self.assertEqual(info[stat]["simulation_count"],20000)
             self.assertIsNone(info[stat]["brier_score"])
             self.assertEqual(info[stat]["evaluated_later_markets"],0)
 
-    def test_10k_calibration_requires_prior_settled_markets(self):
+    def test_20k_calibration_requires_prior_settled_markets(self):
         # One thousand earlier actuals train a residual distribution; all
         # later games must be scored without observing their same-day result.
         observations=[]
@@ -81,7 +81,7 @@ class ResearchTests(unittest.TestCase):
                 "original_projection":22.,"line":20.5,"actual":22.})
         result=research_simulations(observations)
         self.assertEqual(result["PTS"]["evaluated_later_markets"],40)
-        self.assertEqual(result["PTS"]["simulation_count"],10000)
+        self.assertEqual(result["PTS"]["simulation_count"],20000)
         self.assertEqual(result["PTS"]["brier_score"],0.0)
         self.assertEqual(result["REB"]["evaluated_later_markets"],0)
 
