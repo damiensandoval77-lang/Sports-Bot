@@ -1,0 +1,66 @@
+name: Refresh NBA game scores using existing authorized odds provider
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/fetch_odds_scores.py'
+      - 'iphone_bot/tests/test_fetch_odds_scores.py'
+      - '.github/workflows/nba-scores.yml'
+  schedule:
+    # 7:08, 9:08, 11:08 PM Eastern (winter) / 8:08, 10:08, midnight (summer).
+    # Two credits per fetch; modest schedule protects free API credits.
+    - cron: '8 0,2,4 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-live-score-feed
+  cancel-in-progress: false
+jobs:
+  scores:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate NBA game score identity and parser
+        run: |
+          python -m py_compile iphone_bot/fetch_odds_scores.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_odds_scores.py' -v
+      - name: Fetch scheduled, live and recently completed NBA scores
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python -u iphone_bot/fetch_odds_scores.py
+      - name: Verify scores are consistent and never invented
+        run: |
+          python - <<'PY'
+          import json
+          data=json.load(open('docs/nba_schedule.json'))
+          if data.get('status')!='PROVIDER_NBA_SCORES_PARTIAL_SLATE':
+              print('Score provider returned no data; leaving previous schedule unchanged')
+          else:
+              assert data['coverage_complete'] is False
+              assert data['has_sportsbook_props'] is False
+              assert all((g['away_score'] is None)==(g['home_score'] is None)
+                         for g in data['games'])
+              assert all(g['game_state'] in ('pre','in','post','unknown')
+                         for g in data['games'])
+              print('Games:',data['total_games'],'scored:',
+                  sum(g['away_score'] is not None for g in data['games']))
+          PY
+      - name: Publish scores and source status
+        run: |
+          git fetch origin main
+          git add docs/nba_schedule.json docs/nba_schedule_status.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Refresh NBA game slate and verified scores'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
