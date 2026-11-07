@@ -22,12 +22,12 @@ SEASON=2025
 # Historical data predates the current 2026-27 season.
 SOURCE_THROUGH="2026-07-01T00:00:00Z"
 FIELDS={
- "OFF_PLAYER_ID":("OFF_PLAYER_ID","OFFPLAYERID","OFFENSIVE_PLAYER_ID","offPlayerId"),
- "DEF_PLAYER_ID":("DEF_PLAYER_ID","DEFPLAYERID","DEFENSIVE_PLAYER_ID","defPlayerId"),
- "PARTIAL_POSS":("PARTIAL_POSS","PARTIAL_POSS_COUNT","PARTIALPOSSESSIONS","matchupPossessions"),
- "MATCHUP_MIN":("MATCHUP_MIN","MATCHUP_MINUTES","MATCHUPMIN","matchupMinutes"),
- "MATCHUP_FGA":("MATCHUP_FGA","MATCHUPFIELDGOALSATTEMPTED","MATCHUP_FG_ATTEMPTS","matchupFGA"),
- "MATCHUP_FGM":("MATCHUP_FGM","MATCHUPFIELDGOALSMADE","MATCHUP_FG_MADE","matchupFGM"),
+ "OFF_PLAYER_ID":("OFF_PLAYER_ID","OFFPLAYERID","OFFENSIVE_PLAYER_ID","offPlayerId","matchups_person_id"),
+ "DEF_PLAYER_ID":("DEF_PLAYER_ID","DEFPLAYERID","DEFENSIVE_PLAYER_ID","defPlayerId","person_id"),
+ "PARTIAL_POSS":("PARTIAL_POSS","PARTIAL_POSS_COUNT","PARTIALPOSSESSIONS","matchupPossessions","partial_possessions"),
+ "MATCHUP_MIN":("MATCHUP_MIN","MATCHUP_MINUTES","MATCHUPMIN","matchupMinutes","matchup_minutes"),
+ "MATCHUP_FGA":("MATCHUP_FGA","MATCHUPFIELDGOALSATTEMPTED","MATCHUP_FG_ATTEMPTS","matchupFGA","matchup_field_goals_attempted"),
+ "MATCHUP_FGM":("MATCHUP_FGM","MATCHUPFIELDGOALSMADE","MATCHUP_FG_MADE","matchupFGM","matchup_field_goals_made"),
 }
 
 def normalize_schema(columns):
@@ -42,6 +42,18 @@ def normalize_schema(columns):
         used.add(matched[0])
     return out
 
+def archive_minutes(value):
+    """NBA boxscore matchup minutes are MM:SS strings, not decimal values."""
+    if isinstance(value,str) and ":" in value:
+        pieces=value.split(":")
+        if len(pieces)!=2 or not all(x.isdigit() for x in pieces):
+            raise ValueError("Invalid matchup minutes format")
+        m,sec=(int(x) for x in pieces)
+        if sec>=60:raise ValueError("Invalid seconds")
+        return m+sec/60
+    return value
+
+
 def convert_table(table):
     mapping=normalize_schema(table.column_names)
     if "_season" not in table.column_names or "_season_type" not in table.column_names:
@@ -54,6 +66,7 @@ def convert_table(table):
     subset=table.select(list(mapping.values())).rename_columns(list(mapping))
     grouped={}
     for raw in subset.to_pylist():
+        raw["MATCHUP_MIN"]=archive_minutes(raw["MATCHUP_MIN"])
         clean=clean_matchup(raw)
         if clean is None:continue
         key=(clean["off_id"],clean["def_id"])
@@ -94,6 +107,9 @@ def main():
         import io
         import pyarrow.parquet as pq
         table=pq.read_table(io.BytesIO(parquet_bytes))
+        # Provenance: game-level NBA V3 matchup rows list the roster player
+        # (person_id) as defender and matchups_person_id as offensive matchup.
+        # This mapping is explicit and never inferred from arbitrary names.
         # Expose column names even when validation rejects an unfamiliar schema.
         report["source_columns"]=table.column_names
         report["original_rows"]=table.num_rows
