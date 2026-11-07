@@ -140,7 +140,7 @@ def settle(rows,completed_games,now=None):
     by_id=defaultdict(list)
     by_name=defaultdict(list)
     for g in completed_games:
-        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL","CBS_FINAL_VERIFIED"):
+        if g.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL","CBS_FINAL_VERIFIED","FANTASYDATA_FINAL_CROSSCHECKED"):
             if g.get("final_confirmed") is True:
                 key=(strict_player_name(g.get("player")),str(g.get("date")))
                 if key[0]:by_name[key].append(g)
@@ -334,6 +334,56 @@ def cross_checked_final_boxscores(path):
             raise ValueError("Player points exceed verified team final")
     return rows
 
+def fantasydata_cross_checked_final(path):
+    """Require separately sourced final result and complete game identity.
+
+    This manually audited fallback is NOT an automatically available official
+    NBA boxscore. Every included player is matched exactly to a stored pick.
+    Non-participants are omitted rather than invented as zero-stat games.
+    """
+    if not path.exists():return []
+    payload=json.loads(path.read_text())
+    if payload.get("status")!="THIRD_PARTY_FINAL_BOXSCORE_MANUALLY_CROSS_CHECKED":
+        raise ValueError("Unverified third party player boxscore status")
+    url=str(payload.get("source_url") or "")
+    confirm=str(payload.get("cross_check_url") or "")
+    if (not url.startswith("https://fantasydata.com/nba/boxscore/") or
+        not confirm.startswith("https://www.cbssports.com/nba/gametracker/boxscore/")):
+        raise ValueError("Independent source verification missing")
+    date=payload.get("game_date_eastern")
+    away_name,sep,home_name=str(payload.get("matchup") or "").partition(" @ ")
+    a=TEAM_ABBREVIATIONS.get(away_name)
+    h=TEAM_ABBREVIATIONS.get(home_name)
+    if not sep or not a or not h or a==h or not date:
+        raise ValueError("Unrecognized manual match identity")
+    score=payload.get("final_team_score",{})
+    if not all(isinstance(score.get(x),int) and score[x]>0 for x in (a,h)):
+        raise ValueError("No confirmed final team scores")
+    seen=set()
+    totals={a:0,h:0}
+    rows=payload.get("records",[])
+    if not rows:raise ValueError("No finalized player boxscore rows")
+    for row in rows:
+        code=row.get("team")
+        if (row.get("date")!=date or
+            row.get("source")!="FANTASYDATA_FINAL_CROSSCHECKED" or
+            row.get("final_confirmed") is not True or
+            row.get("source_game_id")!=payload.get("game_id") or
+            code not in (a,h) or
+            row.get("opponent")!=(h if code==a else a)):
+            raise ValueError("Unverified player identity/fixture")
+        ident=(strict_player_name(row.get("player")),code)
+        if not ident[0] or ident in seen:raise ValueError("Ambiguous player")
+        seen.add(ident)
+        vals=[float(row[field]) for field in ("PTS","REB","AST","PRA","MIN")]
+        if (not all(math.isfinite(v) and v>=0 for v in vals) or
+            not 0<vals[4]<=60 or abs(vals[3]-sum(vals[:3]))>.01):
+            raise ValueError("Invalid player totals or minutes")
+        totals[code]+=vals[0]
+    if any(totals[code]>score[code] for code in (a,h)):
+        raise ValueError("Player scoring exceeds confirmed final")
+    return rows
+
 def main():
     # Settlement is strictly read-only with respect to the pregame forecast
     # set. Only capture_ai_board.py may add records using the ACTUAL capture
@@ -345,6 +395,7 @@ def main():
     if direct_path.exists():
         completed.extend(json.loads(direct_path.read_text()))
     completed.extend(cross_checked_final_boxscores(ROOT/"docs/verified_postgame_boxscores.json"))
+    completed.extend(fantasydata_cross_checked_final(ROOT/"docs/verified_wizards_hawks_boxscores.json"))
     rows=settle(rows,completed)
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
     source_path=ROOT/"docs/current_form.json"
