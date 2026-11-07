@@ -7,6 +7,7 @@ This is observational player form, not AI probabilities or wagers.
 import csv
 import datetime as dt
 import io
+import os
 import json
 import pathlib
 import re
@@ -25,7 +26,13 @@ HEADERS={"User-Agent":"Sports-Bot-NBA-Research/1.0","Accept":"application/vnd.gi
 
 def fetch(url):
     """Retry transient provider/network errors; never silently substitute old logs."""
-    request=urllib.request.Request(url,headers=HEADERS)
+    headers=dict(HEADERS)
+    # GitHub Actions shares unauthenticated API limits across hosted runners.
+    # Authenticate public metadata reads server-side when a workflow token exists.
+    token=os.environ.get('GITHUB_TOKEN','').strip()
+    if token and url.startswith('https://api.github.com/'):
+        headers['Authorization']='Bearer '+token
+    request=urllib.request.Request(url,headers=headers)
     last_error=None
     for attempt in range(3):
         try:
