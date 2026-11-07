@@ -1,0 +1,93 @@
+name: Settle saved NBA props using verified final player box scores
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/settlement_merge.py'
+      - 'iphone_bot/tests/test_settlement_merge.py'
+      - '.github/workflows/nba-postgame-settlement.yml'
+  schedule:
+    # Frequent postgame check, no sportsbook API calls, no retraining.
+    - cron: '25 */2 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prop-feed
+  cancel-in-progress: false
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test pregame integrity and settlement merging
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_final_boxscores.py' -v
+      - name: Verify actual immutable pregame captures exist
+        run: |
+          python - <<'PY'
+          import json
+          from iphone_bot.paper_pick_pipeline import utc,identity
+          p=json.load(open('docs/paper_pick_ledger.json'))
+          rows=p['records']
+          assert len(rows)>0,'No saved pregame predictions in working tree'
+          assert len({identity(r) for r in rows})==len(rows),'Duplicated original quotes'
+          assert all(utc(r['captured_at'])<utc(r['event_start']) for r in rows if r['status']!='INVALID_LATE_CAPTURE')
+          print('Stored pregame predictions:',len(rows))
+          PY
+      - name: Fetch latest 2026-27 completed player logs when available
+        run: |
+          python -u iphone_bot/fetch_current_form.py || echo 'Current player CSV unavailable: final NBA/ESPN boxscores remain required for eligible games'
+      - name: Fetch final NBA or ESPN player box scores for pending matchups
+        run: python -u iphone_bot/fetch_final_boxscores.py
+      - name: Settle only actual verified matchups and saved pregame quotes
+        run: python -u iphone_bot/paper_pick_pipeline.py
+      - name: Protect settlement and capture integrity
+        run: |
+          python - <<'PY'
+          import json
+          from iphone_bot.paper_pick_pipeline import identity,utc
+          ledger=json.load(open('docs/paper_pick_ledger.json'))['records']
+          result=json.load(open('docs/paper_results.json'))
+          source=json.load(open('docs/final_boxscores_status.json'))
+          assert len(ledger)==len({identity(r) for r in ledger})
+          assert result['captured']==len(ledger)
+          assert result['settled']==sum(r['status']=='SETTLED' for r in ledger)
+          assert all(utc(r['captured_at'])<utc(r['event_start']) for r in ledger if r['status']!='INVALID_LATE_CAPTURE')
+          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME')
+                     and isinstance(r.get('actual'),(int,float))
+                     for r in ledger if r['status']=='SETTLED')
+          print('VALIDATED SETTLEMENT:',result['settled'],'settled,',result['pending'],'pending')
+          print('FINAL BOXSCORE SOURCE:',source)
+          PY
+      - name: Publish verified results onto freshest main without losing captures
+        run: |
+          set -euo pipefail
+          temp="$RUNNER_TEMP/nba-settlement"
+          mkdir -p "$temp"
+          cp docs/paper_pick_ledger.json "$temp/new_ledger.json"
+          cp docs/final_boxscores_status.json "$temp/source_status.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python iphone_bot/settlement_merge.py               docs/paper_pick_ledger.json "$temp/new_ledger.json"               docs/paper_pick_ledger.json docs/paper_results.json docs/current_form.json
+            cp "$temp/source_status.json" docs/final_boxscores_status.json
+            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json
+            if git diff --cached --quiet; then echo 'Latest results already published'; exit 0; fi
+            git commit -m 'Settle real pregame NBA props from verified completed player box scores'
+            if git push origin HEAD:main; then echo 'Postgame settlement successfully published'; exit 0; fi
+            echo 'Concurrent main update; rebuild from latest pregame captures' "$attempt"
+          done
+          echo 'Failed to publish settlement after five safe retries'
+          exit 1
