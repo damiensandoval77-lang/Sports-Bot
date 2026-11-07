@@ -59,7 +59,12 @@ def parse_final(html,date,away,home,records):
     for dead in soup(["script","style","noscript"]):dead.decompose()
     # No final claim from page title alone. Require literal terminal game status.
     text=soup.get_text(" ",strip=True)
-    if not re.search(r"\bFINAL\b",text,re.I):return []
+    # "FINAL" elsewhere on the site (recaps, sidebars) must not cause
+    # an in-progress matchup to be graded. It must appear between the
+    # away/home scorestrip identities, as CBS formats its game header.
+    result_pattern=(r"\\b"+re.escape(away)+r"\\b.{0,200}\\bFINAL\\b.{0,200}\\b"+
+                    re.escape(home)+r"\\b")
+    if not re.search(result_pattern,text,re.I):return []
     # CBS includes both full team names near game box score and date.
     names={abbr:full for full,abbr in TEAM_ABBREVIATIONS.items()}
     if (away not in names or home not in names or
