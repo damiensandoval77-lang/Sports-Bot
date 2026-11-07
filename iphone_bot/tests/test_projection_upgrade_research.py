@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_sanity_shadow,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_sanity_shadow,stress_research_report,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -129,6 +129,34 @@ class ResearchTests(unittest.TestCase):
         result=grade_sanity_shadow([row],outcomes)
         self.assertEqual(result["captured_independent_markets"],0)
         self.assertEqual(result["overall"]["paired_markets"],0)
+
+    def test_conditional_stress_is_frozen_pretip_and_not_live(self):
+        games=[{"id":"10","team":"BOS","date":f"2026-10-{d:02d}",
+                "PTS":18+(d%7),"REB":5+(d%3),"AST":4+(d%2),
+                "MIN":30.,"FGA":14.} for d in range(18,30)]
+        b=board()
+        pre,_=snapshot(b,injury(),[],NOW,games)
+        saved=pre[0]["stress_test_20k_v1"]
+        self.assertEqual(saved["status"],"CONDITIONAL_STRESS_RESEARCH_ONLY")
+        self.assertEqual(saved["simulation_draws_per_scenario"],20000)
+        self.assertEqual(len(saved["simulated_scenarios"]),6)
+        self.assertFalse(saved["probabilities_calibrated"])
+        self.assertFalse(saved["live_projection_modified"])
+        self.assertEqual(b["comparisons"][0]["combined_projection"],22.)
+        scored=[{"status":"SETTLED","event_start":START,"captured_at":NOW,
+                 "player_id":"10","market":"PTS","original_projection":21.,
+                 "line":20.5,"actual":25.}]
+        report=stress_research_report(pre,scored)
+        self.assertEqual(report["independent_stress_tested_markets"],1)
+        self.assertEqual(report["paired_settled_stress_markets"],1)
+        self.assertFalse(report["performance_improvement_established"])
+        self.assertEqual(stress_research_report(pre+pre,scored)["paired_settled_stress_markets"],1)
+
+    def test_old_research_rows_without_stress_do_not_get_backfilled(self):
+        row={"captured_at":NOW,"event_start":START,"player_id":"10","market":"PTS"}
+        result=stress_research_report([row],[])
+        self.assertEqual(result["independent_stress_tested_markets"],0)
+        self.assertFalse(result["calibrated_probability"])
 
     def test_no_simulations_without_settled_prior_residuals(self):
         info=research_simulations([])
