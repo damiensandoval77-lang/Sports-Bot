@@ -140,7 +140,8 @@ def snapshot(board,injury,existing,at,game_history=None):
             row["selection_gate"]=pregame_gate(
                 item["stat"],line,combined,original,
                 valid(item.get("shadow_projection")),
-                indexed.get((pid,row["team"]),[]),
+                [h for h in indexed.get((pid,row["team"]),[])
+                 if h["date"]<day],
                 opp,status)
             if row["selection_gate"]["eligible"]:
                 counters["selection_gate_paper_eligible"]+=1
@@ -330,8 +331,11 @@ def grade_selection_gate(ledger,paper_rows):
             if key in seen or key not in outcomes:continue
             seen.add(key)
             actual,line=outcomes[key]
+            frozen_line=valid(row.get("line"))
             forecast=valid(row.get("combined_projection"))
-            if forecast is None or forecast==line or actual==line:continue
+            if (frozen_line is None or frozen_line!=line or
+                    forecast is None or forecast==line or actual==line):
+                continue
             decision={"date":utc(row["event_start"]).astimezone(ZoneInfo("America/New_York")).date().isoformat(),
               "market":row["market"],
               "win":int((forecast>line)==(actual>line))}
