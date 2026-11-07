@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/opportunity_backtest.py'
+      - 'iphone_bot/tests/test_opportunity_backtest.py'
       - 'iphone_bot/tests/test_projection_upgrade_research.py'
       - '.github/workflows/nba-projection-upgrade-research.yml'
   workflow_dispatch:
@@ -33,6 +35,7 @@ jobs:
         run: |
           python -m py_compile iphone_bot/projection_upgrade_research.py
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
       - name: Refresh research snapshots or audit existing snapshots
         run: python -u iphone_bot/projection_upgrade_research.py
       - name: Protect existing Combined AI and probability outputs
