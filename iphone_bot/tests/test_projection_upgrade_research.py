@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -95,6 +95,40 @@ class ResearchTests(unittest.TestCase):
         self.assertLess(grade["overall"]["injury_candidate_mae"],
                         grade["overall"]["baseline_mae"])
         self.assertTrue(grade["no_live_adjustment"])
+
+    def test_pregame_opportunity_shadow_uses_only_prior_team_games(self):
+        past=[{"id":"10","team":"BOS",
+            "date":f"2026-10-{day:02d}","MIN":30.,
+            "PTS":20.,"REB":6.,"AST":5.,"FGA":14.}
+            for day in range(20,30)]
+        a,_=snapshot(board(),injury(),[],NOW,past)
+        self.assertIsNotNone(a[0]["opportunity_shadow_projection"])
+        self.assertEqual(a[0]["opportunity_shadow_status"],
+                         "PREGAME_LOCKED_UNVALIDATED_CHALLENGER")
+        self.assertLess(a[0]["opportunity_shadow_last_game"],"2026-11-06")
+        future=[{"id":"10","team":"BOS","date":"2026-11-06",
+                 "MIN":45.,"PTS":100.,"REB":40.,"AST":20.,"FGA":50.}]
+        b,_=snapshot(board(),injury(),[],NOW,past+future)
+        self.assertEqual(a[0]["opportunity_shadow_projection"],
+                         b[0]["opportunity_shadow_projection"])
+        self.assertFalse(b[0]["simulated_probability_modified"])
+        self.assertEqual(b[0]["combined_projection"],22.)
+
+    def test_shadow_results_require_saved_pretip_candidate(self):
+        past=[{"id":"10","team":"BOS",
+            "date":f"2026-10-{day:02d}","MIN":30.,
+            "PTS":20.,"REB":6.,"AST":5.,"FGA":14.}
+            for day in range(20,30)]
+        locked,_=snapshot(board(),injury(),[],NOW,past)
+        outcomes=[{"status":"SETTLED","event_start":START,
+                 "captured_at":NOW,"player_id":"10","market":"PTS",
+                 "original_projection":21.,"line":20.5,"actual":24.}]
+        with_shadow=grade_opportunity_shadows(locked,outcomes)
+        self.assertEqual(with_shadow["overall"]["paired_markets"],1)
+        without_shadow=grade_opportunity_shadows(
+             [{**locked[0],"opportunity_shadow_projection":None}],outcomes)
+        self.assertEqual(without_shadow["overall"]["paired_markets"],0)
+        self.assertFalse(with_shadow["eligible_for_live_promotion"])
 
     def test_shadow_only_scores_actual_immutable_capture(self):
         rows,_=snapshot(board(),injury(),[],NOW)
