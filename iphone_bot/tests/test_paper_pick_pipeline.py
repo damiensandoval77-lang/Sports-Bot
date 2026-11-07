@@ -29,6 +29,17 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_official_final_can_settle_before_three_hour_delay(self):
+        picks=snapshot([self.market()],"2026-11-12T20:00:00Z")
+        game={**self.game(24),"player":"Sample Player","source":"NBA_CDN_FINAL",
+              "final_confirmed":True,"source_game_id":"0022600030"}
+        # 2h15 from game start; status must be independently confirmed final.
+        graded=settle(picks,[game],"2026-11-13T02:45:00Z")
+        self.assertTrue(all(r["status"]=="SETTLED" for r in graded))
+        not_final={**game,"final_confirmed":False}
+        waiting=settle(picks,[not_final],"2026-11-13T02:45:00Z")
+        self.assertTrue(all(r["status"]=="PENDING" for r in waiting))
+
     def test_independent_pending_and_combined_record_excludes_duplicate_books(self):
         from iphone_bot.model_performance import compute_performance
         rows=snapshot([self.market()],"2026-11-12T20:00:00Z")
