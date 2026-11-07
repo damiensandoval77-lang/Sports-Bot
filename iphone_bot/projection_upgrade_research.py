@@ -45,6 +45,11 @@ try:
 except ImportError:
     from stress_test_20k_research import check as stress_check
 
+try:
+    from .model_disagreement_research import detect as disagreement_detect,report as disagreement_report
+except ImportError:
+    from model_disagreement_research import detect as disagreement_detect,report as disagreement_report
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -196,6 +201,17 @@ def snapshot(board,injury,existing,at,game_history=None):
                     counters["stress_high_confidence_fragile"]+=1
             else:
                 counters["stress_insufficient_inputs"]+=1
+            sanity=row["sanity_shadow_v1"]
+            row["model_disagreement_v1"]=disagreement_detect(
+                market=row["market"],line=line,original=original,
+                opponent=item.get("shadow_projection"),
+                opponent_verified=item.get("shadow_status")=="RESEARCH_SHADOW_ONLY",
+                combined=combined,sanity=sanity.get("shadow_projection"),
+                sanity_status=sanity.get("status"))
+            if row["model_disagreement_v1"]["status"]=="MODEL_DISAGREEMENT_REVIEW":
+                counters["model_disagreement_review"]+=1
+            elif row["model_disagreement_v1"]["status"]=="PARTIAL_MODEL_COVERAGE":
+                counters["model_disagreement_partial"]+=1
             row["injury_report_status"]=status
             # Only teammates explicitly marked OUT with the correct verified
             # report game date may be used to label a conditional scenario.
@@ -658,6 +674,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
         "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
         "stress_test_20k_v1":stress_research_report(ledger,paper_rows),
+        "model_disagreement_v1":disagreement_report(ledger,paper_rows,finished_unique,utc),
         "selection_gate_shadow":grade_selection_gate(ledger,paper_rows),
         "assist_shadow_v1":grade_assist_shadow(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
@@ -697,6 +714,7 @@ def main():
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
             "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
             "stress_test_20k_v1":stress_research_report(ledger,paper),
+            "model_disagreement_v1":disagreement_report(ledger,paper,finished_unique,utc),
             "selection_gate_shadow":grade_selection_gate(ledger,paper),
             "assist_shadow_v1":grade_assist_shadow(ledger,paper),
             "simulation_audit":research_simulations(paper),

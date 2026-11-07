@@ -158,6 +158,27 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(result["independent_stress_tested_markets"],0)
         self.assertFalse(result["calibrated_probability"])
 
+    def test_model_disagreement_frozen_without_mutating_board(self):
+        b=board()
+        b["comparisons"][0]["shadow_projection"]=18.
+        b["comparisons"][0]["shadow_status"]="RESEARCH_SHADOW_ONLY"
+        frozen,_=snapshot(b,injury(),[],NOW)
+        result=frozen[0]["model_disagreement_v1"]
+        self.assertEqual(result["independent_models_available"],2)
+        self.assertEqual(result["status"],"MODEL_DISAGREEMENT_REVIEW")
+        self.assertIn("ORIGINAL_OPPONENT_DIRECTION_CONFLICT",result["flags"])
+        self.assertEqual(b["comparisons"][0]["combined_projection"],22.)
+        self.assertFalse(result["pick_changed"])
+        self.assertFalse(result["probability_changed"])
+        repeat,_=snapshot(b,injury(),frozen,NOW)
+        self.assertEqual(repeat,frozen)
+
+    def test_missing_opponent_is_not_claimed_as_agreement(self):
+        frozen,_=snapshot(board(),injury(),[],NOW)
+        result=frozen[0]["model_disagreement_v1"]
+        self.assertEqual(result["status"],"PARTIAL_MODEL_COVERAGE")
+        self.assertIn("OPPONENT_MODEL_UNAVAILABLE",result["flags"])
+
     def test_no_simulations_without_settled_prior_residuals(self):
         info=research_simulations([])
         for stat in ("PTS","REB","AST","PRA"):
