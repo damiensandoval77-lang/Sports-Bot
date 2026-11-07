@@ -1,0 +1,103 @@
+name: Publish trained NBA AI props for every available game
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/compare_live_models.py'
+      - '.github/workflows/nba-trained-ai-board.yml'
+  schedule:
+    # Market-refresh job runs at :12. This job reads its published compact feed
+    # and NEVER consumes additional sportsbook API credits.
+    - cron: '41 20,23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-trained-ai-board-publish
+  cancel-in-progress: false
+jobs:
+  trained_board:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm actual current market coverage and quote freshness
+        run: |
+          python - <<'PY'
+          import json,datetime
+          p=json.load(open('docs/odds_compact.json'))
+          assert p['source']=='THE_ODDS_API_VERIFIED_COMPACT_PLAYER_PROPS'
+          assert p['is_live'] is True
+          now=datetime.datetime.now(datetime.timezone.utc)
+          updated=datetime.datetime.fromisoformat(p['updated_at'].replace('Z','+00:00'))
+          assert 0 <= (now-updated).total_seconds() <= 6*3600, 'Current sportsbook quote feed stale'
+          valid={x['game'] for x in p['picks'] if x['direction']=='More'}
+          print('Checked sportsbook fixtures:',p['slate_events_checked'],
+                'with paired quote rows:',len(p['picks']),
+                'games with markets:',len(valid))
+          assert valid, 'No available real player prop markets'
+          PY
+      - name: Install existing model training dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2" "joblib>=1.3,<2"
+      - name: Recreate chronological historical models
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u -m src.sports.nba.features
+          python -u iphone_bot/train_provisional.py
+      - name: Train original opponent-aware model for same combined projection
+        run: python -u iphone_bot/train_defense_shadow.py
+      - name: Download verified current-season NBA player games
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Preserve the exact original trained-model projection and probability pipeline
+        env:
+          NBA_AI_ODDS_INPUT: odds_compact.json
+        run: |
+          python -m py_compile iphone_bot/compare_live_models.py
+          python -u iphone_bot/compare_live_models.py
+      - name: Verify real line and unchanged empirical probability semantics
+        run: |
+          python - <<'PY'
+          import json,datetime
+          p=json.load(open('docs/ai_comparisons.json'))
+          market=json.load(open('docs/odds_compact.json'))
+          assert p['status']=='EXPERIMENTAL_NON_CALIBRATED'
+          assert p['odds_input_file']=='odds_compact.json'
+          assert p['verified_current_matchups'] is True
+          assert p['is_prizepicks'] is False
+          assert p['comparison_rows_published']==len(p['comparisons'])
+          assert p['comparison_rows_truncated']==0
+          assert p['experimental_probability_method']=='CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED'
+          assert p['real_market_probabilities_calibrated'] is False
+          assert p['combined_projection_enabled'] is True
+          assert p['combined_projection_method']=='TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY'
+          assert p['minutes_v2_applied_to_live_model'] is False
+          assert p['shot_profile_applied_to_live_model'] is False
+          assert p['games_with_ai_props']==len({x['game'] for x in p['comparisons']})
+          assert all(x['sample_games']>=5 for x in p['comparisons'])
+          now=datetime.datetime.now(datetime.timezone.utc)
+          assert all(datetime.datetime.fromisoformat(x['start'].replace('Z','+00:00'))>now
+                     for x in p['comparisons'])
+          print('VERIFIED TRAINED AI:',len(p['comparisons']),'props across',
+                p['games_with_ai_props'],'NBA games')
+          print('Skipped:',p['skipped'])
+          # No requirement for a predetermined number of games: never invent
+          # projections for roster mismatches, missing logs or closed markets.
+          PY
+      - name: Publish trained AI board IMMEDIATELY (no paper settlement dependency)
+        run: |
+          git fetch origin main
+          git add docs/ai_comparisons.json docs/current_form.json
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publish trained full-slate NBA AI comparisons'
+          git reset --hard HEAD
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
