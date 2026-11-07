@@ -225,7 +225,8 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <button class="tab" data-tab="results" aria-selected="false">Performance</button></nav>
 
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
-<div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
+<div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest uncalibrated estimate</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
+<div class="source" id="ai-evidence-warning" role="status" aria-live="polite">Reviewing independently graded results before treating simulated estimates as actionable.</div>
 <div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
 <div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
 <div class="filters schedule-roster-control" aria-hidden="true"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
@@ -1476,6 +1477,22 @@ if(slateCoverage && oddsFresh){
  " Missing games do not imply no NBA game is scheduled.";
 }
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
+const evidence=$("ai-evidence-warning");
+if(paper?.performance?.models?.combined){
+  const m=paper.performance.models.combined;
+  const n=m.direction_eligible||0;
+  const rate=m.direction_hit_rate;
+  const roi=m.paper_roi_per_priced_unit;
+  const dayCount=Number(paper.accuracy_feedback?.overall?.overall?.distinct_game_dates||0);
+  evidence.textContent="UNVALIDATED MODEL · "+n+" independently graded props · "+
+    (rate==null?"—":(rate*100).toFixed(1)+"%")+" correct · paper ROI "+
+    (roi==null?"—":(roi*100).toFixed(1)+"%")+
+    " · "+dayCount+" game date"+(dayCount===1?"":"s")+
+    ". No established betting edge. Simulated estimates are NOT verified win probabilities.";
+}else{
+  evidence.textContent="No verified model-performance sample; simulated estimates are uncalibrated, not betting advice.";
+}
+
 injuryMinutesValidation=im.status==="fulfilled"&&im.value.status==="PREGAME_LOCKED_INJURY_MINUTES_RESEARCH"?im.value:null;
 minutesV2Published=mv.status==="fulfilled"&&mv.value?.is_research_only===true?mv.value:null;
 historicalMinutes=hist.status==="fulfilled"&&hist.value?.source==="ARCHIVED_REGULAR_SEASON_PLAYER_GAME_LOGS"?hist.value:null;
