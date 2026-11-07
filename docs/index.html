@@ -649,6 +649,14 @@ function setGameFilter(game){
  if($("odds-game"))$("odds-game").value=game;
  const schedule=nbaSchedule?.games?.find(g=>g.game===game);
  if($("schedule-game"))$("schedule-game").value=schedule?.id||"";
+ // A game with real sportsbook props but no matched model comparisons should
+ // open the sportsbook board, not appear falsely empty on the AI board.
+ if(game&&!ai.some(x=>x.game===game)&&odds.some(x=>x.game===game)){
+  for(const tab of document.querySelectorAll(".tab"))
+   tab.setAttribute("aria-selected",String(tab.dataset.tab==="odds"));
+  for(const panel of document.querySelectorAll(".panel"))
+   panel.classList.toggle("active",panel.id==="tab-odds");
+ }
  renderGameStrip();
  renderSchedulePlayers();
  renderAI();
@@ -768,9 +776,12 @@ function renderGameStrip(){
  strip.replaceChildren(...tiles);
  strip.scrollLeft=previousScroll;
  count.textContent=rows.length+" game"+(rows.length===1?"":"s")+" · Swipe to browse";
+ const scoreUpdate=nbaSchedule?.source==="The Odds API NBA scores"?
+  " Scores last checked "+new Date(nbaSchedule.generated_at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+".":"";
  note.textContent=(nbaSchedule?.coverage_complete===true?
-  "Game schedule source available. ":"Partial game coverage: missing games may not be listed. ")+
-  "Select a matchup to filter AI and sportsbook props. Games without lines remain visible.";
+  "Game schedule source available. ":"Provider schedule may omit some games. ")+
+  "Select a matchup to filter AI and sportsbook props."+scoreUpdate+
+  " No current score means no verified score available.";
 }
 function renderSchedulePlayers(){
  const chosen=$("schedule-game").value;
@@ -913,9 +924,12 @@ if(nbaSchedule){
  const chunks=todaysGames.map(g=>g.away_abbreviation+" @ "+g.home_abbreviation+
   " ("+stat(g)+", "+(withAI.has(g.game)?"AI props":
    withLines.has(g.game)?"Sportsbook only":"No verified props")+")");
- scheduleNode.textContent=(nbaSchedule.coverage_complete===true?
- "TODAY'S NBA SLATE (Eastern, direct scoreboard): ":
- "PARTIAL NBA GAME LIST (Eastern; cached sportsbook events, NOT complete): ")+
+ const sourceLabel=nbaSchedule.source==="The Odds API NBA scores"?
+   "NBA GAME & SCORE FEED (Eastern; The Odds API, partial schedule): ":
+   nbaSchedule.coverage_complete===true?
+   "TODAY'S NBA SLATE (Eastern, direct scoreboard): ":
+   "PARTIAL NBA GAME LIST (Eastern; cached sportsbook events, NOT complete): ";
+ scheduleNode.textContent=sourceLabel+
   todaysGames.length+" games. "+(chunks.join(" · ")||"No games listed today.")+
   " A scheduled game does not guarantee any sportsbook has player lines."+
   (nbaSchedule.coverage_complete?"":" The upstream full-schedule source is unavailable.");
