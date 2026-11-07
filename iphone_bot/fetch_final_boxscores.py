@@ -200,7 +200,10 @@ def pending_games(records,now=None):
             day=local_date(r["event_start"])
             pair=r["game"].split(" @ ")
             if len(pair)!=2:continue
-            from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS
+            try:
+                from .paper_pick_pipeline import TEAM_ABBREVIATIONS
+            except ImportError:
+                from paper_pick_pipeline import TEAM_ABBREVIATIONS
             away=TEAM_ABBREVIATIONS.get(pair[0].strip())
             home=TEAM_ABBREVIATIONS.get(pair[1].strip())
             if away and home and away!=home:
