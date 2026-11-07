@@ -8,6 +8,8 @@ on:
       - 'iphone_bot/paper_pick_pipeline.py'
       - 'iphone_bot/model_performance.py'
       - 'iphone_bot/probability_audit.py'
+      - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/tests/test_final_boxscores.py'
       - 'iphone_bot/tests/test_probability_audit.py'
       - '.github/workflows/nba-ai-record.yml'
   schedule:
@@ -36,13 +38,17 @@ jobs:
           git checkout -B main origin/main
       - name: Verify grading and deduplicated per-model direction records
         run: |
-          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py
+          python -m py_compile iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py iphone_bot/fetch_final_boxscores.py
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_model_performance.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_accuracy_feedback.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v
-      - name: Download actual NBA completed player-game box scores
+          python -m unittest discover -s iphone_bot/tests -p 'test_final_boxscores.py' -v
+      - name: Fetch verified NBA and ESPN FINAL box scores
+        run: python -u iphone_bot/fetch_final_boxscores.py
+      - name: Refresh completed-game CSV fallback for any missing direct results
+        continue-on-error: true
         run: python -u iphone_bot/fetch_current_form.py
       - name: Grade locked AI projections against actual results
         run: python -u iphone_bot/paper_pick_pipeline.py
@@ -85,7 +91,7 @@ jobs:
       - name: Publish verified NBA AI win-loss and projection errors
         run: |
           git fetch origin main
-          git add docs/paper_pick_ledger.json docs/paper_results.json docs/current_form.json
+          git add docs/paper_pick_ledger.json docs/paper_results.json docs/current_form.json docs/final_boxscores_status.json
           if git diff --cached --quiet; then echo 'No new boxscores'; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
