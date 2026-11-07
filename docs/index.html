@@ -246,6 +246,12 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  <div id="error-review-summary">Loading error analysis…</div>
  <div id="error-review-misses"></div>
 </details>
+<details class="error-review" id="selection-quality-review">
+ <summary>Selection-quality audit <span class="error-review-note">No verified betting edge yet</span></summary>
+ <div id="selection-quality-summary">Loading pregame market accuracy…</div>
+ <div id="selection-quality-markets"></div>
+ <div id="selection-quality-note" style="padding:0 13px 12px;font-size:11px;color:#999">Historical hit rates are descriptive, not a promise of future success.</div>
+</details>
 <details class="error-review" id="opportunity-review">
  <summary>Minutes + usage research <span class="error-review-note">Shadow test, not live AI</span></summary>
  <div id="opportunity-review-summary">Reading the historical opportunity test…</div>
@@ -1239,6 +1245,24 @@ async function refreshScoresOnly(){
 }
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
+ fetchJSON("selection_quality_audit.json").then(d=>{
+  const o=d.overall||{}, n=$("selection-quality-summary");
+  n.textContent=(o.independent_markets||0)+" independent graded props across "+
+     (o.distinct_game_dates||0)+" game dates · Hit "+(o.hit_rate==null?"—":
+       (o.hit_rate*100).toFixed(1)+"%")+
+     " · No verified profitable edge or calibrated probability.";
+  const grid=$("selection-quality-markets"); grid.replaceChildren();
+  for(const market of ["PTS","REB","AST","PRA"]){
+   const a=d.by_market?.[market]||{},div=document.createElement("div");
+   div.className="error-review-row";div.style.padding="8px 13px";
+   const left=document.createElement("span"),right=document.createElement("span");
+   left.textContent=market+" · "+(a.independent_markets||0)+" props";
+   right.textContent=a.hit_rate==null?"Awaiting grades":
+      (100*a.hit_rate).toFixed(1)+"% · "+(a.sample_threshold_met?"review pending":"not validated");
+   div.append(left,right);grid.append(div);
+  }
+ }).catch(()=>{$("selection-quality-summary").textContent="Quality audit not published yet.";});
+
  fetchJSON("combined_probability_audit.json").then(a=>{
   const overall=a.overall||{}, n=overall.sample_size||0;
   $("combined-prob-sample").textContent=n+" independent outcomes";
