@@ -93,6 +93,8 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_minutes_scenario_validation.py" -v
       - name: Fetch 2026-27 current-season player games
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       - name: Read official NBA injury report
         run: |
