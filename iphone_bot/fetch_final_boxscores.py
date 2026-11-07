@@ -203,7 +203,14 @@ def verified_schedule_ids(payload,pending):
         raise ValueError("NBA schedule is not for 2026-27")
     matches={}
     for block in league.get("gameDates",[]):
-        day=str(block.get("gameDate") or "")[:10]
+        raw_day=str(block.get("gameDate") or "").strip()
+        try:
+            if raw_day[:4].isdigit() and "-" in raw_day:
+                day=raw_day[:10]
+            else:
+                day=dt.datetime.strptime(raw_day[:10],"%m/%d/%Y").date().isoformat()
+        except ValueError:
+            continue
         for game in block.get("games",[]):
             gid=str(game.get("gameId") or "")
             if not re.fullmatch(r"00226\d{5}",gid):continue
