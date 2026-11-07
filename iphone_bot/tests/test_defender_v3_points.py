@@ -88,6 +88,32 @@ class DefenderPointsTests(unittest.TestCase):
         self.assertLess(bounds[0],0)
         self.assertGreater(bounds[1],0)
 
+    def test_full_research_evaluator_handles_historical_switches_and_assignments(self):
+        from datetime import date,timedelta
+        boxes=[]
+        matchups=[]
+        for k in range(120):
+            day=(date(2025,11,1)+timedelta(days=k)).isoformat()
+            game="00225"+str(k+1).zfill(5)
+            boxes.append({"date":day,"id":"10","game_id":game,
+                "team":"BOS","opponent":"NYK","MIN":32.,"PTS":20.,
+                "FGA":15.,"FG3A":6.,"FGM":7.,"FG3M":2.,"FTA":5.,"FTM":4.})
+            for defender,mins in (("21",35.),("22",31.),("23",28.)):
+                boxes.append({"date":day,"id":defender,"game_id":game,
+                    "team":"NYK","opponent":"BOS","MIN":mins,"PTS":12.,
+                    "FGA":10.,"FG3A":4.,"FGM":4.,"FG3M":1.,"FTA":3.,"FTM":3.})
+                matchups.append({"date":day,"game_id":game,
+                    "off_id":"10","def_id":defender,"def_team":"NYK",
+                    "poss":25.,"switches":2.,"position":"G",
+                    "two_a":5.,"two_m":2.,"three_a":2.,"three_m":1.})
+        report=evaluate(boxes,matchups)
+        self.assertEqual(report["status"],"SAME_GAME_DEFENDER_POINTS_HOLDOUT")
+        self.assertGreater(report["assignment_projection_games_scored"],0)
+        self.assertGreater(report["assignment_top_defender_sample"],0)
+        self.assertIsNotNone(report["assignment_top_defender_accuracy"])
+        self.assertIsNotNone(report["assignment_minutes_only_accuracy"])
+        self.assertFalse(report["validated_for_live_use"])
+
     def test_insufficient_samples_fail_closed(self):
         self.assertEqual(evaluate([{"date":"2025-10-25"}],[])["status"],
                          "INSUFFICIENT_SAME_GAME_POINTS_SAMPLE")
