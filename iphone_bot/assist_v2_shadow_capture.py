@@ -3,6 +3,7 @@
 Append-only: original snapshots are never recalculated or overwritten.
 """
 import json
+import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 try:
@@ -92,10 +93,25 @@ def summary(records):
             "research_only":True}
 
 def main():
-    board=json.loads(BOARD.read_text())
-    games=json.loads(GAMES.read_text())
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--mode",choices=("capture","settle"),required=True)
+    args=parser.parse_args()
     old=json.loads(OUT.read_text()).get("records",[]) if OUT.exists() else []
-    records=capture(board,games,old)
+    if args.mode=="capture":
+        if not BOARD.exists() or not GAMES.exists():
+            raise RuntimeError("Missing pregame board or history")
+        records=capture(json.loads(BOARD.read_text()),json.loads(GAMES.read_text()),old)
+    else:
+        try:
+            from .fetch_final_boxscores import gather
+        except ImportError:
+            from fetch_final_boxscores import gather
+        observed,report=gather(old)
+        records=grade(old,observed)
+        print("Verified final-game fetch:",json.dumps(report,sort_keys=True))
+    OUT.parent.mkdir(parents=True,exist_ok=True)
     OUT.write_text(json.dumps({"version":1,"records":records},indent=2)+"\n")
-    print("V2 SHADOW:",len(records),"snapshots; new",len(records)-len(old))
+    (ROOT/"docs/assist_v2_shadow_results.json").write_text(json.dumps(summary(records),indent=2)+"\n")
+    print("V2 SHADOW:",json.dumps(summary(records),sort_keys=True))
+
 if __name__=="__main__":main()
