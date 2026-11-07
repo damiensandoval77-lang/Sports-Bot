@@ -133,6 +133,45 @@ def paired_model_comparison(records, minimum_sample=30):
         "live_model_unchanged":True,
     }
 
+def directional_diagnostics(records):
+    """Research-only calibration clues on earliest pretip player/stat markets.
+
+    No prediction is rewritten, no sides are picked after the result, and
+    diagnostics are explicitly not evidence of prospective profitability.
+    """
+    rows=independent_rows(records)
+    result={}
+    for stat in ("PTS","REB","AST","PRA"):
+        subset=[r for r in rows if r.get("market")==stat]
+        models={}
+        for model in MODEL_NAMES:
+            errors=[]
+            buckets={"OVER":{"wins":0,"losses":0},"UNDER":{"wins":0,"losses":0}}
+            for row in subset:
+                pred=forecast_values(row)[model]
+                actual=finite(row.get("actual"))
+                line=finite(row.get("line"))
+                if pred is None or actual is None or line is None:continue
+                errors.append(pred-actual)
+                if pred==line or actual==line:continue
+                side="OVER" if pred>line else "UNDER"
+                buckets[side]["wins"]+=int((actual>line)==(pred>line))
+                buckets[side]["losses"]+=int((actual>line)!=(pred>line))
+            for val in buckets.values():
+                n=val["wins"]+val["losses"]
+                val["hit_rate"]=round(val["wins"]/n,4) if n else None
+            models[model]={"observations":len(errors),
+                           "signed_bias":round(sum(errors)/len(errors),3) if errors else None,
+                           "over_predictions":sum(e>0 for e in errors),
+                           "under_predictions":sum(e<0 for e in errors),
+                           "by_side":buckets}
+        result[stat]={"distinct_event_dates":len({utc(r["event_start"]).date().isoformat() for r in subset}),
+                      "models":models}
+    return {"status":"RESEARCH_ONLY_NO_LIVE_CORRECTION",
+            "by_stat":result,
+            "warning":"One-date directional patterns must not be trained into live picks."}
+
+
 def compute_performance(records,include_breakdown=True):
     chosen=independent_rows(records)
     models={}
@@ -182,6 +221,7 @@ def compute_performance(records,include_breakdown=True):
             "models":models,
             "by_stat":per_stat,
             "paired_comparison":paired_model_comparison(records) if include_breakdown else None,
+            "directional_diagnostics":directional_diagnostics(records) if include_breakdown else None,
             "limitations":[
                 "Models use their original pregame-locked predictions; no after-game model reruns.",
                 "Legacy combined midpoint may be derived only from two stored pregame forecasts, not postgame data.",
