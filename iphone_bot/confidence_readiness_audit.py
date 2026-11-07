@@ -140,7 +140,8 @@ def main():
     result["generated_at"] = datetime.now(timezone.utc).isoformat()
     OUT.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({"coverage": result["coverage"],
-                      "ready_to_fit_calibration": result["ready_to_fit_calibration"]},
+                      "ready_to_fit_calibration": result["ready_to_fit_calibration"],
+                      "pending_diagnostics": result["pending_diagnostics"]["counts"]},
                      sort_keys=True))
 
 
