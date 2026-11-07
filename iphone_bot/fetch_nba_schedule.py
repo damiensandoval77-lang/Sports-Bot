@@ -152,38 +152,87 @@ def collect(days,reader=read_schedule):
             "limitation":"Independent schedule including started/completed games. Prop board requires separately verified pregame markets; players without published lines are not invented."}
 
 
+def odds_schedule_fallback(days, odds_path=ROOT/"docs/data.json"):
+    """Previously fetched sportsbook fixtures only; PARTIAL and may be stale."""
+    if not odds_path.exists():
+        raise ValueError("No cached sportsbook event file")
+    data=json.loads(odds_path.read_text())
+    rows=data.get("events_covered") or data.get("picks") or []
+    allowed=set(days);events={};rejected=0
+    for row in rows:
+        start_raw=row.get("start")
+        label=row.get("game")
+        try:
+            start=dt.datetime.fromisoformat(str(start_raw).replace("Z","+00:00"))
+            if start.tzinfo is None:raise ValueError("No timezone")
+            day=start.astimezone(EASTERN).date()
+            if day not in allowed:continue
+            parts=str(label).split(" @ ")
+            if len(parts)!=2 or not all(parts):raise ValueError("Bad matchup")
+            away,home=parts
+            eid=str(row.get("id") or (label+"|"+start.isoformat()))
+            events.setdefault((label,start.isoformat()),{
+                "id":eid,"game":label,"away":away,"home":home,
+                "away_abbreviation":None,"home_abbreviation":None,
+                "start":start.isoformat(),"date_eastern":day.isoformat(),
+                "game_state":"unknown"})
+        except (ValueError,TypeError,KeyError):
+            rejected+=1
+    if not events:
+        raise ValueError("Cached odds contained no qualifying fixtures")
+    return {"events":sorted(events.values(),key=lambda x:x["start"]),
+            "source":"Cached sportsbook fixtures (partial; NOT complete NBA schedule)",
+            "rejected":rejected}
+
+
 def main():
+    import os
     today=dt.datetime.now(EASTERN).date()
     days=[today,today+dt.timedelta(days=1)]
     errors=[]
-    try:
-        nba=nba_season_schedule(days)
-        report=collect(days,lambda day: [])  # Shared report shape
-        report.update(games=nba["events"],total_games=len(nba["events"]),
-                      source=nba["source"],source_records_rejected=nba["rejected"])
-    except (RuntimeError,ValueError) as exc:
-        errors.append(str(exc))
+    source_mode=os.environ.get("NBA_SCHEDULE_SOURCE_MODE","auto")
+    report=collect(days,lambda _: [])
+    schedule=None
+    if source_mode=="auto":
         try:
-            report=collect(days)
-        except (urllib.error.URLError,TimeoutError,ValueError,KeyError) as espn_error:
-            errors.append("ESPN:"+type(espn_error).__name__+
-                          "("+str(getattr(espn_error,"code","unknown"))+")")
-            STATUS.write_text(json.dumps({
-                "generated_at":dt.datetime.now(dt.timezone.utc).isoformat(),
-                "status":"ALL_SCHEDULE_SOURCES_FAILED",
-                "source_failures":errors,
-                "last_known_schedule_may_be_stale":True},indent=2)+"\n")
-            raise RuntimeError("All NBA schedule sources failed; prior schedule remains unchanged: "+
-                               "; ".join(errors)) from espn_error
+            schedule=nba_season_schedule(days)
+        except (RuntimeError,ValueError) as exc:
+            errors.append(str(exc))
+            try:
+                report=collect(days)
+                schedule={"events":report["games"],"source":report["source"],
+                          "rejected":report["source_records_rejected"]}
+            except (urllib.error.URLError,TimeoutError,ValueError,KeyError) as exc2:
+                errors.append("ESPN:"+type(exc2).__name__+
+                              "("+str(getattr(exc2,"code","unknown"))+")")
+    if schedule is None:
+        try:
+            schedule=odds_schedule_fallback(days)
+        except (ValueError,OSError,TypeError) as exc:
+            errors.append("Odds cache:"+str(exc))
+    if schedule is None:
+        report["status"]="SCHEDULE_UNAVAILABLE"
+        report["source"]="No validated schedule source"
+        report["coverage_complete"]=False
+    else:
+        report.update(games=schedule["events"],total_games=len(schedule["events"]),
+                      source=schedule["source"],
+                      source_records_rejected=schedule["rejected"])
+        report["coverage_complete"]=("Cached sportsbook" not in schedule["source"])
+        if not report["coverage_complete"]:
+            report["status"]="PARTIAL_CACHED_SPORTSBOOK_SCHEDULE"
     report["source_failures"]=errors
+    report["source_mode"]=source_mode
     OUTPUT.write_text(json.dumps(report,indent=2)+"\n")
     STATUS.write_text(json.dumps({
         "generated_at":dt.datetime.now(dt.timezone.utc).isoformat(),
-        "status":"SCHEDULE_FETCHED","source":report["source"],
-        "total_games":report["total_games"],"source_failures":errors,
-        "last_known_schedule_may_be_stale":False},indent=2)+"\n")
-    print("NBA SCHEDULE:",len(report["games"]),"games for",report["dates_eastern"],
-          "source:",report["source"],flush=True)
+        "status":("SCHEDULE_FETCHED" if report["coverage_complete"] else
+                  "PARTIAL_SCHEDULE" if report["total_games"] else "SCHEDULE_UNAVAILABLE"),
+        "source":report["source"],"total_games":report["total_games"],
+        "source_failures":errors,
+        "coverage_complete":report["coverage_complete"]},indent=2)+"\n")
+    print("NBA SCHEDULE:",report["total_games"],"source:",report["source"],
+          "coverage_complete:",report["coverage_complete"],flush=True)
 
 
 if __name__=="__main__":main()
