@@ -761,7 +761,13 @@ function renderGameStrip(){
   }else if(g.game_state==="in"&&Number.isInteger(g.period)){
    statusText="Q"+g.period+(g.clock?" "+g.clock:"");
   }
-  header.append(node("span","tile-game-state"+(g.game_state==="in"?" live":g.game_state==="post"?" final":""),statusText));
+  const updateAge=Date.now()-Date.parse(g.score_updated_at||"");
+  if(g.game_state==="in"&&g.score_updated_at&&
+     Number.isFinite(updateAge)&&updateAge>20*60000){
+   statusText="Score as of "+formatTime(g.score_updated_at);
+  }
+  const stale=Number.isFinite(updateAge)&&updateAge>20*60000;
+  header.append(node("span","tile-game-state"+(g.game_state==="in"&&!stale?" live":g.game_state==="post"?" final":""),statusText));
   const scores=node("div","tile-scoreboard");
   for(const [code,logo,score] of [[away,g.away_logo,g.away_score],[home,g.home_logo,g.home_score]]){
    const pair=teamRow(code,safeLogo(logo,code),scoreReady?String(score):"—");
