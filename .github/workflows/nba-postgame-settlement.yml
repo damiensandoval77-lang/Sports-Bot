@@ -8,6 +8,7 @@ on:
       - 'iphone_bot/paper_pick_pipeline.py'
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'docs/verified_postgame_boxscores.json'
+      - 'docs/verified_wizards_hawks_boxscores.json'
       - 'iphone_bot/missed_game_audit.py'
       - 'iphone_bot/projection_error_analysis.py'
       - 'iphone_bot/combined_probability_audit.py'
@@ -88,7 +89,7 @@ jobs:
           assert result['captured']==len(ledger)
           assert result['settled']==sum(r['status']=='SETTLED' for r in ledger)
           assert all(utc(r['captured_at'])<utc(r['event_start']) for r in ledger if r['status']!='INVALID_LATE_CAPTURE')
-          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED')
+          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED','FANTASYDATA_FINAL_CROSSCHECKED')
                      and isinstance(r.get('actual'),(int,float))
                      for r in ledger if r['status']=='SETTLED')
           print('VALIDATED SETTLEMENT:',result['settled'],'settled,',result['pending'],'pending')
