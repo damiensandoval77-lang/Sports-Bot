@@ -11,9 +11,11 @@ on:
       - 'iphone_bot/tests/test_probability_audit.py'
       - '.github/workflows/nba-ai-record.yml'
   schedule:
-    # Two daily checks; completed games are graded only after a five-hour
-    # post-tipoff buffer and exact player/team/opponent box-score validation.
-    - cron: '17 13,19 * * *'
+    # Hourly overnight: 10:17 PM–8:17 AM EST, plus 2:17 PM EST.
+    # Also supports manual workflow_dispatch immediately when box scores
+    # arrive. Five-hour-after-tipoff and exact completed player game matching
+    # safeguards remain in force; no paid sportsbook API credits are used.
+    - cron: '17 3-13,19 * * *'
 permissions:
   contents: write
 concurrency:
