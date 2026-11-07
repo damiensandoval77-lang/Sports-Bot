@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'iphone_bot/sanity_shadow_research.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
       - 'iphone_bot/tests/test_sanity_shadow_research.py'
       - '.github/workflows/sanity-shadow-v1-research.yml'
   push:
@@ -24,6 +26,7 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_sanity_shadow_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_season_average_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
       - name: Confirm research script only reads board and game history
         run: |
           python - <<'PY'
