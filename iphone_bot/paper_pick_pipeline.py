@@ -287,6 +287,7 @@ def summary(rows,now=None,source=None):
        "method":METHOD,"real_money_wagered":False,
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
        "performance":compute_performance(rows),
+       "selective_challenger":selective_evaluate(rows),
        "accuracy_feedback":accuracy_feedback(rows),
        "probability_audit":probability_audit(rows),
        "weight_research":walkforward_weights(rows),
