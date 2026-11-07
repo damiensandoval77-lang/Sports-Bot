@@ -62,8 +62,8 @@ def parse_final(html,date,away,home,records):
     # "FINAL" elsewhere on the site (recaps, sidebars) must not cause
     # an in-progress matchup to be graded. It must appear between the
     # away/home scorestrip identities, as CBS formats its game header.
-    result_pattern=(r"\\b"+re.escape(away)+r"\\b.{0,200}\\bFINAL\\b.{0,200}\\b"+
-                    re.escape(home)+r"\\b")
+    result_pattern=(r"\b"+re.escape(away)+r"\b.{0,200}\bFINAL\b.{0,200}\b"+
+                    re.escape(home)+r"\b")
     if not re.search(result_pattern,text,re.I):return []
     # CBS includes both full team names near game box score and date.
     names={abbr:full for full,abbr in TEAM_ABBREVIATIONS.items()}
