@@ -42,6 +42,16 @@ def nba_name(team):
     return (city+" "+name).strip()
 
 
+def safe_score(value):
+    """A published non-negative integer basketball score, never a guess."""
+    try:
+        if value is None or isinstance(value,bool):return None
+        n=int(value)
+        if str(value).strip() not in (str(n),str(n)+".0"):return None
+        return n if 0<=n<=250 else None
+    except (TypeError,ValueError):return None
+
+
 def parse_nba_game(game,requested_dates):
     try:
         stamp=game.get("gameDateTimeUTC") or game.get("gameTimeUTC")
@@ -58,6 +68,9 @@ def parse_nba_game(game,requested_dates):
                 "away":away_name,"home":home_name,
                 "away_abbreviation":away.get("teamTricode"),
                 "home_abbreviation":home.get("teamTricode"),
+                "away_score":safe_score(away.get("score")) if state in ("in","post") else None,
+                "home_score":safe_score(home.get("score")) if state in ("in","post") else None,
+                "period":game.get("period") if state=="in" else None,
                 "start":start.isoformat(),"date_eastern":eastern_day.isoformat(),
                 "game_state":state}
     except (KeyError,ValueError,TypeError):
@@ -116,10 +129,18 @@ def parse_event(item,day):
         if start.astimezone(EASTERN).date()!=day:return None
         state=item.get("status",{}).get("type",{}).get("state","unknown")
         if state not in ("pre","in","post"):state="unknown"
+        competitors={x["homeAway"]:x for x in comp["competitors"]}
+        status=item.get("status",{})
+        status_type=status.get("type",{})
         return {"id":str(item["id"]),"game":away["displayName"]+" @ "+home["displayName"],
                 "away":away["displayName"],"home":home["displayName"],
                 "away_abbreviation":away.get("abbreviation"),
                 "home_abbreviation":home.get("abbreviation"),
+                "away_score":safe_score(competitors["away"].get("score")) if state in ("in","post") else None,
+                "home_score":safe_score(competitors["home"].get("score")) if state in ("in","post") else None,
+                "period":status.get("period") if state=="in" else None,
+                "clock":status.get("displayClock") if state=="in" else None,
+                "status_detail":status_type.get("shortDetail") if state in ("in","post") else None,
                 "start":start.isoformat(),"date_eastern":day.isoformat(),
                 "game_state":state}
     except (IndexError,KeyError,TypeError,ValueError):
