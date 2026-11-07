@@ -1,49 +1,51 @@
 {
-  "generated_at": "2026-11-06T23:54:23.771510+00:00",
+  "generated_at": "2026-11-07T10:54:56.012151+00:00",
   "status": "REAL_BOOKMAKER_QUOTES_RESEARCH_ONLY",
-  "archived_quotes_seen": 4877,
-  "verified_quote_rows": 217,
-  "latest_completed_game_date": "2026-11-05",
+  "archived_quotes_seen": 6405,
+  "verified_quote_rows": 4364,
+  "latest_completed_game_date": "2026-11-06",
   "earliest_completed_game_date": "2026-10-20",
   "archived_quotes_by_game_date": {
     "2026-03-15": 36,
     "2026-11-05": 225,
-    "2026-11-06": 4616
+    "2026-11-06": 4616,
+    "2026-11-07": 1528
   },
-  "independent_games": 48,
+  "independent_games": 271,
   "skipped": {
     "different_season_requires_historical_grading": 36,
-    "unmatched_player_or_team": 8,
-    "awaiting_completed_boxscores": 4616
+    "unmatched_player_or_team": 16,
+    "no_completed_game_or_history": 461,
+    "awaiting_completed_boxscores": 1528
   },
   "metrics": {
     "PTS": {
-      "evaluated": 65,
-      "baseline_mae": 4.767,
-      "shadow_mae": 4.842,
-      "baseline_direction_accuracy": 0.6,
-      "shadow_direction_accuracy": 0.477
+      "evaluated": 1186,
+      "baseline_mae": 6.087,
+      "shadow_mae": 6.192,
+      "baseline_direction_accuracy": 0.562,
+      "shadow_direction_accuracy": 0.562
     },
     "REB": {
-      "evaluated": 51,
-      "baseline_mae": 2.346,
-      "shadow_mae": 2.292,
-      "baseline_direction_accuracy": 0.314,
-      "shadow_direction_accuracy": 0.373
+      "evaluated": 1147,
+      "baseline_mae": 1.835,
+      "shadow_mae": 1.85,
+      "baseline_direction_accuracy": 0.493,
+      "shadow_direction_accuracy": 0.487
     },
     "AST": {
-      "evaluated": 49,
-      "baseline_mae": 1.539,
-      "shadow_mae": 1.514,
-      "baseline_direction_accuracy": 0.653,
-      "shadow_direction_accuracy": 0.653
+      "evaluated": 1002,
+      "baseline_mae": 2.019,
+      "shadow_mae": 2.035,
+      "baseline_direction_accuracy": 0.448,
+      "shadow_direction_accuracy": 0.467
     },
     "PRA": {
-      "evaluated": 52,
-      "baseline_mae": 3.961,
-      "shadow_mae": 4.126,
-      "baseline_direction_accuracy": 0.769,
-      "shadow_direction_accuracy": 0.692
+      "evaluated": 1029,
+      "baseline_mae": 8.381,
+      "shadow_mae": 8.401,
+      "baseline_direction_accuracy": 0.551,
+      "shadow_direction_accuracy": 0.561
     }
   },
   "limitations": [
@@ -53,5 +55,5 @@
     "Models trained before the current season, and predictions use earlier game histories only.",
     "Small real-line samples must not be interpreted as a calibrated edge."
   ],
-  "can_claim_real_line_accuracy": false
+  "can_claim_real_line_accuracy": true
 }
