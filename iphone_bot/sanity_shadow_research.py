@@ -52,11 +52,13 @@ def past_games(history,team,market,event_start,captured_at):
     event_day=utc(event_start).astimezone(ET).date().isoformat()
     capture_day=utc(captured_at).astimezone(ET).date().isoformat()
     cutoff=min(event_day,capture_day)
+    year=int(event_day[:4]) if int(event_day[5:7])>=10 else int(event_day[:4])-1
+    season_start=f"{year}-10-01"
     values={}
     conflict=set()
     for r in history:
         date=str(r.get("date",""))
-        if r.get("team")!=team or len(date)!=10 or date>=cutoff:continue
+        if r.get("team")!=team or len(date)!=10 or not season_start<=date<cutoff:continue
         try:
             datetime.strptime(date,"%Y-%m-%d")
         except ValueError:continue
@@ -70,7 +72,7 @@ def past_games(history,team,market,event_start,captured_at):
     return [(date,*values[date]) for date in sorted(values)]
 
 def shadow(history,*,team,market,baseline,event_start,captured_at,
-           minutes_context=None,injury_status=None):
+           minutes_context=None,injury_status=None,injury_source=None):
     p=finite(baseline)
     result={"method":METHOD,"status":"INSUFFICIENT_PREGAME_HISTORY",
         "original_combined_projection":p,"shadow_projection":None,
@@ -109,8 +111,8 @@ def shadow(history,*,team,market,baseline,event_start,captured_at,
         warnings.append("EXPECTED_MINUTES_UNVERIFIED")
     elif abs(expected-minutes_l5)>5:
         warnings.append("EXPECTED_MINUTES_DISAGREE_WITH_RECENT")
-    if injury_status is None or str(injury_status).upper() in (
-            "UNKNOWN","QUESTIONABLE","DOUBTFUL","UNVERIFIED","CONFLICTING_EXTRACT"):
+    if (str(injury_status).upper()!="AVAILABLE" or
+            injury_source!="OFFICIAL_NBA_REPORT"):
         warnings.append("INJURY_OR_LINEUP_UNCERTAINTY")
     # A deterministic shadow ONLY for a large unexplained discrepancy.
     # Minutes disagreement/unknown injury blocks adjustment; flags still surface.
@@ -164,7 +166,8 @@ def capture(board,games,existing,at):
                     team=str(item.get("team","")),market=item["stat"],
                     baseline=p,event_start=start,captured_at=captured,
                     minutes_context=item.get("minutes_research"),
-                    injury_status=item.get("injury_status")),
+                    injury_status=item.get("injury_status"),
+                    injury_source=item.get("injury_status_source")),
                  "research_only":True,"production_applied":False}
             key=identity(row)
             if key not in seen:
