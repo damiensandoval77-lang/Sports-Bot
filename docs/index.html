@@ -95,7 +95,7 @@
 </main><script>
 "use strict";
 const $=id=>document.getElementById(id);
-let nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let oddsHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -663,11 +663,12 @@ else {note.textContent="Experimental model projections, NOT verified probabiliti
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 if(o.status==="fulfilled"&&Array.isArray(o.value.picks)){slateCoverage=o.value;oddsFresh=o.value.is_live===true&&isRecent(o.value.updated_at,6);odds=oddsFresh?groupOdds(o.value.picks):[];window.lastOdds=o.value.updated_at;const books=[...new Set(odds.map(x=>x.book))].sort();const select=$("odds-book"),saved=select.value;select.replaceChildren(new Option("All books",""),...books.map(b=>new Option(b,b)));select.value=books.includes(saved)?saved:"";}
 else {oddsFresh=false;odds=[];slateCoverage=null}
+oddsHealth=oh.status==="fulfilled"?oh.value:null;
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];window.lastAI=a.value.generated_at;}
 else {aiFresh=false;ai=[];aiMetadata=null}
@@ -724,7 +725,12 @@ if(slateCoverage && oddsFresh){
   (hidden?"Missing "+hidden+" event fetches due to budget or cap. ":"")+
   "Select a matchup to see more players; markets without available two-sided lines cannot appear here.";
 }else{
- coverageNode.textContent="Full-slate sportsbook coverage unavailable or stale. Missing games do not imply no NBA game is scheduled.";
+ const reason=oddsHealth?.status==="PROVIDER_FAILED"?
+ " Latest fetch failed ("+(oddsHealth.details?.http_status||oddsHealth.details?.error_type||"provider error")+").":
+ oddsHealth?.status==="MISSING_ODDS_API_KEY"?
+ " Odds provider API key is not configured.":"";
+ coverageNode.textContent="Full-slate sportsbook coverage unavailable or stale."+reason+
+ " Missing games do not imply no NBA game is scheduled.";
 }
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
 injuryMinutesValidation=im.status==="fulfilled"&&im.value.status==="PREGAME_LOCKED_INJURY_MINUTES_RESEARCH"?im.value:null;
