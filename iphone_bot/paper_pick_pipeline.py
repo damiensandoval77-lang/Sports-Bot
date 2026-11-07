@@ -14,10 +14,12 @@ try:
     from .model_performance import compute_performance
     from .weight_research import walkforward_weights
     from .accuracy_feedback import evaluate as accuracy_feedback
+    from .probability_audit import audit as probability_audit
 except ImportError:
     from model_performance import compute_performance
     from weight_research import walkforward_weights
     from accuracy_feedback import evaluate as accuracy_feedback
+    from probability_audit import audit as probability_audit
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -100,6 +102,13 @@ def snapshot(comparisons,generated_at,existing=None):
                 "status":"PENDING",
                 "method":METHOD,
                 "paper_only":True,
+                "original_probability_side":("OVER" if original_projection>line else
+                    "UNDER" if original_projection<line else None),
+                "original_probability_estimate":book.get(
+                    "over_model_probability" if original_projection>line else
+                    "under_model_probability" if original_projection<line else
+                    "unavailable_probability"),
+                "original_probability_method":"CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED",
                 "experimental_estimate_model":"PROVISIONAL_ORIGINAL_ONLY",
                 "experimental_estimate":book.get(
                     "over_model_probability" if side=="OVER" else "under_model_probability"),
@@ -230,6 +239,7 @@ def summary(rows,now=None,source=None):
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
        "performance":compute_performance(rows),
        "accuracy_feedback":accuracy_feedback(rows),
+       "probability_audit":probability_audit(rows),
        "weight_research":walkforward_weights(rows),
        "pipeline_health":pipeline_health(rows,source,now),
        "independent_player_game_markets":unique_games,
