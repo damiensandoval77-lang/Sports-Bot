@@ -9,6 +9,10 @@ from collections import defaultdict,deque
 from datetime import date,datetime,timezone
 from pathlib import Path
 from statistics import mean
+try:
+    from .minutes_model_v2 import forecast as minutes_v2_forecast
+except ImportError:
+    from minutes_model_v2 import forecast as minutes_v2_forecast
 
 FIELDS=("MIN","FGA","FG3A","FGM","FG3M","FTA","FTM","PTS")
 REQUIRED_HISTORY=8
@@ -140,7 +144,6 @@ def predict_points(history,as_of,team,expected_minutes):
 
 
 def load_history(path=ARCHIVE):
-    from .historical_minutes_research import load_archive
     # Revalidate shot fields and historical identity independently; no
     # training feature from any later game is ever used for prediction.
     import csv
@@ -214,8 +217,7 @@ def evaluate(records):
             prior=[x for x in history if x["date"]<day]
             if len(prior)>=REQUIRED_HISTORY:
                 # Same minutes forecast for all baselines and attempt profiles.
-                from .minutes_model_v2 import forecast
-                minute_pred=forecast(prior,day,team)["expected_minutes"]
+                minute_pred=minutes_v2_forecast(prior,day,team)["expected_minutes"]
                 model=predict_points(prior,day,team,minute_pred) if minute_pred is not None else None
                 if model:
                     simple=_weighted_mean([x["PTS"] for x in prior])
