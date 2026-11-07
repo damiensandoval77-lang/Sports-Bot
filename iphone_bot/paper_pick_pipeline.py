@@ -259,13 +259,11 @@ def summary(rows,now=None,source=None):
     return record
 
 def main():
-    comparisons_path=ROOT/"docs/ai_comparisons.json"
+    # Settlement is strictly read-only with respect to the pregame forecast
+    # set. Only capture_ai_board.py may add records using the ACTUAL capture
+    # timestamp before tipoff. Never reconstruct historical locks here.
     games_path=ROOT/"data/nba/current/current_games.json"
     rows=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
-    if comparisons_path.exists():
-        comp=json.loads(comparisons_path.read_text())
-        if comp.get("status")=="EXPERIMENTAL_NON_CALIBRATED":
-            rows=snapshot(comp.get("comparisons",[]),comp["generated_at"],rows)
     if games_path.exists():
         rows=settle(rows,json.loads(games_path.read_text()))
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
