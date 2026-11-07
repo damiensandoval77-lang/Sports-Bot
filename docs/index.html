@@ -63,6 +63,8 @@
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="probability">Highest estimated chance</option><option value="edge">Biggest difference</option><option value="time">Game time</option><option value="name">Player name</option></select></div>
 <div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
 <div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
+<div class="filters"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
+<div class="source" id="schedule-players">Players from current-season game logs will appear here; this is not an official active roster.</div>
 <div class="source">Combined AI projection is the midpoint of two models. *Percentage ranking still uses original-model experimental estimates, not validated combined hit rates. Expand for details.</div><div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="source">Current two-sided sportsbook lines only. These are not PrizePicks lines.</div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
@@ -632,6 +634,26 @@ function renderPaper(){
  });
  $("real-board").replaceChildren(...(list.length?list:[empty("No locked paper picks have settled yet. "+paper.pending+" are pending. This is not an error while games are unfinished or the third-party box-score source is delayed.")]));
 }
+function renderSchedulePlayers(){
+ const chosen=$("schedule-game").value;
+ const out=$("schedule-players");
+ const game=nbaSchedule?.games?.find(x=>x.id===chosen);
+ if(!game){
+  out.textContent="Select a game to see players with observed current-season history. This is not a confirmed game-day active roster.";
+  return;
+ }
+ const roster=form.filter(p=>p.team===game.away_abbreviation||p.team===game.home_abbreviation)
+   .sort((a,b)=>a.team.localeCompare(b.team)||a.player.localeCompare(b.player));
+ const priced=new Set(ai.filter(p=>p.game===game.game).map(p=>String(p.player_id)));
+ const lines=new Set(odds.filter(p=>p.game===game.game).map(p=>norm(p.player)));
+ const entries=roster.map(p=>p.player+" ("+p.team+
+   "; "+(priced.has(String(p.player_id))?"AI-priced props":
+   lines.has(norm(p.player))?"Sportsbook quote only":"No matched prop")+")");
+ out.textContent=game.game+" · "+game.date_eastern+
+   " · "+roster.length+" players with observed current-season games: "+
+   (entries.join(" · ")||"No player history available")+
+   ". This is NOT a verified lineup, official roster, or guarantee of available betting lines.";
+}
 function refreshOverview(){const unique=new Set(ai.map(p=>p.game+"|"+p.start));$("top-count").textContent=ai.length;$("top-games").textContent=unique.size;
 const raw=window.lastAI||window.lastOdds;$("top-update").textContent=raw?formatTime(raw):"—";
 const ready=aiFresh&&ai.length>0;$("status").textContent=ready?"AI RESEARCH LIVE":oddsFresh?"ODDS LIVE":"DATA CHECK";$("status").className="status "+(ready?"ok":"warn");
@@ -652,8 +674,11 @@ else {aiFresh=false;ai=[];aiMetadata=null}
 nbaSchedule=sch.status==="fulfilled"&&sch.value.status==="THIRD_PARTY_NBA_SCHEDULE_ONLY"&&
  isRecent(sch.value.generated_at,12)?sch.value:null;
 const scheduledGames=nbaSchedule?.games||[];
-const easternDay=new Intl.DateTimeFormat("en-CA",{
- timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const easternParts=new Intl.DateTimeFormat("en-US",{
+ timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"
+}).formatToParts(new Date());
+const part=type=>easternParts.find(x=>x.type===type)?.value||"";
+const easternDay=part("year")+"-"+part("month")+"-"+part("day");
 const todaysGames=scheduledGames.filter(x=>x.date_eastern===easternDay);
 const scheduleNode=$("full-nba-slate");
 if(nbaSchedule){
@@ -669,6 +694,12 @@ if(nbaSchedule){
 }else{
  scheduleNode.textContent="Full NBA schedule feed unavailable or stale; showing only games found in verified sportsbook data.";
 }
+const scheduleSelect=$("schedule-game"),selectedSchedule=scheduleSelect.value;
+scheduleSelect.replaceChildren(new Option("Select a game to inspect players",""),
+ ...scheduledGames.map(g=>new Option(g.game+" · "+g.date_eastern+" · "+
+ (g.game_state==="post"?"Final":g.game_state==="in"?"Live":"Upcoming"),g.id)));
+scheduleSelect.value=scheduledGames.some(g=>g.id===selectedSchedule)?selectedSchedule:"";
+renderSchedulePlayers();
 const availableGames=[...(slateCoverage?.events_covered||[])].filter(x=>Date.parse(x.start)>Date.now());
 for(const [selectId,rows] of [["ai-game",ai],["odds-game",odds]]){
  const selector=$(selectId),prior=selector.value;
@@ -754,6 +785,7 @@ const status=[];
 for(const control of ["ai-search","ai-stat","ai-sort","ai-game"])$(control).addEventListener("input",renderAI);
 for(const control of ["odds-search","odds-stat","odds-book","odds-game"])$(control).addEventListener("input",renderOdds);
 for(const control of ["form-search","form-stat","form-sort"])$(control).addEventListener("input",renderForm);
+$("schedule-game").addEventListener("change",renderSchedulePlayers);
 $("perf-market").addEventListener("change",renderModelPerformance);
 for(const btn of document.querySelectorAll(".tab"))btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b===btn)));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="tab-"+btn.dataset.tab));});
 $("refresh-now").addEventListener("click",()=>refresh().catch(error=>{
