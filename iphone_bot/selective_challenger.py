@@ -35,6 +35,36 @@ def screen(market,line,original,opponent,combined):
     return {**base,"decision":"CONSIDER","side":"OVER" if c>quoted else "UNDER",
             "reason":"FIXED_MARGIN_AND_MODEL_AGREEMENT"}
 
+def minutes_risk(research,robust,injury_status=None):
+    """Pregame descriptive reliability checks; never changes the locked pick.
+
+    Missing verified injury/lineup information is UNKNOWN, not a healthy
+    assumption. A volatile minute history makes pick confidence weaker.
+    """
+    r=research if isinstance(research,dict) else {}
+    v=robust if isinstance(robust,dict) else {}
+    issues=[]
+    m=_number(r.get("expected_minutes"))
+    alt=_number(v.get("expected_minutes"))
+    vol=_number(v.get("last5_volatility"))
+    games=_number(v.get("history_games"))
+    if m is None or alt is None or games is None or games<8:
+        issues.append("INSUFFICIENT_PREGAME_MINUTES_HISTORY")
+    elif abs(m-alt)>5:
+        issues.append("MINUTES_MODELS_DISAGREE")
+    if vol is None:
+        issues.append("UNKNOWN_MINUTES_VOLATILITY")
+    elif vol>6:
+        issues.append("VOLATILE_RECENT_MINUTES")
+    if injury_status in ("OUT","DOUBTFUL"):
+        issues.append("PLAYER_REPORTED_UNAVAILABLE")
+    elif injury_status not in ("AVAILABLE","PROBABLE"):
+        issues.append("GAME_DAY_AVAILABILITY_UNCONFIRMED")
+    return {"status":"RESEARCH_MINUTES_RISK_UNVALIDATED",
+            "needs_manual_review":bool(issues),"issues":issues,
+            "live_adjustment_applied":False}
+
+
 def evaluate(records):
     """Descriptive, deduped grading of decisions already frozen pretip.
 
