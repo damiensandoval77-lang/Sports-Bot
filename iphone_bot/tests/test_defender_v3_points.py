@@ -6,6 +6,20 @@ from iphone_bot.defender_v3_points import (
 
 
 class DefenderPointsTests(unittest.TestCase):
+    def test_direct_cli_import_exposes_v4_scorer(self):
+        # GitHub Actions invokes iphone_bot/defender_v3_points.py directly,
+        # which follows the non-package fallback imports.
+        import subprocess
+        import sys
+        result=subprocess.run(
+            [sys.executable,"-c",
+             "import sys; sys.path.insert(0, 'iphone_bot'); "
+             "import defender_v3_points as m; "
+             "assert callable(m.assignment_points_v4_scenario)"],
+            capture_output=True,text=True,timeout=10)
+        self.assertEqual(result.returncode,0,result.stderr)
+
+
     def test_defender_proxy_capped_and_weighted_by_recent_minutes(self):
         baseline={"expected_points":25.,"expected_2pa":12.,"expected_3pa":8.}
         hard={"two_a":100.,"two_m":18.,"three_a":70.,"three_m":15.}
