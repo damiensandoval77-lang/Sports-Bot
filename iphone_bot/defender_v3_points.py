@@ -152,6 +152,43 @@ def defender_adjustment(baseline,defenders,league2=.52,league3=.35):
     return round(max(0,baseline["expected_points"]+delta),3),round(delta,3)
 
 
+def head_to_head_adjustment(baseline,defenders,pair_history,off_id):
+    """Individual history only, strictly earlier than target date.
+
+    Each defender remains a candidate, not a confirmed assignment. Historical
+    matchup possessions modulate exposure but never override recent minutes.
+    The adjustment is relative to the offensive player's own prior 2P/3P
+    baseline, shrunk toward no effect and capped at +/-2 scoring points.
+    """
+    if len(defenders)<MIN_TEAM_DEFENDERS:return baseline["expected_points"],None,0
+    two=three=weight=0.
+    covered=0
+    for defender_id,mins,previous in defenders:
+        if mins<=0:continue
+        pair=pair_history.get((str(off_id),str(defender_id)))
+        if not pair or pair["poss"]<10:continue
+        pa2=pair["two_a"];pa3=pair["three_a"]
+        if pa2+pa3<3:continue
+        b2=baseline["expected_2p_pct"];b3=baseline["expected_3p_pct"]
+        effect2=(pair["two_m"]+60*b2)/(pa2+60)-b2
+        effect3=(pair["three_m"]+50*b3)/(pa3+50)-b3
+        # Past possessions increase relevance only modestly; the rest of the
+        # opponent rotation is a neutral unobserved matchup, not secretly zero.
+        exposure=min(2.,1+pair["poss"]/80.)
+        effective_weight=mins*exposure
+        two+=effective_weight*effect2
+        three+=effective_weight*effect3
+        covered+=1
+    # Include ALL projected rotation minutes in denominator, so merely having
+    # one observed historical pairing cannot imply 100% coverage.
+    rotation_minutes=sum(max(0,mins) for _,mins,_ in defenders)
+    if covered==0 or rotation_minutes<=0:return baseline["expected_points"],None,0
+    shift=SCALE*(2*baseline["expected_2pa"]*two/rotation_minutes+
+                 3*baseline["expected_3pa"]*three/rotation_minutes)
+    shift=max(-MAX_DELTA_POINTS,min(MAX_DELTA_POINTS,shift))
+    return round(max(0,baseline["expected_points"]+shift),3),round(shift,3),covered
+
+
 def evaluate(box_games,def_rows):
     dates=sorted({x["date"] for x in box_games})
     out={"status":"INSUFFICIENT_SAME_GAME_POINTS_SAMPLE",
@@ -165,7 +202,13 @@ def evaluate(box_games,def_rows):
          "dates_total":len(dates),"test_dates":0,"baseline_points_mae":None,
          "defender_points_mae":None,"defender_minus_baseline_mae":None,
          "games_scored":0,"games_with_defender_context":0,
-         "games_without_defender_context":0,"expected_exposure_source":"PREVIOUS_5_TEAM_GAMES_DEFENDER_MINUTES",
+         "games_without_defender_context":0,
+         "head_to_head_games_scored":0,"head_to_head_points_mae":None,
+         "head_to_head_baseline_points_mae":None,
+         "head_to_head_minus_baseline_mae":None,
+         "head_to_head_better_on_holdout":None,
+         "head_to_head_pair_coverage":0,
+         "expected_exposure_source":"PREVIOUS_5_TEAM_GAMES_DEFENDER_MINUTES",
          "not_a_sportsbook_prop_backtest":True}
     if len(dates)<MIN_TEST_DATES+20:return out
     boundary=dates[int(len(dates)*(1-TEST_FRACTION))]
@@ -181,8 +224,11 @@ def evaluate(box_games,def_rows):
     team_rotation=collections.defaultdict(lambda:collections.defaultdict(list))
     defense=collections.defaultdict(lambda:{"two_a":0.,"two_m":0.,
                                              "three_a":0.,"three_m":0.})
+    pair_hist=collections.defaultdict(lambda:{"poss":0.,"two_a":0.,"two_m":0.,
+                                               "three_a":0.,"three_m":0.})
     base_error=def_error=0.
-    n_with=n_without=0
+    h2h_base_error=h2h_error=0.
+    n_with=n_without=h2h_count=h2h_pairs=0
     examples=[]
     for day in dates:
         if day>=boundary:
@@ -193,6 +239,7 @@ def evaluate(box_games,def_rows):
                 baseline_points=baseline["expected_points"]
                 prev_team=team_rotation[r["opponent"]]
                 defender_weights=[]
+                projected_rotation=[]
                 for identifier,prior_minutes in prev_team.items():
                     if not prior_minutes:continue
                     # A player who has not appeared in a rotation for 12 days
@@ -200,8 +247,17 @@ def evaluate(box_games,def_rows):
                     if (dt.date.fromisoformat(day)-dt.date.fromisoformat(prior_minutes[-1][0])).days>12:continue
                     recent=[mins for date,mins in prior_minutes[-5:]]
                     def_hist=defense.get(identifier)
-                    if def_hist:defender_weights.append((mean(recent),def_hist))
+                    if def_hist:
+                        defender_weights.append((mean(recent),def_hist))
+                        projected_rotation.append((identifier,mean(recent),def_hist))
                 predicted,adjustment=defender_adjustment(baseline,defender_weights)
+                h2h_pred,h2h_shift,h2h_covered=head_to_head_adjustment(
+                    baseline,projected_rotation,pair_hist,r["id"])
+                if h2h_shift is not None:
+                    h2h_count+=1
+                    h2h_pairs+=h2h_covered
+                    h2h_base_error+=abs(r["PTS"]-baseline_points)
+                    h2h_error+=abs(r["PTS"]-h2h_pred)
                 # Paired-sample comparison: only score games with valid
                 # defender context, and count unavailable context separately.
                 if adjustment is None:
@@ -221,8 +277,20 @@ def evaluate(box_games,def_rows):
         for r in def_day[day]:
             totals=defense[r["def_id"]]
             for k in ("two_a","two_m","three_a","three_m"):totals[k]+=r[k]
+            pair=pair_hist[(r["off_id"],r["def_id"])]
+            pair["poss"]+=r["two_a"]+r["three_a"]
+            for k in ("two_a","two_m","three_a","three_m"):pair[k]+=r[k]
     out.update(games_with_defender_context=n_with,games_without_defender_context=n_without,
-               games_scored=n_with,example_predictions=examples)
+               games_scored=n_with,example_predictions=examples,
+               head_to_head_games_scored=h2h_count,
+               head_to_head_pair_coverage=h2h_pairs)
+    if h2h_count:
+        h2h_base=h2h_base_error/h2h_count
+        h2h_mae=h2h_error/h2h_count
+        out.update(head_to_head_baseline_points_mae=round(h2h_base,4),
+                   head_to_head_points_mae=round(h2h_mae,4),
+                   head_to_head_minus_baseline_mae=round(h2h_mae-h2h_base,4),
+                   head_to_head_better_on_holdout=h2h_mae<h2h_base)
     if n_with:
         base=base_error/n_with;adj=def_error/n_with
         out.update(status="SAME_GAME_DEFENDER_POINTS_HOLDOUT",
