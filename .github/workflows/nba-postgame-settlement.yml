@@ -18,12 +18,14 @@ on:
       - 'iphone_bot/tests/test_projection_error_analysis.py'
       - 'iphone_bot/tests/test_missed_game_audit.py'
       - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/fetch_cbs_final_boxscores.py'
+      - 'iphone_bot/tests/test_fetch_cbs_final_boxscores.py'
       - 'iphone_bot/tests/test_fetch_final_boxscores.py'
       - 'iphone_bot/tests/test_settlement_merge.py'
       - '.github/workflows/nba-postgame-settlement.yml'
   schedule:
     # Frequent postgame check, no sportsbook API calls, no retraining.
-    - cron: '25 */2 * * *'
+    - cron: '*/30 * * * *'
 permissions:
   contents: write
 concurrency:
@@ -41,6 +43,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install minimal CBS parsing dependency
+        run: python -m pip install --disable-pip-version-check beautifulsoup4
       - name: Test pregame integrity and settlement merging
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
@@ -50,6 +54,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_final_boxscores.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_cbs_final_boxscores.py' -v
       - name: Verify actual immutable pregame captures exist
         run: |
           python - <<'PY'
@@ -67,6 +72,8 @@ jobs:
           python -u iphone_bot/fetch_current_form.py || echo 'Current player CSV unavailable: final NBA/ESPN boxscores remain required for eligible games'
       - name: Fetch final NBA or ESPN player box scores for pending matchups
         run: python -u iphone_bot/fetch_final_boxscores.py
+      - name: Try CBS Sports confirmed-final player boxes if official endpoints are blocked
+        run: python -u iphone_bot/fetch_cbs_final_boxscores.py
       - name: Settle only actual verified matchups and saved pregame quotes
         run: python -u iphone_bot/paper_pick_pipeline.py
       - name: Analyze pregame Combined AI errors against settled final statistics
@@ -89,7 +96,7 @@ jobs:
           assert result['captured']==len(ledger)
           assert result['settled']==sum(r['status']=='SETTLED' for r in ledger)
           assert all(utc(r['captured_at'])<utc(r['event_start']) for r in ledger if r['status']!='INVALID_LATE_CAPTURE')
-          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED','FANTASYDATA_FINAL_CROSSCHECKED')
+          assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED','FANTASYDATA_FINAL_CROSSCHECKED','CBS_SPORTS_LIVE_FINAL')
                      and isinstance(r.get('actual'),(int,float))
                      for r in ledger if r['status']=='SETTLED')
           print('VALIDATED SETTLEMENT:',result['settled'],'settled,',result['pending'],'pending')
@@ -102,6 +109,7 @@ jobs:
           mkdir -p "$temp"
           cp docs/paper_pick_ledger.json "$temp/new_ledger.json"
           cp docs/final_boxscores_status.json "$temp/source_status.json"
+          cp docs/cbs_final_boxscores_status.json "$temp/cbs_status.json"
           cp docs/missed_game_audit.json "$temp/missed_game_audit.json"
           cp docs/projection_error_analysis.json "$temp/projection_error_analysis.json"
           cp docs/opportunity_backtest.json "$temp/opportunity_backtest.json"
@@ -113,13 +121,14 @@ jobs:
             git reset --hard origin/main
             python iphone_bot/settlement_merge.py               docs/paper_pick_ledger.json "$temp/new_ledger.json"               docs/paper_pick_ledger.json docs/paper_results.json docs/current_form.json
             cp "$temp/source_status.json" docs/final_boxscores_status.json
+            cp "$temp/cbs_status.json" docs/cbs_final_boxscores_status.json
             cp "$temp/missed_game_audit.json" docs/missed_game_audit.json
             # Recalculate from latest merged ledger, rather than copying an
             # analysis that may have missed concurrently settled predictions.
             python -u iphone_bot/projection_error_analysis.py
             python -u iphone_bot/opportunity_backtest.py
             python -u iphone_bot/combined_probability_audit.py
-            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json docs/missed_game_audit.json docs/projection_error_analysis.json docs/opportunity_backtest.json docs/combined_probability_audit.json
+            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json docs/cbs_final_boxscores_status.json docs/missed_game_audit.json docs/projection_error_analysis.json docs/opportunity_backtest.json docs/combined_probability_audit.json
             if git diff --cached --quiet; then echo 'Latest results already published'; exit 0; fi
             git commit -m 'Settle real pregame NBA props from verified completed player box scores'
             if git push origin HEAD:main; then echo 'Postgame settlement successfully published'; exit 0; fi
@@ -145,7 +154,10 @@ jobs:
           settled=json.loads(result_path.read_text()).get('settled',0) if result_path.exists() else 0
           verified_path=Path('docs/verified_postgame_boxscores.json')
           cross_checked=len(json.loads(verified_path.read_text()).get('records',[])) if verified_path.exists() else 0
-          if eligible and not retrieved and not cross_checked and not settled and errors:
+          cbs_path=Path('docs/cbs_final_boxscores_status.json')
+          cbs=json.loads(cbs_path.read_text()) if cbs_path.exists() else {}
+          cbs_lines=cbs.get('matched_player_lines',0)
+          if eligible and not retrieved and not cbs_lines and not cross_checked and not settled and errors:
               print('ERROR: Settlement blocked by upstream final-boxscore provider failures!')
               print('Pending matchups eligible for verification:',eligible)
               print('Provider errors:')
