@@ -10,9 +10,9 @@ from datetime import datetime,timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 try:
-    from .paper_pick_pipeline import utc,expected_opponents
+    from .paper_pick_pipeline import utc,TEAM_ABBREVIATIONS
 except ImportError:
-    from paper_pick_pipeline import utc,expected_opponents
+    from paper_pick_pipeline import utc,TEAM_ABBREVIATIONS
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -48,8 +48,7 @@ def inspect(records,boxscores=None,now=None):
         start=times[0]
         try:
             away,home=game.split(" @ ")
-            from_team=__import__("iphone_bot.paper_pick_pipeline",fromlist=["TEAM_ABBREVIATIONS"]).TEAM_ABBREVIATIONS
-            a,h=from_team.get(away),from_team.get(home)
+            a,h=TEAM_ABBREVIATIONS.get(away),TEAM_ABBREVIATIONS.get(home)
             boxes=by_game.get((day,a,h),[])+by_game.get((day,h,a),[])
         except (ValueError,TypeError):
             boxes=[]
