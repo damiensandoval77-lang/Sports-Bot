@@ -101,6 +101,49 @@ class FinalBoxscoreTests(unittest.TestCase):
         self.assertEqual(report["final_nba_games"],1)
         self.assertEqual(len(rows),1)
 
+    def test_nba_read_timeout_falls_back_to_espn_final(self):
+        locked=snapshot([market()],"2026-11-13T00:00:00Z")
+        now=__import__("datetime").datetime.fromisoformat("2026-11-13T06:20:00+00:00")
+        event={"id":"4000123","date":"2026-11-13T03:00:00Z",
+               "status":{"type":{"completed":True}},
+               "competitions":[{"competitors":[
+                  {"homeAway":"away","team":{"abbreviation":"BOS"}},
+                  {"homeAway":"home","team":{"abbreviation":"MIA"}}]}]}
+        stats={"header":{"id":"4000123","competitions":[{}]},
+          "boxscore":{"players":[{"team":{"abbreviation":"BOS"},
+            "statistics":[{"names":["MIN","REB","AST","PTS"],
+              "athletes":[{"athlete":{"displayName":"Sample Player"},
+                           "stats":["30:12","5","4","26"]}]}]}]}}
+        def request(url):
+            if url==NBA_SCOREBOARD:raise TimeoutError("The read operation timed out")
+            if url.startswith(ESPN_SCORE):return {"events":[event]}
+            if url.startswith(ESPN_BOX):return stats
+            raise AssertionError(url)
+        rows,report=gather(locked,now,request)
+        self.assertEqual(report["final_espn_games"],1)
+        self.assertEqual(report["final_nba_games"],0)
+        self.assertEqual(rows[0]["source"],"ESPN_FINAL")
+        self.assertTrue(any("timed out" in e for e in report["errors"]))
+        graded=settle(locked,rows,now.isoformat())
+        self.assertEqual(graded[0]["status"],"SETTLED")
+
+    def test_all_providers_timeout_does_not_abort_grading(self):
+        locked=snapshot([market()],"2026-11-13T00:00:00Z")
+        now=__import__("datetime").datetime.fromisoformat("2026-11-13T06:20:00+00:00")
+        def timeout(_):raise TimeoutError("read timed out")
+        rows,report=gather(locked,now,timeout)
+        self.assertEqual(rows,[])
+        self.assertEqual(report["status"],"NO_FINAL_BOXSCORES_AVAILABLE")
+        self.assertGreaterEqual(len(report["errors"]),2)
+        self.assertEqual(settle(locked,rows,now.isoformat())[0]["status"],"PENDING")
+
+    def test_no_pending_matchups_skips_provider_calls(self):
+        def never_called(_):raise AssertionError("No network expected")
+        now=__import__("datetime").datetime.fromisoformat("2026-11-13T06:20:00+00:00")
+        rows,report=gather([],now,never_called)
+        self.assertEqual(rows,[])
+        self.assertEqual(report["status"],"NO_ELIGIBLE_PENDING_MATCHUPS")
+
     def test_source_failure_does_not_create_fake_grades(self):
         locked=snapshot([market()],"2026-11-13T00:00:00Z")
         now=__import__("datetime").datetime.fromisoformat("2026-11-13T06:20:00+00:00")
