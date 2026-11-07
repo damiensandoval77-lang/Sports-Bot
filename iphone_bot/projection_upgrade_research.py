@@ -30,6 +30,11 @@ try:
 except ImportError:
     from selection_gate_shadow import pregame_gate
 
+try:
+    from .assist_shadow_v1 import assist_shadow
+except ImportError:
+    from assist_shadow_v1 import assist_shadow
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -114,6 +119,13 @@ def snapshot(board,injury,existing,at,game_history=None):
             opp=opportunity_forecast(indexed.get((pid,row["team"]),[]),day,row["team"])
             frozen=(opportunity_candidate(combined,opp["raw_stat_projections"][row["market"]])
                     if opp["status"]=="HISTORICAL_OPPORTUNITY_CANDIDATE" else None)
+            row["assist_shadow"]=(
+                assist_shadow(indexed.get((pid,row["team"]),[]),
+                    day,row["team"],combined,opp.get("expected_minutes"))
+                if item["stat"]=="AST"
+                else {"status":"NON_ASSIST_MARKET","projection":None,"live_applied":False})
+            if row["assist_shadow"]["projection"] is not None:
+                counters["assist_shadow_locked"]+=1
             row["opportunity_shadow_projection"]=frozen
             row["opportunity_shadow_status"]=("PREGAME_LOCKED_UNVALIDATED_CHALLENGER"
                if frozen is not None else "INSUFFICIENT_PAST_PLAYER_GAMES")
@@ -309,6 +321,52 @@ def research_simulations(paper_rows):
     return report
 
 
+def grade_assist_shadow(ledger,paper_rows):
+    """Grade only truly pretip-locked assist forecasts on exact matching quotes."""
+    outcomes={}
+    for r in finished_unique(paper_rows):
+        if r.get("market")!="AST":continue
+        key=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"],
+             float(r["line"]))
+        outcomes[key]=float(r["actual"])
+    seen=set()
+    graded=[]
+    for row in sorted(ledger,key=lambda x:str(x.get("captured_at",""))):
+        try:
+            saved=row.get("assist_shadow") or {}
+            if saved.get("status")!="PREGAME_LOCKED_ASSIST_CHALLENGER":continue
+            if row.get("market")!="AST":continue
+            event=utc(row["event_start"])
+            if utc(row["captured_at"])>=event:continue
+            line=valid(row.get("line"))
+            base=valid(row.get("combined_projection"))
+            candidate=valid(saved.get("projection"))
+            if line is None or base is None or candidate is None:continue
+            key=(event.isoformat(),str(row["player_id"]),"AST",line)
+            if key not in outcomes or key in seen:continue
+            seen.add(key)
+            actual=outcomes[key]
+            graded.append({"date":event.astimezone(ZoneInfo("America/New_York")).date().isoformat(),
+              "baseline":base,"shadow":candidate,"actual":actual,"line":line})
+        except (TypeError,ValueError,KeyError):continue
+    n=len(graded)
+    wins=[0,0]
+    for r in graded:
+        if r["actual"]==r["line"]:continue
+        for idx,which in enumerate(("baseline","shadow")):
+            if r[which]!=r["line"] and (r[which]>r["line"])==(r["actual"]>r["line"]):
+                wins[idx]+=1
+    distinct=len({r["date"] for r in graded})
+    return {"status":"PREGAME_LOCKED_ASSIST_SHADOW_RESEARCH_ONLY",
+      "paired_assist_markets":n,"distinct_game_dates":distinct,
+      "baseline_mae":round(sum(abs(r["baseline"]-r["actual"]) for r in graded)/n,3) if n else None,
+      "shadow_mae":round(sum(abs(r["shadow"]-r["actual"]) for r in graded)/n,3) if n else None,
+      "baseline_correct_direction":wins[0],
+      "shadow_correct_direction":wins[1],
+      "prospectively_ready_for_review":n>=100 and distinct>=10,
+      "promoted":False,"production_probabilities_changed":False,
+      "no_retroactive_shadow_generation":True}
+
 def grade_selection_gate(ledger,paper_rows):
     """Prospective abstention effectiveness on frozen identical bookmaker lines.
 
@@ -444,6 +502,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
         "selection_gate_shadow":grade_selection_gate(ledger,paper_rows),
+        "assist_shadow_v1":grade_assist_shadow(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
         "live_combined_ai_unchanged":True,
         "live_simulated_hit_percentages_unchanged":True,
@@ -480,6 +539,7 @@ def main():
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
             "selection_gate_shadow":grade_selection_gate(ledger,paper),
+            "assist_shadow_v1":grade_assist_shadow(ledger,paper),
             "simulation_audit":research_simulations(paper),
             "live_combined_ai_unchanged":True,
             "live_simulated_hit_percentages_unchanged":True,
