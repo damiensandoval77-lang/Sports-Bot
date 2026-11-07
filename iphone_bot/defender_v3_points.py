@@ -23,10 +23,12 @@ try:
     from .defender_matchup_v3 import ROOT
     from .shot_profile_research import predict_points
     from .import_archived_defender_matchups import PARQUET_URL,archive_minutes
+    from .defender_v3_assignment import projected_assignment,assignment_points_scenario
 except ImportError:
     from defender_matchup_v3 import ROOT
     from shot_profile_research import predict_points
     from import_archived_defender_matchups import PARQUET_URL,archive_minutes
+    from defender_v3_assignment import projected_assignment,assignment_points_scenario
 
 MATCHUP_FILE=ROOT/"data/nba/research/matchups2025.parquet"
 PLAYER_FILE=ROOT/"data/nba/research/game_logs_2025-26.parquet"
@@ -93,7 +95,8 @@ def load_defender_games(table,box_games):
       "matchup_three_pointers_made","_season","_season_type"}
     if required-set(table.column_names):raise ValueError("Missing split-defender fields")
     identity={(g["game_id"],g["id"]):(g["date"],g["team"]) for g in box_games}
-    selected=table.select(sorted(required))
+    optional={"switches_on","position"}&set(table.column_names)
+    selected=table.select(sorted(required|optional))
     grouped={}
     failed=collections.Counter()
     for r in selected.to_pylist():
@@ -113,14 +116,18 @@ def load_defender_games(table,box_games):
                          "matchup_three_pointers_made")]
             if mins is None or mins<=0 or None in values:continue
             possessions,fga,fgm,three_a,three_m=values
+            switches=number(r.get("switches_on")) if "switches_on" in optional else 0.
+            if switches is None: switches=0.
             two_a=fga-three_a;two_m=fgm-three_m
             if (fga>possessions or fgm>fga or three_m>three_a or
                 two_a<0 or two_m<0 or two_m>two_a):continue
             key=(day,gid,def_id,off)
             agg=grouped.setdefault(key,{"date":day,"game_id":gid,
               "def_id":def_id,"off_id":off,"def_team":def_team,
-              "poss":0.,"two_a":0.,"two_m":0.,"three_a":0.,"three_m":0.})
+              "poss":0.,"switches":0.,"position":r.get("position"),
+              "two_a":0.,"two_m":0.,"three_a":0.,"three_m":0.})
             agg["poss"]+=possessions
+            agg["switches"]+=switches
             for name,value in zip(("two_a","two_m","three_a","three_m"),
                                   (two_a,two_m,three_a,three_m)):
                 agg[name]+=value
@@ -226,6 +233,16 @@ def evaluate(box_games,def_rows):
          "head_to_head_minus_baseline_mae":None,
          "head_to_head_better_on_holdout":None,
          "head_to_head_pair_coverage":0,
+         "assignment_projection_games_scored":0,
+         "assignment_projection_baseline_points_mae":None,
+         "assignment_projection_points_mae":None,
+         "assignment_projection_delta_mae":None,
+         "assignment_projection_delta_interval":None,
+         "assignment_top_defender_accuracy":None,
+         "assignment_minutes_only_accuracy":None,
+         "assignment_top_defender_sample":0,
+         "assignment_source":"HISTORICAL_PAIR_EXPOSURE_RECENT_ROTATIONS_POSITION_AND_SWITCHES",
+         "assignment_is_confirmed":False,
          "head_to_head_mae_delta_95pct_date_cluster_interval":None,
          "head_to_head_improvement_statistically_supported":False,
          "expected_exposure_source":"PREVIOUS_5_TEAM_GAMES_DEFENDER_MINUTES",
@@ -248,9 +265,22 @@ def evaluate(box_games,def_rows):
                                                "three_a":0.,"three_m":0.})
     base_error=def_error=0.
     h2h_base_error=h2h_error=0.
+    assign_base_error=assign_error=0.
+    assignment_count=assignment_success=minutes_success=actual_assignment_count=0
     n_with=n_without=h2h_count=h2h_pairs=0
+    assignment_by_day=collections.defaultdict(lambda:[0.,0])
+    defense_positions={}
     h2h_by_day=collections.defaultdict(lambda:[0.,0])
     examples=[]
+    # Actual top defender is used ONLY for grading after the pregame forecast.
+    actual_primary={}
+    actual_counts=collections.defaultdict(list)
+    for obs in def_rows:
+        actual_counts[(obs["game_id"],obs["off_id"])].append(obs)
+    for key,items in actual_counts.items():
+        ranked=sorted(items,key=lambda x:(-x["poss"],x["def_id"]))
+        if ranked and ranked[0]["poss"]>=10:
+            actual_primary[key]=ranked[0]["def_id"]
     for day in dates:
         if day>=boundary:
             for r in per_day[day]:
@@ -272,6 +302,24 @@ def evaluate(box_games,def_rows):
                         defender_weights.append((mean(recent),def_hist))
                         projected_rotation.append((identifier,mean(recent),def_hist))
                 predicted,adjustment=defender_adjustment(baseline,defender_weights)
+                # The offensive player's actual same-day matchup observations
+                # are NEVER inputs; actual_primary is only read after forecast.
+                allocation=projected_assignment(r["id"],r["opponent"],
+                    [(pid,mins) for pid,mins,_ in projected_rotation],
+                    pair_hist,defense_positions,day)
+                assigned=assignment_points_scenario(baseline,allocation,pair_hist,r["id"])
+                if assigned is not None:
+                    assignment_count+=1
+                    assign_base_error+=abs(r["PTS"]-baseline_points)
+                    assign_error+=abs(r["PTS"]-assigned)
+                    assignment_by_day[day][0]+=abs(r["PTS"]-assigned)-abs(r["PTS"]-baseline_points)
+                    assignment_by_day[day][1]+=1
+                    actual=actual_primary.get((r["game_id"],r["id"]))
+                    if actual is not None:
+                        actual_assignment_count+=1
+                        assignment_success+=int(allocation["predicted_top_defender"]==actual)
+                        minutes_only=sorted(projected_rotation,key=lambda a:(-a[1],a[0]))[0][0]
+                        minutes_success+=int(minutes_only==actual)
                 h2h_pred,h2h_shift,h2h_covered=head_to_head_adjustment(
                     baseline,projected_rotation,pair_hist,r["id"])
                 if h2h_shift is not None:
@@ -301,12 +349,36 @@ def evaluate(box_games,def_rows):
             totals=defense[r["def_id"]]
             for k in ("two_a","two_m","three_a","three_m"):totals[k]+=r[k]
             pair=pair_hist[(r["off_id"],r["def_id"])]
+            # Traded defenders: only keep historical exposure for the current
+            # team, never attribute old-team direct assignments to a new one.
+            if pair.get("def_team") not in (None,r["def_team"]):
+                pair.clear()
+            pair["def_team"]=r["def_team"]
+            pair["last_seen"]=day
             pair["poss"]+=r["poss"]
+            pair["switches"]+=r.get("switches",0.)
+            if r.get("position"):
+                defense_positions[r["def_id"]]=r["position"]
             for k in ("two_a","two_m","three_a","three_m"):pair[k]+=r[k]
     out.update(games_with_defender_context=n_with,games_without_defender_context=n_without,
                games_scored=n_with,example_predictions=examples,
                head_to_head_games_scored=h2h_count,
                head_to_head_pair_coverage=h2h_pairs)
+    if assignment_count:
+        assignment_base=assign_base_error/assignment_count
+        assignment_mae=assign_error/assignment_count
+        interval=date_cluster_interval(assignment_by_day)
+        out.update(assignment_projection_games_scored=assignment_count,
+                   assignment_projection_baseline_points_mae=round(assignment_base,4),
+                   assignment_projection_points_mae=round(assignment_mae,4),
+                   assignment_projection_delta_mae=round(assignment_mae-assignment_base,4),
+                   assignment_projection_delta_interval=interval,
+                   assignment_top_defender_sample=actual_assignment_count,
+                   assignment_top_defender_accuracy=(round(assignment_success/actual_assignment_count,4)
+                       if actual_assignment_count else None),
+                   assignment_minutes_only_accuracy=(round(minutes_success/actual_assignment_count,4)
+                       if actual_assignment_count else None),
+                   assignment_promotion_gate="RESEARCH_ONLY_INDEPENDENT_SEASON_REPLICATION_REQUIRED")
     if h2h_count:
         h2h_base=h2h_base_error/h2h_count
         h2h_mae=h2h_error/h2h_count
