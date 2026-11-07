@@ -46,7 +46,7 @@ class ConfidenceReadinessTests(unittest.TestCase):
     def test_pending_age_is_not_equated_with_final_boxscore(self):
         rows = [pick(status="PENDING", player_id="a", event_start="2026-11-08T00:00:00Z"),
                 pick(status="PENDING", player_id="b", event_start="2026-11-07T22:00:00Z"),
-                pick(status="PENDING", player_id="c", event_start="2026-11-07T18:00:00Z"),
+                pick(status="PENDING", player_id="c", captured_at="2026-11-07T17:00:00Z", event_start="2026-11-07T18:00:00Z"),
                 pick(player_id="d", combined_probability_proxy_estimate=None)]
         r = audit(rows, now="2026-11-07T23:00:00Z")
         diag = r["pending_diagnostics"]["counts"]
