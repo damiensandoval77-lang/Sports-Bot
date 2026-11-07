@@ -24,6 +24,19 @@ class CalibrationTests(unittest.TestCase):
         self.assertEqual(result["overall"]["wins"],1)
         self.assertEqual(result["overall"]["losses"],1)
 
+    def test_earlier_capture_wins_regardless_of_book_order(self):
+        later=record(book="DraftKings",p=.99,captured="2026-11-12T20:00:00Z")
+        earlier=record(book="FanDuel",p=.72,captured="2026-11-12T19:00:00Z")
+        result=audit([later,earlier])
+        self.assertEqual(result["overall"]["sample_size"],1)
+        self.assertEqual(result["overall"]["average_estimated_probability"],.72)
+
+    def test_equal_capture_uses_first_immutable_ledger_entry(self):
+        first=record(book="FanDuel",p=.72)
+        second=record(book="DraftKings",p=.99)
+        result=audit([first,second])
+        self.assertEqual(result["overall"]["average_estimated_probability"],.72)
+
     def test_duplicate_books_are_one_independent_prediction(self):
         rows=[record(),record(book="DraftKings",p=.99)]
         result=audit(rows)
