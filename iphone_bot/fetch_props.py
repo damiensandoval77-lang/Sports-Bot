@@ -14,6 +14,7 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "data.json"
 STATUS = ROOT / "docs" / "odds_fetch_status.json"
+COMPACT = ROOT / "docs" / "odds_compact.json"
 BASE = "https://api.the-odds-api.com/v4/sports/basketball_nba"
 MARKETS = ("player_points", "player_rebounds", "player_assists", "player_points_rebounds_assists")
 MAX_EVENTS = min(20, max(1, int(os.environ.get('ODDS_MAX_EVENTS', '15'))))
@@ -104,6 +105,56 @@ def save_status(status, **detail):
             "details":detail}
     STATUS.write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
 
+def compact_for_dashboard(report,max_pairs_per_event=240):
+    """Keep compact, real two-sided quotes across EVERY fetched NBA matchup.
+
+    Prefer player breadth and market variety over bookmaker duplication.
+    Do not alter an odd, line, timestamp, or invent availability.
+    """
+    from collections import defaultdict
+    groups=defaultdict(list)
+    for row in report.get("picks",[]):
+        if row.get("game") and row.get("player") and row.get("stat"):
+            groups[row["game"]].append(row)
+    published=[];per_event=[]
+    for event in report.get("events_covered",[]):
+        game=event["game"]
+        by_key={}
+        for row in groups.get(game,[]):
+            key=(row["player"].casefold(),row["stat"],row.get("line"),row.get("source"))
+            pair=by_key.setdefault(key,{})
+            if row.get("direction") in ("More","Less"):pair[row["direction"]]=row
+        pairs=[v for v in by_key.values() if "More" in v and "Less" in v]
+        # Retain distinct player-market pairs first, then alternate books.
+        pairs.sort(key=lambda p:(p["More"]["stat"],p["More"]["player"].casefold(),
+                                 str(p["More"].get("source",""))))
+        by_player=defaultdict(list)
+        for pair in pairs:
+            k=(pair["More"]["player"].casefold(),pair["More"]["stat"])
+            by_player[k].append(pair)
+        selected=[]
+        keys=sorted(by_player)
+        while len(selected)<max_pairs_per_event and any(by_player.values()):
+            for k in keys:
+                if by_player[k] and len(selected)<max_pairs_per_event:
+                    selected.append(by_player[k].pop(0))
+        for pair in selected:published.extend((pair["More"],pair["Less"]))
+        per_event.append({"game":game,"start":event.get("start"),
+                          "source_two_sided_pairs":len(pairs),
+                          "published_two_sided_pairs":len(selected),
+                          "source_players":len({p["More"]["player"] for p in pairs}),
+                          "published_players":len({p["More"]["player"] for p in selected})})
+    return {"is_live":report["is_live"],"updated_at":report["updated_at"],
+            "source":"THE_ODDS_API_VERIFIED_COMPACT_PLAYER_PROPS",
+            "slate_events_available":report["slate_events_available"],
+            "slate_events_checked":report["slate_events_checked"],
+            "slate_events_not_checked":report["slate_events_not_checked"],
+            "events_covered":per_event,"picks":published,
+            "compact_display_feed":True,
+            "not_prizepicks":True,
+            "note":"Selected verified paired prop quotes from all checked matchups. Does not represent a complete sportsbook market list."}
+
+
 def main():
     key = os.environ.get("ODDS_API_KEY", "").strip()
     if not key:
@@ -169,6 +220,9 @@ def main():
             "disclaimer": "Live sportsbook odds, NOT PrizePicks lines. No AI projections or win probabilities yet. Verify all lines before use.",
             "picks": picks[:MAX_EVENTS * MAX_OUTCOMES_PER_EVENT]}
         OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        compact=compact_for_dashboard(result)
+        COMPACT.write_text(json.dumps(compact,separators=(",",":"))+"\n",encoding="utf-8")
+        print("Compact dashboard:",len(compact["picks"]),"rows from",len(compact["events_covered"]),"events",flush=True)
         save_status("FETCHED",available_events=len(upcoming),
                     checked_events=inspected,remaining_credits=remaining,
                     outcome_rows=len(picks),
