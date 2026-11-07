@@ -143,13 +143,22 @@ def snapshot(board,injury,existing,at):
                 injury_minutes.get("status")=="HISTORICAL_SCENARIO_RESEARCH_ONLY" and
                 scenario_id in row["verified_out_teammate_ids"] and
                 estimated is not None and estimated>0 and scenario is not None)
+            # Fixed bounded research challenge: minutes-only exposure ratio.
+            # Production Combined AI may already account for minutes; this is
+            # evaluated as a separate candidate to detect double counting.
+            # No gameplay, bookmaker line or actual score is used in the math.
+            injury_candidate=(round(max(0,combined*
+                max(.90,min(1.10,scenario/estimated))),3)
+                if scenario_ok else None)
             row["injury_scenario"]={
                 "status":"PREGAME_CONDITIONAL_NOT_CAUSAL" if scenario_ok
                          else "NO_VERIFIED_PREGAME_MINUTES_SCENARIO",
                 "candidate_teammate_id":scenario_id if scenario_ok else None,
                 "scenario_minutes":scenario if scenario_ok else None,
                 "baseline_minutes":estimated,
-                "scenario_points_projection":None,
+                "scenario_points_projection":injury_candidate if item["stat"]=="PTS" else None,
+                "scenario_market_projection":injury_candidate,
+                "candidate_method":"BOUNDED_MINUTES_RATIO_RESEARCH_ONLY_NOT_CAUSAL",
                 "research_only":True}
             # Never copy minutes directly into scoring model without a
             # validated usage/efficiency relationship for this market.
@@ -184,6 +193,38 @@ def finished_unique(paper_rows):
                 groups[key]=r
         except (ValueError,TypeError,KeyError):continue
     return list(groups.values())
+
+
+def grade_injury_scenarios(ledger,paper_rows):
+    """Paired scores for pregame-locked conditional injury candidate only."""
+    actuals={}
+    for r in finished_unique(paper_rows):
+        key=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])
+        actuals[key]=float(r["actual"])
+    grouped=defaultdict(list)
+    for row in ledger:
+        scenario=row.get("injury_scenario") or {}
+        candidate=valid(scenario.get("scenario_market_projection"))
+        if candidate is None:continue
+        try:
+            if utc(row["captured_at"])>=utc(row["event_start"]):continue
+            key=(utc(row["event_start"]).isoformat(),str(row["player_id"]),row["market"])
+            if key not in actuals:continue
+            score=actuals[key]
+            grouped[row["market"]].append((abs(score-row["combined_projection"]),
+                                             abs(score-candidate)))
+        except (ValueError,KeyError,TypeError):continue
+    scores=[s for group in grouped.values() for s in group]
+    def summary(rows):
+        return {"paired_observations":len(rows),
+          "baseline_mae":round(sum(r[0] for r in rows)/len(rows),4) if rows else None,
+          "injury_candidate_mae":round(sum(r[1] for r in rows)/len(rows),4) if rows else None}
+    return {"status":"DESCRIPTIVE_LOCKED_INJURY_SCENARIO_COMPARISON" if len(scores)>=30
+            else "AWAITING_AT_LEAST_30_SETTLED_VERIFIED_INJURY_SCENARIOS",
+            "overall":summary(scores),
+            "by_market":{m:summary(grouped[m]) for m in MARKETS},
+            "no_live_adjustment":True,
+            "injury_causality_established":False}
 
 
 def research_simulations(paper_rows):
@@ -270,6 +311,7 @@ def run(board,injury,paper_rows,existing,at):
         "lineup_confirmations_automated":False,
         "teammate_splits":"OBSERVATIONAL_AND_SAMPLE_GATED",
         "defender_v4":grade_shadow(ledger,paper_rows),
+        "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
         "live_combined_ai_unchanged":True,
         "live_simulated_hit_percentages_unchanged":True,
@@ -301,6 +343,7 @@ def main():
             "lineup_confirmations_automated":False,
             "teammate_splits":"OBSERVATIONAL_AND_SAMPLE_GATED",
             "defender_v4":grade_shadow(ledger,paper),
+            "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "simulation_audit":research_simulations(paper),
             "live_combined_ai_unchanged":True,
             "live_simulated_hit_percentages_unchanged":True,
