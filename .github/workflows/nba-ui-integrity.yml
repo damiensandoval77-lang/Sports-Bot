@@ -22,12 +22,15 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           html=Path('docs/index.html').read_text()
-          assert 'RAW MODEL DIRECTION' in html
-          assert 'MODEL CONFIDENCE","UNVERIFIED"' in html
+          # Protect current truthfulness constraints, not obsolete UI badge copy.
           assert 'frozenResearchScreen(p)' in html
           assert 'Market hit rates:' in html
-          assert 'Highest uncalibrated estimate' not in html
+          assert 'combinedSimAvailable(p)' in html
           assert 'SIM EST. %",validEstimate(p)' not in html
+          assert 'No verified hit probability or EV' in html
+          assert 'Directional research signal only' in html
+          assert 'edge.verified_edge!==true' in html
+          assert 'function renderPrizePicksBoard()' in html
           Path('/tmp/sports-bot-board.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
           PY
           node --check /tmp/sports-bot-board.js
