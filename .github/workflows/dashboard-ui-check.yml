@@ -28,7 +28,7 @@ jobs:
               'renderAI();', 'renderOdds();',
               'tile-scoreboard', 'tile-team-logo', 'tile-team-score',
               'away_score', 'home_score', 'refreshScoresOnly',
-              'setInterval(refreshScoresOnly,45000)',
+              'setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000)',
               'game_moneylines.json', 'tile-moneyline',
               'VERIFIED_PREGAME_NBA_MONEYLINES'):
               assert feature in html, f'Missing dashboard feature: {feature}'
