@@ -23,6 +23,8 @@ on:
       - 'iphone_bot/tests/test_combined_probability_audit.py'
       - 'iphone_bot/opportunity_backtest.py'
       - 'iphone_bot/shooting_efficiency_grade.py'
+      - 'iphone_bot/minutes_opportunity_joint_grade.py'
+      - 'iphone_bot/tests/test_minutes_opportunity_joint_grade.py'
       - 'iphone_bot/tests/test_shooting_efficiency_grade.py'
       - 'iphone_bot/assist_retrospective_backtest.py'
       - 'iphone_bot/tests/test_assist_retrospective_backtest.py'
@@ -68,6 +70,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_combined_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_shooting_efficiency_grade.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_minutes_opportunity_joint_grade.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_retrospective_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_official_web_final_boxscores.py' -v
@@ -108,6 +111,8 @@ jobs:
         run: python -u iphone_bot/opportunity_backtest.py
       - name: Compare fixed assist shadow retrospectively on saved pregame quotes
         run: python -u iphone_bot/assist_retrospective_backtest.py
+      - name: Grade originally frozen Minutes V3 and AST-REB Opportunity V2 together
+        run: python -u iphone_bot/minutes_opportunity_joint_grade.py
       - name: Grade only original frozen Shooting V1 candidate against verified points
         run: python -u iphone_bot/shooting_efficiency_grade.py
       - name: Explain missing Celtics and all historical pregame matchups
@@ -144,6 +149,7 @@ jobs:
           cp docs/extreme_miss_forensics.json "$temp/extreme_miss_forensics.json"
           cp docs/opportunity_backtest.json "$temp/opportunity_backtest.json"
           cp docs/shooting_efficiency_v1_prospective_grades.json "$temp/shooting_v1_grades.json"
+          cp docs/minutes_v3_opportunity_v2_prospective.json "$temp/minutes_opportunity_v2_grades.json"
           cp docs/assist_retrospective_backtest.json "$temp/assist_retrospective_backtest.json"
           cp docs/combined_probability_audit.json "$temp/combined_probability_audit.json"
           cp docs/selection_quality_audit.json "$temp/selection_quality_audit.json"
@@ -163,10 +169,11 @@ jobs:
             python -u iphone_bot/extreme_miss_forensics.py
             python -u iphone_bot/opportunity_backtest.py
             python -u iphone_bot/shooting_efficiency_grade.py
+            python -u iphone_bot/minutes_opportunity_joint_grade.py
             python -u iphone_bot/assist_retrospective_backtest.py
             python -u iphone_bot/combined_probability_audit.py
             python -u iphone_bot/selection_quality_audit.py
-            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json docs/cbs_final_boxscores_status.json docs/missed_game_audit.json docs/projection_error_analysis.json docs/underprojection_research.json docs/extreme_miss_forensics.json docs/opportunity_backtest.json docs/assist_retrospective_backtest.json docs/shooting_efficiency_v1_prospective_grades.json docs/combined_probability_audit.json docs/selection_quality_audit.json
+            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json docs/cbs_final_boxscores_status.json docs/missed_game_audit.json docs/projection_error_analysis.json docs/underprojection_research.json docs/extreme_miss_forensics.json docs/opportunity_backtest.json docs/assist_retrospective_backtest.json docs/shooting_efficiency_v1_prospective_grades.json docs/minutes_v3_opportunity_v2_prospective.json docs/combined_probability_audit.json docs/selection_quality_audit.json
             if git diff --cached --quiet; then echo 'Latest results already published'; exit 0; fi
             git commit -m 'Settle real pregame NBA props from verified completed player box scores'
             if git push origin HEAD:main; then echo 'Postgame settlement successfully published'; exit 0; fi
