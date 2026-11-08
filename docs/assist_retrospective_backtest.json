@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-11-08T07:47:35.684080+00:00",
+  "generated_at": "2026-11-08T08:37:59.150708+00:00",
   "status": "RETROSPECTIVE_POST_HOC_RESEARCH_ONLY",
   "formula_created_after_game": true,
   "not_pregame_locked_shadow_predictions": true,
   "production_ai_unchanged": true,
   "simulated_probabilities_unchanged": true,
   "overall": {
-    "matched_assist_markets": 70,
+    "matched_assist_markets": 79,
     "combined_ai": {
-      "record": "32-38",
-      "wins": 32,
-      "losses": 38,
-      "eligible": 70,
-      "hit_rate": 0.4571
+      "record": "38-41",
+      "wins": 38,
+      "losses": 41,
+      "eligible": 79,
+      "hit_rate": 0.481
     },
     "assist_shadow_v1": {
-      "record": "32-38",
-      "wins": 32,
-      "losses": 38,
-      "eligible": 70,
-      "hit_rate": 0.4571
+      "record": "38-41",
+      "wins": 38,
+      "losses": 41,
+      "eligible": 79,
+      "hit_rate": 0.481
     },
-    "combined_ai_mae": 1.901,
-    "assist_shadow_mae": 1.872,
+    "combined_ai_mae": 1.849,
+    "assist_shadow_mae": 1.809,
     "distinct_game_dates": 2
   },
   "by_game": {
@@ -186,6 +186,26 @@
       "assist_shadow_mae": 3.401,
       "distinct_game_dates": 1
     },
+    "San Antonio Spurs @ Portland Trail Blazers": {
+      "matched_assist_markets": 9,
+      "combined_ai": {
+        "record": "6-3",
+        "wins": 6,
+        "losses": 3,
+        "eligible": 9,
+        "hit_rate": 0.6667
+      },
+      "assist_shadow_v1": {
+        "record": "6-3",
+        "wins": 6,
+        "losses": 3,
+        "eligible": 9,
+        "hit_rate": 0.6667
+      },
+      "combined_ai_mae": 1.444,
+      "assist_shadow_mae": 1.315,
+      "distinct_game_dates": 1
+    },
     "San Antonio Spurs @ Sacramento Kings": {
       "matched_assist_markets": 7,
       "combined_ai": {
@@ -270,9 +290,9 @@
   "coverage_exclusions": {
     "INSUFFICIENT_PREGAME_ASSIST_DATA": 45,
     "UNSTABLE_RECENT_MINUTES_ROLE": 5,
-    "HIGH_ASSIST_VOLATILITY": 2
+    "HIGH_ASSIST_VOLATILITY": 3
   },
-  "eligible_assist_markets_saved": 122,
+  "eligible_assist_markets_saved": 132,
   "matched_player_examples": [
     {
       "game": "New York Knicks @ Cleveland Cavaliers",
@@ -419,6 +439,27 @@
       "prior_same_team_games": 8,
       "latest_prior_game": "2026-11-04",
       "projected_minutes": 30.64,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "De'Aaron Fox",
+      "player_id": "1628368",
+      "team": "SAS",
+      "line": 4.5,
+      "actual_assists": 6.0,
+      "baseline_projection": 5.5,
+      "assist_shadow_projection": 5.6026,
+      "baseline_side": "OVER",
+      "shadow_side": "OVER",
+      "baseline_win": 1,
+      "shadow_win": 1,
+      "baseline_error": 0.5,
+      "shadow_error": 0.3974,
+      "prior_same_team_games": 9,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 29.21,
       "retrospective_only": true
     },
     {
@@ -1178,6 +1219,27 @@
       "retrospective_only": true
     },
     {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Scoot Henderson",
+      "player_id": "1630703",
+      "team": "POR",
+      "line": 3.5,
+      "actual_assists": 1.0,
+      "baseline_projection": 1.5,
+      "assist_shadow_projection": 1.3963,
+      "baseline_side": "UNDER",
+      "shadow_side": "UNDER",
+      "baseline_win": 1,
+      "shadow_win": 1,
+      "baseline_error": 0.5,
+      "shadow_error": 0.3963,
+      "prior_same_team_games": 8,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 23.54,
+      "retrospective_only": true
+    },
+    {
       "game": "San Antonio Spurs @ Sacramento Kings",
       "date": "2026-11-06",
       "player": "Victor Wembanyama",
@@ -1196,6 +1258,27 @@
       "prior_same_team_games": 8,
       "latest_prior_game": "2026-11-04",
       "projected_minutes": 31.27,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Victor Wembanyama",
+      "player_id": "1641705",
+      "team": "SAS",
+      "line": 2.5,
+      "actual_assists": 3.0,
+      "baseline_projection": 3.5,
+      "assist_shadow_projection": 3.1379,
+      "baseline_side": "OVER",
+      "shadow_side": "OVER",
+      "baseline_win": 1,
+      "shadow_win": 1,
+      "baseline_error": 0.5,
+      "shadow_error": 0.1379,
+      "prior_same_team_games": 9,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 29.81,
       "retrospective_only": true
     },
     {
@@ -1238,6 +1321,27 @@
       "prior_same_team_games": 9,
       "latest_prior_game": "2026-11-04",
       "projected_minutes": 30.21,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Toumani Camara",
+      "player_id": "1641739",
+      "team": "POR",
+      "line": 1.5,
+      "actual_assists": 0.0,
+      "baseline_projection": 2.2,
+      "assist_shadow_projection": 1.8809,
+      "baseline_side": "OVER",
+      "shadow_side": "OVER",
+      "baseline_win": 0,
+      "shadow_win": 0,
+      "baseline_error": 2.2,
+      "shadow_error": 1.8809,
+      "prior_same_team_games": 8,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 30.1,
       "retrospective_only": true
     },
     {
@@ -1301,6 +1405,48 @@
       "prior_same_team_games": 8,
       "latest_prior_game": "2026-11-04",
       "projected_minutes": 28.58,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Stephon Castle",
+      "player_id": "1642264",
+      "team": "SAS",
+      "line": 6.5,
+      "actual_assists": 5.0,
+      "baseline_projection": 3.8,
+      "assist_shadow_projection": 4.2696,
+      "baseline_side": "UNDER",
+      "shadow_side": "UNDER",
+      "baseline_win": 1,
+      "shadow_win": 1,
+      "baseline_error": 1.2,
+      "shadow_error": 0.7304,
+      "prior_same_team_games": 9,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 29.51,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Donovan Clingan",
+      "player_id": "1642270",
+      "team": "POR",
+      "line": 1.5,
+      "actual_assists": 0.0,
+      "baseline_projection": 1.9,
+      "assist_shadow_projection": 1.6389,
+      "baseline_side": "OVER",
+      "shadow_side": "OVER",
+      "baseline_win": 0,
+      "shadow_win": 0,
+      "baseline_error": 1.9,
+      "shadow_error": 1.6389,
+      "prior_same_team_games": 8,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 27.76,
       "retrospective_only": true
     },
     {
@@ -1406,6 +1552,27 @@
       "prior_same_team_games": 8,
       "latest_prior_game": "2026-11-04",
       "projected_minutes": 33.7,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Dylan Harper",
+      "player_id": "1642844",
+      "team": "SAS",
+      "line": 4.5,
+      "actual_assists": 4.0,
+      "baseline_projection": 4.8,
+      "assist_shadow_projection": 4.8217,
+      "baseline_side": "OVER",
+      "shadow_side": "OVER",
+      "baseline_win": 0,
+      "shadow_win": 0,
+      "baseline_error": 0.8,
+      "shadow_error": 0.8217,
+      "prior_same_team_games": 9,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 31.67,
       "retrospective_only": true
     },
     {
@@ -1658,6 +1825,48 @@
       "prior_same_team_games": 9,
       "latest_prior_game": "2026-11-06",
       "projected_minutes": 32.58,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Jrue Holiday",
+      "player_id": "201950",
+      "team": "POR",
+      "line": 4.5,
+      "actual_assists": 0.0,
+      "baseline_projection": 3.5,
+      "assist_shadow_projection": 3.7445,
+      "baseline_side": "UNDER",
+      "shadow_side": "UNDER",
+      "baseline_win": 1,
+      "shadow_win": 1,
+      "baseline_error": 3.5,
+      "shadow_error": 3.7445,
+      "prior_same_team_games": 8,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 28.48,
+      "retrospective_only": true
+    },
+    {
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "date": "2026-11-07",
+      "player": "Damian Lillard",
+      "player_id": "203081",
+      "team": "POR",
+      "line": 4.5,
+      "actual_assists": 7.0,
+      "baseline_projection": 5.1,
+      "assist_shadow_projection": 4.9092,
+      "baseline_side": "OVER",
+      "shadow_side": "OVER",
+      "baseline_win": 1,
+      "shadow_win": 1,
+      "baseline_error": 1.9,
+      "shadow_error": 2.0908,
+      "prior_same_team_games": 8,
+      "latest_prior_game": "2026-11-06",
+      "projected_minutes": 32.21,
       "retrospective_only": true
     },
     {

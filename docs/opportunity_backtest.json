@@ -6,55 +6,55 @@
   "live_hit_percentages_unchanged": true,
   "prospective_validation": false,
   "overall": {
-    "sample_size": 471,
-    "baseline_mae": 3.982,
-    "candidate_mae": 3.896,
-    "mae_change": -0.087,
-    "baseline_wins": 220,
-    "baseline_losses": 251,
-    "candidate_wins": 230,
-    "candidate_losses": 241
+    "sample_size": 517,
+    "baseline_mae": 3.991,
+    "candidate_mae": 3.915,
+    "mae_change": -0.076,
+    "baseline_wins": 245,
+    "baseline_losses": 272,
+    "candidate_wins": 253,
+    "candidate_losses": 264
   },
   "by_market": {
     "PTS": {
-      "sample_size": 132,
-      "baseline_mae": 5.032,
-      "candidate_mae": 4.974,
+      "sample_size": 145,
+      "baseline_mae": 5.036,
+      "candidate_mae": 4.978,
       "mae_change": -0.058,
-      "baseline_wins": 70,
-      "baseline_losses": 62,
-      "candidate_wins": 72,
-      "candidate_losses": 60
+      "baseline_wins": 74,
+      "baseline_losses": 71,
+      "candidate_wins": 75,
+      "candidate_losses": 70
     },
     "REB": {
-      "sample_size": 127,
-      "baseline_mae": 2.043,
-      "candidate_mae": 1.951,
-      "mae_change": -0.093,
-      "baseline_wins": 51,
-      "baseline_losses": 76,
-      "candidate_wins": 58,
-      "candidate_losses": 69
+      "sample_size": 139,
+      "baseline_mae": 2.067,
+      "candidate_mae": 1.985,
+      "mae_change": -0.082,
+      "baseline_wins": 58,
+      "baseline_losses": 81,
+      "candidate_wins": 65,
+      "candidate_losses": 74
     },
     "AST": {
-      "sample_size": 103,
-      "baseline_mae": 1.879,
-      "candidate_mae": 1.809,
-      "mae_change": -0.07,
-      "baseline_wins": 50,
-      "baseline_losses": 53,
-      "candidate_wins": 51,
-      "candidate_losses": 52
+      "sample_size": 113,
+      "baseline_mae": 1.871,
+      "candidate_mae": 1.811,
+      "mae_change": -0.06,
+      "baseline_wins": 57,
+      "baseline_losses": 56,
+      "candidate_wins": 58,
+      "candidate_losses": 55
     },
     "PRA": {
-      "sample_size": 109,
-      "baseline_mae": 6.959,
-      "candidate_mae": 6.828,
-      "mae_change": -0.13,
-      "baseline_wins": 49,
-      "baseline_losses": 60,
-      "candidate_wins": 49,
-      "candidate_losses": 60
+      "sample_size": 120,
+      "baseline_mae": 6.952,
+      "candidate_mae": 6.847,
+      "mae_change": -0.105,
+      "baseline_wins": 56,
+      "baseline_losses": 64,
+      "candidate_wins": 55,
+      "candidate_losses": 65
     }
   },
   "by_game": {
@@ -138,6 +138,16 @@
       "candidate_wins": 27,
       "candidate_losses": 23
     },
+    "San Antonio Spurs @ Portland Trail Blazers": {
+      "sample_size": 46,
+      "baseline_mae": 4.076,
+      "candidate_mae": 4.11,
+      "mae_change": 0.034,
+      "baseline_wins": 25,
+      "baseline_losses": 21,
+      "candidate_wins": 23,
+      "candidate_losses": 23
+    },
     "San Antonio Spurs @ Sacramento Kings": {
       "sample_size": 42,
       "baseline_mae": 3.569,
@@ -172,8 +182,8 @@
   "missing": {
     "missing_model_or_stat": 75
   },
-  "retrospective_candidates": 471,
-  "candidate_improved_markets": 278,
+  "retrospective_candidates": 517,
+  "candidate_improved_markets": 306,
   "examples": [
     {
       "player": "Paul George",
@@ -528,6 +538,28 @@
       "source": "HISTORICAL_CSV_COMPLETED_GAME"
     },
     {
+      "player": "Deni Avdija",
+      "player_id": "1630166",
+      "team": "POR",
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "game_date_eastern": "2026-11-07",
+      "market": "PRA",
+      "baseline": 34.5,
+      "candidate": 35.3025,
+      "actual": 20.0,
+      "line": 36.5,
+      "baseline_absolute_error": 14.5,
+      "candidate_absolute_error": 15.303,
+      "candidate_improved": false,
+      "prior_games": 8,
+      "last_prior_game": "2026-11-06",
+      "minutes_pred": 35.05,
+      "minutes_method": "ROBUST_V2_PAST_ONLY",
+      "fga_pred": 16.349,
+      "usage_proxy": 0.9656,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
+    },
+    {
       "player": "James Harden",
       "player_id": "201935",
       "team": "CLE",
@@ -702,6 +734,50 @@
       "fga_pred": 12.37,
       "usage_proxy": 1.0457,
       "source": "FANTASYDATA_FINAL_CROSSCHECKED"
+    },
+    {
+      "player": "Toumani Camara",
+      "player_id": "1641739",
+      "team": "POR",
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "game_date_eastern": "2026-11-07",
+      "market": "PRA",
+      "baseline": 20.2,
+      "candidate": 19.7426,
+      "actual": 8.0,
+      "line": 17.5,
+      "baseline_absolute_error": 12.2,
+      "candidate_absolute_error": 11.743,
+      "candidate_improved": true,
+      "prior_games": 8,
+      "last_prior_game": "2026-11-06",
+      "minutes_pred": 30.1,
+      "minutes_method": "ROBUST_V2_PAST_ONLY",
+      "fga_pred": 9.628,
+      "usage_proxy": 0.9626,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
+    },
+    {
+      "player": "Donovan Clingan",
+      "player_id": "1642270",
+      "team": "POR",
+      "game": "San Antonio Spurs @ Portland Trail Blazers",
+      "game_date_eastern": "2026-11-07",
+      "market": "PRA",
+      "baseline": 23.1,
+      "candidate": 25.1778,
+      "actual": 11.0,
+      "line": 24.5,
+      "baseline_absolute_error": 12.1,
+      "candidate_absolute_error": 14.178,
+      "candidate_improved": false,
+      "prior_games": 8,
+      "last_prior_game": "2026-11-06",
+      "minutes_pred": 27.76,
+      "minutes_method": "ROBUST_V2_PAST_ONLY",
+      "fga_pred": 10.154,
+      "usage_proxy": 1.1,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
     },
     {
       "player": "Zach LaVine",
@@ -900,72 +976,6 @@
       "fga_pred": 14.698,
       "usage_proxy": 1.0121,
       "source": "CBS_SPORTS_LIVE_FINAL"
-    },
-    {
-      "player": "Mario Hezonja",
-      "player_id": "1626209",
-      "team": "CLE",
-      "game": "New York Knicks @ Cleveland Cavaliers",
-      "game_date_eastern": "2026-11-07",
-      "market": "PTS",
-      "baseline": 10.5,
-      "candidate": 10.9142,
-      "actual": 0.0,
-      "line": 9.5,
-      "baseline_absolute_error": 10.5,
-      "candidate_absolute_error": 10.914,
-      "candidate_improved": false,
-      "prior_games": 9,
-      "last_prior_game": "2026-11-06",
-      "minutes_pred": 23.78,
-      "minutes_method": "ROBUST_V2_PAST_ONLY",
-      "fga_pred": 9.498,
-      "usage_proxy": 1.0376,
-      "source": "HISTORICAL_CSV_COMPLETED_GAME"
-    },
-    {
-      "player": "Christian Braun",
-      "player_id": "1631128",
-      "team": "DEN",
-      "game": "Denver Nuggets @ Indiana Pacers",
-      "game_date_eastern": "2026-11-07",
-      "market": "PRA",
-      "baseline": 19.3,
-      "candidate": 19.8709,
-      "actual": 9.0,
-      "line": 19.5,
-      "baseline_absolute_error": 10.3,
-      "candidate_absolute_error": 10.871,
-      "candidate_improved": false,
-      "prior_games": 7,
-      "last_prior_game": "2026-11-04",
-      "minutes_pred": 34.1,
-      "minutes_method": "FIVE_GAME_MINUTES_BASELINE_PAST_ONLY",
-      "fga_pred": 9.418,
-      "usage_proxy": 0.9647,
-      "source": "CBS_SPORTS_LIVE_FINAL"
-    },
-    {
-      "player": "Zach LaVine",
-      "player_id": "203897",
-      "team": "SAC",
-      "game": "San Antonio Spurs @ Sacramento Kings",
-      "game_date_eastern": "2026-11-06",
-      "market": "PTS",
-      "baseline": 24.2,
-      "candidate": 22.9125,
-      "actual": 14.0,
-      "line": 20.5,
-      "baseline_absolute_error": 10.2,
-      "candidate_absolute_error": 8.913,
-      "candidate_improved": true,
-      "prior_games": 8,
-      "last_prior_game": "2026-11-04",
-      "minutes_pred": 30.41,
-      "minutes_method": "ROBUST_V2_PAST_ONLY",
-      "fga_pred": 13.321,
-      "usage_proxy": 0.9586,
-      "source": "NBA_OFFICIAL_WEB_FINAL_CROSSCHECKED"
     }
   ],
   "constraints": {
@@ -984,5 +994,5 @@
     "Report only: no tuned weights, betting profitability or calibrated probabilities.",
     "A later genuinely pregame-locked shadow cohort is mandatory before promoting this candidate."
   ],
-  "generated_at": "2026-11-08T07:47:35.571433+00:00"
+  "generated_at": "2026-11-08T08:37:59.015747+00:00"
 }
