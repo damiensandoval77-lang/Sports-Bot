@@ -71,11 +71,16 @@ def report(records):
             "original_bias":original-actual,"opponent_bias":opponent-actual,
             "opponent_minus_original":opponent-original,
             "combined":combined,"actual":actual,"season_gap":season_gap,
+            "season_baseline":baseline,
             "risk":risk if isinstance(risk,dict) else None})
     by_market={}
     for market in MARKETS:
         subset=[r for r in rows if r["market"]==market]
         high=[r for r in subset if r["combined"]>=HIGH_PROJECTION[market]]
+        high_baseline=[r for r in subset if r["season_baseline"] is not None
+                       and r["season_baseline"]>=HIGH_PROJECTION[market]]
+        high_baseline_under=[r for r in high_baseline if r["season_gap"] is not None
+                             and r["season_gap"]<=-.2]
         low=[r for r in subset if r["combined"]<HIGH_PROJECTION[market]]
         flagged_minutes=[r for r in subset if r["risk"] is not None and r["risk"].get("needs_manual_review") is True]
         stable_minutes=[r for r in subset if r["risk"] is not None and r["risk"].get("needs_manual_review") is False]
@@ -86,6 +91,8 @@ def report(records):
         by_market[market]={
             "all":summarize(subset),
             "high_forecast_tier":summarize(high),
+            "high_frozen_season_baseline_tier":summarize(high_baseline),
+            "high_baseline_and_projection_20pct_below":summarize(high_baseline_under),
             "other_forecast_tier":summarize(low),
             "pregame_forecast_20pct_below_frozen_season_avg":summarize(below_baseline),
             "pregame_forecast_20pct_above_frozen_season_avg":summarize(above_baseline),
@@ -128,7 +135,7 @@ def report(records):
             "live_predictions_changed":False,
             "live_probabilities_changed":False},
         "limitations":[
-            "Pregame forecast tiers are fixed in advance; high actual outcomes do not determine the tiers.",
+            "Pregame forecast and frozen season-average tiers are fixed in advance; high actual outcomes do not determine the tiers.",
             "The fixed tier thresholds are research heuristics, not validated player-usage classifications.",
             "Opposing forecast differences are descriptive and do not establish opponent-caused errors.",
             "Recent or injury minutes correlations do not prove causality; incomplete frozen context is missing, never backfilled.",
