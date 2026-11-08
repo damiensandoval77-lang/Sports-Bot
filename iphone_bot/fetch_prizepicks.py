@@ -277,7 +277,7 @@ def quota_guard(saved,health,now,topup=None):
     # An HTTP 200 charged read proves the vendor is accepting account
     # requests despite a zero monthly header. It does not disclose the
     # remaining purchased top-up balance. Budget: MAX_PAGES=4 at no more than
-    # the published 10-credit compact-page cost, once per >=20 hours.
+    # the published 10-credit compact-page cost, no more often than 6h.
     # Stop when the vendor itself rejects the paid request with HTTP 429.
     # Require a *newer* one-shot authenticated successful read and only
     # authorize the immediately following bounded full-slate refresh.
@@ -294,7 +294,7 @@ def quota_guard(saved,health,now,topup=None):
         and 0<=(now-confirmed).total_seconds()<30*86400)
     # Avoid exhausting finite purchased credits by rebuilding the full board
     # after every unrelated repository commit or twice within one slate.
-    if (topup_access and old and 0<=(now-old).total_seconds()<20*3600
+    if (topup_access and old and 0<=(now-old).total_seconds()<6*3600
         and saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"):
         return "TOPUP_REFRESH_COOLDOWN_PRESERVE"
     if (saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
