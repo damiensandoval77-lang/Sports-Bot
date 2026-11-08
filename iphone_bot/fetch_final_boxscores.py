@@ -252,7 +252,9 @@ def pending_games(records,now=None):
             start=dt.datetime.fromisoformat(r["event_start"].replace("Z","+00:00"))
             if start.tzinfo is None:continue
             age=(current-start).total_seconds()
-            if age<2*3600 or age>4*86400:continue
+            # Retry every historical pending game, not just the last four days.
+            # Settlement still requires an independently verified final box score.
+            if age<2*3600:continue
             day=local_date(r["event_start"])
             pair=r["game"].split(" @ ")
             if len(pair)!=2:continue
