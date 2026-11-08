@@ -307,6 +307,7 @@ def summary(rows,now=None,source=None):
        "model":"PROVISIONAL_ORIGINAL",
        "method":METHOD,"real_money_wagered":False,
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
+       "void_dnp":sum(r.get("status")=="VOID_DNP" for r in rows),
        "performance":compute_performance(rows),
        "selective_challenger":selective_evaluate(rows),
        "season_average_research":season_average_report(rows),
@@ -497,6 +498,11 @@ def main():
     if cbs_path.exists():
         completed.extend(json.loads(cbs_path.read_text()))
     rows=settle(rows,completed)
+    try:
+        from .dnp_settlement import apply_verified_dnp,load_fixture
+    except ImportError:
+        from dnp_settlement import apply_verified_dnp,load_fixture
+    rows=apply_verified_dnp(rows,load_fixture())
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
     source_path=ROOT/"docs/current_form.json"
     source=json.loads(source_path.read_text()) if source_path.exists() else None
