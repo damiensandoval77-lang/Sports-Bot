@@ -53,3 +53,11 @@ Added:
 - Fixed invalid variable reference in `iphone_bot/lineup_onoff_research.py` which would have raised an exception when validating on/off groups.
 
 Remaining for P1: Confirm authorized ongoing use in prop analytics, validate independent game-level with/without coverage tied to each query, and obtain a permissible production export. Public probe HTTP 200 proves technical accessibility, not provider authorization or actual historical sample quality. No live predictions changed.
+
+## P1 end-to-end transport checkpoint
+
+The technical response pipeline is connected: `iphone_bot/assemble_pbpstats_wowy.py` accepts two independently obtained, authorized, properly date-bounded provider JSON responses, calls `pbpstats_wowy_adapter.normalize_pair`, then passes the resulting normalized data through `import_authorized_onoff.validate`. Approved data is stored only in gitignored `data/nba/private`, after which pregame research can snapshot licensed teammate OUT splits with the original Combined AI unchanged.
+
+The build runs synthetic end-to-end tests through the new `iphone_bot/tests/test_assemble_pbpstats_wowy.py` in both GitHub research and trained-board workflows. These tests verify software behavior, **not** current-season game availability, legal data permissions, or model effectiveness.
+
+Still blocked: explicit permission for this use case, an actual 2026-27 authorized provider feed, independently verified per-split game dates (not guessed), and confirmation the latest new CI checks passed. Until these clear, live provider ingestion stays disabled and WOWY prospective coverage remains zero.
