@@ -7,6 +7,7 @@ original predictions in immutable paper ledgers. Hide injured/unverifiable
 new picks rather than show stale projected numbers as current.
 """
 import json
+import copy
 from datetime import datetime,timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -49,6 +50,8 @@ def refresh(board,injuries,games,now):
     issued=utc(injuries["report_issued_at"])
     if not 0<=(now-issued).total_seconds()<=18*3600:
         return board,{"status":"STALE_OR_FUTURE_REPORT_NO_CHANGES"}
+    if board.get("injury_report_issued_at")==issued.isoformat():
+        return board,{"status":"SAME_OFFICIAL_REPORT_ALREADY_APPLIED"}
     generated=utc(board["generated_at"])
     if not 0<=(now-generated).total_seconds()<=8*3600:
         return board,{"status":"STALE_OR_FUTURE_SPORTSBOOK_BOARD_NO_CHANGES"}
@@ -64,7 +67,7 @@ def refresh(board,injuries,games,now):
     kept=[]
     counts=defaultdict(int)
     for source in board.get("comparisons",[]):
-        row=dict(source)
+        row=copy.deepcopy(source)
         try:
             start=utc(row["start"])
             if start<=now:
@@ -140,6 +143,10 @@ def refresh(board,injuries,games,now):
                 counts["baseline_or_restored"]+=1
             projected=float(row["combined_projection"])
             row["combined_difference"]=round(projected-float(row["line"]),1)
+            if row.get("shadow_projection") is not None:
+                row["shadow_difference"]=round(float(row["shadow_projection"])-float(row["line"]),1)
+            else:
+                row["shadow_difference"]=None
             row["difference"]=round(float(row["projection"])-float(row["line"]),1)
             row["combined_direction"]="Over" if projected>row["line"] else "Under" if projected<row["line"] else "Neutral"
             row["lean"]="Over" if row["difference"]>0 else "Under" if row["difference"]<0 else "Neutral"
