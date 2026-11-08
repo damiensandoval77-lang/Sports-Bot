@@ -64,13 +64,15 @@ jobs:
         run: |
           set -euo pipefail
           cp docs/shooting_efficiency_v1_backtest.json "$RUNNER_TEMP/shooting-report.json"
+          cp docs/current_shooting_coverage.json "$RUNNER_TEMP/shooting-coverage.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4; do
             git fetch origin main
             git reset --hard origin/main
             cp "$RUNNER_TEMP/shooting-report.json" docs/shooting_efficiency_v1_backtest.json
-            git add docs/shooting_efficiency_v1_backtest.json
+            cp "$RUNNER_TEMP/shooting-coverage.json" docs/current_shooting_coverage.json
+            git add docs/shooting_efficiency_v1_backtest.json docs/current_shooting_coverage.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish lagged shooting efficiency V1 historical and frozen AI paired evaluation'
             if git push origin HEAD:main; then exit 0; fi
