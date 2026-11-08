@@ -186,7 +186,20 @@ def main():
         if source.exists():shadows[stat]=joblib.load(source)
     injury_path=ROOT/"docs/injury_context.json"
     injuries=json.loads(injury_path.read_text()) if injury_path.exists() else {}
-    data=generate(feed,form,games,models,shadows,injuries=injuries)
+    try:
+        data=generate(feed,form,games,models,shadows,injuries=injuries)
+    except ValueError as error:
+        # Provider exhaustion/stale snapshots are not model failures.
+        # Never republish the old prop board with a fresh timestamp.
+        known_unavailable={
+            "PrizePicks source no longer a current observation",
+            "Only real, independently authenticated provider feed allowed",
+            "Missing or stale NBA 2026-27 player form"}
+        if str(error) in known_unavailable:
+            print("No verified fresh PrizePicks provider observation; "
+                  "preserving existing pretip research and skipping predictions")
+            return
+        raise
     if not data["comparisons"]:
         print("No supported upcoming PrizePicks player/model comparisons; not replacing previous nonempty archive")
         return
