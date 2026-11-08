@@ -1,0 +1,63 @@
+name: Freeze and grade authentic pregame PrizePicks AI research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks_ai_research.json'
+      - 'iphone_bot/prizepicks_research_ledger.py'
+      - 'iphone_bot/tests/test_prizepicks_research_ledger.py'
+      - '.github/workflows/nba-prizepicks-research-ledger.yml'
+  schedule:
+    - cron: '27 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prizepicks-research-ledger
+  cancel-in-progress: false
+jobs:
+  research_grades:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify immutable pretip forecast and final-matchup integrity
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_research_ledger.py' -v
+          python -m py_compile iphone_bot/prizepicks_research_ledger.py
+      - name: Read most recent completed NBA player games
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -u iphone_bot/fetch_current_form.py || echo 'Completed-game CSV unavailable; preserve pending, never invent outcomes'
+          mkdir -p "$RUNNER_TEMP/current"
+          if [ -f data/nba/current/current_games.json ]; then
+            cp data/nba/current/current_games.json "$RUNNER_TEMP/current/current_games.json"
+          fi
+      - name: Preserve new pretip snapshots and grade only verified observed games
+        run: python -u -m iphone_bot.prizepicks_research_ledger
+      - name: Publish safely on latest branch without losing prior snapshots
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if [ -f "$RUNNER_TEMP/current/current_games.json" ]; then
+              mkdir -p data/nba/current
+              cp "$RUNNER_TEMP/current/current_games.json" data/nba/current/current_games.json
+            fi
+            python -u -m iphone_bot.prizepicks_research_ledger
+            git add docs/prizepicks_research_ledger.json docs/prizepicks_research_results.json
+            if git diff --cached --quiet; then echo 'Research snapshots and grades current'; exit 0; fi
+            git commit -m 'Preserve and grade immutable pretip PrizePicks AI research snapshots'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo 'Concurrent publisher prevented safe update'
+          exit 1
