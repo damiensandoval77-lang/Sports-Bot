@@ -694,6 +694,13 @@ function renderAI(){
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
+  // Explicit +EV gate: directional strength and simulation volume alone
+  // cannot establish a profitable edge on real prices or pick'em payouts.
+  const edge=p.edge_assessment;
+  if(edge&&edge.verified_edge!==true){
+   main.append(node("div","mini","Edge not verified · calibrated combined-model"+
+     " outcomes and matching payout/price required."));
+  }
   const screen=p.reliability_screen;
   if(screen?.validated===false){
    const blockerText=(screen.blockers||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
