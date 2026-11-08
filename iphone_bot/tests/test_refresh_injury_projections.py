@@ -69,7 +69,7 @@ class FastInjuryRefreshTests(unittest.TestCase):
         self.assertEqual(counters["ruled_out_player_removed"],1)
 
     def test_unsupported_injury_never_keeps_old_pick_masquerading_as_new(self):
-        changed,counters=refresh(board(),report(),games()[:5],NOW)
+        changed,counters=refresh(board(),report(),[g for g in games() if g["date"]<"2026-10-05"],NOW)
         self.assertEqual(changed["comparisons"],[])
         self.assertEqual(counters["unsupported_injury_pick_removed"],1)
 
