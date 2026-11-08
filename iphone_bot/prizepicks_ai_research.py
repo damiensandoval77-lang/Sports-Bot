@@ -27,9 +27,24 @@ ROOT=Path(__file__).resolve().parents[1]
 ET=ZoneInfo("America/New_York")
 STATS=("PTS","REB","AST","PRA")
 
-def generate(feed,form,current_games,models,shadows=None,now=None):
+def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None):
     now=now or datetime.now(timezone.utc)
     shadows=shadows or {}
+    injuries=injuries or {}
+    report_valid=(injuries.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED"
+                  and injuries.get("injury_data_verified") is True)
+    try:
+        issued=utc(injuries["report_issued_at"])
+        report_valid=report_valid and 0<=(now-issued).total_seconds()<=18*3600
+    except (KeyError,ValueError,TypeError):
+        report_valid=False
+    unavailable={}
+    if report_valid:
+        for p in injuries.get("players",[]):
+            if not isinstance(p,dict):continue
+            if str(p.get("status","")).upper() not in ("OUT","DOUBTFUL"):continue
+            if p.get("game_date") and p.get("player_id") and p.get("team"):
+                unavailable[(str(p["player_id"]),str(p["team"]),str(p["game_date"]))]=str(p["status"]).upper()
     if feed.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
         raise ValueError("Only real, independently authenticated provider feed allowed")
     if form.get("season")!="2026-27" or (now-utc(form["updated_at"])).total_seconds()>48*3600:
@@ -60,8 +75,11 @@ def generate(feed,form,current_games,models,shadows=None,now=None):
                 skipped["missing_or_ambiguous_roster_team"]+=1
                 continue
             person=people[0]
-            dates=sorted(history[str(person["player_id"])].values(),key=lambda g:g["date"])
             date=start.astimezone(ET).date()
+            if unavailable.get((str(person["player_id"]),str(offer["team"]),date.isoformat())):
+                skipped["official_game_day_out_or_doubtful"]+=1
+                continue
+            dates=sorted(history[str(person["player_id"])].values(),key=lambda g:g["date"])
             past=[x for x in dates if datetime.fromisoformat(x["date"]).date()<date]
             if len(past)<5:
                 skipped["insufficient_completed_current_season_games"]+=1;continue
@@ -136,7 +154,9 @@ def main():
         models[stat]=joblib.load(ROOT/f"models/nba/provisional/{stat}_model.joblib")
         source=ROOT/f"models/nba/defense_shadow/{stat}_model.joblib"
         if source.exists():shadows[stat]=joblib.load(source)
-    data=generate(feed,form,games,models,shadows)
+    injury_path=ROOT/"docs/injury_context.json"
+    injuries=json.loads(injury_path.read_text()) if injury_path.exists() else {}
+    data=generate(feed,form,games,models,shadows,injuries=injuries)
     if not data["comparisons"]:
         print("No supported upcoming PrizePicks player/model comparisons; not replacing previous nonempty archive")
         return
