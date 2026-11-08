@@ -968,6 +968,30 @@ function renderAI(){
    body.append(node("div","mini","Research minutes estimate: "+fmt(minutesResearch.expected_minutes)+
      " (recent-form estimate, not a confirmed rotation; last five average "+fmt(minutesResearch.observed_l5)+")."));
   else body.append(node("div","mini","Projected minutes unavailable: insufficient recent observations."));
+  const minutesV3=p.minutes_v3_research;
+  if(minutesV3?.status==="PREGAME_MINUTES_V3_RESEARCH"){
+    body.append(node("div","detail-heading","Minutes V3 — rotation and teammate on/off research"));
+    body.append(node("div","mini",
+       "V3 "+fmt(minutesV3.expected_minutes)+
+       " min · V2 "+fmt(minutesV3.baseline_v2)+
+       " min · historical rotation shift "+fmt(minutesV3.rotation_adjustment)+
+       " · verified teammate with/without shift "+fmt(minutesV3.teammate_adjustment)+
+       " · official-out samples "+minutesV3.teammates_evaluated+
+       ". Research-only; not the live minutes assumption."));
+  }
+  const oppV2=p.opportunity_v2_research?.markets?.[p.stat];
+  if((p.stat==="AST"||p.stat==="REB")&&oppV2?.status==="PREGAME_OPPORTUNITY_V2_RESEARCH"){
+    body.append(node("div","detail-heading",
+      (p.stat==="AST"?"Assists":"Rebounds")+" Opportunity V2 — research"));
+    body.append(node("div","research-note",
+       "Experimental projection "+fmt(oppV2.projection)+
+       " · raw opportunity rate "+fmt(oppV2.raw_projection)+
+       " · "+oppV2.prior_games+" past games · source "+
+       (oppV2.source_kind==="OBSERVED_TRACKING_CHANCES_CONVERTED"?
+           "actual tracked opportunity chances":
+           "box-score production per minute (NOT tracking chances)")+
+       ". Combined AI unchanged; projection frozen for later grading."));
+  }
   const minuteV2=p.minutes_v2_research;
   if(minuteV2?.status==="RESEARCH_FORECAST_UNVALIDATED"){
    body.append(node("div","mini","Minutes V2 research: "+
