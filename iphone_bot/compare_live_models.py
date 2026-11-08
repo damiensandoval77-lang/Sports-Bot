@@ -29,6 +29,8 @@ from combined_projection import combine_projections
 from projection_explanation import explain_projection
 from research_context import minutes_estimate,positional_allowance,teammate_on_off,injury_minutes_research,minutes_walkforward_backtest
 from minutes_model_v2 import forecast as minutes_v2_forecast,backtest as minutes_v2_backtest
+from minutes_v3_research import forecast as minutes_v3_forecast,team_context as verified_team_context
+from opportunity_v2_research import forecast as opportunity_v2_forecast
 from minutes_early_season_research import forecast as early_minutes_forecast,backtest as early_minutes_backtest
 from shot_profile_research import predict_attempts as shot_attempt_profile
 from shooting_efficiency_v1 import forecast as shooting_efficiency_v1,opponent_defense_index
@@ -231,6 +233,7 @@ def main():
                 raise ValueError("Unrecognized opponent shadow model provenance")
     tracking_rows,tracking_coverage=load_tracking()
     shooting_defense=opponent_defense_index(all_games)
+    team_games_for_v3=verified_team_context(all_games)
     for row in valid:
         target=row["stat"];model=models[target]
         features=model["features"];fill=model["fill_values"]
@@ -404,6 +407,19 @@ def main():
                 "status":"POINTS_ONLY_RESEARCH_SHADOW",
                 "model":"SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
                 "projection":None,"production_applied":False})
+        # Both challengers share the SAME pretip Minutes V3 context.
+        # Official OUT teammate IDs are independently dated; do not infer.
+        row["minutes_v3_research"]=minutes_v3_forecast(
+            history,upcoming_date,row["team"],player_id=row["player_id"],
+            verified_out_ids=[x["player_id"] for x in row["official_out_teammates"]],
+            team_games=team_games_for_v3,pretip_injury_verified=official_report)
+        row["opportunity_v2_research"]=opportunity_v2_forecast(
+            history,upcoming_date,row["team"],player_id=row["player_id"],
+            baseline_by_stat={target:combined["projection"]} if target in ("AST","REB") else {},
+            minutes=row["minutes_v3_research"],tracking=tracking_rows,
+            team_games=team_games_for_v3,
+            verified_out_ids=[x["player_id"] for x in row["official_out_teammates"]],
+            pretip_injury_verified=official_report)
         row["season_average_challenger"]=season_candidate(
             history,upcoming_date,row["team"],target,combined["projection"])
         row["season_feature_method"]="RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI"
@@ -545,6 +561,9 @@ def main():
        "minutes_early_season_validation":early_minutes_backtest(all_games),
        "minutes_early_season_applied_to_live_model":False,
        "minutes_v2_applied_to_live_model":False,
+       "minutes_v3_research_only":True,
+       "opportunity_v2_research_only":True,
+       "minutes_v3_opportunity_v2_production_applied":False,
        "shot_profile_applied_to_live_model":False,
        "shooting_efficiency_v1_research_only":True,
        "shooting_efficiency_v1_applied_to_live_model":False,
