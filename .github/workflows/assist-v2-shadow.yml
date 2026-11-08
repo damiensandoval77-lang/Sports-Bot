@@ -32,12 +32,27 @@ jobs:
         run: |
           python -m py_compile iphone_bot/assist_v2_research.py iphone_bot/assist_v2_shadow_capture.py
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_v2_*.py' -v
+      # A current-form outage must not prevent settling historical snapshots.
       - name: Load current player form for strictly prior game logs
+        id: refresh_form
+        continue-on-error: true
         run: python -u iphone_bot/fetch_current_form.py
+      # Board staleness is expected outside a pregame capture window.
+      # Capture and grading are separate obligations: even if capture fails,
+      # retain historical shadow records and grade verified finals.
       - name: Lock research-only pretip projections from fresh verified board
+        id: capture_shadow
+        continue-on-error: true
         run: python -u -m iphone_bot.assist_v2_shadow_capture --mode capture
-      - name: Grade only verified final player box scores
+      - name: Grade previously locked predictions using verified final sources
         run: python -u -m iphone_bot.assist_v2_shadow_capture --mode settle
+      - name: Report capture-side source failures without blocking settlement
+        run: |
+          echo "Current player form outcome: ${{ steps.refresh_form.outcome }}"
+          echo "New pretip capture outcome: ${{ steps.capture_shadow.outcome }}"
+          if [ "${{ steps.refresh_form.outcome }}" = "failure" ] || [ "${{ steps.capture_shadow.outcome }}" = "failure" ]; then
+            echo "::warning::Assist V2 pregame inputs unavailable. Existing saved predictions were still sent through verified final grading."
+          fi
       - name: Assert research isolation and independent scoring
         run: |
           python - <<'PY'
