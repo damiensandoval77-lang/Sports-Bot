@@ -558,14 +558,14 @@ function renderAI(){
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
-  if(p.injury_context_requires_reprojection){
-   const outNames=(p.official_out_teammates||[]).map(x=>x.player).join(", ");
-   main.append(node("div","research-note research-risk",
-     "INJURY ALERT: "+outNames+" officially OUT. Baseline AI and SIM % are NOT adjusted. "+
-     (p.injury_scenario_projection!=null?
-      "Conditional historical-minutes scenario: "+fmt(p.injury_scenario_projection)+" "+p.stat+" (research only).":
-      "No verified injury-adjusted scenario available.")+
-     " Verify updated lineups before using this pick."));
+  if(p.injury_reprojection_status==="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"){
+   const names=[...(p.official_out_teammates||[]),...(p.official_out_opponents||[])]
+     .map(x=>x.player).join(", ");
+   main.append(node("div","research-note",
+     "UPDATED FOR OFFICIAL OUT: "+names+". New projected "+p.stat+" "+
+     fmt(projected)+" (before injury "+fmt(p.preinjury_combined_projection)+
+     "). Projection and estimated probability were recalculated using prior games; "+
+     "injury impact is unvalidated."));
   }
   const lean=node("div","ai-lean");
   lean.append(node("span","ai-lean-title","AI LEAN"),
@@ -730,17 +730,13 @@ function renderAI(){
   }else{
    body.append(node("div","mini","Shot-profile research unavailable: fewer than eight prior complete minutes/attempt records."));
   }
-  if(Array.isArray(p.official_out_teammates)&&p.official_out_teammates.length){
-   body.append(node("div","research-note research-risk",
-     "OFFICIAL GAME-DAY OUT: "+p.official_out_teammates.map(x=>x.player).join(", ")+
-     ". The original AI projection does not include a validated injury adjustment. "+
-     "Its displayed hit percentage must not be treated as injury-adjusted."));
-  }
-  if(p.injury_scenario_projection!=null){
+  if(p.injury_reprojection_status==="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"){
    body.append(node("div","research-note",
-     "INJURY-CONDITIONED RESEARCH SCENARIO: "+fmt(p.injury_scenario_projection)+
-     " "+p.stat+" versus original Combined AI "+fmt(p.combined_projection)+
-     ". Uses a bounded prior-minutes scenario; not a confirmed rotation, calibrated prediction, or automatic pick change."));
+     "INJURY-UPDATED PROJECTION: "+fmt(p.combined_projection)+" "+p.stat+
+     " · Previous model estimate: "+fmt(p.preinjury_combined_projection)+
+     " · Verified OUT teammates: "+(p.official_out_teammates||[]).map(x=>x.player).join(", ")+
+     " · Verified OUT opponents: "+(p.official_out_opponents||[]).map(x=>x.player).join(", ")+
+     ". Adjusted using historical minutes and/or defensive results; this adjustment is not yet prospectively validated."));
   }
   const minuteScenario=p.injury_minutes_research;
   if(minuteScenario?.status==="HISTORICAL_SCENARIO_RESEARCH_ONLY"){
