@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_opponent_v2,grade_rebound_v1,grade_licensed_onoff_shadows,grade_sanity_shadow,stress_research_report,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_opponent_v2,grade_rebound_v1,grade_tracking_opportunities,grade_licensed_onoff_shadows,grade_sanity_shadow,stress_research_report,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -53,6 +53,45 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(grade_rebound_v1(locked,[])["paired_markets"],0)
         after=snapshot(b,injury(),locked,NOW,past)[0]
         self.assertEqual(after,locked)
+
+    def test_authorized_chances_are_frozen_and_scored_on_same_line_only(self):
+        from iphone_bot.tests.test_tracking_opportunities_v1 import feed
+        b=board()
+        hist=[{"id":"10","team":"BOS","date":f"2026-10-{d:02d}",
+               "MIN":30.,"PTS":14.,"REB":8.,"AST":6.,"FGA":10.}
+              for d in range(15,25)]
+        source=feed()
+        source["generated_at"]="2026-11-06T22:45:00Z"
+        # Both assists and rebounds use the same authorized observed games.
+        cards=[]
+        for market,baseline,line in (("AST",4.,4.5),("REB",6.,6.5)):
+            b2=board()
+            b2["comparisons"][0].update(stat=market,line=line,
+               combined_projection=baseline,projection=baseline)
+            rows,info=snapshot(b2,injury(),[],NOW,hist,None,source)
+            shadow=rows[0]["tracking_opportunity_shadow"]
+            self.assertEqual(shadow["status"],"PREGAME_TRACKING_OPPORTUNITY_SHADOW")
+            self.assertFalse(shadow["live_applied"])
+            self.assertEqual(info["tracking_opportunity_shadow_locked"],1)
+            self.assertEqual(b2["comparisons"][0]["combined_projection"],baseline)
+            cards.append(rows[0])
+        final=[]
+        for r in cards:
+            final.append({"status":"SETTLED","event_start":START,
+               "captured_at":NOW,"player_id":"10","market":r["market"],
+               "original_projection":r["combined_projection"],
+               "line":r["line"],"actual":8.})
+        graded=grade_tracking_opportunities(cards,final)
+        self.assertEqual(graded["overall"]["paired_markets"],2)
+        self.assertEqual(graded["overall"]["exact_line_eligible"],2)
+        self.assertFalse(graded["eligible_for_production"])
+        wrong=[{**p,"line":p["line"]+1} for p in final]
+        self.assertEqual(grade_tracking_opportunities(cards,wrong)["overall"]["exact_line_eligible"],0)
+        self.assertEqual(snapshot(b2,injury(),[cards[-1]],NOW,hist,None,source)[0],[cards[-1]])
+        denied=dict(source)
+        denied["licensed_use_verified"]=False
+        rows,_=snapshot(b2,injury(),[],NOW,hist,None,denied)
+        self.assertIsNone(rows[0]["tracking_opportunity_shadow"]["projection"])
 
     def test_pregame_frozen_snapshot_and_no_live_modification(self):
         existing=[]
