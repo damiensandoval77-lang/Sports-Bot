@@ -592,6 +592,7 @@ function renderAI(){
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
  $("ai-total").textContent=entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
+  try{
   const outer=node("article","prop compact-prop"),main=node("div","mainline");
   const head=node("div","compact-head"),identity=node("div","compact-identity");
   const shortStats={PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"};
@@ -909,6 +910,12 @@ function renderAI(){
   body.append(node("div","mini","Injury and lineup status not verified. Projections are independent of book prices."));
   if(p.missing_features?.length)body.append(node("div","mini","Training feature substitutes: "+p.missing_features.join(", ")));
   details.append(summary,body);outer.append(details);return outer;
+  }catch(error){
+   console.error("Sports-Bot AI card failed",{
+     player:p?.player,team:p?.team,stat:p?.stat,game:p?.game,error});
+   return empty("Could not display "+String(p?.player||"player")+" "+String(p?.stat||"prop")+
+     " · isolated card error: "+String(error?.message||error));
+  }
  });
  $("ai-board").replaceChildren(...(list.length?list:[empty((aiFresh||aiArchiveMode)?"No saved AI predictions match your filters.":"AI comparisons unavailable or no verified pregame snapshot.")]));
 }
@@ -2093,22 +2100,35 @@ const status=[];
  status.push(p.status==="fulfilled"?"Results loaded":"Results fetch failed");
  status.push(ppState==="PROVIDER_RATE_LIMITED"?"PrizePicks provider quota exhausted":ppState==="NOT_CONFIGURED"?"PrizePicks not connected":ppFresh?"PrizePicks lines loaded":ppState==="LIVE_NO_MATCHED_PRIZEPICKS_LINES"?"PrizePicks no matches":"PrizePicks unavailable/stale");
  $("data-health").textContent=status.join(" · ");
- try{
-  refreshOverview();
-  renderGameStrip();
-  renderAI();
-  renderPrizePicksBoard();
-  renderOdds();
-  renderForm();
-  renderPaper();
-  refreshSelectedLiveTracker().catch(()=>{});
- }catch(error){
-  $("status").textContent="DISPLAY ERROR";
-  $("status").className="status warn";
-  $("global-warning").textContent="Dashboard display problem: "+String(error.message||error)+". Tap Refresh data or reopen the page.";
-  $("data-health").textContent+=" · Display error";
-  console.error("Sports-Bot render error",error);
+ // Render each dashboard section independently. One bad provider record must
+ // never prevent the entire AI board, real lines, performance or slate loading.
+ const renderErrors=[];
+ for(const [label,draw] of [
+  ["Overview",refreshOverview],["Matchups",renderGameStrip],
+  ["AI Board",renderAI],["PrizePicks",renderPrizePicksBoard],
+  ["Sportsbook",renderOdds],["Player Stats",renderForm],
+  ["Performance",renderPaper]]){
+  try{draw();}
+  catch(error){
+   const message=String(error?.message||error);
+   renderErrors.push(label+": "+message);
+   console.error("Sports-Bot render error in "+label,error);
+   const ids={"Matchups":"game-strip","AI Board":"ai-board",
+    "PrizePicks":"pp-board","Sportsbook":"odds-board",
+    "Player Stats":"form-board"};
+   const region=ids[label]&&$(ids[label]);
+   if(region)region.replaceChildren(empty(label+" rendering failed: "+message));
+  }
  }
+ if(renderErrors.length){
+  $("data-health").textContent+=" · Section errors: "+renderErrors.join(" | ");
+  $("global-warning").textContent="Some dashboard sections could not render: "+
+    renderErrors.join(" | ")+". Other sections remain available.";
+  $("status").textContent="PARTIAL DATA";
+  $("status").className="status warn";
+ }
+ refreshSelectedLiveTracker().catch(error=>
+  console.error("Sports-Bot live tracker refresh failed",error));
 }
 for(const control of ["pp-board-search","pp-board-market"])$(control).addEventListener("input",renderPrizePicksBoard);
 for(const control of ["ai-search","ai-stat","ai-sort"])$(control).addEventListener("input",renderAI);
