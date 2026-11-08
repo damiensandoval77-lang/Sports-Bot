@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'iphone_bot/prospective_research_gate.py'
+      - 'iphone_bot/quote_capture_coverage.py'
+      - 'iphone_bot/capture_ai_board.py'
+      - 'iphone_bot/tests/test_quote_capture_coverage.py'
       - 'iphone_bot/tests/test_prospective_research_gate.py'
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/research_storage_integrity.py'
@@ -23,8 +26,9 @@ jobs:
           python-version: '3.11'
       - name: Validate mandatory diagnostics and historical no-backfill rules
         run: |
-          python -m py_compile iphone_bot/prospective_research_gate.py iphone_bot/projection_upgrade_research.py iphone_bot/research_storage_integrity.py
+          python -m py_compile iphone_bot/prospective_research_gate.py iphone_bot/projection_upgrade_research.py iphone_bot/research_storage_integrity.py iphone_bot/quote_capture_coverage.py iphone_bot/capture_ai_board.py
           python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_quote_capture_coverage.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
       - name: Audit existing immutable NBA pretip source records
