@@ -1,13 +1,8 @@
 name: One-time PBP Stats current-season game-level overlap audit
 on:
+  # Deliberately manual-only: do not repeatedly poll public third-party
+  # endpoints on every code change or commit without confirmed rate limits.
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/probe_pbpstats_game_coverage.py'
-      - 'iphone_bot/pbpstats_game_coverage.py'
-      - 'iphone_bot/tests/test_pbpstats_game_coverage.py'
-      - '.github/workflows/pbpstats-onoff-coverage-probe.yml'
 permissions:
   contents: write
 concurrency:
