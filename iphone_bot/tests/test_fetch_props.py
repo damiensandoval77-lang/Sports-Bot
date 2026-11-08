@@ -84,6 +84,45 @@ class FetchPropsTests(unittest.TestCase):
         self.assertEqual(len(report["events_covered"]),6)
         self.assertEqual(len(report["picks"]),12)
 
+    def test_no_upcoming_event_does_not_erase_prior_real_quotes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            prior='{"picks":[{"player":"Real pregame quote"}]}\\n'
+            (root/"out.json").write_text(prior)
+            (root/"compact.json").write_text('{"picks":[{"player":"Real"}]}')
+            with patch.object(fetch_props,"OUT",root/"out.json"),\
+                 patch.object(fetch_props,"COMPACT",root/"compact.json"),\\
+                 patch.object(fetch_props,"STATUS",root/"status.json"),\\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\\
+                 patch.object(fetch_props,"request",return_value=([],500)):
+                fetch_props.main()
+            self.assertEqual((root/"out.json").read_text(),prior)
+            self.assertIn('"Real"',(root/"compact.json").read_text())
+            self.assertEqual(json.loads((root/"status.json").read_text())["status"],
+                             "NO_UPCOMING_EVENTS_PRESERVED")
+
+    def test_no_two_sided_prices_does_not_erase_prior_real_quotes(self):
+        now=fetch_props.dt.datetime.now(fetch_props.dt.timezone.utc)
+        event=fixture_event(1)
+        event["commence_time"]=(now+fetch_props.dt.timedelta(hours=3)).isoformat()
+        def fake(path,key,**kwargs):
+            if path=="/events":return [event],100
+            return {"bookmakers":[]},90
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            (root/"out.json").write_text('{"picks":[{"player":"Real"}]}')
+            (root/"compact.json").write_text('{"picks":[{"player":"Real"}]}')
+            with patch.object(fetch_props,"OUT",root/"out.json"),\\
+                 patch.object(fetch_props,"COMPACT",root/"compact.json"),\\
+                 patch.object(fetch_props,"STATUS",root/"status.json"),\\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\\
+                 patch.object(fetch_props,"request",side_effect=fake):
+                fetch_props.main()
+            self.assertIn('"Real"',(root/"out.json").read_text())
+            self.assertIn('"Real"',(root/"compact.json").read_text())
+            self.assertEqual(json.loads((root/"status.json").read_text())["status"],
+                             "NO_TWO_SIDED_PLAYER_PROPS_PRESERVED")
+
     def test_credit_budget_reports_partial_slate_truthfully(self):
         events=[fixture_event(i) for i in range(6)]
         def fake(path,key,**kwargs):
