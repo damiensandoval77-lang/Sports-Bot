@@ -1,7 +1,7 @@
 "use strict";
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const L=require("../docs/live-prop-tracker.js");
+const L=require("../../docs/live-prop-tracker.js");
 const GAME="Denver Nuggets @ Indiana Pacers";
 const EVENT={
  id:"401888888",date:"2026-11-08T00:00:00Z",
