@@ -44,11 +44,19 @@ class GameCoverageTests(unittest.TestCase):
         t,m=fixture();t.append(copy.deepcopy(t[0]))
         with self.assertRaisesRegex(ValueError,"Duplicate GameId"):
             audit_pair(t,m,player_id="100",teammate_id="900",cutoff_date="2026-11-06")
-    def test_reject_overlap_and_wrong_person_and_game_day(self):
+    def test_merge_overlapping_possessions_without_double_counting(self):
         t,m=fixture()
         t[0]["Possessions"].append({"StartTime":2000,"EndTime":2500})
-        with self.assertRaisesRegex(ValueError,"Overlapping"):
-            audit_pair(t,m,player_id="100",teammate_id="900",cutoff_date="2026-11-06")
+        result=audit_pair(t,m,player_id="100",teammate_id="900",cutoff_date="2026-11-06")
+        self.assertEqual(result["with"]["minutes"],140)
+        self.assertAlmostEqual(result["without"]["minutes"],141.6667,places=4)
+        t,m=fixture()
+        t[0]["Possessions"].append({"StartTime":1000,"EndTime":2000})
+        result=audit_pair(t,m,player_id="100",teammate_id="900",cutoff_date="2026-11-06")
+        self.assertEqual(result["with"]["minutes"],140)
+        self.assertEqual(result["without"]["minutes"],140)
+
+    def test_reject_wrong_person_and_game_day(self):
         t,m=fixture();m[0]["PlayerId"]="101"
         with self.assertRaisesRegex(ValueError,"identity"):
             audit_pair(t,m,player_id="100",teammate_id="900",cutoff_date="2026-11-06")
