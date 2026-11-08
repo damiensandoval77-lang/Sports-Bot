@@ -429,14 +429,21 @@ function renderPrizePicksBoard(){
  if(!box||!status)return;
  box.replaceChildren();
  const q=norm($("pp-board-search").value),market=$("pp-board-market").value;
- const rawUpcoming=ppFresh?ppBoardOffers.filter(o=>Date.parse(o.starts_at)>Date.now()&&
+ // A malformed provider record must not prevent the rest of the slate rendering.
+ const rawUpcoming=ppFresh?ppBoardOffers.filter(o=>
+   o&&typeof o.player==="string"&&o.player.trim()&&
+   typeof o.stat==="string"&&o.stat.trim()&&
+   typeof o.game==="string"&&o.game.trim()&&
+   typeof o.team==="string"&&o.team.trim()&&
+   Number.isFinite(Number(o.line))&&
+   Number.isFinite(Date.parse(o.starts_at))&&Date.parse(o.starts_at)>Date.now()&&
    (!selectedGame||o.game===selectedGame)&&
    (!q||norm(o.player).includes(q))&&(!market||o.stat===market)):[];
  const upcoming=compactPrizePicksOffers(rawUpcoming);
  $("pp-board-total").textContent=upcoming.length+" player/stat cards · "+rawUpcoming.length+" posted thresholds";
  status.textContent=ppFresh?
    "Real PrizePicks lines · "+ppBoardOffers.length+" mapped offers across "+
-   new Set(ppBoardOffers.map(o=>o.game)).size+" upcoming games · "+
+   new Set(ppBoardOffers.filter(Boolean).map(o=>o.game)).size+" upcoming games · "+
    (ppState==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"?"":"Source coverage incomplete · ")+
    "updated "+formatTime(ppStamp)+". Markets not on the provider's board cannot be inferred.":
    ppState==="PROVIDER_RATE_LIMITED"?
@@ -446,16 +453,22 @@ function renderPrizePicksBoard(){
   box.append(empty(ppFresh?"No live PrizePicks lines for these filters / matchup.":"PrizePicks lines unavailable or stale."));
   return;
  }
- upcoming.sort((a,b)=>Date.parse(a.starts_at)-Date.parse(b.starts_at)||
-  a.player.localeCompare(b.player)||a.stat.localeCompare(b.stat));
- for(const p of upcoming.slice(0,500)){
+ // Defensive comparator: third-party names/stat values may be malformed.
+ upcoming.sort((a,b)=>(Date.parse(a.starts_at)-Date.parse(b.starts_at))||
+  String(a.player||"").localeCompare(String(b.player||""))||
+  String(a.stat||"").localeCompare(String(b.stat||"")));
+ // iPhone Safari should not eagerly build thousands of alternative-tier nodes.
+ // The rest remain searchable; show additional cards through a user click.
+ const BATCH=80;
+ const renderCard=p=>{
   const card=node("article","card");
   const head=node("div","card-head");
-  head.append(node("strong","",p.player),node("span","match",p.team+" · "+p.stat+" · "+formatTime(p.starts_at)));
+  head.append(node("strong","",p.player),
+    node("span","match",p.team+" · "+p.stat+" · "+formatTime(p.starts_at)));
   card.append(head,node("div","mini",p.game));
   const vals=node("div","vals");
   const metric=node("div","val");
-  metric.append(node("b","",fmt(p.line)),node("small","","PrizePicks line"));
+  metric.append(node("b","",fmt(Number(p.line))),node("small","","PrizePicks line"));
   vals.append(metric);
   const selection=node("div","val");
   selection.append(node("b","",["MORE "+(p.more_tier||"—"),"LESS "+(p.less_tier||"—")].join(" · ")),
@@ -463,34 +476,62 @@ function renderPrizePicksBoard(){
   vals.append(selection);
   if(p.threshold_offers.length>1){
    const other=node("details","compact-details");
-   other.append(node("summary","","All "+p.threshold_offers.length+" posted thresholds"));
+   const summary=node("summary","","All "+p.threshold_offers.length+" posted thresholds");
    const thresholds=node("div","detailbody");
-   for(const offer of p.threshold_offers){
-    thresholds.append(node("div","mini",fmt(Number(offer.line))+
-      " · MORE "+(offer.more_tier||"unavailable")+
-      " · LESS "+(offer.less_tier||"unavailable")));
-   }
+   // Populate only on disclosure. This avoids excessive mobile DOM work.
+   other.addEventListener("toggle",()=>{
+    if(!other.open||thresholds.childNodes.length)return;
+    for(const offer of p.threshold_offers){
+     thresholds.append(node("div","mini",fmt(Number(offer.line))+
+       " · MORE "+(offer.more_tier||"unavailable")+
+       " · LESS "+(offer.less_tier||"unavailable")));
+    }
+   });
+   other.append(summary,thresholds);
    card.append(other);
   }
-  const forecast=ppAIResearch.get(String(p.id));
+  const forecast=ppAIResearch instanceof Map?ppAIResearch.get(String(p.id)):null;
   if(forecast&&forecast.stat===p.stat&&forecast.team===p.team&&
      norm(forecast.player)===norm(p.player)&&
      Number(forecast.line)===Number(p.line)&&
      Math.abs(Date.parse(forecast.observed_at)-Date.parse(p.observed_at))<=60000){
-   const prediction=node("div","mini","TRAINED AI (research): "+fmt(forecast.combined_projection)+
+   card.append(node("div","mini","TRAINED AI (research): "+fmt(forecast.combined_projection)+
      " "+p.stat+" · model lean "+forecast.ai_direction+
      " · Original "+fmt(forecast.original_projection)+
      (Number.isFinite(forecast.opponent_aware_projection)?
-      " · Opponent-aware "+fmt(forecast.opponent_aware_projection):" · Opponent model unavailable")+
-     " · No verified hit probability or EV");
-   card.append(prediction);
+       " · Opponent-aware "+fmt(forecast.opponent_aware_projection):
+       " · Opponent model unavailable")+
+     " · No verified hit probability or EV"));
   }else{
    card.append(node("div","mini","Trained AI unavailable for this prop · posted line shown independently."));
   }
-  card.append(vals,node("div","mini","Observed "+formatTime(p.observed_at)+" · not American sportsbook odds · independent vendor"));
-  box.append(card);
- }
- if(upcoming.length>500)box.append(empty("Showing first 500 of "+upcoming.length+" eligible observations; narrow your filters."));
+  card.append(vals,node("div","mini","Observed "+formatTime(p.observed_at)+
+    " · not American sportsbook odds · independent vendor"));
+  return card;
+ };
+ let rendered=0,failed=0;
+ const more=node("button","btn","Show next "+BATCH+" player/stat cards");
+ more.type="button";
+ const renderNext=()=>{
+  const end=Math.min(rendered+BATCH,upcoming.length);
+  for(;rendered<end;rendered++){
+   const p=upcoming[rendered];
+   try{box.append(renderCard(p));}
+   catch(error){
+    failed++;
+    console.error("PrizePicks individual card error",{
+      player:p?.player,stat:p?.stat,id:p?.id,error});
+   }
+  }
+  if(failed)status.textContent+=" · "+failed+" individual cards skipped (check record integrity)";
+  if(rendered<upcoming.length){
+   more.textContent="Show next "+Math.min(BATCH,upcoming.length-rendered)+
+     " cards ("+rendered+"/"+upcoming.length+" displayed)";
+   box.append(more);
+  }else more.remove();
+ };
+ more.addEventListener("click",()=>{more.remove();renderNext();});
+ renderNext();
 }
 function matchingPrizepicks(p){
  if(!ppFresh)return [];
