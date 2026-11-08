@@ -261,8 +261,8 @@ def read_url(url,key):
                     data.setdefault("_client_credit_usage",{})[field]=str(value)[:45]
         return data
 
-def quota_guard(saved,health,now):
-    """Prevent automatic paid requests after confirmed provider quota depletion.
+def quota_guard(saved,health,now,topup=None):
+    """Protect the monthly allowance while recognizing separately funded top-ups.
 
     A newly successful authenticated probe can verify manual replenishment.
     Old 429 retry hints are not proof the user's account is still exhausted
@@ -274,14 +274,30 @@ def quota_guard(saved,health,now):
     recovered=(health.get("status")=="API_ACCESS_CONFIRMED"
                and checked is not None and old is not None and checked>old)
     remaining=saved.get("remaining_provider_credits")
+    # This provider can still serve charged authenticated requests after
+    # X-Credits-Remaining=0 when the user owns separate top-up credits.
+    # Require a *newer* one-shot authenticated successful read and only
+    # authorize the immediately following bounded full-slate refresh.
+    proof=topup if isinstance(topup,dict) else {}
+    confirmed=timeparse(proof.get("checked_at"))
+    topup_access=(proof.get("status")=="LIVE_READ_SUCCEEDED"
+        and proof.get("http_status")==200 and proof.get("provider_mode")=="live"
+        and proof.get("provider_source_status")=="fresh"
+        and proof.get("returned_rows",0)>0
+        and proof.get("request_cost") is not None
+        and confirmed is not None and old is not None
+        and old<confirmed<=now and (now-confirmed).total_seconds()<6*3600)
     if (saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
         and remaining is not None and str(remaining).isdigit()
         and int(remaining)<=0):
         if old and (now.year,now.month)!=(old.year,old.month):
             return "MONTH_ROLLOVER_RECHECK_ALLOWED"
-        return "REPLENISHED_ACCESS_CONFIRMED" if recovered else "ZERO_PROVIDER_CREDITS_PRESERVE"
+        return ("REPLENISHED_ACCESS_CONFIRMED" if recovered else
+                "TOPUP_PAID_READ_CONFIRMED" if topup_access else
+                "ZERO_PROVIDER_CREDITS_PRESERVE")
     if saved.get("status")=="PROVIDER_RATE_LIMITED" and saved.get("provider_error_code")=="MONTHLY_QUOTA_EXCEEDED":
         if recovered:return "REPLENISHED_ACCESS_CONFIRMED"
+        if topup_access:return "TOPUP_PAID_READ_CONFIRMED"
         if old and (now.year,now.month)!=(old.year,old.month):
             return "MONTH_ROLLOVER_RECHECK_ALLOWED"
         return "QUOTA_LOCKED_PRESERVE"
@@ -301,7 +317,9 @@ def main():
             saved=json.loads(DEST.read_text())
             health_path=ROOT/"docs/prizepicks_connection_health.json"
             health=json.loads(health_path.read_text()) if health_path.exists() else {}
-            decision=quota_guard(saved,health,dt.datetime.now(dt.timezone.utc))
+            topup_path=ROOT/"docs/prizepicks_topup_probe.json"
+            topup=json.loads(topup_path.read_text()) if topup_path.exists() else {}
+            decision=quota_guard(saved,health,dt.datetime.now(dt.timezone.utc),topup=topup)
             if decision in ("ZERO_PROVIDER_CREDITS_PRESERVE","QUOTA_LOCKED_PRESERVE"):
                 print("PrizePicks quota guard:",decision,
                       "- zero API calls; authentic last-observed board preserved.",
