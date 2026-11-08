@@ -38,7 +38,16 @@ def response_schema(payload):
             info[table+"_shape"]="ARRAY"
             info[table+"_row_count"]=len(value)
             if value and isinstance(value[0],dict):
-                info[table+"_row_keys"]=sorted(str(k) for k in value[0])[:50]
+                names=sorted(str(k) for k in value[0])
+                info[table+"_row_keys"]=names[:50]
+                info[table+"_total_key_count"]=len(names)
+                # Field names ONLY, never data values. These are the signals
+                # needed to verify a real normalized WOWY importer mapping.
+                wanted=("minutes","second","game","points","assists","rebound",
+                        "poss","entity","player","fieldgoal","fga","fg2a","fg3a")
+                info[table+"_relevant_keys"]=[
+                    name for name in names if any(term in name.casefold()
+                      for term in wanted)][:100]
             elif value and isinstance(value[0],list):
                 info[table+"_row_type"]="ARRAY"
                 info[table+"_row_width"]=len(value[0])
