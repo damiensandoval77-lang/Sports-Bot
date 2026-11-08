@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone
 from iphone_bot.fetch_final_boxscores import (
-    pending_games,box_player,espn_final_events,minutes,gather,verified_schedule_ids,final_schedule_boxscore,NBA_BOX
+    pending_games,box_player,nba_boxscore_rows,espn_final_events,minutes,gather,verified_schedule_ids,final_schedule_boxscore,NBA_BOX
 )
 
 def pick(start="2026-11-06T00:00:00Z",status="PENDING"):
@@ -46,6 +46,23 @@ class FinalBoxscoreSettlementTests(unittest.TestCase):
             "2026-11-06",24,8,7,30,"ESPN_FINAL","123"))
         self.assertIsNone(box_player("Real Player","BOS","CHA",
             "2026-11-06",24,8,7,None,"ESPN_FINAL","123"))
+
+    def test_confirmed_final_inactive_player_is_explicit_dnp(self):
+        game={"gameId":"0022600099","gameStatus":3,
+              "gameTimeUTC":"2026-11-08T01:40:00Z",
+              "awayTeam":{"teamTricode":"ORL"},
+              "homeTeam":{"teamTricode":"GSW"}}
+        box={"game":dict(game)}
+        box["game"]["awayTeam"]={"teamTricode":"ORL","players":[
+            {"name":"Desmond Bane","played":False,"notPlayingReason":"INACTIVE",
+             "status":"INACTIVE","statistics":{}}]}
+        box["game"]["homeTeam"]={"teamTricode":"GSW","players":[]}
+        rows=nba_boxscore_rows(game,box)
+        self.assertEqual(len(rows),1)
+        self.assertTrue(rows[0]["dnp_final_verified"])
+        self.assertEqual(rows[0]["player"],"Desmond Bane")
+        box["game"]["gameStatus"]=2
+        with self.assertRaises(ValueError):nba_boxscore_rows(game,box)
 
     def test_verified_official_schedule_finds_exact_2026_nba_matchup(self):
         wanted={("2026-11-06","BOS","CHA")}
