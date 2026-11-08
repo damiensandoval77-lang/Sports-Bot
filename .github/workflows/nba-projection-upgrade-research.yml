@@ -117,6 +117,13 @@ jobs:
           assert wowy['eligible_for_production'] is False
           assert sum(wowy['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['paired_markets']
           assert sum(wowy['by_market'][m]['exact_line_eligible'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['exact_line_eligible']
+          rebound=r['rebound_shadow_v1']
+          assert rebound['status']=='FROZEN_PREGAME_REBOUND_V1_RESEARCH_ONLY'
+          assert rebound['validated_for_live'] is False
+          assert rebound['live_model_unchanged'] is True
+          assert rebound['same_frozen_line_eligible']<=rebound['paired_markets']
+          assert rebound['shadow_wins']<=rebound['same_frozen_line_eligible']
+          assert rebound['baseline_wins']<=rebound['same_frozen_line_eligible']
           ov2=r['opponent_v2_shadow']
           assert ov2['same_line_only'] is True and ov2['eligible_for_production'] is False
           assert sum(ov2['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==ov2['overall']['paired_markets']
