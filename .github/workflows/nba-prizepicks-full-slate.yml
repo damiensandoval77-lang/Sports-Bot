@@ -59,6 +59,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/prizepicks.json
+          if [ -f docs/prizepicks_refresh_health.json ]; then git add docs/prizepicks_refresh_health.json; fi
           if [ -f docs/prizepicks_topup_probe.json ]; then git add docs/prizepicks_topup_probe.json; fi
           if [ -d docs/research_inputs/prizepicks ]; then
             git add docs/research_inputs/prizepicks/
