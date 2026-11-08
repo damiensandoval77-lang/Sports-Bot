@@ -139,6 +139,7 @@ def forecast(history,day,team,opponent=None,expected_minutes=None,
         except (ValueError,TypeError):pass
     return {**out,"status":"PREGAME_SHOOTING_SHADOW_RESEARCH",
         "projection":round(pts,3),"raw_points":round(pts,3),
+        "unadjusted_points":shot["expected_points"],
         "blended_projection":blended,
         "expected_minutes":round(float(mins),3),
         "season_shooting":shooting,
