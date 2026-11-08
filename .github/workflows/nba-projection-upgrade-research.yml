@@ -20,6 +20,8 @@ on:
       - 'iphone_bot/import_authorized_onoff.py'
       - 'iphone_bot/pbpstats_request_plan.py'
       - 'iphone_bot/pbpstats_wowy_adapter.py'
+      - 'iphone_bot/assemble_pbpstats_wowy.py'
+      - 'iphone_bot/tests/test_assemble_pbpstats_wowy.py'
       - 'iphone_bot/tests/test_pbpstats_wowy_adapter.py'
       - 'iphone_bot/tests/test_pbpstats_request_plan.py'
       - 'iphone_bot/tests/test_import_authorized_onoff.py'
@@ -71,6 +73,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_import_authorized_onoff.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_request_plan.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_wowy_adapter.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_assemble_pbpstats_wowy.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selection_gate_shadow.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_shadow_v1.py' -v
           python - <<'PY'
