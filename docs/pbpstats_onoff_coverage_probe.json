@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-08T03:35:49.474663+00:00",
+  "checked_at": "2026-11-08T03:36:21.586869+00:00",
   "season": "2026-27",
   "cutoff": "2026-11-06",
   "sample_player_id": "201939",
@@ -8,6 +8,50 @@
   "raw_player_stats_published": false,
   "automatic_ingestion_enabled": false,
   "license_asserted": false,
+  "time_schema": {
+    "target": {
+      "game_count": 9,
+      "interval_count": 833,
+      "min_start": 0,
+      "max_start": 2879,
+      "min_end": 13,
+      "max_end": 2880,
+      "invalid_range_count": 2,
+      "example_ranges": [
+        {
+          "start": 757,
+          "end": 757,
+          "duration": 0
+        },
+        {
+          "start": 2879,
+          "end": 2879,
+          "duration": 0
+        }
+      ]
+    },
+    "teammate": {
+      "game_count": 9,
+      "interval_count": 765,
+      "min_start": 0,
+      "max_start": 2879,
+      "min_end": 13,
+      "max_end": 2879,
+      "invalid_range_count": 2,
+      "example_ranges": [
+        {
+          "start": 757,
+          "end": 757,
+          "duration": 0
+        },
+        {
+          "start": 2879,
+          "end": 2879,
+          "duration": 0
+        }
+      ]
+    }
+  },
   "status": "NOT_VALIDATED",
   "error_type": "ValueError",
   "error_summary": "Out-of-range or negative stint"
