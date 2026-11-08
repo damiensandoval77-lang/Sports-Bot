@@ -64,7 +64,7 @@ class ResearchTests(unittest.TestCase):
         source["generated_at"]="2026-11-06T22:45:00Z"
         # Both assists and rebounds use the same authorized observed games.
         cards=[]
-        for market,baseline,line in (("AST",4.,4.5),("REB",6.,6.5)):
+        for market,baseline,line in (("AST",4.,4.5),("REB",6.,6.25)):
             b2=board()
             b2["comparisons"][0].update(stat=market,line=line,
                combined_projection=baseline,projection=baseline)
