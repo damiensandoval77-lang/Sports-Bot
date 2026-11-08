@@ -35,6 +35,6 @@ class CurrentShootingEnrichmentTests(unittest.TestCase):
     self.assertNotIn("FGM",rows[1])
  def test_conflicting_duplicate_source_rows_are_discarded(self):
     first=source()
-    conflicting={**source(),"fgm":7,"fg3m":3,"pts":18}
+    conflicting={**source(),"fgm":7,"fg3m":2,"pts":19}
     rows,health=overlay([original()],[first,conflicting],today=date(2026,11,8))
     self.assertEqual(health["matched_player_games"],0)
