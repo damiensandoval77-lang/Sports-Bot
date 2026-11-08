@@ -88,7 +88,7 @@ jobs:
           report=json.load(open('docs/paper_results.json'))
           assert len(data)==len({identity(x) for x in data})
           assert all(x['paper_only'] is True for x in data)
-          assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in data)
+          assert all(x['status'] in ('PENDING','SETTLED','VOID_DNP','INVALID_LATE_CAPTURE') for x in data)
           minutes_v2=json.load(open('docs/minutes_v2_validation.json'))
           assert minutes_v2['live_model_unchanged'] is True
           assert minutes_v2['production_adjustment_applied'] is False
