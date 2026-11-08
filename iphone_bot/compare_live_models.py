@@ -22,6 +22,7 @@ from reliability_screen import research_screen
 from edge_readiness import evaluate_edge
 from preliminary_edge import preliminary_edge
 from tracking_opportunity_features import load_tracking,pregame_features
+from opportunity_shadow_models import forecast_opportunity,backtest_opportunity
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
@@ -278,6 +279,9 @@ def main():
             history,upcoming_date,row["team"])
         row["minutes_early_season_research"]=early_minutes_forecast(
             history,upcoming_date,row["team"])
+        row["tracking_opportunity_shadow"]=forecast_opportunity(
+            tracking_rows,row["player_id"],row["team"],upcoming_date,history,
+            row["minutes_v2_research"].get("expected_minutes"))
         row["shot_profile_research"]=shot_attempt_profile(
             history,upcoming_date,row["team"],
             row["minutes_v2_research"].get("expected_minutes"))
@@ -537,6 +541,10 @@ def main():
        "preliminary_edge_method":"TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
        "preliminary_edge_verified":False,
        "tracking_opportunity_coverage":tracking_coverage,
+       "tracking_opportunity_backtest":backtest_opportunity(
+           tracking_rows,all_games) if tracking_coverage["status"]=="AVAILABLE_FOR_RESEARCH"
+           else {"method":"TRACKING_OPPORTUNITY_SHADOW_V1","status":"SOURCE_NOT_CONNECTED",
+                 "production_applied":False},
        "tracking_opportunity_research_only":True,
        "tracking_opportunity_applied_to_model":False,
        "experimental_probability_ranking":True,
