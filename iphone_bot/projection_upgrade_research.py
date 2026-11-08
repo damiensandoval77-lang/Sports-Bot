@@ -480,49 +480,99 @@ def grade_selection_gate(ledger,paper_rows):
       "no_backfilling_older_game_gates":True}
 
 def grade_opportunity_shadows(ledger,paper_rows):
-    """Only score candidate projections that were actually locked before tipoff.
+    """Compare all four immutable pretip challengers with verified finals.
 
-    Results may be generated on a later date; never reconstruct an alternative
-    for an already completed game and call it a pregame shadow.
+    MAE compares the same player's final total; hit rates require the exact
+    originally quoted shadow line, not merely the same player/game/market.
+    Prevent post-hoc reconstruction and count correlated books only once.
     """
     outcomes={}
     for r in finished_unique(paper_rows):
-        outcomes[(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])]=(
-            float(r["actual"]),float(r["line"]))
-    done=set()
-    bymarket=defaultdict(list)
-    for row in ledger:
-        shadow=valid(row.get("opportunity_shadow_projection"))
-        if shadow is None:continue
         try:
-            event=utc(row["event_start"]).isoformat()
-            if utc(row["captured_at"])>=utc(row["event_start"]):continue
-            key=(event,str(row["player_id"]),row["market"])
-            if key in done or key not in outcomes:continue
-            done.add(key)
-            actual,line=outcomes[key]
-            base=valid(row.get("combined_projection"))
-            if base is None:continue
-            bymarket[row["market"]].append((abs(base-actual),abs(shadow-actual),
-                base,shadow,actual,line))
+            k=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])
+            outcomes[k]=(float(r["actual"]),float(r["line"]))
         except (KeyError,ValueError,TypeError):continue
+    seen=set()
+    bymarket=defaultdict(list)
+    coverage=Counter()
+    pending=Counter()
+    for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
+        try:
+            if row.get("market") not in MARKETS:continue
+            event=utc(row["event_start"])
+            if utc(row["captured_at"])>=event:
+                coverage["late_capture_rejected"]+=1
+                continue
+            k=(event.isoformat(),str(row["player_id"]),row["market"])
+            if k in seen:continue
+            seen.add(k)
+            shadow=valid(row.get("opportunity_shadow_projection"))
+            baseline=valid(row.get("combined_projection"))
+            line=valid(row.get("line"))
+            if shadow is None or baseline is None or line is None:
+                coverage["missing_locked_candidate_or_line"]+=1
+                continue
+            coverage["captured_candidate_markets"]+=1
+            if k not in outcomes:
+                pending[row["market"]]+=1
+                continue
+            actual,settled_line=outcomes[k]
+            if not all(math.isfinite(n) for n in (actual,settled_line)):
+                coverage["invalid_verified_result"]+=1
+                continue
+            # A final actual total is independent of the sportsbook quote.
+            # Its direction, however, must be graded at the *saved* pretip
+            # shadow line, never against a later or different bookmaker line.
+            exact=abs(line-settled_line)<1e-9
+            date=event.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+            bymarket[row["market"]].append({
+                "baseline":baseline,"shadow":shadow,"actual":actual,
+                "line":line,"exact_line":exact,"date":date})
+            if not exact:coverage["settled_quote_line_mismatch"]+=1
+        except (KeyError,ValueError,TypeError,OverflowError):
+            coverage["invalid_capture"]+=1
     def metrics(rows):
         n=len(rows)
-        wins=[0,0]
-        for _,__,b,s,a,l in rows:
-            if a==l:continue
-            if b!=l and (b>l)==(a>l):wins[0]+=1
-            if s!=l and (s>l)==(a>l):wins[1]+=1
+        line_rows=[r for r in rows if r["exact_line"] and
+                   r["actual"]!=r["line"] and
+                   r["baseline"]!=r["line"] and r["shadow"]!=r["line"]]
+        baseline_wins=sum((r["baseline"]>r["line"])==(r["actual"]>r["line"])
+                          for r in line_rows)
+        shadow_wins=sum((r["shadow"]>r["line"])==(r["actual"]>r["line"])
+                        for r in line_rows)
+        dates=len({r["date"] for r in rows})
+        paired_dates=len({r["date"] for r in line_rows})
         return {"paired_markets":n,
-          "baseline_mae":round(sum(x[0] for x in rows)/n,3) if n else None,
-          "opportunity_mae":round(sum(x[1] for x in rows)/n,3) if n else None,
-          "baseline_correct_directions":wins[0],
-          "opportunity_correct_directions":wins[1]}
+          "distinct_game_dates":dates,
+          "baseline_mae":round(sum(abs(r["baseline"]-r["actual"]) for r in rows)/n,3) if n else None,
+          "opportunity_mae":round(sum(abs(r["shadow"]-r["actual"]) for r in rows)/n,3) if n else None,
+          "baseline_correct_directions":baseline_wins,
+          "opportunity_correct_directions":shadow_wins,
+          "same_line_direction_eligible":len(line_rows),
+          "same_line_distinct_game_dates":paired_dates,
+          "baseline_same_line_hit_rate":round(baseline_wins/len(line_rows),4) if line_rows else None,
+          "opportunity_same_line_hit_rate":round(shadow_wins/len(line_rows),4) if line_rows else None,
+          "shadow_only_correct":sum(
+             (r["shadow"]>r["line"])==(r["actual"]>r["line"]) and
+             (r["baseline"]>r["line"])!=(r["actual"]>r["line"])
+             for r in line_rows),
+          "baseline_only_correct":sum(
+             (r["baseline"]>r["line"])==(r["actual"]>r["line"]) and
+             (r["shadow"]>r["line"])!=(r["actual"]>r["line"])
+             for r in line_rows),
+          "exact_line_matched_final_markets":sum(r["exact_line"] for r in rows),
+          "line_mismatched_final_markets":sum(not r["exact_line"] for r in rows)}
     all_rows=[r for g in bymarket.values() for r in g]
+    overall=metrics(all_rows)
     return {"status":"PREGAME_SHADOW_DESCRIPTIVE_ONLY" if len(all_rows)>=30
                     else "AWAITING_PRETIP_LOCKED_SHADOW_AND_SETTLED_GAMES",
-            "overall":metrics(all_rows),
+            "overall":overall,
             "by_market":{m:metrics(bymarket[m]) for m in MARKETS},
+            "capture_coverage":dict(coverage),
+            "pending_by_market":{m:pending[m] for m in MARKETS},
+            "same_line_required_for_direction_scoring":True,
+            "mae_uses_same_player_verified_final_stat_only":True,
+            "not_validated_by_future_game_dates":True,
             "live_applied":False,"eligible_for_live_promotion":False}
 
 def stress_research_report(ledger,paper_rows):
