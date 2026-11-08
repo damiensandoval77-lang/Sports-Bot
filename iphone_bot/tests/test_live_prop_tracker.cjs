@@ -92,3 +92,37 @@ test("overtime isn't treated as fifth 12-minute quarter",()=>{
  assert.equal(L.gameFraction(overtime),null);
  assert.equal(L.evaluate(frozen({line:50}),25,overtime).label,"PACE_UNAVAILABLE_OR_EARLY");
 });
+
+test("actual ESPN Warriors GS abbreviations match GSW model names and real boxscore stats",()=>{
+ const observed=[
+  {player:"Draymond Green",team:"GS",athlete_id:"6589",stats:{PTS:8,REB:3,AST:5,PRA:16}},
+  {player:"Yaxel Lendeborg",team:"GS",athlete_id:"5175737",stats:{PTS:6,REB:1,AST:0,PRA:7}},
+  {player:"Brandin Podziemski",team:"GS",athlete_id:"4709138",stats:{PTS:2,REB:0,AST:1,PRA:3}},
+  {player:"Franz Wagner",team:"ORL",athlete_id:"4566434",stats:{PTS:6,REB:2,AST:1,PRA:9}}
+ ];
+ const game="Orlando Magic @ Golden State Warriors";
+ const frozen=(player,stat)=>({player,team:"GSW",game,stat,
+   start:"2026-11-08T03:00:00Z",board_generated_at:"2026-11-08T00:00:00Z",
+   combined_projection:10,line:8.5});
+ assert.equal(L.canonicalTeam("GS"),"GSW");
+ assert.equal(L.matchPlayer(observed,frozen("Draymond Green","AST"))?.stats.AST,5);
+ assert.equal(L.matchPlayer(observed,frozen("Yaxel Lendeborg","REB"))?.stats.REB,1);
+ assert.equal(L.matchPlayer(observed,frozen("Yaxel Lendeborg","PRA"))?.stats.PRA,7);
+ assert.equal(L.matchPlayer(observed,frozen("Brandin Podziemski","REB"))?.stats.REB,0);
+ assert.equal(L.matchPlayer(observed,{...frozen("Franz Wagner","PTS"),team:"GSW"}),null);
+ assert.equal(L.matchPlayer(observed,{...frozen("Draymond Green","AST"),team:"ORL"}),null);
+});
+test("ESPN nonstandard team aliases match only their canonical NBA team",()=>{
+ for(const [espn,model] of [["GS","GSW"],["NY","NYK"],["WSH","WAS"],["SA","SAS"],
+    ["NO","NOP"],["UT","UTA"],["PHO","PHX"],["BRK","BKN"]]){
+  assert.equal(L.canonicalTeam(espn),model);
+  assert.equal(L.matchPlayer([{player:"Test Player",team:espn,stats:{PTS:12}}],
+    {player:"Test Player",team:model})?.stats.PTS,12);
+ }
+ assert.equal(L.matchPlayer([{player:"Test Player",team:"NY",stats:{PTS:12}}],
+   {player:"Test Player",team:"BKN"}),null);
+ assert.equal(L.matchPlayer([
+  {player:"Same Player",team:"GS",stats:{PTS:5}},
+  {player:"Same Player",team:"GSW",stats:{PTS:7}}
+ ],{player:"Same Player",team:"GSW"}),null);
+});
