@@ -60,12 +60,12 @@ jobs:
           done
           exit 1
       - name: Generate actual player AI projections immediately from new authentic lines
-        if: success()
+        if: steps.publish.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-ai-board.yml --ref main
       - name: Freeze separate PrizePicks research predictions when new lines appear
-        if: success()
+        if: steps.publish.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-ai-research.yml --ref main
