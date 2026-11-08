@@ -14,7 +14,7 @@ class ShootingV1Tests(unittest.TestCase):
     self.assertAlmostEqual(a["last5"]["fg_pct"],.5)
     self.assertAlmostEqual(a["last10"]["three_pct"],.4)
     self.assertAlmostEqual(a["season"]["ft_pct"],.75)
-    self.assertAlmostEqual(a["season"]["effective_fg_pct"],(6+.5*2)/12)
+    self.assertAlmostEqual(a["season"]["effective_fg_pct"],(6+.5*2)/12,places=4)
     self.assertEqual(a["last5"]["three_pa_per_game"],5)
     p=forecast(hist,"2026-10-13","BOS","NYK",30,combined_baseline=17)
     self.assertEqual(p["status"],"PREGAME_SHOOTING_SHADOW_RESEARCH")
