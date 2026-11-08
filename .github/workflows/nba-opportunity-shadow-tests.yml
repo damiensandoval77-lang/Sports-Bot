@@ -1,0 +1,27 @@
+name: Validate assist/rebound opportunity models independent of live lines
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/tracking_opportunity_features.py'
+      - 'iphone_bot/opportunity_shadow_models.py'
+      - 'iphone_bot/tests/test_tracking_opportunity_features.py'
+      - 'iphone_bot/tests/test_opportunity_shadow_models.py'
+      - '.github/workflows/nba-opportunity-shadow-tests.yml'
+permissions:
+  contents: read
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate time-safe tracking history and paired assist/rebound models
+        run: |
+          python -m py_compile iphone_bot/tracking_opportunity_features.py iphone_bot/opportunity_shadow_models.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunity_features.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_shadow_models.py' -v
