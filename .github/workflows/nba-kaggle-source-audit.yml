@@ -1,0 +1,44 @@
+name: Audit public Kaggle NBA historical dataset coverage
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/audit_kaggle_nba_stats.py'
+      - '.github/workflows/nba-kaggle-source-audit.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-kaggle-source-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect public Kaggle metadata without secrets or bulk downloading
+        run: |
+          python -m py_compile iphone_bot/audit_kaggle_nba_stats.py
+          python -u iphone_bot/audit_kaggle_nba_stats.py
+      - name: Publish source availability and license diagnostics
+        run: |
+          set -euo pipefail
+          cp docs/kaggle_nba_stats_source_audit.json "$RUNNER_TEMP/kaggle-audit.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/kaggle-audit.json" docs/kaggle_nba_stats_source_audit.json
+            git add docs/kaggle_nba_stats_source_audit.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Document public Kaggle NBA historical data source availability'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
