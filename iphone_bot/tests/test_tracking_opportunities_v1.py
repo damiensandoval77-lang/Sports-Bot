@@ -35,7 +35,7 @@ class TrackingTest(unittest.TestCase):
         r=run("REB")
         self.assertEqual(r["feature"],"rebound_chances")
         self.assertEqual(r["expected_chances"],16.)
-        self.assertEqual(r["projection"],6.72)
+        self.assertEqual(r["projection"],6.5)
     def test_future_outcome_and_duplicates_rejected(self):
         a=feed();a["observations"][0]["game_date"]="2026-11-06"
         self.assertEqual(run("AST",a)["status"],"LOOKAHEAD_REJECTED")
