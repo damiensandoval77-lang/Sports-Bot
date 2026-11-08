@@ -131,6 +131,14 @@ def refresh(board,injuries,games,now):
                     injury_reprojection_factor=updated["factor"],
                     injury_scenario_projection=round(updated["combined"],1),
                     injury_minutes_research=scenario)
+                row["projection_explanation"]={"sentences":[
+                    "Updated for NBA official game-day OUT status: "+
+                    ", ".join(p["player"] for p in out_team+out_opp)+".",
+                    "Revised forecast: "+str(round(updated["combined"],1))+
+                    " versus pre-injury "+str(row["preinjury_combined_projection"])+
+                    ". This uses strictly earlier teammate minutes or opponent defensive totals.",
+                    "Injury-conditional historical adjustment is unvalidated; previously published probability estimates are withheld."
+                ]}
                 counts["reprojected"]+=1
             else:
                 row.update(projection=round(original,1),
@@ -178,6 +186,8 @@ def refresh(board,injuries,games,now):
     updated["comparison_rows_truncated"]=0
     updated["lineup_research_adjustments_applied"]=any(
         r.get("injury_scenario_applied_to_combined") is True for r in kept)
+    updated["injury_context_source"]="OFFICIAL_NBA_REPORT_VERIFIED"
+    updated["injury_data_verified"]=True
     updated["injury_refreshed_at"]=now.isoformat()
     updated["injury_report_issued_at"]=issued.isoformat()
     updated["injury_reprojection_counts"]=dict(counts)
