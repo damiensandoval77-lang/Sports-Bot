@@ -24,6 +24,14 @@ class GameCoverageTests(unittest.TestCase):
         self.assertEqual(result["without"]["minutes"],140)
         self.assertEqual(len(result["with"]["game_ids"]),7)
         self.assertFalse(result["rights_verified"])
+    def test_zero_duration_possession_does_not_count_as_stint(self):
+        t,m=fixture()
+        t[0]["Possessions"].append({"StartTime":2400,"EndTime":2400})
+        m[0]["Possessions"].append({"StartTime":1200,"EndTime":1200})
+        result=audit_pair(t,m,player_id="100",teammate_id="900",cutoff_date="2026-11-06")
+        self.assertEqual(result["with"]["minutes"],140)
+        self.assertEqual(result["without"]["minutes"],140)
+
     def test_missing_teammate_produces_no_invented_with_group(self):
         t,m=fixture()
         with self.assertRaisesRegex(ValueError,"Insufficient independent with"):
