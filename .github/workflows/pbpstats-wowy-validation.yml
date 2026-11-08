@@ -34,12 +34,11 @@ jobs:
         id: tests
         continue-on-error: true
         run: |
-          python -m compileall -q iphone_bot/pbpstats_request_plan.py iphone_bot/pbpstats_wowy_adapter.py iphone_bot/lineup_onoff_research.py iphone_bot/import_authorized_onoff.py iphone_bot/assemble_pbpstats_wowy.py
-          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_request_plan.py' -v
-          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_wowy_adapter.py' -v
-          python -m unittest discover -s iphone_bot/tests -p 'test_import_authorized_onoff.py' -v
-          python -m unittest discover -s iphone_bot/tests -p 'test_lineup_onoff_research.py' -v
-          python -m unittest discover -s iphone_bot/tests -p 'test_assemble_pbpstats_wowy.py' -v
+          set -o pipefail
+          python -m compileall -q iphone_bot/pbpstats_request_plan.py iphone_bot/pbpstats_wowy_adapter.py iphone_bot/lineup_onoff_research.py iphone_bot/import_authorized_onoff.py iphone_bot/assemble_pbpstats_wowy.py 2>&1 | tee "$RUNNER_TEMP/wowy-tests.log"
+          for name in test_pbpstats_request_plan.py test_pbpstats_wowy_adapter.py test_import_authorized_onoff.py test_lineup_onoff_research.py test_assemble_pbpstats_wowy.py; do
+            python -m unittest discover -s iphone_bot/tests -p "$name" -v 2>&1 | tee -a "$RUNNER_TEMP/wowy-tests.log" || exit 1
+          done
       - name: Publish status only, never source data
         if: always()
         env:
@@ -47,9 +46,17 @@ jobs:
         run: |
           python - <<'PY'
           import os,json,datetime
+          from pathlib import Path
+          log=Path(os.environ["RUNNER_TEMP"])/"wowy-tests.log"
+          lines=log.read_text(errors="replace").splitlines() if log.exists() else []
+          failure_lines=[x.strip()[:240] for x in lines
+              if x.startswith(("FAIL:","ERROR:","AssertionError:","NameError:","TypeError:",
+                               "SyntaxError:","ImportError:","ValueError:","ModuleNotFoundError:",
+                               "FAILED (","Ran "))]
           status={"generated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
            "status":"PASSED" if os.environ.get("TEST_OUTCOME")=="success" else "FAILED",
            "tests":"FIVE_OFFLINE_PBPSTATS_WOWY_MODULES",
+           "failure_diagnostics":failure_lines[-24:],
            "real_provider_samples_verified":False,
            "licensed_ingestion_enabled":False}
           open("docs/pbpstats_wowy_validation_status.json","w").write(json.dumps(status,indent=2)+"\n")
