@@ -25,7 +25,7 @@ def preliminary_probability(sim_rate, stat, audit):
         dates=int(bucket["distinct_event_dates"])
         observed=float(bucket["observed_hit_rate"])
         predicted=float(bucket["average_estimated_probability"])
-        if not 0 < n and dates>0: raise ValueError("No observations")
+        if n <= 0: raise ValueError("No observations")
         if not 0<=observed<=1 or not 0<=predicted<=1 or dates<1:
             raise ValueError("Invalid source")
     except (TypeError,KeyError,ValueError,AttributeError):
