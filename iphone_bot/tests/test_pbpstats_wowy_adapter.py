@@ -52,7 +52,7 @@ class ProviderMapperTests(unittest.TestCase):
         bad=proof()
         bad["game_dates"]=["2026-10-02","2026-10-03","2026-10-04",
                            "2026-10-05","2026-10-06","2026-11-07"]
-        with self.assertRaisesRegex(ValueError,"future"):
+        with self.assertRaisesRegex(ValueError,"Future"):
             normalized(with_provenance=bad)
         bad=proof()
         bad["verified_completed_games"]=False
