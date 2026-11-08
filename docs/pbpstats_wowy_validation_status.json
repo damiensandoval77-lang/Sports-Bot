@@ -1,13 +1,14 @@
 {
-  "generated_at": "2026-11-08T03:26:10.907542+00:00",
+  "generated_at": "2026-11-08T03:26:20.029066+00:00",
   "status": "FAILED",
   "tests": "FIVE_OFFLINE_PBPSTATS_WOWY_MODULES",
   "failure_diagnostics": [
     "Ran 3 tests in 0.000s",
-    "FAIL: test_insufficient_provenance_and_date_leakage (test_pbpstats_wowy_adapter.ProviderMapperTests.test_insufficient_provenance_and_date_leakage)",
-    "ValueError: Future game dates cannot enter pregame samples",
-    "AssertionError: \"future\" does not match \"Future game dates cannot enter pregame samples\"",
-    "Ran 5 tests in 0.002s",
+    "Ran 5 tests in 0.001s",
+    "FAIL: test_refuse_unpermitted_use_and_incomplete_ids (test_import_authorized_onoff.ImportTest.test_refuse_unpermitted_use_and_incomplete_ids)",
+    "ValueError: WOWY import refused: Approval must permit NBA_PROP_RESEARCH specifically",
+    "AssertionError: \"permitted use\" does not match \"WOWY import refused: Approval must permit NBA_PROP_RESEARCH specifically\"",
+    "Ran 4 tests in 0.001s",
     "FAILED (failures=1)"
   ],
   "real_provider_samples_verified": false,
