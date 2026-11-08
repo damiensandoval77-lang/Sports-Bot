@@ -1,6 +1,10 @@
 name: Publish lightweight PrizePicks site data and per-game coverage
 on:
   workflow_dispatch:
+  schedule:
+    # Recovery run even when the upstream job did not dispatch this workflow.
+    # Scheduled PrizePicks ingestion starts at 16:28 and 23:28 UTC.
+    - cron: '46 16,23 * * *'
   push:
     branches: [main]
     paths:
@@ -56,12 +60,12 @@ jobs:
           done
           exit 1
       - name: Generate actual player AI projections immediately from new authentic lines
-        if: steps.publish.outputs.changed == 'true'
+        if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-ai-board.yml --ref main
       - name: Freeze separate PrizePicks research predictions when new lines appear
-        if: steps.publish.outputs.changed == 'true'
+        if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-ai-research.yml --ref main
