@@ -1,6 +1,7 @@
 """Provider response structure validated without network or licensed data."""
 import unittest
 from iphone_bot.pbpstats_wowy_adapter import normalize_pair
+from iphone_bot.pbpstats_request_plan import request_plan
 
 def record(points=80):
     return {"multi_row_table_data":[
@@ -9,14 +10,15 @@ def record(points=80):
         {"EntityId":"102","Points":99,"Rebounds":18,"Assists":9,
          "SecondsPlayed":10000}
     ]}
-def proof():
+def proof(kind="with"):
     return {"verified_completed_games":True,
+            "request_params":request_plan("100","900","BOS",cutoff_date="2026-11-06")["requests"][kind],
             "game_dates":[f"2026-10-{d:02d}" for d in range(2,8)]}
 def normalized(on=None,off=None,**kw):
     args=dict(player_id="100",teammate_id="900",team="BOS",season="2026-27",
         provider_generated_at="2026-11-07T18:00:00Z",
         observed_through_at="2026-11-07T17:00:00Z",data_through="2026-11-06",
-        with_provenance=proof(),without_provenance=proof())
+        with_provenance=proof("with"),without_provenance=proof("without"))
     args.update(kw)
     return normalize_pair(on if on is not None else record(),
                           off if off is not None else record(100),**args)
@@ -30,6 +32,14 @@ class ProviderMapperTests(unittest.TestCase):
         self.assertEqual(r["without"]["PTS_per36"],20)
         self.assertEqual(r["with"]["REB_per36"],4)
         self.assertEqual(r["with"]["AST_per36"],3.2)
+    def test_never_accept_undated_or_wrong_onoff_query_provenance(self):
+        bad=proof("with")
+        bad["request_params"].pop("ToDate")
+        with self.assertRaisesRegex(ValueError,"request provenance"):
+            normalized(with_provenance=bad)
+        with self.assertRaisesRegex(ValueError,"request provenance"):
+            normalized(without_provenance=proof("with"))
+
     def test_insufficient_provenance_and_date_leakage(self):
         with self.assertRaisesRegex(ValueError,"game dates"):
             normalized(with_provenance={"verified_completed_games":True,"game_dates":["2026-10-02"]})
