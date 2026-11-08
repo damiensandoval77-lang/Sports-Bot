@@ -25,9 +25,9 @@ on:
       - 'iphone_bot/tests/test_build_prizepicks_model_input.py'
       - '.github/workflows/nba-prizepicks-ai-board.yml'
   schedule:
-    # Runs after independent PrizePicks snapshots at :28 UTC.
-    # Uses published real pick'em lines, NEVER requests paid sportsbook props.
-    - cron: '48 18,21 * * *'
+    # Independent fallback after both 16:28 and 23:28 UTC PrizePicks refreshes.
+    # Dispatch from site publisher remains the primary fast path.
+    - cron: '08 17,0 * * *'
 permissions:
   contents: write
 concurrency:
