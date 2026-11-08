@@ -129,16 +129,45 @@ def summarize(ledger,now=None):
     by={}
     for stat in SUPPORTED:
         group=[r for r in eligible if r.get("stat")==stat]
-        by[stat]={"graded":len(group),"wins":sum(r["result"]=="WIN" for r in group),
-                  "hit_rate":round(sum(r["result"]=="WIN" for r in group)/len(group),4) if group else None,
+        by[stat]={"graded_lines":len(group),"wins":sum(r["result"]=="WIN" for r in group),
+                  "line_hit_rate":round(sum(r["result"]=="WIN" for r in group)/len(group),4) if group else None,
                   "distinct_game_dates":len({r.get("settled_game_date") for r in group})}
+    # Only one central quoted line per player/game/market counts towards
+    # independent model evaluation. All other thresholds remain saved and graded.
+    groups={}
+    for row in rows:
+        key=(row.get("player_id"),row.get("team"),row.get("game"),
+             row.get("start"),row.get("stat"))
+        groups.setdefault(key,[]).append(row)
+    representatives=[]
+    for group in groups.values():
+        distinct={}
+        for r in group:
+            try:
+                k=float(r["line"])
+            except (KeyError,ValueError,TypeError):continue
+            distinct.setdefault(k,r)
+        if not distinct:continue
+        values=sorted(distinct)
+        central=values[(len(values)-1)//2]
+        representatives.append(distinct[central])
+    independent={}
+    for stat in SUPPORTED:
+        sample=[r for r in representatives
+                if r.get("stat")==stat and r.get("result") in ("WIN","LOSS")]
+        wins=sum(r["result"]=="WIN" for r in sample)
+        independent[stat]={"graded":len(sample),"wins":wins,"losses":len(sample)-wins,
+                           "hit_rate":round(wins/len(sample),4) if sample else None,
+                           "distinct_game_dates":len({r.get("settled_game_date") for r in sample})}
     return {"status":"PRIZEPICKS_PRETIP_RESEARCH_GRADED_NOT_ODDS",
             "updated_at":now.isoformat(),"saved":len(rows),
             "settled":len(settled),"pending":sum(r.get("status")=="PENDING" for r in rows),
-            "independent_player_market_count":len({(r.get("player_id"),r.get("game"),r.get("stat"))
-                   for r in rows}),
+            "independent_player_market_count":len(representatives),
+            "independent_settled_center_lines":sum(v["graded"] for v in independent.values()),
+            "independent_by_market":independent,
             "by_market":by,"wager_roi":None,"verified_ev":False,
-            "notice":"Research-only pregame directions; multiple PrizePicks thresholds are correlated and not independent observations."}
+            "selection_method":"FIXED_CENTRAL_POSTED_LINE_PER_PLAYER_GAME_STAT_NO_RETROACTIVE_WINNER_SELECTION",
+            "notice":"Only one central posted threshold per player/game/stat is used for independent hit rates. Alternate thresholds are preserved, graded, and never counted as independent outcomes."}
 
 def main():
     old=json.loads(LEDGER.read_text()) if LEDGER.exists() else {"records":[]}
@@ -147,7 +176,9 @@ def main():
     games=json.loads(CURRENT.read_text()) if CURRENT.exists() else []
     graded=settle(frozen,games)
     if (graded["records"]==old.get("records",[]) and LEDGER.exists() and
-        RESULTS.exists()):
+        RESULTS.exists() and
+        json.loads(RESULTS.read_text()).get("selection_method")==
+        "FIXED_CENTRAL_POSTED_LINE_PER_PLAYER_GAME_STAT_NO_RETROACTIVE_WINNER_SELECTION"):
         print("PrizePicks research ledger unchanged; no redundant publication")
         return
     graded["updated_at"]=datetime.now(timezone.utc).isoformat()
