@@ -11,7 +11,7 @@ class ShootingProspectiveGradeTests(unittest.TestCase):
  def test_frozen_projection_not_rebuilt(self):
     record={"market":"PTS","status":"SETTLED","event_start":"2026-11-07T19:00:00Z",
          "player_id":"1","team":"BOS","bookmaker":"Book",
-         "line":20.5,"actual":22,"combined_projection":19,"game":"BOS @ NYK",
+         "line":20.5,"actual":22,"combined_projection":19,"original_projection":18,"opponent_shadow_projection":20,"game":"BOS @ NYK",
          "captured_at":"2026-11-07T16:00:00Z",
          "shooting_efficiency_v1":{"status":"PREGAME_SHOOTING_SHADOW_RESEARCH",
              "blended_projection":21,"projection":25,
@@ -24,7 +24,7 @@ class ShootingProspectiveGradeTests(unittest.TestCase):
  def test_no_future_game_feature(self):
     record={"market":"PTS","status":"SETTLED","event_start":"2026-11-07T19:00:00Z",
          "player_id":"1","team":"BOS","bookmaker":"Book",
-         "line":20.5,"actual":22,"combined_projection":19,"game":"BOS @ NYK",
+         "line":20.5,"actual":22,"combined_projection":19,"original_projection":18,"opponent_shadow_projection":20,"game":"BOS @ NYK",
          "captured_at":"2026-11-07T16:00:00Z",
          "shooting_efficiency_v1":{"status":"PREGAME_SHOOTING_SHADOW_RESEARCH",
              "blended_projection":21,"projection":25,"last_prior_game":"2026-11-07"}}
