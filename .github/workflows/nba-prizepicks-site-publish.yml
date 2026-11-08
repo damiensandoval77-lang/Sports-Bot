@@ -1,0 +1,50 @@
+name: Publish lightweight PrizePicks site data and per-game coverage
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks.json'
+      - 'iphone_bot/publish_prizepicks_site.py'
+      - 'iphone_bot/tests/test_publish_prizepicks_site.py'
+      - '.github/workflows/nba-prizepicks-site-publish.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prizepicks-site-data
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test genuine NBA PrizePicks site snapshot and date-safe coverage
+        run: |
+          python -m py_compile iphone_bot/publish_prizepicks_site.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_prizepicks_site.py' -v
+      - name: Build small read-only PrizePicks board and coverage
+        run: python -u iphone_bot/publish_prizepicks_site.py
+      - name: Publish no-cost website research status
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ ! -f docs/prizepicks_site.json ]; then
+            echo 'No eligible live PrizePicks board to publish'
+            exit 0
+          fi
+          git add docs/prizepicks_site.json docs/prizepicks_status.json
+          if git diff --cached --quiet; then echo 'PrizePicks site status unchanged'; exit 0; fi
+          git commit -m 'Publish compact real PrizePicks NBA lines and slate coverage'
+          for attempt in 1 2 3 4 5 6; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
