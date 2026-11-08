@@ -68,6 +68,30 @@ def capture(board,games,existing,now=None):
             continue
     return result
 
+def verified_completed_games(root=ROOT):
+    """Reuse production's verified sources; never infer a final score from time."""
+    try:
+        from .paper_pick_pipeline import (cross_checked_final_boxscores,
+            fantasydata_cross_checked_final, official_web_cross_checked_final)
+    except ImportError:
+        from paper_pick_pipeline import (cross_checked_final_boxscores,
+            fantasydata_cross_checked_final, official_web_cross_checked_final)
+
+    def read_array(path):
+        if not path.exists():return []
+        data=json.loads(path.read_text())
+        if not isinstance(data,list):
+            raise ValueError("Invalid completed player-game source: "+str(path))
+        return data
+
+    completed=read_array(root/"data/nba/current/current_games.json")
+    completed+=read_array(root/"data/nba/current/final_boxscores.json")
+    completed+=cross_checked_final_boxscores(root/"docs/verified_postgame_boxscores.json")
+    completed+=fantasydata_cross_checked_final(root/"docs/verified_wizards_hawks_boxscores.json")
+    completed+=official_web_cross_checked_final(root/"docs/verified_spurs_kings_boxscores.json")
+    completed+=read_array(root/"data/nba/current/cbs_final_boxscores.json")
+    return completed
+
 def grade(records,completed_games,now=None):
     """Use the production verifier without changing pretip V2 predictions."""
     return settle(records,completed_games,now=now)
@@ -127,8 +151,13 @@ def main():
         except ImportError:
             from fetch_final_boxscores import gather
         observed,report=gather(old)
-        records=grade(old,observed)
-        print("Verified final-game fetch:",json.dumps(report,sort_keys=True))
+        # A direct NBA/ESPN 403 or timeout must not block independently
+        # verified CBS finals or completed CSV game logs already used by
+        # the production settlement pipeline.
+        completed=verified_completed_games()
+        records=grade(old,completed+observed)
+        print("Verified final-game fetch:",json.dumps(report,sort_keys=True),
+              "additional trusted player-game rows:",len(completed))
     OUT.parent.mkdir(parents=True,exist_ok=True)
     OUT.write_text(json.dumps({"version":1,"records":records},indent=2)+"\n")
     (ROOT/"docs/assist_v2_shadow_results.json").write_text(json.dumps(summary(records),indent=2)+"\n")
