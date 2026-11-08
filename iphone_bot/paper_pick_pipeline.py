@@ -6,6 +6,7 @@ game/player identity. Settlement NEVER re-runs a model or selects a side after
 observing game results. No money is wagered or assumed.
 """
 import json
+import copy
 import math
 import re
 import unicodedata
@@ -129,9 +130,9 @@ def snapshot(comparisons,generated_at,existing=None):
                 "research_minutes_risk_v1":minutes_risk(market.get("minutes_research"),
                     market.get("minutes_v2_research"),market.get("injury_status")),
                 "season_average_challenger":market.get("season_average_challenger"),
-                "model_feature_audit":market.get("model_feature_audit"),
-                "frozen_minutes_research":market.get("minutes_research"),
-                "frozen_minutes_v2_research":market.get("minutes_v2_research"),
+                "model_feature_audit":copy.deepcopy(market.get("model_feature_audit")),
+                "frozen_minutes_research":copy.deepcopy(market.get("minutes_research")),
+                "frozen_minutes_v2_research":copy.deepcopy(market.get("minutes_v2_research")),
                 "frozen_injury_status":market.get("injury_status"),
                 "forensic_data_collected_pregame":True}
             ident=identity(record)
