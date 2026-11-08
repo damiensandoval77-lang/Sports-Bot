@@ -29,6 +29,21 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_shooting_v1_shadow_is_frozen_and_immutable(self):
+        m=self.market()
+        m["shooting_efficiency_v1"]={
+            "status":"PREGAME_SHOOTING_SHADOW_RESEARCH",
+            "projection":24.5,"blended_projection":23.8,
+            "last_prior_game":"2026-11-11",
+            "production_applied":False}
+        stored=snapshot([m],"2026-11-12T18:00:00Z")
+        self.assertEqual(len(stored),2)
+        self.assertEqual(stored[0]["shooting_efficiency_v1"]["projection"],24.5)
+        m["shooting_efficiency_v1"]["projection"]=100
+        self.assertEqual(stored[0]["shooting_efficiency_v1"]["projection"],24.5)
+        again=snapshot([m],"2026-11-12T19:00:00Z",stored)
+        self.assertEqual(again[0]["shooting_efficiency_v1"]["projection"],24.5)
+
     def test_verified_third_party_final_settles_celtics_only(self):
         from pathlib import Path
         verified=Path(__file__).resolve().parents[2]/"docs/verified_postgame_boxscores.json"
