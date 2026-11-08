@@ -61,6 +61,11 @@ except ImportError:
     from prospective_research_gate import verify as verify_prospective_capture
 
 try:
+    from .lineup_onoff_research import evaluate as licensed_onoff_evaluate
+except ImportError:
+    from lineup_onoff_research import evaluate as licensed_onoff_evaluate
+
+try:
     from .opponent_context_v2 import games_by_team as opponent_team_games, matchup as opponent_matchup, shadow as opponent_v2_shadow
     from .paper_pick_pipeline import expected_opponents
 except ImportError:
@@ -73,6 +78,7 @@ INJURY=ROOT/"docs/injury_context.json"
 PAPER=ROOT/"docs/paper_pick_ledger.json"
 LEDGER=ROOT/"docs/projection_upgrade_ledger.json"
 STATUS=ROOT/"docs/projection_upgrade_status.json"
+ONOFF=ROOT/"docs/lineup_onoff_research.json"
 MARKETS=("PTS","REB","AST","PRA")
 MIN_RESIDUALS=1000
 SIMULATIONS=20000
@@ -112,7 +118,7 @@ def official_injuries(feed,game_start,capture):
     return rows,"OFFICIAL_SAME_DAY_VERIFIED" if rows else "NO_SAME_DAY_PLAYER_STATUS"
 
 
-def snapshot(board,injury,existing,at,game_history=None):
+def snapshot(board,injury,existing,at,game_history=None,onoff_feed=None):
     captured=utc(at)
     if board.get("status")!="EXPERIMENTAL_NON_CALIBRATED" or board.get("verified_current_matchups") is not True:
         raise ValueError("Board not verified")
@@ -260,6 +266,20 @@ def snapshot(board,injury,existing,at,game_history=None):
                 str(p.get("player_id",""))!=pid and
                 str(p.get("status","")).lower()=="out"]
             row["verified_out_teammate_ids"]=sorted({str(p["player_id"]) for p in out_team})
+            # Only official date-matched OUT player and licensed past-only split
+            # can trigger a shadow. Never infer that an unlisted player is OUT.
+            row["licensed_onoff_shadow"]={"status":"NO_SINGLE_VERIFIED_OUT_TEAMMATE",
+                "projection":None,"research_only":True}
+            if len(row["verified_out_teammate_ids"])==1:
+                row["licensed_onoff_shadow"]=licensed_onoff_evaluate(
+                    onoff_feed or {},
+                    player_id=pid,team=row["team"],
+                    teammate_id=row["verified_out_teammate_ids"][0],
+                    market=row["market"],baseline=combined,
+                    expected_minutes=(item.get("minutes_research") or {}).get("expected_minutes"),
+                    game_start=start.isoformat(),captured_at=captured.isoformat())
+                if row["licensed_onoff_shadow"]["projection"] is not None:
+                    counters["licensed_onoff_shadow_locked"]+=1
             # These are *observed* historical teammate on/off production
             # splits already computed pregame; retain provenance and coverage,
             # not a fabricated causal boost or a same-day learned outcome.
@@ -811,8 +831,8 @@ def grade_shadow(ledger,paper_rows):
             "v4_live_applied":False}
 
 
-def run(board,injury,paper_rows,existing,at,game_history=None):
-    ledger,counts=snapshot(board,injury,existing,at,game_history)
+def run(board,injury,paper_rows,existing,at,game_history=None,onoff_feed=None):
+    ledger,counts=snapshot(board,injury,existing,at,game_history,onoff_feed)
     capture_gate=verify_prospective_capture(ledger,len(existing),len(ledger))
     settled=finished_unique(paper_rows)
     return ledger,{"generated_at":utc(at).isoformat(),
@@ -846,10 +866,11 @@ def main():
     paper=json.loads(PAPER.read_text()).get("records",[]) if PAPER.exists() else []
     existing=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
     now=datetime.now(timezone.utc).isoformat()
+    onoff=json.loads(ONOFF.read_text()) if ONOFF.exists() else {}
     games_path=ROOT/"data/nba/current/current_games.json"
     game_history=json.loads(games_path.read_text()) if games_path.exists() else []
     try:
-        ledger,report=run(board,injury,paper,existing,now,game_history)
+        ledger,report=run(board,injury,paper,existing,now,game_history,onoff)
     except ValueError as error:
         # A scheduled research-only refresh can update settlement diagnostics
         # even if there is no fresh pregame AI feed to freeze. It may never
