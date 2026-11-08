@@ -385,6 +385,22 @@ function sideClass(side){return side==="OVER"?"over":side==="UNDER"?"under":"neu
 function validEstimate(p){return typeof p.estimated_selected_probability==="number"&&Number.isFinite(p.estimated_selected_probability)&&p.probability_method==="CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED"}
 function chance(p){return validEstimate(p)?(100*p.estimated_selected_probability).toFixed(1)+"%":"—"}
 function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
+function frozenResearchScreen(p){
+ // Pre-registered research thresholds; NOT a verified profitable strategy.
+ const margins={PTS:3,REB:1.5,AST:1.5,PRA:4};
+ const margin=margins[p.stat];
+ const source=Number(p.projection),shadow=Number(p.shadow_projection),
+       combined=Number.isFinite(p.combined_projection)?p.combined_projection:NaN,
+       line=Number(p.line);
+ if(!margin||p.shadow_status!=="RESEARCH_SHADOW_ONLY"||
+    ![source,shadow,combined,line].every(Number.isFinite))
+  return "INSUFFICIENT MODEL DATA";
+ const sides=[source,shadow,combined].map(x=>modelSide(x,line));
+ if(sides.some(x=>x==="NO LEAN"||x==="UNAVAILABLE")||
+    sides.some(x=>x!==sides[0]))return "MODELS DISAGREE · PASS";
+ if(Math.abs(combined-line)<margin)return "SMALL EDGE · PASS";
+ return "RESEARCH SCREEN ONLY · NO VERIFIED EDGE";
+}
 function renderPrizePicksBoard(){
  const box=$("pp-board"),status=$("pp-board-health");
  if(!box||!status)return;
@@ -553,7 +569,7 @@ function renderAI(){
    metric("MODEL CONFIDENCE","UNVERIFIED","chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
-  const probabilityNote=node("div","match","Historical estimated confidence materially overstated actual results; confidence-based ordering disabled.");
+  const probabilityNote=node("div","match","Research only: current model hit below 50%; no validated betting edge. Estimated percentages hidden due to calibration failure.");
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
@@ -567,12 +583,13 @@ function renderAI(){
      "injury impact is unvalidated; no verified hit percentage is available."));
   }
   const lean=node("div","ai-lean");
-  lean.append(node("span","ai-lean-title","AI LEAN"),
+  lean.append(node("span","ai-lean-title","RAW MODEL DIRECTION"),
     node("span","ai-lean-choice "+sideClass(side),
        side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS":"NO LEAN"),
     node("span","ai-lean-sub",available?
       (p.combined_model_count===2?"Combined two-model projection":"Original AI projection"):
       "Original AI projection"));
+  lean.append(node("span","ai-lean-sub",frozenResearchScreen(p)));
   main.append(lean);
   outer.append(main);
   const details=node("details","compact-details"),
