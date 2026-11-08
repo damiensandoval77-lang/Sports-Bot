@@ -136,7 +136,8 @@ def report(archive,ledger,games):
 def main():
     archive,_=load_history()
     ledger=json.loads((ROOT/"docs/paper_pick_ledger.json").read_text()).get("records",[])
-    games=json.loads((ROOT/"data/nba/current/current_games.json").read_text())
+    current_file=ROOT/"data/nba/current/current_games.json"
+    games=json.loads(current_file.read_text()) if current_file.exists() else []
     result=report(archive,ledger,games)
     OUT.write_text(json.dumps(result,indent=2)+"\n")
     print("SHOOTING V1:",json.dumps({k:result[k] for k in ("historical_holdout","saved_combined_comparison")}))
