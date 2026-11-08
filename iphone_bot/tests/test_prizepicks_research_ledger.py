@@ -34,6 +34,20 @@ class ResearchLedgerTests(unittest.TestCase):
     again=settle(result,[{**GAME,"AST":0}],NOW)
     self.assertEqual(again["records"][0]["actual"],8)
     self.assertEqual(summarize(result,NOW)["by_market"]["AST"]["wins"],1)
+ def test_alternate_thresholds_not_counted_as_independent_hits(self):
+    rows=[]
+    for i,line in enumerate((3.5,5.5,7.5)):
+        v={**SOURCE["comparisons"][0],
+           "provider_projection_id":"different"+str(i),"line":line}
+        rows.append(v)
+    frozen=freeze({"records":[]},{**SOURCE,"comparisons":rows})
+    graded=settle(frozen,[GAME],NOW)
+    summary=summarize(graded,NOW)
+    self.assertEqual(summary["settled"],3)
+    self.assertEqual(summary["independent_player_market_count"],1)
+    self.assertEqual(summary["independent_settled_center_lines"],1)
+    self.assertEqual(summary["independent_by_market"]["AST"]["graded"],1)
+    self.assertEqual(summary["independent_by_market"]["AST"]["wins"],1)
  def test_missing_final_does_not_invent_grades(self):
     saved=freeze({"records":[]},SOURCE)
     result=settle(saved,[],NOW)
