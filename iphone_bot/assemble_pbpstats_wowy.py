@@ -11,9 +11,11 @@ from pathlib import Path
 
 try:
     from .pbpstats_wowy_adapter import normalize_pair
+    from .pbpstats_game_coverage import audit_pair
     from .import_authorized_onoff import validate,ROOT,FORM,PRIVATE
 except ImportError:
     from pbpstats_wowy_adapter import normalize_pair
+    from pbpstats_game_coverage import audit_pair
     from import_authorized_onoff import validate,ROOT,FORM,PRIVATE
 
 def assemble(bundle,approval,form):
@@ -28,6 +30,18 @@ def assemble(bundle,approval,form):
                   "team","with_provenance","without_provenance")
         missing=[key for key in required if key not in pair]
         if missing:raise ValueError(f"Response pair {i} missing {missing}")
+        # Require independently sourced target/teammate dated on-court stints.
+        # The provenance game-date arrays must agree with independently
+        # recomputed ON and OFF intervals, not just a self-declared flag.
+        if "target_distribution" not in pair or "teammate_distribution" not in pair:
+            raise ValueError("Missing independent player stint distributions")
+        coverage=audit_pair(pair["target_distribution"],pair["teammate_distribution"],
+            player_id=pair["player_id"],teammate_id=pair["teammate_id"],
+            cutoff_date=pair["data_through"])
+        for name in ("with","without"):
+            source_proof=pair[name+"_provenance"]
+            if sorted(source_proof.get("game_dates",[]))!=coverage[name]["game_dates"]:
+                raise ValueError("Independent "+name+" on/off games do not match provider proof")
         normalized=normalize_pair(pair["with_response"],pair["without_response"],
             player_id=pair["player_id"],teammate_id=pair["teammate_id"],
             team=pair["team"],season=bundle["season"],
@@ -36,6 +50,9 @@ def assemble(bundle,approval,form):
             data_through=pair["data_through"],
             with_provenance=pair["with_provenance"],
             without_provenance=pair["without_provenance"])
+        for name in ("with","without"):
+            if abs(normalized[name]["minutes"]-coverage[name]["minutes"])>max(3,coverage[name]["minutes"]*.03):
+                raise ValueError("Provider "+name+" exposure does not match game-level teammate stints")
         raw.append(normalized)
     return validate({"season":bundle["season"],"source":bundle["source"],
           "generated_at":bundle["generated_at"],"observations":raw},
