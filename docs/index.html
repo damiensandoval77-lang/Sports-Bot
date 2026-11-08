@@ -744,7 +744,7 @@ function renderAI(){
    }else if(preliminary.status==="PRIZEPICKS_SLIP_PAYOUT_REQUIRED"){
     detail+=" · PrizePicks has no single-leg sportsbook EV; actual slip payouts required";
    }else{
-    detail+=" · price not verified or research screen passed on this pick";
+    detail+=" · no eligible exact-price EV calculation or structural screen did not qualify";
    }
    main.append(node("div","research-note",detail+
      ". SMALL SAMPLE / NOT CALIBRATED — do not treat as a proven advantage."));
