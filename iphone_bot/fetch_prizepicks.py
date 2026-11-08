@@ -424,6 +424,32 @@ def main():
     out["source_query"]="NBA_ACTIVE_ALL_PLAYERS_CURSOR_PAGED"
     out["complete_provider_board"]=not out["partial_board"] and out["provider_status"]=="fresh"
     out["pages_requested"]=len(requested)
+    # Always record the actual paid API outcome, even if it supplied no
+    # authentic upcoming rows. Do not mask a failed refresh as successful.
+    health_path=ROOT/"docs/prizepicks_refresh_health.json"
+    diagnostic={"checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+        "status":"FRESH_LINES_PUBLISHED" if out["independent_board_count"]>0 else
+                 "PAID_READ_NO_FRESH_USABLE_OFFERS",
+        "api_requests_made":len(requested),
+        "provider_pages_read":out["pages_read"],
+        "provider_status":out["provider_status"],
+        "raw_rows":out["raw_rows_read"],
+        "eligible_upcoming_offers":out["eligible_upcoming_offers"],
+        "matched_upcoming_offers":out["independent_board_count"],
+        "rejected_by_reason":out["filtered_out_reasons"],
+        "unassigned_or_ambiguous_events":out["unassigned_or_ambiguous_events"],
+        "credits_reported_charged":out["total_provider_charged_credits"],
+        "monthly_credits_header":out["remaining_provider_credits"],
+        "topup_balance_not_exposed_by_monthly_header":True,
+        "stale_quotes_published_as_current":False}
+    health_path.write_text(json.dumps(diagnostic,indent=2)+"\n")
+    print("PrizePicks authenticated paid-read result:",
+          diagnostic["status"],"requests:",len(requested),
+          "returned:",diagnostic["raw_rows"],
+          "verified upcoming:",diagnostic["eligible_upcoming_offers"],
+          "rejections:",diagnostic["rejected_by_reason"],
+          "charged:",diagnostic["credits_reported_charged"],
+          flush=True)
     if out["independent_board_count"]==0 and out["matched_count"]==0 and DEST.exists():
         print("No fresh eligible PrizePicks events; preserving previous feed as stale.",flush=True)
         return
