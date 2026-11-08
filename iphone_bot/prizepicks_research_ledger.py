@@ -47,6 +47,10 @@ def freeze(existing,source):
             stored={k:row.get(k) for k in fields}
             stored.update({
                 "opponent_aware_projection":row.get("opponent_aware_projection"),
+                "minutes_v3_research":row.get("minutes_v3_research"),
+                "opportunity_v2_research":row.get("opportunity_v2_research")
+                    if row.get("stat") in ("AST","REB") else None,
+                "minutes_v2_research_baseline":row.get("minutes_v2_research_baseline"),
                 "observed_at":row.get("observed_at"),
                 "captured_at":row["captured_at"],
                 "snapshot_generated_at":source["generated_at"],
@@ -117,9 +121,52 @@ def settle(ledger,games,now=None):
             "LOSS" if prediction!=line else "NO_LEAN")
         row.update(status="SETTLED",actual=value,result=result,
                    settlement_source="HISTORICAL_CSV_COMPLETED_GAME",
-                   settled_game_date=date)
+                   settled_game_date=date,
+                   actual_minutes=float(actual_row["MIN"])
+                      if actual_row.get("MIN") is not None and
+                         0<float(actual_row["MIN"])<=60 else None)
         out.append(row)
     return {"records":out}
+
+def paired_joint_metrics(representatives):
+    """Independent representative PrizePicks markets, exact original frozen forecast."""
+    out={}
+    for stat in ("AST","REB"):
+        eligible=[]
+        for row in representatives:
+            if row.get("stat")!=stat or row.get("status")!="SETTLED":
+                continue
+            shadow=row.get("opportunity_v2_research")
+            point=(shadow.get("markets") or {}).get(stat,{}) if isinstance(shadow,dict) else {}
+            mins=row.get("minutes_v3_research")
+            if (not isinstance(mins,dict) or
+                point.get("status")!="PREGAME_OPPORTUNITY_V2_RESEARCH"):
+                continue
+            day=row.get("settled_game_date")
+            if not day or (point.get("last_prior_game") or "9999")>=day or (mins.get("last_prior_date") or "9999")>=day:
+                continue
+            try:
+                actual=float(row["actual"]);old=float(row["combined_projection"])
+                new=float(point["projection"]);line=float(row["line"])
+                if not all(__import__("math").isfinite(x) for x in (actual,old,new,line)):
+                    continue
+            except (TypeError,KeyError,ValueError):
+                continue
+            eligible.append((row,actual,old,new,line))
+        n=len(eligible)
+        all_direction=[x for x in eligible if x[1]!=x[4] and x[2]!=x[4] and x[3]!=x[4]]
+        out[stat]={"paired":n,
+            "distinct_game_dates":len({x[0].get("settled_game_date") for x in eligible}),
+            "baseline_mae":round(sum(abs(x[1]-x[2]) for x in eligible)/n,4) if n else None,
+            "challenger_mae":round(sum(abs(x[1]-x[3]) for x in eligible)/n,4) if n else None,
+            "paired_direction_grades":len(all_direction),
+            "baseline_wins":sum((x[2]>x[4])==(x[1]>x[4]) for x in all_direction),
+            "challenger_wins":sum((x[3]>x[4])==(x[1]>x[4]) for x in all_direction),
+            "tracked_chances_samples":sum(x[0]["opportunity_v2_research"]["markets"][stat].get("source_kind")=="OBSERVED_TRACKING_CHANCES_CONVERTED" for x in eligible),
+            "production_applied":False}
+    return {"status":"PRETIP_FROZEN_PRIZEPICKS_JOINT_RESEARCH_ONLY",
+        "by_market":out,"verified_edge":False,
+        "note":"No payoff/ROI inferred; paired observations only and alternate thresholds are not counted as independent."}
 
 def summarize(ledger,now=None):
     now=now or datetime.now(timezone.utc)
@@ -165,6 +212,7 @@ def summarize(ledger,now=None):
             "independent_player_market_count":len(representatives),
             "independent_settled_center_lines":sum(v["graded"] for v in independent.values()),
             "independent_by_market":independent,
+            "minutes_v3_opportunity_v2_paired":paired_joint_metrics(representatives),
             "by_market":by,"wager_roi":None,"verified_ev":False,
             "selection_method":"FIXED_CENTRAL_POSTED_LINE_PER_PLAYER_GAME_STAT_NO_RETROACTIVE_WINNER_SELECTION",
             "notice":"Only one central posted threshold per player/game/stat is used for independent hit rates. Alternate thresholds are preserved, graded, and never counted as independent outcomes."}
@@ -178,7 +226,8 @@ def main():
     if (graded["records"]==old.get("records",[]) and LEDGER.exists() and
         RESULTS.exists() and
         json.loads(RESULTS.read_text()).get("selection_method")==
-        "FIXED_CENTRAL_POSTED_LINE_PER_PLAYER_GAME_STAT_NO_RETROACTIVE_WINNER_SELECTION"):
+        "FIXED_CENTRAL_POSTED_LINE_PER_PLAYER_GAME_STAT_NO_RETROACTIVE_WINNER_SELECTION" and
+        "minutes_v3_opportunity_v2_paired" in json.loads(RESULTS.read_text())):
         print("PrizePicks research ledger unchanged; no redundant publication")
         return
     graded["updated_at"]=datetime.now(timezone.utc).isoformat()
