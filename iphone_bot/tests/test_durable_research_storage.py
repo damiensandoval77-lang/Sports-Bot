@@ -78,6 +78,17 @@ class DurableResearchTests(unittest.TestCase):
         self.assertEqual(info["research_diagnostics"]["missing_sanity"],2)
         self.assertFalse(info["intermediate_live_player_stats_persisted"])
 
+    def test_archive_only_offer_mismatch_is_preserved_without_grading(self):
+        x=board()
+        # Different line from the exact paper capture, same game and book.
+        x["comparisons"][0]["book_quotes"][0]["line"]=26.5
+        result=audit({"records":[offer()]},x,{"games":[]},{},
+            now=datetime(2026,11,8,0,30,tzinfo=timezone.utc))
+        a=result["archive"]
+        self.assertEqual(a["archived_offers_not_found_in_paper"],1)
+        self.assertEqual(a["archived_offer_mismatch_categories"]["PLAYER_MARKET_AND_BOOK_SAVED_DIFFERENT_LINE"],1)
+        self.assertFalse(a["archive_only_offers_eligible_for_retroactive_grading"])
+
     def test_missing_paper_quote_reported_not_fabricated(self):
         info=audit({"records":[]},board(),{"games":[]},{},
             now=datetime(2026,11,8,0,30,tzinfo=timezone.utc))
