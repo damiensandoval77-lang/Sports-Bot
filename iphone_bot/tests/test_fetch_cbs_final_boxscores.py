@@ -60,6 +60,19 @@ class CBSFallbackTests(unittest.TestCase):
         self.assertTrue(cbs_boxscore_url("2026-11-06","WAS","ATL").endswith(
             "NBA_20261106_WAS%40ATL/"))
 
+    def test_cbs_live_route_recovers_from_boxscore_404(self):
+        urls=[]
+        def fetch(url):
+            urls.append(url)
+            if "/boxscore/" in url:raise OSError("HTTP 404")
+            return synthetic()
+        found,status=collect(records(),now=datetime(2026,11,7,6,tzinfo=timezone.utc),
+                             request=fetch)
+        self.assertEqual(len(found),6)
+        self.assertEqual(status["finished_matchups"],1)
+        self.assertEqual(len(urls),2)
+        self.assertIn("/live/",urls[-1])
+
     def test_no_pending_projections_no_network(self):
         def forbidden(_):
             raise AssertionError("Cannot search unrelated games")
