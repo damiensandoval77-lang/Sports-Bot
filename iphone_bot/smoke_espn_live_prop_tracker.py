@@ -26,32 +26,7 @@ def game_name(event):
 
 def main():
     day=dt.datetime.now(dt.timezone.utc).astimezone(ET).strftime("%Y%m%d")
-    try:
-        board=get("/scoreboard?dates="+day+"&limit=100")
-    except Exception as e:
-        print("ESPN endpoint unavailable:",repr(e))
-        alternatives=[
-          "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
-          "https://cdn.nba.com/static/json/liveData/scoreboard/scoreboard_"+day+".json",
-          "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/summary?event=401888888",
-          "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates="+day
-        ]
-        successful=[]
-        for u in alternatives:
-            try:
-                req=urllib.request.Request(u,headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"})
-                with urllib.request.urlopen(req,timeout=12) as res:
-                    payload=json.load(res)
-                    print("ALT OK",u,"keys",list(payload)[:8])
-                    if "scoreboard" in payload:
-                        games=payload["scoreboard"].get("games",[])
-                        print("NBA scoreboard game IDs:",[g.get("gameId") for g in games[:8]])
-                    successful.append(u)
-            except Exception as alt:
-                print("ALT FAILED",u,repr(alt))
-        if not successful:raise RuntimeError("ALL LIVE NBA/ESPN PROBES BLOCKED")
-        print("At least one alternative public live basketball data source reachable")
-        return
+    board=get("/scoreboard?dates="+day+"&limit=100")
     games=board.get("events",[])
     print("ESPN scoreboard:",day,"games",len(games))
     if not games:raise RuntimeError("Scoreboard returned no games for today's slate")
