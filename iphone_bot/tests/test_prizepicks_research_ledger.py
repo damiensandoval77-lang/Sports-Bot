@@ -48,6 +48,30 @@ class ResearchLedgerTests(unittest.TestCase):
     self.assertEqual(summary["independent_settled_center_lines"],1)
     self.assertEqual(summary["independent_by_market"]["AST"]["graded"],1)
     self.assertEqual(summary["independent_by_market"]["AST"]["wins"],1)
+ def test_joint_v3_v2_shadows_are_frozen_and_graded(self):
+    src={**SOURCE,"comparisons":[{
+      **SOURCE["comparisons"][0],
+      "minutes_v3_research":{
+         "status":"PREGAME_MINUTES_V3_RESEARCH",
+         "expected_minutes":31.5,"last_prior_date":"2026-11-07"},
+      "minutes_v2_research_baseline":30,
+      "opportunity_v2_research":{"markets":{"AST":{
+        "status":"PREGAME_OPPORTUNITY_V2_RESEARCH","projection":7.5,
+        "last_prior_game":"2026-11-07",
+        "source_kind":"BOX_SCORE_RATE_PROXY"}}}
+    }]}
+    stored=freeze({"records":[]},src)
+    self.assertEqual(stored["records"][0]["opportunity_v2_research"]["markets"]["AST"]["projection"],7.5)
+    graded=settle(stored,[GAME],NOW)
+    summary=summarize(graded,NOW)["minutes_v3_opportunity_v2_paired"]["by_market"]["AST"]
+    self.assertEqual(summary["paired"],1)
+    self.assertEqual(summary["challenger_wins"],1)
+    self.assertEqual(summary["tracked_chances_samples"],0)
+    self.assertFalse(summarize(graded,NOW)["verified_ev"])
+ def test_absent_original_shadows_do_not_get_retrospective_grades(self):
+    sample=settle(freeze({"records":[]},SOURCE),[GAME],NOW)
+    result=summarize(sample,NOW)["minutes_v3_opportunity_v2_paired"]["by_market"]["AST"]
+    self.assertEqual(result["paired"],0)
  def test_missing_final_does_not_invent_grades(self):
     saved=freeze({"records":[]},SOURCE)
     result=settle(saved,[],NOW)
