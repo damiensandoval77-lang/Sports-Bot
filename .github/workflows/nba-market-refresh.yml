@@ -64,11 +64,15 @@ jobs:
           else:
               print('No successful refresh:',status['status'])
           PY
+      - name: Freeze original real sportsbook quote input for longitudinal research
+        if: success()
+        run: python -u iphone_bot/preserve_research_inputs.py odds
       - name: Publish NBA sportsbook market coverage and provider health
         if: always()
         run: |
           git fetch origin main
           git add docs/data.json docs/odds_compact.json docs/odds_fetch_status.json
+          if [ -d docs/research_inputs/odds ]; then git add docs/research_inputs/odds/; fi
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
