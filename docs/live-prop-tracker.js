@@ -92,13 +92,27 @@
  function gameFraction(event){
   if(gameStatus(event)==="post")return 1;
   const period=Number(event?.status?.period);
-  const clock=String(event?.status?.displayClock||"");
-  const found=clock.match(/^(\d+):(\d{2})(?:\.\d+)?$/);
-  if(!Number.isInteger(period)||period<1||!found)return null;
-  const remaining=Number(found[1])*60+Number(found[2]);
-  if(period<=4&&remaining<=720)return Math.max(0,Math.min(1,((period-1)*720+720-remaining)/2880));
-  // Do not treat overtime as a 5th 12-minute regulation period.
-  return period>4?1:null;
+  if(!Number.isInteger(period)||period<1)return null;
+  // Overtime has 5-minute periods, not regulation's 12-minute periods.
+  if(period>4)return null;
+  const status=event?.status||{};
+  const display=String(status.displayClock||"").trim();
+  const found=display.match(/^(\d+):(\d{2})(?:\.\d+)?$/);
+  let remaining=found?Number(found[1])*60+Number(found[2]):null;
+  if(remaining===null){
+   const fallback=Number(status.clock);
+   if(Number.isFinite(fallback)&&fallback>=0&&fallback<=720)
+    remaining=fallback;
+  }
+  if(remaining===null){
+   const label=String(status.type?.shortDetail||status.type?.detail||"").toLowerCase();
+   if(/half.?time/.test(label)||/end of (?:the )?(?:second|2nd)/.test(label))return .5;
+   if(/end of (?:the )?(?:first|1st)/.test(label))return .25;
+   if(/end of (?:the )?(?:third|3rd)/.test(label))return .75;
+   return null;
+  }
+  if(remaining<0||remaining>720)return null;
+  return Math.max(0,Math.min(1,((period-1)*720+720-remaining)/2880));
  }
  function evaluate(row,actual,event){
   const projection=numeric(row.combined_projection??row.projection);
@@ -108,17 +122,43 @@
   const state=gameStatus(event);
   const fraction=gameFraction(event);
   const final=state==="post";
-  if(side==="NO_LEAN"||actual===null)return {
-    side,label:actual===null?"STATS_UNAVAILABLE":"NO_MODEL_LEAN",pace:null};
+  if(actual===null)return {side,label:"STATS_UNAVAILABLE",pace:null};
+  // Pace remains visible even when a side has already hit/lost. It is only
+  // linear extrapolation of regulation game time, never a live model forecast.
+  const pace=(!final&&fraction!==null&&fraction>=.15&&fraction<1)?
+   Math.round(actual/fraction*10)/10:null;
+  if(side==="NO_LEAN")return {side,label:"NO_MODEL_LEAN",pace};
   if(final)return {side,label:actual===line?"PUSH":
      (actual>line)===(side==="OVER")?"FINAL_HIT":"FINAL_MISS",pace:null};
-  if(side==="OVER"&&actual>line)return {side,label:"OVER_ALREADY_CLEARED",pace:null};
-  if(side==="UNDER"&&actual>line)return {side,label:"UNDER_ALREADY_LOST",pace:null};
-  if(fraction===null||fraction<0.15||fraction>=1)return {
-    side,label:"PACE_UNAVAILABLE_OR_EARLY",pace:null};
-  const pace=Math.round(actual/fraction*10)/10;
+  if(side==="OVER"&&actual>line)return {side,label:"OVER_ALREADY_CLEARED",pace};
+  if(side==="UNDER"&&actual>line)return {side,label:"UNDER_ALREADY_LOST",pace};
+  if(pace===null)return {side,label:"PACE_UNAVAILABLE_OR_EARLY",pace:null};
   const supports=(side==="OVER"?pace>line:pace<line);
   return {side,label:supports?"ON_PACE":"BEHIND_PACE",pace};
+ }
+ // Convert a legitimately timestamped pregame independent pick'em research
+ // record to the SAME frozen tracker shape as the historical sportsbook cards.
+ // Never use the current time as a fabricated pregame capture timestamp.
+ function frozenPrizePicks(records){
+  const result=[];
+  for(const p of records||[]){
+   if(p?.source!=="independent_prizepicksapi_com"||
+      p.no_calibrated_hit_percentage!==true||
+      !p.provider_projection_id)continue;
+   const row={
+    ...p,board_generated_at:p.captured_at,
+    projection:p.original_projection,
+    combined_projection:p.combined_projection,
+    start:p.start,game:p.game,stat:p.stat,
+    line:p.line,player:p.player,player_id:p.player_id,team:p.team,
+    original_pregame_source:"PRIZEPICKS_AI_RESEARCH_ONLY"
+   };
+   if(isFrozenForecast(row)&&
+      Date.parse(p.observed_at)<=Date.parse(p.captured_at)&&
+      Date.parse(p.observed_at)<Date.parse(row.start))
+    result.push(row);
+  }
+  return result;
  }
  function pickRows(forecasts,game){
   const dedup=new Map();
@@ -131,5 +171,5 @@
   return [...dedup.values()];
  }
  return {numeric,normalize,matchup,identifyGame,gameStatus,summaryGameMatch,
-         athleteRows,matchPlayer,isFrozenForecast,gameFraction,evaluate,pickRows};
+         athleteRows,matchPlayer,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows};
 });
