@@ -19,6 +19,7 @@ from defense_training import COLS
 from experimental_probability import probability_sides, METHOD
 from combined_simulation import simulate_combined_hit_rate, METHOD as COMBINED_SIM_METHOD
 from reliability_screen import research_screen
+from edge_readiness import evaluate_edge
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
@@ -473,6 +474,15 @@ def main():
             skipped["injury_reprojection_unavailable"]=skipped.get("injury_reprojection_unavailable",0)+1
             continue
         r["reliability_screen"] = research_screen(r)
+        # Current simulations use uncalibrated original-model residuals.
+        # Regardless of apparent EV, do not mark sportsbook or pick'em picks +EV.
+        # Keep this explicit readiness status with every frozen pregame row.
+        r["edge_assessment"] = evaluate_edge(
+            model_probability=None, lower_probability=None,
+            calibration={"model":"combined","verified":False,
+                         "independent_outcomes":0,"distinct_event_dates":0},
+            quote=None, side=r.get("combined_direction"), line=r.get("line"),
+            wager_type="prizepicks" if prizepicks_mode else "sportsbook")
         eligible.append(r)
     valid=eligible
     # Put directional research leans first; PASS means genuine blockers.
