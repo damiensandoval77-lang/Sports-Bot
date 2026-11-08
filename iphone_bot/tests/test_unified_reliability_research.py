@@ -22,6 +22,25 @@ class UnifiedReliabilityResearchTests(unittest.TestCase):
                          ["SANITY_LARGE_SEASON_BASELINE_DEVIATION"])
         self.assertTrue(r["no_live_picks_changed"])
 
+    def test_jokic_style_large_pra_and_assists_deviations_need_review(self):
+        # Representative comparison based on observed concern, NOT a retroactive
+        # evaluation of a real bet or invented archived pregame snapshot.
+        outcomes=[]
+        for market,proj,season in (("PRA",32.9,42.4),("AST",6.7,9.3)):
+            p=row(pid="203999")
+            p["market"]=market
+            p["combined_projection"]=proj
+            p["sanity_shadow_v1"]={"status":"REVIEW_ONLY_UNCERTAIN_INPUTS",
+                "season_average":season,
+                "warnings":["LARGE_SEASON_BASELINE_DEVIATION",
+                            "INJURY_OR_LINEUP_UNCERTAINTY"]}
+            outcomes.append(p)
+        x=view(outcomes,[],generated_at=CAPTURE)
+        self.assertEqual(x["independent_research_markets"],2)
+        self.assertEqual(x["classification_counts"]["NEEDS_REVIEW"],2)
+        self.assertEqual(x["reasons_by_code"]["SANITY_LARGE_SEASON_BASELINE_DEVIATION"],2)
+        self.assertTrue(x["no_accuracy_improvement_claimed"])
+
     def test_missing_and_partial_old_models_are_not_clean(self):
         previous=row()
         del previous["stress_test_20k_v1"]
