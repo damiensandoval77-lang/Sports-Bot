@@ -23,6 +23,14 @@ class UnderprojectionTests(unittest.TestCase):
         self.assertFalse(r["conclusions"]["systematic_underprojection_proven"])
         self.assertFalse(r["conclusions"]["live_predictions_changed"])
 
+    def test_high_season_baseline_catches_underestimated_star(self):
+        x=row(stat="PRA",forecast=32.9,actual=49)
+        x["season_average_challenger"]["season_average"]=42.4
+        r=report([x])["by_market"]["PRA"]
+        self.assertEqual(r["high_forecast_tier"]["observations"],0)
+        self.assertEqual(r["high_frozen_season_baseline_tier"]["observations"],1)
+        self.assertEqual(r["high_baseline_and_projection_20pct_below"]["observations"],1)
+
     def test_same_game_duplicate_book_does_not_double_count(self):
         one=row()
         late={**one,"bookmaker":"DraftKings","captured_at":"2026-11-06T22:00:00Z",
