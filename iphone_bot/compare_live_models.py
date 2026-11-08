@@ -31,6 +31,7 @@ from research_context import minutes_estimate,positional_allowance,teammate_on_o
 from minutes_model_v2 import forecast as minutes_v2_forecast,backtest as minutes_v2_backtest
 from minutes_early_season_research import forecast as early_minutes_forecast,backtest as early_minutes_backtest
 from shot_profile_research import predict_attempts as shot_attempt_profile
+from shooting_efficiency_v1 import forecast as shooting_efficiency_v1,opponent_defense_index
 from season_average_research import season_candidate
 from injury_projection_adjustment import teammate_minutes_ratio,opponent_defense_ratio,reproject
 
@@ -229,6 +230,7 @@ def main():
             if shadow_models[stat].get("status")!="SHADOW_ONLY_NOT_CALIBRATED":
                 raise ValueError("Unrecognized opponent shadow model provenance")
     tracking_rows,tracking_coverage=load_tracking()
+    shooting_defense=opponent_defense_index(all_games)
     for row in valid:
         target=row["stat"];model=models[target]
         features=model["features"];fill=model["fill_values"]
@@ -347,6 +349,16 @@ def main():
         combined=combine_projections(projection,
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
         row["combined_projection"]=round(combined["projection"],1)
+        row["shooting_efficiency_v1"] = (shooting_efficiency_v1(
+            history,upcoming_date,row["team"],opponent,
+            expected_minutes=row["minutes_v2_research"].get("expected_minutes"),
+            defense_index=shooting_defense,
+            combined_baseline=combined["projection"])
+            if target=="PTS" else {
+               "status":"POINTS_ONLY_RESEARCH_SHADOW",
+               "model":"SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
+               "projection":None,"production_applied":False})
+
         row["preinjury_original_projection"]=round(projection,1)
         row["preinjury_shadow_projection"]=row["shadow_projection"]
         row["preinjury_combined_projection"]=round(combined["projection"],1)
@@ -533,6 +545,8 @@ def main():
        "minutes_early_season_applied_to_live_model":False,
        "minutes_v2_applied_to_live_model":False,
        "shot_profile_applied_to_live_model":False,
+       "shooting_efficiency_v1_research_only":True,
+       "shooting_efficiency_v1_applied_to_live_model":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
        "line_aggregation_method":"AUTHENTIC_PRIZEPICKS_PICKEM_LINES" if prizepicks_mode else "MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
        "markets_with_multiple_books":sum(v["line_book_count"]>=2 for v in valid),
