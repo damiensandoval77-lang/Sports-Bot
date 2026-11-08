@@ -261,6 +261,32 @@ def read_url(url,key):
                     data.setdefault("_client_credit_usage",{})[field]=str(value)[:45]
         return data
 
+def quota_guard(saved,health,now):
+    """Prevent automatic paid requests after confirmed provider quota depletion.
+
+    A newly successful authenticated probe can verify manual replenishment.
+    Old 429 retry hints are not proof the user's account is still exhausted
+    after a verified later provider check. Monthly rollover may also restore
+    credits. Unknown evidence fails closed on confirmed depletion.
+    """
+    checked=timeparse(health.get("checked_at"))
+    old=timeparse(saved.get("generated_at"))
+    recovered=(health.get("status")=="API_ACCESS_CONFIRMED"
+               and checked is not None and old is not None and checked>old)
+    remaining=saved.get("remaining_provider_credits")
+    if (saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
+        and remaining is not None and str(remaining).isdigit()
+        and int(remaining)<=0):
+        if old and (now.year,now.month)!=(old.year,old.month):
+            return "MONTH_ROLLOVER_RECHECK_ALLOWED"
+        return "REPLENISHED_ACCESS_CONFIRMED" if recovered else "ZERO_PROVIDER_CREDITS_PRESERVE"
+    if saved.get("status")=="PROVIDER_RATE_LIMITED" and saved.get("provider_error_code")=="MONTHLY_QUOTA_EXCEEDED":
+        if recovered:return "REPLENISHED_ACCESS_CONFIRMED"
+        if old and (now.year,now.month)!=(old.year,old.month):
+            return "MONTH_ROLLOVER_RECHECK_ALLOWED"
+        return "QUOTA_LOCKED_PRESERVE"
+    return "REQUEST_ALLOWED"
+
 def main():
     key=os.environ.get("PRIZEPICKS_API_KEY","").strip()
     if not key:
@@ -270,19 +296,19 @@ def main():
         DEST.write_text(json.dumps(out,indent=2)+"\n")
         print("PrizePicks API key missing; publishing NOT_CONFIGURED status, no vendor request.",flush=True)
         return
-    # Only a newer successful authenticated provider check unlocks old 429.
     if DEST.exists() and os.environ.get("PRIZEPICKS_FORCE_REFRESH")!="1":
         try:
-            old=json.loads(DEST.read_text())
-            if old.get("status")=="PROVIDER_RATE_LIMITED" and old.get("provider_error_code")=="MONTHLY_QUOTA_EXCEEDED":
-                health=json.loads((ROOT/"docs/prizepicks_connection_health.json").read_text())
-                checked=timeparse(health.get("checked_at"))
-                previous=timeparse(old.get("generated_at"))
-                if not (health.get("status")=="API_ACCESS_CONFIRMED" and checked and previous and checked>previous):
-                    print("Monthly quota lockout not cleared by confirmed authenticated health check.",flush=True)
-                    return
+            saved=json.loads(DEST.read_text())
+            health_path=ROOT/"docs/prizepicks_connection_health.json"
+            health=json.loads(health_path.read_text()) if health_path.exists() else {}
+            decision=quota_guard(saved,health,dt.datetime.now(dt.timezone.utc))
+            if decision in ("ZERO_PROVIDER_CREDITS_PRESERVE","QUOTA_LOCKED_PRESERVE"):
+                print("PrizePicks quota guard:",decision,
+                      "- zero API calls; authentic last-observed board preserved.",
+                      flush=True)
+                return
         except (ValueError,TypeError,KeyError,FileNotFoundError):
-            print("Cannot verify credit recovery: retaining provider lockout.",flush=True)
+            print("Quota status could not be inspected; authentic file retained.",flush=True)
             return
     comp=json.loads((ROOT/"docs/ai_comparisons.json").read_text())
     if comp.get("status")!="EXPERIMENTAL_NON_CALIBRATED":
@@ -321,6 +347,14 @@ def main():
              "retry_after_seconds":retry_after if retry_after and str(retry_after).isdigit() else None,
              "pages_read":len(pages),
              "notice":"Independent PrizePicks provider returned 429; no live lines displayed. Check plan quota or Retry-After. FanDuel remains separate."}
+        if DEST.exists():
+            try:
+                saved=json.loads(DEST.read_text())
+                if saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES" and saved.get("board_offers"):
+                    print("Independent PrizePicks rate limited:",out["provider_error_code"],
+                          "- preserving the last verified snapshot, never publishing stale offers as fresh.",flush=True)
+                    return
+            except (OSError,ValueError,TypeError):pass
         DEST.write_text(json.dumps(out,indent=2)+"\n")
         print("Independent PrizePicks rate limited:",out["provider_error_code"],
               "retry after:",out["retry_after_seconds"],flush=True)
