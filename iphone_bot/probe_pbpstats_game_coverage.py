@@ -67,6 +67,27 @@ def one_time_probe():
             games=[r for r in payload["results"] if isinstance(r,dict)
                  and str(r.get("Date",""))<=DATE]
             summarized[target]=[{**r,"PlayerId":target} for r in games]
+        def time_schema(items):
+            start=[];end=[];invalid=0;examples=[]
+            for g in items:
+                for p in g.get("Possessions",[]):
+                    a=p.get("StartTime");b=p.get("EndTime")
+                    if isinstance(a,(int,float)) and isinstance(b,(int,float)):
+                        start.append(a);end.append(b)
+                        if not(0<=a<b<=4000):
+                            invalid+=1
+                            if len(examples)<3:
+                                examples.append({"start":a,"end":b,"duration":b-a})
+            return {"game_count":len(items),"interval_count":len(start),
+                    "min_start":min(start) if start else None,
+                    "max_start":max(start) if start else None,
+                    "min_end":min(end) if end else None,
+                    "max_end":max(end) if end else None,
+                    "invalid_range_count":invalid,
+                    "example_ranges":examples}
+        outcome["time_schema"]={
+            "target":time_schema(summarized[PLAYER]),
+            "teammate":time_schema(summarized[TEAMMATE])}
         coverage=audit_pair(summarized[PLAYER],summarized[TEAMMATE],
             player_id=PLAYER,teammate_id=TEAMMATE,cutoff_date=DATE,
             min_games=1,min_minutes=1)
