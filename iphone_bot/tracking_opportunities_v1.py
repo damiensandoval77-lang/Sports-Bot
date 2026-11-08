@@ -49,9 +49,8 @@ def evaluate(feed,*,player_id,team,market,event_date,baseline,
         day=date.fromisoformat(str(event_date))
         if issued>captured or (captured-issued).total_seconds()>72*3600:
             raise ValueError("future or stale feed")
-        if day.isoformat()!=captured.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date().isoformat():
-            # Same-day requirement is conservative for scheduled pregame snapshots.
-            return {**result,"status":"WRONG_EVENT_DATE"}
+        if day<captured.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date():
+            return {**result,"status":"EVENT_ALREADY_PASSED"}
     except (ValueError,KeyError,TypeError):
         return {**result,"status":"UNSAFE_SOURCE_TIMESTAMP"}
     baseline=num(baseline);minutes=num(expected_minutes)
@@ -59,7 +58,9 @@ def evaluate(feed,*,player_id,team,market,event_date,baseline,
         return {**result,"status":"MISSING_PREGAME_MINUTES"}
     field,made=MARKETS[market]
     selected={}
-    for row in feed.get("observations",[]):
+    if not isinstance(feed.get("observations"),list):
+        return {**result,"status":"MISSING_TRACKING_GAME_LOGS"}
+    for row in feed["observations"]:
         if not isinstance(row,dict):continue
         if str(row.get("player_id"))!=str(player_id) or str(row.get("team"))!=str(team):continue
         game_day=row.get("game_date")
