@@ -37,10 +37,12 @@ def _aggregate(payload,target,provenance,cutoff,expected_request):
         raise ValueError("At least five independent game dates are required")
     try:
         dates=[date.fromisoformat(d) for d in raw_dates]
-        if len(set(dates))!=len(dates) or any(d>cutoff for d in dates):
-            raise ValueError("Duplicate or future game dates")
     except (ValueError,TypeError):
-        raise ValueError("Missing, duplicated or invalid completed game dates")
+        raise ValueError("Invalid completed game dates")
+    if len(set(dates))!=len(dates):
+        raise ValueError("Duplicate completed game dates")
+    if any(d>cutoff for d in dates):
+        raise ValueError("Future game dates cannot enter pregame samples")
     seconds=positive(row.get("SecondsPlayed"))
     mins=positive(row.get("Minutes"))
     # Prefer explicit SecondsPlayed units; cross-check optional Minutes.
