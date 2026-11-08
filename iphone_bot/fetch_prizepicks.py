@@ -274,8 +274,11 @@ def quota_guard(saved,health,now,topup=None):
     recovered=(health.get("status")=="API_ACCESS_CONFIRMED"
                and checked is not None and old is not None and checked>old)
     remaining=saved.get("remaining_provider_credits")
-    # This provider can still serve charged authenticated requests after
-    # X-Credits-Remaining=0 when the user owns separate top-up credits.
+    # An HTTP 200 charged read proves the vendor is accepting account
+    # requests despite a zero monthly header. It does not disclose the
+    # remaining purchased top-up balance. Budget: MAX_PAGES=4 at no more than
+    # the published 10-credit compact-page cost, once per >=20 hours.
+    # Stop when the vendor itself rejects the paid request with HTTP 429.
     # Require a *newer* one-shot authenticated successful read and only
     # authorize the immediately following bounded full-slate refresh.
     proof=topup if isinstance(topup,dict) else {}
@@ -283,10 +286,17 @@ def quota_guard(saved,health,now,topup=None):
     topup_access=(proof.get("status")=="LIVE_READ_SUCCEEDED"
         and proof.get("http_status")==200 and proof.get("provider_mode")=="live"
         and proof.get("provider_source_status")=="fresh"
-        and proof.get("returned_rows",0)>0
-        and proof.get("request_cost") is not None
-        and confirmed is not None and old is not None
-        and old<confirmed<=now and (now-confirmed).total_seconds()<6*3600)
+        and isinstance(proof.get("returned_rows"),int)
+        and proof["returned_rows"]>0
+        and isinstance(proof.get("request_cost"),int)
+        and 0<proof["request_cost"]<=10
+        and confirmed is not None and confirmed<=now
+        and 0<=(now-confirmed).total_seconds()<30*86400)
+    # Avoid exhausting finite purchased credits by rebuilding the full board
+    # after every unrelated repository commit or twice within one slate.
+    if (topup_access and old and 0<=(now-old).total_seconds()<20*3600
+        and saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"):
+        return "TOPUP_REFRESH_COOLDOWN_PRESERVE"
     if (saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
         and remaining is not None and str(remaining).isdigit()
         and int(remaining)<=0):
@@ -320,7 +330,7 @@ def main():
             topup_path=ROOT/"docs/prizepicks_topup_probe.json"
             topup=json.loads(topup_path.read_text()) if topup_path.exists() else {}
             decision=quota_guard(saved,health,dt.datetime.now(dt.timezone.utc),topup=topup)
-            if decision in ("ZERO_PROVIDER_CREDITS_PRESERVE","QUOTA_LOCKED_PRESERVE"):
+            if decision in ("ZERO_PROVIDER_CREDITS_PRESERVE","QUOTA_LOCKED_PRESERVE","TOPUP_REFRESH_COOLDOWN_PRESERVE"):
                 print("PrizePicks quota guard:",decision,
                       "- zero API calls; authentic last-observed board preserved.",
                       flush=True)
