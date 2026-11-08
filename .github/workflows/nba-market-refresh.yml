@@ -17,6 +17,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   markets:
+    # A code push must not unexpectedly consume paid odds credits. Run on
+    # the existing schedule or only when manually dispatched.
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
