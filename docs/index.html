@@ -797,6 +797,30 @@ function renderAI(){
    body.append(node("div","mini",p.alternative_lines.map(n=>fmt(n)).join(" · ")+
      " · representative center threshold is shown on the card; these are pick'em lines, not sportsbook odds."));
   }
+  const tracking=p.tracking_opportunity_research;
+  if(tracking?.status==="RESEARCH_TRACKING_AVAILABLE"){
+   const labelNames={potential_assists:"Potential assists",
+    passes_made:"Passes made",touches:"Touches",
+    assist_points_created:"Assist points created",
+    rebound_chances:"Rebound chances",rebound_chance_pct:"REB chance %",
+    contested_rebounds:"Contested rebounds",
+    uncontested_rebounds:"Uncontested rebounds",
+    offensive_rebound_chances:"Offensive rebound chances",
+    defensive_rebound_chances:"Defensive rebound chances"};
+   body.append(node("div","detail-heading","Observed tracking opportunities (research)"));
+   for(const [key,stats] of Object.entries(tracking.features||{})){
+    body.append(node("div","mini",(labelNames[key]||key)+
+      " · L5 "+fmt(stats.last5)+" · L10 "+fmt(stats.last10)+
+      " · Season "+fmt(stats.season)+" · "+stats.observations+" recorded games"));
+   }
+   body.append(node("div","mini","Authorized player-game source, through "+
+     tracking.latest_recorded_date+
+     ". Strictly pregame observations; NOT applied to current AI projection."));
+  }else{
+   body.append(node("div","mini",
+     "Tracking opportunities: independent potential-assist/rebound-chance game logs "+
+     "not connected or insufficient. No fabricated estimates."));
+  }
   const recentForm=formFresh?currentPerson(p.player,p.team):null;
   const recentBlocks=node("div","recent-block-grid");
   const seasonGames=Number(recentForm?.games)||0;
