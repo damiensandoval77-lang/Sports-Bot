@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/prospective_research_gate.py'
+      - 'iphone_bot/tests/test_prospective_research_gate.py'
       - 'iphone_bot/sanity_shadow_research.py'
       - 'iphone_bot/stress_test_20k_research.py'
       - 'iphone_bot/model_disagreement_research.py'
@@ -47,6 +49,7 @@ jobs:
         run: |
           python -m py_compile iphone_bot/projection_upgrade_research.py iphone_bot/sanity_shadow_research.py iphone_bot/stress_test_20k_research.py iphone_bot/model_disagreement_research.py iphone_bot/unified_reliability_research.py
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_sanity_shadow_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_stress_test_20k_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_model_disagreement_research.py' -v
@@ -66,6 +69,9 @@ jobs:
           python - <<'PY'
           import json
           r=json.load(open('docs/projection_upgrade_status.json'))
+          if r.get('new_samples',0):
+              assert r['prospective_capture_integrity']['all_new_rows_have_three_diagnostics'] is True
+              assert r['prospective_capture_integrity']['new_research_rows']==r['new_samples']
           assert r['live_combined_ai_unchanged'] is True
           assert r['live_simulated_hit_percentages_unchanged'] is True
           assert r['defender_v4']['v4_live_applied'] is False

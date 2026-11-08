@@ -100,6 +100,20 @@ def audit(paper,archive,slate,research,now=None,live_checkpoints=None,history_ar
                 key=offer_key(row,row)
                 if key:saved_offers.add(key)
         except (ValueError,TypeError,KeyError):continue
+    # A quote in the original archive is not necessarily an eligible paper
+    # selection. Group mismatches without inventing capture time or a bet.
+    # The exact quote ledger remains the only prospective grading source.
+    market_key=lambda key:(key[0],key[1],key[2],key[3])
+    matching_markets={market_key(k) for k in saved_offers}
+    matching_book_markets={(market_key(k),k[4]) for k in saved_offers}
+    unmatched_reasons=Counter()
+    for k in archived_offers-saved_offers:
+        if (market_key(k),k[4]) in matching_book_markets:
+            unmatched_reasons["PLAYER_MARKET_AND_BOOK_SAVED_DIFFERENT_LINE"]+=1
+        elif market_key(k) in matching_markets:
+            unmatched_reasons["PLAYER_MARKET_SAVED_DIFFERENT_BOOK"]+=1
+        else:
+            unmatched_reasons["NO_SAME_PLAYER_GAME_MARKET_IN_PAPER"]+=1
     report["archive"]={
         "date_eastern":archive.get("date_eastern"),
         "source_generated_at":archive.get("original_board_generated_at"),
@@ -108,6 +122,8 @@ def audit(paper,archive,slate,research,now=None,live_checkpoints=None,history_ar
         "archived_bookmaker_quotes":len(archived_offers),
         "matched_existing_paper_quote_keys":len(archived_offers&saved_offers),
         "archived_offers_not_found_in_paper":len(archived_offers-saved_offers),
+        "archived_offer_mismatch_categories":dict(unmatched_reasons),
+        "archive_only_offers_eligible_for_retroactive_grading":False,
         "paper_offers_not_in_current_archived_revision":len(saved_offers-archived_offers),
         "rejected_archive_evidence":dict(rejected),
         "historical_archive_is_not_a_new_paper_capture":True,
