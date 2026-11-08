@@ -1892,7 +1892,11 @@ if(paper?.performance?.models?.combined){
     (rate==null?"—":(rate*100).toFixed(1)+"%")+" correct · paper ROI "+
     (roi==null?"—":(roi*100).toFixed(1)+"%")+
     " · "+dayCount+" game date"+(dayCount===1?"":"s")+
-    ". No established betting edge. Simulated estimates are NOT verified win probabilities.";
+    ". No established betting edge. Simulated estimates are NOT verified win probabilities."+
+    " Market hit rates: "+["PTS","REB","AST","PRA"].map(k=>{
+      const x=paper.performance.by_stat?.[k]?.combined;
+      return k+" "+(x?.direction_hit_rate==null?"—":(100*x.direction_hit_rate).toFixed(1)+"%");
+    }).join(" · ")+". Raw model leans are not validated bets.";
 }else{
   evidence.textContent="No verified model-performance sample; simulated estimates are uncalibrated, not betting advice.";
 }
