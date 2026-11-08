@@ -162,6 +162,11 @@ def main():
     # median of independent real sportsbook prop lines instead of selecting
     # whichever book appears first. Preserve all source quotes for inspection.
     valid=consensus_markets(paired)
+    # Zero valid pregame markets is not a valid replacement for a previously
+    # populated full-slate board. Fail rather than publishing empty predictions.
+    # The archived last-known-good pregame board stays available separately.
+    if not valid:
+        raise SystemExit("ZERO_VERIFIED_PREGAME_MARKETS: preserving prior published AI board; no invented picks")
     print("Matched paired sportsbook quotes:",len(paired),
           "unique consensus markets:",len(valid),
           "markets with 2+ bookmakers:",sum(v["line_book_count"]>=2 for v in valid),flush=True)
