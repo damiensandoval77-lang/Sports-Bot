@@ -11,9 +11,9 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 try:
-    from .model_performance import independent_rows,finite,utc
+    from .model_performance import independent_rows,forecast_values,finite,utc
 except ImportError:
-    from model_performance import independent_rows,finite,utc
+    from model_performance import independent_rows,forecast_values,finite,utc
 
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER=ROOT/"docs/paper_pick_ledger.json"
@@ -43,9 +43,14 @@ def report(records):
     for r in unique:
         stat=r.get("market")
         if stat not in MARKETS:continue
-        # Only the exact saved Combined forecast, including original-model
-        # fallback cases; an unavailable opponent model is not invented.
+        # Prefer the exact frozen Combined prediction. Legacy settled quotes
+        # may omit Combined but preserve both ORIGINAL and opponent forecasts.
+        # Their arithmetic midpoint can be reconstructed from those two
+        # *pregame* values only, never from any actual game outcome.
         projection=number(r.get("combined_projection"))
+        if projection is None:
+            projection=number(forecast_values(r)["combined"])
+            if projection is not None:gaps["legacy_combined_from_frozen_components"]+=1
         actual=number(r.get("actual"))
         if projection is None or actual is None:
             gaps["missing_valid_settled_projection"]+=1
