@@ -8,8 +8,8 @@ on:
       - 'iphone_bot/tests/test_fetch_props.py'
       - '.github/workflows/nba-market-refresh.yml'
   schedule:
-    # Two quick refreshes before major evening tipoff; independent of ML retraining.
-    - cron: '12 20,23 * * *'
+    # Two cost-controlled refreshes earlier in the Eastern afternoon (1/4pm EST).
+    - cron: '12 18,21 * * *'
 permissions:
   contents: write
 concurrency:
@@ -43,7 +43,7 @@ jobs:
           import json
           from pathlib import Path
           status=json.load(open('docs/odds_fetch_status.json'))
-          if status['status']=='FETCHED':
+          if status['status'] in ('FETCHED','FETCHED_PARTIAL'):
               report=json.load(open('docs/data.json'))
               assert report['slate_events_checked']<=report['slate_events_available']
               assert report['slate_events_not_checked']==report['slate_events_available']-report['slate_events_checked']
