@@ -687,12 +687,15 @@ function renderAI(){
   main.append(probabilityNote);
   const screen=p.reliability_screen;
   if(screen?.validated===false){
-   const flagged=(screen.reasons||[]).map(x=>x.replaceAll("_"," ").toLowerCase());
+   const blockerText=(screen.blockers||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
+   const cautionText=(screen.cautions||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
+   const label=screen.status==="MODEL_LEAN"?
+     "MODEL LEAN: "+(screen.side==="MORE"?"MORE":screen.side==="LESS"?"LESS":"NO SIDE"):
+     "PASS";
    main.append(node("div","research-note",
-     screen.status==="ABSTAIN"?
-       "RESEARCH SCREEN: ABSTAIN · "+(flagged.join("; ")||"incomplete information")+
-       ". This is not a validated pick-selection strategy.":
-       "RESEARCH SCREEN: no structural flags identified; selection accuracy is not yet validated."));
+     label+(blockerText.length?" · Why pass: "+blockerText.join("; "):"")+
+     (cautionText.length?" · Cautions: "+cautionText.join("; "):"")+
+     ". Directional research signal only—not a verified betting edge."));
   }
   if(p.injury_reprojection_status==="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"){
    const names=[...(p.official_out_teammates||[]),...(p.official_out_opponents||[])]
