@@ -1,37 +1,69 @@
 {
   "status": "PRIZEPICKS_PRETIP_RESEARCH_GRADED_NOT_ODDS",
-  "updated_at": "2026-11-08T21:11:04.450855+00:00",
+  "updated_at": "2026-11-08T21:13:02.133962+00:00",
   "saved": 1116,
   "settled": 643,
   "pending": 473,
-  "independent_player_market_count": 267,
-  "by_market": {
+  "independent_player_market_count": 270,
+  "independent_settled_center_lines": 106,
+  "independent_by_market": {
     "PTS": {
-      "graded": 205,
-      "wins": 134,
-      "hit_rate": 0.6537,
+      "graded": 30,
+      "wins": 10,
+      "losses": 20,
+      "hit_rate": 0.3333,
       "distinct_game_dates": 1
     },
     "REB": {
-      "graded": 154,
-      "wins": 113,
-      "hit_rate": 0.7338,
+      "graded": 30,
+      "wins": 19,
+      "losses": 11,
+      "hit_rate": 0.6333,
       "distinct_game_dates": 1
     },
     "AST": {
-      "graded": 106,
-      "wins": 78,
-      "hit_rate": 0.7358,
+      "graded": 20,
+      "wins": 13,
+      "losses": 7,
+      "hit_rate": 0.65,
       "distinct_game_dates": 1
     },
     "PRA": {
-      "graded": 167,
+      "graded": 26,
+      "wins": 14,
+      "losses": 12,
+      "hit_rate": 0.5385,
+      "distinct_game_dates": 1
+    }
+  },
+  "by_market": {
+    "PTS": {
+      "graded_lines": 205,
+      "wins": 134,
+      "line_hit_rate": 0.6537,
+      "distinct_game_dates": 1
+    },
+    "REB": {
+      "graded_lines": 154,
+      "wins": 113,
+      "line_hit_rate": 0.7338,
+      "distinct_game_dates": 1
+    },
+    "AST": {
+      "graded_lines": 106,
+      "wins": 78,
+      "line_hit_rate": 0.7358,
+      "distinct_game_dates": 1
+    },
+    "PRA": {
+      "graded_lines": 167,
       "wins": 111,
-      "hit_rate": 0.6647,
+      "line_hit_rate": 0.6647,
       "distinct_game_dates": 1
     }
   },
   "wager_roi": null,
   "verified_ev": false,
-  "notice": "Research-only pregame directions; multiple PrizePicks thresholds are correlated and not independent observations."
+  "selection_method": "FIXED_CENTRAL_POSTED_LINE_PER_PLAYER_GAME_STAT_NO_RETROACTIVE_WINNER_SELECTION",
+  "notice": "Only one central posted threshold per player/game/stat is used for independent hit rates. Alternate thresholds are preserved, graded, and never counted as independent outcomes."
 }
