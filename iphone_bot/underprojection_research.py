@@ -64,6 +64,7 @@ def report(records):
         if season_gap is None:
             gaps["missing_frozen_current_season_baseline"]+=1
         risk=r.get("research_minutes_risk_v1")
+        if not isinstance(risk,dict):gaps["missing_frozen_minutes_diagnostics"]+=1
         rows.append({"date":event.date().isoformat(),"player_id":str(r.get("player_id")),
             "player":str(r.get("player","")),"market":market,
             "game":str(r.get("game","")),"bias":combined-actual,
@@ -76,6 +77,10 @@ def report(records):
         subset=[r for r in rows if r["market"]==market]
         high=[r for r in subset if r["combined"]>=HIGH_PROJECTION[market]]
         low=[r for r in subset if r["combined"]<HIGH_PROJECTION[market]]
+        flagged_minutes=[r for r in subset if r["risk"] is not None and r["risk"].get("needs_manual_review") is True]
+        stable_minutes=[r for r in subset if r["risk"] is not None and r["risk"].get("needs_manual_review") is False]
+        opponent_lower=[r for r in subset if r["opponent_minus_original"]<=-1.]
+        opponent_higher=[r for r in subset if r["opponent_minus_original"]>=1.]
         below_baseline=[r for r in subset if r["season_gap"] is not None and r["season_gap"]<=-.2]
         above_baseline=[r for r in subset if r["season_gap"] is not None and r["season_gap"]>=.2]
         by_market[market]={
@@ -85,6 +90,10 @@ def report(records):
             "pregame_forecast_20pct_below_frozen_season_avg":summarize(below_baseline),
             "pregame_forecast_20pct_above_frozen_season_avg":summarize(above_baseline),
             "high_tier_threshold":HIGH_PROJECTION[market],
+            "frozen_minutes_review_flagged":summarize(flagged_minutes),
+            "frozen_minutes_no_review_flags":summarize(stable_minutes),
+            "opponent_model_1plus_below_original":summarize(opponent_lower),
+            "opponent_model_1plus_above_original":summarize(opponent_higher),
             "opponent_vs_original":{
               "observations":len(subset),
               "mean_opponent_minus_original":round(mean(r["opponent_minus_original"] for r in subset),3) if subset else None,
