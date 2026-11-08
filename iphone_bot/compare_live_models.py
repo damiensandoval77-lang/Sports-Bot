@@ -1,7 +1,7 @@
 """Experimental trained-model comparisons with VERIFIED current NBA market identities.
 
 No claim of calibrated betting odds, EV, injury adjustments or PrizePicks lines.
-Only show upcoming two-sided sportsbook markets where the player roster team
+Only show upcoming verified market identities where the player roster team
 matches one of the game's teams. Training feature gaps are flagged.
 """
 import json
@@ -33,7 +33,7 @@ GAMES=ROOT/"data/nba/current/current_games.json"
 FORM=ROOT/"docs/current_form.json"
 ODDS=ROOT/"docs"/os.environ.get("NBA_AI_ODDS_INPUT","data.json")
 MODELS=ROOT/"models/nba/provisional"
-OUTPUT=ROOT/"docs/ai_comparisons.json"
+OUTPUT=ROOT/"docs"/os.environ.get("NBA_AI_OUTPUT","ai_comparisons.json")
 INJURIES=ROOT/"docs/injury_context.json"
 MARKETS={"Points":"PTS","Rebounds":"REB","Assists":"AST","Points Rebounds Assists":"PRA"}
 TEAM={
@@ -108,7 +108,8 @@ def main():
     market_time=utc(odds["updated_at"])
     if (now-form_time).total_seconds()>48*3600 or (now-market_time).total_seconds()>6*3600:
         raise SystemExit("Refusing to publish comparisons from stale player stats or market feed")
-    if not odds.get("is_live"):raise ValueError("Sportsbook feed not live")
+    prizepicks_mode=odds.get("source")=="AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS"
+    if not odds.get("is_live"):raise ValueError("Verified market feed not live")
     roster={}
     for player in form["players"]:
         identity=key(player["player"])
@@ -187,10 +188,20 @@ def main():
            "sample_games":len(history),"last_game":history[-1]["date"]})
         market["over_odds" if side=="More" else "under_odds"]=r.get("odds")
     paired=[v for v in raw_markets.values() if isinstance(v["over_odds"],int) and isinstance(v["under_odds"],int)]
-    # The model projection remains independent. Evaluate it against the
-    # median of independent real sportsbook prop lines instead of selecting
-    # whichever book appears first. Preserve all source quotes for inspection.
-    valid=consensus_markets(paired)
+    if prizepicks_mode:
+        # PrizePicks is pick'em; no sportsbook prices exist. Use actual
+        # separately observed pick'em lines, never fake bookmaker quote pairs.
+        valid=[]
+        for r in raw_markets.values():
+            item=dict(r)
+            item.update({"line_book_count":0,"line_type":"PRIZEPICKS_PICKEM_LINE",
+                "sportsbook":"PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
+                "book_quotes":[],"line_range":[item["line"],item["line"]],
+                "over_odds":None,"under_odds":None})
+            valid.append(item)
+    else:
+        # Real paired sportsbook quotes use median consensus.
+        valid=consensus_markets(paired)
     # Zero valid pregame markets is not a valid replacement for a previously
     # populated full-slate board. Fail rather than publishing empty predictions.
     # The archived last-known-good pregame board stays available separately.
@@ -458,7 +469,7 @@ def main():
         abs(r["difference"])),reverse=True)
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
-       "verified_current_matchups":True,"is_prizepicks":False,
+       "verified_current_matchups":True,"is_prizepicks":prizepicks_mode,
        "odds_input_file":ODDS.name,
        "games_with_ai_props":len({r["game"] for r in valid}),
        "injury_data_verified":report_fresh and injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED",
@@ -475,19 +486,21 @@ def main():
        "minutes_v2_applied_to_live_model":False,
        "shot_profile_applied_to_live_model":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
-       "line_aggregation_method":"MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
+       "line_aggregation_method":"AUTHENTIC_PRIZEPICKS_PICKEM_LINES" if prizepicks_mode else "MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
        "markets_with_multiple_books":sum(v["line_book_count"]>=2 for v in valid),
        "experimental_probability_ranking":True,
        "experimental_probability_method":METHOD,
        "real_market_probabilities_calibrated":False,
-       "experimental_ev_available":True,
+       "experimental_ev_available":False if prizepicks_mode else True,
        "combined_projection_enabled":True,
        "combined_projection_validated":False,
        "combined_projection_method":"TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
        "ev_verified":False,
-       "ev_method":"PRICE_SPECIFIC_HYPOTHETICAL_EV_NOT_VALIDATED",
-       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability requires game-day verification, and research-only positional defense and minutes estimates do not change picks. Opponent-aware shadow is separate and research-only. The combined displayed projection is a two-model median (average) where a valid shadow forecast exists, falling back to original otherwise. Probabilities and EV still describe the ORIGINAL model only, not the combined projection; they are uncalibrated and cannot establish profitable picks.",
+       "ev_method":"NO_SPORTSBOOK_PRICES_PICKEM_ONLY" if prizepicks_mode else "PRICE_SPECIFIC_HYPOTHETICAL_EV_NOT_VALIDATED",
+       "disclaimer":("Authentic independent PrizePicks pick'em lines only, NOT sportsbook odds; no American odds, no EV, no validated win probability. Historical trained AI forecasts are unchanged. Game-day availability and lines must be independently checked." if prizepicks_mode else "Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability requires game-day verification, and research-only positional defense and minutes estimates do not change picks. Opponent-aware shadow is separate and research-only. The combined displayed projection is a two-model median (average) where a valid shadow forecast exists, falling back to original otherwise. Probabilities and EV still describe the ORIGINAL model only, not the combined projection; they are uncalibrated and cannot establish profitable picks."),
        "comparisons":valid,"skipped":skipped,
+       "no_sportsbook_prices":prizepicks_mode,
+       "no_validated_win_probability":True,
        "comparison_rows_published":len(valid),
        "comparison_rows_truncated":0}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")
