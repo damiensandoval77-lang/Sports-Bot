@@ -558,6 +558,15 @@ function renderAI(){
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
+  if(p.injury_context_requires_reprojection){
+   const outNames=(p.official_out_teammates||[]).map(x=>x.player).join(", ");
+   main.append(node("div","research-note research-risk",
+     "INJURY ALERT: "+outNames+" officially OUT. Baseline AI and SIM % are NOT adjusted. "+
+     (p.injury_scenario_projection!=null?
+      "Conditional historical-minutes scenario: "+fmt(p.injury_scenario_projection)+" "+p.stat+" (research only).":
+      "No verified injury-adjusted scenario available.")+
+     " Verify updated lineups before using this pick."));
+  }
   const lean=node("div","ai-lean");
   lean.append(node("span","ai-lean-title","AI LEAN"),
     node("span","ai-lean-choice "+sideClass(side),
