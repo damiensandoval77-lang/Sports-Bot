@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T02:28:37.978640+00:00",
+  "generated_at": "2026-11-08T02:31:11.013103+00:00",
   "status": "RESEARCH_AUDIT_ONLY_NO_FRESH_PREGAME_BOARD",
   "capture_notice": "Board must be captured within 45 minutes of generation",
   "locked_samples": 448,
@@ -52,41 +52,99 @@
     "status": "PREGAME_SHADOW_DESCRIPTIVE_ONLY",
     "overall": {
       "paired_markets": 36,
+      "distinct_game_dates": 1,
       "baseline_mae": 3.392,
       "opportunity_mae": 3.386,
-      "baseline_correct_directions": 19,
-      "opportunity_correct_directions": 19
+      "baseline_correct_directions": 14,
+      "opportunity_correct_directions": 15,
+      "same_line_direction_eligible": 29,
+      "same_line_distinct_game_dates": 1,
+      "baseline_same_line_hit_rate": 0.4828,
+      "opportunity_same_line_hit_rate": 0.5172,
+      "shadow_only_correct": 3,
+      "baseline_only_correct": 2,
+      "exact_line_matched_final_markets": 29,
+      "line_mismatched_final_markets": 7
     },
     "by_market": {
       "PTS": {
         "paired_markets": 10,
+        "distinct_game_dates": 1,
         "baseline_mae": 4.06,
         "opportunity_mae": 4.515,
-        "baseline_correct_directions": 7,
-        "opportunity_correct_directions": 6
+        "baseline_correct_directions": 6,
+        "opportunity_correct_directions": 5,
+        "same_line_direction_eligible": 9,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.6667,
+        "opportunity_same_line_hit_rate": 0.5556,
+        "shadow_only_correct": 0,
+        "baseline_only_correct": 1,
+        "exact_line_matched_final_markets": 9,
+        "line_mismatched_final_markets": 1
       },
       "REB": {
         "paired_markets": 10,
+        "distinct_game_dates": 1,
         "baseline_mae": 2.23,
         "opportunity_mae": 2.042,
-        "baseline_correct_directions": 3,
-        "opportunity_correct_directions": 5
+        "baseline_correct_directions": 2,
+        "opportunity_correct_directions": 4,
+        "same_line_direction_eligible": 9,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.2222,
+        "opportunity_same_line_hit_rate": 0.4444,
+        "shadow_only_correct": 2,
+        "baseline_only_correct": 0,
+        "exact_line_matched_final_markets": 9,
+        "line_mismatched_final_markets": 1
       },
       "AST": {
         "paired_markets": 8,
+        "distinct_game_dates": 1,
         "baseline_mae": 1.688,
         "opportunity_mae": 1.567,
-        "baseline_correct_directions": 4,
-        "opportunity_correct_directions": 3
+        "baseline_correct_directions": 2,
+        "opportunity_correct_directions": 2,
+        "same_line_direction_eligible": 6,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.3333,
+        "opportunity_same_line_hit_rate": 0.3333,
+        "shadow_only_correct": 0,
+        "baseline_only_correct": 0,
+        "exact_line_matched_final_markets": 6,
+        "line_mismatched_final_markets": 2
       },
       "PRA": {
         "paired_markets": 8,
+        "distinct_game_dates": 1,
         "baseline_mae": 5.713,
         "opportunity_mae": 5.474,
-        "baseline_correct_directions": 5,
-        "opportunity_correct_directions": 5
+        "baseline_correct_directions": 4,
+        "opportunity_correct_directions": 4,
+        "same_line_direction_eligible": 5,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.8,
+        "opportunity_same_line_hit_rate": 0.8,
+        "shadow_only_correct": 1,
+        "baseline_only_correct": 1,
+        "exact_line_matched_final_markets": 5,
+        "line_mismatched_final_markets": 3
       }
     },
+    "capture_coverage": {
+      "captured_candidate_markets": 331,
+      "settled_quote_line_mismatch": 7
+    },
+    "pending_by_market": {
+      "PTS": 82,
+      "REB": 80,
+      "AST": 66,
+      "PRA": 67
+    },
+    "same_line_required_for_direction_scoring": true,
+    "mae_uses_same_player_verified_final_stat_only": true,
+    "not_validated_by_future_game_dates": true,
     "live_applied": false,
     "eligible_for_live_promotion": false
   },
@@ -201,7 +259,7 @@
   "unified_reliability_v1": {
     "method": "PREGAME_UNIFIED_RESEARCH_FLAGS_V1",
     "status": "DESCRIPTIVE_PREGAME_RELIABILITY_RESEARCH_ONLY",
-    "generated_at": "2026-11-08T02:28:37.978640+00:00",
+    "generated_at": "2026-11-08T02:31:11.013103+00:00",
     "independent_research_markets": 331,
     "classification_counts": {
       "INSUFFICIENT_RESEARCH_COVERAGE": 331
