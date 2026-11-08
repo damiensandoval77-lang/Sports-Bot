@@ -9,6 +9,7 @@ on:
       - 'docs/projection_upgrade_status.json'
       - 'docs/research_live/**'
       - 'docs/research_history/**'
+      - 'docs/research_inputs/**'
       - 'iphone_bot/research_storage_integrity.py'
       - 'iphone_bot/tests/test_durable_research_storage.py'
       - '.github/workflows/nba-research-storage-integrity.yml'
@@ -32,8 +33,9 @@ jobs:
           python-version: '3.11'
       - name: Verify paper capture, original pretip archives and real live data integrity
         run: |
-          python -m py_compile iphone_bot/research_storage_integrity.py iphone_bot/research_archive_persistence.py iphone_bot/capture_live_research.py
+          python -m py_compile iphone_bot/research_storage_integrity.py iphone_bot/research_archive_persistence.py iphone_bot/capture_live_research.py iphone_bot/preserve_research_inputs.py
           python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
       - name: Compare real sportsbook paper ledger and exact archived offers
