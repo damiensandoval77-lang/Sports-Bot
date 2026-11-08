@@ -1,0 +1,60 @@
+name: Started NBA matchup live tracker, pace and iPhone fallback (offline)
+on:
+  pull_request:
+    paths:
+      - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'iphone_bot/publish_live_tracker_feed.py'
+      - 'iphone_bot/tests/test_live_prop_tracker.cjs'
+      - 'iphone_bot/tests/test_publish_live_tracker_feed.py'
+      - '.github/workflows/nba-live-tracker-v2-tests.yml'
+      - '.github/workflows/nba-live-tracker-backup.yml'
+  push:
+    branches: ['fix/20261107-started-game-live-pace-tracker-v2']
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run real-time pace and frozen research regression tests
+        run: |
+          node --check docs/live-prop-tracker.js
+          node --test iphone_bot/tests/test_live_prop_tracker.cjs
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v
+      - name: Assert independent 45-second refresh and conservative ESPN backup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path('docs/index.html').read_text()
+          script=html.split('<script>',1)[1].split('</script>',1)[0]
+          Path('/tmp/live-tracker-v2.js').write_text(script)
+          assert 'frozenMatchupForecasts.push(...(window.LivePropTracker?.frozenPrizePicks' in html
+          assert 'for(const r of [...ai,...odds,...frozenMatchupForecasts])' in html
+          assert 'if(trackerLastGame!==game)' in html
+          assert 'live_player_tracking.json' in html
+          assert 'isRecent(backup.captured_at,.25)' in html
+          assert 'No unique matching server-verified NBA boxscore' in html
+          assert 'setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000);' in html
+          assert 'document.addEventListener("visibilitychange"' in html
+          assert 'trackerLastUpdated=verifiedAt' in html
+          print('Pregame frozen captures, game tabs, live pace, 45s refresh, conservative fallback verified')
+          PY
+          node --check /tmp/live-tracker-v2.js
+      - name: Confirm no paid sportsbook requests and no post-tip capture changes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('iphone_bot/publish_live_tracker_feed.py').read_text()
+          assert 'ODDS_API_KEY' not in source
+          assert 'PRIZEPICKS_API_KEY' not in source
+          assert 'not_ai_predictions' in source
+          assert 'status' in source
+          assert 'captured_at' in source
+          print('Live observed player totals are separate from frozen pregame research')
+          PY
