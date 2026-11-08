@@ -315,7 +315,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 "use strict";
 const $=id=>document.getElementById(id);
 let gameMoneylines=null;
-let selectedGame="",oddsHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,oddsFresh=false,formFresh=false;
+let selectedGame="",oddsHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -403,10 +403,18 @@ function reasoningSentences(p,person){
  return parts.slice(0,4);
 }
 
+function easternGameDay(value){
+ const date=new Date(value);
+ if(!Number.isFinite(date.getTime()))return "";
+ const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);
+ const p=k=>parts.find(x=>x.type===k)?.value||"";
+ return p("year")+"-"+p("month")+"-"+p("day");
+}
 function renderAI(){
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
- const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter)&&Date.parse(p.start)>Date.now());
+ const entries=ai.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter)&&
+ (easternGameDay(p.start)===easternGameDay(new Date())||(!aiArchiveMode&&Date.parse(p.start)>Date.now())));
  entries.sort((a,b)=>sort==="time"?Date.parse(a.start)-Date.parse(b.start):
   sort==="name"?a.player.localeCompare(b.player):
   sort==="edge"?Math.abs(b.difference)-Math.abs(a.difference):
@@ -432,6 +440,7 @@ function renderAI(){
     identity.append(average);
   }
   const side=primaryDirection(p);
+  if(aiArchiveMode){identity.append(node("div","match","FROZEN PREGAME SNAPSHOT · Historical line and simulation, NOT live"));}
   head.append(identity);main.append(head);
   // Exactly the original validated comparison values and chance calculation.
   // This is presentation only: never substitute another projection/probability.
@@ -525,7 +534,7 @@ function renderAI(){
     const activeProjection=Number.isFinite(p.combined_projection)?p.combined_projection:Number(p.projection);
     const ppDelta=activeProjection-Number(q.line);
     const ppSide=modelSide(activeProjection,q.line);
-    body.append(node("div","mini","Current Combined AI: "+fmt(activeProjection)+
+    body.append(node("div","mini",(aiArchiveMode?"Archived pregame Combined AI: ":"Current Combined AI: ")+fmt(activeProjection)+
       " · "+(ppSide==="OVER"?"MORE":ppSide==="UNDER"?"LESS":"NO LEAN")+
       " · difference "+(ppDelta>0?"+":"")+fmt(ppDelta)+
       " · verify the current line in PrizePicks before entering."));
@@ -687,7 +696,7 @@ function renderAI(){
   if(p.missing_features?.length)body.append(node("div","mini","Training feature substitutes: "+p.missing_features.join(", ")));
   details.append(summary,body);outer.append(details);return outer;
  });
- $("ai-board").replaceChildren(...(list.length?list:[empty(aiFresh?"No upcoming AI comparisons match your filters.":"AI comparisons are unavailable or outdated.")]));
+ $("ai-board").replaceChildren(...(list.length?list:[empty((aiFresh||aiArchiveMode)?"No saved AI predictions match your filters.":"AI comparisons unavailable or no verified pregame snapshot.")]));
 }
 function groupOdds(picks){const groups=new Map();for(const x of picks){if(!x?.player||!Number.isFinite(Number(x.line))||!x.source||!S[x.stat])continue;const id=[norm(x.player),S[x.stat],x.line,x.source,x.game,x.start].join("|");if(!groups.has(id))groups.set(id,{player:x.player,stat:S[x.stat],line:Number(x.line),book:x.source,game:x.game,start:x.start,over:null,under:null});const r=groups.get(id);if(x.direction==="More")r.over=x.odds;else if(x.direction==="Less")r.under=x.odds;}return [...groups.values()].filter(x=>Number.isFinite(x.over)&&Number.isFinite(x.under))}
 function implied(odd){return odd>0?100/(odd+100):Math.abs(odd)/(Math.abs(odd)+100)}
@@ -1152,8 +1161,9 @@ function renderSchedulePlayers(){
 }
 function refreshOverview(){const unique=new Set(ai.map(p=>p.game+"|"+p.start));$("top-count").textContent=ai.length;$("top-games").textContent=unique.size;
 const raw=window.lastAI||window.lastOdds;$("top-update").textContent=raw?formatTime(raw):"—";
-const ready=aiFresh&&ai.length>0;$("status").textContent=ready?"AI RESEARCH LIVE":oddsFresh?"ODDS LIVE":"DATA CHECK";$("status").className="status "+(ready?"ok":"warn");
-const note=$("global-warning");if(!aiFresh){note.textContent="AI board unavailable or stale; any previously published predictions are hidden. Sportsbook and player form may still be available."}
+const ready=aiFresh&&ai.length>0;$("status").textContent=ready?"AI RESEARCH LIVE":aiArchiveMode?"PREGAME ARCHIVE":oddsFresh?"ODDS LIVE":"DATA CHECK";$("status").className="status "+(ready?"ok":"warn");
+const note=$("global-warning");if(aiArchiveMode){note.textContent="Showing the last authentic PREGAME AI projections for today, recovered from a prior published snapshot. These are NOT current sportsbook lines, live predictions or verified probabilities. Refresh failures have been detected."}
+else if(!aiFresh){note.textContent="AI board unavailable or stale. Live player props may be unavailable when sportsbook markets close. No simulated lines are invented."}
 else if(ai.length===0){note.textContent="No upcoming team-matched AI comparisons yet. This can happen when markets are closed or no valid props are available."}
 else {note.textContent="Experimental model projections, NOT verified probabilities or +EV picks. Sportsbook prices change; check injuries and game status."}}
 async function fetchJSON(path){const r=await fetch("./"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
@@ -1382,7 +1392,7 @@ async function refresh(){
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
 
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
@@ -1407,11 +1417,28 @@ gameMoneylines=mlFeed.status==="fulfilled"&&
  mlFeed.value?.status==="VERIFIED_PREGAME_NBA_MONEYLINES"&&
  Array.isArray(mlFeed.value.games)&&isRecent(mlFeed.value.updated_at,3)?mlFeed.value:null;
 oddsHealth=oh.status==="fulfilled"?oh.value:null;
+aiFresh=false;aiArchiveMode=false;ai=[];aiMetadata=null;
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);
- ai=aiFresh?groupAI(a.value.comparisons).filter(x=>Date.parse(x.start)>Date.now()):[];
+ ai=aiFresh?groupAI(a.value.comparisons).filter(x=>
+    easternGameDay(x.start)===easternGameDay(new Date())||Date.parse(x.start)>Date.now()):[];
  window.lastAI=a.value.generated_at;
-}else {aiFresh=false;ai=[];aiMetadata=null}
+}
+if(ai.length===0&&archive.status==="fulfilled"&&
+ archive.value?.status==="FROZEN_PREGAME_HISTORICAL_ARCHIVE_NOT_LIVE"&&
+ archive.value.date_eastern===easternGameDay(new Date())&&
+ Array.isArray(archive.value.comparisons)&&
+ isRecent(archive.value.original_board_generated_at,36)){
+ const stamp=Date.parse(archive.value.original_board_generated_at);
+ const frozen=archive.value.comparisons.filter(x=>
+   Date.parse(x.start)>stamp&&easternGameDay(x.start)===easternGameDay(new Date()));
+ if(frozen.length){
+  ai=groupAI(frozen);
+  aiArchiveMode=true;
+  aiMetadata=archive.value;
+  window.lastAI=archive.value.original_board_generated_at;
+ }
+}
 nbaSchedule=sch.status==="fulfilled"&&
  ["THIRD_PARTY_NBA_SCHEDULE_ONLY","PARTIAL_CACHED_SPORTSBOOK_SCHEDULE",
   "PROVIDER_NBA_SCORES_PARTIAL_SLATE"].includes(sch.value.status)&&
@@ -1493,6 +1520,7 @@ if(slateCoverage && oddsFresh){
  oddsHealth?.status==="MISSING_ODDS_API_KEY"?
  " Odds provider API key is not configured.":"";
  coverageNode.textContent="Full-slate sportsbook coverage unavailable or stale."+reason+
+ (aiArchiveMode?" Historical pregame AI available for "+new Set(ai.map(x=>x.game)).size+" games; NOT live prices.":"")+
  " Missing games do not imply no NBA game is scheduled.";
 }
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
@@ -1547,7 +1575,7 @@ injuryLink.target="_blank";injuryLink.rel="noopener noreferrer";
 injuryLink.textContent="Open official NBA injury report";
 injuryBox.append(injuryLink);
 const status=[];
- status.push(a.status==="fulfilled"?"AI file loaded"+(aiFresh?"":" (stale)"):"AI fetch failed");
+ status.push(aiArchiveMode?"AI pregame archive loaded (NOT LIVE)":a.status==="fulfilled"?"AI file loaded"+(aiFresh?"":" (stale/empty)"):"AI fetch failed");
  status.push(o.status==="fulfilled"?"Odds file loaded"+(oddsFresh?"":" (stale)"):"Odds fetch failed");
  status.push(f.status==="fulfilled"?"Player form loaded":"Form fetch failed");
  status.push(p.status==="fulfilled"?"Results loaded":"Results fetch failed");
