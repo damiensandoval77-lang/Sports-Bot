@@ -49,6 +49,22 @@ class PrizePicksAIResearchTests(unittest.TestCase):
         x=self.feed()
         x["board_offers"][0]["team"]="LAL"
         self.assertEqual(generate(x,self.form(),self.games(),self.models(),now=NOW)["comparison_count"],0)
+    def test_official_game_day_out_prevents_prizepicks_projection(self):
+        injury={"status":"OFFICIAL_NBA_REPORT_VERIFIED","injury_data_verified":True,
+                "report_issued_at":"2026-11-07T18:00:00Z",
+                "players":[{"player_id":"10","team":"BOS",
+                            "game_date":"2026-11-07","status":"Out"}]}
+        # The modeled game is on November 7 Eastern at 8 PM.
+        self.assertEqual(generate(self.feed(),self.form(),self.games(),
+                                  self.models(),now=NOW,injuries=injury)["comparison_count"],0)
+        injury["players"][0]["game_date"]="2026-11-08"
+        self.assertEqual(generate(self.feed(),self.form(),self.games(),
+                                  self.models(),now=NOW,injuries=injury)["comparison_count"],1)
+        injury["players"][0]["game_date"]="2026-11-07"
+        injury["report_issued_at"]="2026-11-05T18:00:00Z"
+        self.assertEqual(generate(self.feed(),self.form(),self.games(),
+                                  self.models(),now=NOW,injuries=injury)["comparison_count"],1)
+
     def test_missing_history_not_faked(self):
         self.assertEqual(generate(self.feed(),self.form(),self.games()[:3],self.models(),now=NOW)["comparison_count"],0)
     def test_duplicate_lines_carry_same_model_input_without_new_probabilities(self):
