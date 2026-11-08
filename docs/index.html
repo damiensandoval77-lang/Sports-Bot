@@ -1648,7 +1648,13 @@ async function refresh(){
    " vs V2 "+(r.opponent_v2_shadow?.overall?.v2_mae??"—")+
    "; exact-line grades "+
    (r.opponent_v2_shadow?.overall?.exact_line_direction_eligible??0)+
-   " (PTS/REB/AST/PRA, research only).";
+   " (PTS/REB/AST/PRA, research only)."+
+   " Licensed WOWY on/off: "+
+   (r.licensed_onoff_shadow?.overall?.paired_markets??0)+
+   " graded; baseline MAE "+
+   (r.licensed_onoff_shadow?.overall?.baseline_mae??"—")+
+   " vs WOWY "+(r.licensed_onoff_shadow?.overall?.licensed_onoff_mae??"—")+
+   " · License-gated data required; no invented on/off projections.";
  }).catch(()=>{
   $("opportunity-review-shadow").textContent="Pregame shadow validation report not yet published.";
  });
