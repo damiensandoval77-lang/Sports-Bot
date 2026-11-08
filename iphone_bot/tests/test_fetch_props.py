@@ -91,9 +91,9 @@ class FetchPropsTests(unittest.TestCase):
             (root/"out.json").write_text(prior)
             (root/"compact.json").write_text('{"picks":[{"player":"Real"}]}')
             with patch.object(fetch_props,"OUT",root/"out.json"),\
-                 patch.object(fetch_props,"COMPACT",root/"compact.json"),\\
-                 patch.object(fetch_props,"STATUS",root/"status.json"),\\
-                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\\
+                 patch.object(fetch_props,"COMPACT",root/"compact.json"),\
+                 patch.object(fetch_props,"STATUS",root/"status.json"),\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
                  patch.object(fetch_props,"request",return_value=([],500)):
                 fetch_props.main()
             self.assertEqual((root/"out.json").read_text(),prior)
@@ -112,10 +112,10 @@ class FetchPropsTests(unittest.TestCase):
             root=Path(temp)
             (root/"out.json").write_text('{"picks":[{"player":"Real"}]}')
             (root/"compact.json").write_text('{"picks":[{"player":"Real"}]}')
-            with patch.object(fetch_props,"OUT",root/"out.json"),\\
-                 patch.object(fetch_props,"COMPACT",root/"compact.json"),\\
-                 patch.object(fetch_props,"STATUS",root/"status.json"),\\
-                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\\
+            with patch.object(fetch_props,"OUT",root/"out.json"),\
+                 patch.object(fetch_props,"COMPACT",root/"compact.json"),\
+                 patch.object(fetch_props,"STATUS",root/"status.json"),\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
                  patch.object(fetch_props,"request",side_effect=fake):
                 fetch_props.main()
             self.assertIn('"Real"',(root/"out.json").read_text())
