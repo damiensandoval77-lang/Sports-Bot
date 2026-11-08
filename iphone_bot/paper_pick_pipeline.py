@@ -130,6 +130,11 @@ def snapshot(comparisons,generated_at,existing=None):
                 "research_minutes_risk_v1":minutes_risk(market.get("minutes_research"),
                     market.get("minutes_v2_research"),market.get("injury_status")),
                 "season_average_challenger":market.get("season_average_challenger"),
+                # Immutable pretip Shooting V1 shadow for prospective grading.
+                # Never recompute this field using postgame outcomes.
+                "shooting_efficiency_v1":copy.deepcopy(
+                    market.get("shooting_efficiency_v1"))
+                    if market.get("stat")=="PTS" else None,
                 "model_feature_audit":copy.deepcopy(market.get("model_feature_audit")),
                 "frozen_minutes_research":copy.deepcopy(market.get("minutes_research")),
                 "frozen_minutes_v2_research":copy.deepcopy(market.get("minutes_v2_research")),
