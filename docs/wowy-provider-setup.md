@@ -6,6 +6,7 @@
 - API reference: https://api.pbpstats.com/docs
 - Provider's code examples: https://github.com/dblackrun/pbpstats-api-code-examples
 - `GET https://api.pbpstats.com/get-wowy-stats/nba` (provider examples use `Type=Player`, `Season=2026-27`, `SeasonType=Regular Season`, `TeamId`, `0Exactly1OnFloor=PLAYER_ID`, and `1Exactly1OnFloor=TEAMMATE_ID` or `1Exactly1OffFloor=TEAMMATE_ID`).
+- The provider's published OpenAPI specification also explicitly supports `FromDate` and `ToDate` (YYYY-MM-DD) on the WOWY endpoint: https://api.pbpstats.com/openapi.json. Our planner can now supply both, with `ToDate` no later than the previous completed game day.
 - `GET https://api.pbpstats.com/get-on-off/nba/player` (documented player on/off data).
 - `GET https://api.pbpstats.com/get-playing-time-distribution/nba` (documented distributions).
 
@@ -70,3 +71,18 @@ The importer validates exact player/team IDs against `docs/current_form.json` an
 - Neither source availability nor a teammate's absence proves a causal effect.
 - A fixed cautious adjustment is only a challenger until independently graded on future games.
 - No current simulated confidence, sportsbook quote or previously frozen forecast is overwritten by this source.
+
+## Verified API response mapping checkpoint
+
+- GitHub's 2026-11-07 one-shot test reached the API (HTTP 200, full JSON). The API returned `multi_row_table_data` rows containing `EntityId`, `Points`, `Rebounds`, `Assists`, `Minutes`, and `SecondsPlayed`. Those fields were identified by field name only; raw third-party values are not stored publicly.
+- New pure adapter: `iphone_bot/pbpstats_wowy_adapter.py`. It selects one exact `EntityId` in each ON/OFF response and computes PTS/REB/AST per-36 minutes using provider totals and exposure time.
+- The adapter additionally requires **independently verified game dates for each split**, a source observation timestamp, and matching season/team/teammate IDs. An aggregate API response alone is insufficient evidence of the number of independent games.
+- See `iphone_bot/pbpstats_request_plan.py` for pregame date-bounded request parameters. Current full-season totals after an event must not be used to simulate what was known at that event.
+- Tests use fictional provider-shaped dictionaries, not a permissioned production data feed.
+
+### Outstanding before actual automated ingestion
+
+1. Confirm whether the API permits recurring automated usage in a betting-prop research service, local retention, and derived forecasts.
+2. Verify actual 2026-27 request parameters and complete ON/OFF response semantics for each targeted pair, including which game-date summaries correspond to each split.
+3. Provide real independent, date-stamped game coverage for both groups and preserve pretip cutoff provenance.
+4. Set up secure server-side permitted ingestion; the GitHub Actions test makes a *single historical connectivity probe*, not routine data ingestion.
