@@ -73,6 +73,17 @@ class FastInjuryRefreshTests(unittest.TestCase):
         self.assertEqual(changed["comparisons"],[])
         self.assertEqual(counters["unsupported_injury_pick_removed"],1)
 
+    def test_updated_official_available_status_restores_suppressed_pretip_market(self):
+        hidden,_=refresh(board(),report(pid="100"),games(),NOW)
+        self.assertEqual(len(hidden["injury_excluded_comparisons"]),1)
+        recovered_report=report(pid="100",status="Available")
+        recovered_report["report_issued_at"]="2026-11-07T18:25:00+00:00"
+        recovered,info=refresh(hidden,recovered_report,games(),NOW)
+        self.assertEqual(len(recovered["comparisons"]),1)
+        self.assertEqual(recovered["injury_excluded_comparisons"],[])
+        self.assertEqual(recovered["comparisons"][0]["combined_projection"],22.0)
+        self.assertEqual(info["baseline_or_restored"],1)
+
     def test_stale_or_nonofficial_injury_report_is_ignored(self):
         d=report()
         d["report_issued_at"]="2026-11-05T18:00:00+00:00"
