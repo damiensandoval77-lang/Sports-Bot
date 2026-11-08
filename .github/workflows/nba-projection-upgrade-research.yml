@@ -120,6 +120,12 @@ jobs:
           assert wowy['eligible_for_production'] is False
           assert sum(wowy['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['paired_markets']
           assert sum(wowy['by_market'][m]['exact_line_eligible'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['exact_line_eligible']
+          tracking=r['tracking_opportunity_shadow']
+          assert tracking['status']=='TRACKING_CHANCES_PRETIP_SHADOW_ONLY'
+          assert tracking['production_applied'] is False
+          assert tracking['eligible_for_production'] is False
+          assert sum(tracking['by_market'][m]['paired_markets'] for m in ('AST','REB'))==tracking['overall']['paired_markets']
+          assert sum(tracking['by_market'][m]['exact_line_eligible'] for m in ('AST','REB'))==tracking['overall']['exact_line_eligible']
           rebound=r['rebound_shadow_v1']
           assert rebound['status']=='FROZEN_PREGAME_REBOUND_V1_RESEARCH_ONLY'
           assert rebound['validated_for_live'] is False
