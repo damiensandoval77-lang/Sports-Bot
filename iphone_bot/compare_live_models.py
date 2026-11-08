@@ -475,10 +475,11 @@ def main():
         r["reliability_screen"] = research_screen(r)
         eligible.append(r)
     valid=eligible
-    # Rank by combined-model SIMULATION, not original-model probability.
-    # The risk screen is descriptive and unvalidated; never auto-recommend bets.
+    # Put directional research leans first; PASS means genuine blockers.
+    # Within each group rank by combined simulation, not original-model odds.
+    # No ranking here is a verified betting strategy.
     valid.sort(key=lambda r:(
-        r["reliability_screen"]["status"]=="RESEARCH_ONLY",
+        r["reliability_screen"]["status"]=="MODEL_LEAN",
         r["combined_simulation"] is not None and r["combined_simulation"]["selected_hit_rate"] is not None,
         r["combined_simulation"]["selected_hit_rate"] if r["combined_simulation"] and r["combined_simulation"]["selected_hit_rate"] is not None else -1,
         abs(r["combined_difference"])),reverse=True)
