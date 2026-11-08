@@ -31,6 +31,10 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v
       - name: Recover latest immutable same-Eastern-day pregame predictions
         run: python -u iphone_bot/archive_pregame_ai_board.py
+      - name: Preserve a lossless dated immutable pregame archive for future research
+        run: |
+          python -u iphone_bot/research_archive_persistence.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
       - name: Publish archive without live lines or sportsbook API requests
         run: |
           set -euo pipefail
@@ -40,7 +44,7 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/ai_pregame_archive.json
+          git add docs/ai_pregame_archive.json docs/research_history
           if git diff --cached --quiet; then echo 'Archive unchanged'; exit 0; fi
           git commit -m 'Retain real frozen NBA pregame prediction snapshot (not live)'
           for attempt in 1 2 3; do
