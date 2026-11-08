@@ -465,7 +465,9 @@ def main():
        "injury_context_source":injury_feed.get("status") if report_fresh else "UNAVAILABLE",
        "official_injury_report_url":injury_feed.get("source_pdf") if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" else None,
        "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":any(r.get("injury_scenario_applied_to_combined") for r in valid),
-       "injury_minutes_research_status":"DESCRIPTIVE_ONLY_NOT_APPLIED",
+       "injury_minutes_research_status":("BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS"
+            if any(r.get("injury_scenario_applied_to_combined") for r in valid)
+            else "NO_SUPPORTED_OFFICIAL_OUT_REPROJECTION_APPLIED"),
        "minutes_baseline_validation":minutes_walkforward_backtest(all_games),
        "minutes_v2_validation":minutes_v2_backtest(all_games),
        "minutes_early_season_validation":early_minutes_backtest(all_games),
