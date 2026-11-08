@@ -28,7 +28,7 @@ class PrizePicksTests(unittest.TestCase):
 
     def test_verified_topup_purchased_access_allows_one_bounded_refresh(self):
         old={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
-             "generated_at":"2026-11-08T01:37:00Z",
+             "generated_at":"2026-11-08T08:37:00Z",
              "remaining_provider_credits":0}
         after={"status":"LIVE_READ_SUCCEEDED","checked_at":"2026-11-08T10:02:00Z",
           "http_status":200,"provider_mode":"live",
