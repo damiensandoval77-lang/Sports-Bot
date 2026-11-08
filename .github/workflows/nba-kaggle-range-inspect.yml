@@ -1,0 +1,39 @@
+name: Inspect Kaggle NBA archive index by HTTPS byte range
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/kaggle_zip_range.py'
+      - '.github/workflows/nba-kaggle-range-inspect.yml'
+permissions:
+  contents: write
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run bounded range inventory; never download full archive
+        run: python -m iphone_bot.kaggle_zip_range
+      - name: Publish file inventory and access diagnostics only
+        run: |
+          set -euo pipefail
+          cp docs/kaggle_nba_zip_range_inventory.json "$RUNNER_TEMP/kaggle-index.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/kaggle-index.json" docs/kaggle_nba_zip_range_inventory.json
+            git add docs/kaggle_nba_zip_range_inventory.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Record bounded Kaggle ZIP central directory inspection'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
