@@ -1615,6 +1615,8 @@ async function refresh(){
   $("opportunity-review-shadow").textContent="True pregame-locked opportunity shadow: "+
    (o.paired_markets||0)+" verified final props · Combined MAE "+(o.baseline_mae??"—")+
    " vs shadow "+(o.opportunity_mae??"—")+
+   " · Stability-aware challenger "+(o.stability_shadow_paired_markets||0)+
+   " graded / MAE "+(o.stability_shadow_mae??"—")+
    (same==null?" · Updated same-line direction audit awaiting publication":
     " · "+same+" identical-line direction comparisons, baseline "+
     (o.baseline_same_line_hit_rate==null?"—":(o.baseline_same_line_hit_rate*100).toFixed(1)+"%")+
