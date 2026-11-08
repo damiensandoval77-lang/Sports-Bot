@@ -94,14 +94,56 @@ def build(schedule,form,games,models,now=None):
  output["games_covered"]=len({r["game"] for r in output["predictions"]})
  output["status"]="PREGAME_PROJECTIONS_NO_LINES" if output["predictions"] else "NO_ELIGIBLE_PLAYER_PROJECTIONS"
  return output
+def recovered_fixture_schedule(schedule,model_input,now):
+ """Use a previously authenticated NBA source as fixture evidence only.
+
+ NO provider lines, model labels, offer prices or tiers are transferred.
+ Historic evidence is kept valid for 30 hours only to avoid phantom games.
+ Completeness is explicitly unknown.
+ """
+ existing=schedule.get("games") if isinstance(schedule,dict) else None
+ updated=parsed(schedule.get("generated_at")) if isinstance(schedule,dict) else None
+ if existing and updated and now-updated<timedelta(hours=18):
+  if any(parsed(g.get("start")) and parsed(g["start"])>now
+         and matchup(g.get("game","")) for g in existing if isinstance(g,dict)):
+   return schedule
+ snapshot=parsed(model_input.get("source_generated_at"))
+ if (snapshot is None or snapshot>now or now-snapshot>timedelta(hours=30)
+     or model_input.get("source")!="AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS"):
+  return schedule
+ recovered={}
+ for event in model_input.get("events_covered",[]):
+  if not isinstance(event,dict):continue
+  tip=parsed(event.get("start"));game=event.get("game")
+  if tip is None or tip<=now or tip>now+timedelta(hours=32) or not matchup(game):
+   continue
+  recovered[(game,tip.isoformat())]={"game":game,"start":tip.isoformat(),
+           "game_state":"pre"}
+ if not recovered:return schedule
+ return {"generated_at":now.isoformat(),
+    "status":"PARTIAL_PRIOR_AUTHENTIC_PRIZEPICKS_EVENT_TIMES",
+    "source":"Verified historical PrizePicks NBA fixture identities ONLY, not current odds",
+    "coverage_complete":False,
+    "fixture_observed_at":snapshot.isoformat(),
+    "games":list(recovered.values()),
+    "total_games":len(recovered),
+    "no_prop_lines_reused":True}
+
 def main():
  now=datetime.now(timezone.utc)
  status={"status":"UNAVAILABLE","generated_at":now.isoformat(),"predictions":[],
          "games_covered":0,"has_actual_prop_lines":False}
  try:
   models={stat:joblib.load(MODEL_DIR/f"{stat}_model.joblib") for stat in STATS}
-  status=build(json.loads(SCHEDULE.read_text()),json.loads(FORM.read_text()),
+  official=json.loads(SCHEDULE.read_text())
+  archived=ROOT/"docs/prizepicks_model_input.json"
+  past=json.loads(archived.read_text()) if archived.exists() else {}
+  fixture_schedule=recovered_fixture_schedule(official,past,now)
+  status=build(fixture_schedule,json.loads(FORM.read_text()),
                json.loads(GAMES.read_text()),models,now)
+  status["fixture_source_status"]=fixture_schedule.get("status")
+  status["fixture_source_complete"]=fixture_schedule.get("coverage_complete") is True
+  status["fixture_last_observed_at"]=fixture_schedule.get("fixture_observed_at") or fixture_schedule.get("generated_at")
  except (OSError,ValueError,KeyError,TypeError) as e:
   status["status"]="MODEL_OR_INPUT_UNAVAILABLE"
   status["error_type"]=type(e).__name__
