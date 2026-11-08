@@ -76,8 +76,23 @@
   }
   return rows;
  }
+ // ESPN uses nonstandard short team codes (GS, NY, WSH, SA, NO).
+ // Our projections use NBA three-letter codes (GSW, NYK, WAS, SAS, NOP).
+ // Normalize only known, explicit aliases; never match a player by name
+ // across teams, which could silently attach someone else's box score.
+ const TEAM_ALIASES=Object.freeze({
+  GS:"GSW",GSW:"GSW",NY:"NYK",NYK:"NYK",WSH:"WAS",WAS:"WAS",
+  SA:"SAS",SAS:"SAS",NO:"NOP",NOP:"NOP",UT:"UTA",UTA:"UTA",
+  PHO:"PHX",PHX:"PHX",BRK:"BKN",BKN:"BKN"
+ });
+ function canonicalTeam(team){
+  const code=String(team||"").trim().toUpperCase();
+  return TEAM_ALIASES[code]||code;
+ }
  function matchPlayer(rows,forecast){
-  const hits=rows.filter(r=>r.team===String(forecast.team||"").toUpperCase()&&
+  const team=canonicalTeam(forecast.team);
+  if(!team||!forecast.player)return null;
+  const hits=rows.filter(r=>canonicalTeam(r.team)===team&&
      normalize(r.player)===normalize(forecast.player));
   return hits.length===1?hits[0]:null;
  }
@@ -171,5 +186,5 @@
   return [...dedup.values()];
  }
  return {numeric,normalize,matchup,identifyGame,gameStatus,summaryGameMatch,
-         athleteRows,matchPlayer,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows};
+         athleteRows,canonicalTeam,matchPlayer,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows};
 });
