@@ -65,8 +65,18 @@ def refresh(board,injuries,games,now):
             official[(str(p["player_id"]),str(p["game_date"]))].append(p)
     cache={}
     kept=[]
+    excluded=[]
     counts=defaultdict(int)
-    for source in board.get("comparisons",[]):
+    # Keep suppressed offers outside the visible board so a later official
+    # AVAILABLE update can restore them without inventing a new market line.
+    candidates=board.get("comparisons",[])+board.get("injury_excluded_comparisons",[])
+    seen=set()
+    for source in candidates:
+        ident=(str(source.get("player_id")),str(source.get("start")),
+               str(source.get("stat")),str(source.get("line")),
+               str(source.get("sportsbook")))
+        if ident in seen:continue
+        seen.add(ident)
         row=copy.deepcopy(source)
         try:
             start=utc(row["start"])
@@ -84,6 +94,7 @@ def refresh(board,injuries,games,now):
                 return statuses.pop() if len(statuses)==1 else None
             if status(pid,team) in ("OUT","DOUBTFUL"):
                 counts["ruled_out_player_removed"]+=1
+                excluded.append(row)
                 continue
             out_team=[]
             out_opp=[]
@@ -121,6 +132,7 @@ def refresh(board,injuries,games,now):
                 updated=reproject(original,base_shadow,team_ratio,opp_ratio)
                 if updated is None:
                     counts["unsupported_injury_pick_removed"]+=1
+                    excluded.append(row)
                     continue
                 row.update(projection=round(updated["original"],1),
                     shadow_projection=round(updated["opponent"],1) if updated["opponent"] is not None else None,
@@ -181,6 +193,8 @@ def refresh(board,injuries,games,now):
             counts["invalid_row_removed"]+=1
     updated=dict(board)
     updated["comparisons"]=kept
+    updated["injury_excluded_comparisons"]=excluded
+    updated["injury_suppressed_offer_count"]=len(excluded)
     updated["games_with_ai_props"]=len({r["game"] for r in kept if utc(r["start"])>now})
     updated["comparison_rows_published"]=len(kept)
     updated["comparison_rows_truncated"]=0
