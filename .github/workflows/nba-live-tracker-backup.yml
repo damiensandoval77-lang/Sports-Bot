@@ -1,0 +1,57 @@
+name: Backup NBA live player tracker observations (no sportsbook API)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/publish_live_tracker_feed.py'
+      - 'iphone_bot/tests/test_publish_live_tracker_feed.py'
+      - '.github/workflows/nba-live-tracker-backup.yml'
+  schedule:
+    # Server backup every 10 min during NBA Eastern evening, independent of
+    # browser's 45-second direct ESPN refresh. GitHub scheduling is best-effort.
+    - cron: '*/10 0-9,22-23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-live-tracker-backup
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate real game and player boxscore identities
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v
+          python -m py_compile iphone_bot/publish_live_tracker_feed.py
+      - name: Collect currently verified ESPN player totals, not sportsbook lines
+        run: python -u iphone_bot/publish_live_tracker_feed.py
+      - name: Publish fresh, time-stamped observed totals without overwriting original picks
+        run: |
+          set -euo pipefail
+          if [ ! -f docs/live_player_tracking.json ]; then
+            echo 'No verified game boxscores: keep prior snapshot as stale'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            # Only publish the output of the current verified capture. Never
+            # merge or reissue an old prediction based on a post-tip score.
+            git checkout -B main origin/main
+            python -u iphone_bot/publish_live_tracker_feed.py
+            git add docs/live_player_tracking.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Refresh observed live NBA player tracker fallback'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1
