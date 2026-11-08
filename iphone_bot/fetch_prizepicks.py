@@ -411,6 +411,43 @@ def main():
         return
     schedule_path=ROOT/"docs/nba_schedule.json"
     schedule=json.loads(schedule_path.read_text()) if schedule_path.exists() else {}
+    # GitHub-hosted NBA/ESPN schedule endpoints can fail independently while
+    # authenticated PrizePicks returns 4,000 real upcoming player props.
+    # Recover only exact fixture identities/time from an EARLIER VERIFIED
+    # authentic PrizePicks event archive, never its expired player lines.
+    valid_now=dt.datetime.now(dt.timezone.utc)
+    known_events=ROOT/"docs/prizepicks_model_input.json"
+    previous=json.loads(known_events.read_text()) if known_events.exists() else {}
+    old_observation=timeparse(previous.get("source_generated_at"))
+    independent=(previous.get("source")=="AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS"
+        and old_observation and 0<=(valid_now-old_observation).total_seconds()<=36*3600)
+    fixture_keys={(x.get("game"),str(x.get("start"))) for x in schedule.get("games",[])
+                  if isinstance(x,dict)}
+    if independent:
+        appended=[]
+        for event in previous.get("events_covered",[]):
+            if not isinstance(event,dict):continue
+            game=event.get("game")
+            start=timeparse(event.get("start"))
+            if not game or not start or not valid_now<start<valid_now+dt.timedelta(hours=30):
+                continue
+            if not expected_opponents(game,"BOS") and not any(
+                expected_opponents(game,t) for t in ("ATL","BKN","CHA","CHI","CLE",
+                "DAL","DEN","DET","GSW","HOU","IND","LAC","LAL","MEM","MIA",
+                "MIL","MIN","NOP","NYK","OKC","ORL","PHI","PHX","POR",
+                "SAC","SAS","TOR","UTA","WAS")):
+                continue
+            canonical=(game,start.isoformat())
+            if canonical in fixture_keys:continue
+            appended.append({"game":game,"start":start.isoformat(),
+                "game_state":"pre","fixture_source":
+                "PRIOR_VERIFIED_PRIZEPICKS_EVENT_TIME_NOT_STALE_LINE"})
+            fixture_keys.add(canonical)
+        if appended:
+            schedule={**schedule,"games":list(schedule.get("games",[]))+appended,
+                "coverage_complete":False}
+            print("Recovered exact verified provider matchup times:",len(appended),
+                  "from prior authentic fixture archive; not reusing old lines")
     out=publish(pages,comp["comparisons"],schedule=schedule)
     usage=[p.get("_client_credit_usage",{}) for p in pages]
     out["total_provider_charged_credits"]=sum(int(x["charged_credits"]) for x in usage
