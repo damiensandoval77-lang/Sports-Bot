@@ -1,11 +1,6 @@
 name: PrizePicks authenticated REST onboarding and NBA model sample
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/prizepicks_rest_onboarding.py'
-      - '.github/workflows/nba-prizepicks-rest-setup.yml'
 permissions:
   contents: write
 concurrency:
