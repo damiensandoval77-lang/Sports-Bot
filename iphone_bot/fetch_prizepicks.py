@@ -291,7 +291,7 @@ def quota_guard(saved,health,now,topup=None):
         and isinstance(proof.get("request_cost"),int)
         and 0<proof["request_cost"]<=10
         and confirmed is not None and confirmed<=now
-        and 0<=(now-confirmed).total_seconds()<30*86400)
+        and 0<=(now-confirmed).total_seconds()<36*3600)
     # Avoid exhausting finite purchased credits by rebuilding the full board
     # after every unrelated repository commit or twice within one slate.
     if (topup_access and old and 0<=(now-old).total_seconds()<6*3600
@@ -323,6 +323,28 @@ def main():
         print("PrizePicks API key missing; publishing NOT_CONFIGURED status, no vendor request.",flush=True)
         return
     if DEST.exists() and os.environ.get("PRIZEPICKS_FORCE_REFRESH")!="1":
+        # Monthly credit header may read zero while separately purchased
+        # top-up credits are available. A single billed compact read is the
+        # only reliable proof; do not treat zero monthly credits as a hard lock.
+        try:
+            saved_check=json.loads(DEST.read_text())
+            topup_path=ROOT/"docs/prizepicks_topup_probe.json"
+            proof=json.loads(topup_path.read_text()) if topup_path.exists() else {}
+            verified=timeparse(proof.get("checked_at"))
+            now_check=dt.datetime.now(dt.timezone.utc)
+            old_monthly=saved_check.get("remaining_provider_credits")
+            if (str(old_monthly)=="0" and
+                (verified is None or (now_check-verified).total_seconds()>36*3600)):
+                from probe_prizepicks_topup import probe
+                new_proof=probe(key)
+                topup_path.write_text(json.dumps(new_proof,indent=2)+"\\n")
+                print("Top-up probe:",new_proof.get("status"),
+                      "HTTP:",new_proof.get("http_status"),
+                      "charged:",new_proof.get("request_cost"),
+                      "(the exhausted monthly balance may exclude purchased top-ups)")
+        except (OSError,ValueError,TypeError,ImportError) as error:
+            print("Top-up probe unavailable:",type(error).__name__)
+
         try:
             saved=json.loads(DEST.read_text())
             health_path=ROOT/"docs/prizepicks_connection_health.json"
