@@ -29,6 +29,27 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_minutes_v3_and_opportunity_v2_are_originally_frozen(self):
+        m=self.market()
+        m["stat"]="AST"
+        m["minutes_v3_research"]={
+           "status":"PREGAME_MINUTES_V3_RESEARCH",
+           "expected_minutes":31.2,"last_prior_date":"2026-11-11",
+           "production_applied":False}
+        m["opportunity_v2_research"]={"markets":{"AST":{
+           "status":"PREGAME_OPPORTUNITY_V2_RESEARCH",
+           "projection":7.1,"last_prior_game":"2026-11-11",
+           "source_kind":"BOX_SCORE_RATE_PROXY"}}}
+        saved=snapshot([m],"2026-11-12T18:00:00Z")
+        self.assertEqual(len(saved),2)
+        self.assertEqual(saved[0]["minutes_v3_research"]["expected_minutes"],31.2)
+        self.assertEqual(saved[0]["opportunity_v2_research"]["markets"]["AST"]["projection"],7.1)
+        m["minutes_v3_research"]["expected_minutes"]=100
+        m["opportunity_v2_research"]["markets"]["AST"]["projection"]=100
+        again=snapshot([m],"2026-11-12T18:10:00Z",saved)
+        self.assertEqual(again[0]["minutes_v3_research"]["expected_minutes"],31.2)
+        self.assertEqual(again[0]["opportunity_v2_research"]["markets"]["AST"]["projection"],7.1)
+
     def test_shooting_v1_shadow_is_frozen_and_immutable(self):
         m=self.market()
         m["shooting_efficiency_v1"]={
