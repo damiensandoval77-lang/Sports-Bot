@@ -19,6 +19,8 @@ on:
       - 'iphone_bot/opportunity_backtest.py'
       - 'iphone_bot/opponent_context_v2.py'
       - 'iphone_bot/lineup_onoff_research.py'
+      - 'iphone_bot/import_authorized_onoff.py'
+      - 'iphone_bot/tests/test_import_authorized_onoff.py'
       - 'iphone_bot/tests/test_lineup_onoff_research.py'
       - 'iphone_bot/tests/test_opponent_context_v2.py'
       - 'iphone_bot/tests/test_opportunity_backtest.py'
@@ -54,6 +56,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opponent_context_v2.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_lineup_onoff_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_import_authorized_onoff.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
       - name: Confirm actual current market coverage and quote freshness
