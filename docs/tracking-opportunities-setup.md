@@ -80,3 +80,29 @@ REB forecasts with unchanged Combined AI baseline. See:
 
 No real licensed tracking feed has been connected yet. **No improvement in
 assist or rebound hit rate is claimed until future-grade records exist.**
+
+## Import an authorized CSV export
+
+A source with confirmed rights can export one row per player/game using this
+exact header:
+
+```text
+player_id,team,game_id,game_date,observed_at,minutes,potential_assists,assists,rebound_chances,rebounds
+```
+
+Use an independently verified permission manifest, containing
+`season`, `source`, `generated_at`, `allowed_use`,
+`reviewer_confirmation`, and `permission_reference`. Never set the rights
+fields to verified without an actual permitted-use basis.
+
+```bash
+python -m iphone_bot.import_tracking_export \
+  --csv /secure/tracking-player-games.csv \
+  --authorization /secure/provider-permissions.json
+```
+
+The import validates rows and writes only to the gitignored private research
+feed. CI checks the importer against synthetic data, but an ordinary GitHub
+Actions runner **does not** have access to locally imported private files.
+For unattended source updates, a permitted server-side feed and secure
+deployment are still required.
