@@ -56,6 +56,17 @@ class UnderprojectionTests(unittest.TestCase):
         self.assertEqual(d["mean_opponent_minus_original"],-4)
         self.assertFalse(r["conclusions"]["opponent_adjustment_causality_proven"])
 
+    def test_frozen_minutes_risk_and_matchup_separate_strata(self):
+        a=row(pid="1",forecast=30,actual=40)
+        a["research_minutes_risk_v1"]={"needs_manual_review":True,
+             "issues":["VOLATILE_RECENT_MINUTES"]}
+        b=row(pid="2",forecast=29,actual=24)
+        b["research_minutes_risk_v1"]={"needs_manual_review":False,"issues":[]}
+        results=report([a,b])["by_market"]["PTS"]
+        self.assertEqual(results["frozen_minutes_review_flagged"]["observations"],1)
+        self.assertEqual(results["frozen_minutes_no_review_flags"]["observations"],1)
+        self.assertEqual(results["opponent_model_1plus_below_original"]["observations"],2)
+
     def test_missing_opponent_forecast_not_faked(self):
         x=row()
         x["opponent_shadow_projection"]=None
