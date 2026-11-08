@@ -32,7 +32,8 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           s=Path('docs/index.html').read_text()
-          assert s.count('<script>')==1 and s.count('</script>')==1
+          assert s.count('<script>')==1 and s.count('</script>')==2
+          assert '<script src="./live-prop-tracker.js"></script>' in s
           script=s.split('<script>',1)[1].split('</script>',1)[0]
           Path('/tmp/sports-bot-dashboard.js').write_text(script)
           assert 'FROZEN_PREGAME_HISTORICAL_ARCHIVE_NOT_LIVE' in script
