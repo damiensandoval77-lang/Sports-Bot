@@ -135,6 +135,11 @@ def snapshot(comparisons,generated_at,existing=None):
                 "shooting_efficiency_v1":copy.deepcopy(
                     market.get("shooting_efficiency_v1"))
                     if market.get("stat")=="PTS" else None,
+                "minutes_v3_research":copy.deepcopy(
+                    market.get("minutes_v3_research")),
+                "opportunity_v2_research":copy.deepcopy(
+                    market.get("opportunity_v2_research"))
+                    if market.get("stat") in ("AST","REB") else None,
                 "model_feature_audit":copy.deepcopy(market.get("model_feature_audit")),
                 "frozen_minutes_research":copy.deepcopy(market.get("minutes_research")),
                 "frozen_minutes_v2_research":copy.deepcopy(market.get("minutes_v2_research")),
