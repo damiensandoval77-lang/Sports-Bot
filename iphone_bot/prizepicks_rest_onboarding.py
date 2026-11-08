@@ -92,24 +92,44 @@ def parse_date(value):
     except (TypeError,ValueError):return None
 
 def first_join(samples,logs):
-    # Feature MUST come from an earlier game, never from the outcome row.
-    for r in samples:
+    """Join by provider stats id when available, otherwise exact name + team.
+
+    Every input game must have a date strictly BEFORE the recorded prop
+    start. Never use target outcome, minutes, actual or postgame labels
+    as an input feature.
+    """
+    # Prefer assists/rebounds for the bot's immediate model-development work.
+    ranking={"Assists":0,"Rebounds":1,"Points":2}
+    candidates=sorted(samples,key=lambda r:ranking.get(str(r.get("stat")),10))
+    for r in candidates:
         player_id=nested(r,"stats_player_id","player.stats_player_id")
+        player=nested(r,"player","player_name")
+        if isinstance(player,dict):player=player.get("name")
+        player=str(player or "").strip().casefold()
+        team=str(nested(r,"team","player.team") or "").strip().upper()
         day=parse_date(nested(r,"game_date","date"))
-        if not day or not player_id:continue
-        prior=sorted((g for g in logs if g["stats_player_id"]==player_id and
-             (parse_date(g["game_date"]) or day)>=datetime(1900,1,1).date() and
-             (parse_date(g["game_date"]) or day)<day),key=lambda x:x["game_date"])
+        if not day or not player:continue
+        prior=[]
+        for g in logs:
+            gday=parse_date(g.get("game_date"))
+            if not gday or gday>=day:continue
+            if (player_id and g.get("stats_player_id")==player_id) or (
+                not player_id and str(g.get("player") or "").strip().casefold()==player and
+                str(g.get("team") or "").strip().upper()==team):
+                prior.append(g)
+        prior.sort(key=lambda x:x["game_date"])
         if not prior:continue
         tail=prior[-5:]
         def av(k):
             numbers=[float(x[k]) for x in tail if x.get(k) is not None]
             return round(sum(numbers)/len(numbers),3) if numbers else None
         return {"game_date":day.isoformat(),"player":nested(r,"player","player_name"),
-                "stats_player_id":player_id,
+                "stats_player_id":prior[-1].get("stats_player_id"),
+                "join_method":"STATS_PLAYER_ID" if player_id else "EXACT_PLAYER_NAME_AND_TEAM",
                 "training_projection_id":nested(r,"projection_id","id"),
                 "stat":nested(r,"stat","market.stat"),
                 "closing_line":nested(r,"closing_line","line"),
+                "closing_observed_at":r.get("closing_observed_at"),
                 "label_result":r.get("result"),
                 "prior_games":len(tail),
                 "last_prior_game":tail[-1]["game_date"],
