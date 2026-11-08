@@ -190,6 +190,20 @@ def settle(rows,completed_games,now=None):
         direct=[g for g in by_name.get((strict_player_name(r["player"]),gameday),[])
                 if g.get("team")==r["team"] and g.get("opponent") in opponents
                 and g.get("final_confirmed") is True]
+        dnp_direct=[g for g in direct if g.get("dnp_final_verified") is True]
+        playable_direct=[g for g in direct if not g.get("dnp_final_verified")]
+        if dnp_direct and playable_direct:
+            # Contradictory providers cannot be used to grade or void.
+            result.append(r);continue
+        if len(dnp_direct)==1 and age>=2*3600:
+            evidence=dnp_direct[0]
+            r.update({"status":"VOID_DNP","result":"VOID",
+                      "void_reason":evidence.get("dnp_reason","Verified no-play"),
+                      "void_source_url":"https://www.nba.com/game/"+
+                        str(evidence.get("source_game_id","")),
+                      "void_recorded_at":now.isoformat()})
+            result.append(r);continue
+        direct=playable_direct
         # Multiple providers can observe the same final game.
         # Identical pts/reb/ast are corroboration, not ambiguity.
         # Conflicting providers must not be graded arbitrarily.
