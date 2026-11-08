@@ -47,7 +47,7 @@ class ProviderMapperTests(unittest.TestCase):
             normalized(with_provenance=bad)
         bad=proof()
         bad["game_dates"]=["2026-10-02"]*6
-        with self.assertRaisesRegex(ValueError,"Duplicate"):
+        with self.assertRaisesRegex(ValueError,"duplicated"):
             normalized(with_provenance=bad)
         bad=proof()
         bad["game_dates"]=["2026-10-02","2026-10-03","2026-10-04",
