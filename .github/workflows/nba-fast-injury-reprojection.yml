@@ -46,7 +46,9 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4; do
             git fetch origin main
-            git checkout -B main origin/main
+            # Previous local refresh produced modified JSON; discard it and
+            # recompute against the newest main before every publish attempt.
+            git reset --hard origin/main
             python -u iphone_bot/fetch_official_injuries.py
             python -u iphone_bot/refresh_injury_projections.py
             git add docs/injury_context.json docs/ai_comparisons.json
