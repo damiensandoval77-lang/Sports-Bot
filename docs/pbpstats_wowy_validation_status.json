@@ -1,7 +1,16 @@
 {
-  "generated_at": "2026-11-08T03:24:56.353422+00:00",
+  "generated_at": "2026-11-08T03:25:27.906478+00:00",
   "status": "FAILED",
   "tests": "FIVE_OFFLINE_PBPSTATS_WOWY_MODULES",
+  "failure_diagnostics": [
+    "Ran 3 tests in 0.000s",
+    "FAIL: test_insufficient_provenance_and_date_leakage (test_pbpstats_wowy_adapter.ProviderMapperTests.test_insufficient_provenance_and_date_leakage)",
+    "ValueError: Duplicate or future game dates",
+    "ValueError: Missing, duplicated or invalid completed game dates",
+    "AssertionError: \"Duplicate\" does not match \"Missing, duplicated or invalid completed game dates\"",
+    "Ran 5 tests in 0.001s",
+    "FAILED (failures=1)"
+  ],
   "real_provider_samples_verified": false,
   "licensed_ingestion_enabled": false
 }
