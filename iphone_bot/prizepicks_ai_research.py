@@ -1,0 +1,147 @@
+"""Independently trained NBA projections vs genuine PrizePicks pick'em lines.
+
+This research output is separate from priced sportsbook research. It never
+substitutes pick'em tiers for American odds or calls any betting API.
+"""
+import json
+from collections import Counter,defaultdict
+from datetime import datetime,timezone
+from pathlib import Path
+from zoneinfo import ZoneInfo
+import joblib
+import numpy as np
+import pandas as pd
+
+try:
+    from .compare_live_models import key,matchup,predict_features,utc
+    from .combined_projection import combine_projections
+    from .matchup_context import team_allowances
+    from .defense_training import COLS
+except ImportError:
+    from compare_live_models import key,matchup,predict_features,utc
+    from combined_projection import combine_projections
+    from matchup_context import team_allowances
+    from defense_training import COLS
+
+ROOT=Path(__file__).resolve().parents[1]
+ET=ZoneInfo("America/New_York")
+STATS=("PTS","REB","AST","PRA")
+
+def generate(feed,form,current_games,models,shadows=None,now=None):
+    now=now or datetime.now(timezone.utc)
+    shadows=shadows or {}
+    if feed.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
+        raise ValueError("Only real, independently authenticated provider feed allowed")
+    if form.get("season")!="2026-27" or (now-utc(form["updated_at"])).total_seconds()>48*3600:
+        raise ValueError("Missing or stale NBA 2026-27 player form")
+    if (now-utc(feed["generated_at"])).total_seconds()>6*3600:
+        raise ValueError("PrizePicks source no longer a current observation")
+    roster=defaultdict(list)
+    for r in form["players"]:roster[key(r["player"])].append(r)
+    history=defaultdict(dict)
+    for r in current_games:history[str(r["id"])][r["date"]]=r
+    eligible=[]
+    skipped=Counter()
+    cache={}
+    for offer in feed.get("board_offers",[]):
+        try:
+            start=utc(offer["starts_at"])
+            observed=utc(offer["observed_at"])
+            stat=offer["stat"]
+            if start<=now or stat not in STATS or observed>now or now-observed>__import__("datetime").timedelta(hours=6):
+                skipped["not_upcoming_or_observation_stale"]+=1
+                continue
+            if offer.get("source")!="independent_prizepicksapi_com" or offer.get("is_demo") is not False:
+                skipped["not_verified_live_provider"]+=1
+                continue
+            pair=matchup(offer["game"])
+            people=roster[key(offer["player"])]
+            if not pair or len(people)!=1 or people[0]["team"]!=offer["team"] or offer["team"] not in pair:
+                skipped["missing_or_ambiguous_roster_team"]+=1
+                continue
+            person=people[0]
+            dates=sorted(history[str(person["player_id"])].values(),key=lambda g:g["date"])
+            date=start.astimezone(ET).date()
+            past=[x for x in dates if datetime.fromisoformat(x["date"]).date()<date]
+            if len(past)<5:
+                skipped["insufficient_completed_current_season_games"]+=1;continue
+            token=(str(person["player_id"]),start.isoformat(),stat)
+            if token not in cache:
+                base=predict_features(past,date,offer["team"]==pair[1])
+                if base is None:
+                    skipped["feature_input_missing"]+=1;continue
+                model=models.get(stat)
+                if not model:skipped["model_unavailable"]+=1;continue
+                cols=model["features"]
+                x=pd.DataFrame([{c:base.get(c,model["fill_values"].get(c,0)) for c in cols}])[cols]
+                original=max(0,float(model["model"].predict(x)[0]))
+                opponent=pair[0] if offer["team"]==pair[1] else pair[1]
+                shadow=None
+                # Defensive model requires strictly prior opponent games.
+                if stat in shadows:
+                    allowed=team_allowances(current_games,date.isoformat()).get(opponent,[])
+                    if len(allowed)>=3:
+                        sample=allowed[-5:]
+                        shadow_model=shadows[stat]
+                        if shadow_model.get("status")=="SHADOW_ONLY_NOT_CALIBRATED" and set(COLS).issubset(shadow_model["features"]):
+                            def_values={f"OPP_{name}_ALLOWED_L5":float(np.mean([v[name] for _,v in sample]))
+                                        for name in ("PTS","REB","AST","PRA")}
+                            def_values["OPP_DEF_SAMPLE_GAMES"]=min(5,len(allowed))
+                            features={**base,**def_values}
+                            shadow_cols=shadow_model["features"]
+                            sx=pd.DataFrame([{c:features.get(c,shadow_model["fill_values"].get(c,0)) for c in shadow_cols}])[shadow_cols]
+                            shadow=max(0,float(shadow_model["model"].predict(sx)[0]))
+                combo=combine_projections(original,shadow)
+                cache[token]=(original,shadow,combo,base,len(past))
+            original,shadow,combined,base,n_games=cache[token]
+            line=float(offer["line"])
+            projection=round(combined["projection"],1)
+            direction=("MORE" if projection>line else "LESS" if projection<line else "NO_LEAN")
+            eligible.append({
+                "provider_projection_id":str(offer["id"]),
+                "player":offer["player"],"player_id":str(person["player_id"]),
+                "team":offer["team"],"game":offer["game"],"start":start.isoformat(),
+                "stat":stat,"line":line,"more_tier":offer.get("more_tier"),
+                "less_tier":offer.get("less_tier"),
+                "observed_at":observed.isoformat(),
+                "original_projection":round(original,1),
+                "opponent_aware_projection":round(shadow,1) if shadow is not None else None,
+                "combined_projection":projection,"combined_method":combined["method"],
+                "ai_direction":direction,"model_count":combined["model_count"],
+                "season_observations":n_games,
+                "pts_l5":round(base.get("PTS_L5",0),2),
+                "minutes_l5":round(base.get("MIN_L5",0),2),
+                "captured_at":now.isoformat(),
+                "no_calibrated_hit_percentage":True,"no_verified_ev":True,
+                "source":"independent_prizepicksapi_com"})
+        except (KeyError,ValueError,TypeError,OverflowError):
+            skipped["invalid_source_or_model_inputs"]+=1
+    return {"status":"PRIZEPICKS_AI_RESEARCH_ONLY_NOT_SPORTSBOOK_ODDS",
+        "generated_at":now.isoformat(),"provider_generated_at":feed["generated_at"],
+        "comparison_count":len(eligible),
+        "games_with_ai_comparisons":len({x["game"] for x in eligible}),
+        "by_game":dict(Counter(x["game"] for x in eligible)),
+        "source_eligible_markets":len(feed.get("board_offers",[])),
+        "skipped":dict(skipped),"comparisons":eligible,
+        "confidence_calibrated":False,"sportsbook_american_odds_available":False,
+        "paper_pick_ledger_modified":False,"existing_combined_ai_modified":False}
+
+def main():
+    feed=json.loads((ROOT/"docs/prizepicks_site.json").read_text())
+    form=json.loads((ROOT/"docs/current_form.json").read_text())
+    games=json.loads((ROOT/"data/nba/current/current_games.json").read_text())
+    models={}
+    shadows={}
+    for stat in STATS:
+        models[stat]=joblib.load(ROOT/f"models/nba/provisional/{stat}_model.joblib")
+        source=ROOT/f"models/nba/defense_shadow/{stat}_model.joblib"
+        if source.exists():shadows[stat]=joblib.load(source)
+    data=generate(feed,form,games,models,shadows)
+    if not data["comparisons"]:
+        print("No supported upcoming PrizePicks player/model comparisons; not replacing previous nonempty archive")
+        return
+    (ROOT/"docs/prizepicks_ai_research.json").write_text(json.dumps(data,separators=(",",":"))+"\n")
+    print("PRIZEPICKS AI RESEARCH:",data["comparison_count"],
+          "props",data["games_with_ai_comparisons"],"games",
+          "sources",data["source_eligible_markets"],"skipped",data["skipped"],flush=True)
+if __name__=="__main__":main()
