@@ -6,6 +6,8 @@ on:
     paths:
       - 'docs/prizepicks.json'
       - 'iphone_bot/publish_prizepicks_site.py'
+      - 'iphone_bot/build_prizepicks_model_input.py'
+      - 'iphone_bot/tests/test_build_prizepicks_model_input.py'
       - 'iphone_bot/tests/test_publish_prizepicks_site.py'
       - '.github/workflows/nba-prizepicks-site-publish.yml'
 permissions:
@@ -28,8 +30,11 @@ jobs:
         run: |
           python -m py_compile iphone_bot/publish_prizepicks_site.py
           python -m unittest discover -s iphone_bot/tests -p 'test_publish_prizepicks_site.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_build_prizepicks_model_input.py' -v
       - name: Build small read-only PrizePicks board and coverage
         run: python -u iphone_bot/publish_prizepicks_site.py
+      - name: Build distinct authentic pick'em-only line comparison input
+        run: python -m iphone_bot.build_prizepicks_model_input
       - name: Publish no-cost website research status
         run: |
           set -euo pipefail
@@ -39,7 +44,7 @@ jobs:
             echo 'No eligible live PrizePicks board to publish'
             exit 0
           fi
-          git add docs/prizepicks_site.json docs/prizepicks_status.json
+          git add docs/prizepicks_site.json docs/prizepicks_status.json docs/prizepicks_model_input.json
           if git diff --cached --quiet; then echo 'PrizePicks site status unchanged'; exit 0; fi
           git commit -m 'Publish compact real PrizePicks NBA lines and slate coverage'
           for attempt in 1 2 3 4 5 6; do
