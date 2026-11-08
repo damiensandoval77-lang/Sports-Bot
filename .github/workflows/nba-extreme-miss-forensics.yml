@@ -1,0 +1,47 @@
+name: Extreme NBA Miss Forensics (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/settlement_merge.py'
+      - 'iphone_bot/extreme_miss_forensics.py'
+      - 'iphone_bot/tests/test_extreme_miss_forensics.py'
+      - '.github/workflows/nba-extreme-miss-forensics.yml'
+  push:
+    branches: ['research/20261107-extreme-miss-forensics']
+permissions:
+  contents: read
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate full pretip to verified-final chain
+        run: |
+          python -m py_compile iphone_bot/extreme_miss_forensics.py iphone_bot/paper_pick_pipeline.py iphone_bot/settlement_merge.py iphone_bot/compare_live_models.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_extreme_miss_forensics.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_error_analysis.py' -v
+      - name: Audit existing immutable settled data without inventing feature history
+        run: |
+          python -u iphone_bot/extreme_miss_forensics.py
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/extreme_miss_forensics.json'))
+          assert r['historical_pregame_feature_backfill_permitted'] is False
+          assert r['training_or_probability_modified'] is False
+          assert r['live_predictions_modified'] is False
+          print('Audit coverage:',r['independent_settled_markets'])
+          print('Missing legacy feature and minutes evidence:',r['data_gaps'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extreme-miss-forensics-offline
+          path: docs/extreme_miss_forensics.json
+          retention-days: 7
