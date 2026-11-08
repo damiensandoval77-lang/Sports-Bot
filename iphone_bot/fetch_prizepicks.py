@@ -14,6 +14,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+try:
+    from iphone_bot.paper_pick_pipeline import expected_opponents
+except ModuleNotFoundError:
+    from paper_pick_pipeline import expected_opponents
+
 ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/"docs/prizepicks.json"
 BASE="https://prizepicksapi.com/api/v1/projections"
@@ -105,13 +110,6 @@ def match(offer,comparison,now=None):
     start=timeparse(comparison.get("start"))
     other=timeparse(offer.get("starts_at"))
     if not start or start<=(now or dt.datetime.now(dt.timezone.utc)):return False
-    try:
-        try:
-        from iphone_bot.paper_pick_pipeline import expected_opponents
-    except ModuleNotFoundError:
-        from paper_pick_pipeline import expected_opponents
-    except ModuleNotFoundError:
-        from paper_pick_pipeline import expected_opponents
     verified=expected_opponents(comparison.get("game"),offer["team"])
     if not verified:return False
     if offer["opponent"] and offer["opponent"] not in verified:return False
@@ -172,7 +170,6 @@ def publish(raw_pages,comparisons,now=None,schedule=None):
     schedule_games=(schedule or {}).get("games",[])
     board_offers=[]
     ambiguous=0
-    from iphone_bot.paper_pick_pipeline import expected_opponents
     for original in distinct.values():
         item=dict(original)
         possibilities=[]
