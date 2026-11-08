@@ -1,0 +1,61 @@
+name: NBA Odds Budget and Full-Slate Coverage Tests (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/fetch_props.py'
+      - 'iphone_bot/odds_slate_health.py'
+      - 'iphone_bot/tests/test_fetch_props.py'
+      - 'iphone_bot/tests/test_odds_slate_health.py'
+      - 'docs/index.html'
+      - '.github/workflows/nba-market-refresh.yml'
+      - '.github/workflows/nba-ai-comparisons.yml'
+      - '.github/workflows/nba-trained-ai-board.yml'
+      - '.github/workflows/nba-slate-coverage-health.yml'
+      - '.github/workflows/nba-odds-budget-coverage-tests.yml'
+  push:
+    branches: ['fix/20261107-odds-budget-coverage-alerts']
+permissions:
+  contents: read
+jobs:
+  no-credit-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test paid-call reserve, genuine paired quotes and independent slate
+        run: |
+          python -m py_compile iphone_bot/fetch_props.py iphone_bot/odds_slate_health.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_odds_slate_health.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v
+      - name: Validate website JS syntax and clear missing-game flags
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('docs/index.html').read_text()
+          Path('/tmp/sports-odds-diagnostics.js').write_text(
+            source.split('<script>',1)[1].split('</script>',1)[0])
+          assert 'CREDITS_BELOW_RESERVE_PRESERVED' in source
+          assert 'odds_slate_health.json' in source
+          assert 'INDEPENDENT SLATE CHECK' in source
+          print('Verified status UI, independent slate game labels')
+          PY
+          node --check /tmp/sports-odds-diagnostics.js
+      - name: Ensure only one scheduled workflow pays for odds
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          market=Path('.github/workflows/nba-market-refresh.yml').read_text()
+          compare=Path('.github/workflows/nba-ai-comparisons.yml').read_text()
+          trained=Path('.github/workflows/nba-trained-ai-board.yml').read_text()
+          assert "cron: '12 18,21 * * *'" in market
+          assert "cron: '17 18,21 * * *'" in compare
+          assert "cron: '41 18,21 * * *'" in trained
+          assert 'python -u iphone_bot/fetch_props.py' in market
+          assert 'python -u iphone_bot/fetch_props.py' not in compare
+          assert 'python -u iphone_bot/fetch_props.py' not in trained
+          print('One scheduled paid odds workflow; comparisons consume published real quotes')
+          PY

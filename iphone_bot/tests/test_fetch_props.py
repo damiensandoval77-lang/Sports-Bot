@@ -84,6 +84,33 @@ class FetchPropsTests(unittest.TestCase):
         self.assertEqual(len(report["events_covered"]),6)
         self.assertEqual(len(report["picks"]),12)
 
+    def test_below_credit_reserve_never_requests_paid_event_props(self):
+        now=fetch_props.dt.datetime.now(fetch_props.dt.timezone.utc)
+        event=fixture_event(1)
+        event["commence_time"]=(now+fetch_props.dt.timedelta(hours=3)).isoformat()
+        calls=[]
+        def fake(path,key,**kwargs):
+            calls.append(path)
+            return [event],11
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            original='{"picks":[{"player":"Real"}]}'
+            (root/"out.json").write_text(original)
+            (root/"compact.json").write_text(original)
+            with patch.object(fetch_props,"OUT",root/"out.json"),\
+                 patch.object(fetch_props,"COMPACT",root/"compact.json"),\
+                 patch.object(fetch_props,"STATUS",root/"status.json"),\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
+                 patch.object(fetch_props,"request",side_effect=fake):
+                fetch_props.main()
+            self.assertEqual(calls,["/events"])
+            self.assertEqual((root/"out.json").read_text(),original)
+            self.assertEqual((root/"compact.json").read_text(),original)
+            status=json.loads((root/"status.json").read_text())
+            self.assertEqual(status["status"],"CREDITS_BELOW_RESERVE_PRESERVED")
+            self.assertEqual(status["details"]["available_events"],1)
+            self.assertEqual(status["details"]["remaining_credits"],11)
+
     def test_no_upcoming_event_does_not_erase_prior_real_quotes(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
