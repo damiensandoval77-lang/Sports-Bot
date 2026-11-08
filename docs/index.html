@@ -315,7 +315,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 "use strict";
 const $=id=>document.getElementById(id);
 let gameMoneylines=null;
-let selectedGame="",oddsHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
+let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -1392,7 +1392,7 @@ async function refresh(){
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
 
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
@@ -1417,6 +1417,8 @@ gameMoneylines=mlFeed.status==="fulfilled"&&
  mlFeed.value?.status==="VERIFIED_PREGAME_NBA_MONEYLINES"&&
  Array.isArray(mlFeed.value.games)&&isRecent(mlFeed.value.updated_at,3)?mlFeed.value:null;
 oddsHealth=oh.status==="fulfilled"?oh.value:null;
+slateHealth=health.status==="fulfilled"&&health.value?.status==="DESCRIPTIVE_NBA_SLATE_ODDS_COVERAGE"&&
+ health.value.date_eastern===easternGameDay(new Date())&&isRecent(health.value.generated_at,8)?health.value:null;
 aiFresh=false;aiArchiveMode=false;ai=[];aiMetadata=null;
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);
@@ -1517,13 +1519,26 @@ if(slateCoverage && oddsFresh){
   "Scheduled today: "+todaysGames.length+" · AI coverage: "+new Set(ai.filter(x=>easternGameDay(x.start)===easternDay).map(x=>x.game)).size+
   " games"+(aiArchiveMode?" (archived pregame, not live).":".");
 }else{
- const reason=oddsHealth?.status==="PROVIDER_FAILED"?
+ const reason=oddsHealth?.status==="CREDITS_BELOW_RESERVE_PRESERVED"?
+ " Odds API credit reserve reached ("+(oddsHealth.details?.remaining_credits??"unknown")+ " left; reserve "+(oddsHealth.details?.minimum_reserved_credits??"unknown") +"). No new props fetched.":
+ oddsHealth?.status==="PROVIDER_FAILED"?
  " Latest fetch failed ("+(oddsHealth.details?.http_status||oddsHealth.details?.error_type||"provider error")+").":
  oddsHealth?.status==="MISSING_ODDS_API_KEY"?
  " Odds provider API key is not configured.":"";
  coverageNode.textContent="Full-slate sportsbook coverage unavailable or stale."+reason+
  (aiArchiveMode?" Historical pregame AI available for "+new Set(ai.map(x=>x.game)).size+" games; NOT live prices.":"")+
  " Missing games do not imply no NBA game is scheduled.";
+}
+if(slateHealth){
+ const missing=slateHealth.games.filter(g=>g.coverage!=="FRESH_VERIFIED_PAIRED_PROPS"&&
+  g.coverage!=="STARTED_OR_FINISHED_NO_NEW_PREGAME_MARKET");
+ const label=slateHealth.provider_status==="CREDITS_BELOW_RESERVE_PRESERVED"?
+   "CREDIT RESERVE BLOCKED":slateHealth.provider_status;
+ coverageNode.textContent+=" INDEPENDENT SLATE CHECK: "+slateHealth.upcoming_with_fresh_props+
+   "/"+slateHealth.upcoming_scheduled+" upcoming games have fresh paired lines. "+
+   missing.length+" missing; reason: "+label+". "+
+   (missing.length?"Games: "+missing.map(g=>g.game+" ["+g.coverage.replaceAll("_"," ").toLowerCase()+"]").join("; ")+". ":"")+
+   "Past pregame AI forecasts, if shown, are archived—not live.";
 }
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
 const evidence=$("ai-evidence-warning");
