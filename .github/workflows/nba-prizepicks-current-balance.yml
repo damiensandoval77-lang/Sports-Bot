@@ -1,0 +1,44 @@
+name: Check funded independent PrizePicks API key and current quota
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/check_prizepicks_live_access.py'
+      - '.github/workflows/nba-prizepicks-current-balance.yml'
+permissions:
+  contents: write
+concurrency:
+  group: prizepicks-quota-probe
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Perform one small authenticated PrizePicks request and read credit headers
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+        run: python -m iphone_bot.check_prizepicks_live_access
+      - name: Publish quota-only status without storing offers or API key
+        run: |
+          set -euo pipefail
+          cp docs/prizepicks_account_balance.json "$RUNNER_TEMP/prizepicks-balance.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/prizepicks-balance.json" docs/prizepicks_account_balance.json
+            git add docs/prizepicks_account_balance.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Report independently verified current PrizePicks API quota'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
