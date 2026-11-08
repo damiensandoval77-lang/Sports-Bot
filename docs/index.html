@@ -1532,7 +1532,7 @@ if(slateCoverage && oddsFresh){
 if(slateHealth){
  const missing=slateHealth.games.filter(g=>g.coverage!=="FRESH_VERIFIED_PAIRED_PROPS"&&
   g.coverage!=="STARTED_OR_FINISHED_NO_NEW_PREGAME_MARKET");
- const label=slateHealth.provider_status==="CREDITS_BELOW_RESERVE_PRESERVED"?
+ const label=["CREDITS_BELOW_RESERVE_PRESERVED","LEGACY_ZERO_EVENT_FETCH_CREDIT_RESERVE"].includes(slateHealth.provider_status)?
    "CREDIT RESERVE BLOCKED":slateHealth.provider_status;
  coverageNode.textContent+=" INDEPENDENT SLATE CHECK: "+slateHealth.upcoming_with_fresh_props+
    "/"+slateHealth.upcoming_scheduled+" upcoming games have fresh paired lines. "+
