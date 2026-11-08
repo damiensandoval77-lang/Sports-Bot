@@ -1988,7 +1988,7 @@ async function refresh(){
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
 
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
@@ -2256,6 +2256,12 @@ const status=[];
  status.push(o.status==="fulfilled"?"Odds file loaded"+(oddsFresh?"":" (stale)"):"Odds fetch failed");
  status.push(f.status==="fulfilled"?"Player form loaded":"Form fetch failed");
  status.push(p.status==="fulfilled"?"Results loaded":"Results fetch failed");
+ if(prizepicksGrades.status==="fulfilled"&&
+   prizepicksGrades.value?.status==="PRIZEPICKS_PRETIP_RESEARCH_GRADED_NOT_ODDS"){
+  const g=prizepicksGrades.value;
+  status.push("PrizePicks research tracked: "+g.saved+" frozen · "+
+    g.settled+" graded · "+g.pending+" pending");
+ }else status.push("PrizePicks independent research grades not yet published");
  status.push(ppState==="PROVIDER_RATE_LIMITED"?"PrizePicks provider quota exhausted":ppState==="NOT_CONFIGURED"?"PrizePicks not connected":ppFresh?"PrizePicks lines loaded":ppState==="LIVE_NO_MATCHED_PRIZEPICKS_LINES"?"PrizePicks no matches":"PrizePicks unavailable/stale");
  $("data-health").textContent=status.join(" · ");
  // Render each dashboard section independently. One bad provider record must
