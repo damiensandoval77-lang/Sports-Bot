@@ -14,7 +14,7 @@ ET=ZoneInfo("America/New_York")
 
 def get(path):
     request=urllib.request.Request(BASE+path,headers={
-        "User-Agent":"Sports-Bot-ReadOnlyESPNVerification/1.0",
+        "User-Agent":"Mozilla/5.0",
         "Accept":"application/json"})
     with urllib.request.urlopen(request,timeout=20) as response:
         return json.load(response)
