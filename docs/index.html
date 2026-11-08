@@ -797,6 +797,25 @@ function renderAI(){
    body.append(node("div","mini",p.alternative_lines.map(n=>fmt(n)).join(" · ")+
      " · representative center threshold is shown on the card; these are pick'em lines, not sportsbook odds."));
   }
+  const shadowChance=p.tracking_opportunity_shadow;
+  const opportunityStat=shadowChance?.[p.stat];
+  if(opportunityStat?.status==="PREGAME_OPPORTUNITY_SHADOW"){
+   body.append(node("div","detail-heading",
+     p.stat==="AST"?"Potential-assist opportunity model":"Rebound-chance opportunity model"));
+   body.append(node("div","mini",
+     "Experimental opportunity projection "+fmt(opportunityStat.projection)+
+     " vs Combined AI "+fmt(projected)+
+     " · "+opportunityStat.chance_metric.replaceAll("_"," ")+
+     " per minute "+opportunityStat.chances_per_minute+
+     " · conversion "+(100*opportunityStat.conversion_rate).toFixed(1)+"%"+
+     " · expected minutes "+fmt(opportunityStat.expected_minutes)+
+     " · "+opportunityStat.games+" matched historical games."+
+     " RESEARCH ONLY—no production weight or verified hit-rate change."));
+  }else if(p.stat==="AST"||p.stat==="REB"){
+   body.append(node("div","mini",
+     "Opportunity-based "+p.stat+" model awaiting genuine player-game tracking"+
+     " and paired historical box-score games."));
+  }
   const tracking=p.tracking_opportunity_research;
   if(tracking?.status==="RESEARCH_TRACKING_AVAILABLE"){
    const labelNames={potential_assists:"Potential assists",
