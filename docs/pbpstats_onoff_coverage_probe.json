@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-08T03:37:41.328733+00:00",
+  "checked_at": "2026-11-08T03:38:23.423676+00:00",
   "season": "2026-27",
   "cutoff": "2026-11-06",
   "sample_player_id": "201939",
@@ -52,7 +52,29 @@
       ]
     }
   },
-  "status": "NOT_VALIDATED",
-  "error_type": "ValueError",
-  "error_summary": "Overlapping source stints would double-count minutes"
+  "game_level_coverage": {
+    "status": "GAME_LEVEL_ON_OFF_EXPOSURE_VERIFIED",
+    "with_games": 7,
+    "without_games": 4,
+    "with_minutes": 175.0333,
+    "without_minutes": 20.55,
+    "meets_model_sample_threshold": false
+  },
+  "provider_minutes_comparison": {
+    "with": {
+      "target_entity_unique": true,
+      "provider_minutes": 180.7367,
+      "independent_minutes": 175.0333,
+      "minute_difference": 5.7034,
+      "minutes_reconcile": false
+    },
+    "without": {
+      "target_entity_unique": true,
+      "provider_minutes": 20.135,
+      "independent_minutes": 20.55,
+      "minute_difference": 0.415,
+      "minutes_reconcile": true
+    }
+  },
+  "status": "COVERAGE_MISMATCH"
 }
