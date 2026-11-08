@@ -1546,8 +1546,14 @@ async function refresh(){
    div.className="error-review-row";div.style.padding="8px 13px";
    const left=document.createElement("span"),right=document.createElement("span");
    left.textContent=market+" · "+(a.independent_markets||0)+" props";
+   const direction=a.by_direction||{};
+   const split=[["Over",direction.OVER],["Under",direction.UNDER]]
+     .filter(([,v])=>v&&v.hit_rate!=null)
+     .map(([name,v])=>name+" "+(100*v.hit_rate).toFixed(1)+"% ("+v.independent_markets+")")
+     .join(" · ");
    right.textContent=a.hit_rate==null?"Awaiting grades":
-      (100*a.hit_rate).toFixed(1)+"% · "+(a.sample_threshold_met?"review pending":"not validated");
+      (100*a.hit_rate).toFixed(1)+"% · "+(a.sample_threshold_met?"review pending":"not validated")+
+      (split?" · "+split:"");
    div.append(left,right);grid.append(div);
   }
  }).catch(()=>{$("selection-quality-summary").textContent="Quality audit not published yet.";});
