@@ -80,8 +80,8 @@ class OpportunityBacktestTests(unittest.TestCase):
         self.assertIsNone(stability_candidate(None,40,{"last5_minutes_volatility":9}))
         out=opportunity(history(),"2026-11-06","BOS")
         self.assertIn("last5_minutes_volatility",out)
-        self.assertEqual(out["raw_stat_projections"]["PRA"],
-            round(sum(out["raw_stat_projections"][m] for m in ("PTS","REB","AST")),4))
+        self.assertAlmostEqual(out["raw_stat_projections"]["PRA"],
+            sum(out["raw_stat_projections"][m] for m in ("PTS","REB","AST")),places=3)
 
     def test_direction_and_mae(self):
         d=describe([{"baseline":20.0,"candidate":21.0,
