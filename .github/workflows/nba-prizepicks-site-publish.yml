@@ -12,6 +12,7 @@ on:
       - '.github/workflows/nba-prizepicks-site-publish.yml'
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: nba-prizepicks-site-data
   cancel-in-progress: false
@@ -36,6 +37,7 @@ jobs:
       - name: Build distinct authentic pick'em-only line comparison input
         run: python -m iphone_bot.build_prizepicks_model_input
       - name: Publish no-cost website research status
+        id: publish
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -48,8 +50,18 @@ jobs:
           if git diff --cached --quiet; then echo 'PrizePicks site status unchanged'; exit 0; fi
           git commit -m 'Publish compact real PrizePicks NBA lines and slate coverage'
           for attempt in 1 2 3 4 5 6; do
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then echo 'changed=true' >> "$GITHUB_OUTPUT"; exit 0; fi
             git fetch origin main
             git rebase origin/main || { git rebase --abort || true; exit 1; }
           done
           exit 1
+      - name: Generate actual player AI projections immediately from new authentic lines
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-prizepicks-ai-board.yml --ref main
+      - name: Freeze separate PrizePicks research predictions when new lines appear
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-prizepicks-ai-research.yml --ref main
