@@ -17,6 +17,7 @@ import pandas as pd
 from matchup_context import team_allowances, defense_context, minutes_context
 from defense_training import COLS
 from experimental_probability import probability_sides, METHOD
+from combined_simulation import simulate_combined_hit_rate, METHOD as COMBINED_SIM_METHOD
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
@@ -414,6 +415,15 @@ def main():
             row["estimated_probability_side"]=direction
             row["estimated_selected_probability"]=round(max(frequency["over"],frequency["under"]),4)
             row["probability_method"]=METHOD
+        # Research-only 20k simulation for the actual COMBINED card direction.
+        # Original-model residuals are a proxy, not combined-model calibration.
+        row["combined_simulation"] = None
+        if ("experimental_residuals" in model and
+            model.get("residual_calibration",{}).get("real_market_calibrated") is False):
+            row["combined_simulation"] = simulate_combined_hit_rate(
+                row["combined_projection"], row["line"], model["experimental_residuals"],
+                (row["player_id"], row["stat"], row["start"], row["line"],
+                 row["combined_projection"], COMBINED_SIM_METHOD))
         row["ev_status"]="UNAVAILABLE_NO_VALIDATED_PROBABILITY"
         row["experimental_ev_available"]=False
         row["experimental_best_quote"]=None
