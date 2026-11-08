@@ -32,6 +32,14 @@ LEDGER=ROOT/"docs/paper_pick_ledger.json"
 OUTPUT=ROOT/"data/nba/current/cbs_final_boxscores.json"
 STATUS=ROOT/"docs/cbs_final_boxscores_status.json"
 ROOT_URL="https://www.cbssports.com/nba/gametracker/boxscore/"
+# CBS uses shorter game URL codes than standard NBA tricode identifiers.
+CBS_URL_TEAMS={"NYK":"NY","GSW":"GS","NOP":"NO","SAS":"SA","UTA":"UTAH","PHX":"PHO"}
+
+def cbs_boxscore_url(date,away,home):
+    a=CBS_URL_TEAMS.get(away,away)
+    h=CBS_URL_TEAMS.get(home,home)
+    return ROOT_URL+f"NBA_{date.replace('-','')}_{a}%40{h}/"
+
 
 def keyname(s):
     ascii_name=unicodedata.normalize("NFKD",str(s or "")).casefold()
@@ -138,7 +146,7 @@ def collect(records,now=None,request=fetch_html):
         "matched_player_lines":0,"failures":[]}
     results=[]
     for date,away,home in sorted(pending):
-        url=ROOT_URL+f"NBA_{date.replace('-','')}_{away}%40{home}/"
+        url=cbs_boxscore_url(date,away,home)
         try:
             parsed=parse_final(request(url),date,away,home,records)
             if not parsed:continue
