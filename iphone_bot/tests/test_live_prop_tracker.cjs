@@ -126,3 +126,24 @@ test("ESPN nonstandard team aliases match only their canonical NBA team",()=>{
   {player:"Same Player",team:"GSW",stats:{PTS:7}}
  ],{player:"Same Player",team:"GSW"}),null);
 });
+
+test("all 30 NBA franchise codes and ESPN aliases resolve deterministically",()=>{
+ const teams="ATL BOS BKN CHA CHI CLE DAL DEN DET GSW HOU IND LAC LAL MEM MIA MIL MIN NOP NYK OKC ORL PHI PHX POR SAC SAS TOR UTA WAS".split(" ");
+ for(const code of teams){
+  assert.equal(L.canonicalTeam(code),code);
+  const player={player:"Sample Player",team:code};
+  const row={player:"Sample Player",team:code,stats:{PTS:12,REB:3,AST:4,PRA:19}};
+  assert.deepEqual(L.matchDiagnostics([row],player),{matched:row,reason:null});
+ }
+ for(const [espn,official] of Object.entries({GS:"GSW",NY:"NYK",WSH:"WAS",SA:"SAS",NO:"NOP",UT:"UTA",PHO:"PHX",BRK:"BKN",BK:"BKN"})){
+  assert.equal(L.canonicalTeam(espn),official);
+  assert.equal(L.matchPlayer([{player:"Sample Player",team:espn}],{player:"Sample Player",team:official})?.team,espn);
+ }
+});
+test("live player diagnostics distinguish other-team identity from unavailable player",()=>{
+ const rows=[{player:"Draymond Green",team:"GS",stats:{AST:5}},{player:"Franz Wagner",team:"ORL",stats:{PTS:6}}];
+ assert.equal(L.matchDiagnostics(rows,{player:"Franz Wagner",team:"GSW"}).reason,"TEAM_MISMATCH");
+ assert.equal(L.matchDiagnostics(rows,{player:"Missing Player",team:"GSW"}).reason,"PLAYER_NOT_IN_VERIFIED_BOXSCORE");
+ assert.equal(L.matchDiagnostics([...rows,rows[0]],{player:"Draymond Green",team:"GSW"}).reason,"DUPLICATE_PLAYER");
+ assert.equal(L.matchDiagnostics(rows,{player:"Draymond Green",team:"GSW"}).matched.stats.AST,5);
+});
