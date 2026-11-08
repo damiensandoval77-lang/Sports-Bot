@@ -81,20 +81,33 @@
  // Normalize only known, explicit aliases; never match a player by name
  // across teams, which could silently attach someone else's box score.
  const TEAM_ALIASES=Object.freeze({
-  GS:"GSW",GSW:"GSW",NY:"NYK",NYK:"NYK",WSH:"WAS",WAS:"WAS",
-  SA:"SAS",SAS:"SAS",NO:"NOP",NOP:"NOP",UT:"UTA",UTA:"UTA",
-  PHO:"PHX",PHX:"PHX",BRK:"BKN",BKN:"BKN"
+  ATL:"ATL",BOS:"BOS",BKN:"BKN",BRK:"BKN",BK:"BKN",
+  CHA:"CHA",CHI:"CHI",CLE:"CLE",DAL:"DAL",DEN:"DEN",DET:"DET",
+  GSW:"GSW",GS:"GSW",HOU:"HOU",IND:"IND",LAC:"LAC",LAL:"LAL",
+  MEM:"MEM",MIA:"MIA",MIL:"MIL",MIN:"MIN",NOP:"NOP",NO:"NOP",
+  NYK:"NYK",NY:"NYK",OKC:"OKC",ORL:"ORL",PHI:"PHI",PHX:"PHX",PHO:"PHX",
+  POR:"POR",SAC:"SAC",SAS:"SAS",SA:"SAS",TOR:"TOR",UTA:"UTA",UT:"UTA",
+  WAS:"WAS",WSH:"WAS"
  });
  function canonicalTeam(team){
   const code=String(team||"").trim().toUpperCase();
   return TEAM_ALIASES[code]||code;
  }
+ // A player is never matched across teams. A missing/invalid team or
+ // duplicate name is intentionally unresolved rather than assigned fake stats.
+ function matchDiagnostics(rows,forecast){
+  const team=canonicalTeam(forecast?.team);
+  if(!team||!forecast?.player)return {matched:null,reason:"INVALID_FORECAST_IDENTITY"};
+  const sameName=(Array.isArray(rows)?rows:[]).filter(r=>
+    normalize(r.player)===normalize(forecast.player));
+  const hits=sameName.filter(r=>canonicalTeam(r.team)===team);
+  if(hits.length===1)return {matched:hits[0],reason:null};
+  if(hits.length>1)return {matched:null,reason:"DUPLICATE_PLAYER"};
+  if(sameName.length)return {matched:null,reason:"TEAM_MISMATCH"};
+  return {matched:null,reason:"PLAYER_NOT_IN_VERIFIED_BOXSCORE"};
+ }
  function matchPlayer(rows,forecast){
-  const team=canonicalTeam(forecast.team);
-  if(!team||!forecast.player)return null;
-  const hits=rows.filter(r=>canonicalTeam(r.team)===team&&
-     normalize(r.player)===normalize(forecast.player));
-  return hits.length===1?hits[0]:null;
+  return matchDiagnostics(rows,forecast).matched;
  }
  function isFrozenForecast(row){
   const created=Date.parse(row?.board_generated_at);
@@ -186,5 +199,5 @@
   return [...dedup.values()];
  }
  return {numeric,normalize,matchup,identifyGame,gameStatus,summaryGameMatch,
-         athleteRows,canonicalTeam,matchPlayer,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows};
+         athleteRows,canonicalTeam,matchPlayer,matchDiagnostics,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows};
 });
