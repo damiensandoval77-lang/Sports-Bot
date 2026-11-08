@@ -1,0 +1,53 @@
+name: Audit saved NBA games, predictions, quotes and research evidence
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/ai_pregame_archive.json'
+      - 'docs/paper_pick_ledger.json'
+      - 'docs/projection_upgrade_status.json'
+      - 'docs/research_live/**'
+      - 'docs/research_history/**'
+      - 'iphone_bot/research_storage_integrity.py'
+      - 'iphone_bot/tests/test_durable_research_storage.py'
+      - '.github/workflows/nba-research-storage-integrity.yml'
+  schedule:
+    - cron: '17 3,12 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-research-integrity
+  cancel-in-progress: false
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify paper capture, original pretip archives and real live data integrity
+        run: |
+          python -m py_compile iphone_bot/research_storage_integrity.py iphone_bot/research_archive_persistence.py iphone_bot/capture_live_research.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
+      - name: Compare real sportsbook paper ledger and exact archived offers
+        run: python -u iphone_bot/research_storage_integrity.py
+      - name: Publish no-cost evidence coverage report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/research_storage_integrity.json
+          if git diff --cached --quiet; then echo 'Audit unchanged'; exit 0; fi
+          git commit -m 'Report NBA research persistence, saved quotes and missing evidence'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
