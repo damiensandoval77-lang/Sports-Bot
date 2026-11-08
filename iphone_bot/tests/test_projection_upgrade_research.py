@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_sanity_shadow,stress_research_report,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_opponent_v2,grade_sanity_shadow,stress_research_report,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -324,6 +324,43 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(r["capture_coverage"]["captured_candidate_markets"],4)
         self.assertEqual(set(r["pending_by_market"].values()),{1})
         self.assertTrue(r["same_line_required_for_direction_scoring"])
+
+    def test_opponent_v2_freezes_all_market_context_and_scores_exact_lines(self):
+        logs=[]
+        for d in range(1,19):
+            day=f"2026-10-{d:02d}"
+            for team,other,pts in (("BOS","NYK",14),("NYK","BOS",12)):
+                for i in range(8):
+                    logs.append({"id":str(i)+"-"+team,"date":day,"team":team,
+                        "opponent":other,"PTS":pts,"REB":5,"AST":3,"MIN":27,
+                        "FGA":10,"FTA":3,"OREB":2,"TOV":2})
+        b=board()
+        b["comparisons"]=[]
+        for i,m in enumerate(("PTS","REB","AST","PRA")):
+            example=board()["comparisons"][0]
+            example.update(player_id=str(i+1),stat=m)
+            b["comparisons"].append(example)
+        original=b["comparisons"][0]["combined_projection"]
+        pre,counts=snapshot(b,injury(),[],NOW,logs)
+        self.assertEqual(counts["opponent_v2_shadow_locked"],4)
+        self.assertEqual(len(pre),4)
+        self.assertEqual(b["comparisons"][0]["combined_projection"],original)
+        for x in pre:
+            self.assertEqual(x["opponent_v2_context"]["status"],
+                "PACE_EFFICIENCY_PAST_ONLY")
+            self.assertFalse(x["opponent_v2_context"]["individual_defender_impact_applied"])
+        finals=[]
+        for x in pre:
+            finals.append({"status":"SETTLED","event_start":START,
+                "captured_at":NOW,"player_id":x["player_id"],
+                "market":x["market"],"original_projection":21.,
+                "line":20.5 if x["market"]!="REB" else 21.5,"actual":23.})
+        report=grade_opponent_v2(pre,finals)
+        self.assertEqual(report["overall"]["paired_markets"],4)
+        self.assertEqual(report["overall"]["exact_line_direction_eligible"],3)
+        self.assertEqual(report["by_market"]["REB"]["exact_line_direction_eligible"],0)
+        self.assertFalse(report["eligible_for_production"])
+        self.assertEqual(grade_opponent_v2(pre,[])["overall"]["paired_markets"],0)
 
     def test_shadow_only_scores_actual_immutable_capture(self):
         rows,_=snapshot(board(),injury(),[],NOW)
