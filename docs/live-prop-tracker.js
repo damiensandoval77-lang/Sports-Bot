@@ -102,7 +102,14 @@
     normalize(r.player)===normalize(forecast.player));
   const hits=sameName.filter(r=>canonicalTeam(r.team)===team);
   if(hits.length===1)return {matched:hits[0],reason:null};
-  if(hits.length>1)return {matched:null,reason:"DUPLICATE_PLAYER"};
+  // If ESPN duplicates the display name, a shared verified athlete ID
+  // can disambiguate; never use a provider ID to override a team mismatch.
+  if(hits.length>1){
+   const id=String(forecast.player_id||"").trim();
+   const byId=id?hits.filter(r=>String(r.athlete_id||"")===id):[];
+   if(byId.length===1)return {matched:byId[0],reason:null};
+   return {matched:null,reason:"DUPLICATE_PLAYER"};
+  }
   if(sameName.length)return {matched:null,reason:"TEAM_MISMATCH"};
   return {matched:null,reason:"PLAYER_NOT_IN_VERIFIED_BOXSCORE"};
  }
