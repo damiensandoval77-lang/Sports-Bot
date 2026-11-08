@@ -1,311 +1,192 @@
 {
   "status": "DESCRIPTIVE_UNDERPROJECTION_ROOT_CAUSE_RESEARCH_ONLY",
   "method": "EARLIEST_SETTLED_PRETIP_BOOK_QUOTE; FROZEN_FORECAST_TIER_AND_SEASON_CONTEXT",
-  "independent_markets": 309,
-  "distinct_event_dates": 1,
+  "independent_markets": 404,
+  "distinct_event_dates": 2,
   "overall": {
-    "observations": 309,
-    "distinct_event_dates": 1,
-    "mean_signed_error_projection_minus_actual": 0.932,
-    "mae": 4.02,
-    "underprojection_count": 127,
-    "overprojection_count": 180,
-    "underprojection_share": 0.411,
+    "observations": 404,
+    "distinct_event_dates": 2,
+    "mean_signed_error_projection_minus_actual": 0.753,
+    "mae": 4.028,
+    "underprojection_count": 174,
+    "overprojection_count": 227,
+    "underprojection_share": 0.4307,
     "sufficient_longitudinal_sample": false
   },
   "by_market": {
     "PTS": {
       "all": {
-        "observations": 85,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 1.288,
-        "mae": 5.168,
-        "underprojection_count": 37,
-        "overprojection_count": 48,
-        "underprojection_share": 0.4353,
+        "observations": 111,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.104,
+        "mae": 5.219,
+        "underprojection_count": 51,
+        "overprojection_count": 60,
+        "underprojection_share": 0.4595,
         "sufficient_longitudinal_sample": false
       },
       "high_forecast_tier": {
-        "observations": 4,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 9.675,
-        "mae": 9.675,
-        "underprojection_count": 0,
-        "overprojection_count": 4,
-        "underprojection_share": 0.0,
+        "observations": 6,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 7.583,
+        "mae": 7.783,
+        "underprojection_count": 1,
+        "overprojection_count": 5,
+        "underprojection_share": 0.1667,
         "sufficient_longitudinal_sample": false
       },
       "high_frozen_season_baseline_tier": {
-        "observations": 1,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 3.9,
-        "mae": 3.9,
-        "underprojection_count": 0,
-        "overprojection_count": 1,
-        "underprojection_share": 0.0,
-        "sufficient_longitudinal_sample": false
-      },
-      "high_baseline_and_projection_20pct_below": {
-        "observations": 1,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 3.9,
-        "mae": 3.9,
-        "underprojection_count": 0,
-        "overprojection_count": 1,
-        "underprojection_share": 0.0,
-        "sufficient_longitudinal_sample": false
-      },
-      "other_forecast_tier": {
-        "observations": 81,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 0.873,
-        "mae": 4.945,
-        "underprojection_count": 37,
-        "overprojection_count": 44,
-        "underprojection_share": 0.4568,
-        "sufficient_longitudinal_sample": false
-      },
-      "pregame_forecast_20pct_below_frozen_season_avg": {
-        "observations": 1,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 3.9,
-        "mae": 3.9,
-        "underprojection_count": 0,
-        "overprojection_count": 1,
-        "underprojection_share": 0.0,
-        "sufficient_longitudinal_sample": false
-      },
-      "pregame_forecast_20pct_above_frozen_season_avg": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
-        "sufficient_longitudinal_sample": false
-      },
-      "high_tier_threshold": 25.0,
-      "frozen_minutes_review_flagged": {
-        "observations": 10,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 4.06,
-        "mae": 4.06,
-        "underprojection_count": 0,
-        "overprojection_count": 10,
-        "underprojection_share": 0.0,
-        "sufficient_longitudinal_sample": false
-      },
-      "frozen_minutes_no_review_flags": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
-        "sufficient_longitudinal_sample": false
-      },
-      "opponent_model_1plus_below_original": {
-        "observations": 5,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": -1.36,
-        "mae": 6.4,
-        "underprojection_count": 3,
-        "overprojection_count": 2,
-        "underprojection_share": 0.6,
-        "sufficient_longitudinal_sample": false
-      },
-      "opponent_model_1plus_above_original": {
         "observations": 2,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 10.0,
-        "mae": 10.0,
-        "underprojection_count": 0,
-        "overprojection_count": 2,
-        "underprojection_share": 0.0,
-        "sufficient_longitudinal_sample": false
-      },
-      "opponent_vs_original": {
-        "observations": 85,
-        "mean_opponent_minus_original": 0.009,
-        "original_bias": 1.279,
-        "opponent_bias": 1.288
-      }
-    },
-    "REB": {
-      "all": {
-        "observations": 81,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 0.252,
-        "mae": 1.998,
-        "underprojection_count": 31,
-        "overprojection_count": 48,
-        "underprojection_share": 0.3827,
-        "sufficient_longitudinal_sample": false
-      },
-      "high_forecast_tier": {
-        "observations": 2,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": -1.9,
-        "mae": 1.9,
-        "underprojection_count": 2,
-        "overprojection_count": 0,
-        "underprojection_share": 1.0,
-        "sufficient_longitudinal_sample": false
-      },
-      "high_frozen_season_baseline_tier": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
-        "sufficient_longitudinal_sample": false
-      },
-      "high_baseline_and_projection_20pct_below": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
-        "sufficient_longitudinal_sample": false
-      },
-      "other_forecast_tier": {
-        "observations": 79,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 0.307,
-        "mae": 2.001,
-        "underprojection_count": 29,
-        "overprojection_count": 48,
-        "underprojection_share": 0.3671,
-        "sufficient_longitudinal_sample": false
-      },
-      "pregame_forecast_20pct_below_frozen_season_avg": {
-        "observations": 1,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": -2.0,
-        "mae": 2.0,
-        "underprojection_count": 1,
-        "overprojection_count": 0,
-        "underprojection_share": 1.0,
-        "sufficient_longitudinal_sample": false
-      },
-      "pregame_forecast_20pct_above_frozen_season_avg": {
-        "observations": 4,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 1.1,
-        "mae": 2.05,
-        "underprojection_count": 1,
-        "overprojection_count": 3,
-        "underprojection_share": 0.25,
-        "sufficient_longitudinal_sample": false
-      },
-      "high_tier_threshold": 10.0,
-      "frozen_minutes_review_flagged": {
-        "observations": 10,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 0.49,
-        "mae": 2.23,
-        "underprojection_count": 3,
-        "overprojection_count": 7,
-        "underprojection_share": 0.3,
-        "sufficient_longitudinal_sample": false
-      },
-      "frozen_minutes_no_review_flags": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
-        "sufficient_longitudinal_sample": false
-      },
-      "opponent_model_1plus_below_original": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
-        "sufficient_longitudinal_sample": false
-      },
-      "opponent_model_1plus_above_original": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
-        "sufficient_longitudinal_sample": false
-      },
-      "opponent_vs_original": {
-        "observations": 81,
-        "mean_opponent_minus_original": 0.057,
-        "original_bias": 0.225,
-        "opponent_bias": 0.281
-      }
-    },
-    "AST": {
-      "all": {
-        "observations": 69,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 0.275,
-        "mae": 1.765,
-        "underprojection_count": 25,
-        "overprojection_count": 44,
-        "underprojection_share": 0.3623,
-        "sufficient_longitudinal_sample": false
-      },
-      "high_forecast_tier": {
-        "observations": 2,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 0.0,
-        "mae": 0.1,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.65,
+        "mae": 2.25,
         "underprojection_count": 1,
         "overprojection_count": 1,
         "underprojection_share": 0.5,
         "sufficient_longitudinal_sample": false
       },
-      "high_frozen_season_baseline_tier": {
-        "observations": 1,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": -1.3,
-        "mae": 1.3,
-        "underprojection_count": 1,
-        "overprojection_count": 0,
-        "underprojection_share": 1.0,
-        "sufficient_longitudinal_sample": false
-      },
       "high_baseline_and_projection_20pct_below": {
         "observations": 1,
         "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": -1.3,
-        "mae": 1.3,
-        "underprojection_count": 1,
-        "overprojection_count": 0,
-        "underprojection_share": 1.0,
+        "mean_signed_error_projection_minus_actual": 3.9,
+        "mae": 3.9,
+        "underprojection_count": 0,
+        "overprojection_count": 1,
+        "underprojection_share": 0.0,
         "sufficient_longitudinal_sample": false
       },
       "other_forecast_tier": {
-        "observations": 67,
+        "observations": 105,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 0.734,
+        "mae": 5.073,
+        "underprojection_count": 50,
+        "overprojection_count": 55,
+        "underprojection_share": 0.4762,
+        "sufficient_longitudinal_sample": false
+      },
+      "pregame_forecast_20pct_below_frozen_season_avg": {
+        "observations": 1,
         "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 0.284,
-        "mae": 1.815,
-        "underprojection_count": 24,
-        "overprojection_count": 43,
-        "underprojection_share": 0.3582,
+        "mean_signed_error_projection_minus_actual": 3.9,
+        "mae": 3.9,
+        "underprojection_count": 0,
+        "overprojection_count": 1,
+        "underprojection_share": 0.0,
+        "sufficient_longitudinal_sample": false
+      },
+      "pregame_forecast_20pct_above_frozen_season_avg": {
+        "observations": 3,
+        "distinct_event_dates": 1,
+        "mean_signed_error_projection_minus_actual": 2.7,
+        "mae": 4.7,
+        "underprojection_count": 1,
+        "overprojection_count": 2,
+        "underprojection_share": 0.3333,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_tier_threshold": 25.0,
+      "frozen_minutes_review_flagged": {
+        "observations": 36,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.492,
+        "mae": 5.019,
+        "underprojection_count": 14,
+        "overprojection_count": 22,
+        "underprojection_share": 0.3889,
+        "sufficient_longitudinal_sample": false
+      },
+      "frozen_minutes_no_review_flags": {
+        "observations": 0,
+        "distinct_event_dates": 0,
+        "mean_signed_error_projection_minus_actual": null,
+        "mae": null,
+        "underprojection_count": 0,
+        "overprojection_count": 0,
+        "underprojection_share": null,
+        "sufficient_longitudinal_sample": false
+      },
+      "opponent_model_1plus_below_original": {
+        "observations": 7,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 0.886,
+        "mae": 7.286,
+        "underprojection_count": 4,
+        "overprojection_count": 3,
+        "underprojection_share": 0.5714,
+        "sufficient_longitudinal_sample": false
+      },
+      "opponent_model_1plus_above_original": {
+        "observations": 6,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 2.167,
+        "mae": 6.967,
+        "underprojection_count": 3,
+        "overprojection_count": 3,
+        "underprojection_share": 0.5,
+        "sufficient_longitudinal_sample": false
+      },
+      "opponent_vs_original": {
+        "observations": 111,
+        "mean_opponent_minus_original": 0.046,
+        "original_bias": 1.081,
+        "opponent_bias": 1.127
+      }
+    },
+    "REB": {
+      "all": {
+        "observations": 106,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 0.122,
+        "mae": 2.06,
+        "underprojection_count": 42,
+        "overprojection_count": 62,
+        "underprojection_share": 0.3962,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_forecast_tier": {
+        "observations": 3,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": -0.1,
+        "mae": 2.433,
+        "underprojection_count": 2,
+        "overprojection_count": 1,
+        "underprojection_share": 0.6667,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_frozen_season_baseline_tier": {
+        "observations": 0,
+        "distinct_event_dates": 0,
+        "mean_signed_error_projection_minus_actual": null,
+        "mae": null,
+        "underprojection_count": 0,
+        "overprojection_count": 0,
+        "underprojection_share": null,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_baseline_and_projection_20pct_below": {
+        "observations": 0,
+        "distinct_event_dates": 0,
+        "mean_signed_error_projection_minus_actual": null,
+        "mae": null,
+        "underprojection_count": 0,
+        "overprojection_count": 0,
+        "underprojection_share": null,
+        "sufficient_longitudinal_sample": false
+      },
+      "other_forecast_tier": {
+        "observations": 103,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 0.129,
+        "mae": 2.049,
+        "underprojection_count": 40,
+        "overprojection_count": 61,
+        "underprojection_share": 0.3883,
         "sufficient_longitudinal_sample": false
       },
       "pregame_forecast_20pct_below_frozen_season_avg": {
         "observations": 2,
-        "distinct_event_dates": 1,
+        "distinct_event_dates": 2,
         "mean_signed_error_projection_minus_actual": -1.7,
         "mae": 1.7,
         "underprojection_count": 2,
@@ -314,24 +195,24 @@
         "sufficient_longitudinal_sample": false
       },
       "pregame_forecast_20pct_above_frozen_season_avg": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
+        "observations": 7,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.6,
+        "mae": 2.143,
+        "underprojection_count": 1,
+        "overprojection_count": 6,
+        "underprojection_share": 0.1429,
         "sufficient_longitudinal_sample": false
       },
-      "high_tier_threshold": 8.0,
+      "high_tier_threshold": 10.0,
       "frozen_minutes_review_flagged": {
-        "observations": 8,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": -0.688,
-        "mae": 1.688,
-        "underprojection_count": 5,
-        "overprojection_count": 3,
-        "underprojection_share": 0.625,
+        "observations": 35,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": -0.074,
+        "mae": 2.251,
+        "underprojection_count": 14,
+        "overprojection_count": 21,
+        "underprojection_share": 0.4,
         "sufficient_longitudinal_sample": false
       },
       "frozen_minutes_no_review_flags": {
@@ -365,21 +246,140 @@
         "sufficient_longitudinal_sample": false
       },
       "opponent_vs_original": {
-        "observations": 69,
-        "mean_opponent_minus_original": -0.014,
-        "original_bias": 0.288,
-        "opponent_bias": 0.274
+        "observations": 106,
+        "mean_opponent_minus_original": 0.052,
+        "original_bias": 0.097,
+        "opponent_bias": 0.149
+      }
+    },
+    "AST": {
+      "all": {
+        "observations": 91,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 0.175,
+        "mae": 1.863,
+        "underprojection_count": 35,
+        "overprojection_count": 55,
+        "underprojection_share": 0.3846,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_forecast_tier": {
+        "observations": 3,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 2.267,
+        "mae": 2.333,
+        "underprojection_count": 1,
+        "overprojection_count": 2,
+        "underprojection_share": 0.3333,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_frozen_season_baseline_tier": {
+        "observations": 2,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 2.75,
+        "mae": 4.05,
+        "underprojection_count": 1,
+        "overprojection_count": 1,
+        "underprojection_share": 0.5,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_baseline_and_projection_20pct_below": {
+        "observations": 1,
+        "distinct_event_dates": 1,
+        "mean_signed_error_projection_minus_actual": -1.3,
+        "mae": 1.3,
+        "underprojection_count": 1,
+        "overprojection_count": 0,
+        "underprojection_share": 1.0,
+        "sufficient_longitudinal_sample": false
+      },
+      "other_forecast_tier": {
+        "observations": 88,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 0.103,
+        "mae": 1.847,
+        "underprojection_count": 34,
+        "overprojection_count": 53,
+        "underprojection_share": 0.3864,
+        "sufficient_longitudinal_sample": false
+      },
+      "pregame_forecast_20pct_below_frozen_season_avg": {
+        "observations": 4,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": -0.875,
+        "mae": 1.075,
+        "underprojection_count": 3,
+        "overprojection_count": 1,
+        "underprojection_share": 0.75,
+        "sufficient_longitudinal_sample": false
+      },
+      "pregame_forecast_20pct_above_frozen_season_avg": {
+        "observations": 3,
+        "distinct_event_dates": 1,
+        "mean_signed_error_projection_minus_actual": 1.367,
+        "mae": 1.967,
+        "underprojection_count": 1,
+        "overprojection_count": 2,
+        "underprojection_share": 0.3333,
+        "sufficient_longitudinal_sample": false
+      },
+      "high_tier_threshold": 8.0,
+      "frozen_minutes_review_flagged": {
+        "observations": 30,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": -0.287,
+        "mae": 2.04,
+        "underprojection_count": 15,
+        "overprojection_count": 14,
+        "underprojection_share": 0.5,
+        "sufficient_longitudinal_sample": false
+      },
+      "frozen_minutes_no_review_flags": {
+        "observations": 0,
+        "distinct_event_dates": 0,
+        "mean_signed_error_projection_minus_actual": null,
+        "mae": null,
+        "underprojection_count": 0,
+        "overprojection_count": 0,
+        "underprojection_share": null,
+        "sufficient_longitudinal_sample": false
+      },
+      "opponent_model_1plus_below_original": {
+        "observations": 0,
+        "distinct_event_dates": 0,
+        "mean_signed_error_projection_minus_actual": null,
+        "mae": null,
+        "underprojection_count": 0,
+        "overprojection_count": 0,
+        "underprojection_share": null,
+        "sufficient_longitudinal_sample": false
+      },
+      "opponent_model_1plus_above_original": {
+        "observations": 0,
+        "distinct_event_dates": 0,
+        "mean_signed_error_projection_minus_actual": null,
+        "mae": null,
+        "underprojection_count": 0,
+        "overprojection_count": 0,
+        "underprojection_share": null,
+        "sufficient_longitudinal_sample": false
+      },
+      "opponent_vs_original": {
+        "observations": 91,
+        "mean_opponent_minus_original": -0.036,
+        "original_bias": 0.198,
+        "opponent_bias": 0.162
       }
     },
     "PRA": {
       "all": {
-        "observations": 74,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 1.879,
-        "mae": 7.018,
-        "underprojection_count": 34,
-        "overprojection_count": 40,
-        "underprojection_share": 0.4595,
+        "observations": 96,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.593,
+        "mae": 6.878,
+        "underprojection_count": 46,
+        "overprojection_count": 50,
+        "underprojection_share": 0.4792,
         "sufficient_longitudinal_sample": false
       },
       "high_forecast_tier": {
@@ -413,13 +413,13 @@
         "sufficient_longitudinal_sample": false
       },
       "other_forecast_tier": {
-        "observations": 73,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 1.874,
-        "mae": 7.084,
-        "underprojection_count": 34,
-        "overprojection_count": 39,
-        "underprojection_share": 0.4658,
+        "observations": 95,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.586,
+        "mae": 6.926,
+        "underprojection_count": 46,
+        "overprojection_count": 49,
+        "underprojection_share": 0.4842,
         "sufficient_longitudinal_sample": false
       },
       "pregame_forecast_20pct_below_frozen_season_avg": {
@@ -433,24 +433,24 @@
         "sufficient_longitudinal_sample": false
       },
       "pregame_forecast_20pct_above_frozen_season_avg": {
-        "observations": 0,
-        "distinct_event_dates": 0,
-        "mean_signed_error_projection_minus_actual": null,
-        "mae": null,
-        "underprojection_count": 0,
-        "overprojection_count": 0,
-        "underprojection_share": null,
+        "observations": 2,
+        "distinct_event_dates": 1,
+        "mean_signed_error_projection_minus_actual": 1.15,
+        "mae": 5.55,
+        "underprojection_count": 1,
+        "overprojection_count": 1,
+        "underprojection_share": 0.5,
         "sufficient_longitudinal_sample": false
       },
       "high_tier_threshold": 40.0,
       "frozen_minutes_review_flagged": {
-        "observations": 8,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 3.612,
-        "mae": 5.713,
-        "underprojection_count": 3,
-        "overprojection_count": 5,
-        "underprojection_share": 0.375,
+        "observations": 30,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.427,
+        "mae": 6.22,
+        "underprojection_count": 15,
+        "overprojection_count": 15,
+        "underprojection_share": 0.5,
         "sufficient_longitudinal_sample": false
       },
       "frozen_minutes_no_review_flags": {
@@ -464,30 +464,30 @@
         "sufficient_longitudinal_sample": false
       },
       "opponent_model_1plus_below_original": {
-        "observations": 4,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 5.787,
-        "mae": 5.812,
-        "underprojection_count": 1,
-        "overprojection_count": 3,
-        "underprojection_share": 0.25,
+        "observations": 7,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 2.164,
+        "mae": 4.921,
+        "underprojection_count": 3,
+        "overprojection_count": 4,
+        "underprojection_share": 0.4286,
         "sufficient_longitudinal_sample": false
       },
       "opponent_model_1plus_above_original": {
-        "observations": 12,
-        "distinct_event_dates": 1,
-        "mean_signed_error_projection_minus_actual": 2.021,
-        "mae": 5.938,
-        "underprojection_count": 7,
-        "overprojection_count": 5,
-        "underprojection_share": 0.5833,
+        "observations": 16,
+        "distinct_event_dates": 2,
+        "mean_signed_error_projection_minus_actual": 1.284,
+        "mae": 5.522,
+        "underprojection_count": 10,
+        "overprojection_count": 6,
+        "underprojection_share": 0.625,
         "sufficient_longitudinal_sample": false
       },
       "opponent_vs_original": {
-        "observations": 74,
-        "mean_opponent_minus_original": 0.12,
-        "original_bias": 1.822,
-        "opponent_bias": 1.942
+        "observations": 96,
+        "mean_opponent_minus_original": 0.101,
+        "original_bias": 1.545,
+        "opponent_bias": 1.646
       }
     }
   },
@@ -538,6 +538,17 @@
         "pregame_vs_season_gap_pct": null
       },
       {
+        "player": "Jalen Johnson",
+        "player_id": "1630552",
+        "game": "Brooklyn Nets @ Atlanta Hawks",
+        "date": "2026-11-08",
+        "combined_projection": 18.5,
+        "actual": 30.0,
+        "projection_minus_actual": -11.5,
+        "opponent_minus_original": -0.3,
+        "pregame_vs_season_gap_pct": 1.17
+      },
+      {
         "player": "Onyeka Okongwu",
         "player_id": "1630168",
         "game": "Washington Wizards @ Atlanta Hawks",
@@ -549,6 +560,17 @@
         "pregame_vs_season_gap_pct": null
       },
       {
+        "player": "Aday Mara",
+        "player_id": "1643530",
+        "game": "Washington Wizards @ Oklahoma City Thunder",
+        "date": "2026-11-08",
+        "combined_projection": 8.2,
+        "actual": 18.0,
+        "projection_minus_actual": -9.8,
+        "opponent_minus_original": -0.1,
+        "pregame_vs_season_gap_pct": 17.14
+      },
+      {
         "player": "Darryn Peterson",
         "player_id": "1643408",
         "game": "Utah Jazz @ Dallas Mavericks",
@@ -558,31 +580,31 @@
         "projection_minus_actual": -8.25,
         "opponent_minus_original": 0.5,
         "pregame_vs_season_gap_pct": null
-      },
-      {
-        "player": "Devin Vassell",
-        "player_id": "1630170",
-        "game": "San Antonio Spurs @ Sacramento Kings",
-        "date": "2026-11-07",
-        "combined_projection": 10.9,
-        "actual": 19.0,
-        "projection_minus_actual": -8.1,
-        "opponent_minus_original": 0.2,
-        "pregame_vs_season_gap_pct": null
-      },
-      {
-        "player": "Victor Wembanyama",
-        "player_id": "1641705",
-        "game": "San Antonio Spurs @ Sacramento Kings",
-        "date": "2026-11-07",
-        "combined_projection": 22.7,
-        "actual": 30.0,
-        "projection_minus_actual": -7.3,
-        "opponent_minus_original": 0.2,
-        "pregame_vs_season_gap_pct": null
       }
     ],
     "REB": [
+      {
+        "player": "Alex Sarr",
+        "player_id": "1642259",
+        "game": "Washington Wizards @ Oklahoma City Thunder",
+        "date": "2026-11-08",
+        "combined_projection": 7.2,
+        "actual": 14.0,
+        "projection_minus_actual": -6.8,
+        "opponent_minus_original": 0.2,
+        "pregame_vs_season_gap_pct": 15.2
+      },
+      {
+        "player": "Isaiah Hartenstein",
+        "player_id": "1628392",
+        "game": "Washington Wizards @ Oklahoma City Thunder",
+        "date": "2026-11-08",
+        "combined_projection": 8.2,
+        "actual": 14.0,
+        "projection_minus_actual": -5.8,
+        "opponent_minus_original": 0.0,
+        "pregame_vs_season_gap_pct": -15.18
+      },
       {
         "player": "Deandre Ayton",
         "player_id": "1629028",
@@ -648,31 +670,20 @@
         "projection_minus_actual": -4.15,
         "opponent_minus_original": -0.1,
         "pregame_vs_season_gap_pct": null
-      },
-      {
-        "player": "Julian Champagnie",
-        "player_id": "1630577",
-        "game": "San Antonio Spurs @ Sacramento Kings",
-        "date": "2026-11-07",
-        "combined_projection": 3.5,
-        "actual": 7.0,
-        "projection_minus_actual": -3.5,
-        "opponent_minus_original": 0.0,
-        "pregame_vs_season_gap_pct": null
-      },
-      {
-        "player": "Toumani Camara",
-        "player_id": "1641739",
-        "game": "Portland Trail Blazers @ Los Angeles Lakers",
-        "date": "2026-11-07",
-        "combined_projection": 2.7,
-        "actual": 6.0,
-        "projection_minus_actual": -3.3,
-        "opponent_minus_original": 0.0,
-        "pregame_vs_season_gap_pct": null
       }
     ],
     "AST": [
+      {
+        "player": "Day'Ron Sharpe",
+        "player_id": "1630549",
+        "game": "Brooklyn Nets @ Atlanta Hawks",
+        "date": "2026-11-08",
+        "combined_projection": 2.9,
+        "actual": 13.0,
+        "projection_minus_actual": -10.1,
+        "opponent_minus_original": -0.2,
+        "pregame_vs_season_gap_pct": 10.48
+      },
       {
         "player": "Dyson Daniels",
         "player_id": "1630700",
@@ -683,6 +694,17 @@
         "projection_minus_actual": -7.9,
         "opponent_minus_original": -0.2,
         "pregame_vs_season_gap_pct": null
+      },
+      {
+        "player": "Shai Gilgeous-Alexander",
+        "player_id": "1628983",
+        "game": "Washington Wizards @ Oklahoma City Thunder",
+        "date": "2026-11-08",
+        "combined_projection": 4.8,
+        "actual": 9.0,
+        "projection_minus_actual": -4.2,
+        "opponent_minus_original": 0.1,
+        "pregame_vs_season_gap_pct": 8.01
       },
       {
         "player": "Keyonte George",
@@ -738,28 +760,6 @@
         "projection_minus_actual": -2.8,
         "opponent_minus_original": 0.0,
         "pregame_vs_season_gap_pct": null
-      },
-      {
-        "player": "DeMar DeRozan",
-        "player_id": "201942",
-        "game": "Denver Nuggets @ Indiana Pacers",
-        "date": "2026-11-07",
-        "combined_projection": 2.2,
-        "actual": 5.0,
-        "projection_minus_actual": -2.8,
-        "opponent_minus_original": -0.3,
-        "pregame_vs_season_gap_pct": -17.51
-      },
-      {
-        "player": "Luguentz Dort",
-        "player_id": "1629652",
-        "game": "Washington Wizards @ Atlanta Hawks",
-        "date": "2026-11-07",
-        "combined_projection": 1.4,
-        "actual": 4.0,
-        "projection_minus_actual": -2.6,
-        "opponent_minus_original": -0.1,
-        "pregame_vs_season_gap_pct": null
       }
     ],
     "PRA": [
@@ -797,6 +797,28 @@
         "pregame_vs_season_gap_pct": null
       },
       {
+        "player": "Day'Ron Sharpe",
+        "player_id": "1630549",
+        "game": "Brooklyn Nets @ Atlanta Hawks",
+        "date": "2026-11-08",
+        "combined_projection": 18.6,
+        "actual": 35.0,
+        "projection_minus_actual": -16.4,
+        "opponent_minus_original": -0.2,
+        "pregame_vs_season_gap_pct": 10.22
+      },
+      {
+        "player": "Alex Sarr",
+        "player_id": "1642259",
+        "game": "Washington Wizards @ Oklahoma City Thunder",
+        "date": "2026-11-08",
+        "combined_projection": 18.8,
+        "actual": 30.0,
+        "projection_minus_actual": -11.2,
+        "opponent_minus_original": 0.5,
+        "pregame_vs_season_gap_pct": 2.31
+      },
+      {
         "player": "Dyson Daniels",
         "player_id": "1630700",
         "game": "Washington Wizards @ Atlanta Hawks",
@@ -828,28 +850,6 @@
         "projection_minus_actual": -9.1,
         "opponent_minus_original": -0.5,
         "pregame_vs_season_gap_pct": null
-      },
-      {
-        "player": "Victor Wembanyama",
-        "player_id": "1641705",
-        "game": "San Antonio Spurs @ Sacramento Kings",
-        "date": "2026-11-07",
-        "combined_projection": 37.6,
-        "actual": 46.0,
-        "projection_minus_actual": -8.4,
-        "opponent_minus_original": -0.4,
-        "pregame_vs_season_gap_pct": null
-      },
-      {
-        "player": "Peyton Watson",
-        "player_id": "1631212",
-        "game": "Philadelphia 76ers @ Cleveland Cavaliers",
-        "date": "2026-11-07",
-        "combined_projection": 16.1,
-        "actual": 24.0,
-        "projection_minus_actual": -7.9,
-        "opponent_minus_original": 1.6,
-        "pregame_vs_season_gap_pct": null
       }
     ]
   },
@@ -874,5 +874,5 @@
     "Historical settlement feeds and player/team identity must be independently validated before acting on anomalous games.",
     "No changes to live pick selection, confidence values, projection formulas or model training."
   ],
-  "generated_at": "2026-11-08T02:37:51.947531+00:00"
+  "generated_at": "2026-11-08T03:38:50.660094+00:00"
 }
