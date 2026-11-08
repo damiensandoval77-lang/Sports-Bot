@@ -26,6 +26,7 @@ from minutes_model_v2 import forecast as minutes_v2_forecast,backtest as minutes
 from minutes_early_season_research import forecast as early_minutes_forecast,backtest as early_minutes_backtest
 from shot_profile_research import predict_attempts as shot_attempt_profile
 from season_average_research import season_candidate
+from injury_projection_adjustment import teammate_minutes_ratio,opponent_defense_ratio,reproject
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
@@ -305,6 +306,33 @@ def main():
         combined=combine_projections(projection,
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
         row["combined_projection"]=round(combined["projection"],1)
+        row["preinjury_original_projection"]=round(projection,1)
+        row["preinjury_combined_projection"]=round(combined["projection"],1)
+        row["injury_reprojection_status"]="NO_OFFICIAL_OUT_IN_MATCHUP"
+        if row["injury_context_requires_reprojection"]:
+            team_factor=teammate_minutes_ratio(
+                row["injury_minutes_research"],len(row["official_out_teammates"]))
+            defensive_factor=opponent_defense_ratio(
+                defense_cache[upcoming_date],opponent,
+                [p["player_id"] for p in row["official_out_opponents"]],
+                all_games,upcoming_date,target)
+            update=reproject(projection,
+                row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None,
+                team_factor,defensive_factor)
+            if update is None:
+                row["injury_reprojection_status"]="INSUFFICIENT_VERIFIED_PRIOR_ON_OFF_EVIDENCE"
+            else:
+                projection=update["original"]
+                row["projection"]=round(projection,1)
+                if update["opponent"] is not None:
+                    row["shadow_projection"]=round(update["opponent"],1)
+                    row["shadow_difference"]=round(update["opponent"]-row["line"],1)
+                combined=combine_projections(projection,update["opponent"])
+                row["combined_projection"]=round(combined["projection"],1)
+                row["injury_reprojection_status"]="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"
+                row["injury_reprojection_factor"]=update["factor"]
+                row["injury_scenario_applied_to_combined"]=True
+                row["lineup_research_adjustment_applied"]=True
         # Bounded conditional estimate, only when a GAME-DATE official OUT
         # report and strictly past teammate minute split both exist. Keep the
         # original model/pick frozen for honest historical grading.
@@ -321,11 +349,9 @@ def main():
             row["injury_scenario_source"]="OFFICIAL_GAME_DAY_OUT_PLUS_PRIOR_NONCAUSAL_MINUTES"
         if row["injury_context_requires_reprojection"]:
             row["injury_projection_warning"]=(
-                "BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_OUT_OPPONENT_AND_TEAMMATES"
-                if row["official_out_opponents"] and row["official_out_teammates"] else
-                "BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_OUT_OPPONENT"
-                if row["official_out_opponents"] else
-                "BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_TEAMMATE_OUT")
+                "REPROJECTED_FROM_OFFICIAL_OUT_WITH_HISTORICAL_SPLITS"
+                if row["injury_reprojection_status"]=="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"
+                else "NO_SUPPORTED_REPROJECTION_DO_NOT_SHOW_OLD_PICK")
 
         row["season_average_challenger"]=season_candidate(
             history,upcoming_date,row["team"],target,combined["projection"])
@@ -401,6 +427,16 @@ def main():
             "minutes_research_not_applied_to_live":True}
         row["missing_features"]=[name for name in features if name not in row["features"]]
         del row["features"]
+    # Never show an unchanged ordinary pick when official absences
+    # materially change the lineup and there is insufficient historical
+    # evidence to recalculate it. Keep prior pregame snapshots untouched.
+    eligible=[]
+    for r in valid:
+        if r.get("injury_reprojection_status")=="INSUFFICIENT_VERIFIED_PRIOR_ON_OFF_EVIDENCE":
+            skipped["injury_reprojection_unavailable"]=skipped.get("injury_reprojection_unavailable",0)+1
+            continue
+        eligible.append(r)
+    valid=eligible
     valid.sort(key=lambda r:(
         r["estimated_selected_probability"] is not None,
         r["estimated_selected_probability"] if r["estimated_selected_probability"] is not None else -1,
