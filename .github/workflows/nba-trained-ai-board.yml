@@ -18,7 +18,7 @@ on:
   schedule:
     # Market-refresh job runs at :12. This job reads its published compact feed
     # and NEVER consumes additional sportsbook API credits.
-    - cron: '41 20,23 * * *'
+    - cron: '41 18,21 * * *'
 permissions:
   contents: write
 concurrency:
