@@ -45,6 +45,33 @@ class PrizePicksTests(unittest.TestCase):
         self.assertEqual(offer["more_tier"],"demon")
         self.assertIsNone(offer["less_tier"])
 
+    def test_actual_compact_schema_uses_starts_at_and_sides_not_selections(self):
+        flat={"id":"pp_compact_1","league":"NBA","status":"active",
+            "player":"Sample Player","team":"BOS","opponent":"MIA",
+            "stat":"Points","period":"Full game","line":23.5,
+            "starts_at":START,"observed_at":"2026-11-06T18:30:00Z",
+            "tier":"standard","sides":["more","less"]}
+        offer=clean(flat,NOW,verified_live=True)
+        self.assertIsNotNone(offer)
+        self.assertEqual(offer["starts_at"],"2026-11-07T00:30:00+00:00")
+        self.assertEqual((offer["more_tier"],offer["less_tier"]),("standard","standard"))
+        p=publish([{"data":[flat],"meta":{"mode":"live","source_status":"fresh",
+            "next_cursor":None}}],[],NOW,schedule={"games":[{"game":
+            "Boston Celtics @ Miami Heat","start":START}]})
+        self.assertEqual(p["independent_board_count"],1)
+
+    def test_compact_demon_one_side_only_not_fake_under(self):
+        data={"id":"pp_compact_2","league":"NBA","status":"active",
+              "player":"Sample Player","team":"BOS","opponent":"MIA",
+              "stat":"Assists","period":"Full game","line":6.5,
+              "starts_at":START,"observed_at":"2026-11-06T18:30:00Z",
+              "tier":"demon","sides":["more"]}
+        offer=clean(data,NOW,verified_live=True)
+        self.assertEqual(offer["more_tier"],"demon")
+        self.assertIsNone(offer["less_tier"])
+        data["sides"]=[]
+        self.assertIsNone(clean(data,NOW,verified_live=True))
+
     def test_compact_flat_row_with_verified_live_provenance(self):
         compact={"id":"pp_flat_1","league":"NBA","status":"active",
             "player":"Sample Player","team":"BOS","opponent":"MIA",
