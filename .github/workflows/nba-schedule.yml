@@ -27,9 +27,9 @@ jobs:
         run: |
           python -m py_compile iphone_bot/fetch_nba_schedule.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_nba_schedule.py' -v
-      - name: Publish labeled cached fixture coverage without blocked GitHub-hosted providers
+      - name: Fetch genuine current-date NBA fixtures from NBA/ESPN; fall back only if both unavailable
         env:
-          NBA_SCHEDULE_SOURCE_MODE: cached
+          NBA_SCHEDULE_SOURCE_MODE: auto
         run: python -u iphone_bot/fetch_nba_schedule.py
       - name: Publish diagnostic if all schedule providers reject GitHub Actions
         if: failure()
