@@ -117,6 +117,22 @@ def main():
     all_games=json.loads(GAMES.read_text())
     for r in all_games:
         by_id.setdefault(str(r["id"]),{})[r["date"]]=r
+    def materially_active_out(player_id,game_date):
+        """Only absences with observed sizeable recent same-team minutes.
+
+        Do not infer playing time from a name, status alone, or an unlisted
+        athlete. Target-day statistics are strictly excluded.
+        """
+        people=[g for g in by_id.get(str(player_id),{}).values()
+                if str(g.get("date",""))<game_date]
+        people.sort(key=lambda g:g["date"])
+        minutes=[]
+        for g in people[-5:]:
+            try:
+                n=float(g.get("MIN"))
+                if np.isfinite(n) and 0<n<=60:minutes.append(n)
+            except (ValueError,TypeError):continue
+        return len(minutes)>=3 and float(np.mean(minutes))>=22
     raw_markets={}
     skipped={"not_upcoming":0,"team_mismatch":0,"player_ambiguous":0,"insufficient_stats":0,
              "unsupported_market":0,"stale_market_quote":0,
@@ -276,7 +292,8 @@ def main():
             team_out=[p for (player_id,game_date),p in official_by_event.items()
                 if game_date==upcoming_date and p.get("team")==row["team"]
                 and str(p.get("status","")).upper()=="OUT"
-                and player_id!=str(row["player_id"])]
+                and player_id!=str(row["player_id"])
+                and materially_active_out(player_id,upcoming_date)]
             for teammate in team_out[:8]:
                 observed=teammate_on_off(history,all_games,upcoming_date,teammate["player_id"],target)
                 if observed:
@@ -293,7 +310,8 @@ def main():
         row["official_out_opponents"]=[{"player":p["player"],"player_id":str(p["player_id"])}
                                       for (pid,day),p in official_by_event.items()
                                       if day==upcoming_date and p.get("team")==opponent
-                                      and str(p.get("status","")).upper()=="OUT"] if official_report else []
+                                      and str(p.get("status","")).upper()=="OUT"
+                                      and materially_active_out(pid,upcoming_date)] if official_report else []
         row["injury_scenario_projection"]=None
         row["injury_scenario_applied_to_combined"]=False
         row["injury_context_requires_reprojection"]=bool(
