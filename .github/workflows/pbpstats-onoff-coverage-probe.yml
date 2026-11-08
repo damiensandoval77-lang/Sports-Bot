@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/probe_pbpstats_game_coverage.py'
+      - 'iphone_bot/pbpstats_game_coverage.py'
+      - 'iphone_bot/tests/test_pbpstats_game_coverage.py'
       - '.github/workflows/pbpstats-onoff-coverage-probe.yml'
 permissions:
   contents: write
@@ -24,6 +26,8 @@ jobs:
           python-version: '3.11'
       - name: Compile single pair metadata-only overlap audit
         run: python -m py_compile iphone_bot/probe_pbpstats_game_coverage.py
+      - name: Check overlap timestamp edge-case tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_game_coverage.py' -v
       - name: Validate public current-season teammate ON-OFF stints
         run: python -m iphone_bot.probe_pbpstats_game_coverage
       - name: Publish derived coverage diagnostics without raw player stats
