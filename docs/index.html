@@ -383,7 +383,16 @@ function modelSide(projection,line){
 }
 function sideClass(side){return side==="OVER"?"over":side==="UNDER"?"under":"neutral"}
 function validEstimate(p){return typeof p.estimated_selected_probability==="number"&&Number.isFinite(p.estimated_selected_probability)&&p.probability_method==="CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED"}
-function chance(p){return validEstimate(p)?(100*p.estimated_selected_probability).toFixed(1)+"%":"—"}
+function combinedSimAvailable(p){
+ const sim=p.combined_simulation;
+ return sim?.method==="COMBINED_PROJECTION_20K_ORIGINAL_RESIDUAL_BOOTSTRAP_UNCALIBRATED"&&
+  sim?.simulation_count===20000&&sim?.calibrated===false&&
+  sim?.combined_residuals_validated===false&&
+  sim?.direction===({OVER:"Over",UNDER:"Under"}[primaryDirection(p)])&&
+  typeof sim?.selected_hit_rate==="number"&&Number.isFinite(sim.selected_hit_rate)&&
+  sim.selected_hit_rate>=0&&sim.selected_hit_rate<=1;
+}
+function chance(p){return combinedSimAvailable(p)?(100*p.combined_simulation.selected_hit_rate).toFixed(1)+"%":"—"}
 function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
 function frozenResearchScreen(p){
  // Pre-registered research thresholds; NOT a verified profitable strategy.
@@ -566,14 +575,14 @@ function renderAI(){
   values.append(
    metric(aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
    metric("AI PROJECTION",fmt(projected),"projection"),
-   metric("EST. HIT %",chance(p),"chance")
+   metric("20K SIM HIT %",chance(p),"chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
-  const probabilityNote=node("div","match",(validEstimate(p)?
-    "Uncalibrated ORIGINAL AI historical-residual estimate; not a verified combined-model or 20,000-simulation hit rate. ":
-    "No supported per-pick hit estimate available. ")+
-    (aiMetadata?.is_prizepicks?"PrizePicks pick\'em line, not sportsbook odds. ":"")+
-    "Graded historical accuracy is in Performance; no validated betting edge or EV.");
+  const probabilityNote=node("div","match",(combinedSimAvailable(p)?
+    "20,000 bootstrap draws centered on COMBINED projection using original-model holdout errors. Not calibrated on combined-model outcomes. ":
+    "20,000-run COMBINED model estimate unavailable until valid holdout residuals are provided. ")+
+    (aiMetadata?.is_prizepicks?"PrizePicks pick'em line, not sportsbook odds. ":"")+
+    "Historical graded results remain in Performance; no verified betting edge or EV.");
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
