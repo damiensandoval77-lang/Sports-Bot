@@ -137,7 +137,13 @@ jobs:
           assert d['is_prizepicks'] is False
           assert all(x['sample_games']>=5 for x in d['comparisons'])
           assert type(d['injury_data_verified']) is bool
-          assert d['lineup_research_adjustments_applied'] is False
+          assert d['lineup_research_adjustments_applied'] is any(
+              r.get('injury_scenario_applied_to_combined') is True for r in d['comparisons'])
+          assert all(r.get('injury_reprojection_status')!='INSUFFICIENT_VERIFIED_PRIOR_ON_OFF_EVIDENCE'
+                     for r in d['comparisons'])
+          assert all(r.get('injury_reprojection_status')!='REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT'
+                     or r.get('preinjury_combined_projection') is not None
+                     for r in d['comparisons'])
           assert d['minutes_v2_applied_to_live_model'] is False
           assert d['shot_profile_applied_to_live_model'] is False
           assert all(x['shot_profile_research']['live_adjustment_applied'] is False
