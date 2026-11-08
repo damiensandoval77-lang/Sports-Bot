@@ -89,6 +89,10 @@ jobs:
           assert r['unified_reliability_v1']['confidence_proxy_quote_coverage']['confidence_calibrated'] is False
           opp=r['opportunity_shadow']
           assert opp['same_line_required_for_direction_scoring'] is True
+          assert opp['stability_challenger_research_only'] is True
+          assert opp['overall']['stability_shadow_paired_markets']<=opp['overall']['paired_markets']
+          assert opp['overall']['stability_shadow_same_line_eligible']<=opp['overall']['same_line_direction_eligible']
+          assert sum(opp['by_market'][m]['stability_shadow_paired_markets'] for m in ('PTS','REB','AST','PRA'))==opp['overall']['stability_shadow_paired_markets']
           assert opp['mae_uses_same_player_verified_final_stat_only'] is True
           assert opp['eligible_for_live_promotion'] is False
           assert sum(opp['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==opp['overall']['paired_markets']
