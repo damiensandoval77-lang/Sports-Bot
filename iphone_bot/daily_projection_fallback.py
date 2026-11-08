@@ -10,6 +10,9 @@ from collections import defaultdict
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
+import sys
+# Existing trained model helper modules use local absolute imports.
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 import joblib
 import numpy as np
 import pandas as pd
