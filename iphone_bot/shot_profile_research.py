@@ -175,7 +175,9 @@ def load_history(path=ARCHIVE):
             opponent=(matchup.split()[-1] if (" vs. " in matchup or " @ " in matchup)
                       else None)
             if opponent and len(opponent)!=3:opponent=None
-            entry={**candidate,"id":raw["PLAYER_ID"],"game_id":raw["GAME_ID"],
+            # AST and REB are observed archived totals, not tracking chances.
+            entry={**candidate,"AST":number(raw.get("AST")),"REB":number(raw.get("REB")),
+                   "id":raw["PLAYER_ID"],"game_id":raw["GAME_ID"],
                    "team":raw["TEAM_ABBREVIATION"],"opponent":opponent,
                    "date":day,"season":season}
             if not normalized(entry,require_makes=True):
