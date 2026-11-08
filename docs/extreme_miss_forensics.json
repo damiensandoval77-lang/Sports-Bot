@@ -1,41 +1,41 @@
 {
   "status": "DESCRIPTIVE_EXTREME_MISS_FORENSICS_NOT_CAUSAL",
   "method": "PREGAME_LOCKED_MODEL_FEATURES_AND_VERIFIED_ACTUAL_MINUTES",
-  "independent_settled_markets": 404,
+  "independent_settled_markets": 546,
   "by_market": {
     "PTS": {
       "extreme_threshold": 10.0,
       "all": {
-        "markets": 111,
+        "markets": 151,
         "distinct_game_dates": 2,
-        "extreme_misses": 13,
-        "extreme_rate": 0.1171,
-        "mean_signed_error": 1.104,
-        "mean_absolute_error": 5.219
+        "extreme_misses": 18,
+        "extreme_rate": 0.1192,
+        "mean_signed_error": 0.9,
+        "mean_absolute_error": 5.121
       },
       "extreme": {
-        "markets": 13,
+        "markets": 18,
         "distinct_game_dates": 2,
-        "extreme_misses": 13,
+        "extreme_misses": 18,
         "extreme_rate": 1.0,
-        "mean_signed_error": 3.419,
-        "mean_absolute_error": 13.75
+        "mean_signed_error": 1.464,
+        "mean_absolute_error": 13.225
       },
       "extreme_with_frozen_minutes_and_actual": 0,
       "extreme_under_minutes_by_at_least_5": 0,
       "extreme_over_minutes_by_at_least_5": 0,
       "extreme_minutes_within_5": 0,
-      "extreme_unexplained_minutes_coverage": 13
+      "extreme_unexplained_minutes_coverage": 18
     },
     "REB": {
       "extreme_threshold": 5.0,
       "all": {
-        "markets": 106,
+        "markets": 146,
         "distinct_game_dates": 2,
         "extreme_misses": 7,
-        "extreme_rate": 0.066,
-        "mean_signed_error": 0.122,
-        "mean_absolute_error": 2.06
+        "extreme_rate": 0.0479,
+        "mean_signed_error": -0.115,
+        "mean_absolute_error": 2.021
       },
       "extreme": {
         "markets": 7,
@@ -54,50 +54,50 @@
     "AST": {
       "extreme_threshold": 4.0,
       "all": {
-        "markets": 91,
+        "markets": 122,
         "distinct_game_dates": 2,
-        "extreme_misses": 6,
-        "extreme_rate": 0.0659,
-        "mean_signed_error": 0.175,
+        "extreme_misses": 10,
+        "extreme_rate": 0.082,
+        "mean_signed_error": 0.107,
         "mean_absolute_error": 1.863
       },
       "extreme": {
-        "markets": 6,
+        "markets": 10,
         "distinct_game_dates": 2,
-        "extreme_misses": 6,
+        "extreme_misses": 10,
         "extreme_rate": 1.0,
-        "mean_signed_error": -1.1,
-        "mean_absolute_error": 6.3
+        "mean_signed_error": -2.56,
+        "mean_absolute_error": 5.68
       },
       "extreme_with_frozen_minutes_and_actual": 0,
       "extreme_under_minutes_by_at_least_5": 0,
       "extreme_over_minutes_by_at_least_5": 0,
       "extreme_minutes_within_5": 0,
-      "extreme_unexplained_minutes_coverage": 6
+      "extreme_unexplained_minutes_coverage": 10
     },
     "PRA": {
       "extreme_threshold": 15.0,
       "all": {
-        "markets": 96,
+        "markets": 127,
         "distinct_game_dates": 2,
-        "extreme_misses": 9,
-        "extreme_rate": 0.0938,
-        "mean_signed_error": 1.593,
-        "mean_absolute_error": 6.878
+        "extreme_misses": 11,
+        "extreme_rate": 0.0866,
+        "mean_signed_error": 0.894,
+        "mean_absolute_error": 6.874
       },
       "extreme": {
-        "markets": 9,
+        "markets": 11,
         "distinct_game_dates": 2,
-        "extreme_misses": 9,
+        "extreme_misses": 11,
         "extreme_rate": 1.0,
-        "mean_signed_error": 3.161,
-        "mean_absolute_error": 19.139
+        "mean_signed_error": -0.705,
+        "mean_absolute_error": 18.95
       },
       "extreme_with_frozen_minutes_and_actual": 0,
       "extreme_under_minutes_by_at_least_5": 0,
       "extreme_over_minutes_by_at_least_5": 0,
       "extreme_minutes_within_5": 0,
-      "extreme_unexplained_minutes_coverage": 9
+      "extreme_unexplained_minutes_coverage": 11
     }
   },
   "large_misses": [
@@ -118,6 +118,24 @@
       "actual_minus_frozen_research_minutes": null,
       "actual_minus_production_min_l5": null,
       "source": "CBS_FINAL_VERIFIED"
+    },
+    {
+      "player_id": "201939",
+      "player": "Stephen Curry",
+      "team": "GSW",
+      "game": "Orlando Magic @ Golden State Warriors",
+      "date": "2026-11-08",
+      "market": "PRA",
+      "projection": 31.8,
+      "actual": 53.0,
+      "error": -21.2,
+      "extreme": true,
+      "actual_minutes": 36.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
     },
     {
       "player_id": "1629652",
@@ -246,6 +264,24 @@
       "source": "CBS_FINAL_VERIFIED"
     },
     {
+      "player_id": "201939",
+      "player": "Stephen Curry",
+      "team": "GSW",
+      "game": "Orlando Magic @ Golden State Warriors",
+      "date": "2026-11-08",
+      "market": "PTS",
+      "projection": 23.6,
+      "actual": 41.0,
+      "error": -17.4,
+      "extreme": true,
+      "actual_minutes": 36.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
+    },
+    {
       "player_id": "1628960",
       "player": "Grayson Allen",
       "team": "CHA",
@@ -352,6 +388,24 @@
       "actual_minus_frozen_research_minutes": null,
       "actual_minus_production_min_l5": null,
       "source": "FANTASYDATA_FINAL_CROSSCHECKED"
+    },
+    {
+      "player_id": "1628973",
+      "player": "Jalen Brunson",
+      "team": "NYK",
+      "game": "New York Knicks @ Cleveland Cavaliers",
+      "date": "2026-11-08",
+      "market": "PRA",
+      "projection": 31.0,
+      "actual": 46.0,
+      "error": -15.0,
+      "extreme": true,
+      "actual_minutes": 34.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
     },
     {
       "player_id": "203954",
@@ -462,6 +516,42 @@
       "source": "CBS_SPORTS_LIVE_FINAL"
     },
     {
+      "player_id": "1628378",
+      "player": "Donovan Mitchell",
+      "team": "CLE",
+      "game": "New York Knicks @ Cleveland Cavaliers",
+      "date": "2026-11-08",
+      "market": "PTS",
+      "projection": 25.8,
+      "actual": 37.0,
+      "error": -11.2,
+      "extreme": true,
+      "actual_minutes": 37.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
+    },
+    {
+      "player_id": "1626209",
+      "player": "Mario Hezonja",
+      "team": "CLE",
+      "game": "New York Knicks @ Cleveland Cavaliers",
+      "date": "2026-11-08",
+      "market": "PTS",
+      "projection": 10.5,
+      "actual": 0.0,
+      "error": 10.5,
+      "extreme": true,
+      "actual_minutes": 19.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
+    },
+    {
       "player_id": "1630178",
       "player": "Tyrese Maxey",
       "team": "PHI",
@@ -514,6 +604,42 @@
       "actual_minus_frozen_research_minutes": null,
       "actual_minus_production_min_l5": null,
       "source": "CBS_SPORTS_LIVE_FINAL"
+    },
+    {
+      "player_id": "201935",
+      "player": "James Harden",
+      "team": "CLE",
+      "game": "New York Knicks @ Cleveland Cavaliers",
+      "date": "2026-11-08",
+      "market": "PTS",
+      "projection": 17.1,
+      "actual": 7.0,
+      "error": 10.1,
+      "extreme": true,
+      "actual_minutes": 34.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
+    },
+    {
+      "player_id": "1626157",
+      "player": "Karl-Anthony Towns",
+      "team": "NYK",
+      "game": "New York Knicks @ Cleveland Cavaliers",
+      "date": "2026-11-08",
+      "market": "PTS",
+      "projection": 18.9,
+      "actual": 29.0,
+      "error": -10.1,
+      "extreme": true,
+      "actual_minutes": 34.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
     },
     {
       "player_id": "1630700",
@@ -660,6 +786,24 @@
       "source": "CBS_SPORTS_LIVE_FINAL"
     },
     {
+      "player_id": "203110",
+      "player": "Draymond Green",
+      "team": "GSW",
+      "game": "Orlando Magic @ Golden State Warriors",
+      "date": "2026-11-08",
+      "market": "AST",
+      "projection": 7.7,
+      "actual": 13.0,
+      "error": -5.3,
+      "extreme": true,
+      "actual_minutes": 34.0,
+      "frozen_research_minutes": null,
+      "frozen_production_min_l5": null,
+      "actual_minus_frozen_research_minutes": null,
+      "actual_minus_production_min_l5": null,
+      "source": "HISTORICAL_CSV_COMPLETED_GAME"
+    },
+    {
       "player_id": "1627783",
       "player": "Pascal Siakam",
       "team": "IND",
@@ -676,65 +820,11 @@
       "actual_minus_frozen_research_minutes": null,
       "actual_minus_production_min_l5": null,
       "source": "CBS_SPORTS_LIVE_FINAL"
-    },
-    {
-      "player_id": "1642349",
-      "player": "Ajay Mitchell",
-      "team": "OKC",
-      "game": "Washington Wizards @ Oklahoma City Thunder",
-      "date": "2026-11-08",
-      "market": "AST",
-      "projection": 4.5,
-      "actual": 0.0,
-      "error": 4.5,
-      "extreme": true,
-      "actual_minutes": 21.0,
-      "frozen_research_minutes": null,
-      "frozen_production_min_l5": null,
-      "actual_minus_frozen_research_minutes": null,
-      "actual_minus_production_min_l5": null,
-      "source": "CBS_SPORTS_LIVE_FINAL"
-    },
-    {
-      "player_id": "203954",
-      "player": "Joel Embiid",
-      "team": "PHI",
-      "game": "Philadelphia 76ers @ Cleveland Cavaliers",
-      "date": "2026-11-07",
-      "market": "AST",
-      "projection": 5.3,
-      "actual": 1.0,
-      "error": 4.3,
-      "extreme": true,
-      "actual_minutes": null,
-      "frozen_research_minutes": null,
-      "frozen_production_min_l5": null,
-      "actual_minus_frozen_research_minutes": null,
-      "actual_minus_production_min_l5": null,
-      "source": "CBS_SPORTS_LIVE_FINAL"
-    },
-    {
-      "player_id": "1628983",
-      "player": "Shai Gilgeous-Alexander",
-      "team": "OKC",
-      "game": "Washington Wizards @ Oklahoma City Thunder",
-      "date": "2026-11-08",
-      "market": "AST",
-      "projection": 4.8,
-      "actual": 9.0,
-      "error": -4.2,
-      "extreme": true,
-      "actual_minutes": 28.0,
-      "frozen_research_minutes": null,
-      "frozen_production_min_l5": null,
-      "actual_minus_frozen_research_minutes": null,
-      "actual_minus_production_min_l5": null,
-      "source": "CBS_SPORTS_LIVE_FINAL"
     }
   ],
   "data_gaps": {
-    "missing_frozen_pregame_expected_minutes": 404,
-    "missing_frozen_production_minutes_feature": 404,
+    "missing_frozen_pregame_expected_minutes": 546,
+    "missing_frozen_production_minutes_feature": 546,
     "missing_verified_actual_minutes": 273,
     "legacy_combined_from_frozen_components": 75
   },
@@ -750,5 +840,5 @@
     "Individual markets for the same player and game are correlated.",
     "Source boxscores must be independently verified; historical minutes may be missing."
   ],
-  "generated_at": "2026-11-08T06:37:16.639726+00:00"
+  "generated_at": "2026-11-08T07:47:35.397303+00:00"
 }
