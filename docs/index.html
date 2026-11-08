@@ -227,6 +227,9 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 .live-prop-result.wait{color:#c5d2e4}
 .live-prop-foot{font-size:10px;color:#acbdd5;line-height:1.45;margin-top:9px}
 @media(max-width:680px){.live-prop-rows{grid-template-columns:1fr}}
+
+/* Compact primary AI cards; keep model-validation prose in expanded details. */
+.compact-prop .mainline{padding:11px 12px}.compact-prop .ai-metrics{margin-top:8px;gap:6px}.compact-prop .ai-metric{padding:9px 6px}.compact-prop .ai-metric-label{font-size:10px;letter-spacing:0}.compact-prop .ai-metric-value{font-size:19px}.compact-prop .ai-lean{margin-top:8px}.compact-prop .compact-details summary{padding:11px 12px}.pp-full-slate{margin-top:22px;border-top:1px solid var(--border);padding-top:16px}.compact-details .advanced{margin-top:8px}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -257,14 +260,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
 <div class="filters schedule-roster-control" aria-hidden="true"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
 <div class="source" id="schedule-players">Players from current-season game logs will appear here; this is not an official active roster.</div>
-<section aria-label="Independent PrizePicks lines" class="pp-full-slate">
- <div class="bar"><h2>PrizePicks posted lines</h2><small id="pp-board-total">—</small></div>
- <div class="source" id="pp-board-health">Checking real, independent NBA PrizePicks lines…</div>
- <div class="filters"><input id="pp-board-search" aria-label="Filter PrizePicks players" placeholder="Search PrizePicks player…" autocomplete="off">
- <select id="pp-board-market" aria-label="PrizePicks market"><option value="">All stats</option><option value="PTS">PTS</option><option value="REB">REB</option><option value="AST">AST</option><option value="PRA">PRA</option></select></div>
- <div class="board" id="pp-board"><div class="empty">Loading PrizePicks lines…</div></div>
- <div class="source">Independent third-party PrizePicks observation, not FanDuel odds. No American odds or verified EV. Standard, Goblin and Demon are different tiers; check the PrizePicks app before placing anything.</div>
-</section>
+
 <div id="ai-no-line-shell" class="source" hidden>
  <strong>AI PLAYER PROJECTIONS · no current prop lines</strong>
  <div id="ai-no-line-status">Checking independently trained NBA estimates…</div>
@@ -350,6 +346,14 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 </details>
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 </div>
+<section aria-label="Independent PrizePicks lines" class="pp-full-slate">
+ <div class="bar"><h2>PrizePicks posted lines</h2><small id="pp-board-total">—</small></div>
+ <div class="source" id="pp-board-health">Checking real, independent NBA PrizePicks lines…</div>
+ <div class="filters"><input id="pp-board-search" aria-label="Filter PrizePicks players" placeholder="Search PrizePicks player…" autocomplete="off">
+ <select id="pp-board-market" aria-label="PrizePicks market"><option value="">All stats</option><option value="PTS">PTS</option><option value="REB">REB</option><option value="AST">AST</option><option value="PRA">PRA</option></select></div>
+ <div class="board" id="pp-board"><div class="empty">Loading PrizePicks lines…</div></div>
+ <div class="source">Independent third-party PrizePicks observation, not FanDuel odds. No American odds or verified EV. Standard, Goblin and Demon are different tiers; check the PrizePicks app before placing anything.</div>
+</section>
 <div class="foot">Research-only NBA prop dashboard. Stale/started games are hidden from the AI board. No automated betting or guaranteed outcomes.</div>
 </main><script src="./live-prop-tracker.js?v=7dc6e93"></script><script>
 "use strict";
@@ -720,7 +724,7 @@ function renderAI(){
    (entries.some(p=>p.preliminary_edge?.probability||earlyEdgePreview(p)?.probability)?" · early grades applied":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   try{
-  const outer=node("article","prop compact-prop"),main=node("div","mainline");
+  const outer=node("article","prop compact-prop"),main=node("div","mainline"),detailNotes=[];
   const head=node("div","compact-head"),identity=node("div","compact-identity");
   const shortStats={PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"};
   identity.append(node("strong","",p.player),
@@ -755,7 +759,7 @@ function renderAI(){
   values.append(
    metric(aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
    metric("AI PROJECTION",fmt(projected),"projection"),
-   metric("20K SIM HIT %",chance(p),"chance")
+   metric("20K SIM EST.",chance(p),"chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
   if(aiMetadata?.is_prizepicks&&p.available_threshold_count>1){
@@ -770,7 +774,7 @@ function renderAI(){
     "Historical graded results remain in Performance; no verified betting edge or EV.");
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
-  main.append(probabilityNote);
+  detailNotes.push(probabilityNote);
   // Preliminary, intentionally shrunk use of existing two-date graded results.
   // This is a research ranking, NOT calibrated betting probabilities.
   const preliminary=p.preliminary_edge||earlyEdgePreview(p);
@@ -793,14 +797,14 @@ function renderAI(){
    }else{
     detail+=" · no eligible exact-price EV calculation or structural screen did not qualify";
    }
-   main.append(node("div","research-note",detail+
+   detailNotes.push(node("div","research-note",detail+
      ". SMALL SAMPLE / NOT CALIBRATED — do not treat as a proven advantage."));
   }
   // Explicit +EV gate: directional strength and simulation volume alone
   // cannot establish a profitable edge on real prices or pick'em payouts.
   const edge=p.edge_assessment;
   if(edge&&edge.verified_edge!==true){
-   main.append(node("div","mini","Edge not verified · calibrated combined-model"+
+   detailNotes.push(node("div","mini","Edge not verified · calibrated combined-model"+
      " outcomes and matching payout/price required."));
   }
   const screen=p.reliability_screen;
@@ -810,7 +814,7 @@ function renderAI(){
    const label=screen.status==="MODEL_LEAN"?
      "MODEL LEAN: "+(screen.side==="MORE"?"MORE":screen.side==="LESS"?"LESS":"NO SIDE"):
      "PASS";
-   main.append(node("div","research-note",
+   detailNotes.push(node("div","research-note",
      label+(blockerText.length?" · Why pass: "+blockerText.join("; "):"")+
      (cautionText.length?" · Cautions: "+cautionText.join("; "):"")+
      ". Directional research signal only—not a verified betting edge."));
@@ -818,7 +822,7 @@ function renderAI(){
   if(p.injury_reprojection_status==="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"){
    const names=[...(p.official_out_teammates||[]),...(p.official_out_opponents||[])]
      .map(x=>x.player).join(", ");
-   main.append(node("div","research-note",
+   detailNotes.push(node("div","research-note",
      "UPDATED FOR OFFICIAL OUT: "+names+". New projected "+p.stat+" "+
      fmt(projected)+" (before injury "+fmt(p.preinjury_combined_projection)+
      "). Projection and estimated probability were recalculated using prior games; "+
@@ -831,14 +835,15 @@ function renderAI(){
     node("span","ai-lean-sub",available?
       (p.combined_model_count===2?"Combined two-model projection":"Original AI projection"):
       "Original AI projection"));
-  lean.append(node("span","ai-lean-sub",frozenResearchScreen(p)));
+  detailNotes.push(node("div","mini",frozenResearchScreen(p)));
   main.append(lean);
   outer.append(main);
   const details=node("details","compact-details"),
         summary=node("summary","",aiMetadata?.is_prizepicks?
-          "View recent stats, PrizePicks tiers & analysis":
-          "View recent stats, sportsbook odds & analysis"),
+          "Stats, matchup & AI analysis":
+          "Stats, matchup & AI analysis"),
         body=node("div","detailbody");
+  if(detailNotes.length){const audit=node("details","advanced"),auditBody=node("div","advbody");auditBody.append(...detailNotes);audit.append(node("summary","","Model validation & cautions"),auditBody);body.append(audit);}
   if(aiMetadata?.is_prizepicks&&p.available_threshold_count>1){
    body.append(node("div","detail-heading","All available PrizePicks thresholds"));
    body.append(node("div","mini",p.alternative_lines.map(n=>fmt(n)).join(" · ")+
