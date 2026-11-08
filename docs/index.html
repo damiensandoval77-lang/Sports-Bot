@@ -1665,6 +1665,14 @@ async function refresh(){
    "; exact-line grades "+
    (r.opponent_v2_shadow?.overall?.exact_line_direction_eligible??0)+
    " (PTS/REB/AST/PRA, research only)."+
+   " REB opportunity V1: "+
+   (r.rebound_shadow_v1?.paired_markets??0)+" newly frozen REB samples graded; "+
+   (r.rebound_shadow_v1?.same_frozen_line_eligible??0)+" exact frozen lines; "+
+   "Combined MAE "+(r.rebound_shadow_v1?.baseline_mae??"—")+
+   " vs REB V1 MAE "+(r.rebound_shadow_v1?.shadow_mae??"—")+
+   "; baseline correct "+(r.rebound_shadow_v1?.baseline_wins??0)+
+   " vs REB V1 correct "+(r.rebound_shadow_v1?.shadow_wins??0)+
+   ". No production adjustment until independently validated."+
    " Licensed WOWY on/off: "+
    (r.licensed_onoff_shadow?.overall?.paired_markets??0)+
    " graded; baseline MAE "+
