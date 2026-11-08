@@ -688,6 +688,61 @@ def grade_opponent_v2(ledger,paper_rows):
         "same_line_only":True,"prospective_validation_required":True,
         "live_model_unchanged":True,"eligible_for_production":False}
 
+def grade_licensed_onoff_shadows(ledger,paper_rows):
+    """Prospective only, exact frozen line and verified player/event final."""
+    actuals={}
+    for r in finished_unique(paper_rows):
+        try:
+            k=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])
+            actuals[k]=(float(r["actual"]),float(r["line"]))
+        except (KeyError,ValueError,TypeError):continue
+    seen=set()
+    segments=defaultdict(list)
+    captured=Counter()
+    pending=Counter()
+    for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
+        info=row.get("licensed_onoff_shadow")
+        if not isinstance(info,dict):continue
+        try:
+            tip=utc(row["event_start"])
+            if utc(row["captured_at"])>=tip:continue
+            k=(tip.isoformat(),str(row["player_id"]),row["market"])
+            if k in seen:continue
+            seen.add(k)
+            captured[str(info.get("status","UNKNOWN"))]+=1
+            proposed=valid(info.get("projection"))
+            baseline=valid(row.get("combined_projection"))
+            line=valid(row.get("line"))
+            if proposed is None or baseline is None or line is None:continue
+            if k not in actuals:
+                pending[row["market"]]+=1;continue
+            final,quoted=actuals[k]
+            exact=abs(quoted-line)<1e-9
+            date=tip.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+            segments[row["market"]].append((baseline,proposed,final,line,exact,date))
+        except (KeyError,ValueError,TypeError,OverflowError):continue
+    def summarize(rows):
+        eligible=[r for r in rows if r[4] and r[2]!=r[3]
+                  and r[0]!=r[3] and r[1]!=r[3]]
+        n=len(rows)
+        bw=sum((r[0]>r[3])==(r[2]>r[3]) for r in eligible)
+        cw=sum((r[1]>r[3])==(r[2]>r[3]) for r in eligible)
+        return {"paired_markets":n,"distinct_game_dates":len({r[5] for r in rows}),
+            "baseline_mae":round(sum(abs(r[0]-r[2]) for r in rows)/n,4) if n else None,
+            "licensed_onoff_mae":round(sum(abs(r[1]-r[2]) for r in rows)/n,4) if n else None,
+            "exact_line_eligible":len(eligible),
+            "baseline_correct":bw,"licensed_onoff_correct":cw,
+            "baseline_hit_rate":round(bw/len(eligible),4) if eligible else None,
+            "licensed_onoff_hit_rate":round(cw/len(eligible),4) if eligible else None}
+    allrows=[x for m in MARKETS for x in segments[m]]
+    return {"status":"PRETIP_LICENSED_WOWY_SHADOW_RESEARCH_ONLY",
+        "overall":summarize(allrows),
+        "by_market":{m:summarize(segments[m]) for m in MARKETS},
+        "captured_by_status":dict(captured),
+        "pending_by_market":{m:pending[m] for m in MARKETS},
+        "same_frozen_line_required":True,
+        "live_model_unchanged":True,"eligible_for_production":False}
+
 def stress_research_report(ledger,paper_rows):
     """Only pregame frozen warnings; settlements count market identities once."""
     settled=set()
@@ -848,6 +903,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None,onoff_feed=None):
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
         "opponent_v2_shadow":grade_opponent_v2(ledger,paper_rows),
+        "licensed_onoff_shadow":grade_licensed_onoff_shadows(ledger,paper_rows),
         "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
         "stress_test_20k_v1":stress_research_report(ledger,paper_rows),
         "model_disagreement_v1":disagreement_report(ledger,paper_rows,finished_unique,utc),
@@ -891,6 +947,7 @@ def main():
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
             "opponent_v2_shadow":grade_opponent_v2(ledger,paper),
+            "licensed_onoff_shadow":grade_licensed_onoff_shadows(ledger,paper),
             "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
             "stress_test_20k_v1":stress_research_report(ledger,paper),
             "model_disagreement_v1":disagreement_report(ledger,paper,finished_unique,utc),
