@@ -14,7 +14,7 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/"docs/odds_slate_health.json"
 EASTERN=ZoneInfo("America/New_York")
 FRESH_HOURS=6
-QUOTA_STATES={"CREDITS_BELOW_RESERVE_PRESERVED"}
+QUOTA_STATES={"CREDITS_BELOW_RESERVE_PRESERVED","LEGACY_ZERO_EVENT_FETCH_CREDIT_RESERVE"}
 
 def utc(raw):
     d=dt.datetime.fromisoformat(str(raw).replace("Z","+00:00"))
@@ -34,6 +34,23 @@ def report(schedule,odds,status,archive=None,now=None):
     if not isinstance(status,dict):status={}
     status_name=str(status.get("status") or "UNKNOWN")
     details=status.get("details") if isinstance(status.get("details"),dict) else {}
+    # Legacy bug: older runs published status=FETCHED even when no event
+    # endpoints were queried because only <=12 credits remained.
+    # Infer a diagnostic from historical *published* metadata, without
+    # rewriting the historical provider response or spending API credits.
+    try:
+        remaining=int(details.get("remaining_credits"))
+        checked=int(details.get("checked_events"))
+        listed=int(details.get("available_events"))
+        reserve=int(details.get("minimum_reserved_credits") or 12)
+    except (ValueError,TypeError):
+        remaining=checked=listed=reserve=None
+    if (status_name=="FETCHED" and remaining is not None and
+        checked==0 and listed is not None and listed>0 and
+        remaining<=reserve):
+        status_name="LEGACY_ZERO_EVENT_FETCH_CREDIT_RESERVE"
+    if status_name=="LEGACY_ZERO_EVENT_FETCH_CREDIT_RESERVE":
+        details={**details,"minimum_reserved_credits":reserve}
     try:
         stamp=utc(odds.get("updated_at"))
         feed_fresh=now>=stamp and now-stamp<=dt.timedelta(hours=FRESH_HOURS)
