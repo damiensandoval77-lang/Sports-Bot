@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/nba-real-results.yml'
       - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/grade_quality_scorecard.py'
+      - 'iphone_bot/tests/test_grade_quality_scorecard.py'
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'iphone_bot/model_performance.py'
       - 'iphone_bot/accuracy_feedback.py'
@@ -53,6 +55,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_minutes_model_v2.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_probability_audit.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_grade_quality_scorecard.py" -v
           python - <<'PY'
           from pathlib import Path
           html=Path('docs/index.html').read_text()
@@ -72,6 +75,8 @@ jobs:
           python -u iphone_bot/fetch_official_injuries.py
       - name: Settle previously locked predictions from actual completed games
         run: python -u iphone_bot/paper_pick_pipeline.py
+      - name: Publish honest grading and confidence audit from frozen forecasts
+        run: python -u iphone_bot/grade_quality_scorecard.py
       - name: Settle frozen injury-aware minutes research (no paid calls)
         run: python -u iphone_bot/minutes_scenario_validation.py
       - name: Verify no predictions were retroactively changed
@@ -117,7 +122,7 @@ jobs:
           PY
       - name: Publish finished real-game paper grades
         run: |
-          git add docs/injury_context.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json docs/minutes_v2_validation.json
+          git add docs/injury_context.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json docs/minutes_v2_validation.json docs/grade_quality_scorecard.json
           if git diff --cached --quiet; then echo "No new grades"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
