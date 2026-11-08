@@ -66,7 +66,15 @@ jobs:
           assert all(utc(x['captured_at'])<utc(x['event_start']) for x in p if x['status']!='INVALID_LATE_CAPTURE')
           assert r['research_only'] is True and r['prospective_pretip_locked'] is True
           assert r['captured']==len(p) and r['settled']+r['pending']<=len(p)
+          paired=r['paired_comparison']
+          assert paired['paired_direction_markets']<=r['independent_settled_markets']
+          assert paired['paired_v2_wins']<=paired['paired_direction_markets']
+          assert paired['v2_only_correct']+paired['baseline_only_correct']+paired['both_correct']+paired['both_wrong']==paired['paired_direction_markets']
+          assert paired['promotion_eligible'] is False
           print('Independent settled Assist V2 markets:',r['independent_settled_markets'])
+          print('Same-market paired comparisons:',paired['paired_direction_markets'],
+                'V2 wins:',paired['paired_v2_wins'],
+                'baseline wins:',paired['paired_baseline_wins'])
           PY
       - name: Commit only the research ledger and scoring summary
         run: |
