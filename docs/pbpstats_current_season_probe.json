@@ -1,0 +1,46 @@
+{
+  "checked_at": "2026-11-08T03:23:59.566700+00:00",
+  "season": "2026-27",
+  "cutoff": "2026-11-06",
+  "provider": "PBP Stats",
+  "scope": "ONE_SHOT_NONPERSISTENT_METADATA_ONLY",
+  "licensed_use_verified": false,
+  "automated_live_ingestion_enabled": false,
+  "source_stats_stored": false,
+  "queries": {
+    "with": {
+      "http_status": 200,
+      "content_type": "application/json",
+      "response_shape": "PLAYER_ROWS",
+      "row_count": 12,
+      "target_entity_match_count": 1,
+      "required_fields_present": {
+        "EntityId": true,
+        "Points": true,
+        "Rebounds": true,
+        "Assists": true,
+        "Minutes": true,
+        "SecondsPlayed": true
+      },
+      "game_date_fields_present": [],
+      "status": "PARSED"
+    },
+    "without": {
+      "http_status": 200,
+      "content_type": "application/json",
+      "response_shape": "PLAYER_ROWS",
+      "row_count": 11,
+      "target_entity_match_count": 1,
+      "required_fields_present": {
+        "EntityId": true,
+        "Points": true,
+        "Rebounds": true,
+        "Assists": true,
+        "Minutes": true,
+        "SecondsPlayed": true
+      },
+      "game_date_fields_present": [],
+      "status": "PARSED"
+    }
+  }
+}
