@@ -10,6 +10,8 @@ on:
       - 'iphone_bot/reliability_screen.py'
       - 'iphone_bot/edge_readiness.py'
       - 'iphone_bot/preliminary_edge.py'
+      - 'iphone_bot/tracking_opportunity_features.py'
+      - 'iphone_bot/tests/test_tracking_opportunity_features.py'
       - 'iphone_bot/sportsbook_consensus.py'
       - 'iphone_bot/tests/test_preliminary_edge.py'
       - 'iphone_bot/tests/test_edge_readiness.py'
@@ -64,6 +66,8 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_edge_readiness.py' -v
       - name: Validate existing-grade preliminary edge comparisons
         run: python -m unittest discover -s iphone_bot/tests -p 'test_preliminary_edge.py' -v
+      - name: Validate pregame tracking opportunity feature ingestion
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunity_features.py' -v
       - name: Train original historical model and separate opponent shadow
         run: |
           python -u iphone_bot/download_archived_nba.py
