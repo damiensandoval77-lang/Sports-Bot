@@ -23,10 +23,15 @@ def _rows(payload,target):
         raise ValueError("Target EntityId not unique in PBP Stats player rows")
     return matches[0]
 
-def _aggregate(payload,target,provenance,cutoff):
+def _aggregate(payload,target,provenance,cutoff,expected_request):
     row=_rows(payload,target)
     if not isinstance(provenance,dict) or provenance.get("verified_completed_games") is not True:
         raise ValueError("Game-level provenance has not been verified")
+    # The two historical provider responses must be bound to their exact
+    # target ON/OFF params, including FromDate and ToDate. Do not allow
+    # a current-season aggregate to masquerade as a pregame dated query.
+    if provenance.get("request_params")!=expected_request:
+        raise ValueError("Provider request provenance lacks exact historical date filters")
     raw_dates=provenance.get("game_dates")
     if not isinstance(raw_dates,list) or len(raw_dates)<5:
         raise ValueError("At least five independent game dates are required")
@@ -69,9 +74,9 @@ def normalize_pair(with_payload,without_payload,*,player_id,teammate_id,
         raise ValueError("Invalid provider observation metadata")
     if seen>generated or cutoff>seen.date():
         raise ValueError("Observations cannot postdate source generation")
-    request_plan(player_id,teammate_id,team,season,cutoff_date=cutoff.isoformat())
-    on=_aggregate(with_payload,player_id,with_provenance,cutoff)
-    off=_aggregate(without_payload,player_id,without_provenance,cutoff)
+    plan=request_plan(player_id,teammate_id,team,season,cutoff_date=cutoff.isoformat())
+    on=_aggregate(with_payload,player_id,with_provenance,cutoff,plan["requests"]["with"])
+    off=_aggregate(without_payload,player_id,without_provenance,cutoff,plan["requests"]["without"])
     return {"player_id":str(player_id),"teammate_id":str(teammate_id),
         "team":str(team).upper(),"season":season,"data_through":cutoff.isoformat(),
         "observed_through_at":seen.isoformat(),"with":on,"without":off}
