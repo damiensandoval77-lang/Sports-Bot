@@ -79,3 +79,21 @@ Began verifying *real* public historical game-level ON/OFF exposure, not just re
 - Encountered authentic zero-duration and overlapping possession intervals; now correctly ignores zero-second intervals and unions overlaps.
 - The provider research probe is manual-only to avoid repeated third-party calls on unrelated commits while provider limits/rights remain unclear.
 - P1 cannot yet be marked complete: no qualified independent 5-game/120-minute ON *and* OFF sample and no live model benefit measured.
+
+## Model accuracy improvement sprint — 2026-11-08
+
+**Why:** The latest immutable grading (`docs/grade_quality_scorecard.json`) shows Combined AI at 282/592 (47.64%) and -13.38% hypothetical paper ROI on the recorded prices. Only two independent game dates exist; raw probabilities are not calibrated (original model 62.68% mean estimated vs 45.28% actual in 318 graded observations). This is a losing sample, not a demonstrated edge.
+
+**First model improvement delivered:** `iphone_bot/rebound_shadow_v1.py`. New fixed, conservative rebound-rate challenger:
+- Strict completed same-team prior history, >=8 qualifying games and duplicate-date conflict exclusion.
+- Predicted minutes from a frozen pregame input or prior-game-only fallback; reject recent minutes SD above 8 and low-minute recent rotations.
+- Exposure-weighted season rebounds per minute (65%), last-five median rate (35%); 30% blend toward historical opportunity estimate, maximum 12% deviation from frozen Combined AI.
+- Pre-tip immutable field `rebound_shadow_v1` in `docs/projection_upgrade_ledger.json`; grade on identical player/event/market and exactly the same frozen sportsbook line as the original Combined AI. Results appear under `rebound_shadow_v1` in `docs/projection_upgrade_status.json`.
+- Research dashboard now displays future paired REB MAE, correct side counts and eligibility, without claiming a live edge.
+- Both new standalone tests and the full research integrity suite verified PASSED in GitHub Actions (5 + 23 tests, `docs/rebound_shadow_validation_status.json`).
+- **Current genuine REB V1 results: zero newly graded markets.** It was created after the earlier settled games. Do not reconstruct an in-sample prospective hit rate or change production projections.
+- Existing prospectively frozen *generic opportunity* REB challenger on one game date: baseline 2.107 MAE vs opportunity 2.037 on 87 paired markets; on 67 exact-line eligible calls, Combined 26 correct vs opportunity 31. Descriptive only; cannot be attributed to the new rebound V1 or promised for future games.
+- Existing pregame assist-specific shadow on 42 assists and one date: Combined MAE 1.893 vs assist challenger 1.886, but directions 25 vs 24, respectively. **Do not promote** or assert it improved win rate.
+- On-screen model leans are raw directions, not verified profitable picks; misleading simulated percentages and EV ranking were removed in the prior grading-integrity sprint.
+
+**Next gating milestones:** lock REB V1 projections on multiple *future* NBA game dates, grade on the exact original line without retroactive regeneration, compare paired MAE and win rate against original Combined, review exposure and injuries, and only consider a change if the candidate improves held-out independent multi-day performance (not merely this two-day grading snapshot). Preserve all losing grades; no production promotion until independently justified.
