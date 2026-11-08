@@ -164,6 +164,8 @@ jobs:
             cp "$temp/missed_game_audit.json" docs/missed_game_audit.json
             # Recalculate from latest merged ledger, rather than copying an
             # analysis that may have missed concurrently settled predictions.
+            # Rebuild nightly coverage from the freshest merged ledger, not stale runner captures.
+            python -u iphone_bot/missed_game_audit.py
             python -u iphone_bot/projection_error_analysis.py
             python -u iphone_bot/underprojection_research.py
             python -u iphone_bot/extreme_miss_forensics.py
