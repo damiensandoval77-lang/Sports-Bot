@@ -976,6 +976,33 @@ function renderAI(){
     " · recent minutes volatility "+fmt(minuteV2.last5_volatility)+
     ". Historical estimate only; NOT used in live prop projections."));
   }
+  const shootingV1=p.shooting_efficiency_v1;
+  if(shootingV1?.status==="PREGAME_SHOOTING_SHADOW_RESEARCH"){
+    body.append(node("div","detail-heading","Shooting Efficiency V1 — research-only scoring"));
+    const labels=[["last5","L5"],["last10","L10"],["season","Season"]];
+    for(const [key,label] of labels){
+      const a=shootingV1.season_shooting?.[key];
+      if(!a)continue;
+      body.append(node("div","mini",label+
+        " · FG "+fmt(a.fg_pct==null?null:100*a.fg_pct)+"%"+
+        " · 3PT "+fmt(a.three_pct==null?null:100*a.three_pct)+"%"+
+        " · FT "+fmt(a.ft_pct==null?null:100*a.ft_pct)+"%"+
+        " · eFG "+fmt(a.effective_fg_pct==null?null:100*a.effective_fg_pct)+"%"+
+        " · TS "+fmt(a.true_shooting_pct==null?null:100*a.true_shooting_pct)+"%"+
+        " · FGA "+fmt(a.fga_per_game)+" · 3PA "+fmt(a.three_pa_per_game)+
+        " · FTA "+fmt(a.fta_per_game)));
+    }
+    body.append(node("div","research-note",
+      "SHOOTING V1 · Expected points "+fmt(shootingV1.projection)+
+      " · Combined AI "+fmt(p.combined_projection)+
+      " · Candidate 25% blend "+fmt(shootingV1.blended_projection)+
+      " · Expected 2PA "+fmt(shootingV1.expected_2pa)+
+      ", 3PA "+fmt(shootingV1.expected_3pa)+
+      ", FTA "+fmt(shootingV1.expected_fta)+
+      " · Opponent shooting proxy "+
+      (shootingV1.opponent_adjustment_applied?"lagged previous games":"not available")+
+      ". Separate experimental challenger; NOT used in live picks or simulated probabilities."));
+  }
   const shots=p.shot_profile_research;
   if(shots?.status==="SHOT_PROFILE_RESEARCH_UNVALIDATED"){
    const shotText=node("div","research-note",
