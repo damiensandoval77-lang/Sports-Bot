@@ -42,7 +42,7 @@ class PrizePicksTests(unittest.TestCase):
         self.assertEqual(quota_guard(old,{},when,topup={**after,"provider_mode":"demo"}),
                          "ZERO_PROVIDER_CREDITS_PRESERVE")
         self.assertEqual(quota_guard(old,{},when+dt.timedelta(hours=7),topup=after),
-                         "ZERO_PROVIDER_CREDITS_PRESERVE")
+                         "TOPUP_REFRESH_COOLDOWN_PRESERVE")
         updated={**old,"generated_at":"2026-11-08T10:30:00Z"}
         self.assertEqual(quota_guard(updated,{},when+dt.timedelta(hours=1),topup=after),
                          "TOPUP_REFRESH_COOLDOWN_PRESERVE")
@@ -56,7 +56,7 @@ class PrizePicksTests(unittest.TestCase):
                "provider_source_status":"fresh","returned_rows":100,"request_cost":1}
         expired=dt.datetime(2026,12,10,12,tzinfo=dt.timezone.utc)
         self.assertEqual(quota_guard(old,{},expired,topup=probe),
-                         "ZERO_PROVIDER_CREDITS_PRESERVE")
+                         "MONTH_ROLLOVER_RECHECK_ALLOWED")
 
     def test_newer_confirmed_replenishment_unlocks(self):
         old={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
