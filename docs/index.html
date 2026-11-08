@@ -2421,6 +2421,29 @@ window.addEventListener("focus",()=>{
  if(document.visibilityState!=="visible")return;
  refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});
 });
+// Refresh the actual model JSON, fallback estimates, provider health and
+// schedule every four minutes while the iPhone tab is visible. The live
+// scores-only loop is not sufficient to discover newly published AI rows.
+let dashboardLastReload=Date.now();
+let dashboardReloadPending=false;
+async function refreshPublishedModels(){
+ if(dashboardReloadPending||document.visibilityState==="hidden")return;
+ dashboardReloadPending=true;
+ try{
+   await refresh();
+   dashboardLastReload=Date.now();
+ }catch(error){
+   console.error("Published NBA model refresh failed",error);
+ }finally{dashboardReloadPending=false;}
+}
+setInterval(refreshPublishedModels,240000);
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState==="visible"&&Date.now()-dashboardLastReload>120000)
+   refreshPublishedModels();
+});
+window.addEventListener("focus",()=>{
+ if(Date.now()-dashboardLastReload>120000)refreshPublishedModels();
+});
 // Tipoffs can happen while the page stays open; remove started-game
 // projections without requiring a manual refresh or another API request.
 setInterval(()=>{refreshOverview();renderAI();renderPrizePicksBoard();},30000);
