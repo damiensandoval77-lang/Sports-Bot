@@ -31,6 +31,16 @@ jobs:
         run: |
           python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
+          python - <<'PY'
+          import runpy
+          # Verify direct-path standalone import without calling provider.
+          import subprocess,sys
+          p=subprocess.run([sys.executable,'-c',
+            "import sys;sys.path.insert(0,'iphone_bot');import fetch_prizepicks;assert fetch_prizepicks.expected_opponents"],
+            capture_output=True,text=True)
+          assert p.returncode==0,p.stderr
+          print("Standalone script import path verified")
+          PY
           python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
       - name: Fetch bounded, cursor-paged actual NBA PrizePicks board
         env:
