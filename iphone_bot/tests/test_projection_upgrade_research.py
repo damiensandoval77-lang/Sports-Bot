@@ -264,6 +264,45 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(without_shadow["overall"]["paired_markets"],0)
         self.assertFalse(with_shadow["eligible_for_live_promotion"])
 
+    def test_all_market_shadow_paired_direction_requires_exact_pregame_line(self):
+        locked=[]
+        settled=[]
+        for i,market in enumerate(("PTS","REB","AST","PRA")):
+            player=str(i+1)
+            locked.append({
+                "event_start":START,"captured_at":NOW,
+                "player_id":player,"market":market,
+                "combined_projection":7.0,"opportunity_shadow_projection":9.0,
+                "line":8.5})
+            settled.append({"status":"SETTLED","event_start":START,
+                "captured_at":NOW,"player_id":player,"market":market,
+                "original_projection":7.0,
+                "line":8.5 if market!="REB" else 9.5,"actual":10.0})
+        report=grade_opportunity_shadows(locked,settled)
+        self.assertEqual(report["overall"]["paired_markets"],4)
+        self.assertEqual(report["overall"]["same_line_direction_eligible"],3)
+        self.assertEqual(report["overall"]["baseline_correct_directions"],0)
+        self.assertEqual(report["overall"]["opportunity_correct_directions"],3)
+        self.assertEqual(report["overall"]["line_mismatched_final_markets"],1)
+        self.assertEqual(report["capture_coverage"]["settled_quote_line_mismatch"],1)
+        self.assertEqual(report["by_market"]["REB"]["paired_markets"],1)
+        self.assertEqual(report["by_market"]["REB"]["same_line_direction_eligible"],0)
+        self.assertIsNone(report["by_market"]["REB"]["opportunity_same_line_hit_rate"])
+        self.assertEqual(report["overall"]["distinct_game_dates"],1)
+        self.assertFalse(report["eligible_for_live_promotion"])
+
+    def test_all_market_shadow_reports_pending_without_claiming_hits(self):
+        rows=[{"event_start":START,"captured_at":NOW,"player_id":str(i),
+               "market":market,"line":5.5,"combined_projection":5.0,
+               "opportunity_shadow_projection":6.0}
+              for i,market in enumerate(("PTS","REB","AST","PRA"))]
+        r=grade_opportunity_shadows(rows,[])
+        self.assertEqual(r["overall"]["paired_markets"],0)
+        self.assertEqual(r["overall"]["same_line_direction_eligible"],0)
+        self.assertEqual(r["capture_coverage"]["captured_candidate_markets"],4)
+        self.assertEqual(set(r["pending_by_market"].values()),{1})
+        self.assertTrue(r["same_line_required_for_direction_scoring"])
+
     def test_shadow_only_scores_actual_immutable_capture(self):
         rows,_=snapshot(board(),injury(),[],NOW)
         self.assertEqual(grade_shadow(rows,[])["paired_markets"],0)
