@@ -68,3 +68,14 @@ Still blocked: explicit permission for this use case, an actual 2026-27 authoriz
 - **Offline source adapter validated:** `docs/pbpstats_wowy_validation_status.json` now shows `PASSED` for five test modules (3+5+4+6+4 tests). Fixed two undeclared WITHOUT-group variables in `iphone_bot/lineup_onoff_research.py` discovered by real CI.
 - **Source game-level qualification remains unverified.** The WOWY aggregate player record does not expose individual game dates. A season/date filter and plausible exposure minutes are not enough to prove independent ON/OFF game counts. The importer correctly continues to require independently verified underlying game participation or lineup observations.
 - **Rights remain unverified.** Public PBP Stats API docs and successful unauthenticated API response do not establish authorization for recurring betting-model use, caching, storage, or publishing. No scheduled on/off provider-stat ingestion, real licensed samples or production AI changes are enabled.
+
+## P1 actual 2026–27 source data audit (2026-11-08 UTC)
+
+Began verifying *real* public historical game-level ON/OFF exposure, not just response schema. Details: `docs/pbpstats-real-data-research.md` and `docs/pbpstats_onoff_coverage_probe.json`.
+
+- Curry/Green: 7 games, 175.03 min together; 4 games, 20.55 min apart. OFF sample insufficient.
+- Brunson/Hart: 7 games, 205.13 min together; 7 games, 66.57 min apart. Both source minutes reconcile within the current 3%/3 minute threshold, but OFF exposure is insufficient.
+- Wagner/Banchero and Trae Young/Anthony Davis: API requests encountered HTTP errors. No numeric assertions or model adjustments derived from these.
+- Encountered authentic zero-duration and overlapping possession intervals; now correctly ignores zero-second intervals and unions overlaps.
+- The provider research probe is manual-only to avoid repeated third-party calls on unrelated commits while provider limits/rights remain unclear.
+- P1 cannot yet be marked complete: no qualified independent 5-game/120-minute ON *and* OFF sample and no live model benefit measured.
