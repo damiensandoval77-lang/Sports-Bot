@@ -41,3 +41,15 @@ P1 now includes:
 - Setup: `docs/wowy-provider-setup.md`.
 
 **Not finished:** provider permission for prop analytics, actual response mapping and current-season data access, source-specific historical cutoff, a successful end-to-end live provider fetch, and verified CI run. No public source totals have been reclassified as user-authorized data.
+
+## PBP Stats API example integration checkpoint (2026-11-07)
+
+The provider-owned GitHub notebook confirms two separate WOWY requests: target player AND teammate ON FLOOR, and target player ON while teammate OFF FLOOR. The provider OpenAPI specification (https://api.pbpstats.com/openapi.json) confirms `FromDate` and `ToDate` on the WOWY endpoint.
+
+Added:
+- `iphone_bot/pbpstats_wowy_adapter.py`: validates provider-style `multi_row_table_data` and exact `EntityId`, converts `Points`, `Rebounds`, `Assists`, and `SecondsPlayed` or `Minutes` into per-36 splits.
+- Exact ON/OFF request provenance including `FromDate` and `ToDate` must accompany each split. Undated post-game aggregates cannot be relabeled as pretip samples.
+- `iphone_bot/tests/test_pbpstats_wowy_adapter.py`: synthetic provider-schema mapping and lookahead rejection tests, added to both model workflows.
+- Fixed invalid variable reference in `iphone_bot/lineup_onoff_research.py` which would have raised an exception when validating on/off groups.
+
+Remaining for P1: Confirm authorized ongoing use in prop analytics, validate independent game-level with/without coverage tied to each query, and obtain a permissible production export. Public probe HTTP 200 proves technical accessibility, not provider authorization or actual historical sample quality. No live predictions changed.
