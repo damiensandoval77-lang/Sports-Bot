@@ -1051,7 +1051,7 @@ async function refreshSelectedLiveTracker(){
  const section=$("live-prop-tracker");
  const target=nbaSchedule?.games?.find(g=>g.game===game);
  const started=Boolean(game&&target&&(target.game_state==="in"||target.game_state==="post"||
-    (Date.parse(target.start)<=Date.now()&&target.game_state!=="pre")));
+    Date.parse(target.start)<=Date.now()));
  if(!started||!helper){section.hidden=true;return}
  section.hidden=false;
  showTrackerMessage(game,"Checking frozen pregame picks and ESPN player box scores…");
