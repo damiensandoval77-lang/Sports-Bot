@@ -83,7 +83,7 @@ class WholePipelineTest(unittest.TestCase):
     def test_absent_game_provenance_is_not_inferred(self):
         bundle,approval,form=fixture()
         bundle["pairs"][0]["without_provenance"].pop("game_dates")
-        with self.assertRaisesRegex(ValueError,"game dates"):
+        with self.assertRaisesRegex(ValueError,"do not match"):
             assemble(bundle,approval,form)
 
 if __name__=="__main__":unittest.main()
