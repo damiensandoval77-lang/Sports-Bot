@@ -16,6 +16,8 @@ on:
       - 'iphone_bot/tests/test_sanity_shadow_research.py'
       - 'iphone_bot/opportunity_backtest.py'
       - 'iphone_bot/opponent_context_v2.py'
+      - 'iphone_bot/rebound_shadow_v1.py'
+      - 'iphone_bot/tests/test_rebound_shadow_v1.py'
       - 'iphone_bot/lineup_onoff_research.py'
       - 'iphone_bot/import_authorized_onoff.py'
       - 'iphone_bot/pbpstats_request_plan.py'
@@ -71,6 +73,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_unified_reliability_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opponent_context_v2.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_rebound_shadow_v1.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_lineup_onoff_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_import_authorized_onoff.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_request_plan.py' -v
