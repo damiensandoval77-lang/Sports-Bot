@@ -48,6 +48,15 @@ def evaluate(feed, *,player_id,team,teammate_id,market,baseline,
         return dict(result,status="INVALID_BASELINE_OR_MINUTES")
     if not isinstance(feed,dict) or feed.get("status")!="LICENSED_ON_OFF_VERIFIED" or feed.get("licensed_use_verified") is not True:
         return result
+    # A provider assertion alone is not a license: require an independently
+    # reviewed manifest tying the permitted purpose to our specific bot.
+    authorization=feed.get("authorization")
+    if (not isinstance(authorization,dict)
+        or authorization.get("reviewed_for_betting_analytics") is not True
+        or authorization.get("allowed_use")!="NBA_PROP_RESEARCH"
+        or authorization.get("reviewer_confirmation")!="MANUALLY_VERIFIED"
+        or not str(authorization.get("permission_reference","")).strip()):
+        return dict(result,status="MISSING_VERIFIED_USAGE_PERMISSION")
     try:
         captured=utc(captured_at);tip=utc(game_start);issued=utc(feed["generated_at"])
         if not issued<=captured<tip:
@@ -63,6 +72,14 @@ def evaluate(feed, *,player_id,team,teammate_id,market,baseline,
     # Conflicting records are not arbitrarily selected or averaged.
     if len(rows)!=1:return dict(result,status="MISSING_OR_AMBIGUOUS_PLAYER_TEAM_PAIR")
     r=rows[0]
+    # The normalized feed must identify each split's *actual* end-of-data
+    # timestamp, not just the JSON generation time.
+    try:
+        observed_through=utc(r["observed_through_at"])
+        if observed_through>issued or observed_through>captured:
+            return dict(result,status="UNSAFE_SOURCE_OBSERVATION_TIMESTAMP")
+    except (KeyError,TypeError,ValueError):
+        return dict(result,status="MISSING_SOURCE_OBSERVATION_TIMESTAMP")
     cutoff=r.get("data_through")
     if not isinstance(cutoff,str) or len(cutoff)!=10 or not cutoff<day:
         return dict(result,status="SPLIT_INCLUDES_TARGET_GAME")
