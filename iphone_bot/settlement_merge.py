@@ -15,7 +15,7 @@ try:
 except ImportError:
     from paper_pick_pipeline import identity,summary,utc
 
-TERMINAL={"SETTLED","INVALID_LATE_CAPTURE"}
+TERMINAL={"SETTLED","VOID_DNP","INVALID_LATE_CAPTURE"}
 
 def read_records(path):
     p=Path(path)
@@ -55,7 +55,8 @@ def merge(base,new):
                 "original_probability_method","experimental_estimate")}
             original.update({k:v for k,v in row.items() if k in (
                 "status","settled_at","settlement_source","source_game_id",
-                "actual","actual_minutes","result","paper_profit_units")})
+                "actual","actual_minutes","result","paper_profit_units",
+                "void_reason","void_source_url","void_recorded_at")})
             original.update(preserve)
     return sorted(saved.values(),key=lambda r:(
         utc(r["event_start"]),str(r["player_id"]),r["market"],
