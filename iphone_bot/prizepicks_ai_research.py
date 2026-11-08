@@ -23,6 +23,15 @@ except ImportError:
     from matchup_context import team_allowances
     from defense_training import COLS
 
+try:
+    from .minutes_v3_research import forecast as minutes_v3_forecast, team_context
+    from .opportunity_v2_research import forecast as opportunity_v2_forecast
+    from .tracking_opportunity_features import load_tracking
+except ImportError:
+    from minutes_v3_research import forecast as minutes_v3_forecast, team_context
+    from opportunity_v2_research import forecast as opportunity_v2_forecast
+    from tracking_opportunity_features import load_tracking
+
 ROOT=Path(__file__).resolve().parents[1]
 ET=ZoneInfo("America/New_York")
 STATS=("PTS","REB","AST","PRA")
@@ -55,6 +64,8 @@ def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None)
     for r in form["players"]:roster[key(r["player"])].append(r)
     history=defaultdict(dict)
     for r in current_games:history[str(r["id"])][r["date"]]=r
+    team_presence=team_context(current_games)
+    tracking_rows,tracking_coverage=load_tracking()
     eligible=[]
     skipped=Counter()
     cache={}
@@ -115,6 +126,19 @@ def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None)
             line=float(offer["line"])
             projection=round(combined["projection"],1)
             direction=("MORE" if projection>line else "LESS" if projection<line else "NO_LEAN")
+            official_out_teammates=[
+                pid for (pid,t,d),status in unavailable.items()
+                if report_valid and t==offer["team"] and d==date.isoformat()
+                and status=="OUT" and pid!=str(person["player_id"])]
+            minutes_v3=minutes_v3_forecast(past,date.isoformat(),offer["team"],
+                player_id=person["player_id"],team_games=team_presence,
+                verified_out_ids=official_out_teammates,
+                pretip_injury_verified=report_valid)
+            opportunity_v2=opportunity_v2_forecast(
+                past,date.isoformat(),offer["team"],
+                player_id=person["player_id"],minutes=minutes_v3,
+                baseline_by_stat={stat:combined["projection"]} if stat in ("AST","REB") else {},
+                tracking=tracking_rows)
             eligible.append({
                 "provider_projection_id":str(offer["id"]),
                 "player":offer["player"],"player_id":str(person["player_id"]),
@@ -129,6 +153,10 @@ def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None)
                 "season_observations":n_games,
                 "pts_l5":round(base.get("PTS_L5",0),2),
                 "minutes_l5":round(base.get("MIN_L5",0),2),
+                "minutes_v3_research":minutes_v3,
+                "opportunity_v2_research":opportunity_v2
+                    if stat in ("AST","REB") else None,
+                "minutes_v2_research_baseline":base.get("MIN_L5"),
                 "captured_at":now.isoformat(),
                 "no_calibrated_hit_percentage":True,"no_verified_ev":True,
                 "source":"independent_prizepicksapi_com"})
@@ -136,6 +164,8 @@ def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None)
             skipped["invalid_source_or_model_inputs"]+=1
     return {"status":"PRIZEPICKS_AI_RESEARCH_ONLY_NOT_SPORTSBOOK_ODDS",
         "generated_at":now.isoformat(),"provider_generated_at":feed["generated_at"],
+        "minutes_v3_opportunity_v2_research_only":True,
+        "tracking_coverage":tracking_coverage,
         "comparison_count":len(eligible),
         "games_with_ai_comparisons":len({x["game"] for x in eligible}),
         "by_game":dict(Counter(x["game"] for x in eligible)),
