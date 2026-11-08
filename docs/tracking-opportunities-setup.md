@@ -106,3 +106,51 @@ feed. CI checks the importer against synthetic data, but an ordinary GitHub
 Actions runner **does not** have access to locally imported private files.
 For unattended source updates, a permitted server-side feed and secure
 deployment are still required.
+
+## Actual provider connection progress — November 8, 2026
+
+I verified the published schema of **SportQuanta** at
+https://docs.sportquanta.com/api-reference/endpoints/basketball/nba/list-nba-player-tracking/ .
+It explicitly includes `passing.potential_assists` and
+`rebounding.rebound_chances`. Its public docs also state that the player
+tracking API is behind the paid **stats** entitlement and requires an
+`Authorization: Bearer` token. The documented response is a
+**season-level player summary**, not a set of verified independent
+player/game observations, so it cannot be fed directly to the prospective
+game-level model or counted as >=8 historical games. A plan or token alone
+therefore does not yet complete per-game tracking integration.
+
+New repository-only readiness diagnostics:
+- `iphone_bot/probe_tracking_provider.py` makes **one** bounded request to
+  the documented `/v1/nba/player-tracking?season=2026&limit=500` endpoint,
+  manually, with token from the GitHub Actions secret
+  `SPORTQUANTA_API_KEY` only. It publishes no raw player statistics.
+- `.github/workflows/nba-tracking-provider-access.yml` runs schema-only
+  tests on push without a paid HTTP call. On manual dispatch, it attempts the
+  provider check using that secret, never publishing it.
+- `docs/tracking_provider_access_status.json` currently reports
+  `NOT_CONFIGURED_NEEDS_PROVIDER_TOKEN`.
+- `docs/tracking_coverage_status.json` refreshes automatically when the
+  research board or provider status changes and explains whether actual
+  player-game observations have been graded. An empty current board does not
+  mean zero accuracy.
+
+**If a SportQuanta subscription and properly authorized source are available**,
+add `SPORTQUANTA_API_KEY` to GitHub repo Settings → Secrets and variables →
+Actions → New repository secret. Then manually run "Inspect NBA potential-assist
+and rebound-chance provider safely" from the Actions tab. This only confirms
+entitlement and response structure; it does not yet prove the subscription
+includes the historical per-game samples required by this model.
+
+As a betting-oriented UI, `Outlier.bet` documents potential assists and
+rebound chances (https://help.outlier.bet/en/articles/9005352-potential-assists-rebound-chances-nba-advanced-data),
+but no supported per-game export/API licensing contract has been verified.
+`DunkAPI` allows product/model use under its published terms and offers
+play-by-play/box scores, but does **not** document the exact optical tracking
+metrics required here; its play-by-play should never be relabeled as measured
+potential assists or rebound chances.
+
+**Missing prerequisite for live data use:** One permitted per-game player
+tracking export/API, covering each player, actual `game_id` + `game_date`,
+minutes, potential assists, and rebound chances. No existing connected
+account or API key for such data was available in this session.
