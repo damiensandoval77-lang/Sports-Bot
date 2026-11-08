@@ -10,7 +10,14 @@ on:
       - '.github/workflows/nba-live-tracker-v2-tests.yml'
       - '.github/workflows/nba-live-tracker-backup.yml'
   push:
-    branches: ['fix/20261107-started-game-live-pace-tracker-v2']
+    branches: ['main', 'fix/20261107-started-game-live-pace-tracker-v2']
+    paths:
+      - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'iphone_bot/publish_live_tracker_feed.py'
+      - 'iphone_bot/tests/test_live_prop_tracker.cjs'
+      - 'iphone_bot/tests/test_publish_live_tracker_feed.py'
+      - '.github/workflows/nba-live-tracker-v2-tests.yml'
 permissions:
   contents: read
 jobs:
