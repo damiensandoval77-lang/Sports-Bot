@@ -45,7 +45,7 @@ def main():
     capture_time=datetime.now(timezone.utc).isoformat()
     locked=capture(current,existing,capture_time)
     quote_report=verify_quote_coverage(current.get("comparisons",[]),locked,capture_time)
-    COVERAGE.write_text(json.dumps(quote_report,indent=2)+"\\n")
+    COVERAGE.write_text(json.dumps(quote_report,indent=2)+"\n")
     added=len(locked)-len(existing)
     LEDGER.write_text(json.dumps({"version":1,"records":locked},indent=2)+"\n")
     form=json.loads(CURRENT_FORM.read_text()) if CURRENT_FORM.exists() else None
