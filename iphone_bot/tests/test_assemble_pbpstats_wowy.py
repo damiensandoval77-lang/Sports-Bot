@@ -9,7 +9,15 @@ CAPTURE="2026-11-07T19:00:00Z"
 
 def fixture():
     params=request_plan("100","900","BOS",cutoff_date="2026-11-06")["requests"]
-    days=[f"2026-10-{i:02d}" for i in range(2,8)]
+    days=[f"2026-10-{i:02d}" for i in range(2,12)]
+    target=[{"PlayerId":"100","Date":day,
+             "GameId":f"0022600{i:03d}",
+             "Possessions":[{"StartTime":0,"EndTime":2400}]}
+            for i,day in enumerate(days,1)]
+    teammate=[{"PlayerId":"900","Date":day,
+               "GameId":f"0022600{i:03d}",
+               "Possessions":[{"StartTime":0,"EndTime":1200}]}
+              for i,day in enumerate(days,1)]
     proof=lambda name:{"verified_completed_games":True,"game_dates":days,
                        "request_params":params[name]}
     response=lambda pts:{"multi_row_table_data":[
@@ -22,6 +30,8 @@ def fixture():
               "data_through":"2026-11-06",
               "with_response":response(100),
               "without_response":response(120),
+              "target_distribution":target,
+              "teammate_distribution":teammate,
               "with_provenance":proof("with"),
               "without_provenance":proof("without")}]}
     approval={"reviewed_for_betting_analytics":True,
@@ -37,7 +47,7 @@ class WholePipelineTest(unittest.TestCase):
         args=fixture()
         normalized=assemble(*args)
         self.assertEqual(len(normalized["observations"]),1)
-        self.assertEqual(normalized["observations"][0]["with"]["games"],6)
+        self.assertEqual(normalized["observations"][0]["with"]["games"],10)
         self.assertEqual(normalized["observations"][0]["without"]["minutes"],200)
         for market in ("PTS","REB","AST","PRA"):
             result=evaluate(normalized,player_id="100",teammate_id="900",
@@ -56,6 +66,20 @@ class WholePipelineTest(unittest.TestCase):
         bundle["pairs"][0]["with_provenance"]["request_params"]["ToDate"]="2026-11-08"
         with self.assertRaisesRegex(ValueError,"historical date"):
             assemble(bundle,approval,form)
+    def test_missing_or_inconsistent_independent_stints_are_rejected(self):
+        bundle,approval,form=fixture()
+        bundle["pairs"][0].pop("target_distribution")
+        with self.assertRaisesRegex(ValueError,"Missing independent"):
+            assemble(bundle,approval,form)
+        bundle,approval,form=fixture()
+        bundle["pairs"][0]["teammate_distribution"][0]["Possessions"][0]["EndTime"]=600
+        with self.assertRaisesRegex(ValueError,"exposure does not match"):
+            assemble(bundle,approval,form)
+        bundle,approval,form=fixture()
+        bundle["pairs"][0]["without_provenance"]["game_dates"].pop()
+        with self.assertRaisesRegex(ValueError,"do not match"):
+            assemble(bundle,approval,form)
+
     def test_absent_game_provenance_is_not_inferred(self):
         bundle,approval,form=fixture()
         bundle["pairs"][0]["without_provenance"].pop("game_dates")
