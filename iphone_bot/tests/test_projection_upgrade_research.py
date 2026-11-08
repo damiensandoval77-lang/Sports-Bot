@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_opponent_v2,grade_sanity_shadow,stress_research_report,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_opponent_v2,grade_licensed_onoff_shadows,grade_sanity_shadow,stress_research_report,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -361,6 +361,33 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(report["by_market"]["REB"]["exact_line_direction_eligible"],0)
         self.assertFalse(report["eligible_for_production"])
         self.assertEqual(grade_opponent_v2(pre,[])["overall"]["paired_markets"],0)
+
+    def test_verified_out_licensed_onoff_freezes_and_grades_without_production_change(self):
+        licensed={"status":"LICENSED_ON_OFF_VERIFIED","licensed_use_verified":True,
+          "generated_at":"2026-11-06T22:45:00Z","source":"TEST_RIGHTS_CLEARED",
+          "observations":[{"player_id":"10","teammate_id":"99","team":"BOS",
+            "season":"2026-27","data_through":"2026-11-05",
+            "with":{"games":6,"minutes":180,"PTS_per36":20},
+            "without":{"games":6,"minutes":190,"PTS_per36":26}}]}
+        b=board()
+        original=b["comparisons"][0]["combined_projection"]
+        frozen,info=run(b,injury(),[],[],NOW,[],licensed)
+        self.assertEqual(info["features_covered"]["licensed_onoff_shadow_locked"],1)
+        self.assertAlmostEqual(frozen[0]["licensed_onoff_shadow"]["projection"],23.25)
+        self.assertFalse(frozen[0]["licensed_onoff_shadow"]["production_applied"])
+        self.assertEqual(b["comparisons"][0]["combined_projection"],original)
+        final=[{"status":"SETTLED","event_start":START,"captured_at":NOW,
+           "player_id":"10","market":"PTS","original_projection":21,
+           "line":20.5,"actual":27}]
+        score=grade_licensed_onoff_shadows(frozen,final)
+        self.assertEqual(score["overall"]["paired_markets"],1)
+        self.assertEqual(score["overall"]["exact_line_eligible"],1)
+        self.assertFalse(score["eligible_for_production"])
+        wrong=grade_licensed_onoff_shadows(frozen,[{**final[0],"line":19.5}])
+        self.assertEqual(wrong["overall"]["exact_line_eligible"],0)
+        no_license={**licensed,"licensed_use_verified":False}
+        missing,_=snapshot(b,injury(),[],NOW,[],no_license)
+        self.assertIsNone(missing[0]["licensed_onoff_shadow"]["projection"])
 
     def test_shadow_only_scores_actual_immutable_capture(self):
         rows,_=snapshot(board(),injury(),[],NOW)
