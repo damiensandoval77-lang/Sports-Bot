@@ -21,6 +21,7 @@ from combined_simulation import simulate_combined_hit_rate, METHOD as COMBINED_S
 from reliability_screen import research_screen
 from edge_readiness import evaluate_edge
 from preliminary_edge import preliminary_edge
+from tracking_opportunity_features import load_tracking,pregame_features
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
@@ -226,6 +227,7 @@ def main():
             shadow_models[stat]=joblib.load(file)
             if shadow_models[stat].get("status")!="SHADOW_ONLY_NOT_CALIBRATED":
                 raise ValueError("Unrecognized opponent shadow model provenance")
+    tracking_rows,tracking_coverage=load_tracking()
     for row in valid:
         target=row["stat"];model=models[target]
         features=model["features"];fill=model["fill_values"]
@@ -268,6 +270,8 @@ def main():
             row["shadow_status"]="SHADOW_MODEL_NOT_TRAINED"
         history=sorted(by_id.get(str(row["player_id"]),{}).values(),key=lambda x:x["date"])
         history=[g for g in history if g["date"]<upcoming_date]
+        row["tracking_opportunity_research"]=pregame_features(
+            tracking_rows,row["player_id"],row["team"],upcoming_date)
         row["minutes_context"]=minutes_context(history)
         row["minutes_research"]=minutes_estimate(history,upcoming_date)
         row["minutes_v2_research"]=minutes_v2_forecast(
@@ -532,6 +536,9 @@ def main():
        "provisional_positive_ev_count":sum(r["preliminary_edge"]["status"]=="PROVISIONAL_POSITIVE_EV" for r in valid),
        "preliminary_edge_method":"TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
        "preliminary_edge_verified":False,
+       "tracking_opportunity_coverage":tracking_coverage,
+       "tracking_opportunity_research_only":True,
+       "tracking_opportunity_applied_to_model":False,
        "experimental_probability_ranking":True,
        "experimental_probability_method":METHOD,
        "real_market_probabilities_calibrated":False,
