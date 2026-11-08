@@ -349,7 +349,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 "use strict";
 const $=id=>document.getElementById(id);
 let gameMoneylines=null;
-let frozenMatchupForecasts=[],trackerRequestId=0;
+let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -1116,11 +1116,24 @@ async function refreshSelectedLiveTracker(){
  const serial=++trackerRequestId,game=selectedGame,helper=window.LivePropTracker;
  const section=$("live-prop-tracker");
  const target=nbaSchedule?.games?.find(g=>g.game===game);
- const started=Boolean(game&&target&&(target.game_state==="in"||target.game_state==="post"||
-    Date.parse(target.start)<=Date.now()));
- if(!started||!helper){section.hidden=true;return}
+ const firstFrozen=frozenMatchupForecasts.find(r=>r.game===game);
+ // Sportbook score feeds can omit live fixtures. A verified frozen original
+ // matchup still proves the actual scheduled tipoff; never infer new picks.
+ const start=target?.start||firstFrozen?.start;
+ const started=Boolean(game&&start&&
+    (target?.game_state==="in"||target?.game_state==="post"||
+     Date.parse(start)<=Date.now()));
+ if(!started||!helper){section.hidden=true;trackerLastGame="";return}
  section.hidden=false;
- showTrackerMessage(game,"Checking frozen pregame picks and ESPN player box scores…");
+ if(trackerLastGame!==game){
+   trackerLastGame=game;
+   trackerLastUpdated=null;
+   showTrackerMessage(game,"Loading live ESPN player totals and frozen pregame projections…");
+ }else{
+   $("live-prop-context").textContent="Checking for updated player totals… Last verified "+
+     (trackerLastUpdated?new Date(trackerLastUpdated).toLocaleTimeString():"not yet")+
+     ". Existing figures are previous observations until refreshed.";
+ }
  const pregame=helper.pickRows(frozenMatchupForecasts,game);
  if(!pregame.length){
   showTrackerMessage(game,"No authentic pre-tipoff AI projections with quoted lines were saved for this matchup. Live picks cannot be reconstructed.");
@@ -1129,7 +1142,7 @@ async function refreshSelectedLiveTracker(){
  try{
   // ESPN event IDs are different from the odds-provider IDs. Match teams,
   // date, and event status before requesting the box score.
-  const eastern=easternGameDay(target.start).replaceAll("-","");
+  const eastern=easternGameDay(start).replaceAll("-","");
   const response=await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates="+eastern+"&limit=100",
      {cache:"no-store"});
   if(!response.ok)throw Error("ESPN scoreboard unavailable");
@@ -1178,10 +1191,17 @@ async function refreshSelectedLiveTracker(){
    cards.push(card);
   }
   $("live-prop-cards").replaceChildren(...cards);
+  trackerLastUpdated=Date.now();
  }catch(error){
   if(serial!==trackerRequestId)return;
-  showTrackerMessage(game,"Live ESPN player box score unavailable: "+String(error.message||error)+
-    ". Pregame picks remain saved; no player totals are guessed.");
+  // An intermittent provider/network error must not wipe verified stats.
+  // Mark the prior totals as old so they are not mistaken for current.
+  $("live-prop-title").textContent=game+" · LIVE FEED DELAYED";
+  $("live-prop-context").textContent="Refresh failed: "+String(error.message||error)+
+    ". "+(trackerLastUpdated?"Previous verified totals from "+
+     new Date(trackerLastUpdated).toLocaleTimeString()+" retained (STALE).":
+     "No verified player totals available yet.")+
+    " Saved pregame picks are unchanged.";
  }
 }
 function renderGameStrip(){
@@ -1195,7 +1215,7 @@ function renderGameStrip(){
   if(g.date_eastern!==easternDay)continue;
   games.set(g.game,{...g});
  }
- for(const r of [...ai,...odds]){
+ for(const r of [...ai,...odds,...frozenMatchupForecasts]){
   if(!r.game||games.has(r.game))continue;
   const startDate=new Date(r.start);
   if(!Number.isFinite(startDate.getTime()))continue;
@@ -1204,6 +1224,14 @@ function renderGameStrip(){
   const p=t=>pp.find(x=>x.type===t)?.value||"";
   if(p("year")+"-"+p("month")+"-"+p("day")!==easternDay)continue;
   games.set(r.game,{game:r.game,start:r.start,game_state:"unknown"});
+ }
+ // Keep the selected, legitimately captured matchup while temporary score
+ // feeds omit it. Never discard the user's live tracker selection on polling.
+ if(selectedGame&&!games.has(selectedGame)){
+  const prior=frozenMatchupForecasts.find(p=>p.game===selectedGame);
+  if(prior&&easternGameDay(prior.start)===easternDay)
+    games.set(selectedGame,{game:selectedGame,start:prior.start,game_state:
+      Date.parse(prior.start)<=Date.now()?"in":"pre",source:"FROZEN_PREGAME_IDENTITY_ONLY"});
  }
  const rows=[...games.values()].sort((a,b)=>Date.parse(a.start)-Date.parse(b.start));
  if(selectedGame&&!games.has(selectedGame))selectedGame="";
@@ -1267,11 +1295,13 @@ function renderGameStrip(){
   const total=ai.filter(x=>x.game===name).length;
   const oddsTotal=odds.filter(x=>x.game===name).length;
   const ppTotal=ppBoardOffers.filter(x=>x.game===name&&Date.parse(x.starts_at)>Date.now()).length;
+  const frozenTotal=frozenMatchupForecasts.filter(x=>x.game===name).length;
   const state=g.game_state==="post"?"Final":g.game_state==="in"?"Live":
     Date.parse(g.start)<=Date.now()?"Started":formatTime(g.start);
   const playersWithLines=new Set(odds.filter(x=>x.game===name).map(x=>norm(x.player))).size;
   const detail=oddsTotal?playersWithLines+" players · "+oddsTotal+" lines":
-    ppTotal?ppTotal+" PrizePicks lines":total?total+" AI props":"No verified lines";
+    ppTotal?ppTotal+" PrizePicks lines":frozenTotal?frozenTotal+" frozen AI props":
+    total?total+" AI props":"No verified lines";
   const scoreReady=["in","post"].includes(g.game_state)&&
     validScore(g.away_score)&&validScore(g.home_score);
   const tile=node("button","game-tile score-tile");
@@ -1298,7 +1328,7 @@ function renderGameStrip(){
    const pair=teamRow(code,safeLogo(logo,code),scoreReady?String(score):"—");
    scores.append(pair[0],pair[1]);
   }
-  const footer=node("span","tile-props"+(total||ppTotal?"":oddsTotal?" partial":" no-lines"),detail);
+  const footer=node("span","tile-props"+(total||ppTotal||frozenTotal?"":oddsTotal?" partial":" no-lines"),detail);
   const liveMl=gameMoneylines?.games?.find(m=>m.game===name);
   const latestMl=liveMl?.books?.filter(b=>Date.now()-Date.parse(b.updated_at)<90*60000)
     .sort((a,b)=>Date.parse(b.updated_at)-Date.parse(a.updated_at))[0];
@@ -1776,6 +1806,11 @@ if(ppAI.status==="fulfilled"&&ppAI.value?.status==="PRIZEPICKS_AI_RESEARCH_ONLY_
   if(!ppAIResearch.has(id))ppAIResearch.set(id,x);
  }
 }
+// The live tracker must use the original frozen PrizePicks research capture,
+// not the upcoming-only posted-line board. Retain rows after the game begins
+// even when provider credits reach zero or the live sportsbook market closes.
+frozenMatchupForecasts.push(...(window.LivePropTracker?.frozenPrizePicks(
+ [...ppAIResearch.values()])||[]));
 ppBoardOffers=ppFresh&&Array.isArray(pp.value.board_offers)?
   pp.value.board_offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"&&
     x.game&&Date.parse(x.starts_at)>Date.now()):[];
