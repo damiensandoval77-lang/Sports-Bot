@@ -531,14 +531,40 @@ function upcomingAIProps(rows,now=Date.now()){
  // Persisted pregame captures remain untouched for settlement and research.
  return rows.filter(p=>Number.isFinite(Date.parse(p.start))&&Date.parse(p.start)>now);
 }
+// PrizePicks exposes many selectable thresholds for the same athlete/market.
+ // Show one representative central threshold per player/stat/matchup, while
+ // preserving all distinct source thresholds in the expanded card.
+ // This is a PRESENTATION grouping only: no change to model output, grading,
+ // archived forecasts or the underlying authentic provider lines.
+function compactPrizePicksDisplay(rows){
+ const groups=new Map();
+ for(const p of rows){
+  const id=[norm(p.player),p.team,p.game,p.start,p.stat].join("|");
+  if(!groups.has(id))groups.set(id,[]);
+  groups.get(id).push(p);
+ }
+ const display=[];
+ for(const values of groups.values()){
+  const unique=[...new Map(values.map(p=>[Number(p.line),p])).values()]
+   .sort((a,b)=>Number(a.line)-Number(b.line));
+  if(!unique.length)continue;
+  // Select the center POSTED threshold, not whichever threshold yields the
+  // largest simulated probability. An even count uses the lower middle.
+  const main=unique[Math.floor((unique.length-1)/2)];
+  display.push({...main,alternative_lines:unique.map(p=>Number(p.line)),
+   available_threshold_count:unique.length});
+ }
+ return display;
+}
 function renderAI(){
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
- const entries=upcomingAIProps(ai).filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
+ const board=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
+ const entries=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
  entries.sort((a,b)=>sort==="name"?a.player.localeCompare(b.player):
   sort==="edge"?Math.abs(b.difference)-Math.abs(a.difference):
-  Date.parse(a.start)-Date.parse(b.start)||a.player.localeCompare(b.player));
- $("ai-total").textContent=entries.length+" props";
+  Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
+ $("ai-total").textContent=entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   const outer=node("article","prop compact-prop"),main=node("div","mainline");
   const head=node("div","compact-head"),identity=node("div","compact-identity");
@@ -578,6 +604,11 @@ function renderAI(){
    metric("20K SIM HIT %",chance(p),"chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
+  if(aiMetadata?.is_prizepicks&&p.available_threshold_count>1){
+   main.append(node("div","match",
+     "Central posted PrizePicks line shown · "+p.available_threshold_count+
+     " authentic alternative thresholds for this player/market in details."));
+  }
   const probabilityNote=node("div","match",(combinedSimAvailable(p)?
     "20,000 bootstrap draws centered on COMBINED projection using original-model holdout errors. Not calibrated on combined-model outcomes. ":
     "20,000-run COMBINED model estimate unavailable until valid holdout residuals are provided. ")+
@@ -619,6 +650,11 @@ function renderAI(){
           "View recent stats, PrizePicks tiers & analysis":
           "View recent stats, sportsbook odds & analysis"),
         body=node("div","detailbody");
+  if(aiMetadata?.is_prizepicks&&p.available_threshold_count>1){
+   body.append(node("div","detail-heading","All available PrizePicks thresholds"));
+   body.append(node("div","mini",p.alternative_lines.map(n=>fmt(n)).join(" · ")+
+     " · representative center threshold is shown on the card; these are pick'em lines, not sportsbook odds."));
+  }
   const recentForm=formFresh?currentPerson(p.player,p.team):null;
   const recentBlocks=node("div","recent-block-grid");
   const seasonGames=Number(recentForm?.games)||0;
