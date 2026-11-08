@@ -20,7 +20,8 @@ BASE="https://prizepicksapi.com/api/v1/projections"
 STAT={"points":"PTS","rebounds":"REB","assists":"AST",
       "pts+rebs+asts":"PRA","pts+reb+ast":"PRA","points rebounds assists":"PRA",
       "points+rebounds+assists":"PRA","pts reb ast":"PRA"}
-MAX_PAGES=3  # Limit free-plan API requests; a partial result is clearly labeled.
+MAX_PAGES=6  # At most six production requests per refresh; partial clearly labeled.
+PAGE_SIZE=200
 
 def timeparse(value):
     try:
@@ -137,7 +138,7 @@ def rejection_hint(row,now,verified_live=False):
     if not start and not (event.get("opponent") or row.get("opponent")):return "missing_game_time_and_opponent"
     return "invalid_or_unavailable_selection"
 
-def publish(raw_pages,comparisons,now=None):
+def publish(raw_pages,comparisons,now=None,schedule=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     offers=[]
     raw_count=0
@@ -160,6 +161,35 @@ def publish(raw_pages,comparisons,now=None):
             if cleaned:offers.append(cleaned)
             else:rejection_reasons[rejection_hint(row,now,verified_live=True)]+=1
     distinct={o["id"]:o for o in offers if o["id"]}
+    # Collect genuine PrizePicks lines independently of the priced sportsbook
+    # AI board, which may be empty when The Odds API credits run out.
+    schedule_games=(schedule or {}).get("games",[])
+    board_offers=[]
+    ambiguous=0
+    from iphone_bot.paper_pick_pipeline import expected_opponents
+    for original in distinct.values():
+        item=dict(original)
+        possibilities=[]
+        for game in schedule_games:
+            try:
+                start=timeparse(game.get("start"))
+                if not start or start<=now:continue
+                opponents=expected_opponents(game.get("game"),item["team"])
+                if not opponents:continue
+                if item["opponent"] and item["opponent"] not in opponents:continue
+                stated=timeparse(item.get("starts_at"))
+                if stated and abs((start-stated).total_seconds())>30*60:continue
+                if not item["opponent"] and not stated:continue
+                possibilities.append(game)
+            except (TypeError,ValueError,KeyError):continue
+        if len(possibilities)==1:
+            game=possibilities[0]
+            item["game"]=game["game"]
+            item["starts_at"]=item["starts_at"] or game["start"]
+            item["event_start_source"]="provider" if original["starts_at"] else "verified_internal_schedule"
+            board_offers.append(item)
+        elif len(possibilities)>1:
+            ambiguous+=1
     matched=[]
     unmatched=0
     for comparison in comparisons:
@@ -177,7 +207,9 @@ def publish(raw_pages,comparisons,now=None):
                 difference=round(projection-o["line"],2) if projection is not None else None,
                 ai_direction="MORE" if projection is not None and projection>o["line"] else
                              "LESS" if projection is not None and projection<o["line"] else "NO LEAN"))
-    return {"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES" if matched else "LIVE_NO_MATCHED_PRIZEPICKS_LINES",
+    status=("LIVE_THIRD_PARTY_PRIZEPICKS_LINES" if matched or board_offers
+            else "LIVE_NO_MATCHED_PRIZEPICKS_LINES")
+    return {"status":status,
         "source":"Independent prizepicksapi.com (not affiliated with PrizePicks)",
         "source_url":"https://prizepicksapi.com/docs",
         "generated_at":now.isoformat(),
@@ -187,6 +219,11 @@ def publish(raw_pages,comparisons,now=None):
         "filtered_out_reasons":dict(sorted(rejection_reasons.items())),
         "match_method":"EXACT_PLAYER_TEAM_STAT_AND_VERIFIED_SCHEDULE_OR_30_MIN_TIPOFF",
         "matched_count":len(matched),"unmatched_ai_comparisons":unmatched,
+        "independent_board_count":len(board_offers),
+        "games_with_independent_lines":len({o["game"] for o in board_offers}),
+        "unassigned_or_ambiguous_events":len(distinct)-len(board_offers),
+        "ambiguous_event_matches":ambiguous,
+        "board_offers":board_offers,
         "offers":matched,
         "notice":"Read-only third-party observations. May lag the app. FanDuel odds and EV are separate; PrizePicks pick'em lines are NOT American-odds quotes."}
 
@@ -207,40 +244,41 @@ def main():
         DEST.write_text(json.dumps(out,indent=2)+"\n")
         print("PrizePicks API key missing; publishing NOT_CONFIGURED status, no vendor request.",flush=True)
         return
-    # Do not re-spend API calls during a confirmed monthly quota lockout.
-    # An explicit workflow_dispatch can opt in after the account is upgraded.
+    # Only a newer successful authenticated provider check unlocks old 429.
     if DEST.exists() and os.environ.get("PRIZEPICKS_FORCE_REFRESH")!="1":
         try:
             old=json.loads(DEST.read_text())
             if old.get("status")=="PROVIDER_RATE_LIMITED" and old.get("provider_error_code")=="MONTHLY_QUOTA_EXCEEDED":
+                health=json.loads((ROOT/"docs/prizepicks_connection_health.json").read_text())
+                checked=timeparse(health.get("checked_at"))
                 previous=timeparse(old.get("generated_at"))
-                wait=int(old.get("retry_after_seconds") or 0)
-                if previous and 0<wait and dt.datetime.now(dt.timezone.utc)<previous+dt.timedelta(seconds=wait):
-                    print("Monthly PrizePicks API quota previously exhausted; skipping provider call until reset.",flush=True)
+                if not (health.get("status")=="API_ACCESS_CONFIRMED" and checked and previous and checked>previous):
+                    print("Monthly quota lockout not cleared by confirmed authenticated health check.",flush=True)
                     return
-        except (ValueError,TypeError,KeyError):
-            pass
+        except (ValueError,TypeError,KeyError,FileNotFoundError):
+            print("Cannot verify credit recovery: retaining provider lockout.",flush=True)
+            return
     comp=json.loads((ROOT/"docs/ai_comparisons.json").read_text())
     if comp.get("status")!="EXPERIMENTAL_NON_CALIBRATED":
         raise ValueError("AI comparison source invalid")
-    # Search only players we can actually compare, rather than consuming
-    # monthly credits on 3,000 unrelated rows from the ID-ordered board.
-    # The full JSON shape retains event/selection context missing in compact.
-    names=[]
-    for comparison in comp["comparisons"]:
-        name=str(comparison.get("player","")).strip()
-        if name and name not in names:names.append(name)
-        if len(names)>=3:break
+    # Use cursor pagination over all active NBA offers, not a 3-player sample.
     pages=[]
     requested=[]
+    cursor=None
+    seen_cursors=set()
     try:
-        for name in names:
-            url=BASE+"?"+urllib.parse.urlencode({
-                "league":"NBA","status":"active","search":name,"limit":200})
-            page=read_url(url,key)
-            if not isinstance(page,dict):raise ValueError("Invalid response")
+        for index in range(MAX_PAGES):
+            params={"league":"NBA","status":"active","limit":PAGE_SIZE}
+            if cursor:params["cursor"]=cursor
+            page=read_url(BASE+"?"+urllib.parse.urlencode(params),key)
+            if not isinstance(page,dict) or not isinstance(page.get("meta"),dict):
+                raise ValueError("Invalid authenticated PrizePicks page")
             pages.append(page)
-            requested.append(name)
+            requested.append(index+1)
+            cursor=page["meta"].get("next_cursor")
+            if not cursor:break
+            if cursor in seen_cursors:raise ValueError("Repeated PrizePicks page cursor")
+            seen_cursors.add(cursor)
     except urllib.error.HTTPError as err:
         # Do not retry 429: it can signal monthly credits, not just a minute.
         if err.code!=429:raise
@@ -261,9 +299,16 @@ def main():
         print("Independent PrizePicks rate limited:",out["provider_error_code"],
               "retry after:",out["retry_after_seconds"],flush=True)
         return
-    out=publish(pages,comp["comparisons"])
-    out["searched_player_count"]=len(requested)
-    out["searched_players"]=requested
+    schedule_path=ROOT/"docs/nba_schedule.json"
+    schedule=json.loads(schedule_path.read_text()) if schedule_path.exists() else {}
+    out=publish(pages,comp["comparisons"],schedule=schedule)
+    out["max_pages_budget"]=MAX_PAGES
+    out["source_query"]="NBA_ACTIVE_ALL_PLAYERS_CURSOR_PAGED"
+    out["complete_provider_board"]=not out["partial_board"] and out["provider_status"]=="fresh"
+    out["pages_requested"]=len(requested)
+    if out["independent_board_count"]==0 and out["matched_count"]==0 and DEST.exists():
+        print("No fresh eligible PrizePicks events; preserving previous feed as stale.",flush=True)
+        return
     DEST.write_text(json.dumps(out,indent=2)+"\n")
     print("PrizePicks matched observations:",out["matched_count"],
           "raw rows:",out["raw_rows_read"],"eligible:",out["eligible_upcoming_offers"],
