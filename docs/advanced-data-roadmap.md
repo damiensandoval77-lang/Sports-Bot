@@ -97,3 +97,16 @@ Began verifying *real* public historical game-level ON/OFF exposure, not just re
 - On-screen model leans are raw directions, not verified profitable picks; misleading simulated percentages and EV ranking were removed in the prior grading-integrity sprint.
 
 **Next gating milestones:** lock REB V1 projections on multiple *future* NBA game dates, grade on the exact original line without retroactive regeneration, compare paired MAE and win rate against original Combined, review exposure and injuries, and only consider a change if the candidate improves held-out independent multi-day performance (not merely this two-day grading snapshot). Preserve all losing grades; no production promotion until independently justified.
+
+## P2 / P3 player tracking opportunities (2026-11-08)
+
+Implemented **research-only** pipeline for the two additional features requested:
+- **Potential assists:** authorized game-level tracked potential assists, the corresponding recorded assists, minutes, and per-player historical conversion. Avoids treating recorded AST as the opportunity denominator.
+- **Rebound chances:** authorized per-game rebound chances, recorded rebounds, minutes, historical conversion, and strict prior-game exposure. Avoids treating traditional rebounds as chances.
+- Both challengers are in `iphone_bot/tracking_opportunities_v1.py` with >=8 independent prior completed games, >=160 prior minutes, 65/35 season/recent opportunity rates, pregame expected minutes and conservative capped adjustments. Missing, future, duplicate, unlicensed or unstable samples are excluded.
+- `iphone_bot/import_tracking_export.py` accepts a rights-reviewed provider CSV and writes only to gitignored `data/nba/private/tracking_opportunities.json`. Regular GitHub runners will not possess this private export.
+- `iphone_bot/projection_upgrade_research.py` freezes alternative AST and REB predictions prospectively and grades both only against the *identical frozen sportsbook quote* and the original Combined AI. Results appear in `docs/projection_upgrade_status.json` under `tracking_opportunity_shadow`; the performance panel displays them.
+- `docs/tracking_opportunities_validation_status.json`: PASSED 33 tests (6 dedicated model, 3 importer, 24 full integration). **No true tracking-derived live edge or hit-rate improvement has yet been measured.**
+- **Rights limitation:** NBA.com's published Statistics terms restrict its data in connection with gambling, even when the endpoints are publicly readable. This work does *not* scrape NBA.com or suggest the public API access creates a license. A properly licensed independent data source remains necessary. See `docs/tracking-opportunities-setup.md`.
+
+P2 and P3 are **built in code, source ingestion not yet active**. No live pick weights, grades or simulated probabilities were overwritten.
