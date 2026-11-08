@@ -67,6 +67,7 @@ def historical(records):
                       "date":day,"player_id":pid,"actual":target["PTS"],
                       "baseline":baseline,"candidate":candidate["projection"],
                       "blended":candidate["blended_projection"],
+                      "without_opponent":candidate["unadjusted_points"],
                       "old_shot_profile":old["expected_points"],
                       "opponent_adjusted":candidate["opponent_adjustment_applied"]})
             history.append(target)
@@ -74,6 +75,10 @@ def historical(records):
     if comparisons:
         summary["old_shot_profile_mae"]=round(mean(abs(x["old_shot_profile"]-x["actual"])
                                                      for x in comparisons),4)
+        summary["same_minutes_no_opponent_mae"]=round(
+            mean(abs(x["without_opponent"]-x["actual"]) for x in comparisons),4)
+        summary["opponent_factor_mae_change"]=round(
+            summary["candidate_mae"]-summary["same_minutes_no_opponent_mae"],4)
     return summary
 
 def locked(ledger,games):
