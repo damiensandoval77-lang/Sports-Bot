@@ -1,20 +1,13 @@
 name: Refresh independent NBA PrizePicks full-slate lines
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/fetch_prizepicks.py'
-      - 'iphone_bot/probe_prizepicks_topup.py'
-      - 'iphone_bot/tests/test_fetch_prizepicks.py'
-      - 'iphone_bot/preserve_research_inputs.py'
-      - '.github/workflows/nba-prizepicks-full-slate.yml'
   schedule:
     # Two daily NBA pregame refresh windows, seven hours apart; up to four compact pages each.
     # Uses proven top-up access even if the monthly remaining-credit header is zero.
     - cron: '28 16,23 * * *'
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: nba-independent-prizepicks-feed
   cancel-in-progress: false
@@ -54,6 +47,7 @@ jobs:
       - name: Archive original independent pick'em lines and tiers
         run: python -u iphone_bot/preserve_research_inputs.py prizepicks
       - name: Save real PrizePicks observations without modifying sportsbook odds
+        id: publish
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -67,8 +61,13 @@ jobs:
           if git diff --cached --quiet; then echo 'No newly eligible real lines'; exit 0; fi
           git commit -m 'Update authentic independent NBA PrizePicks full-slate lines'
           for attempt in 1 2 3 4 5 6; do
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then echo 'changed=true' >> "$GITHUB_OUTPUT"; exit 0; fi
             git fetch origin main
             git rebase origin/main || { git rebase --abort || true; exit 1; }
           done
           exit 1
+      - name: Immediately publish lines to site after authenticated provider update
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-prizepicks-site-publish.yml --ref main
