@@ -1,0 +1,42 @@
+name: Publish actual assist model grades by Eastern game night
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/assist_night_comparison.py'
+      - '.github/workflows/nba-assist-night-comparison.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-assist-night-comparison
+  cancel-in-progress: false
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Grade original frozen assists separately for each game night
+        run: python -m iphone_bot.assist_night_comparison
+      - name: Publish derived counts and rate differences
+        run: |
+          set -euo pipefail
+          cp docs/assist_nightly_comparison.json "$RUNNER_TEMP/assist-nightly.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/assist-nightly.json" docs/assist_nightly_comparison.json
+            git add docs/assist_nightly_comparison.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish independently graded assist hit rate by game night'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
