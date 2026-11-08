@@ -339,14 +339,10 @@ def main():
         scenario=row["injury_minutes_research"]
         baseline_min=scenario.get("baseline_minutes")
         scenario_min=scenario.get("scenario_minutes")
-        if (official_report and
-            scenario.get("status")=="HISTORICAL_SCENARIO_RESEARCH_ONLY" and
-            isinstance(baseline_min,(int,float)) and baseline_min>0 and
-            isinstance(scenario_min,(int,float)) and scenario_min>=0):
-            ratio=max(.90,min(1.10,scenario_min/baseline_min))
-            row["injury_scenario_projection"]=round(max(0,combined["projection"]*ratio),1)
-            row["injury_scenario_ratio_capped"]=round(ratio,4)
-            row["injury_scenario_source"]="OFFICIAL_GAME_DAY_OUT_PLUS_PRIOR_NONCAUSAL_MINUTES"
+        if row["injury_reprojection_status"]=="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT":
+            row["injury_scenario_projection"]=row["combined_projection"]
+            row["injury_scenario_ratio_capped"]=row["injury_reprojection_factor"]
+            row["injury_scenario_source"]="ACTUAL_APPLIED_BOUNDED_OFFICIAL_OUT_REPROJECTION"
         if row["injury_context_requires_reprojection"]:
             row["injury_projection_warning"]=(
                 "REPROJECTED_FROM_OFFICIAL_OUT_WITH_HISTORICAL_SPLITS"
@@ -449,7 +445,7 @@ def main():
        "injury_data_verified":report_fresh and injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED",
        "injury_context_source":injury_feed.get("status") if report_fresh else "UNAVAILABLE",
        "official_injury_report_url":injury_feed.get("source_pdf") if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" else None,
-       "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":False,
+       "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":any(r.get("injury_scenario_applied_to_combined") for r in valid),
        "injury_minutes_research_status":"DESCRIPTIVE_ONLY_NOT_APPLIED",
        "minutes_baseline_validation":minutes_walkforward_backtest(all_games),
        "minutes_v2_validation":minutes_v2_backtest(all_games),
