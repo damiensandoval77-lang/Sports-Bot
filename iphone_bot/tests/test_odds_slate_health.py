@@ -43,6 +43,18 @@ class CoverageTests(unittest.TestCase):
         self.assertEqual(r["provider_events_reported"],12)
         self.assertTrue(r["no_new_provider_requests_made"])
 
+    def test_legacy_fetched_zero_events_with_low_credits_corrected(self):
+        # Published metadata from a historical run: 12 upcoming games,
+        # no event detail requests, 11 remaining vs a 12-credit reserve.
+        legacy={"status":"FETCHED","details":{
+            "available_events":12,"checked_events":0,"remaining_credits":"11"}}
+        r=report(schedule(),{"updated_at":"2026-11-07T18:45:00Z",
+                  "events_covered":[],"picks":[]},legacy,now=NOW)
+        self.assertEqual(r["provider_status"],"LEGACY_ZERO_EVENT_FETCH_CREDIT_RESERVE")
+        self.assertEqual(r["reserved_credits"],12)
+        self.assertEqual(r["by_coverage"]["ODDS_CREDIT_RESERVE_BLOCKED"],3)
+        self.assertEqual(r["upcoming_with_fresh_props"],0)
+
     def test_stale_feed_does_not_claim_verified_live(self):
         expired=odds()
         expired["updated_at"]="2026-11-06T18:45:00Z"
