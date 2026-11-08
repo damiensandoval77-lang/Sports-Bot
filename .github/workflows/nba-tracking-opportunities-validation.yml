@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/tracking_opportunities_v1.py'
+      - 'iphone_bot/import_tracking_export.py'
+      - 'iphone_bot/tests/test_import_tracking_export.py'
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/tests/test_tracking_opportunities_v1.py'
       - 'iphone_bot/tests/test_projection_upgrade_research.py'
@@ -31,7 +33,7 @@ jobs:
         run: |
           set -o pipefail
           python -m py_compile iphone_bot/tracking_opportunities_v1.py iphone_bot/projection_upgrade_research.py 2>&1 | tee "$RUNNER_TEMP/tracking-check.log"
-          for suite in test_tracking_opportunities_v1.py test_projection_upgrade_research.py; do
+          for suite in test_tracking_opportunities_v1.py test_import_tracking_export.py test_projection_upgrade_research.py; do
             python -m unittest discover -s iphone_bot/tests -p "$suite" -v 2>&1 | tee -a "$RUNNER_TEMP/tracking-check.log" || exit 1
           done
       - name: Publish diagnostics only, not tracking game rows
