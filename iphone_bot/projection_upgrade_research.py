@@ -21,9 +21,9 @@ except ImportError:
     from paper_pick_pipeline import utc
 
 try:
-    from .opportunity_backtest import histories as opportunity_histories,opportunity as opportunity_forecast,candidate as opportunity_candidate
+    from .opportunity_backtest import histories as opportunity_histories,opportunity as opportunity_forecast,candidate as opportunity_candidate,stability_candidate as stability_opportunity_candidate
 except ImportError:
-    from opportunity_backtest import histories as opportunity_histories,opportunity as opportunity_forecast,candidate as opportunity_candidate
+    from opportunity_backtest import histories as opportunity_histories,opportunity as opportunity_forecast,candidate as opportunity_candidate,stability_candidate as stability_opportunity_candidate
 
 try:
     from .selection_gate_shadow import pregame_gate
@@ -152,6 +152,12 @@ def snapshot(board,injury,existing,at,game_history=None):
             if row["assist_shadow"]["projection"] is not None:
                 counters["assist_shadow_locked"]+=1
             row["opportunity_shadow_projection"]=frozen
+            row["stability_opportunity_shadow_projection"]=(
+                stability_opportunity_candidate(combined,opp["raw_stat_projections"][row["market"]],opp)
+                if opp["status"]=="HISTORICAL_OPPORTUNITY_CANDIDATE" else None)
+            row["stability_opportunity_method"]="FIXED_VOLATILITY_SHRINKAGE_RESEARCH_ONLY"
+            if row["stability_opportunity_shadow_projection"] is not None:
+                counters["stability_opportunity_shadow_locked"]+=1
             row["opportunity_shadow_status"]=("PREGAME_LOCKED_UNVALIDATED_CHALLENGER"
                if frozen is not None else "INSUFFICIENT_PAST_PLAYER_GAMES")
             row["opportunity_shadow_prior_games"]=opp["history_games"]
@@ -525,8 +531,9 @@ def grade_opportunity_shadows(ledger,paper_rows):
             # shadow line, never against a later or different bookmaker line.
             exact=abs(line-settled_line)<1e-9
             date=event.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+            stable=valid(row.get("stability_opportunity_shadow_projection"))
             bymarket[row["market"]].append({
-                "baseline":baseline,"shadow":shadow,"actual":actual,
+                "baseline":baseline,"shadow":shadow,"stable":stable,"actual":actual,
                 "line":line,"exact_line":exact,"date":date})
             if not exact:coverage["settled_quote_line_mismatch"]+=1
         except (KeyError,ValueError,TypeError,OverflowError):
@@ -542,7 +549,15 @@ def grade_opportunity_shadows(ledger,paper_rows):
                         for r in line_rows)
         dates=len({r["date"] for r in rows})
         paired_dates=len({r["date"] for r in line_rows})
+        stable_rows=[r for r in rows if r["stable"] is not None]
+        stable_sides=[r for r in line_rows if r["stable"] is not None and r["stable"]!=r["line"]]
+        stable_wins=sum((r["stable"]>r["line"])==(r["actual"]>r["line"]) for r in stable_sides)
         return {"paired_markets":n,
+          "stability_shadow_paired_markets":len(stable_rows),
+          "stability_shadow_mae":round(sum(abs(r["stable"]-r["actual"]) for r in stable_rows)/len(stable_rows),3) if stable_rows else None,
+          "stability_shadow_same_line_eligible":len(stable_sides),
+          "stability_shadow_correct_directions":stable_wins,
+          "stability_shadow_same_line_hit_rate":round(stable_wins/len(stable_sides),4) if stable_sides else None,
           "distinct_game_dates":dates,
           "baseline_mae":round(sum(abs(r["baseline"]-r["actual"]) for r in rows)/n,3) if n else None,
           "opportunity_mae":round(sum(abs(r["shadow"]-r["actual"]) for r in rows)/n,3) if n else None,
@@ -571,6 +586,7 @@ def grade_opportunity_shadows(ledger,paper_rows):
             "capture_coverage":dict(coverage),
             "pending_by_market":{m:pending[m] for m in MARKETS},
             "same_line_required_for_direction_scoring":True,
+            "stability_challenger_research_only":True,
             "mae_uses_same_player_verified_final_stat_only":True,
             "not_validated_by_future_game_dates":True,
             "live_applied":False,"eligible_for_live_promotion":False}
