@@ -41,8 +41,10 @@ class PrizePicksTests(unittest.TestCase):
                          "ZERO_PROVIDER_CREDITS_PRESERVE")
         self.assertEqual(quota_guard(old,{},when,topup={**after,"provider_mode":"demo"}),
                          "ZERO_PROVIDER_CREDITS_PRESERVE")
-        self.assertEqual(quota_guard(old,{},when+dt.timedelta(hours=7),topup=after),
+        self.assertEqual(quota_guard(old,{},when+dt.timedelta(hours=3),topup=after),
                          "TOPUP_REFRESH_COOLDOWN_PRESERVE")
+        self.assertEqual(quota_guard(old,{},when+dt.timedelta(hours=7),topup=after),
+                         "TOPUP_PAID_READ_CONFIRMED")
         updated={**old,"generated_at":"2026-11-08T10:30:00Z"}
         self.assertEqual(quota_guard(updated,{},when+dt.timedelta(hours=1),topup=after),
                          "TOPUP_REFRESH_COOLDOWN_PRESERVE")
