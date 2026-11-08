@@ -61,3 +61,10 @@ The technical response pipeline is connected: `iphone_bot/assemble_pbpstats_wowy
 The build runs synthetic end-to-end tests through the new `iphone_bot/tests/test_assemble_pbpstats_wowy.py` in both GitHub research and trained-board workflows. These tests verify software behavior, **not** current-season game availability, legal data permissions, or model effectiveness.
 
 Still blocked: explicit permission for this use case, an actual 2026-27 authorized provider feed, independently verified per-split game dates (not guessed), and confirmation the latest new CI checks passed. Until these clear, live provider ingestion stays disabled and WOWY prospective coverage remains zero.
+
+## 2026-11-07 current-season probe and full integration CI verification
+
+- **Actual API response, current season:** `docs/pbpstats_current_season_probe.json` shows both strict `2026-27` date-bounded teammate ON/OFF requests succeeded with HTTP 200 and one uniquely matched target `EntityId` each. Core Points/Rebounds/Assists/Minutes/SecondsPlayed fields exist in both. These are metadata diagnostics; no third-party stat rows were copied.
+- **Offline source adapter validated:** `docs/pbpstats_wowy_validation_status.json` now shows `PASSED` for five test modules (3+5+4+6+4 tests). Fixed two undeclared WITHOUT-group variables in `iphone_bot/lineup_onoff_research.py` discovered by real CI.
+- **Source game-level qualification remains unverified.** The WOWY aggregate player record does not expose individual game dates. A season/date filter and plausible exposure minutes are not enough to prove independent ON/OFF game counts. The importer correctly continues to require independently verified underlying game participation or lineup observations.
+- **Rights remain unverified.** Public PBP Stats API docs and successful unauthenticated API response do not establish authorization for recurring betting-model use, caching, storage, or publishing. No scheduled on/off provider-stat ingestion, real licensed samples or production AI changes are enabled.
