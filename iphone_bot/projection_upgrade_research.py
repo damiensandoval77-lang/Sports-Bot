@@ -60,6 +60,13 @@ try:
 except ImportError:
     from prospective_research_gate import verify as verify_prospective_capture
 
+try:
+    from .opponent_context_v2 import games_by_team as opponent_team_games, matchup as opponent_matchup, shadow as opponent_v2_shadow
+    from .paper_pick_pipeline import expected_opponents
+except ImportError:
+    from opponent_context_v2 import games_by_team as opponent_team_games, matchup as opponent_matchup, shadow as opponent_v2_shadow
+    from paper_pick_pipeline import expected_opponents
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -115,6 +122,7 @@ def snapshot(board,injury,existing,at,game_history=None):
     seen={identity(r) for r in old}
     counters=Counter()
     indexed=opportunity_histories(game_history or [])
+    team_context_by_date={}
     for item in board.get("comparisons",[]):
         try:
             if item.get("stat") not in MARKETS:continue
@@ -180,6 +188,22 @@ def snapshot(board,injury,existing,at,game_history=None):
                     if estimated is not None and original_min is not None else None),
                 "source":"PREGAME_RECENT_PLAYER_GAMES_NOT_LINEUP_CONFIRMED"}
             all_statuses,status=official_injuries(injury,start,captured)
+            opposite=expected_opponents(item.get("game"),row["team"])
+            opponent_code=opposite[0] if len(opposite)==1 else None
+            if day not in team_context_by_date:
+                team_context_by_date[day]=opponent_team_games(game_history or [],day)
+            out_ids=([str(p["player_id"]) for p in all_statuses
+                if p.get("team")==opponent_code
+                and str(p.get("status","")).upper()=="OUT" and p.get("player_id")]
+                if status=="OFFICIAL_SAME_DAY_VERIFIED" else [])
+            matchup_v2=(opponent_matchup(team_context_by_date[day],
+                row["team"],opponent_code,row["market"],out_ids)
+                if opponent_code is not None else
+                {"status":"UNVERIFIED_MATCHUP","relative_factor":None,"research_only":True})
+            row["opponent_v2_context"]=matchup_v2
+            row["opponent_v2_shadow_projection"]=opponent_v2_shadow(combined,matchup_v2)
+            if row["opponent_v2_shadow_projection"] is not None:
+                counters["opponent_v2_shadow_locked"]+=1
             row["selection_gate"]=pregame_gate(
                 item["stat"],line,combined,original,
                 valid(item.get("shadow_projection")),
