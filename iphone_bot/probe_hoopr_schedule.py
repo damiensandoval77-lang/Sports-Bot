@@ -19,7 +19,12 @@ def main():
     columns=list(map(str,frame.columns)),bytes=len(raw))
   candidates=[x for x in frame.columns if
       any(k in str(x).lower() for k in ("game_date","home_","away_","status"))]
-  data["preview"]=frame[candidates[:15]].head(2).astype(str).to_dict(orient="records")
+  useful=[c for c in ("date","start_date","game_date_time","game_date",
+      "home_display_name","away_display_name","home_abbreviation",
+      "away_abbreviation","status_type_state","season_type")
+      if c in frame.columns]
+  data["preview"]=frame[useful].head(2).astype(str).to_dict(orient="records")
+  data["november_8_preview"]=frame[frame["game_date"].astype(str).str.startswith("2026-11-08")][useful].head(3).astype(str).to_dict(orient="records")
  except (OSError,ValueError,TypeError,Exception) as e:
   data["error_type"]=type(e).__name__
  OUT.parent.mkdir(parents=True,exist_ok=True)
