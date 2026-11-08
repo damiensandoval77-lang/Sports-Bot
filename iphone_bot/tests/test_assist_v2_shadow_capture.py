@@ -57,6 +57,22 @@ class ShadowCaptureTests(unittest.TestCase):
             self.assertEqual(result[0]["actual"],7)
             self.assertEqual(result[0]["settlement_source"],"HISTORICAL_CSV_COMPLETED_GAME")
 
+    def test_paired_scoring_excludes_baseline_no_lean_and_duplicate_books(self):
+        common={"event_start":"2026-11-07T20:00:00+00:00",
+                "captured_at":"2026-11-07T18:00:00+00:00",
+                "player_id":"1","team":"BOS","market":"AST","line":5.5,
+                "status":"SETTLED","result":"WIN","actual":7,
+                "baseline_projection":4.8,"v2_projection":6.2}
+        no_lean={**common,"player_id":"2","baseline_projection":5.5}
+        a=summary([common,{**common,"bookmaker":"other"},no_lean])["paired_comparison"]
+        self.assertEqual(a["paired_direction_markets"],1)
+        self.assertEqual(a["paired_v2_wins"],1)
+        self.assertEqual(a["paired_baseline_wins"],0)
+        self.assertEqual(a["v2_only_correct"],1)
+        self.assertEqual(a["distinct_game_dates"],1)
+        self.assertFalse(a["promotion_eligible"])
+        self.assertEqual(summary([])["paired_comparison"]["paired_v2_hit_rate"],None)
+
     def test_empty_grade_and_summary_are_safe(self):
         self.assertEqual(grade([],[],now="2026-11-07T20:00:00+00:00"),[])
         self.assertIsNone(summary([])["hit_rate"])
