@@ -95,6 +95,22 @@ class PaperPipelineTests(unittest.TestCase):
         waiting=settle(picks,[not_final],"2026-11-13T02:45:00Z")
         self.assertTrue(all(r["status"]=="PENDING" for r in waiting))
 
+    def test_official_final_explicit_dnp_is_void_not_loss(self):
+        picks=snapshot([self.market()],"2026-11-12T20:00:00Z")
+        dnp={"player":"Sample Player","team":"BOS","opponent":"MIA",
+             "date":"2026-11-12","source":"NBA_CDN_FINAL",
+             "source_game_id":"0022600030","final_confirmed":True,
+             "dnp_final_verified":True,"dnp_reason":"INACTIVE"}
+        void=settle(picks,[dnp],"2026-11-13T03:00:00Z")
+        self.assertTrue(all(r["status"]=="VOID_DNP" for r in void))
+        self.assertTrue(all(r["result"]=="VOID" for r in void))
+        report=summary(void)
+        self.assertEqual(report["void_dnp"],2)
+        self.assertEqual(report["settled"],0)
+        self.assertIsNone(report["win_rate_ex_push"])
+        waiting=settle(picks,[dnp],"2026-11-13T01:30:00Z")
+        self.assertTrue(all(r["status"]=="PENDING" for r in waiting))
+
     def test_independent_pending_and_combined_record_excludes_duplicate_books(self):
         from iphone_bot.model_performance import compute_performance
         rows=snapshot([self.market()],"2026-11-12T20:00:00Z")
