@@ -41,17 +41,23 @@ class ProviderMapperTests(unittest.TestCase):
             normalized(without_provenance=proof("with"))
 
     def test_insufficient_provenance_and_date_leakage(self):
+        bad=proof()
+        bad["game_dates"]=["2026-10-02"]
         with self.assertRaisesRegex(ValueError,"game dates"):
-            normalized(with_provenance={"verified_completed_games":True,"game_dates":["2026-10-02"]})
+            normalized(with_provenance=bad)
+        bad=proof()
+        bad["game_dates"]=["2026-10-02"]*6
         with self.assertRaisesRegex(ValueError,"Duplicate"):
-            normalized(with_provenance={"verified_completed_games":True,"game_dates":["2026-10-02"]*6})
+            normalized(with_provenance=bad)
+        bad=proof()
+        bad["game_dates"]=["2026-10-02","2026-10-03","2026-10-04",
+                           "2026-10-05","2026-10-06","2026-11-07"]
         with self.assertRaisesRegex(ValueError,"future"):
-            normalized(with_provenance={"verified_completed_games":True,
-                "game_dates":["2026-10-02","2026-10-03","2026-10-04",
-                              "2026-10-05","2026-10-06","2026-11-07"]})
+            normalized(with_provenance=bad)
+        bad=proof()
+        bad["verified_completed_games"]=False
         with self.assertRaisesRegex(ValueError,"provenance"):
-            normalized(with_provenance={"verified_completed_games":False,
-                                        "game_dates":proof()["game_dates"]})
+            normalized(with_provenance=bad)
     def test_wrong_player_duplicates_and_missing_minutes(self):
         with self.assertRaisesRegex(ValueError,"EntityId"):
             normalized(on={"multi_row_table_data":[{"EntityId":"999","Minutes":180}]})
