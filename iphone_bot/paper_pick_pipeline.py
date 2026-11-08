@@ -128,7 +128,12 @@ def snapshot(comparisons,generated_at,existing=None):
                     original_projection,market.get("shadow_projection"),chosen_projection),
                 "research_minutes_risk_v1":minutes_risk(market.get("minutes_research"),
                     market.get("minutes_v2_research"),market.get("injury_status")),
-                "season_average_challenger":market.get("season_average_challenger")}
+                "season_average_challenger":market.get("season_average_challenger"),
+                "model_feature_audit":market.get("model_feature_audit"),
+                "frozen_minutes_research":market.get("minutes_research"),
+                "frozen_minutes_v2_research":market.get("minutes_v2_research"),
+                "frozen_injury_status":market.get("injury_status"),
+                "forensic_data_collected_pregame":True}
             ident=identity(record)
             if ident not in seen:
                 rows.append(record)
@@ -224,7 +229,7 @@ def settle(rows,completed_games,now=None):
         r.update({"status":"SETTLED","settled_at":now.isoformat(),
                   "settlement_source":game.get("source","HISTORICAL_CSV_COMPLETED_GAME"),
                   "source_game_id":game.get("source_game_id"),
-                  "actual":actual,"result":"PUSH" if outcome=="PUSH" else ("WIN" if outcome==r["side"] else "LOSS"),
+                  "actual":actual,"actual_minutes":round(minutes,4),"result":"PUSH" if outcome=="PUSH" else ("WIN" if outcome==r["side"] else "LOSS"),
                   "paper_profit_units":round(profit,6)})
         result.append(r)
     return result
