@@ -8,7 +8,7 @@ class OpportunityTrackingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             rows,coverage=load_tracking(Path(d)/"missing.csv")
             self.assertEqual(coverage["status"],"SOURCE_NOT_CONNECTED")
-            self.assertEqual(pregame_features(rows,"123","NYK","2026-11-10")["features"],{})
+            self.assertEqual(pregame_features(rows,"123","NYK","2026-11-07")["features"],{})
 
     def test_pre_tip_only_and_identity_match(self):
         with tempfile.TemporaryDirectory() as d:
@@ -17,18 +17,18 @@ class OpportunityTrackingTests(unittest.TestCase):
                 "123,2026-11-01,NYK,NBA Tracking,ref1,10,9,55\n"
                 "123,2026-11-02,NYK,NBA Tracking,ref2,12,11,57\n"
                 "123,2026-11-03,NYK,NBA Tracking,ref3,14,13,59\n"
-                "123,2026-11-10,NYK,NBA Tracking,ref4,80,80,80\n"
+                "123,2026-11-07,NYK,NBA Tracking,ref4,80,80,80\n"
                 "123,2026-11-02,BOS,NBA Tracking,ref5,99,99,99\n")
             rows,coverage=load_tracking(file)
             self.assertEqual(coverage["rows"],5)
-            feature=pregame_features(rows,"123","NYK","2026-11-10")
+            feature=pregame_features(rows,"123","NYK","2026-11-07")
             self.assertEqual(feature["feature_version"],FEATURE_VERSION)
             self.assertEqual(feature["features"]["potential_assists"]["last5"],12)
             self.assertEqual(feature["features"]["rebound_chances"]["last5"],11)
             self.assertEqual(feature["latest_recorded_date"],"2026-11-03")
             self.assertFalse(feature["production_applied"])
-            self.assertEqual(pregame_features(rows,"123","BOS","2026-11-10")["status"],"NOT_AVAILABLE")
-            self.assertEqual(pregame_features(rows,"999","NYK","2026-11-10")["status"],"NOT_AVAILABLE")
+            self.assertEqual(pregame_features(rows,"123","BOS","2026-11-07")["status"],"NOT_AVAILABLE")
+            self.assertEqual(pregame_features(rows,"999","NYK","2026-11-07")["status"],"NOT_AVAILABLE")
 
     def test_reject_conflicting_same_game_rows(self):
         with tempfile.TemporaryDirectory() as d:
