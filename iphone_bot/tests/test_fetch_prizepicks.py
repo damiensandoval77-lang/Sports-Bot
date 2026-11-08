@@ -45,6 +45,24 @@ class PrizePicksTests(unittest.TestCase):
         self.assertEqual(offer["more_tier"],"demon")
         self.assertIsNone(offer["less_tier"])
 
+    def test_compact_flat_row_with_verified_live_provenance(self):
+        compact={"id":"pp_flat_1","league":"NBA","status":"active",
+            "player":"Sample Player","team":"BOS","opponent":"MIA",
+            "stat":"Points","period":"Full game","line":23.5,
+            "event_starts_at":START,"observed_at":"2026-11-06T18:30:00Z",
+            "more_available":True,"more_tier":"standard",
+            "less_available":True,"less_tier":"standard"}
+        self.assertIsNone(clean(compact,NOW,verified_live=False))
+        offer=clean(compact,NOW,verified_live=True)
+        self.assertEqual(offer["stat"],"PTS")
+        self.assertEqual(offer["more_tier"],"standard")
+        slate={"games":[{"game":"Boston Celtics @ Miami Heat","start":START}]}
+        out=publish([{"data":[compact],"meta":{
+            "mode":"live","source_status":"fresh","next_cursor":None}}],
+            [],NOW,schedule=slate)
+        self.assertEqual(out["independent_board_count"],1)
+        self.assertEqual(out["board_offers"][0]["line"],23.5)
+
     def test_independent_full_slate_without_odds_api_ai_board(self):
         slate={"games":[{"game":"Boston Celtics @ Miami Heat","start":START,
                          "game_state":"pre"}]}

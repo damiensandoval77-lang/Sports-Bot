@@ -25,8 +25,8 @@ BASE="https://prizepicksapi.com/api/v1/projections"
 STAT={"points":"PTS","rebounds":"REB","assists":"AST",
       "pts+rebs+asts":"PRA","pts+reb+ast":"PRA","points rebounds assists":"PRA",
       "points+rebounds+assists":"PRA","pts reb ast":"PRA"}
-MAX_PAGES=6  # At most six production requests per refresh; partial clearly labeled.
-PAGE_SIZE=200
+MAX_PAGES=4  # 4 compact pages, up to 4,000 offers; capped at <=40 new-plan credits.
+PAGE_SIZE=1000
 
 def timeparse(value):
     try:
@@ -59,9 +59,10 @@ def clean(row,now,verified_live=False):
     event=row.get("event",{})
     market=row.get("market",{})
     if isinstance(player,str):player={"name":player,"team":row.get("team")}
+    if player is None:player={"name":row.get("player_name"),"team":row.get("team")}
     if not isinstance(player,dict):return None
     if not isinstance(event,dict):event={}
-    if not isinstance(market,dict):market={"stat":row.get("stat"),"period":row.get("period")}
+    if not isinstance(market,dict):market={"stat":row.get("stat") or market,"period":row.get("period")}
     stat=STAT.get(str(market.get("stat") or row.get("stat") or "").lower().strip())
     period=str(market.get("period") or row.get("period") or "").strip().lower()
     if period not in ("full game","full_game","fullgame"):return None
@@ -236,7 +237,16 @@ def read_url(url,key):
         "Accept":"application/json",
         "X-User-Request":"Read NBA PrizePicks lines for Sports-Bot dashboard comparison"})
     with urllib.request.urlopen(req,timeout=30) as reply:
-        return json.load(reply)
+        data=json.load(reply)
+        if isinstance(data,dict):
+            # Provider-reported credit accounting only; never publish keys.
+            for header,field in (("X-Credits-Cost","charged_credits"),
+                                ("X-Credits-Remaining","remaining_credits"),
+                                ("X-Usage-Unit","usage_unit")):
+                value=reply.headers.get(header)
+                if value is not None:
+                    data.setdefault("_client_credit_usage",{})[field]=str(value)[:45]
+        return data
 
 def main():
     key=os.environ.get("PRIZEPICKS_API_KEY","").strip()
@@ -271,7 +281,7 @@ def main():
     seen_cursors=set()
     try:
         for index in range(MAX_PAGES):
-            params={"league":"NBA","status":"active","limit":PAGE_SIZE}
+            params={"league":"NBA","status":"active","view":"compact","limit":PAGE_SIZE}
             if cursor:params["cursor"]=cursor
             page=read_url(BASE+"?"+urllib.parse.urlencode(params),key)
             if not isinstance(page,dict) or not isinstance(page.get("meta"),dict):
@@ -305,6 +315,14 @@ def main():
     schedule_path=ROOT/"docs/nba_schedule.json"
     schedule=json.loads(schedule_path.read_text()) if schedule_path.exists() else {}
     out=publish(pages,comp["comparisons"],schedule=schedule)
+    usage=[p.get("_client_credit_usage",{}) for p in pages]
+    out["total_provider_charged_credits"]=sum(int(x["charged_credits"]) for x in usage
+        if str(x.get("charged_credits","")).isdigit())
+    out["remaining_provider_credits"]=next((int(x["remaining_credits"]) for x in reversed(usage)
+        if str(x.get("remaining_credits","")).isdigit()),None)
+    out["provider_usage_units"]=sorted(set(x.get("usage_unit") for x in usage if x.get("usage_unit")))
+    out["page_size_requested"]=PAGE_SIZE
+    out["page_view"]="compact"
     out["max_pages_budget"]=MAX_PAGES
     out["source_query"]="NBA_ACTIVE_ALL_PLAYERS_CURSOR_PAGED"
     out["complete_provider_board"]=not out["partial_board"] and out["provider_status"]=="fresh"
