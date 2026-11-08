@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/shooting_efficiency_v1.py'
+      - 'iphone_bot/enrich_current_shooting.py'
+      - 'iphone_bot/tests/test_enrich_current_shooting.py'
       - 'iphone_bot/shooting_efficiency_backtest.py'
       - 'iphone_bot/shot_profile_research.py'
       - 'iphone_bot/tests/test_shooting_efficiency_v1.py'
@@ -39,6 +41,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
+      - name: Validate and import current NBA player shooting rates for research only
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_enrich_current_shooting.py' -v
+          python -u iphone_bot/enrich_current_shooting.py
       - name: Run paired historical holdout and saved pretip Combined-AI comparisons
         run: python -u iphone_bot/shooting_efficiency_backtest.py
       - name: Verify research-only and reject false improvements
