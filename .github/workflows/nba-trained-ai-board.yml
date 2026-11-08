@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/injury_projection_adjustment.py'
+      - 'iphone_bot/tests/test_injury_projection_adjustment.py'
       - 'iphone_bot/tests/test_player_name_matching.py'
       - 'iphone_bot/market_coverage_audit.py'
       - 'iphone_bot/tests/test_market_coverage_audit.py'
@@ -79,6 +81,10 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check "pypdf>=5,<7"
           python -u iphone_bot/fetch_official_injuries.py
+      - name: Validate injury-updated projections for official OUT players
+        run: |
+          python -m py_compile iphone_bot/injury_projection_adjustment.py iphone_bot/compare_live_models.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_injury_projection_adjustment.py' -v
       - name: Check Unicode player identity matching across sportsbook and NBA roster
         env:
           PYTHONPATH: ${{ github.workspace }}/iphone_bot:${{ github.workspace }}
