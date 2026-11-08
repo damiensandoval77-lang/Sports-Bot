@@ -1,0 +1,48 @@
+name: Keep NBA tracking opportunity coverage transparent
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/ai_comparisons.json'
+      - 'docs/projection_upgrade_status.json'
+      - 'docs/tracking_provider_access_status.json'
+      - 'iphone_bot/tracking_coverage_status.py'
+      - 'iphone_bot/tests/test_tracking_coverage_status.py'
+      - '.github/workflows/nba-tracking-coverage.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-tracking-coverage
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test transparent coverage accounting
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_tracking_coverage_status.py' -v
+      - name: Calculate research coverage from published board and grades
+        run: python -m iphone_bot.tracking_coverage_status
+      - name: Publish coverage without provider statistical rows
+        run: |
+          set -euo pipefail
+          cp docs/tracking_coverage_status.json "$RUNNER_TEMP/coverage.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/coverage.json" docs/tracking_coverage_status.json
+            git add docs/tracking_coverage_status.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish honest current AST and REB tracking coverage'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
