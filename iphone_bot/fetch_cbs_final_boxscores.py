@@ -33,7 +33,7 @@ OUTPUT=ROOT/"data/nba/current/cbs_final_boxscores.json"
 STATUS=ROOT/"docs/cbs_final_boxscores_status.json"
 ROOT_URL="https://www.cbssports.com/nba/gametracker/boxscore/"
 # CBS uses shorter game URL codes than standard NBA tricode identifiers.
-CBS_URL_TEAMS={"NYK":"NY","GSW":"GS","NOP":"NO","SAS":"SA","UTA":"UTAH","PHX":"PHO"}
+CBS_URL_TEAMS={"NYK":"NY","GSW":"GS"}
 
 def cbs_boxscore_url(date,away,home):
     a=CBS_URL_TEAMS.get(away,away)
