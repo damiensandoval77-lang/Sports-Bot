@@ -16,6 +16,9 @@ on:
       - 'iphone_bot/tests/test_sanity_shadow_research.py'
       - 'iphone_bot/opportunity_backtest.py'
       - 'iphone_bot/opponent_context_v2.py'
+      - 'iphone_bot/lineup_onoff_research.py'
+      - 'iphone_bot/tests/test_lineup_onoff_research.py'
+      - 'docs/lineup_onoff_research.json'
       - 'iphone_bot/tests/test_opponent_context_v2.py'
       - 'iphone_bot/selection_gate_shadow.py'
       - 'iphone_bot/assist_shadow_v1.py'
@@ -58,6 +61,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_unified_reliability_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opponent_context_v2.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_lineup_onoff_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selection_gate_shadow.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_shadow_v1.py' -v
           python - <<'PY'
@@ -90,6 +94,11 @@ jobs:
           assert r['unified_reliability_v1']['no_live_probabilities_changed'] is True
           assert r['unified_reliability_v1']['no_accuracy_improvement_claimed'] is True
           assert r['unified_reliability_v1']['confidence_proxy_quote_coverage']['confidence_calibrated'] is False
+          wowy=r['licensed_onoff_shadow']
+          assert wowy['same_frozen_line_required'] is True
+          assert wowy['eligible_for_production'] is False
+          assert sum(wowy['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['paired_markets']
+          assert sum(wowy['by_market'][m]['exact_line_eligible'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['exact_line_eligible']
           ov2=r['opponent_v2_shadow']
           assert ov2['same_line_only'] is True and ov2['eligible_for_production'] is False
           assert sum(ov2['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==ov2['overall']['paired_markets']
