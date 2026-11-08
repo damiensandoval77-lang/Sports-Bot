@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/settlement_merge.py'
+      - 'iphone_bot/dnp_settlement.py'
+      - 'iphone_bot/tests/test_dnp_settlement.py'
+      - 'docs/verified_dnp_outcomes.json'
       - 'iphone_bot/paper_pick_pipeline.py'
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'docs/verified_postgame_boxscores.json'
@@ -62,6 +65,7 @@ jobs:
       - name: Test pregame integrity and settlement merging
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_dnp_settlement.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_missed_game_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_error_analysis.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_underprojection_research.py' -v
@@ -128,6 +132,7 @@ jobs:
           assert len(ledger)==len({identity(r) for r in ledger})
           assert result['captured']==len(ledger)
           assert result['settled']==sum(r['status']=='SETTLED' for r in ledger)
+          assert result['void_dnp']==sum(r['status']=='VOID_DNP' for r in ledger)
           assert all(utc(r['captured_at'])<utc(r['event_start']) for r in ledger if r['status']!='INVALID_LATE_CAPTURE')
           assert all(r.get('settlement_source') in ('NBA_CDN_FINAL','ESPN_FINAL','HISTORICAL_CSV_COMPLETED_GAME','CBS_FINAL_VERIFIED','FANTASYDATA_FINAL_CROSSCHECKED','CBS_SPORTS_LIVE_FINAL','NBA_OFFICIAL_WEB_FINAL_CROSSCHECKED')
                      and isinstance(r.get('actual'),(int,float))
