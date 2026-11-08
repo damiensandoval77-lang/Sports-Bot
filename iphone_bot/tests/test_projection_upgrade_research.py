@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime,timezone,timedelta
 from iphone_bot.projection_upgrade_research import (
-    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_opponent_v2,grade_licensed_onoff_shadows,grade_sanity_shadow,stress_research_report,run)
+    snapshot,official_injuries,research_simulations,grade_shadow,grade_injury_scenarios,grade_opportunity_shadows,grade_opponent_v2,grade_rebound_v1,grade_licensed_onoff_shadows,grade_sanity_shadow,stress_research_report,run)
 
 NOW="2026-11-06T23:00:00Z"
 START="2026-11-07T01:00:00Z"  # Nov 6 Eastern
@@ -26,6 +26,34 @@ def injury(issue="2026-11-06T22:30:00Z",day="2026-11-06",verified=True):
                    "game_date":day,"status":"Out"}]}
 
 class ResearchTests(unittest.TestCase):
+    def test_rebound_shadow_is_locked_and_graded_only_at_exact_pretip_line(self):
+        b=board()
+        b["comparisons"][0].update(stat="REB",line=6.5,projection=5.8,
+                                   combined_projection=6.0)
+        past=[{"id":"10","team":"BOS","date":f"2026-10-{d:02d}",
+               "MIN":30.,"PTS":14.,"REB":8.,"AST":3.,"FGA":10.}
+              for d in range(15,25)]
+        locked,counts=snapshot(b,injury(),[],NOW,past)
+        result=locked[0]["rebound_shadow_v1"]
+        self.assertEqual(result["status"],"PRETIP_REBOUND_OPPORTUNITY_SHADOW")
+        self.assertAlmostEqual(result["projection"],6.6)
+        self.assertEqual(counts["rebound_shadow_v1_locked"],1)
+        self.assertEqual(b["comparisons"][0]["combined_projection"],6.0)
+        final={"status":"SETTLED","event_start":START,"captured_at":NOW,
+            "player_id":"10","market":"REB","original_projection":5.8,
+            "line":6.5,"actual":8.}
+        score=grade_rebound_v1(locked,[final])
+        self.assertEqual(score["paired_markets"],1)
+        self.assertEqual(score["same_frozen_line_eligible"],1)
+        self.assertEqual(score["baseline_wins"],0)
+        self.assertEqual(score["shadow_wins"],1)
+        self.assertFalse(score["validated_for_live"])
+        mismatched=grade_rebound_v1(locked,[{**final,"line":7.5}])
+        self.assertEqual(mismatched["same_frozen_line_eligible"],0)
+        self.assertEqual(grade_rebound_v1(locked,[])["paired_markets"],0)
+        after=snapshot(b,injury(),locked,NOW,past)[0]
+        self.assertEqual(after,locked)
+
     def test_pregame_frozen_snapshot_and_no_live_modification(self):
         existing=[]
         original=board()
