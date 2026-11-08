@@ -365,8 +365,12 @@ class ResearchTests(unittest.TestCase):
     def test_verified_out_licensed_onoff_freezes_and_grades_without_production_change(self):
         licensed={"status":"LICENSED_ON_OFF_VERIFIED","licensed_use_verified":True,
           "generated_at":"2026-11-06T22:45:00Z","source":"TEST_RIGHTS_CLEARED",
+          "authorization":{"reviewed_for_betting_analytics":True,
+            "allowed_use":"NBA_PROP_RESEARCH","reviewer_confirmation":"MANUALLY_VERIFIED",
+            "permission_reference":"TEST_ONLY_NONPRODUCTION_FIXTURE"},
           "observations":[{"player_id":"10","teammate_id":"99","team":"BOS",
             "season":"2026-27","data_through":"2026-11-05",
+            "observed_through_at":"2026-11-06T22:40:00Z",
             "with":{"games":6,"minutes":180,"PTS_per36":20},
             "without":{"games":6,"minutes":190,"PTS_per36":26}}]}
         b=board()
