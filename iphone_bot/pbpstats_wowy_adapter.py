@@ -61,7 +61,6 @@ def normalize_pair(with_payload,without_payload,*,player_id,teammate_id,
 
     Do not attribute post-tip full-season results to an earlier pretip game.
     """
-    request_plan(player_id,teammate_id,team,season)
     try:
         cutoff=date.fromisoformat(str(data_through))
         seen=utc(observed_through_at)
@@ -70,6 +69,7 @@ def normalize_pair(with_payload,without_payload,*,player_id,teammate_id,
         raise ValueError("Invalid provider observation metadata")
     if seen>generated or cutoff>seen.date():
         raise ValueError("Observations cannot postdate source generation")
+    request_plan(player_id,teammate_id,team,season,cutoff_date=cutoff.isoformat())
     on=_aggregate(with_payload,player_id,with_provenance,cutoff)
     off=_aggregate(without_payload,player_id,without_provenance,cutoff)
     return {"player_id":str(player_id),"teammate_id":str(teammate_id),
