@@ -1,0 +1,42 @@
+{
+  "status": "SAMPLE_READY_NO_EARLIER_GAME_JOIN",
+  "checked_at": "2026-11-08T21:28:01.915201+00:00",
+  "provider": "prizepicksapi.com",
+  "onboarding_http": 201,
+  "onboarding_status": "OK",
+  "coverage_http": 200,
+  "coverage": {
+    "observed_at": "2026-11-08T21:26:03.893Z",
+    "source_status": "stale",
+    "stats_leagues": null,
+    "top_level_keys": [
+      "data",
+      "meta"
+    ]
+  },
+  "training_http": 200,
+  "training_rows": 19,
+  "training_meta": {
+    "count": 19,
+    "next_cursor": null,
+    "plan_limit": {
+      "window_start": "2026-11-01",
+      "plan": "free",
+      "feature": "training_set",
+      "limit": "The training set on the Free plan is a labeled sample: one fixed set of at most 100 graded rows. Filters only narrow this sample.",
+      "unlocks": "Developer pages the training set, up to 25,000 historical rows a month. Closing book prices come with it where they were recorded, and those are off on Free.",
+      "required_plan": "developer",
+      "price_usd_per_month": 49,
+      "upgrade_url": "https://prizepicksapi.com/upgrade?plan=developer&source=rest",
+      "message": "The training set on the Free plan is a labeled sample: one fixed set of at most 100 graded rows. Filters only narrow this sample. Developer pages the training set, up to 25,000 historical rows a month. Closing book prices come with it where they were recorded, and those are off on Free. Developer is $49/month: https://prizepicksapi.com/upgrade?plan=developer&source=rest"
+    },
+    "source_status": null
+  },
+  "game_logs_http": 200,
+  "game_log_rows": 20,
+  "earlier_game_join": null,
+  "observed_at": "2026-11-08T21:26:03.893Z",
+  "remaining_credits": "0",
+  "plan_limit": null,
+  "error_type": null
+}
