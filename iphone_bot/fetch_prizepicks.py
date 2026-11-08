@@ -106,7 +106,10 @@ def match(offer,comparison,now=None):
     other=timeparse(offer.get("starts_at"))
     if not start or start<=(now or dt.datetime.now(dt.timezone.utc)):return False
     try:
+        try:
         from iphone_bot.paper_pick_pipeline import expected_opponents
+    except ModuleNotFoundError:
+        from paper_pick_pipeline import expected_opponents
     except ModuleNotFoundError:
         from paper_pick_pipeline import expected_opponents
     verified=expected_opponents(comparison.get("game"),offer["team"])
