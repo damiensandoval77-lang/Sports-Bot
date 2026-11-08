@@ -1,0 +1,38 @@
+name: Unified NBA Reliability Research Tests
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/unified_reliability_research.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_unified_reliability_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
+      - '.github/workflows/unified-reliability-research.yml'
+  push:
+    branches: ['research/20261107-unified-reliability-v1']
+permissions:
+  contents: read
+jobs:
+  research-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile research only
+        run: python -m py_compile iphone_bot/unified_reliability_research.py iphone_bot/projection_upgrade_research.py
+      - name: Test consolidated diagnostics and pregame grading integration
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_unified_reliability_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+      - name: Confirm no verified confidence or production selections
+        run: |
+          python - <<'PY'
+          from iphone_bot.unified_reliability_research import view
+          x=view([],[])
+          assert x["no_live_picks_changed"] is True
+          assert x["no_live_probabilities_changed"] is True
+          assert x["no_accuracy_improvement_claimed"] is True
+          assert x["confidence_proxy_quote_coverage"]["confidence_calibrated"] is False
+          print("Research reporting only, no changes to live sportsbook picks")
+          PY

@@ -50,6 +50,11 @@ try:
 except ImportError:
     from model_disagreement_research import detect as disagreement_detect,report as disagreement_report
 
+try:
+    from .unified_reliability_research import view as unified_reliability_view
+except ImportError:
+    from unified_reliability_research import view as unified_reliability_view
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -675,6 +680,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
         "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
         "stress_test_20k_v1":stress_research_report(ledger,paper_rows),
         "model_disagreement_v1":disagreement_report(ledger,paper_rows,finished_unique,utc),
+        "unified_reliability_v1":unified_reliability_view(ledger,paper_rows,generated_at=at),
         "selection_gate_shadow":grade_selection_gate(ledger,paper_rows),
         "assist_shadow_v1":grade_assist_shadow(ledger,paper_rows),
         "simulation_audit":research_simulations(paper_rows),
@@ -715,6 +721,7 @@ def main():
             "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
             "stress_test_20k_v1":stress_research_report(ledger,paper),
             "model_disagreement_v1":disagreement_report(ledger,paper,finished_unique,utc),
+            "unified_reliability_v1":unified_reliability_view(ledger,paper,generated_at=now),
             "selection_gate_shadow":grade_selection_gate(ledger,paper),
             "assist_shadow_v1":grade_assist_shadow(ledger,paper),
             "simulation_audit":research_simulations(paper),

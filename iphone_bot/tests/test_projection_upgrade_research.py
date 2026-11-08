@@ -179,6 +179,23 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(result["status"],"PARTIAL_MODEL_COVERAGE")
         self.assertIn("OPPONENT_MODEL_UNAVAILABLE",result["flags"])
 
+    def test_unified_reliability_preserves_pregame_research_warnings(self):
+        history=[{"id":"10","team":"BOS","date":f"2026-10-{d:02d}",
+                  "MIN":30.,"PTS":18+d%7,"REB":5.,"AST":4.,"FGA":14.}
+                 for d in range(18,30)]
+        b=board()
+        b["comparisons"][0]["shadow_projection"]=18.
+        b["comparisons"][0]["shadow_status"]="RESEARCH_SHADOW_ONLY"
+        ledger,status=run(b,injury(),[],[],NOW,history)
+        combined=status["unified_reliability_v1"]
+        self.assertEqual(combined["independent_research_markets"],1)
+        self.assertEqual(combined["classification_counts"]["NEEDS_REVIEW"],1)
+        self.assertIn("MODELS_ORIGINAL_OPPONENT_DIRECTION_CONFLICT",
+                      combined["recent_markets"][0]["reasons"])
+        self.assertTrue(combined["no_live_picks_changed"])
+        self.assertTrue(combined["no_accuracy_improvement_claimed"])
+        self.assertEqual(b["comparisons"][0]["combined_projection"],22.)
+
     def test_no_simulations_without_settled_prior_residuals(self):
         info=research_simulations([])
         for stat in ("PTS","REB","AST","PRA"):
