@@ -393,6 +393,31 @@ function combinedSimAvailable(p){
   sim.selected_hit_rate>=0&&sim.selected_hit_rate<=1;
 }
 function chance(p){return combinedSimAvailable(p)?(100*p.combined_simulation.selected_hit_rate).toFixed(1)+"%":"—"}
+// Fallback for existing published pregame cards before a new AI workflow runs.
+// Uses only settled grades available BEFORE the matchup; early-sample method
+// matches the backend and makes NO calibration/verified-edge claims.
+function earlyEdgePreview(p){
+ const audit=paper?.probability_audit,sim=p?.combined_simulation;
+ if(audit?.original_model_only!==true||!combinedSimAvailable(p))return null;
+ const priorDate=Date.parse(paper?.generated_at),tipoff=Date.parse(p.start);
+ const finished=paper?.pipeline_health?.latest_completed_player_game_date;
+ if(!Number.isFinite(priorDate)||!Number.isFinite(tipoff)||
+  priorDate>=tipoff||tipoff<=Date.now()||
+  (finished&&finished>=new Date(tipoff).toISOString().slice(0,10)))return null;
+ const bucket=audit.by_stat?.[p.stat];
+ const n=Number(bucket?.sample_size),dates=Number(bucket?.distinct_event_dates);
+ const observed=Number(bucket?.observed_hit_rate),estimated=Number(bucket?.average_estimated_probability);
+ if(!Number.isInteger(n)||n<=0||!Number.isInteger(dates)||dates<=0||
+  ![observed,estimated].every(x=>Number.isFinite(x)&&x>=0&&x<=1))return null;
+ const correction=Math.max(-.08,Math.min(.08,(observed-estimated)*
+   (n/(n+150))*(dates/(dates+8))));
+ const probability=Math.max(.005,Math.min(.995,sim.selected_hit_rate+correction));
+ return {status:aiMetadata?.is_prizepicks?"PRIZEPICKS_SLIP_PAYOUT_REQUIRED":"PRELIMINARY_PROBABILITY_ONLY",
+  verified_edge:false,net_ev_pct:null,
+  probability:{probability,raw_probability:sim.selected_hit_rate,correction,
+   sample_size:n,distinct_event_dates:dates,validated:false}};
+}
+
 function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
 function frozenResearchScreen(p){
  // Pre-registered research thresholds; NOT a verified profitable strategy.
@@ -645,7 +670,7 @@ function renderAI(){
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
  $("ai-total").textContent=entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
    (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"")+
-   (entries.some(p=>p.preliminary_edge?.probability)?" · early grades applied":"");
+   (entries.some(p=>p.preliminary_edge?.probability||earlyEdgePreview(p)?.probability)?" · early grades applied":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   try{
   const outer=node("article","prop compact-prop"),main=node("div","mainline");
@@ -701,7 +726,7 @@ function renderAI(){
   main.append(probabilityNote);
   // Preliminary, intentionally shrunk use of existing two-date graded results.
   // This is a research ranking, NOT calibrated betting probabilities.
-  const preliminary=p.preliminary_edge;
+  const preliminary=p.preliminary_edge||earlyEdgePreview(p);
   const early=preliminary?.probability;
   if(early&&typeof early.probability==="number"){
    const pct=(100*early.probability).toFixed(1)+"%";
