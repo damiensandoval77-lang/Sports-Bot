@@ -248,6 +248,28 @@ class ResearchTests(unittest.TestCase):
         self.assertFalse(b[0]["simulated_probability_modified"])
         self.assertEqual(b[0]["combined_projection"],22.)
 
+    def test_stability_opportunity_shadow_is_frozen_pretip_and_scored(self):
+        prior=[{"id":"10","team":"BOS","date":f"2026-10-{d:02d}",
+                "MIN":28.+(d%3),"PTS":19.,"REB":6.,"AST":5.,"FGA":14.}
+               for d in range(19,30)]
+        frozen,_=snapshot(board(),injury(),[],NOW,prior)
+        r=frozen[0]
+        self.assertIsNotNone(r["stability_opportunity_shadow_projection"])
+        self.assertEqual(r["stability_opportunity_method"],
+                         "FIXED_VOLATILITY_SHRINKAGE_RESEARCH_ONLY")
+        self.assertFalse(r["simulated_probability_modified"])
+        self.assertEqual(r["combined_projection"],22.)
+        finished=[{"status":"SETTLED","event_start":START,
+                   "captured_at":NOW,"player_id":"10","market":"PTS",
+                   "original_projection":21.,"line":20.5,"actual":24.}]
+        report=grade_opportunity_shadows(frozen,finished)
+        self.assertEqual(report["overall"]["stability_shadow_paired_markets"],1)
+        self.assertEqual(report["overall"]["stability_shadow_same_line_eligible"],1)
+        self.assertFalse(report["eligible_for_live_promotion"])
+        no_candidate=grade_opportunity_shadows(
+            [{**r,"stability_opportunity_shadow_projection":None}],finished)
+        self.assertEqual(no_candidate["overall"]["stability_shadow_paired_markets"],0)
+
     def test_shadow_results_require_saved_pretip_candidate(self):
         past=[{"id":"10","team":"BOS",
             "date":f"2026-10-{day:02d}","MIN":30.,
