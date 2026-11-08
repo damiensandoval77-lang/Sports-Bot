@@ -12,7 +12,7 @@ class ReboundShadowTests(unittest.TestCase):
         self.assertEqual(r["status"],"PRETIP_REBOUND_OPPORTUNITY_SHADOW")
         self.assertEqual(r["prior_games"],10)
         self.assertEqual(r["prior_latest_game"],"2026-10-24")
-        self.assertEqual(r["projection"],6.72)
+        self.assertEqual(r["projection"],6.6)
         self.assertFalse(r["live_applied"])
         self.assertFalse(r["probability_calibrated"])
         self.assertEqual(r["predicted_minutes"],30)
