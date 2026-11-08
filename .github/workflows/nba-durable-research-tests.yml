@@ -5,6 +5,8 @@ on:
       - 'iphone_bot/research_archive_persistence.py'
       - 'iphone_bot/research_storage_integrity.py'
       - 'iphone_bot/capture_live_research.py'
+      - 'iphone_bot/preserve_research_inputs.py'
+      - 'iphone_bot/tests/test_preserve_research_inputs.py'
       - 'iphone_bot/tests/test_durable_research_storage.py'
       - '.github/workflows/nba-pregame-ai-archive.yml'
       - '.github/workflows/nba-live-research-checkpoints.yml'
@@ -25,8 +27,9 @@ jobs:
           python-version: '3.11'
       - name: Test immutable archival data and in-game capture
         run: |
-          python -m py_compile iphone_bot/research_archive_persistence.py iphone_bot/research_storage_integrity.py iphone_bot/capture_live_research.py
+          python -m py_compile iphone_bot/research_archive_persistence.py iphone_bot/research_storage_integrity.py iphone_bot/capture_live_research.py iphone_bot/preserve_research_inputs.py
           python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
       - name: Audit actual pretip paper ledger and archived offers
         run: |
           python -u iphone_bot/research_storage_integrity.py
@@ -45,6 +48,7 @@ jobs:
         run: |
           python -u iphone_bot/research_archive_persistence.py
           find docs/research_history -type f -name '*.json.gz' -print
+          python -u iphone_bot/preserve_research_inputs.py schedule
       - uses: actions/upload-artifact@v4
         with:
           name: nba-research-storage-integrity-and-history
