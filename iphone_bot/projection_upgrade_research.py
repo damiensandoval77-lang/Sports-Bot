@@ -66,6 +66,11 @@ except ImportError:
     from lineup_onoff_research import evaluate as licensed_onoff_evaluate
 
 try:
+    from .rebound_shadow_v1 import forecast as rebound_opportunity_v1
+except ImportError:
+    from rebound_shadow_v1 import forecast as rebound_opportunity_v1
+
+try:
     from .opponent_context_v2 import games_by_team as opponent_team_games, matchup as opponent_matchup, shadow as opponent_v2_shadow
     from .paper_pick_pipeline import expected_opponents
 except ImportError:
@@ -166,6 +171,15 @@ def snapshot(board,injury,existing,at,game_history=None,onoff_feed=None):
                 else {"status":"NON_ASSIST_MARKET","projection":None,"live_applied":False})
             if row["assist_shadow"]["projection"] is not None:
                 counters["assist_shadow_locked"]+=1
+            row["rebound_shadow_v1"]=(
+                rebound_opportunity_v1(indexed.get((pid,row["team"]),[]),
+                    team=row["team"],event_date=day,baseline=combined,
+                    expected_minutes=opp.get("expected_minutes"))
+                if item["stat"]=="REB" else
+                {"status":"NON_REBOUND_MARKET","projection":None,
+                    "research_only":True,"live_applied":False})
+            if row["rebound_shadow_v1"].get("projection") is not None:
+                counters["rebound_shadow_v1_locked"]+=1
             row["opportunity_shadow_projection"]=frozen
             row["stability_opportunity_shadow_projection"]=(
                 stability_opportunity_candidate(combined,opp["raw_stat_projections"][row["market"]],opp)
@@ -689,6 +703,63 @@ def grade_opponent_v2(ledger,paper_rows):
         "same_line_only":True,"prospective_validation_required":True,
         "live_model_unchanged":True,"eligible_for_production":False}
 
+def grade_rebound_v1(ledger,paper_rows):
+    """Exact frozen-line grading; no postgame model recalculation."""
+    outcomes={}
+    for r in finished_unique(paper_rows):
+        if r.get("market")!="REB":continue
+        try:
+            k=(utc(r["event_start"]).isoformat(),str(r["player_id"]))
+            outcomes[k]=(float(r["actual"]),float(r["line"]))
+        except (KeyError,ValueError,TypeError):continue
+    samples=[]
+    pending=0
+    coverage=Counter()
+    seen=set()
+    for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
+        if row.get("market")!="REB":continue
+        info=row.get("rebound_shadow_v1")
+        if not isinstance(info,dict):continue
+        try:
+            start=utc(row["event_start"])
+            if utc(row["captured_at"])>=start:continue
+            key=(start.isoformat(),str(row["player_id"]))
+            if key in seen:continue
+            seen.add(key)
+            coverage[str(info.get("status","UNKNOWN"))]+=1
+            alt=valid(info.get("projection"))
+            base=valid(row.get("combined_projection"))
+            line=valid(row.get("line"))
+            if alt is None or base is None or line is None:continue
+            if key not in outcomes:
+                pending+=1;continue
+            actual,settled_line=outcomes[key]
+            if not math.isfinite(actual):continue
+            samples.append({"baseline":base,"shadow":alt,"actual":actual,
+                "line":line,"exact":abs(line-settled_line)<1e-9,
+                "date":start.astimezone(ZoneInfo("America/New_York")).date().isoformat()})
+        except (ValueError,TypeError,KeyError,OverflowError):continue
+    n=len(samples)
+    valid_sides=[r for r in samples if r["exact"] and r["actual"]!=r["line"]
+                 and r["baseline"]!=r["line"] and r["shadow"]!=r["line"]]
+    wins_base=sum((r["baseline"]>r["line"])==(r["actual"]>r["line"])
+                  for r in valid_sides)
+    wins_alt=sum((r["shadow"]>r["line"])==(r["actual"]>r["line"])
+                 for r in valid_sides)
+    return {"status":"FROZEN_PREGAME_REBOUND_V1_RESEARCH_ONLY",
+        "paired_markets":n,
+        "distinct_game_dates":len({r["date"] for r in samples}),
+        "same_frozen_line_eligible":len(valid_sides),
+        "baseline_wins":wins_base,"shadow_wins":wins_alt,
+        "baseline_hit_rate":round(wins_base/len(valid_sides),4) if valid_sides else None,
+        "shadow_hit_rate":round(wins_alt/len(valid_sides),4) if valid_sides else None,
+        "baseline_mae":round(sum(abs(r["baseline"]-r["actual"]) for r in samples)/n,4) if n else None,
+        "shadow_mae":round(sum(abs(r["shadow"]-r["actual"]) for r in samples)/n,4) if n else None,
+        "captured_statuses":dict(coverage),"pending":pending,
+        "validated_for_live":False,"live_model_unchanged":True,
+        "requires_more_distinct_game_dates":True}
+
+
 def grade_licensed_onoff_shadows(ledger,paper_rows):
     """Prospective only, exact frozen line and verified player/event final."""
     actuals={}
@@ -904,6 +975,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None,onoff_feed=None):
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
         "opponent_v2_shadow":grade_opponent_v2(ledger,paper_rows),
+        "rebound_shadow_v1":grade_rebound_v1(ledger,paper_rows),
         "licensed_onoff_shadow":grade_licensed_onoff_shadows(ledger,paper_rows),
         "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
         "stress_test_20k_v1":stress_research_report(ledger,paper_rows),
@@ -949,6 +1021,7 @@ def main():
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
             "opponent_v2_shadow":grade_opponent_v2(ledger,paper),
+            "rebound_shadow_v1":grade_rebound_v1(ledger,paper),
             "licensed_onoff_shadow":grade_licensed_onoff_shadows(ledger,paper),
             "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
             "stress_test_20k_v1":stress_research_report(ledger,paper),
