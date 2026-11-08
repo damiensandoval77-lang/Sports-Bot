@@ -146,6 +146,10 @@ def main():
     frozen=freeze(old,source)
     games=json.loads(CURRENT.read_text()) if CURRENT.exists() else []
     graded=settle(frozen,games)
+    if (graded["records"]==old.get("records",[]) and LEDGER.exists() and
+        RESULTS.exists()):
+        print("PrizePicks research ledger unchanged; no redundant publication")
+        return
     graded["updated_at"]=datetime.now(timezone.utc).isoformat()
     LEDGER.parent.mkdir(parents=True,exist_ok=True)
     LEDGER.write_text(json.dumps(graded,indent=2)+"\n")
