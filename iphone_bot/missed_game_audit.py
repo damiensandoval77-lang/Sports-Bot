@@ -76,6 +76,12 @@ def inspect(records,boxscores=None,now=None):
           "pregame_captures":len(pregame),
           "settled":len(settled),"pending":len(pending),
           "pending_unique_players":len({str(r["player_id"]) for r in pending}),
+          "unresolved_players":[{"player":name,"player_id":ident,
+              "markets":sorted({r["market"] for r in pending
+                      if str(r["player_id"])==ident}),
+              "quote_count":sum(str(r["player_id"])==ident for r in pending)}
+              for ident,name in sorted({(str(r["player_id"]),str(r.get("player","")))
+                  for r in pending})],
           "hours_since_scheduled_tipoff":round(age,2),
           "available_player_boxscore_rows":len(boxes),
           "diagnosis":reason})
