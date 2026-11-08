@@ -74,7 +74,7 @@ test("pace is explicitly heuristic, never final grading during game",()=>{
  assert.equal(outcome.label,"OVER_ALREADY_CLEARED");
  const under=L.evaluate(frozen({combined_projection:25,line:29.5}),35,EVENT);
  assert.equal(under.label,"UNDER_ALREADY_LOST");
- const behind=L.evaluate(frozen({line:48.5}),35,EVENT);
+ const behind=L.evaluate(frozen({line:48.5,combined_projection:55}),35,EVENT);
  assert.equal(behind.label,"ON_PACE");
  assert.equal(behind.pace,56);
  const early={...EVENT,status:{type:{state:"in"},period:1,displayClock:"10:30"}};
