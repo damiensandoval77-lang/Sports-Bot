@@ -1,0 +1,44 @@
+name: Verify current Odds API credits without paying for prop markets
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/check_odds_api_balance.py'
+      - '.github/workflows/nba-odds-current-balance.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-odds-credit-balance
+  cancel-in-progress: false
+jobs:
+  quota:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check real-time account quota (NBA /events only)
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python -m iphone_bot.check_odds_api_balance
+      - name: Publish quota status safely
+        run: |
+          set -euo pipefail
+          cp docs/odds_account_balance.json "$RUNNER_TEMP/odds-balance.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/odds-balance.json" docs/odds_account_balance.json
+            git add docs/odds_account_balance.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Report current actual Odds API quota (no paid props)'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
