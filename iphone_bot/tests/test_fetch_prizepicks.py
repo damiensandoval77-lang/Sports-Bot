@@ -1,6 +1,6 @@
 import datetime as dt
 import unittest
-from iphone_bot.fetch_prizepicks import clean,match,publish
+from iphone_bot.fetch_prizepicks import clean,match,publish,quota_guard
 
 NOW=dt.datetime(2026,11,6,19,0,tzinfo=dt.timezone.utc)
 START="2026-11-07T00:30:00Z"
@@ -18,6 +18,38 @@ COMP={"player":"Sample Player","team":"BOS","game":"Boston Celtics @ Miami Heat"
       "start":START,"stat":"PTS","projection":22.8,"combined_projection":24.0}
 
 class PrizePicksTests(unittest.TestCase):
+    def test_zero_balance_blocks_scheduled_paid_call(self):
+        old={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+             "generated_at":"2026-11-08T01:37:00Z",
+             "remaining_provider_credits":0,"board_offers":[fixture()]}
+        health={"status":"API_ACCESS_CONFIRMED","checked_at":"2026-11-08T01:22:00Z"}
+        self.assertEqual(quota_guard(old,health,dt.datetime(2026,11,8,2,tzinfo=dt.timezone.utc)),
+                         "ZERO_PROVIDER_CREDITS_PRESERVE")
+
+    def test_newer_confirmed_replenishment_unlocks(self):
+        old={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+             "generated_at":"2026-11-08T01:37:00Z",
+             "remaining_provider_credits":0}
+        health={"status":"API_ACCESS_CONFIRMED","checked_at":"2026-11-08T03:15:00Z"}
+        self.assertEqual(quota_guard(old,health,dt.datetime(2026,11,8,4,tzinfo=dt.timezone.utc)),
+                         "REPLENISHED_ACCESS_CONFIRMED")
+
+    def test_month_change_allows_one_new_credit_check(self):
+        old={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+             "generated_at":"2026-11-08T01:37:00Z",
+             "remaining_provider_credits":0}
+        self.assertEqual(quota_guard(old,{},dt.datetime(2026,12,1,2,tzinfo=dt.timezone.utc)),
+                         "MONTH_ROLLOVER_RECHECK_ALLOWED")
+
+    def test_previous_429_fails_closed_without_new_health(self):
+        old={"status":"PROVIDER_RATE_LIMITED",
+             "provider_error_code":"MONTHLY_QUOTA_EXCEEDED",
+             "generated_at":"2026-11-06T23:29:58Z"}
+        self.assertEqual(quota_guard(old,{"status":"API_ACCESS_CONFIRMED",
+             "checked_at":"2026-11-05T01:22:00Z"},
+             dt.datetime(2026,11,8,2,tzinfo=dt.timezone.utc)),
+             "QUOTA_LOCKED_PRESERVE")
+
     def test_real_board_match(self):
         offer=clean(fixture(),NOW)
         self.assertTrue(match(offer,COMP,NOW))
