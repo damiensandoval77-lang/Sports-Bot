@@ -345,7 +345,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 </div>
 <div class="foot">Research-only NBA prop dashboard. Stale/started games are hidden from the AI board. No automated betting or guaranteed outcomes.</div>
-</main><script src="./live-prop-tracker.js?v=712b5b5"></script><script>
+</main><script src="./live-prop-tracker.js?v=7dc6e93"></script><script>
 "use strict";
 const $=id=>document.getElementById(id);
 let gameMoneylines=null;
@@ -1188,8 +1188,15 @@ async function refreshSelectedLiveTracker(){
     new Date(verifiedAt).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
     (liveSource.startsWith("ESPN verified server")?" · Server snapshots refresh on a separate best-effort schedule":" · Direct refresh every 45 seconds");
   const cards=[];
+  let matchedProps=0,missingProps=0;
+  const missingReasons={};
   for(const p of pregame){
    const diagnostic=helper.matchDiagnostics(players,p);
+   if(diagnostic.matched)matchedProps++;
+   else {
+    missingProps++;
+    missingReasons[diagnostic.reason]=(missingReasons[diagnostic.reason]||0)+1;
+   }
    const identity=diagnostic.matched;
    const actual=identity?.stats?.[p.stat]??null;
    const outcome=helper.evaluate(p,actual,event);
@@ -1221,6 +1228,10 @@ async function refreshSelectedLiveTracker(){
    cards.push(card);
   }
   $("live-prop-cards").replaceChildren(...cards);
+  const coverage=matchedProps+"/"+pregame.length+" saved prop rows matched to verified ESPN players";
+  const reasons=Object.entries(missingReasons).map(([k,v])=>v+" "+k.replaceAll("_"," ").toLowerCase()).join(", ");
+  const context=$("live-prop-context");
+  context.textContent+=" · "+coverage+(missingProps?" · Unmatched: "+reasons:"");
   trackerLastUpdated=verifiedAt;
  }catch(error){
   if(serial!==trackerRequestId)return;
