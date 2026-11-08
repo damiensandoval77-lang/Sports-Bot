@@ -147,3 +147,13 @@ test("live player diagnostics distinguish other-team identity from unavailable p
  assert.equal(L.matchDiagnostics([...rows,rows[0]],{player:"Draymond Green",team:"GSW"}).reason,"DUPLICATE_PLAYER");
  assert.equal(L.matchDiagnostics(rows,{player:"Draymond Green",team:"GSW"}).matched.stats.AST,5);
 });
+
+test("duplicate same-team display names resolve only on a verified shared athlete ID",()=>{
+ const rows=[
+  {player:"Alex Smith",team:"GS",athlete_id:"100",stats:{PTS:10}},
+  {player:"Alex Smith",team:"GS",athlete_id:"200",stats:{PTS:20}}
+ ];
+ assert.equal(L.matchDiagnostics(rows,{player:"Alex Smith",team:"GSW",player_id:"200"}).matched.stats.PTS,20);
+ assert.equal(L.matchDiagnostics(rows,{player:"Alex Smith",team:"GSW",player_id:"999"}).reason,"DUPLICATE_PLAYER");
+ assert.equal(L.matchDiagnostics(rows,{player:"Alex Smith",team:"ORL",player_id:"200"}).reason,"TEAM_MISMATCH");
+});
