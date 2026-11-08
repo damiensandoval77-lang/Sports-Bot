@@ -39,6 +39,21 @@ class SourceEvidenceTests(unittest.TestCase):
                 (docs/name).write_text(json.dumps(report))
             self.assertEqual(preserve("odds",docs,Path(t)/"archive"),(None,False))
 
+    def test_prizepicks_full_slate_source_is_not_bookmaker_american_odds(self):
+        with tempfile.TemporaryDirectory() as t:
+            docs=files(Path(t)/"docs")
+            pp={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+                "generated_at":"2026-11-07T20:00:00Z",
+                "board_offers":[{"id":"pp_123","player":"Example","team":"BOS",
+                 "stat":"PTS","line":28.5,"more_tier":"standard",
+                 "less_tier":"standard","observed_at":"2026-11-07T19:59:00Z"}]}
+            (docs/"prizepicks.json").write_text(json.dumps(pp))
+            path,_=preserve("prizepicks",docs,Path(t)/"archive")
+            content=json.loads(gzip.decompress(path.read_bytes()))
+            self.assertEqual(content["feed"],pp)
+            self.assertTrue(content["is_pickem_not_sportsbook_american_odds"])
+            self.assertTrue(content["not_a_retroactive_pregame_paper_pick"])
+
     def test_schedule_keeps_uncovered_games_and_source_limitations(self):
         with tempfile.TemporaryDirectory() as t:
             docs=files(Path(t)/"docs")
