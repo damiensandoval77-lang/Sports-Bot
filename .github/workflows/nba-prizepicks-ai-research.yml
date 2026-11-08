@@ -1,6 +1,9 @@
 name: Research AI projections for independent PrizePicks NBA lines
 on:
   workflow_dispatch:
+  schedule:
+    # Recovery if a site-publish dispatch was missed; no provider credits used.
+    - cron: '12 17,0 * * *'
   push:
     branches: [main]
     paths:
