@@ -90,7 +90,7 @@ def evaluate(feed, *,player_id,team,teammate_id,market,baseline,
     with_group=r.get("with");without_group=r.get("without")
     if not isinstance(with_group,dict) or not isinstance(without_group,dict):
         return dict(result,status="MISSING_ON_OFF_GROUP")
-    for group in (with_group,without):
+    for group in (with_group,without_group):
         n=group.get("games")
         exposure=positive(group.get("minutes"))
         if (not isinstance(n,int) or isinstance(n,bool) or n<MIN_GAMES_EACH
