@@ -33,7 +33,7 @@ def offer_key(row,book):
             float(book.get("line",row.get("line"))))
     except (TypeError,ValueError,OverflowError):return None
 
-def audit(paper,archive,slate,research,now=None,live_checkpoints=None,history_artifacts=None):
+def audit(paper,archive,slate,research,now=None,live_checkpoints=None,history_artifacts=None,source_inputs=None):
     now=now or datetime.now(timezone.utc)
     records=paper.get("records",[])
     report={"status":"RESEARCH_STORAGE_INTEGRITY_AUDIT",
@@ -53,6 +53,9 @@ def audit(paper,archive,slate,research,now=None,live_checkpoints=None,history_ar
               "total_game_observations":sum(len(x.get("games",[])) for x in (live_checkpoints or [])),
               "today_snapshot_files":sum(x.get("date_eastern")==now.astimezone(ET).date().isoformat() for x in (live_checkpoints or []))},
             "permanent_archive_snapshots":len(history_artifacts or []),
+            "original_source_input_snapshots":{
+              "odds":sum(x.get("status")=="ORIGINAL_PAID_PROVIDER_SOURCE_DATA_ARCHIVE_NOT_LIVE" for x in (source_inputs or [])),
+              "schedule":sum(x.get("status")=="ORIGINAL_REPORTED_NBA_FIXTURES_ARCHIVE" for x in (source_inputs or []))},
             "claims_every_game_has_props":False,
             "claims_missing_models_were_pregame_captured":False,
             "no_changes_to_saved_picks_or_live_probabilities":True}
@@ -150,13 +153,20 @@ def compressed_records(folder):
 def main():
     live,invalid_live=compressed_records(ROOT/"docs/research_live")
     saved,invalid_archives=compressed_records(ROOT/"docs/research_history")
+    source_archives=[]
+    invalid_sources=[]
+    for path in sorted((ROOT/"docs/research_inputs").glob("*/*/*.json.gz")):
+        try:source_archives.append(json.loads(gzip.decompress(path.read_bytes())))
+        except (OSError,ValueError,TypeError):
+            invalid_sources.append(str(path.relative_to(ROOT)))
     paper=read(ROOT/"docs/paper_pick_ledger.json")
     archive=read(ROOT/"docs/ai_pregame_archive.json")
     slate=read(ROOT/"docs/nba_schedule.json")
     research=read(ROOT/"docs/projection_upgrade_status.json")
-    result=audit(paper,archive,slate,research,live_checkpoints=live,history_artifacts=saved)
+    result=audit(paper,archive,slate,research,live_checkpoints=live,history_artifacts=saved,source_inputs=source_archives)
     result["corrupted_live_snapshots"]=invalid_live
     result["corrupted_historical_snapshots"]=invalid_archives
+    result["corrupted_source_snapshots"]=invalid_sources
     out=ROOT/"docs/research_storage_integrity.json"
     out.write_text(json.dumps(result,indent=2)+"\n")
     print("RESEARCH STORAGE AUDIT",
@@ -168,7 +178,7 @@ def main():
             "unpaired_archived_book_offers":result["archive"]["archived_offers_not_found_in_paper"],
             "missing_shadow":result["research_diagnostics"]["missing_sanity"],
             "issues":result["paper_invariant_errors"]},sort_keys=True))
-    if result["paper_invariant_errors"] or invalid_live or invalid_archives:
+    if result["paper_invariant_errors"] or invalid_live or invalid_archives or invalid_sources:
         raise SystemExit("RESEARCH_STORAGE_INTEGRITY_VIOLATION")
 
 if __name__=="__main__":main()
