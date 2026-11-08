@@ -2122,9 +2122,10 @@ const status=[];
  }
  if(renderErrors.length){
   $("data-health").textContent+=" · Section errors: "+renderErrors.join(" | ");
-  $("global-warning").textContent="Some dashboard sections could not render: "+
-    renderErrors.join(" | ")+". Other sections remain available.";
-  $("status").textContent="PARTIAL DATA";
+  $("global-warning").textContent="RENDER FAILURE — "+
+    renderErrors.join(" | ")+
+    ". Working sections remain available. Copy this exact message when reporting a problem.";
+  $("status").textContent="ERROR: "+renderErrors.map(x=>x.split(":")[0]).join(", ");
   $("status").className="status warn";
  }
  refreshSelectedLiveTracker().catch(error=>
