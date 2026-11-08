@@ -34,6 +34,11 @@ jobs:
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests
       - name: Read existing verified four-season historical game logs
         run: python -u iphone_bot/download_archived_nba.py
+      - name: Retrieve completed current-season games for optional frozen Combined-AI comparison
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -u iphone_bot/fetch_current_form.py
       - name: Run paired historical holdout and saved pretip Combined-AI comparisons
         run: python -u iphone_bot/shooting_efficiency_backtest.py
       - name: Verify research-only and reject false improvements
