@@ -289,9 +289,14 @@ def main():
             team_out if official_report else [])
         row["official_out_teammates"]=[{"player":p["player"],"player_id":str(p["player_id"])}
                                       for p in team_out] if official_report else []
+        row["official_out_opponents"]=[{"player":p["player"],"player_id":str(p["player_id"])}
+                                      for (pid,day),p in official_by_event.items()
+                                      if day==upcoming_date and p.get("team")==opponent
+                                      and str(p.get("status","")).upper()=="OUT"] if official_report else []
         row["injury_scenario_projection"]=None
         row["injury_scenario_applied_to_combined"]=False
-        row["injury_context_requires_reprojection"]=bool(row["official_out_teammates"])
+        row["injury_context_requires_reprojection"]=bool(
+            row["official_out_teammates"] or row["official_out_opponents"])
         row["defense_in_model"]=False
         row["projection"]=round(projection,1)
         # Build a combined median from UNROUNDED original and shadow forecasts.
@@ -315,7 +320,12 @@ def main():
             row["injury_scenario_ratio_capped"]=round(ratio,4)
             row["injury_scenario_source"]="OFFICIAL_GAME_DAY_OUT_PLUS_PRIOR_NONCAUSAL_MINUTES"
         if row["injury_context_requires_reprojection"]:
-            row["injury_projection_warning"]="BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_TEAMMATE_OUT"
+            row["injury_projection_warning"]=(
+                "BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_OUT_OPPONENT_AND_TEAMMATES"
+                if row["official_out_opponents"] and row["official_out_teammates"] else
+                "BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_OUT_OPPONENT"
+                if row["official_out_opponents"] else
+                "BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_TEAMMATE_OUT")
 
         row["season_average_challenger"]=season_candidate(
             history,upcoming_date,row["team"],target,combined["projection"])
