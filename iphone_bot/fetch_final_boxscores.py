@@ -101,6 +101,17 @@ def box_player(name,team_code,opponent,date,pts,reb,ast,mins,source,game_id):
             "source":source,"final_confirmed":True,"source_game_id":str(game_id)}
 
 
+def verified_dnp_player(name,team_code,opponent,date,reason,source,game_id):
+    """Explicit no-play from confirmed final box, never inferred from missing CSV."""
+    if not (name and team_code in ABBREV and opponent in ABBREV
+            and team_code!=opponent and isinstance(reason,str) and reason.strip()):
+        return None
+    return {"player":str(name).strip(),"team":team_code,"opponent":opponent,
+            "date":date,"source":source,"final_confirmed":True,
+            "source_game_id":str(game_id),"dnp_final_verified":True,
+            "dnp_reason":reason.strip()[:160]}
+
+
 def nba_scoreboard_games(payload):
     games=payload.get("scoreboard",{}).get("games",[])
     if not isinstance(games,list):raise ValueError("bad NBA scoreboard")
@@ -132,7 +143,19 @@ def nba_boxscore_rows(score_event,box):
                   tcode,opp,day,stats.get("points"),stats.get("reboundsTotal"),
                   stats.get("assists"),stats.get("minutes") or stats.get("minutesCalculated"),
                   "NBA_CDN_FINAL",game_id)
-            if row:rows.append(row)
+            if row:
+                rows.append(row)
+            elif player.get("played") is False and (
+                    player.get("notPlayingReason") or
+                    str(player.get("status","")).upper() in ("INACTIVE","DNP","NOT_PLAYING")):
+                dnp=verified_dnp_player(
+                    player.get("name") or
+                    " ".join(str(player.get(v) or "").strip()
+                             for v in ("firstName","familyName")).strip(),
+                    tcode,opp,day,str(player.get("notPlayingReason") or
+                                      player.get("status")),
+                    "NBA_CDN_FINAL",game_id)
+                if dnp:rows.append(dnp)
     return rows
 
 
