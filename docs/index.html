@@ -410,15 +410,30 @@ function frozenResearchScreen(p){
  if(Math.abs(combined-line)<margin)return "SMALL EDGE · PASS";
  return "RESEARCH SCREEN ONLY · NO VERIFIED EDGE";
 }
+function compactPrizePicksOffers(offers){
+ const groups=new Map();
+ for(const offer of offers){
+  const key=[norm(offer.player),offer.team,offer.game,offer.starts_at,offer.stat].join("|");
+  if(!groups.has(key))groups.set(key,[]);
+  groups.get(key).push(offer);
+ }
+ return [...groups.values()].map(group=>{
+  const byLine=[...new Map(group.map(p=>[Number(p.line),p])).values()]
+   .sort((a,b)=>Number(a.line)-Number(b.line));
+  const representative=byLine[Math.floor((byLine.length-1)/2)];
+  return {...representative,threshold_offers:byLine};
+ });
+}
 function renderPrizePicksBoard(){
  const box=$("pp-board"),status=$("pp-board-health");
  if(!box||!status)return;
  box.replaceChildren();
  const q=norm($("pp-board-search").value),market=$("pp-board-market").value;
- const upcoming=ppFresh?ppBoardOffers.filter(o=>Date.parse(o.starts_at)>Date.now()&&
+ const rawUpcoming=ppFresh?ppBoardOffers.filter(o=>Date.parse(o.starts_at)>Date.now()&&
    (!selectedGame||o.game===selectedGame)&&
    (!q||norm(o.player).includes(q))&&(!market||o.stat===market)):[];
- $("pp-board-total").textContent=upcoming.length+" posted lines";
+ const upcoming=compactPrizePicksOffers(rawUpcoming);
+ $("pp-board-total").textContent=upcoming.length+" player/stat cards · "+rawUpcoming.length+" posted thresholds";
  status.textContent=ppFresh?
    "Real PrizePicks lines · "+ppBoardOffers.length+" mapped offers across "+
    new Set(ppBoardOffers.map(o=>o.game)).size+" upcoming games · "+
@@ -446,6 +461,17 @@ function renderPrizePicksBoard(){
   selection.append(node("b","",["MORE "+(p.more_tier||"—"),"LESS "+(p.less_tier||"—")].join(" · ")),
     node("small","","Available sides / tiers"));
   vals.append(selection);
+  if(p.threshold_offers.length>1){
+   const other=node("details","compact-details");
+   other.append(node("summary","","All "+p.threshold_offers.length+" posted thresholds"));
+   const thresholds=node("div","detailbody");
+   for(const offer of p.threshold_offers){
+    thresholds.append(node("div","mini",fmt(Number(offer.line))+
+      " · MORE "+(offer.more_tier||"unavailable")+
+      " · LESS "+(offer.less_tier||"unavailable")));
+   }
+   card.append(other);
+  }
   const forecast=ppAIResearch.get(String(p.id));
   if(forecast&&forecast.stat===p.stat&&forecast.team===p.team&&
      norm(forecast.player)===norm(p.player)&&
