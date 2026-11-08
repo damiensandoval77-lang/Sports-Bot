@@ -4,13 +4,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/fetch_prizepicks.py'\n      - 'iphone_bot/probe_prizepicks_topup.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
       - 'iphone_bot/preserve_research_inputs.py'
       - '.github/workflows/nba-prizepicks-full-slate.yml'
   schedule:
-    # Collect before evening NBA tips, independently of depleted sportsbook API.
-    - cron: '28 18,21 * * *'
+    # Two daily NBA pregame refresh windows, seven hours apart; up to four compact pages each.\n    # Uses proven top-up access even if the monthly remaining-credit header is zero.
+    - cron: '28 16,23 * * *'
 permissions:
   contents: write
 concurrency:
@@ -53,7 +53,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/prizepicks.json
+          git add docs/prizepicks.json\n          if [ -f docs/prizepicks_topup_probe.json ]; then git add docs/prizepicks_topup_probe.json; fi
           if [ -d docs/research_inputs/prizepicks ]; then
             git add docs/research_inputs/prizepicks/
           fi
