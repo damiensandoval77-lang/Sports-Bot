@@ -118,7 +118,8 @@ def main():
         by_id.setdefault(str(r["id"]),{})[r["date"]]=r
     raw_markets={}
     skipped={"not_upcoming":0,"team_mismatch":0,"player_ambiguous":0,"insufficient_stats":0,
-             "unsupported_market":0,"stale_market_quote":0}
+             "unsupported_market":0,"stale_market_quote":0,
+             "officially_out":0,"officially_doubtful":0}
     for r in odds.get("picks",[]):
         stat=MARKETS.get(r.get("stat"))
         if not stat:
@@ -141,6 +142,17 @@ def main():
         person=people[0]
         if not pair or person["team"] not in pair:
             skipped["team_mismatch"]+=1;continue
+        # Official, game-specific unavailability removes a player before the
+        # model can produce normal picks/probabilities for someone ruled out.
+        # An unlisted player is NOT interpreted as available.
+        eastern_day=start.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+        official=(official_by_event.get((str(person["player_id"]),eastern_day))
+                  if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" and report_fresh else None)
+        status=str(official.get("status","")).upper() if official and official.get("team")==person["team"] else ""
+        if status=="OUT":
+            skipped["officially_out"]+=1;continue
+        if status=="DOUBTFUL":
+            skipped["officially_doubtful"]+=1;continue
         side=r.get("direction")
         if side not in ("More","Less"):continue
         game_date=start.astimezone(ZoneInfo("America/New_York")).date()
@@ -275,6 +287,11 @@ def main():
         row["injury_minutes_research"]=injury_minutes_research(
             history,all_games,upcoming_date,row["team"],
             team_out if official_report else [])
+        row["official_out_teammates"]=[{"player":p["player"],"player_id":str(p["player_id"])}
+                                      for p in team_out] if official_report else []
+        row["injury_scenario_projection"]=None
+        row["injury_scenario_applied_to_combined"]=False
+        row["injury_context_requires_reprojection"]=bool(row["official_out_teammates"])
         row["defense_in_model"]=False
         row["projection"]=round(projection,1)
         # Build a combined median from UNROUNDED original and shadow forecasts.
@@ -283,6 +300,23 @@ def main():
         combined=combine_projections(projection,
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
         row["combined_projection"]=round(combined["projection"],1)
+        # Bounded conditional estimate, only when a GAME-DATE official OUT
+        # report and strictly past teammate minute split both exist. Keep the
+        # original model/pick frozen for honest historical grading.
+        scenario=row["injury_minutes_research"]
+        baseline_min=scenario.get("baseline_minutes")
+        scenario_min=scenario.get("scenario_minutes")
+        if (official_report and
+            scenario.get("status")=="HISTORICAL_SCENARIO_RESEARCH_ONLY" and
+            isinstance(baseline_min,(int,float)) and baseline_min>0 and
+            isinstance(scenario_min,(int,float)) and scenario_min>=0):
+            ratio=max(.90,min(1.10,scenario_min/baseline_min))
+            row["injury_scenario_projection"]=round(max(0,combined["projection"]*ratio),1)
+            row["injury_scenario_ratio_capped"]=round(ratio,4)
+            row["injury_scenario_source"]="OFFICIAL_GAME_DAY_OUT_PLUS_PRIOR_NONCAUSAL_MINUTES"
+        if row["injury_context_requires_reprojection"]:
+            row["injury_projection_warning"]="BASELINE_NOT_ADJUSTED_FOR_OFFICIAL_TEAMMATE_OUT"
+
         row["season_average_challenger"]=season_candidate(
             history,upcoming_date,row["team"],target,combined["projection"])
         row["season_feature_method"]="RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI"
