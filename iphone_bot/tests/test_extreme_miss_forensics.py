@@ -65,6 +65,18 @@ class ExtremeMissForensicsTests(unittest.TestCase):
         finished=settle(frozen,[game()],"2026-11-13T04:00:00Z")
         self.assertEqual(report(finished)["independent_settled_markets"],1)
 
+    def test_legacy_frozen_two_model_midpoint_is_counted_without_postgame_reestimate(self):
+        p=market()
+        p["shadow_projection"]=26
+        finished=settle(snapshot([p],AT),[game()],
+                        "2026-11-13T04:00:00Z")
+        finished[0].pop("combined_projection")
+        observed=report(finished)
+        self.assertEqual(observed["independent_settled_markets"],1)
+        self.assertEqual(observed["data_gaps"]["legacy_combined_from_frozen_components"],1)
+        # 24 original, 26 opponent, exact pre-tip midpoint = 25.
+        self.assertEqual(observed["large_misses"][0]["projection"],25)
+
     def test_missing_or_ambiguous_final_not_attached(self):
         frozen=snapshot([market()],AT)
         bad={**game(),"final_confirmed":False}
