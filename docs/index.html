@@ -345,7 +345,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 </div>
 <div class="foot">Research-only NBA prop dashboard. Stale/started games are hidden from the AI board. No automated betting or guaranteed outcomes.</div>
-</main><script src="./live-prop-tracker.js"></script><script>
+</main><script src="./live-prop-tracker.js?v=712b5b5"></script><script>
 "use strict";
 const $=id=>document.getElementById(id);
 let gameMoneylines=null;
@@ -1189,7 +1189,8 @@ async function refreshSelectedLiveTracker(){
     (liveSource.startsWith("ESPN verified server")?" · Server snapshots refresh on a separate best-effort schedule":" · Direct refresh every 45 seconds");
   const cards=[];
   for(const p of pregame){
-   const identity=helper.matchPlayer(players,p);
+   const diagnostic=helper.matchDiagnostics(players,p);
+   const identity=diagnostic.matched;
    const actual=identity?.stats?.[p.stat]??null;
    const outcome=helper.evaluate(p,actual,event);
    const card=node("article","live-prop-card");
@@ -1207,7 +1208,16 @@ async function refreshSelectedLiveTracker(){
      node("div","live-prop-result "+trackerClass(outcome.label),trackerStatusLabel(outcome.label)));
    if(outcome.pace!==null)card.append(node("div","live-prop-foot",
      "Simple estimated final pace: "+fmt(outcome.pace)+" "+p.stat+" · not a prediction update"));
-   if(actual===null)card.append(node("div","live-prop-foot","Stats not matched to an ESPN player on the same team; no zero assumed."));
+   if(actual===null){
+    const reason=diagnostic.reason==="TEAM_MISMATCH"?
+     "Player found in ESPN boxscore under another team; saved matchup/team needs review.":
+     diagnostic.reason==="DUPLICATE_PLAYER"?
+     "Multiple ESPN player identities found; cannot safely identify.":
+     diagnostic.reason==="INVALID_FORECAST_IDENTITY"?
+     "Saved player/team identity is incomplete.":
+     "Player not found in this game's verified ESPN boxscore (may not have played).";
+    card.append(node("div","live-prop-foot",reason+" No zero assumed."));
+   }
    cards.push(card);
   }
   $("live-prop-cards").replaceChildren(...cards);
