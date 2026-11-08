@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/fetch_nba_schedule.py'
+      - 'iphone_bot/fetch_hoopr_nba_schedule.py'
       - 'iphone_bot/tests/test_fetch_nba_schedule.py'
       - '.github/workflows/nba-schedule.yml'
   schedule:
@@ -27,10 +28,10 @@ jobs:
         run: |
           python -m py_compile iphone_bot/fetch_nba_schedule.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_nba_schedule.py' -v
-      - name: Fetch genuine current-date NBA fixtures from NBA/ESPN; fall back only if both unavailable
-        env:
-          NBA_SCHEDULE_SOURCE_MODE: auto
-        run: python -u iphone_bot/fetch_nba_schedule.py
+      - name: Refresh verified full season fixture schedule before private NBA/ESPN fallbacks
+        run: |
+          pip install pandas pyarrow
+          python -u iphone_bot/fetch_hoopr_nba_schedule.py || NBA_SCHEDULE_SOURCE_MODE=auto python -u iphone_bot/fetch_nba_schedule.py
       - name: Publish diagnostic if all schedule providers reject GitHub Actions
         if: failure()
         run: |
