@@ -265,6 +265,12 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  <div class="board" id="pp-board"><div class="empty">Loading PrizePicks lines…</div></div>
  <div class="source">Independent third-party PrizePicks observation, not FanDuel odds. No American odds or verified EV. Standard, Goblin and Demon are different tiers; check the PrizePicks app before placing anything.</div>
 </section>
+<div id="ai-no-line-shell" class="source" hidden>
+ <strong>AI PLAYER PROJECTIONS · no current prop lines</strong>
+ <div id="ai-no-line-status">Checking independently trained NBA estimates…</div>
+ <div class="board" id="ai-no-line-board"></div>
+ <div>Model estimates only. These are NOT PrizePicks or sportsbook lines, betting directions, calibrated probabilities, or verified picks. Coverage may be partial.</div>
+</div>
 <div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
@@ -351,6 +357,7 @@ const $=id=>document.getElementById(id);
 let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
+let noLineForecast=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -648,7 +655,47 @@ function compactPrizePicksDisplay(rows){
  }
  return display;
 }
+function renderNoLineForecast(){
+ const shell=$("ai-no-line-shell"),body=$("ai-no-line-board"),state=$("ai-no-line-status");
+ if(!shell||!body||!state)return;
+ const active=ai.length===0;
+ shell.hidden=!active;
+ if(!active)return;
+ body.replaceChildren();
+ const feed=noLineForecast;
+ const rows=feed?.status==="PREGAME_PROJECTIONS_NO_LINES"&&
+   isRecent(feed.generated_at,8)&&Array.isArray(feed.predictions)?
+   feed.predictions.filter(x=>Date.parse(x.start)>Date.now()&&
+      x.line==null&&x.direction==null):[];
+ const search=norm($("ai-search").value),stat=$("ai-stat").value;
+ const filtered=rows.filter(x=>(!selectedGame||x.game===selectedGame)&&
+   (!stat||x.stat===stat)&&(!search||norm(x.player).includes(search)));
+ if(!rows.length){
+   state.textContent="No usable upcoming estimates. "+
+      (feed?.status||"The daily model refresh has not published yet")+
+      ". PrizePicks lines unavailable or stale; no guesses displayed.";
+   return;
+ }
+ state.textContent=filtered.length+" player-stat estimates available · "+
+   feed.games_covered+" verified matchups · updated "+
+   new Date(feed.generated_at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
+   " · fixture coverage "+(feed.fixture_source_complete?"verified":"partial")+
+   ". No current bettable over/under lines.";
+ for(const p of filtered.slice(0,140)){
+   const card=node("div","card");
+   card.append(node("div","detail-heading",p.player+" · "+p.team+" · "+p.stat));
+   card.append(node("div","mini",p.game+" · "+new Date(p.start).toLocaleString([],
+        {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})));
+   card.append(node("div","research-note",
+       "AI projected "+fmt(p.projection)+
+       " · "+p.source_recent_games+" earlier games · no line, no O/U side"));
+   body.append(card);
+ }
+ if(filtered.length>140)body.append(node("div","source",
+   "Showing first 140 estimates; filter by player or stat to narrow results."));
+}
 function renderAI(){
+ renderNoLineForecast();
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
  const board=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
@@ -2066,6 +2113,7 @@ gameMoneylines=mlFeed.status==="fulfilled"&&
 oddsHealth=oh.status==="fulfilled"?oh.value:null;
 slateHealth=health.status==="fulfilled"&&health.value?.status==="DESCRIPTIVE_NBA_SLATE_ODDS_COVERAGE"&&
  health.value.date_eastern===easternGameDay(new Date())&&isRecent(health.value.generated_at,8)?health.value:null;
+noLineForecast=await fetchJSON("ai_projection_fallback.json").catch(()=>null);
 aiFresh=false;aiArchiveMode=false;ai=[];aiMetadata=null;frozenMatchupForecasts=[];
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);
