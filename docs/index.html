@@ -1641,7 +1641,14 @@ async function refresh(){
    " · "+segments+
    " · "+(cover.captured_candidate_markets??"—")+" frozen candidates; "+
    (cover.settled_quote_line_mismatch||0)+" settled quote-line mismatches excluded from direction scoring."+
-   " Research only—live projections and simulated hit percentages unchanged.";
+   " Research only—live projections and simulated hit percentages unchanged."+
+   " Opponent V2 pace/defense shadow: "+
+   (r.opponent_v2_shadow?.overall?.paired_markets??0)+" paired markets; Combined MAE "+
+   (r.opponent_v2_shadow?.overall?.baseline_mae??"—")+
+   " vs V2 "+(r.opponent_v2_shadow?.overall?.v2_mae??"—")+
+   "; exact-line grades "+
+   (r.opponent_v2_shadow?.overall?.exact_line_direction_eligible??0)+
+   " (PTS/REB/AST/PRA, research only).";
  }).catch(()=>{
   $("opportunity-review-shadow").textContent="Pregame shadow validation report not yet published.";
  });
