@@ -12,6 +12,8 @@ on:
       - 'iphone_bot/projection_upgrade_research.py'
       - 'iphone_bot/prospective_research_gate.py'
       - 'iphone_bot/tests/test_prospective_research_gate.py'
+      - 'iphone_bot/quote_capture_coverage.py'
+      - 'iphone_bot/tests/test_quote_capture_coverage.py'
       - 'iphone_bot/opportunity_backtest.py'
       - 'iphone_bot/tests/test_opportunity_backtest.py'
       - 'iphone_bot/tests/test_projection_upgrade_research.py'
@@ -40,6 +42,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_quote_capture_coverage.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
@@ -117,6 +120,14 @@ jobs:
           PY
       - name: Freeze every eligible AI comparison before scheduled tipoff
         run: python -u iphone_bot/capture_ai_board.py
+      - name: Verify no eligible bookmaker quote was silently dropped
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('docs/pregame_quote_capture_coverage.json'))
+          assert x['eligible_quote_missing_from_ledger']==0
+          print('Every real quote accounted for:',x['eligibility_by_reason'])
+          PY
       - name: Lock opportunity, official injury, V4 shadow and 20k calibration research
         run: |
           python -u iphone_bot/projection_upgrade_research.py
@@ -150,7 +161,7 @@ jobs:
       - name: Publish AI board and immutable pregame paper records immediately
         run: |
           git fetch origin main
-          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json docs/ai_market_coverage.json
+          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json docs/ai_market_coverage.json docs/pregame_quote_capture_coverage.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
