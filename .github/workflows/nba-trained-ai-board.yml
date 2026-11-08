@@ -22,7 +22,9 @@ on:
   schedule:
     # Market-refresh job runs at :12. This job reads its published compact feed
     # and NEVER consumes additional sportsbook API credits.
-    - cron: '41 18,21 * * *'
+    # Re-evaluate the published market feed near Eastern evening tipoffs
+    # after official NBA availability reports update. No new sportsbook call.
+    - cron: '41 0,18,21,23 * * *'
 permissions:
   contents: write
 concurrency:
