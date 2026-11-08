@@ -29,7 +29,7 @@ jobs:
       - name: Prove price-less model output cannot invent picks or confidence
         run: |
           python -m py_compile iphone_bot/prizepicks_ai_research.py
-          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_ai_research.py' -v
+          PYTHONPATH=iphone_bot python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_ai_research.py' -v
       - name: Recreate pre-current-season NBA trained regressions and heldout checks
         run: |
           python -u iphone_bot/download_archived_nba.py
