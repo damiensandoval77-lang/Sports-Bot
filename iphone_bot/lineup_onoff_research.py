@@ -83,7 +83,7 @@ def evaluate(feed, *,player_id,team,teammate_id,market,baseline,
     deltas=[]
     for stat in stats:
         a=positive(with_group.get(stat+"_per36"))
-        b=positive(positive(without_group.get(stat+"_per36"))
+        b=positive(without_group.get(stat+"_per36"))
         if a is None or b is None:return dict(result,status="MISSING_PER36_RATE")
         deltas.append(b-a)
     raw_per_game=sum(deltas)*mins/36
