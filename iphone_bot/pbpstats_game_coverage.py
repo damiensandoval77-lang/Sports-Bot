@@ -34,7 +34,10 @@ def _intervals(records,player_id,through):
                 raise ValueError("Invalid starting second")
             if not isinstance(b,(int,float)) or isinstance(b,bool) or not math.isfinite(b):
                 raise ValueError("Invalid ending second")
-            if not (0<=a<b<=4000):raise ValueError("Out-of-range or negative stint")
+            if not (0<=a<=b<=4000):raise ValueError("Out-of-range or negative stint")
+            # Provider emits zero-second possession events. These add no
+            # actual exposure and must not invalidate an otherwise legal game.
+            if a==b:continue
             windows.append((float(a),float(b)))
         windows.sort()
         for i in range(1,len(windows)):
