@@ -28,7 +28,7 @@ class PregameArchiveTests(unittest.TestCase):
 
     def test_after_tip_model_predictions_cannot_be_archived(self):
         self.assertIsNone(choose([board(created="2026-11-08T02:00:00Z")],
-                                   datetime(2026,11,8,4,0,tzinfo=timezone.utc))))
+                                   datetime(2026,11,8,4,0,tzinfo=timezone.utc)))
 
     def test_reject_unverified_or_no_real_book_prices(self):
         bad=board()
