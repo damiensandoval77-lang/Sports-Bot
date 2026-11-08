@@ -1,8 +1,8 @@
 """Single, non-recurring current-season ON/OFF source-consistency research check.
 
-Five bounded public GET requests: two dated WOWY requests, two time-distribution
-requests, one current-season game-list request (if needed in later revisions).
-This version makes only FOUR requests. Raw third-party rows stay in memory;
+Twelve bounded public GET requests, four per three injury-related pairs:
+two dated WOWY requests plus two playing-time distribution requests for
+each pair. Strictly one-time research validation, not recurring polling. Raw third-party rows stay in memory;
 publish only derived count/coverage diagnostics. Never enable paid/live model
 ingestion from a reachability test.
 """
