@@ -39,11 +39,17 @@ def _intervals(records,player_id,through):
             # actual exposure and must not invalidate an otherwise legal game.
             if a==b:continue
             windows.append((float(a),float(b)))
+        # PBP Stats returns individual possession records, not disjoint
+        # continuous court stints. They can share clock intervals. Collapse
+        # overlapping intervals into their union to avoid counting time twice.
         windows.sort()
-        for i in range(1,len(windows)):
-            if windows[i][0]<windows[i-1][1]-1e-6:
-                raise ValueError("Overlapping source stints would double-count minutes")
-        out[gid]=(day,windows)
+        merged=[]
+        for start,end in windows:
+            if merged and start<=merged[-1][1]:
+                merged[-1]=(merged[-1][0],max(merged[-1][1],end))
+            else:
+                merged.append((start,end))
+        out[gid]=(day,merged)
     return out
 
 def audit_pair(target_distribution,teammate_distribution,
