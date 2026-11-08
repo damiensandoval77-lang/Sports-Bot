@@ -87,6 +87,14 @@ jobs:
           assert r['unified_reliability_v1']['no_live_probabilities_changed'] is True
           assert r['unified_reliability_v1']['no_accuracy_improvement_claimed'] is True
           assert r['unified_reliability_v1']['confidence_proxy_quote_coverage']['confidence_calibrated'] is False
+          opp=r['opportunity_shadow']
+          assert opp['same_line_required_for_direction_scoring'] is True
+          assert opp['mae_uses_same_player_verified_final_stat_only'] is True
+          assert opp['eligible_for_live_promotion'] is False
+          assert sum(opp['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==opp['overall']['paired_markets']
+          assert sum(opp['by_market'][m]['same_line_direction_eligible'] for m in ('PTS','REB','AST','PRA'))==opp['overall']['same_line_direction_eligible']
+          assert opp['overall']['same_line_direction_eligible']<=opp['overall']['exact_line_matched_final_markets']
+          assert opp['overall']['exact_line_matched_final_markets']+opp['overall']['line_mismatched_final_markets']==opp['overall']['paired_markets']
           assert r['sanity_shadow_v1']['adjusted_only']['paired_markets'] <= r['sanity_shadow_v1']['overall']['paired_markets']
           assert all(v['changes_live_probabilities'] is False for v in r['simulation_audit'].values())
           print('Research records:',r['locked_samples'],'settled:',r['settled_independent_paper_markets'])
