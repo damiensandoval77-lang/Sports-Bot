@@ -1,29 +1,29 @@
 {
-  "generated_at": "2026-11-08T00:10:01.666198+00:00",
+  "generated_at": "2026-11-08T00:30:11.902445+00:00",
   "status": "RETROSPECTIVE_POST_HOC_RESEARCH_ONLY",
   "formula_created_after_game": true,
   "not_pregame_locked_shadow_predictions": true,
   "production_ai_unchanged": true,
   "simulated_probabilities_unchanged": true,
   "overall": {
-    "matched_assist_markets": 36,
+    "matched_assist_markets": 37,
     "combined_ai": {
-      "record": "12-24",
+      "record": "12-25",
       "wins": 12,
-      "losses": 24,
-      "eligible": 36,
-      "hit_rate": 0.3333
+      "losses": 25,
+      "eligible": 37,
+      "hit_rate": 0.3243
     },
     "assist_shadow_v1": {
-      "record": "13-23",
+      "record": "13-24",
       "wins": 13,
-      "losses": 23,
-      "eligible": 36,
-      "hit_rate": 0.3611
+      "losses": 24,
+      "eligible": 37,
+      "hit_rate": 0.3514
     },
-    "combined_ai_mae": 1.836,
-    "assist_shadow_mae": 1.757,
-    "distinct_game_dates": 1
+    "combined_ai_mae": 1.843,
+    "assist_shadow_mae": 1.759,
+    "distinct_game_dates": 2
   },
   "by_game": {
     "Boston Celtics @ Charlotte Hornets": {
@@ -44,6 +44,26 @@
       },
       "combined_ai_mae": 1.329,
       "assist_shadow_mae": 1.286,
+      "distinct_game_dates": 1
+    },
+    "Denver Nuggets @ Indiana Pacers": {
+      "matched_assist_markets": 1,
+      "combined_ai": {
+        "record": "0-1",
+        "wins": 0,
+        "losses": 1,
+        "eligible": 1,
+        "hit_rate": 0.0
+      },
+      "assist_shadow_v1": {
+        "record": "0-1",
+        "wins": 0,
+        "losses": 1,
+        "eligible": 1,
+        "hit_rate": 0.0
+      },
+      "combined_ai_mae": 2.1,
+      "assist_shadow_mae": 1.814,
       "distinct_game_dates": 1
     },
     "Philadelphia 76ers @ Cleveland Cavaliers": {
@@ -148,11 +168,11 @@
     }
   },
   "coverage_exclusions": {
-    "INSUFFICIENT_PREGAME_ASSIST_DATA": 20,
+    "INSUFFICIENT_PREGAME_ASSIST_DATA": 27,
     "UNSTABLE_RECENT_MINUTES_ROLE": 4,
     "HIGH_ASSIST_VOLATILITY": 1
   },
-  "eligible_assist_markets_saved": 61,
+  "eligible_assist_markets_saved": 69,
   "matched_player_examples": [
     {
       "game": "Philadelphia 76ers @ Cleveland Cavaliers",
@@ -236,6 +256,27 @@
       "prior_same_team_games": 8,
       "latest_prior_game": "2026-11-04",
       "projected_minutes": 36.17,
+      "retrospective_only": true
+    },
+    {
+      "game": "Denver Nuggets @ Indiana Pacers",
+      "date": "2026-11-07",
+      "player": "Pascal Siakam",
+      "player_id": "1627783",
+      "team": "IND",
+      "line": 3.5,
+      "actual_assists": 5.0,
+      "baseline_projection": 2.9,
+      "assist_shadow_projection": 3.1864,
+      "baseline_side": "UNDER",
+      "shadow_side": "UNDER",
+      "baseline_win": 0,
+      "shadow_win": 0,
+      "baseline_error": 2.1,
+      "shadow_error": 1.8136,
+      "prior_same_team_games": 8,
+      "latest_prior_game": "2026-11-04",
+      "projected_minutes": 31.94,
       "retrospective_only": true
     },
     {
