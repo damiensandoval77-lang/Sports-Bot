@@ -4,6 +4,7 @@ No retroactive pick creation or AI model edits. Historical GitHub archive rows
 and genuinely captured pre-tip paper records are counted SEPARATELY.
 """
 import json
+import gzip
 from collections import Counter
 from datetime import datetime,timezone
 from pathlib import Path
@@ -32,7 +33,7 @@ def offer_key(row,book):
             float(book.get("line",row.get("line"))))
     except (TypeError,ValueError,OverflowError):return None
 
-def audit(paper,archive,slate,research,now=None):
+def audit(paper,archive,slate,research,now=None,live_checkpoints=None,history_artifacts=None):
     now=now or datetime.now(timezone.utc)
     records=paper.get("records",[])
     report={"status":"RESEARCH_STORAGE_INTEGRITY_AUDIT",
@@ -45,7 +46,13 @@ def audit(paper,archive,slate,research,now=None):
             "paper_game_dates":{},
             "paper_invariant_errors":[],
             "archive":{},"slate":{},"research_diagnostics":{},
-            "intermediate_live_player_stats_persisted":False,
+            "intermediate_live_player_stats_persisted":bool(live_checkpoints),
+            "live_checkpoints":{
+              "persisted_snapshot_files":len(live_checkpoints or []),
+              "latest_capture_at":max((x.get("captured_at","") for x in (live_checkpoints or [])),default=None),
+              "total_game_observations":sum(len(x.get("games",[])) for x in (live_checkpoints or [])),
+              "today_snapshot_files":sum(x.get("date_eastern")==now.astimezone(ET).date().isoformat() for x in (live_checkpoints or []))},
+            "permanent_archive_snapshots":len(history_artifacts or []),
             "claims_every_game_has_props":False,
             "claims_missing_models_were_pregame_captured":False,
             "no_changes_to_saved_picks_or_live_probabilities":True}
@@ -132,12 +139,24 @@ def audit(paper,archive,slate,research,now=None):
         "missing_is_not_retrospectively_backfilled":True}
     return report
 
+def compressed_records(folder):
+    records=[]
+    invalid=[]
+    for path in sorted(folder.glob("*/*.json.gz")):
+        try:records.append(json.loads(gzip.decompress(path.read_bytes())))
+        except (OSError,ValueError,TypeError):invalid.append(str(path.relative_to(ROOT)))
+    return records,invalid
+
 def main():
+    live,invalid_live=compressed_records(ROOT/"docs/research_live")
+    saved,invalid_archives=compressed_records(ROOT/"docs/research_history")
     paper=read(ROOT/"docs/paper_pick_ledger.json")
     archive=read(ROOT/"docs/ai_pregame_archive.json")
     slate=read(ROOT/"docs/nba_schedule.json")
     research=read(ROOT/"docs/projection_upgrade_status.json")
-    result=audit(paper,archive,slate,research)
+    result=audit(paper,archive,slate,research,live_checkpoints=live,history_artifacts=saved)
+    result["corrupted_live_snapshots"]=invalid_live
+    result["corrupted_historical_snapshots"]=invalid_archives
     out=ROOT/"docs/research_storage_integrity.json"
     out.write_text(json.dumps(result,indent=2)+"\n")
     print("RESEARCH STORAGE AUDIT",
@@ -149,6 +168,7 @@ def main():
             "unpaired_archived_book_offers":result["archive"]["archived_offers_not_found_in_paper"],
             "missing_shadow":result["research_diagnostics"]["missing_sanity"],
             "issues":result["paper_invariant_errors"]},sort_keys=True))
-    if result["paper_invariant_errors"]:raise SystemExit("INVALID_PAPER_LEDGER_INTEGRITY")
+    if result["paper_invariant_errors"] or invalid_live or invalid_archives:
+        raise SystemExit("RESEARCH_STORAGE_INTEGRITY_VIOLATION")
 
 if __name__=="__main__":main()
