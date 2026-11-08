@@ -26,9 +26,13 @@ except ImportError:
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/"docs/pbpstats_onoff_coverage_probe.json"
 MAX_BYTES=5*1024*1024
-PLAYER="201939"       # Example: one pair, not the entire league
-TEAMMATE="203110"
-TEAM="GSW"
+# Three additional injury-related pairs, one-time bounded diagnostic only.
+# No licensed data persisted, no recurring ingestion, and no API keys.
+PAIRS=(
+    ("1628973","1628404","NYK"),  # Brunson / Josh Hart
+    ("1630532","1631094","ORL"),  # Franz Wagner / Paolo Banchero
+    ("1629027","203076","WAS"),   # Trae Young / Anthony Davis
+)
 DATE="2026-11-06"
 
 def get_json(url,params):
@@ -42,12 +46,12 @@ def get_json(url,params):
         if len(data)>MAX_BYTES:raise ValueError("Response exceeds safe diagnostic size")
         return json.loads(data)
 
-def one_time_probe():
-    plan=request_plan(PLAYER,TEAMMATE,TEAM,cutoff_date=DATE)
+def one_time_probe(player_id,teammate_id,team):
+    plan=request_plan(player_id,teammate_id,team,cutoff_date=DATE)
     outcome={"checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
              "season":"2026-27","cutoff":DATE,
-             "sample_player_id":PLAYER,"sample_teammate_id":TEAMMATE,
-             "purpose":"SINGLE_PAIR_GAME_LEVEL_COVERAGE_VALIDATION",
+             "sample_player_id":player_id,"sample_teammate_id":teammate_id,
+             "purpose":"BOUNDED_INJURY_PAIR_GAME_LEVEL_COVERAGE_VALIDATION",
              "raw_player_stats_published":False,"automatic_ingestion_enabled":False,
              "license_asserted":False}
     try:
@@ -56,9 +60,9 @@ def one_time_probe():
             wowy[kind]=get_json(plan["endpoint"],plan["requests"][kind])
         dist_url="https://api.pbpstats.com/get-playing-time-distribution/nba"
         distributions={}
-        for target in (PLAYER,TEAMMATE):
+        for target in (player_id,teammate_id):
             distributions[target]=get_json(dist_url,{
-              "TeamId":TEAM_IDS[TEAM],"Season":"2026-27",
+              "TeamId":TEAM_IDS[team],"Season":"2026-27",
               "SeasonType":"Regular Season","PlayerId":target})
         summarized={}
         for target,payload in distributions.items():
@@ -86,10 +90,10 @@ def one_time_probe():
                     "invalid_range_count":invalid,
                     "example_ranges":examples}
         outcome["time_schema"]={
-            "target":time_schema(summarized[PLAYER]),
-            "teammate":time_schema(summarized[TEAMMATE])}
-        coverage=audit_pair(summarized[PLAYER],summarized[TEAMMATE],
-            player_id=PLAYER,teammate_id=TEAMMATE,cutoff_date=DATE,
+            "target":time_schema(summarized[player_id]),
+            "teammate":time_schema(summarized[teammate_id])}
+        coverage=audit_pair(summarized[player_id],summarized[teammate_id],
+            player_id=player_id,teammate_id=teammate_id,cutoff_date=DATE,
             min_games=1,min_minutes=1)
         outcome["game_level_coverage"]={
             "status":coverage["status"],
@@ -102,7 +106,7 @@ def one_time_probe():
               for k in ("with","without"))}
         comparison={}
         for kind in ("with","without"):
-            row=_rows(wowy[kind],PLAYER)
+            row=_rows(wowy[kind],player_id)
             seconds=positive(row.get("SecondsPlayed"))
             minutes=seconds/60 if seconds is not None else positive(row.get("Minutes"))
             independent=coverage[kind]["minutes"]
@@ -121,7 +125,12 @@ def one_time_probe():
     return outcome
 
 def main():
-    result=one_time_probe()
+    result={"status":"ONE_TIME_THREE_PAIR_PUBLIC_SOURCE_RESEARCH_ONLY",
+       "checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+       "raw_stats_saved":False,"licensed_use_verified":False,
+       "historical_cutoff":DATE,"pairs":[]}
+    for player,teammate,team in PAIRS:
+        result["pairs"].append(one_time_probe(player,teammate,team))
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps(result,sort_keys=True))
 
