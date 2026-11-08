@@ -103,3 +103,17 @@ The `bundle.json` contract is `{season,source,generated_at,pairs:[...]}`. Each p
 Raw `with_response` and `without_response` must contain the provider's `multi_row_table_data` with an unambiguous `EntityId` equal to the subject's NBA ID and numeric `Points`, `Rebounds`, `Assists`, and exposure minutes. If data rights, independent coverage, cutoff or sampling units are uncertain, the import must be rejected and the production model remains unchanged.
 
 **Important:** A GitHub Actions HTTP 200 is evidence of reachable public transport, not a grant of rights for ongoing betting-model analytics, training, caching, or redistribution. The permitted-use issue remains open. The provider's exact 2026-27 on/off response semantics and games-per-split provenance are not independently verified yet.
+
+## Verified game-level possession overlap gate (new)
+
+The public PBP Stats API advertises `get-playing-time-distribution/nba` and `get-wowy-combo-playing-time-distribution/nba`; the former's official notebook shows `GameId`, `Date`, and per-possession `StartTime`/`EndTime`. Those possession/stint records are suitable for inspecting which teammates shared playing time, subject to source permission and correct game-elapsed time semantics.
+
+New module `iphone_bot/pbpstats_game_coverage.py` computes per-game exact intersection between the target's and teammate's on-floor intervals. It requires unambiguous 10-digit GameIds and dates strictly before the target game's pretip date, rejects duplicated or overlapping possession intervals, separately counts ON/OFF game dates and minutes, and demands at least 5 distinct games and 120 minutes in each condition. No per-game stats are manufactured from an aggregate.
+
+The offline assembler `iphone_bot/assemble_pbpstats_wowy.py` now requires private `target_distribution` and `teammate_distribution` lists in every pair, compares the independently computed ON/OFF game dates to the provider query provenance, and reconciles observed ON/OFF minutes with the corresponding WOWY API aggregate to within 3% or 3 minutes. If the distributions cannot be obtained or do not reconcile, no licensed feed is accepted.
+
+This test path is integrated into the GitHub workflows with synthetic game-level interval fixtures; it does **not** mean the actual 2026–27 distributions have been verified. The API's published examples contain historical response examples; permission, current-season source behavior and ON/OFF possession timing still require confirmation.
+
+## Provider licensing inquiry
+
+`docs/pbpstats-permission-inquiry.md` contains a draft asking the provider to confirm use in a sportsbook/PrizePicks analytics workflow, caching, paid tiers, and third-party NBA rights. The draft is **not sent** and does not grant permission.
