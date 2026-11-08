@@ -1047,6 +1047,7 @@ function showTrackerMessage(title,message){
  $("live-prop-cards").replaceChildren();
 }
 async function refreshSelectedLiveTracker(){
+ if(document.visibilityState==="hidden")return;
  const serial=++trackerRequestId,game=selectedGame,helper=window.LivePropTracker;
  const section=$("live-prop-tracker");
  const target=nbaSchedule?.games?.find(g=>g.game===game);
@@ -1760,7 +1761,18 @@ for(const btn of document.querySelectorAll(".tab"))btn.addEventListener("click",
 $("refresh-now").addEventListener("click",()=>refresh().catch(error=>{
  $("data-health").textContent="Refresh failed: "+String(error.message||error);
 }));
+// Foreground polling: running tabs check the ESPN game and selected player box
+// score about every 45 seconds. Suspended iOS tabs resume immediately on focus.
 setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000);
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState!=="visible")return;
+ refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});
+ refreshOverview();renderAI();
+});
+window.addEventListener("focus",()=>{
+ if(document.visibilityState!=="visible")return;
+ refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});
+});
 // Tipoffs can happen while the page stays open; remove started-game
 // projections without requiring a manual refresh or another API request.
 setInterval(()=>{refreshOverview();renderAI();},30000);
