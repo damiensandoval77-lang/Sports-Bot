@@ -184,6 +184,15 @@ def main():
         upcoming = [e for e in events if now <
             dt.datetime.fromisoformat(e["commence_time"].replace("Z","+00:00")) <= cutoff]
         upcoming.sort(key=lambda e: e["commence_time"])
+        if not upcoming:
+            # A late-night /events call often lists no future fixtures because
+            # every game has tipped. This does NOT invalidate pregame captures.
+            # Do not erase the last authentic quote snapshot with an empty one.
+            save_status("NO_UPCOMING_EVENTS_PRESERVED",
+                        available_events=0,checked_events=0,
+                        note="All provider fixtures may have tipped; old quote file preserved and must be shown as stale.")
+            print("Provider has no future events: preserving prior authentic prop snapshots.",flush=True)
+            return
         picks = []
         remaining = start_credits
         inspected = 0
@@ -237,6 +246,13 @@ def main():
             "remaining_provider_credits":int(remaining) if remaining is not None else None,
             "disclaimer": "Live sportsbook odds, NOT PrizePicks lines. No AI projections or win probabilities yet. Verify all lines before use.",
             "picks": picks[:MAX_EVENTS * MAX_OUTCOMES_PER_EVENT]}
+        if not picks:
+            save_status("NO_TWO_SIDED_PLAYER_PROPS_PRESERVED",
+                        available_events=len(upcoming),checked_events=inspected,
+                        remaining_credits=remaining,
+                        note="No completed real Over/Under pairs available. Last verified snapshot was not replaced.")
+            print("No two-sided real player props returned; preserving prior published snapshots.",flush=True)
+            return
         OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         compact=compact_for_dashboard(result)
         COMPACT.write_text(json.dumps(compact,separators=(",",":"))+"\n",encoding="utf-8")
