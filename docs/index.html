@@ -251,7 +251,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <button class="tab" data-tab="results" aria-selected="false">Performance</button></nav>
 
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
-<div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="time">Game time</option><option value="edge">Biggest difference (not verified)</option><option value="name">Player name</option></select></div>
+<div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="leans">Ranked model leans</option><option value="time">Game time</option><option value="edge">Biggest difference (not verified)</option><option value="name">Player name</option></select></div>
 <div class="source" id="ai-evidence-warning" role="status" aria-live="polite">Reviewing independently graded results before treating simulated estimates as actionable.</div>
 <div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
 <div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
@@ -627,11 +627,20 @@ function renderAI(){
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
  const board=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
- const entries=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
+ const filtered=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
+ const entries=[...filtered];
+ const eligibleLeans=entries.filter(p=>p.reliability_screen?.status==="MODEL_LEAN").length;
+ const passed=entries.filter(p=>p.reliability_screen?.status==="PASS").length;
  entries.sort((a,b)=>sort==="name"?a.player.localeCompare(b.player):
-  sort==="edge"?Math.abs(b.difference)-Math.abs(a.difference):
+  sort==="edge"?Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
+  sort==="leans"?
+   ((b.reliability_screen?.status==="MODEL_LEAN"?1:0)-
+    (a.reliability_screen?.status==="MODEL_LEAN"?1:0))||
+   ((b.combined_simulation?.selected_hit_rate??-1)-(a.combined_simulation?.selected_hit_rate??-1))||
+   Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
- $("ai-total").textContent=entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props");
+ $("ai-total").textContent=entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
+   (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   try{
   const outer=node("article","prop compact-prop"),main=node("div","mainline");
