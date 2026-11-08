@@ -349,16 +349,6 @@ def main():
         combined=combine_projections(projection,
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
         row["combined_projection"]=round(combined["projection"],1)
-        row["shooting_efficiency_v1"] = (shooting_efficiency_v1(
-            history,upcoming_date,row["team"],opponent,
-            expected_minutes=row["minutes_v2_research"].get("expected_minutes"),
-            defense_index=shooting_defense,
-            combined_baseline=combined["projection"])
-            if target=="PTS" else {
-               "status":"POINTS_ONLY_RESEARCH_SHADOW",
-               "model":"SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
-               "projection":None,"production_applied":False})
-
         row["preinjury_original_projection"]=round(projection,1)
         row["preinjury_shadow_projection"]=row["shadow_projection"]
         row["preinjury_combined_projection"]=round(combined["projection"],1)
@@ -403,6 +393,17 @@ def main():
                 if row["injury_reprojection_status"]=="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"
                 else "NO_SUPPORTED_REPROJECTION_DO_NOT_SHOW_OLD_PICK")
 
+        # Freeze shadow against the FINAL same-snapshot Combined AI, including
+        # any separately verified official injury projection adjustment.
+        row["shooting_efficiency_v1"] = (shooting_efficiency_v1(
+            history,upcoming_date,row["team"],opponent,
+            expected_minutes=row["minutes_v2_research"].get("expected_minutes"),
+            defense_index=shooting_defense,
+            combined_baseline=combined["projection"])
+            if target=="PTS" else {
+                "status":"POINTS_ONLY_RESEARCH_SHADOW",
+                "model":"SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
+                "projection":None,"production_applied":False})
         row["season_average_challenger"]=season_candidate(
             history,upcoming_date,row["team"],target,combined["projection"])
         row["season_feature_method"]="RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI"
