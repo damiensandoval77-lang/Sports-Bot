@@ -34,7 +34,9 @@ class PrizePicksTests(unittest.TestCase):
           "http_status":200,"provider_mode":"live",
           "provider_source_status":"fresh","returned_rows":100,"request_cost":1}
         when=dt.datetime(2026,11,8,10,10,tzinfo=dt.timezone.utc)
-        self.assertEqual(quota_guard(old,{},when,topup=after),"TOPUP_PAID_READ_CONFIRMED")
+        self.assertEqual(quota_guard(old,{},when,topup=after),"TOPUP_REFRESH_COOLDOWN_PRESERVE")
+        day_later=when+dt.timedelta(hours=24)
+        self.assertEqual(quota_guard(old,{},day_later,topup=after),"TOPUP_PAID_READ_CONFIRMED")
         self.assertEqual(quota_guard(old,{},when,topup={**after,"status":"HTTP_ERROR"}),
                          "ZERO_PROVIDER_CREDITS_PRESERVE")
         self.assertEqual(quota_guard(old,{},when,topup={**after,"provider_mode":"demo"}),
@@ -43,6 +45,17 @@ class PrizePicksTests(unittest.TestCase):
                          "ZERO_PROVIDER_CREDITS_PRESERVE")
         updated={**old,"generated_at":"2026-11-08T10:30:00Z"}
         self.assertEqual(quota_guard(updated,{},when+dt.timedelta(hours=1),topup=after),
+                         "TOPUP_REFRESH_COOLDOWN_PRESERVE")
+
+    def test_topup_proof_expires_and_never_authorizes_unlimited_spending(self):
+        old={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+            "generated_at":"2026-11-08T01:37:00Z",
+            "remaining_provider_credits":0}
+        probe={"status":"LIVE_READ_SUCCEEDED","checked_at":"2026-11-08T10:02:00Z",
+               "http_status":200,"provider_mode":"live",
+               "provider_source_status":"fresh","returned_rows":100,"request_cost":1}
+        expired=dt.datetime(2026,12,10,12,tzinfo=dt.timezone.utc)
+        self.assertEqual(quota_guard(old,{},expired,topup=probe),
                          "ZERO_PROVIDER_CREDITS_PRESERVE")
 
     def test_newer_confirmed_replenishment_unlocks(self):
