@@ -87,7 +87,7 @@ def evaluate(feed, *,player_id,team,teammate_id,market,baseline,
         datetime.strptime(cutoff,"%Y-%m-%d")
     except ValueError:
         return dict(result,status="INVALID_SPLIT_DATE")
-    with_group=r.get("with");without=r.get("without")
+    with_group=r.get("with");without_group=r.get("without")
     if not isinstance(with_group,dict) or not isinstance(without_group,dict):
         return dict(result,status="MISSING_ON_OFF_GROUP")
     for group in (with_group,without):
