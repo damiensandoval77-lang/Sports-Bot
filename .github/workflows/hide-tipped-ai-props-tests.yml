@@ -24,7 +24,7 @@ jobs:
           assert 'ai=aiFresh?upcomingAIProps(groupAI(a.value.comparisons)):[]' in script
           assert 'const frozen=archive.value.comparisons.filter' in script
           assert 'Date.parse(x.start)>Date.now()' in script
-          assert 'setInterval(()=>{refreshOverview();renderAI();},30000);' in script
+          assert 'setInterval(()=>{refreshOverview();renderAI();renderPrizePicksBoard();},30000);' in script
           assert 'const upcoming=upcomingAIProps(ai)' in script
           print('Main AI cards, archive, counts and ongoing timer use upcoming-only forecasts.')
           PY

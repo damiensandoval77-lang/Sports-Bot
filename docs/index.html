@@ -257,6 +257,14 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
 <div class="filters schedule-roster-control" aria-hidden="true"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
 <div class="source" id="schedule-players">Players from current-season game logs will appear here; this is not an official active roster.</div>
+<section aria-label="Independent PrizePicks lines" class="pp-full-slate">
+ <div class="bar"><h2>PrizePicks posted lines</h2><small id="pp-board-total">—</small></div>
+ <div class="source" id="pp-board-health">Checking real, independent NBA PrizePicks lines…</div>
+ <div class="filters"><input id="pp-board-search" aria-label="Filter PrizePicks players" placeholder="Search PrizePicks player…" autocomplete="off">
+ <select id="pp-board-market" aria-label="PrizePicks market"><option value="">All stats</option><option value="PTS">PTS</option><option value="REB">REB</option><option value="AST">AST</option><option value="PRA">PRA</option></select></div>
+ <div class="board" id="pp-board"><div class="empty">Loading PrizePicks lines…</div></div>
+ <div class="source">Independent third-party PrizePicks observation, not FanDuel odds. No American odds or verified EV. Standard, Goblin and Demon are different tiers; check the PrizePicks app before placing anything.</div>
+</section>
 <div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
@@ -342,7 +350,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 const $=id=>document.getElementById(id);
 let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0;
-let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
+let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -377,6 +385,47 @@ function sideClass(side){return side==="OVER"?"over":side==="UNDER"?"under":"neu
 function validEstimate(p){return typeof p.estimated_selected_probability==="number"&&Number.isFinite(p.estimated_selected_probability)&&p.probability_method==="CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED"}
 function chance(p){return validEstimate(p)?(100*p.estimated_selected_probability).toFixed(1)+"%":"—"}
 function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
+function renderPrizePicksBoard(){
+ const box=$("pp-board"),status=$("pp-board-health");
+ if(!box||!status)return;
+ box.replaceChildren();
+ const q=norm($("pp-board-search").value),market=$("pp-board-market").value;
+ const upcoming=ppFresh?ppBoardOffers.filter(o=>Date.parse(o.starts_at)>Date.now()&&
+   (!selectedGame||o.game===selectedGame)&&
+   (!q||norm(o.player).includes(q))&&(!market||o.stat===market)):[];
+ $("pp-board-total").textContent=upcoming.length+" posted lines";
+ status.textContent=ppFresh?
+   "Real PrizePicks lines · "+ppBoardOffers.length+" mapped offers across "+
+   new Set(ppBoardOffers.map(o=>o.game)).size+" upcoming games · "+
+   (ppState==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"?"":"Source coverage incomplete · ")+
+   "updated "+formatTime(ppStamp)+". Markets not on the provider's board cannot be inferred.":
+   ppState==="PROVIDER_RATE_LIMITED"?
+   "PrizePicks provider reports quota exhausted; old observations are not shown as current.":
+   "No fresh, confirmed PrizePicks lines available right now.";
+ if(!upcoming.length){
+  box.append(empty(ppFresh?"No live PrizePicks lines for these filters / matchup.":"PrizePicks lines unavailable or stale."));
+  return;
+ }
+ upcoming.sort((a,b)=>Date.parse(a.starts_at)-Date.parse(b.starts_at)||
+  a.player.localeCompare(b.player)||a.stat.localeCompare(b.stat));
+ for(const p of upcoming.slice(0,500)){
+  const card=node("article","card");
+  const head=node("div","card-head");
+  head.append(node("strong","",p.player),node("span","match",p.team+" · "+p.stat+" · "+formatTime(p.starts_at)));
+  card.append(head,node("div","mini",p.game));
+  const vals=node("div","vals");
+  const metric=node("div","val");
+  metric.append(node("b","",fmt(p.line)),node("small","","PrizePicks line"));
+  vals.append(metric);
+  const selection=node("div","val");
+  selection.append(node("b","",["MORE "+(p.more_tier||"—"),"LESS "+(p.less_tier||"—")].join(" · ")),
+    node("small","","Available sides / tiers"));
+  vals.append(selection);
+  card.append(vals,node("div","mini","Observed "+formatTime(p.observed_at)+" · not American sportsbook odds · independent vendor"));
+  box.append(card);
+ }
+ if(upcoming.length>500)box.append(empty("Showing first 500 of "+upcoming.length+" eligible observations; narrow your filters."));
+}
 function matchingPrizepicks(p){
  if(!ppFresh)return [];
  const name=norm(p.player),team=String(p.team||"").toUpperCase();
@@ -1027,6 +1076,7 @@ function setGameFilter(game){
  renderSchedulePlayers();
  renderAI();
  renderOdds();
+ renderPrizePicksBoard();
  refreshSelectedLiveTracker().catch(()=>{});
 }
 function trackerStatusLabel(label){
@@ -1201,11 +1251,12 @@ function renderGameStrip(){
   const home=teamCode(g.home_abbreviation,abbreviations[labels[1]]);
   const total=ai.filter(x=>x.game===name).length;
   const oddsTotal=odds.filter(x=>x.game===name).length;
+  const ppTotal=ppBoardOffers.filter(x=>x.game===name&&Date.parse(x.starts_at)>Date.now()).length;
   const state=g.game_state==="post"?"Final":g.game_state==="in"?"Live":
     Date.parse(g.start)<=Date.now()?"Started":formatTime(g.start);
   const playersWithLines=new Set(odds.filter(x=>x.game===name).map(x=>norm(x.player))).size;
   const detail=oddsTotal?playersWithLines+" players · "+oddsTotal+" lines":
-    total?total+" AI props":"No verified lines";
+    ppTotal?ppTotal+" PrizePicks lines":total?total+" AI props":"No verified lines";
   const scoreReady=["in","post"].includes(g.game_state)&&
     validScore(g.away_score)&&validScore(g.home_score);
   const tile=node("button","game-tile score-tile");
@@ -1232,7 +1283,7 @@ function renderGameStrip(){
    const pair=teamRow(code,safeLogo(logo,code),scoreReady?String(score):"—");
    scores.append(pair[0],pair[1]);
   }
-  const footer=node("span","tile-props"+(total?"":oddsTotal?" partial":" no-lines"),detail);
+  const footer=node("span","tile-props"+(total||ppTotal?"":oddsTotal?" partial":" no-lines"),detail);
   const liveMl=gameMoneylines?.games?.find(m=>m.game===name);
   const latestMl=liveMl?.books?.filter(b=>Date.now()-Date.parse(b.updated_at)<90*60000)
     .sort((a,b)=>Date.parse(b.updated_at)-Date.parse(a.updated_at))[0];
@@ -1701,6 +1752,12 @@ ppErrorCode=pp.status==="fulfilled"?pp.value.provider_error_code:null;
 ppFresh=pp.status==="fulfilled"&&pp.value.status==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"&&
  isRecent(pp.value.generated_at,6)&&Array.isArray(pp.value.offers);
 prizepicks=ppFresh?pp.value.offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"):[];
+ppBoardOffers=ppFresh&&Array.isArray(pp.value.board_offers)?
+  pp.value.board_offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"&&
+    x.game&&Date.parse(x.starts_at)>Date.now()):[];
+if(ppFresh&&ppBoardOffers.length){
+ prizepicks=[...prizepicks,...ppBoardOffers];
+}
 
 const injuryBox=$("injury-feed-health");
 const injury=inj.status==="fulfilled"?inj.value:null;
@@ -1735,6 +1792,7 @@ const status=[];
  try{
   refreshOverview();
   renderAI();
+  renderPrizePicksBoard();
   renderOdds();
   renderForm();
   renderPaper();
@@ -1747,6 +1805,7 @@ const status=[];
   console.error("Sports-Bot render error",error);
  }
 }
+for(const control of ["pp-board-search","pp-board-market"])$(control).addEventListener("input",renderPrizePicksBoard);
 for(const control of ["ai-search","ai-stat","ai-sort"])$(control).addEventListener("input",renderAI);
 $("ai-game").addEventListener("change",()=>setGameFilter($("ai-game").value));
 for(const control of ["odds-search","odds-stat","odds-book"])$(control).addEventListener("input",renderOdds);
@@ -1775,7 +1834,7 @@ window.addEventListener("focus",()=>{
 });
 // Tipoffs can happen while the page stays open; remove started-game
 // projections without requiring a manual refresh or another API request.
-setInterval(()=>{refreshOverview();renderAI();},30000);
+setInterval(()=>{refreshOverview();renderAI();renderPrizePicksBoard();},30000);
 // Recheck game-level sportsbook prices without calling the sportsbook API
 // from the browser; only the server-published, timestamped quotes are shown.
 setInterval(async()=>{

@@ -35,6 +35,15 @@ def source_payload(kind,docs):
                 "captured_source_at":source,"provider_health":provider,
                 "full_odds_feed":odds,"compact_odds_feed":compact,
                 "not_a_pregame_paper_pick":True}
+    if kind=="prizepicks":
+        feed=json.loads((docs/"prizepicks.json").read_text())
+        if feed.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES" or not feed.get("board_offers"):
+            return None
+        source=feed["generated_at"]
+        return {"status":"ORIGINAL_AUTHENTICATED_THIRD_PARTY_PRIZEPICKS_CAPTURE",
+                "captured_source_at":source,"feed":feed,
+                "is_pickem_not_sportsbook_american_odds":True,
+                "not_a_retroactive_pregame_paper_pick":True}
     if kind=="schedule":
         slate=json.loads((docs/"nba_schedule.json").read_text())
         if not slate.get("games"):return None
@@ -44,7 +53,7 @@ def source_payload(kind,docs):
                 "schedule":slate,
                 "not_proof_of_complete_slate":slate.get("coverage_complete") is not True,
                 "not_sportsbook_lines":True}
-    raise ValueError("Only odds or schedule source archives supported")
+    raise ValueError("Only odds, prizepicks or schedule source archives supported")
 
 def preserve(kind,docs,root):
     report=source_payload(kind,docs)
@@ -63,7 +72,7 @@ def preserve(kind,docs,root):
     return path,True
 
 def main():
-    if len(sys.argv)!=2:raise SystemExit("Usage: preserve_research_inputs.py odds|schedule")
+    if len(sys.argv)!=2:raise SystemExit("Usage: preserve_research_inputs.py odds|schedule|prizepicks")
     kind=sys.argv[1]
     path,created=preserve(kind,ROOT/"docs",HISTORY)
     print("RESEARCH SOURCE INPUT",kind,

@@ -45,6 +45,37 @@ class PrizePicksTests(unittest.TestCase):
         self.assertEqual(offer["more_tier"],"demon")
         self.assertIsNone(offer["less_tier"])
 
+    def test_independent_full_slate_without_odds_api_ai_board(self):
+        slate={"games":[{"game":"Boston Celtics @ Miami Heat","start":START,
+                         "game_state":"pre"}]}
+        out=publish([{"data":[fixture()],"meta":{
+            "mode":"live","source_status":"fresh","next_cursor":None}}],
+            [],NOW,schedule=slate)
+        self.assertEqual(out["status"],"LIVE_THIRD_PARTY_PRIZEPICKS_LINES")
+        self.assertEqual(out["matched_count"],0)
+        self.assertEqual(out["independent_board_count"],1)
+        self.assertEqual(out["games_with_independent_lines"],1)
+        self.assertEqual(out["board_offers"][0]["game"],"Boston Celtics @ Miami Heat")
+        self.assertFalse(out["partial_board"])
+
+    def test_other_team_or_started_game_does_not_show_false_line(self):
+        bad={"games":[{"game":"Boston Celtics @ Los Angeles Lakers","start":START}]}
+        out=publish([{"data":[fixture()],"meta":{
+            "mode":"live","source_status":"fresh","next_cursor":None}}],[],
+            NOW,schedule=bad)
+        self.assertEqual(out["independent_board_count"],0)
+        past={"games":[{"game":"Boston Celtics @ Miami Heat",
+             "start":"2026-11-06T18:00:00Z"}]}
+        self.assertEqual(publish([{"data":[fixture()],"meta":{
+            "mode":"live","source_status":"fresh","next_cursor":None}}],[],
+            NOW,schedule=past)["independent_board_count"],0)
+
+    def test_source_cursor_indicates_partial_coverage(self):
+        out=publish([{"data":[fixture()],"meta":{
+            "mode":"live","source_status":"fresh","next_cursor":"pp_next"}}],
+            [],NOW,schedule={"games":[{"game":"Boston Celtics @ Miami Heat","start":START}]})
+        self.assertTrue(out["partial_board"])
+
     def test_bad_feed_refused(self):
         with self.assertRaises(ValueError):
             publish([{"data":[fixture()],"meta":{"mode":"demo","source_status":"fresh"}}],[COMP],NOW)

@@ -1,0 +1,55 @@
+name: PrizePicks NBA full board and UI validation (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/preserve_research_inputs.py'
+      - 'iphone_bot/tests/test_preserve_research_inputs.py'
+      - 'docs/index.html'
+      - '.github/workflows/nba-prizepicks-full-slate.yml'
+      - '.github/workflows/nba-ai-comparisons.yml'
+      - '.github/workflows/prizepicks-full-board-tests.yml'
+  push:
+    branches: ['fix/20261107-full-prizepicks-slate']
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test authentic PrizePicks full board and research storage
+        run: |
+          python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
+      - name: Validate site shows missing-sportsbook independent posted lines
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('docs/index.html').read_text()
+          assert 'id="pp-board"' in s and 'function renderPrizePicksBoard()' in s
+          assert 'board_offers' in s and 'ppBoardOffers' in s
+          assert 'Date.parse(o.starts_at)>Date.now()' in s
+          assert 'Independent third-party PrizePicks observation' in s
+          script=s.split('<script>',1)[1].split('</script>',1)[0]
+          Path('/tmp/pp-board.js').write_text(script)
+          print('Independent PrizePicks slate and market filters present')
+          PY
+          node --check /tmp/pp-board.js
+      - name: Confirm no duplicate paid PrizePicks requests in AI workflows
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          old=Path('.github/workflows/nba-ai-comparisons.yml').read_text()
+          new=Path('.github/workflows/nba-prizepicks-full-slate.yml').read_text()
+          assert 'python -u iphone_bot/fetch_prizepicks.py' not in old
+          assert 'python -u iphone_bot/fetch_prizepicks.py' in new
+          assert 'PRIZEPICKS_API_KEY' in new
+          print('PrizePicks dedicated workflow only, no duplicate API pulls')
+          PY
