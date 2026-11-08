@@ -5,7 +5,10 @@ not verified better forecasts, not calibrated hit rates and not live weights.
 """
 import math
 from statistics import mean
-from .tracking_opportunity_features import MIN_GAMES
+try:
+    from .tracking_opportunity_features import MIN_GAMES
+except ImportError:
+    from tracking_opportunity_features import MIN_GAMES
 
 VERSION="TRACKING_OPPORTUNITY_SHADOW_V1"
 CONFIG={"AST":("potential_assists","AST"),"REB":("rebound_chances","REB")}
