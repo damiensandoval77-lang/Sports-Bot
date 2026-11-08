@@ -17,6 +17,11 @@ class FinalBoxscoreSettlementTests(unittest.TestCase):
         self.assertEqual(games,{("2026-11-05","BOS","CHA")})
         self.assertEqual(pending_games([pick(status="SETTLED")],now),set())
 
+    def test_old_ungraded_night_remains_eligible_for_recovery(self):
+        now=datetime(2026,11,20,6,tzinfo=timezone.utc)
+        self.assertEqual(pending_games([pick()],now),
+                         {("2026-11-05","BOS","CHA")})
+
     def test_not_yet_finished_games_are_not_eligible(self):
         now=datetime(2026,11,7,2,tzinfo=timezone.utc)
         self.assertEqual(pending_games([pick("2026-11-07T01:30:00Z")],now),set())
