@@ -207,6 +207,26 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 #opportunity-review-market>div{border:1px solid #303030;border-radius:7px;padding:7px;min-width:0}
 #opportunity-review-market b{color:#e6e6e6}
 #opportunity-review-shadow{border-top:1px solid #303030;padding-top:8px}
+
+.live-prop-tracker{margin:5px 0 14px;padding:12px;border:1px solid #38516d;background:#111d30;border-radius:12px}
+.live-prop-tracker[hidden]{display:none}
+.live-prop-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.live-prop-header strong{font-size:14px}
+.live-prop-header .live-context{font-size:11px;color:var(--sub);margin-top:4px}
+.live-prop-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.live-prop-card{border:1px solid #384a64;background:#19283e;border-radius:10px;padding:10px;min-width:0}
+.live-prop-card .live-name{font-size:13px;font-weight:750}
+.live-prop-card .live-stat{font-size:10px;color:#acbfd7;margin-top:3px}
+.live-prop-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:9px}
+.live-prop-values div{display:flex;flex-direction:column;gap:4px;background:#101d31;border-radius:6px;padding:7px 5px;min-width:0}
+.live-prop-values span{font-size:9px;color:#aebbd1}
+.live-prop-values b{font-size:20px;font-variant-numeric:tabular-nums}
+.live-prop-result{font-size:11px;font-weight:750;margin-top:9px}
+.live-prop-result.good{color:#64e3b0}
+.live-prop-result.bad{color:#f1b18b}
+.live-prop-result.wait{color:#c5d2e4}
+.live-prop-foot{font-size:10px;color:#acbdd5;line-height:1.45;margin-top:9px}
+@media(max-width:680px){.live-prop-rows{grid-template-columns:1fr}}
 </style></head>
 <body><main>
 <header class="top"><div><div class="eyebrow">NBA PROP ANALYTICS</div><h1>Sports-Bot</h1></div><span class="status warn" id="status">CHECKING</span></header>
@@ -216,6 +236,12 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <button type="button" class="game-tile all-games" aria-pressed="true"><span class="tile-matchup">All Games</span><span class="tile-time">Full board</span><span class="tile-props">Loading slate…</span></button>
 </div>
 <div id="game-strip-note" class="game-strip-note">Game tabs filter the AI and sportsbook views; a game without lines may have no props.</div>
+</section>
+<section class="live-prop-tracker" id="live-prop-tracker" aria-label="Selected game live AI projection tracker" hidden>
+ <div class="live-prop-header"><div><strong id="live-prop-title">Selected game tracker</strong>
+ <div class="live-context" id="live-prop-context">Comparing frozen pregame projections to verified live box scores.</div></div></div>
+ <div id="live-prop-cards" class="live-prop-rows" aria-live="polite"></div>
+ <div class="live-prop-foot">Pregame model leans and lines are frozen historical snapshots, not placed bets or updated sportsbook prices. Pace uses a simple regulation-time extrapolation, not a calibrated probability. Live box scores may lag. No automatic wagering.</div>
 </section>
 <div class="summary dashboard-summary"><div class="metric"><b id="top-count">—</b><small>AI comparisons</small></div><div class="metric"><b id="top-games">—</b><small>Upcoming games</small></div><div class="metric"><b id="top-update">—</b><small>Data updated</small></div></div>
 <nav class="tabs" aria-label="Dashboard sections">
@@ -311,10 +337,11 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="load-toolbar"><button id="refresh-now" class="btn" type="button">↻ Refresh data</button><span id="data-health" aria-live="polite">Checking feeds…</span></div>
 </div>
 <div class="foot">Research-only NBA prop dashboard. Stale/started games are hidden from the AI board. No automated betting or guaranteed outcomes.</div>
-</main><script>
+</main><script src="./live-prop-tracker.js"></script><script>
 "use strict";
 const $=id=>document.getElementById(id);
 let gameMoneylines=null;
+let frozenMatchupForecasts=[],trackerRequestId=0;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -1000,6 +1027,96 @@ function setGameFilter(game){
  renderSchedulePlayers();
  renderAI();
  renderOdds();
+ refreshSelectedLiveTracker().catch(()=>{});
+}
+function trackerStatusLabel(label){
+ return ({OVER_ALREADY_CLEARED:"OVER ALREADY HIT",UNDER_ALREADY_LOST:"UNDER ALREADY LOST",
+  FINAL_HIT:"FINAL HIT",FINAL_MISS:"FINAL MISS",PUSH:"FINAL PUSH",
+  ON_PACE:"ON PACE (ESTIMATE)",BEHIND_PACE:"BEHIND PACE (ESTIMATE)",
+  PACE_UNAVAILABLE_OR_EARLY:"TOO EARLY / PACE UNKNOWN",
+  STATS_UNAVAILABLE:"PLAYER STATS UNAVAILABLE",NO_MODEL_LEAN:"NO MODEL LEAN"})[label]||"UNAVAILABLE";
+}
+function trackerClass(label){
+ if(["OVER_ALREADY_CLEARED","FINAL_HIT"].includes(label))return "good";
+ if(["UNDER_ALREADY_LOST","FINAL_MISS","BEHIND_PACE"].includes(label))return "bad";
+ return "wait";
+}
+function showTrackerMessage(title,message){
+ $("live-prop-title").textContent=title;
+ $("live-prop-context").textContent=message;
+ $("live-prop-cards").replaceChildren();
+}
+async function refreshSelectedLiveTracker(){
+ const serial=++trackerRequestId,game=selectedGame,helper=window.LivePropTracker;
+ const section=$("live-prop-tracker");
+ const target=nbaSchedule?.games?.find(g=>g.game===game);
+ const started=Boolean(game&&target&&(target.game_state==="in"||target.game_state==="post"||
+    (Date.parse(target.start)<=Date.now()&&target.game_state!=="pre")));
+ if(!started||!helper){section.hidden=true;return}
+ section.hidden=false;
+ showTrackerMessage(game,"Checking frozen pregame picks and ESPN player box scores…");
+ const pregame=helper.pickRows(frozenMatchupForecasts,game);
+ if(!pregame.length){
+  showTrackerMessage(game,"No authentic pre-tipoff AI projections with quoted lines were saved for this matchup. Live picks cannot be reconstructed.");
+  return;
+ }
+ try{
+  // ESPN event IDs are different from the odds-provider IDs. Match teams,
+  // date, and event status before requesting the box score.
+  const eastern=easternGameDay(target.start).replaceAll("-","");
+  const response=await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates="+eastern+"&limit=100",
+     {cache:"no-store"});
+  if(!response.ok)throw Error("ESPN scoreboard unavailable");
+  const scoreboard=await response.json();
+  const event=helper.identifyGame(scoreboard.events,game);
+  if(serial!==trackerRequestId)return;
+  if(!event||!helper.gameStatus(event)){
+   showTrackerMessage(game,"ESPN game identity or live status could not be verified. Showing no invented player totals.");
+   return;
+  }
+  const summaryResponse=await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event="+encodeURIComponent(event.id),
+     {cache:"no-store"});
+  if(!summaryResponse.ok)throw Error("ESPN player box score unavailable");
+  const summary=await summaryResponse.json();
+  if(serial!==trackerRequestId)return;
+  if(!helper.summaryGameMatch(summary,game)){
+   showTrackerMessage(game,"ESPN box score did not exactly match the selected matchup; live statistics withheld.");
+   return;
+  }
+  const players=helper.athleteRows(summary);
+  $("live-prop-title").textContent=game+" · "+(helper.gameStatus(event)==="post"?"FINAL":"LIVE TRACKER");
+  $("live-prop-context").textContent="ESPN player totals · "+
+    (event.status?.type?.shortDetail||"current game")+
+    " · Frozen pregame AI vs actual · Updated "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+  const cards=[];
+  for(const p of pregame){
+   const identity=helper.matchPlayer(players,p);
+   const actual=identity?.stats?.[p.stat]??null;
+   const outcome=helper.evaluate(p,actual,event);
+   const card=node("article","live-prop-card");
+   card.append(node("div","live-name",p.player),
+     node("div","live-stat",p.team+" · "+p.stat+" · Model lean "+outcome.side));
+   const values=node("div","live-prop-values");
+   for(const [caption,value] of [
+     ["ACTUAL",actual===null?"—":String(actual)],
+     ["AI PROJECTION",fmt(Number(p.combined_projection??p.projection))],
+     ["PREGAME LINE",fmt(Number(p.line))]]){
+    const item=node("div","");item.append(node("span","",caption),node("b","",value));
+    values.append(item);
+   }
+   card.append(values,
+     node("div","live-prop-result "+trackerClass(outcome.label),trackerStatusLabel(outcome.label)));
+   if(outcome.pace!==null)card.append(node("div","live-prop-foot",
+     "Simple estimated final pace: "+fmt(outcome.pace)+" "+p.stat+" · not a prediction update"));
+   if(actual===null)card.append(node("div","live-prop-foot","Stats not matched to an ESPN player on the same team; no zero assumed."));
+   cards.push(card);
+  }
+  $("live-prop-cards").replaceChildren(...cards);
+ }catch(error){
+  if(serial!==trackerRequestId)return;
+  showTrackerMessage(game,"Live ESPN player box score unavailable: "+String(error.message||error)+
+    ". Pregame picks remain saved; no player totals are guessed.");
+ }
 }
 function renderGameStrip(){
  const strip=$("game-strip"),count=$("game-strip-count"),note=$("game-strip-note");
@@ -1423,7 +1540,7 @@ gameMoneylines=mlFeed.status==="fulfilled"&&
 oddsHealth=oh.status==="fulfilled"?oh.value:null;
 slateHealth=health.status==="fulfilled"&&health.value?.status==="DESCRIPTIVE_NBA_SLATE_ODDS_COVERAGE"&&
  health.value.date_eastern===easternGameDay(new Date())&&isRecent(health.value.generated_at,8)?health.value:null;
-aiFresh=false;aiArchiveMode=false;ai=[];aiMetadata=null;
+aiFresh=false;aiArchiveMode=false;ai=[];aiMetadata=null;frozenMatchupForecasts=[];
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);
  ai=aiFresh?upcomingAIProps(groupAI(a.value.comparisons)):[];
@@ -1444,7 +1561,20 @@ if(ai.length===0&&archive.status==="fulfilled"&&
   window.lastAI=archive.value.original_board_generated_at;
  }
 }
-nbaSchedule=sch.status==="fulfilled"&&
+// Saved research quotes are separate from the upcoming-only main board.
+ // Use the immutable archive first, then any independently pre-tip current board.
+ // Only rows captured before a game's tipoff are eligible for the tracker.
+ if(archive.status==="fulfilled"&&
+    archive.value?.status==="FROZEN_PREGAME_HISTORICAL_ARCHIVE_NOT_LIVE"&&
+    Array.isArray(archive.value.comparisons)){
+  const stamp=archive.value.original_board_generated_at;
+  frozenMatchupForecasts.push(...archive.value.comparisons.map(p=>({...p,board_generated_at:stamp})));
+ }
+ if(a.status==="fulfilled"&&a.value?.status==="EXPERIMENTAL_NON_CALIBRATED"&&
+    a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
+  frozenMatchupForecasts.push(...a.value.comparisons.map(p=>({...p,board_generated_at:a.value.generated_at})));
+ }
+ nbaSchedule=sch.status==="fulfilled"&&
  ["THIRD_PARTY_NBA_SCHEDULE_ONLY","PARTIAL_CACHED_SPORTSBOOK_SCHEDULE",
   "PROVIDER_NBA_SCORES_PARTIAL_SLATE"].includes(sch.value.status)&&
  isRecent(sch.value.generated_at,12)?sch.value:null;
@@ -1607,6 +1737,7 @@ const status=[];
   renderOdds();
   renderForm();
   renderPaper();
+  refreshSelectedLiveTracker().catch(()=>{});
  }catch(error){
   $("status").textContent="DISPLAY ERROR";
   $("status").className="status warn";
@@ -1629,7 +1760,7 @@ for(const btn of document.querySelectorAll(".tab"))btn.addEventListener("click",
 $("refresh-now").addEventListener("click",()=>refresh().catch(error=>{
  $("data-health").textContent="Refresh failed: "+String(error.message||error);
 }));
-setInterval(refreshScoresOnly,45000);
+setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000);
 // Tipoffs can happen while the page stays open; remove started-game
 // projections without requiring a manual refresh or another API request.
 setInterval(()=>{refreshOverview();renderAI();},30000);
