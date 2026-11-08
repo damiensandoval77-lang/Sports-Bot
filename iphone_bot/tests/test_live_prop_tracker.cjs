@@ -89,6 +89,6 @@ test("final grades exactly, including push, with no made-up results",()=>{
 });
 test("overtime isn't treated as fifth 12-minute quarter",()=>{
  const overtime={...EVENT,status:{type:{state:"in"},period:5,displayClock:"2:00"}};
- assert.equal(L.gameFraction(overtime),1);
+ assert.equal(L.gameFraction(overtime),null);
  assert.equal(L.evaluate(frozen({line:50}),25,overtime).label,"PACE_UNAVAILABLE_OR_EARLY");
 });
