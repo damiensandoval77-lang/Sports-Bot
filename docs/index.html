@@ -636,11 +636,16 @@ function renderAI(){
   sort==="leans"?
    ((b.reliability_screen?.status==="MODEL_LEAN"?1:0)-
     (a.reliability_screen?.status==="MODEL_LEAN"?1:0))||
+   ((b.preliminary_edge?.status==="PROVISIONAL_POSITIVE_EV"?1:0)-
+    (a.preliminary_edge?.status==="PROVISIONAL_POSITIVE_EV"?1:0))||
+   ((b.preliminary_edge?.net_ev_pct??-999)-(a.preliminary_edge?.net_ev_pct??-999))||
+   ((b.preliminary_edge?.probability?.probability??-1)-(a.preliminary_edge?.probability?.probability??-1))||
    ((b.combined_simulation?.selected_hit_rate??-1)-(a.combined_simulation?.selected_hit_rate??-1))||
    Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
  $("ai-total").textContent=entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
-   (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"");
+   (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"")+
+   (entries.some(p=>p.preliminary_edge?.probability)?" · early grades applied":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   try{
   const outer=node("article","prop compact-prop"),main=node("div","mainline");
@@ -694,6 +699,31 @@ function renderAI(){
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
+  // Preliminary, intentionally shrunk use of existing two-date graded results.
+  // This is a research ranking, NOT calibrated betting probabilities.
+  const preliminary=p.preliminary_edge;
+  const early=preliminary?.probability;
+  if(early&&typeof early.probability==="number"){
+   const pct=(100*early.probability).toFixed(1)+"%";
+   const n=early.sample_size,days=early.distinct_event_dates;
+   let detail="EARLY-SAMPLE ESTIMATE "+pct+
+     " · "+n+" graded "+p.stat+" picks across "+days+" dates"+
+     " · simulation adjusted using historical ORIGINAL-model misses";
+   if(preliminary.status==="PROVISIONAL_POSITIVE_EV"||
+      preliminary.status==="PROVISIONAL_NONPOSITIVE_EV"){
+    const quote=preliminary.quote;
+    detail+=" · HYPOTHETICAL "+(preliminary.net_ev_pct>0?"+":"")+
+      preliminary.net_ev_pct.toFixed(1)+"% EV at "+
+      quote.book+" "+(quote.odds>0?"+":"")+quote.odds+
+      " for "+quote.side+" "+fmt(quote.line);
+   }else if(preliminary.status==="PRIZEPICKS_SLIP_PAYOUT_REQUIRED"){
+    detail+=" · PrizePicks has no single-leg sportsbook EV; actual slip payouts required";
+   }else{
+    detail+=" · price not verified or research screen passed on this pick";
+   }
+   main.append(node("div","research-note",detail+
+     ". SMALL SAMPLE / NOT CALIBRATED — do not treat as a proven advantage."));
+  }
   // Explicit +EV gate: directional strength and simulation volume alone
   // cannot establish a profitable edge on real prices or pick'em payouts.
   const edge=p.edge_assessment;
