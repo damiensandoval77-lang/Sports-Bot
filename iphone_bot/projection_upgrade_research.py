@@ -615,6 +615,59 @@ def grade_opportunity_shadows(ledger,paper_rows):
             "not_validated_by_future_game_dates":True,
             "live_applied":False,"eligible_for_live_promotion":False}
 
+def grade_opponent_v2(ledger,paper_rows):
+    """Score strictly locked V2 against same-game final, same quoted line."""
+    outcomes={}
+    for r in finished_unique(paper_rows):
+        try:
+            key=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])
+            outcomes[key]=(float(r["actual"]),float(r["line"]))
+        except (KeyError,ValueError,TypeError):continue
+    seen=set();segments=defaultdict(list);pending=Counter()
+    for row in sorted(ledger,key=lambda r:str(r.get("captured_at",""))):
+        try:
+            when=utc(row["event_start"])
+            if utc(row["captured_at"])>=when:continue
+            key=(when.isoformat(),str(row["player_id"]),row["market"])
+            if key in seen:continue
+            seen.add(key)
+            candidate=valid(row.get("opponent_v2_shadow_projection"))
+            baseline=valid(row.get("combined_projection"))
+            line=valid(row.get("line"))
+            if candidate is None or baseline is None or line is None:continue
+            if key not in outcomes:
+                pending[row["market"]]+=1;continue
+            actual,settled_line=outcomes[key]
+            eastern=when.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+            exact=abs(line-settled_line)<1e-9
+            segments[row["market"]].append((baseline,candidate,actual,line,exact,eastern))
+        except (KeyError,ValueError,TypeError,OverflowError):continue
+    def measures(items):
+        n=len(items)
+        same=[x for x in items if x[4] and x[2]!=x[3]
+              and x[0]!=x[3] and x[1]!=x[3]]
+        b=sum((x[0]>x[3])==(x[2]>x[3]) for x in same)
+        c=sum((x[1]>x[3])==(x[2]>x[3]) for x in same)
+        return {"paired_markets":n,
+          "distinct_game_dates":len({x[5] for x in items}),
+          "baseline_mae":round(sum(abs(x[0]-x[2]) for x in items)/n,4) if n else None,
+          "v2_mae":round(sum(abs(x[1]-x[2]) for x in items)/n,4) if n else None,
+          "exact_line_direction_eligible":len(same),
+          "baseline_direction_wins":b,"v2_direction_wins":c,
+          "baseline_hit_rate":round(b/len(same),4) if same else None,
+          "v2_hit_rate":round(c/len(same),4) if same else None,
+          "v2_only_correct":sum((x[1]>x[3])==(x[2]>x[3]) and
+              (x[0]>x[3])!=(x[2]>x[3]) for x in same),
+          "baseline_only_correct":sum((x[0]>x[3])==(x[2]>x[3]) and
+              (x[1]>x[3])!=(x[2]>x[3]) for x in same)}
+    allrows=[r for market in MARKETS for r in segments[market]]
+    return {"status":"PREGAME_OPPONENT_V2_RESEARCH_ONLY",
+        "overall":measures(allrows),
+        "by_market":{m:measures(segments[m]) for m in MARKETS},
+        "pending_by_market":{m:pending[m] for m in MARKETS},
+        "same_line_only":True,"prospective_validation_required":True,
+        "live_model_unchanged":True,"eligible_for_production":False}
+
 def stress_research_report(ledger,paper_rows):
     """Only pregame frozen warnings; settlements count market identities once."""
     settled=set()
@@ -774,6 +827,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None):
         "defender_v4":grade_shadow(ledger,paper_rows),
         "injury_opportunity":grade_injury_scenarios(ledger,paper_rows),
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
+        "opponent_v2_shadow":grade_opponent_v2(ledger,paper_rows),
         "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
         "stress_test_20k_v1":stress_research_report(ledger,paper_rows),
         "model_disagreement_v1":disagreement_report(ledger,paper_rows,finished_unique,utc),
@@ -815,6 +869,7 @@ def main():
             "defender_v4":grade_shadow(ledger,paper),
             "injury_opportunity":grade_injury_scenarios(ledger,paper),
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
+            "opponent_v2_shadow":grade_opponent_v2(ledger,paper),
             "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
             "stress_test_20k_v1":stress_research_report(ledger,paper),
             "model_disagreement_v1":disagreement_report(ledger,paper,finished_unique,utc),
