@@ -25,6 +25,18 @@ jobs:
           PRIZEPICKS_SETUP_OUTPUT: artifacts/prizepicks_rest_setup
         run: |
           python -u iphone_bot/prizepicks_rest_onboarding.py
+      - name: Backtest sample against strictly earlier confirmed NBA game logs
+        if: success()
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_sample_backtest.py' -v
+          if [ -f artifacts/prizepicks_rest_setup/nba_training_sample.csv ] && [ -f artifacts/prizepicks_rest_setup/nba_prior_game_logs.csv ]; then
+            python -m iphone_bot.prizepicks_sample_backtest \
+              artifacts/prizepicks_rest_setup/nba_training_sample.csv \
+              artifacts/prizepicks_rest_setup/nba_prior_game_logs.csv \
+              artifacts/prizepicks_rest_setup
+          else
+            echo 'No matching vendor samples; backtest unavailable, do not fabricate'
+          fi
       - name: Save authentic provider sample as private workflow artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -50,6 +62,13 @@ jobs:
               'coverage','training_http','training_rows','training_meta',
               'game_logs_http','game_log_rows','earlier_game_join','observed_at',
               'remaining_credits','plan_limit','error_type')}
+          audit=Path('artifacts/prizepicks_rest_setup/backtest_report.json')
+          if audit.is_file():
+            q=json.loads(audit.read_text())
+            public['historical_backtest']={k:q.get(k) for k in (
+              'status','training_rows','game_log_rows','usable_market_rows',
+              'distinct_game_dates','exclusions','baseline','rate_candidate',
+              'verified_edge','live_model_changed','limitation')}
           Path('docs/prizepicks_rest_setup_status.json').write_text(
               json.dumps(public,indent=2)+'\n')
           print('Setup status:',public['status'],'training:',public['training_rows'],
