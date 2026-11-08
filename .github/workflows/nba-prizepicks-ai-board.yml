@@ -11,6 +11,8 @@ on:
       - 'iphone_bot/edge_readiness.py'
       - 'iphone_bot/preliminary_edge.py'
       - 'iphone_bot/tracking_opportunity_features.py'
+      - 'iphone_bot/opportunity_shadow_models.py'
+      - 'iphone_bot/tests/test_opportunity_shadow_models.py'
       - 'iphone_bot/tests/test_tracking_opportunity_features.py'
       - 'iphone_bot/sportsbook_consensus.py'
       - 'iphone_bot/tests/test_preliminary_edge.py'
@@ -68,6 +70,8 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_preliminary_edge.py' -v
       - name: Validate pregame tracking opportunity feature ingestion
         run: python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunity_features.py' -v
+      - name: Validate assist and rebound opportunity shadow simulations
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_shadow_models.py' -v
       - name: Train original historical model and separate opponent shadow
         run: |
           python -u iphone_bot/download_archived_nba.py
