@@ -337,6 +337,19 @@ def main():
                 row["experimental_best_quote"]=max(options,key=lambda item:item["hypothetical_ev_pct"])
                 row["experimental_ev_available"]=True
                 row["ev_status"]="HYPOTHETICAL_ONLY_UNCALIBRATED_PROBABILITIES"
+        # Freeze exact historical feature values used by the trained model.
+        # Never substitute the separate minutes research forecast for MIN_L5.
+        relevant=("MIN_L5","MIN_L10","MIN_Season","PTS_L5","PTS_L10",
+                  "PTS_Season","REB_L5","REB_L10","REB_Season",
+                  "AST_L5","AST_L10","AST_Season","DAYS_REST",
+                  "IS_HOME","IS_B2B")
+        row["model_feature_audit"]={
+            "method":"EXACT_INPUT_TO_ORIGINAL_TRAINED_MODEL_PREGAME",
+            "features":{k:round(float(input_data[k]),4) for k in relevant
+                        if k in input_data and np.isfinite(float(input_data[k]))},
+            "sample_games":row["sample_games"],
+            "last_observed_game_date":row["last_game"],
+            "minutes_research_not_applied_to_live":True}
         row["missing_features"]=[name for name in features if name not in row["features"]]
         del row["features"]
     valid.sort(key=lambda r:(
