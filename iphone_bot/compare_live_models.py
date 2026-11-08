@@ -18,6 +18,7 @@ from matchup_context import team_allowances, defense_context, minutes_context
 from defense_training import COLS
 from experimental_probability import probability_sides, METHOD
 from combined_simulation import simulate_combined_hit_rate, METHOD as COMBINED_SIM_METHOD
+from reliability_screen import research_screen
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
@@ -471,12 +472,16 @@ def main():
         if r.get("injury_reprojection_status")=="INSUFFICIENT_VERIFIED_PRIOR_ON_OFF_EVIDENCE":
             skipped["injury_reprojection_unavailable"]=skipped.get("injury_reprojection_unavailable",0)+1
             continue
+        r["reliability_screen"] = research_screen(r)
         eligible.append(r)
     valid=eligible
+    # Rank by combined-model SIMULATION, not original-model probability.
+    # The risk screen is descriptive and unvalidated; never auto-recommend bets.
     valid.sort(key=lambda r:(
-        r["estimated_selected_probability"] is not None,
-        r["estimated_selected_probability"] if r["estimated_selected_probability"] is not None else -1,
-        abs(r["difference"])),reverse=True)
+        r["reliability_screen"]["status"]=="RESEARCH_ONLY",
+        r["combined_simulation"] is not None and r["combined_simulation"]["selected_hit_rate"] is not None,
+        r["combined_simulation"]["selected_hit_rate"] if r["combined_simulation"] and r["combined_simulation"]["selected_hit_rate"] is not None else -1,
+        abs(r["combined_difference"])),reverse=True)
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
        "verified_current_matchups":True,"is_prizepicks":prizepicks_mode,
