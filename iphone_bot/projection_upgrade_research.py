@@ -79,6 +79,7 @@ PAPER=ROOT/"docs/paper_pick_ledger.json"
 LEDGER=ROOT/"docs/projection_upgrade_ledger.json"
 STATUS=ROOT/"docs/projection_upgrade_status.json"
 ONOFF=ROOT/"docs/lineup_onoff_research.json"
+PRIVATE_ONOFF=ROOT/"data/nba/private/lineup_onoff_research.json"
 MARKETS=("PTS","REB","AST","PRA")
 MIN_RESIDUALS=1000
 SIMULATIONS=20000
@@ -922,7 +923,8 @@ def main():
     paper=json.loads(PAPER.read_text()).get("records",[]) if PAPER.exists() else []
     existing=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
     now=datetime.now(timezone.utc).isoformat()
-    onoff=json.loads(ONOFF.read_text()) if ONOFF.exists() else {}
+    source=PRIVATE_ONOFF if PRIVATE_ONOFF.exists() else ONOFF
+    onoff=json.loads(source.read_text()) if source.exists() else {}
     games_path=ROOT/"data/nba/current/current_games.json"
     game_history=json.loads(games_path.read_text()) if games_path.exists() else []
     try:
