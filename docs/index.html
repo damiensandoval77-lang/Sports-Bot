@@ -721,6 +721,18 @@ function renderAI(){
   }else{
    body.append(node("div","mini","Shot-profile research unavailable: fewer than eight prior complete minutes/attempt records."));
   }
+  if(Array.isArray(p.official_out_teammates)&&p.official_out_teammates.length){
+   body.append(node("div","research-note research-risk",
+     "OFFICIAL GAME-DAY OUT: "+p.official_out_teammates.map(x=>x.player).join(", ")+
+     ". The original AI projection does not include a validated injury adjustment. "+
+     "Its displayed hit percentage must not be treated as injury-adjusted."));
+  }
+  if(p.injury_scenario_projection!=null){
+   body.append(node("div","research-note",
+     "INJURY-CONDITIONED RESEARCH SCENARIO: "+fmt(p.injury_scenario_projection)+
+     " "+p.stat+" versus original Combined AI "+fmt(p.combined_projection)+
+     ". Uses a bounded prior-minutes scenario; not a confirmed rotation, calibrated prediction, or automatic pick change."));
+  }
   const minuteScenario=p.injury_minutes_research;
   if(minuteScenario?.status==="HISTORICAL_SCENARIO_RESEARCH_ONLY"){
    body.append(node("div","research-note","Verified OUT teammate: "+
