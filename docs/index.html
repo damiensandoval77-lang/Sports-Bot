@@ -1737,7 +1737,7 @@ async function refresh(){
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
 
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
@@ -1896,6 +1896,16 @@ if(slateHealth){
    missing.length+" missing; reason: "+label+". "+
    (missing.length?"Games: "+missing.map(g=>g.game+" ["+g.coverage.replaceAll("_"," ").toLowerCase()+"]").join("; ")+". ":"")+
    "Past pregame AI forecasts, if shown, are archived—not live.";
+}
+// A newer provider-quota probe overrides stale credit metadata, but cannot
+// make old quotes live. Display only a recently checked real balance.
+if(quota.status==="fulfilled"&&quota.value?.status==="LIVE_PROVIDER_BALANCE_CHECKED"&&
+   isRecent(quota.value.checked_at,24)&&Number.isInteger(quota.value.remaining_credits)){
+  const credits=quota.value.remaining_credits;
+  coverageNode.textContent+=" LATEST ODDS API BALANCE ("+
+    new Date(quota.value.checked_at).toLocaleString()+"): "+credits+
+    " credits on the repository-connected key."+
+    (credits===0?" No paid sportsbook prop refresh is possible until this key is replenished or updated.":"");
 }
 paper=p.status==="fulfilled"&&p.value.status==="REAL_SPORTSBOOK_QUOTES_PAPER_ONLY"?p.value:null;
 const evidence=$("ai-evidence-warning");
