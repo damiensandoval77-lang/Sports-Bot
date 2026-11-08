@@ -564,12 +564,14 @@ function renderAI(){
    return tile;
   }
   values.append(
-   metric("SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
+   metric(aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
    metric("AI PROJECTION",fmt(projected),"projection"),
    metric("MODEL CONFIDENCE","UNVERIFIED","chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
-  const probabilityNote=node("div","match","Research only: current model hit below 50%; no validated betting edge. Estimated percentages hidden due to calibration failure.");
+  const probabilityNote=node("div","match",aiMetadata?.is_prizepicks?
+    "Verified pick'em line only, not sportsbook odds. No calibrated win probability or EV; research model direction only.":
+    "Research only: current model hit below 50%; no validated betting edge. Estimated percentages hidden due to calibration failure.");
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
@@ -593,7 +595,9 @@ function renderAI(){
   main.append(lean);
   outer.append(main);
   const details=node("details","compact-details"),
-        summary=node("summary","","View recent stats, sportsbook odds & analysis"),
+        summary=node("summary","",aiMetadata?.is_prizepicks?
+          "View recent stats, PrizePicks tiers & analysis":
+          "View recent stats, sportsbook odds & analysis"),
         body=node("div","detailbody");
   const recentForm=formFresh?currentPerson(p.player,p.team):null;
   const recentBlocks=node("div","recent-block-grid");
@@ -1737,7 +1741,7 @@ async function refresh(){
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
 
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
@@ -1785,6 +1789,22 @@ if(ai.length===0&&archive.status==="fulfilled"&&
   window.lastAI=archive.value.original_board_generated_at;
  }
 }
+// Only if the normal sportsbook AI board has no fresh pregame markets:
+ // use independent, verified genuine PrizePicks pick'em projections.
+ // Do not label these as American sportsbook odds, and never claim EV.
+ if(ai.length===0&&prizepicksAI.status==="fulfilled"&&
+     prizepicksAI.value?.status==="EXPERIMENTAL_NON_CALIBRATED"&&
+     prizepicksAI.value?.is_prizepicks===true&&
+     prizepicksAI.value?.no_sportsbook_prices===true&&
+     prizepicksAI.value?.verified_current_matchups===true&&
+     isRecent(prizepicksAI.value.generated_at,6)&&
+     Array.isArray(prizepicksAI.value.comparisons)){
+   const eligible=upcomingAIProps(groupAI(prizepicksAI.value.comparisons));
+   if(eligible.length){
+     ai=eligible;aiMetadata=prizepicksAI.value;aiFresh=true;
+     aiArchiveMode=false;window.lastAI=prizepicksAI.value.generated_at;
+   }
+ }
 // Saved research quotes are separate from the upcoming-only main board.
  // Use the immutable archive first, then any independently pre-tip current board.
  // Only rows captured before a game's tipoff are eligible for the tracker.
@@ -1882,7 +1902,9 @@ if(slateCoverage && oddsFresh){
  " Latest fetch failed ("+(oddsHealth.details?.http_status||oddsHealth.details?.error_type||"provider error")+").":
  oddsHealth?.status==="MISSING_ODDS_API_KEY"?
  " Odds provider API key is not configured.":"";
- coverageNode.textContent="Full-slate sportsbook coverage unavailable or stale."+reason+
+ coverageNode.textContent=(aiMetadata?.is_prizepicks?
+ "LIVE PRIZEPICKS AI FALLBACK ACTIVE: authentic pick'em lines, NOT sportsbook odds. "+
+ ai.length+" props; no verified EV or win probabilities. ":"Full-slate sportsbook coverage unavailable or stale.")+reason+
  (aiArchiveMode?" Historical pregame AI available for "+new Set(ai.map(x=>x.game)).size+" games; NOT live prices.":"")+
  " Missing games do not imply no NBA game is scheduled.";
 }
