@@ -149,7 +149,7 @@ def publish(raw_pages,comparisons,now=None,schedule=None):
     for page in raw_pages:
         meta=page.get("meta",{})
         if meta.get("mode")!="live":raise ValueError("Refuse demo or unknown mode")
-        if meta.get("source_status") in ("failed","stale","partial"):
+        if meta.get("source_status") in ("failed","stale"):
             raise ValueError("Provider source is not fresh")
         statuses.append(meta.get("source_status","unknown"))
         cursors.append(meta.get("next_cursor"))
@@ -213,7 +213,7 @@ def publish(raw_pages,comparisons,now=None,schedule=None):
         "source":"Independent prizepicksapi.com (not affiliated with PrizePicks)",
         "source_url":"https://prizepicksapi.com/docs",
         "generated_at":now.isoformat(),
-        "provider_status":statuses[0] if statuses else "unknown",
+        "provider_status":"partial" if "partial" in statuses else statuses[0] if statuses else "unknown",
         "pages_read":len(raw_pages),"partial_board":bool(cursors and cursors[-1]),
         "raw_rows_read":raw_count,"eligible_upcoming_offers":len(distinct),
         "filtered_out_reasons":dict(sorted(rejection_reasons.items())),
