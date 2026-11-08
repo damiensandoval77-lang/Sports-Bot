@@ -166,7 +166,10 @@ jobs:
           assert all(x['minutes_v2_research']['expected_minutes'] is None or
                      0 <= x['minutes_v2_research']['expected_minutes'] <= 48
                      for x in d['comparisons'])
-          assert d['injury_minutes_research_status']=='DESCRIPTIVE_ONLY_NOT_APPLIED'
+          assert d['injury_minutes_research_status'] in (
+              'BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS',
+              'NO_SUPPORTED_OFFICIAL_OUT_REPROJECTION_APPLIED')
+          assert (d['injury_minutes_research_status']=='BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS') is d['lineup_research_adjustments_applied']
           assert d['minutes_baseline_validation']['live_model_unchanged'] is True
           assert all(x['injury_minutes_research']['live_adjustment_applied'] is False for x in d['comparisons'])
           assert all(x['injury_minutes_research']['scenario_minutes'] is None or
