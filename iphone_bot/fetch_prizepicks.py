@@ -337,7 +337,7 @@ def main():
                 (verified is None or (now_check-verified).total_seconds()>36*3600)):
                 from probe_prizepicks_topup import probe
                 new_proof=probe(key)
-                topup_path.write_text(json.dumps(new_proof,indent=2)+"\\n")
+                topup_path.write_text(json.dumps(new_proof,indent=2)+"\n")
                 print("Top-up probe:",new_proof.get("status"),
                       "HTTP:",new_proof.get("http_status"),
                       "charged:",new_proof.get("request_cost"),
