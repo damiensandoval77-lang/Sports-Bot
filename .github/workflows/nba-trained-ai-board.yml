@@ -73,6 +73,10 @@ jobs:
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Download verified current-season NBA player games
         run: python -u iphone_bot/fetch_current_form.py
+      - name: Refresh official NBA injury statuses before producing AI projections
+        run: |
+          python -m pip install --disable-pip-version-check "pypdf>=5,<7"
+          python -u iphone_bot/fetch_official_injuries.py
       - name: Check Unicode player identity matching across sportsbook and NBA roster
         env:
           PYTHONPATH: ${{ github.workspace }}/iphone_bot:${{ github.workspace }}
