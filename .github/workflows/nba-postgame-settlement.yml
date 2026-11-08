@@ -13,6 +13,8 @@ on:
       - 'iphone_bot/tests/test_official_web_final_boxscores.py'
       - 'iphone_bot/missed_game_audit.py'
       - 'iphone_bot/projection_error_analysis.py'
+      - 'iphone_bot/underprojection_research.py'
+      - 'iphone_bot/tests/test_underprojection_research.py'
       - 'iphone_bot/selection_quality_audit.py'
       - 'iphone_bot/tests/test_selection_quality_audit.py'
       - 'iphone_bot/combined_probability_audit.py'
@@ -56,6 +58,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_missed_game_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_error_analysis.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_underprojection_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selection_quality_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_combined_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
@@ -91,6 +94,8 @@ jobs:
         run: python -u iphone_bot/selection_quality_audit.py
       - name: Audit frozen Combined-direction simulated probability proxies
         run: python -u iphone_bot/combined_probability_audit.py
+      - name: Diagnose model underprojection by frozen player-production tier
+        run: python -u iphone_bot/underprojection_research.py
       - name: Compare historical opportunity challenger with immutable Combined AI
         run: python -u iphone_bot/opportunity_backtest.py
       - name: Compare fixed assist shadow retrospectively on saved pregame quotes
@@ -125,6 +130,7 @@ jobs:
           cp docs/cbs_final_boxscores_status.json "$temp/cbs_status.json"
           cp docs/missed_game_audit.json "$temp/missed_game_audit.json"
           cp docs/projection_error_analysis.json "$temp/projection_error_analysis.json"
+          cp docs/underprojection_research.json "$temp/underprojection_research.json"
           cp docs/opportunity_backtest.json "$temp/opportunity_backtest.json"
           cp docs/assist_retrospective_backtest.json "$temp/assist_retrospective_backtest.json"
           cp docs/combined_probability_audit.json "$temp/combined_probability_audit.json"
@@ -141,11 +147,12 @@ jobs:
             # Recalculate from latest merged ledger, rather than copying an
             # analysis that may have missed concurrently settled predictions.
             python -u iphone_bot/projection_error_analysis.py
+            python -u iphone_bot/underprojection_research.py
             python -u iphone_bot/opportunity_backtest.py
             python -u iphone_bot/assist_retrospective_backtest.py
             python -u iphone_bot/combined_probability_audit.py
             python -u iphone_bot/selection_quality_audit.py
-            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json docs/cbs_final_boxscores_status.json docs/missed_game_audit.json docs/projection_error_analysis.json docs/opportunity_backtest.json docs/assist_retrospective_backtest.json docs/combined_probability_audit.json docs/selection_quality_audit.json
+            git add docs/paper_pick_ledger.json docs/paper_results.json docs/final_boxscores_status.json docs/cbs_final_boxscores_status.json docs/missed_game_audit.json docs/projection_error_analysis.json docs/underprojection_research.json docs/opportunity_backtest.json docs/assist_retrospective_backtest.json docs/combined_probability_audit.json docs/selection_quality_audit.json
             if git diff --cached --quiet; then echo 'Latest results already published'; exit 0; fi
             git commit -m 'Settle real pregame NBA props from verified completed player box scores'
             if git push origin HEAD:main; then echo 'Postgame settlement successfully published'; exit 0; fi
