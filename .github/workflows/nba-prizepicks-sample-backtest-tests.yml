@@ -1,0 +1,24 @@
+name: Validate historical PrizePicks sample joins and backtest
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/prizepicks_sample_backtest.py'
+      - 'iphone_bot/tests/test_prizepicks_sample_backtest.py'
+      - '.github/workflows/nba-prizepicks-sample-backtest-tests.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate historical join and backtest without any API calls
+        run: |
+          python -m py_compile iphone_bot/prizepicks_sample_backtest.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_sample_backtest.py' -v
