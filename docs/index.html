@@ -566,17 +566,14 @@ function renderAI(){
   values.append(
    metric(aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
    metric("AI PROJECTION",fmt(projected),"projection"),
-   metric("GRADED HIT RATE",(()=>{const observed=paper?.performance?.by_stat?.[p.stat]?.combined;return observed&&observed.direction_eligible>=30&&Number.isFinite(observed.direction_hit_rate)?(100*observed.direction_hit_rate).toFixed(1)+"%":"NO SAMPLE"})(),"chance")
+   metric("EST. HIT %",chance(p),"chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
-  const historical=paper?.performance?.by_stat?.[p.stat]?.combined;
-  const sample=historical?.direction_eligible||0;
-  const days=paper?.performance?.directional_diagnostics?.by_stat?.[p.stat]?.distinct_event_dates||0;
-  const detail=sample>=30?" Historical combined-model accuracy: "+historical.direction_wins+"/"+sample+" across "+days+" event dates. ":" No sufficient settled historical sample. ";
-  const probabilityNote=node("div","match",(aiMetadata?.is_prizepicks?
-    "Verified PrizePicks pick\'em line, not sportsbook odds.":
-    "Research model compared with real sportsbook lines.")+detail+
-    "This is NOT this pick\'s win probability. Confidence remains uncalibrated; no validated betting edge or EV.");
+  const probabilityNote=node("div","match",(validEstimate(p)?
+    "Uncalibrated ORIGINAL AI historical-residual estimate; not a verified combined-model or 20,000-simulation hit rate. ":
+    "No supported per-pick hit estimate available. ")+
+    (aiMetadata?.is_prizepicks?"PrizePicks pick\'em line, not sportsbook odds. ":"")+
+    "Graded historical accuracy is in Performance; no validated betting edge or EV.");
   probabilityNote.style.fontSize="10px";
   probabilityNote.style.margin="2px 0 5px";
   main.append(probabilityNote);
