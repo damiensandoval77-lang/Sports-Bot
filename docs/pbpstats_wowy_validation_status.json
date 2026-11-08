@@ -1,14 +1,26 @@
 {
-  "generated_at": "2026-11-08T03:31:17.231256+00:00",
-  "status": "PASSED",
+  "generated_at": "2026-11-08T03:32:09.856521+00:00",
+  "status": "FAILED",
   "tests": "SIX_OFFLINE_PBPSTATS_WOWY_MODULES",
   "failure_diagnostics": [
     "Ran 3 tests in 0.000s",
     "Ran 5 tests in 0.001s",
     "Ran 4 tests in 0.001s",
     "Ran 4 tests in 0.001s",
-    "Ran 6 tests in 0.063s",
-    "Ran 4 tests in 0.002s"
+    "Ran 6 tests in 0.009s",
+    "ERROR: test_end_to_end_all_markets_stay_shadow_only (test_assemble_pbpstats_wowy.WholePipelineTest.test_end_to_end_all_markets_stay_shadow_only)",
+    "ValueError: Missing independent player stint distributions",
+    "FAIL: test_absent_game_provenance_is_not_inferred (test_assemble_pbpstats_wowy.WholePipelineTest.test_absent_game_provenance_is_not_inferred)",
+    "ValueError: Missing independent player stint distributions",
+    "AssertionError: \"game dates\" does not match \"Missing independent player stint distributions\"",
+    "FAIL: test_unlicensed_bundle_is_not_normalized (test_assemble_pbpstats_wowy.WholePipelineTest.test_unlicensed_bundle_is_not_normalized)",
+    "ValueError: Missing independent player stint distributions",
+    "AssertionError: \"manually verified\" does not match \"Missing independent player stint distributions\"",
+    "FAIL: test_wrong_cutoff_query_does_not_create_pretip_sample (test_assemble_pbpstats_wowy.WholePipelineTest.test_wrong_cutoff_query_does_not_create_pretip_sample)",
+    "ValueError: Missing independent player stint distributions",
+    "AssertionError: \"historical date\" does not match \"Missing independent player stint distributions\"",
+    "Ran 4 tests in 0.001s",
+    "FAILED (failures=3, errors=1)"
   ],
   "real_provider_samples_verified": false,
   "licensed_ingestion_enabled": false
