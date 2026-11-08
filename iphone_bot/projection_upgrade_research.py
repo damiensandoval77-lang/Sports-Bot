@@ -55,6 +55,11 @@ try:
 except ImportError:
     from unified_reliability_research import view as unified_reliability_view
 
+try:
+    from .prospective_research_gate import verify as verify_prospective_capture
+except ImportError:
+    from prospective_research_gate import verify as verify_prospective_capture
+
 ROOT=Path(__file__).resolve().parents[1]
 BOARD=ROOT/"docs/ai_comparisons.json"
 INJURY=ROOT/"docs/injury_context.json"
@@ -665,11 +670,13 @@ def grade_shadow(ledger,paper_rows):
 
 def run(board,injury,paper_rows,existing,at,game_history=None):
     ledger,counts=snapshot(board,injury,existing,at,game_history)
+    capture_gate=verify_prospective_capture(ledger,len(existing),len(ledger))
     settled=finished_unique(paper_rows)
     return ledger,{"generated_at":utc(at).isoformat(),
         "status":"OPPORTUNITY_V4_SHADOW_AND_20K_CALIBRATION_RESEARCH_ONLY",
         "locked_samples":len(ledger),"new_samples":counts.get("new",0),
         "features_covered":counts,
+        "prospective_capture_integrity":capture_gate,
         "settled_independent_paper_markets":len(settled),
         "injury_context":"VERIFIED_SAME_GAME_OFFICIAL_REPORT_ONLY",
         "lineup_confirmations_automated":False,
