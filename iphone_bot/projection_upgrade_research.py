@@ -71,6 +71,11 @@ except ImportError:
     from rebound_shadow_v1 import forecast as rebound_opportunity_v1
 
 try:
+    from .tracking_opportunities_v1 import evaluate as tracking_opportunity_evaluate
+except ImportError:
+    from tracking_opportunities_v1 import evaluate as tracking_opportunity_evaluate
+
+try:
     from .opponent_context_v2 import games_by_team as opponent_team_games, matchup as opponent_matchup, shadow as opponent_v2_shadow
     from .paper_pick_pipeline import expected_opponents
 except ImportError:
@@ -85,6 +90,7 @@ LEDGER=ROOT/"docs/projection_upgrade_ledger.json"
 STATUS=ROOT/"docs/projection_upgrade_status.json"
 ONOFF=ROOT/"docs/lineup_onoff_research.json"
 PRIVATE_ONOFF=ROOT/"data/nba/private/lineup_onoff_research.json"
+PRIVATE_TRACKING=ROOT/"data/nba/private/tracking_opportunities.json"
 MARKETS=("PTS","REB","AST","PRA")
 MIN_RESIDUALS=1000
 SIMULATIONS=20000
@@ -124,7 +130,7 @@ def official_injuries(feed,game_start,capture):
     return rows,"OFFICIAL_SAME_DAY_VERIFIED" if rows else "NO_SAME_DAY_PLAYER_STATUS"
 
 
-def snapshot(board,injury,existing,at,game_history=None,onoff_feed=None):
+def snapshot(board,injury,existing,at,game_history=None,onoff_feed=None,tracking_feed=None):
     captured=utc(at)
     if board.get("status")!="EXPERIMENTAL_NON_CALIBRATED" or board.get("verified_current_matchups") is not True:
         raise ValueError("Board not verified")
@@ -180,6 +186,18 @@ def snapshot(board,injury,existing,at,game_history=None,onoff_feed=None):
                     "research_only":True,"live_applied":False})
             if row["rebound_shadow_v1"].get("projection") is not None:
                 counters["rebound_shadow_v1_locked"]+=1
+            # Opportunity tracking is not a substitute for real box scores.
+            # Only provider-authorized, historical game-level chances count.
+            row["tracking_opportunity_shadow"]=(
+                tracking_opportunity_evaluate(tracking_feed,player_id=pid,
+                    team=row["team"],market=row["market"],event_date=day,
+                    baseline=combined,expected_minutes=opp.get("expected_minutes"),
+                    captured_at=captured.isoformat())
+                if row["market"] in ("AST","REB") else
+                {"status":"NON_TRACKING_MARKET","projection":None,
+                    "research_only":True,"live_applied":False})
+            if row["tracking_opportunity_shadow"].get("projection") is not None:
+                counters["tracking_opportunity_shadow_locked"]+=1
             row["opportunity_shadow_projection"]=frozen
             row["stability_opportunity_shadow_projection"]=(
                 stability_opportunity_candidate(combined,opp["raw_stat_projections"][row["market"]],opp)
@@ -703,6 +721,57 @@ def grade_opponent_v2(ledger,paper_rows):
         "same_line_only":True,"prospective_validation_required":True,
         "live_model_unchanged":True,"eligible_for_production":False}
 
+def grade_tracking_opportunities(ledger,paper_rows):
+    """Paired prospectively frozen AST/REB tracking shadows on exact same lines."""
+    official={}
+    for r in finished_unique(paper_rows):
+        if r.get("market") not in ("AST","REB"):continue
+        try:
+            key=(utc(r["event_start"]).isoformat(),str(r["player_id"]),r["market"])
+            official[key]=(float(r["actual"]),float(r["line"]))
+        except (KeyError,ValueError,TypeError):continue
+    seen=set();by=defaultdict(list);coverage=Counter()
+    for r in sorted(ledger,key=lambda x:str(x.get("captured_at",""))):
+        if r.get("market") not in ("AST","REB"):continue
+        try:
+            at=utc(r["captured_at"]);start=utc(r["event_start"])
+            if at>=start:continue
+            key=(start.isoformat(),str(r["player_id"]),r["market"])
+            if key in seen:continue
+            seen.add(key)
+            alt=r.get("tracking_opportunity_shadow") or {}
+            coverage[str(alt.get("status","LEGACY_NO_TRACKING_CAPTURE"))]+=1
+            projection=valid(alt.get("projection"))
+            base=valid(r.get("combined_projection"))
+            line=valid(r.get("line"))
+            if projection is None or base is None or line is None:continue
+            if key not in official:continue
+            actual,graded_line=official[key]
+            by[r["market"]].append({"actual":actual,"base":base,"shadow":projection,
+                "same_line":abs(line-graded_line)<1e-9,"line":line,
+                "date":start.astimezone(ZoneInfo("America/New_York")).date().isoformat()})
+        except (KeyError,ValueError,TypeError):continue
+    def summary(rows):
+        same=[x for x in rows if x["same_line"] and
+              x["actual"]!=x["line"] and x["base"]!=x["line"] and x["shadow"]!=x["line"]]
+        bw=sum((x["base"]>x["line"])==(x["actual"]>x["line"]) for x in same)
+        sw=sum((x["shadow"]>x["line"])==(x["actual"]>x["line"]) for x in same)
+        n=len(rows)
+        return {"paired_markets":n,"exact_line_eligible":len(same),
+                "distinct_game_dates":len(set(x["date"] for x in rows)),
+                "baseline_mae":round(sum(abs(x["base"]-x["actual"]) for x in rows)/n,4) if n else None,
+                "tracking_mae":round(sum(abs(x["shadow"]-x["actual"]) for x in rows)/n,4) if n else None,
+                "baseline_wins":bw,"tracking_wins":sw,
+                "baseline_hit_rate":round(bw/len(same),4) if same else None,
+                "tracking_hit_rate":round(sw/len(same),4) if same else None}
+    return {"status":"TRACKING_CHANCES_PRETIP_SHADOW_ONLY",
+            "by_market":{m:summary(by[m]) for m in ("AST","REB")},
+            "overall":summary(by["AST"]+by["REB"]),
+            "coverage_statuses":dict(coverage),
+            "source_rights_required":True,"production_applied":False,
+            "eligible_for_production":False}
+
+
 def grade_rebound_v1(ledger,paper_rows):
     """Exact frozen-line grading; no postgame model recalculation."""
     outcomes={}
@@ -958,8 +1027,8 @@ def grade_shadow(ledger,paper_rows):
             "v4_live_applied":False}
 
 
-def run(board,injury,paper_rows,existing,at,game_history=None,onoff_feed=None):
-    ledger,counts=snapshot(board,injury,existing,at,game_history,onoff_feed)
+def run(board,injury,paper_rows,existing,at,game_history=None,onoff_feed=None,tracking_feed=None):
+    ledger,counts=snapshot(board,injury,existing,at,game_history,onoff_feed,tracking_feed)
     capture_gate=verify_prospective_capture(ledger,len(existing),len(ledger))
     settled=finished_unique(paper_rows)
     return ledger,{"generated_at":utc(at).isoformat(),
@@ -976,6 +1045,7 @@ def run(board,injury,paper_rows,existing,at,game_history=None,onoff_feed=None):
         "opportunity_shadow":grade_opportunity_shadows(ledger,paper_rows),
         "opponent_v2_shadow":grade_opponent_v2(ledger,paper_rows),
         "rebound_shadow_v1":grade_rebound_v1(ledger,paper_rows),
+        "tracking_opportunity_shadow":grade_tracking_opportunities(ledger,paper_rows),
         "licensed_onoff_shadow":grade_licensed_onoff_shadows(ledger,paper_rows),
         "sanity_shadow_v1":grade_sanity_shadow(ledger,paper_rows),
         "stress_test_20k_v1":stress_research_report(ledger,paper_rows),
@@ -997,10 +1067,11 @@ def main():
     now=datetime.now(timezone.utc).isoformat()
     source=PRIVATE_ONOFF if PRIVATE_ONOFF.exists() else ONOFF
     onoff=json.loads(source.read_text()) if source.exists() else {}
+    tracking=json.loads(PRIVATE_TRACKING.read_text()) if PRIVATE_TRACKING.exists() else {}
     games_path=ROOT/"data/nba/current/current_games.json"
     game_history=json.loads(games_path.read_text()) if games_path.exists() else []
     try:
-        ledger,report=run(board,injury,paper,existing,now,game_history,onoff)
+        ledger,report=run(board,injury,paper,existing,now,game_history,onoff,tracking)
     except ValueError as error:
         # A scheduled research-only refresh can update settlement diagnostics
         # even if there is no fresh pregame AI feed to freeze. It may never
@@ -1022,6 +1093,7 @@ def main():
             "opportunity_shadow":grade_opportunity_shadows(ledger,paper),
             "opponent_v2_shadow":grade_opponent_v2(ledger,paper),
             "rebound_shadow_v1":grade_rebound_v1(ledger,paper),
+            "tracking_opportunity_shadow":grade_tracking_opportunities(ledger,paper),
             "licensed_onoff_shadow":grade_licensed_onoff_shadows(ledger,paper),
             "sanity_shadow_v1":grade_sanity_shadow(ledger,paper),
             "stress_test_20k_v1":stress_research_report(ledger,paper),
