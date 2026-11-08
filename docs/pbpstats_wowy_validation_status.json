@@ -1,13 +1,12 @@
 {
-  "generated_at": "2026-11-08T03:25:47.949795+00:00",
+  "generated_at": "2026-11-08T03:26:00.797762+00:00",
   "status": "FAILED",
   "tests": "FIVE_OFFLINE_PBPSTATS_WOWY_MODULES",
   "failure_diagnostics": [
     "Ran 3 tests in 0.000s",
     "FAIL: test_insufficient_provenance_and_date_leakage (test_pbpstats_wowy_adapter.ProviderMapperTests.test_insufficient_provenance_and_date_leakage)",
-    "ValueError: Duplicate or future game dates",
-    "ValueError: Missing, duplicated or invalid completed game dates",
-    "AssertionError: \"future\" does not match \"Missing, duplicated or invalid completed game dates\"",
+    "ValueError: Future game dates cannot enter pregame samples",
+    "AssertionError: \"future\" does not match \"Future game dates cannot enter pregame samples\"",
     "Ran 5 tests in 0.002s",
     "FAILED (failures=1)"
   ],
