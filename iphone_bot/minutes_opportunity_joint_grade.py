@@ -6,6 +6,11 @@ No opponent/injury hindsight. No reconstructed unrecorded new forecast.
 import json,math
 from datetime import datetime,timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
+try:
+ from .paper_pick_pipeline import utc
+except ImportError:
+ from paper_pick_pipeline import utc
 from statistics import mean
 try:
  from .model_performance import independent_rows
@@ -31,7 +36,7 @@ def grade(records):
   stat=(op.get("markets") or {}).get(market,{}) if isinstance(op,dict) else {}
   if not isinstance(minutes,dict) or not stat or stat.get("status")!="PREGAME_OPPORTUNITY_V2_RESEARCH":
    missing["NO_FROZEN_JOINT_RESEARCH"]+=1;continue
-  date=str(r.get("event_start",""))[:10]
+  date=utc(r["event_start"]).astimezone(ZoneInfo("America/New_York")).date().isoformat()
   if (minutes.get("last_prior_date") or "9999")>=date or (stat.get("last_prior_game") or "9999")>=date:
    missing["UNSAFE_FEATURE_DATE"]+=1;continue
   baseline=valid(r.get("combined_projection"))
