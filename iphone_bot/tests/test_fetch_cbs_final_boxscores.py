@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime,timezone
-from iphone_bot.fetch_cbs_final_boxscores import parse_final,collect,shortname
+from iphone_bot.fetch_cbs_final_boxscores import parse_final,collect,shortname,cbs_boxscore_url
 
 def pick(player,team="WAS"):
     return {"status":"PENDING","player":player,"team":team,
@@ -52,6 +52,14 @@ class CBSFallbackTests(unittest.TestCase):
         self.assertEqual(len(result),6)
         self.assertEqual(status["finished_matchups"],1)
         self.assertTrue(urls[0].endswith("NBA_20261106_WAS%40ATL/"))
+    def test_cbs_uses_verified_short_url_codes(self):
+        self.assertTrue(cbs_boxscore_url("2026-11-07","NYK","CLE").endswith(
+            "NBA_20261107_NY%40CLE/"))
+        self.assertTrue(cbs_boxscore_url("2026-11-07","ORL","GSW").endswith(
+            "NBA_20261107_ORL%40GS/"))
+        self.assertTrue(cbs_boxscore_url("2026-11-06","WAS","ATL").endswith(
+            "NBA_20261106_WAS%40ATL/"))
+
     def test_no_pending_projections_no_network(self):
         def forbidden(_):
             raise AssertionError("Cannot search unrelated games")
