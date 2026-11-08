@@ -27,7 +27,7 @@ def validate(export,approval,form):
     if approval.get("reviewed_for_betting_analytics") is not True:
         errors.append("Manual review must affirm permitted use for betting analytics")
     if approval.get("allowed_use")!="NBA_PROP_RESEARCH":
-        errors.append("Approval must permit NBA_PROP_RESEARCH specifically")
+        errors.append("Approval permitted use must include NBA_PROP_RESEARCH specifically")
     if approval.get("reviewer_confirmation")!="MANUALLY_VERIFIED":
         errors.append("Approval must explicitly be manually verified")
     if not str(approval.get("permission_reference","")).strip():
