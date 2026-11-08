@@ -66,7 +66,7 @@ def clean(row,now,verified_live=False):
     stat=STAT.get(str(market.get("stat") or row.get("stat") or "").lower().strip())
     period=str(market.get("period") or row.get("period") or "").strip().lower()
     if period not in ("full game","full_game","fullgame"):return None
-    raw_starts=event.get("starts_at") or row.get("event_starts_at")
+    raw_starts=event.get("starts_at") or row.get("event_starts_at") or row.get("starts_at")
     starts=timeparse(raw_starts)
     observed=timeparse(row.get("observed_at"))
     if not observed or observed>now+dt.timedelta(minutes=10):return None
@@ -82,9 +82,22 @@ def clean(row,now,verified_live=False):
     selections=row.get("selections")
     if not isinstance(selections,list):
         selections=[]
-        for side in ("more","less"):
-            if row.get(side+"_available") is True:
-                selections.append({"side":side,"available":True,"tier":row.get(side+"_tier")})
+        # Compact authenticated board uses sides[] and a top-level tier.
+        # Explicit strings represent available sides; source still supplies
+        # the real tier instead of inventing American betting odds.
+        if isinstance(row.get("sides"),list):
+            for entry in row["sides"]:
+                if isinstance(entry,str):
+                    selections.append({"side":entry,"available":True,"tier":row.get("tier")})
+                elif isinstance(entry,dict):
+                    selections.append({
+                        "side":entry.get("side") or entry.get("name"),
+                        "available":entry.get("available",True),
+                        "tier":entry.get("tier") or row.get("tier")})
+        else:
+            for side in ("more","less"):
+                if row.get(side+"_available") is True:
+                    selections.append({"side":side,"available":True,"tier":row.get(side+"_tier")})
     picks={}
     for sel in selections:
         if not isinstance(sel,dict) or sel.get("available") is not True:continue
@@ -127,7 +140,7 @@ def rejection_hint(row,now,verified_live=False):
     if row.get("is_demo") is True or (row.get("is_demo") is None and not verified_live):return "missing_real_provenance"
     if row.get("status")!="active" or str(row.get("league","")).upper()!="NBA":return "inactive_or_not_nba"
     event=row.get("event") if isinstance(row.get("event"),dict) else {}
-    start=timeparse(event.get("starts_at") or row.get("event_starts_at"))
+    start=timeparse(event.get("starts_at") or row.get("event_starts_at") or row.get("starts_at"))
     if start and start<=now:return "game_already_started"
     observed=timeparse(row.get("observed_at"))
     if observed is None:return "missing_observed_time"
