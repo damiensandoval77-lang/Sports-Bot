@@ -325,6 +325,7 @@ def main():
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
         row["combined_projection"]=round(combined["projection"],1)
         row["preinjury_original_projection"]=round(projection,1)
+        row["preinjury_shadow_projection"]=row["shadow_projection"]
         row["preinjury_combined_projection"]=round(combined["projection"],1)
         row["injury_reprojection_status"]="NO_OFFICIAL_OUT_IN_MATCHUP"
         if row["injury_context_requires_reprojection"]:
