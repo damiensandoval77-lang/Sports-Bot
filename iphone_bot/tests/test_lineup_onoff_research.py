@@ -9,8 +9,12 @@ TIP="2026-11-08T01:00:00Z"
 def feed():
     return {"status":"LICENSED_ON_OFF_VERIFIED","licensed_use_verified":True,
         "source":"TEST_LICENSED_FIXTURE","generated_at":"2026-11-07T18:00:00Z",
+        "authorization":{"reviewed_for_betting_analytics":True,
+          "allowed_use":"NBA_PROP_RESEARCH","reviewer_confirmation":"MANUALLY_VERIFIED",
+          "permission_reference":"TEST_ONLY_NONPRODUCTION_FIXTURE"},
         "observations":[{"player_id":"100","teammate_id":"900","team":"BOS",
             "season":"2026-27","data_through":"2026-11-06",
+            "observed_through_at":"2026-11-07T17:00:00Z",
             "with":{"games":8,"minutes":220,"PTS_per36":19,"REB_per36":6,"AST_per36":4},
             "without":{"games":7,"minutes":230,"PTS_per36":25,"REB_per36":8,"AST_per36":6}}]}
 
@@ -43,6 +47,20 @@ class LicensedOnOffResearchTests(unittest.TestCase):
         self.assertEqual(check(d)["status"],"UNSAFE_CAPTURE_OR_FEED_TIMESTAMP")
         self.assertEqual(check(game_start="2026-11-07T17:00:00Z")["status"],
                          "UNSAFE_CAPTURE_OR_FEED_TIMESTAMP")
+    def test_authorization_manifest_and_source_time_are_mandatory(self):
+        d=feed()
+        d.pop("authorization")
+        self.assertEqual(check(d)["status"],"MISSING_VERIFIED_USAGE_PERMISSION")
+        d=feed()
+        d["authorization"]["allowed_use"]="EDITORIAL_ONLY"
+        self.assertEqual(check(d)["status"],"MISSING_VERIFIED_USAGE_PERMISSION")
+        d=feed()
+        d["observations"][0].pop("observed_through_at")
+        self.assertEqual(check(d)["status"],"MISSING_SOURCE_OBSERVATION_TIMESTAMP")
+        d=feed()
+        d["observations"][0]["observed_through_at"]="2026-11-08T01:00:00Z"
+        self.assertEqual(check(d)["status"],"UNSAFE_SOURCE_OBSERVATION_TIMESTAMP")
+
     def test_tiny_samples_or_missing_rates_are_rejected(self):
         d=feed();d["observations"][0]["without"]["minutes"]=15
         self.assertEqual(check(d)["status"],"INSUFFICIENT_ON_OFF_SAMPLE")
