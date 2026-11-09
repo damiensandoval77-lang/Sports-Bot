@@ -6,6 +6,7 @@ re-queries a provider, invents a quote, or rewrites research/graded records.
 import json
 from collections import Counter
 from datetime import datetime,timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -39,6 +40,33 @@ def summarize(board,schedule):
         except (TypeError,ValueError):return False
     scheduled={g["game"] for g in known if future(g["start"])}
     offered={x for x in by_game if x in scheduled}
+    # A partially paged board cannot prove that later scheduled games have no
+    # lines. Separate near-tipoff coverage from future-date coverage without
+    # making extra paid vendor requests.
+    eastern=ZoneInfo("America/New_York")
+    per_game=[]
+    per_date={}
+    for game in known:
+        name=game["game"]
+        try:
+            start=datetime.fromisoformat(str(game["start"]).replace("Z","+00:00"))
+        except (TypeError,ValueError):
+            continue
+        if start.tzinfo is None or start<=now:continue
+        date=start.astimezone(eastern).date().isoformat()
+        hours=round((start-now).total_seconds()/3600,2)
+        has_lines=name in offered
+        reason=("LINES_OBSERVED" if has_lines else
+                "NOT_OBSERVED_IN_PARTIAL_FEED" if board.get("partial_board") is True
+                else "NOT_OBSERVED_IN_COMPLETE_FEED")
+        per_game.append({"game":name,"game_date_eastern":date,
+                         "hours_until_tipoff":hours,"line_offer_count":by_game.get(name,0),
+                         "coverage_status":reason})
+        day=per_date.setdefault(date,{"scheduled_games":0,"games_with_lines":0,
+                                      "games_without_lines":0})
+        day["scheduled_games"]+=1
+        day["games_with_lines"]+=int(has_lines)
+        day["games_without_lines"]+=int(not has_lines)
     health={"status":"INDEPENDENT_PRIZEPICKS_NBA_COVERAGE",
         "generated_at":now.isoformat(),
         "source_status":board.get("status"),"source_generated_at":board.get("generated_at"),
@@ -56,6 +84,9 @@ def summarize(board,schedule):
         "known_upcoming_scheduled_games":len(scheduled),
         "known_upcoming_games_with_lines":len(offered),
         "known_upcoming_games_without_lines":sorted(scheduled-offered),
+        "per_game_coverage":sorted(per_game,key=lambda x:(x["hours_until_tipoff"],x["game"])),
+        "coverage_by_eastern_date":dict(sorted(per_date.items())),
+        "missing_lines_are_provider_absence_verified":board.get("complete_provider_board") is True,
         "schedule_is_independently_complete":schedule.get("coverage_complete") is True,
         "source_spend_credits_reported":board.get("total_provider_charged_credits"),
         "source_credits_remaining":board.get("remaining_provider_credits"),
