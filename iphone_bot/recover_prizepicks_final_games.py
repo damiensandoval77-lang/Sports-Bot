@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 
 from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
+from iphone_bot.verified_prizepicks_inactives import load_verified_inactive_rows
 
 OUT=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 STATUS=ROOT/"docs/prizepicks_final_recovery_status.json"
@@ -90,6 +91,18 @@ def main():
         rows=[]
         report={"status":"PRIZEPICKS_FINAL_RECOVERY_FAILED","requested_matchups":None,
                 "verified_rows":0,"errors":[type(e).__name__]}
+    # Supplement missing official feed inactivity only with manually verified
+    # NBA/club postgame source links and a matching independently final game ID.
+    # A failed cross-check NEVER creates a DNP or changes a settled record.
+    try:
+        checked_inactives=load_verified_inactive_rows(rows)
+    except (OSError,ValueError,TypeError,KeyError) as error:
+        checked_inactives=[]
+        report.setdefault("errors",[]).append("OFFICIAL_INACTIVE_CROSSCHECK_"+type(error).__name__)
+    rows.extend(checked_inactives)
+    report["manual_crosschecked_official_inactive_rows"]=len(checked_inactives)
+    report["verified_rows"]=len(rows)
+    report["verified_dnp_rows"]=sum(r.get("dnp_final_verified") is True for r in rows)
     # Preview only: no mutation to the immutable research ledger here.
     today = dt.datetime.now(ET).date()
     target_dates = {(today-dt.timedelta(days=i)).isoformat() for i in range(4)}
