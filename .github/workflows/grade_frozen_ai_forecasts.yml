@@ -1,0 +1,82 @@
+name: Grade frozen pretip AI forecasts against verified NBA finals
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '38 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/grade_frozen_ai_forecasts.py'
+      - '.github/workflows/grade_frozen_ai_forecasts.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/tests/test_grade_frozen_ai_forecasts.py'
+      - '.github/workflows/grade_frozen_ai_forecasts.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: frozen-ai-forecast-grades
+  cancel-in-progress: false
+
+jobs:
+  grade-ai:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate immutable pretip and final-player identity safeguards
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
+          python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py
+      - name: Grade frozen actual AI forecasts independently of PrizePicks
+        if: github.event_name != 'pull_request'
+        id: grade
+        continue-on-error: true
+        run: python -u -m iphone_bot.grade_frozen_ai_forecasts
+      - name: Preserve recovered grades and diagnostics safely after branch updates
+        if: always() && github.event_name != 'pull_request' && steps.grade.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp docs/ai_forecast_actual_ledger.json "$RUNNER_TEMP/ai_forecast_actual_ledger.json"
+          cp docs/ai_forecast_grade_status.json "$RUNNER_TEMP/ai_forecast_grade_status.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          current=Path("docs/ai_forecast_actual_ledger.json")
+          new=Path(__import__("os").environ["RUNNER_TEMP"])/"ai_forecast_actual_ledger.json"
+          prior=json.loads(current.read_text()).get("records",[]) if current.exists() else []
+          recent=json.loads(new.read_text()).get("records",[])
+          def key(r):return tuple(r.get(k) for k in ("player_id","team","game","start","stat"))
+          merged={key(r):r for r in prior}
+          for r in recent:
+              merged.setdefault(key(r),r)
+          current.write_text(json.dumps({"version":1,"records":list(merged.values())},indent=2)+"\n")
+          PY
+            cp "$RUNNER_TEMP/ai_forecast_grade_status.json" docs/ai_forecast_grade_status.json
+            git add docs/ai_forecast_actual_ledger.json docs/ai_forecast_grade_status.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Grade original locked NBA AI forecasts against verified final player results'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Concurrent publisher prevented safe AI grade updates"
+          exit 1
+      - name: Surface errors instead of silently calling a night graded
+        if: always() && github.event_name != 'pull_request' && steps.grade.outcome == 'failure'
+        run: |
+          echo "::error::Frozen AI forecast grader failed; no outcomes may be inferred"
+          exit 1
