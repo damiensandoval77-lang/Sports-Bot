@@ -63,8 +63,12 @@ class AlertsTests(unittest.TestCase):
 
     def test_absent_lineup_splits_no_fabrication(self):
         self.assertIsNone(minutes_shift("123","456","LAL","2026-11-09",[]))
+        a=player_alerts(post("Austin Reaves (illness) ruled out Monday."),
+                        ROSTER,SCHEDULE,NOW,verified_author_id="456")
         x=injury_adjustment({"PTS":20},"1629656","LAL","ATL","2026-11-09",
-           TIP,NOW,official("OUT"),{},[])
+           TIP,NOW,official("OUT"),
+           {"status":"UNDERDOGNBA_X_AUTHENTICATED_POLL",
+            "verified_x_posts":True,"alerts":a},[])
         self.assertEqual(x["status"],"INJURY_MATCHUP_DATA_INSUFFICIENT")
         self.assertIsNone(x["factor"])
 
