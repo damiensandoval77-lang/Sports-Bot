@@ -109,12 +109,37 @@ def prepare(schedule,stats,previous=None):
         "weeks":{str(w):len(v) for w,v in weeks.items()}}
     return weeks,manifest
 
+def validate_against_published(weeks,out=OUT):
+    """Never replace a complete game with a severely truncated player list."""
+    previous_counts={}
+    for week in weeks:
+        path=out/f"week_{week:02d}.json"
+        if path.exists():
+            old=json.loads(path.read_text(encoding="utf-8"))
+            if old.get("season")!=YEAR or int(old.get("week",-1))!=week:
+                raise ValueError("Stored NFL boxscore has inconsistent season/week")
+            for game in old.get("games",[]):
+                previous_counts[game["game_id"]]=len(game.get("players",[]))
+    for games in weeks.values():
+        for game in games:
+            n=len(game["players"])
+            if n==0:raise ValueError("Final NFL game has zero named offensive players")
+            if any(not str(p.get("player") or "").strip() or
+                   str(p["player"]).strip().lower() in {"nan","none","null"}
+                   for p in game["players"]):
+                raise ValueError("Verified NFL boxscore contains a blank player name")
+            before=previous_counts.get(game["game_id"],0)
+            if before>=8 and n<before*.6:
+                raise ValueError(f"Refusing truncated player boxscore for {game['game_id']}: {n}/{before}")
+    return True
+
 def run():
     schedule=json.loads(SCHEDULE.read_text(encoding="utf-8"))
     if schedule.get("season")!=YEAR:raise ValueError("Wrong NFL season")
     manifest_file=OUT/"manifest.json"
     previous=json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
     weeks,manifest=prepare(schedule,fetch_stats(),previous)
+    validate_against_published(weeks)
     # Do not commit timestamp-only refreshes; redundant commits repeatedly
     # cancel GitHub Pages deployments when NBA and NFL jobs share the site.
     comparable=dict(manifest)
