@@ -76,5 +76,25 @@ class IndependentScoreboardTests(unittest.TestCase):
         r=snapshot([DAY],reader=lambda _: [event()],now=NOW,schedule=baseline)
         self.assertEqual(r["status"],"OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES")
 
+
+    def test_espn_http_failure_uses_independent_nba_schedule(self):
+        def blocked(_): raise OSError("ESPN unavailable")
+        def backup(_):
+            return {"events":[{"id":"nba-1","game":"Away @ Home",
+                     "date_eastern":DAY.isoformat(),"game_state":"pre",
+                     "start":"2026-11-09T23:00:00+00:00"}],
+                    "source":"NBA public CDN season schedule","rejected":0}
+        r=snapshot([DAY],reader=blocked,fallback=backup,now=NOW)
+        self.assertEqual(r["status"],"NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
+        self.assertFalse(r["is_live_score_source"])
+        self.assertEqual(r["total_games"],1)
+
+    def test_both_sources_fail_produces_explicit_unavailable_status(self):
+        def blocked(_): raise OSError("ESPN unavailable")
+        def failed(_): raise RuntimeError("NBA CDN unavailable")
+        r=snapshot([DAY],reader=blocked,fallback=failed,now=NOW)
+        self.assertEqual(r["status"],"UNAVAILABLE_UPSTREAM_ERROR")
+        self.assertIsNone(r["generated_at"])
+
 if __name__=="__main__":
     unittest.main()
