@@ -91,7 +91,8 @@ def settle(ledger,games,now=None,final_games=None):
     official_by_name={}
     for g in (final_games or []):
         if (g.get("final_confirmed") is not True or
-            g.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL")):
+            g.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL",
+                                     "NBA_OFFICIAL_INACTIVE_CROSSCHECKED")):
             continue
         k=(strict_player_name(g.get("player")),str(g.get("team","")).upper(),
            str(g.get("date")),str(g.get("opponent","")).upper())
@@ -130,13 +131,19 @@ def settle(ledger,games,now=None,final_games=None):
         # Do not infer DNP just because a name is missing from the boxscore.
         if actual_row.get("dnp_final_verified") is True:
             if (actual_row.get("final_confirmed") is True and
-                actual_row.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL") and
+                actual_row.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL",
+                                              "NBA_OFFICIAL_INACTIVE_CROSSCHECKED") and
                 str(actual_row.get("opponent","")).upper() in expected and
                 actual_row.get("dnp_reason")):
                 row.update(status="VOID_DNP",result="VOID",actual=None,
                            settlement_source=actual_row["source"],
                            settled_game_date=date,
                            dnp_reason=actual_row["dnp_reason"])
+            out.append(row)
+            continue
+        # Manually crosschecked evidence may ONLY void verified DNPs. It can
+        # never supply played points/rebounds/assists or an apparent WIN/LOSS.
+        if actual_row.get("source")=="NBA_OFFICIAL_INACTIVE_CROSSCHECKED":
             out.append(row)
             continue
         # Verify the actual opponent matches the original, exact scheduled game.

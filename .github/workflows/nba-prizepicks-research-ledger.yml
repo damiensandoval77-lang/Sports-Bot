@@ -8,6 +8,9 @@ on:
       - 'iphone_bot/prizepicks_research_ledger.py'
       - 'iphone_bot/recover_prizepicks_final_games.py'
       - 'iphone_bot/tests/test_prizepicks_final_recovery.py'
+      - 'iphone_bot/verified_prizepicks_inactives.py'
+      - 'iphone_bot/tests/test_verified_prizepicks_inactives.py'
+      - 'docs/verified_prizepicks_inactive_2026-11-08.json'
       - 'iphone_bot/tests/test_prizepicks_research_ledger.py'
       - '.github/workflows/nba-prizepicks-research-ledger.yml'
   schedule:
@@ -17,6 +20,9 @@ on:
       - 'iphone_bot/prizepicks_research_ledger.py'
       - 'iphone_bot/recover_prizepicks_final_games.py'
       - 'iphone_bot/tests/test_prizepicks_final_recovery.py'
+      - 'iphone_bot/verified_prizepicks_inactives.py'
+      - 'iphone_bot/tests/test_verified_prizepicks_inactives.py'
+      - 'docs/verified_prizepicks_inactive_2026-11-08.json'
       - '.github/workflows/nba-prizepicks-research-ledger.yml'
 permissions:
   contents: write
@@ -39,6 +45,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_research_ledger.py' -v
           python -m py_compile iphone_bot/prizepicks_research_ledger.py
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_final_recovery.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
       - name: Read most recent completed NBA player games
         if: github.event_name != 'pull_request'
         env:
