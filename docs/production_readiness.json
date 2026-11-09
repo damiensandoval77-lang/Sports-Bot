@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-11-09T15:36:05.485414+00:00",
+  "game_date_eastern": "2026-11-09",
+  "status": "BLOCKED",
+  "ready_for_trustworthy_picks": false,
+  "readiness_is_not_model_accuracy": true,
+  "today_schedule_games": 7,
+  "upcoming_games": 7,
+  "started_not_marked_final": 0,
+  "next_tip_at": "2026-11-10T00:00:00+00:00",
+  "components": {
+    "schedule": {
+      "state": "READY",
+      "required": true,
+      "reasons": [],
+      "age_minutes": 70.8
+    },
+    "ai_forecasts": {
+      "state": "READY",
+      "required": true,
+      "reasons": [],
+      "age_minutes": 70.8
+    },
+    "prizepicks_lines": {
+      "state": "DEGRADED",
+      "required": true,
+      "reasons": [
+        "STALE_SOURCE",
+        "PARTIAL_PRIZEPICKS_PROVIDER_COVERAGE"
+      ],
+      "age_minutes": 371.9
+    },
+    "scoreboard": {
+      "state": "BLOCKED",
+      "required": true,
+      "reasons": [
+        "STALE_SOURCE"
+      ],
+      "age_minutes": 67.2
+    },
+    "live_player_stats": {
+      "state": "READY",
+      "required": false,
+      "reasons": [],
+      "age_minutes": null
+    },
+    "nightly_grades": {
+      "state": "DEGRADED",
+      "required": true,
+      "reasons": [
+        "PREVIOUS_DAY_AI_GRADING_INCOMPLETE"
+      ],
+      "age_minutes": 27.3
+    }
+  },
+  "blocking_components": [
+    "scoreboard"
+  ],
+  "degraded_components": [
+    "prizepicks_lines",
+    "nightly_grades"
+  ],
+  "required_checks": 5,
+  "passing_required_checks": 2,
+  "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
+}
