@@ -1,0 +1,76 @@
+name: NFL frozen-pick grading and accuracy ledger
+on:
+  pull_request:
+    paths:
+      - 'scripts/reconcile_nfl_picks.py'
+      - 'tests/test_nfl_public_grading.py'
+      - '.github/workflows/nfl-pick-grading.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/reconcile_nfl_picks.py'
+      - 'tests/test_nfl_public_grading.py'
+      - '.github/workflows/nfl-pick-grading.yml'
+      - 'docs/nfl/data/latest_2026*.csv'
+      - 'docs/nfl/data/latest_2026.json'
+      - 'docs/nfl/data/boxscores/week_*.json'
+      - 'docs/nfl/data/boxscores/manifest.json'
+  workflow_dispatch:
+  schedule:
+    - cron: '45 5,11,17,23 * 1,2,9-12 *'
+permissions:
+  contents: write
+concurrency:
+  group: nfl-public-frozen-grading
+  cancel-in-progress: false
+jobs:
+  verify-grade-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run deterministic public NFL grading unit tests
+        run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+      - name: Reconcile captured pregame lines with verified final player stats
+        run: python scripts/reconcile_nfl_picks.py
+      - name: Check grading coverage, including pending results
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("docs/nfl/data/grading_health_2026.json")
+          r=json.loads(p.read_text())
+          assert r["expected_final_picks"] == r["graded_picks"]+r["pending_picks"]
+          assert r["standard_wins"] <= r["standard_settled"]
+          print("2026 frozen grading:",r["graded_picks"],"graded,",
+                r["pending_picks"],"pending,",
+                r["archived_pregame_lines"],"frozen pregame lines")
+          PY
+      - name: Commit only changed grading and frozen history files
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name nfl-grading-publisher
+          git config user.email actions@users.noreply.github.com
+          for attempt in 1 2 3; do
+            git add docs/nfl/data/frozen_pick_history_2026.csv \
+                    docs/nfl/data/pp_graded_2026.csv \
+                    docs/nfl/data/pp_grading_pending_2026.csv \
+                    docs/nfl/data/grading_health_2026.json
+            if git diff --cached --quiet; then
+              echo "NFL frozen grades unchanged; preserving stable Pages deployment"
+              exit 0
+            fi
+            git commit -m "Reconcile and grade archived NFL pregame predictions"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent Sports-Bot commit detected; refresh and recompute on new main"
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/reconcile_nfl_picks.py
+          done
+          echo "::error::Could not publish NFL grading after three safe retries"
+          exit 1
