@@ -25,11 +25,11 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           s=Path('docs/index.html').read_text()
-          assert '<script src="./live-prop-tracker.js"></script>' in s
+          assert '<script src="./live-prop-tracker.js?v=' in s or '<script src="./live-prop-tracker.js"></script>' in s
           assert 'id="live-prop-tracker"' in s
           assert 'id="live-prop-cards"' in s
           assert 'refreshSelectedLiveTracker().catch(()=>{})' in s
-          assert 'const entries=upcomingAIProps(ai).filter' in s
+          assert 'const filtered=board.filter' in s and 'upcomingAIProps(ai)' in s
           assert 'isFrozenForecast' in Path('docs/live-prop-tracker.js').read_text()
           assert 'summaryGameMatch' in Path('docs/live-prop-tracker.js').read_text()
           assert 'LivePropTracker' in s
