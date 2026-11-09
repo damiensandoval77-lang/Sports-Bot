@@ -1682,11 +1682,32 @@ async function refreshSelectedLiveTracker(){
   // An intermittent provider/network error must not wipe verified stats.
   // Mark the prior totals as old so they are not mistaken for current.
   $("live-prop-title").textContent=game+" · LIVE FEED DELAYED";
-  $("live-prop-context").textContent="Refresh failed: "+String(error.message||error)+
+  $("live-prop-context").textContent="Live stats unavailable: "+String(error.message||error)+
     ". "+(trackerLastUpdated?"Previous verified totals from "+
      new Date(trackerLastUpdated).toLocaleTimeString()+" retained (STALE).":
      "No verified player totals available yet.")+
-    " Saved pregame picks are unchanged.";
+    " Pace cannot be calculated without real player stats; pregame estimates remain visible.";
+  // Even if ESPN and the backup both fail, display the original projections
+  // with explicit unavailable actuals rather than an apparently empty tracker.
+  if(!$("live-prop-cards").childElementCount){
+   const unavailable=pregame.slice(0,120).map(p=>{
+     const card=node("article","live-prop-card");
+     card.append(node("div","live-name",p.player),
+       node("div","live-stat",p.team+" · "+p.stat));
+     const values=node("div","live-prop-values");
+     for(const [caption,value] of [["ACTUAL","—"],
+       ["AI PROJECTION",fmt(Number(p.combined_projection??p.projection))],
+       ["EST. FINAL PACE","—"]]){
+       const cell=node("div","");
+       cell.append(node("span","",caption),node("b","",value));
+       values.append(cell);
+     }
+     card.append(values,node("div","live-prop-result wait",
+       "LIVE STATS UNAVAILABLE · PACE UNKNOWN"));
+     return card;
+   });
+   $("live-prop-cards").replaceChildren(...unavailable);
+  }
  }
 }
 function renderGameStrip(){
@@ -1779,7 +1800,7 @@ function renderGameStrip(){
   const home=teamCode(g.home_abbreviation,abbreviations[labels[1]]);
   const total=ai.filter(x=>x.game===name).length;
   const oddsTotal=odds.filter(x=>x.game===name).length;
-  const ppTotal=ppBoardOffers.filter(x=>x.game===name&&Date.parse(x.starts_at)>Date.now()).length;
+  const ppTotal=ppBoardOffers.filter(x=>x.game===name&&["PTS","REB","AST","PRA"].includes(x.stat)&&Date.parse(x.starts_at)>Date.now()).length;
   const frozenTotal=frozenMatchupForecasts.filter(x=>x.game===name).length;
   const state=g.game_state==="post"?"Final":g.game_state==="in"?"Live":
     Date.parse(g.start)<=Date.now()?"Started":formatTime(g.start);
