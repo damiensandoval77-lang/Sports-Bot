@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/daily_projection_fallback.py'
+      - 'iphone_bot/preserve_no_line_forecasts.py'
+      - 'iphone_bot/tests/test_preserve_no_line_forecasts.py'
       - 'iphone_bot/fetch_hoopr_nba_schedule.py'
       - 'iphone_bot/tests/test_daily_projection_fallback.py'
       - '.github/workflows/nba-no-line-daily-projections.yml'
@@ -49,6 +51,10 @@ jobs:
           python -u iphone_bot/enrich_current_shooting.py
       - name: Generate real model estimates even without bookmaker or PrizePicks lines
         run: python -u iphone_bot/daily_projection_fallback.py
+      - name: Protect immutable price-free pregame forecasts
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_no_line_forecasts.py' -v
+          python -u iphone_bot/preserve_no_line_forecasts.py
       - name: Verify all estimates are event-specific and price-independent
         run: |
           python - <<'PY'
@@ -68,6 +74,7 @@ jobs:
         run: |
           set -euo pipefail
           cp docs/ai_projection_fallback.json "$RUNNER_TEMP/no-line-ai.json"
+          cp docs/ai_no_line_pregame_archive.json "$RUNNER_TEMP/no-line-archive.json"
           cp docs/nba_schedule.json "$RUNNER_TEMP/nba-schedule.json"
           cp docs/nba_schedule_status.json "$RUNNER_TEMP/nba-schedule-status.json"
           cp docs/current_form.json "$RUNNER_TEMP/nba-form.json"
@@ -77,10 +84,11 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             cp "$RUNNER_TEMP/no-line-ai.json" docs/ai_projection_fallback.json
+            ADDITIONAL_PREGAME_ARCHIVE="$RUNNER_TEMP/no-line-archive.json" python -u iphone_bot/preserve_no_line_forecasts.py
             cp "$RUNNER_TEMP/nba-schedule.json" docs/nba_schedule.json
             cp "$RUNNER_TEMP/nba-schedule-status.json" docs/nba_schedule_status.json
             cp "$RUNNER_TEMP/nba-form.json" docs/current_form.json
-            git add docs/ai_projection_fallback.json docs/nba_schedule.json docs/nba_schedule_status.json docs/current_form.json
+            git add docs/ai_projection_fallback.json docs/ai_no_line_pregame_archive.json docs/nba_schedule.json docs/nba_schedule_status.json docs/current_form.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish fresh NBA pregame player model projections without paid prop lines'
             if git push origin HEAD:main; then exit 0; fi
