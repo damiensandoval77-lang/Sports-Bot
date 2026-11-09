@@ -1,0 +1,80 @@
+name: NBA injury-to-AI self-recovery watchdog (free)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '3,13,23,33,43,53 0-5,16-23 * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/injury_refresh_integrity.py'
+      - 'iphone_bot/injury_refresh_watchdog.py'
+      - 'iphone_bot/tests/test_injury_refresh_integrity.py'
+      - 'iphone_bot/tests/test_injury_refresh_watchdog.py'
+      - '.github/workflows/nba-injury-ai-recovery.yml'
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: nba-injury-ai-recovery
+  cancel-in-progress: false
+jobs:
+  check-and-recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate injury-to-model version and recovery decisions
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_injury_refresh_integrity.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_injury_refresh_watchdog.py' -v
+      - name: Check latest official report against published model and repair missed refresh
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if python -m iphone_bot.injury_refresh_watchdog; then
+            echo 'NBA injury/model synchronization healthy or no upcoming NBA games.'
+            exit 0
+          else
+            code="$?"
+            if [ "$code" -ne 10 ]; then
+              echo "::error::Injury watchdog crashed, not safe to blindly retry"
+              exit "$code"
+            fi
+          fi
+          echo 'Detected confirmed NBA injury report not yet reflected in live AI.'
+          gh run list --repo "$GITHUB_REPOSITORY" --workflow nba-new-ai-all-markets.yml \
+            --branch main --limit 15 --json status,createdAt > "$RUNNER_TEMP/recent-ai-runs.json"
+          set +e
+          python - "$RUNNER_TEMP/recent-ai-runs.json" <<'PY'
+          import json,sys
+          from datetime import datetime,timezone,timedelta
+          runs=json.load(open(sys.argv[1]))
+          now=datetime.now(timezone.utc)
+          for run in runs:
+            if run.get('status') in ('queued','in_progress','pending','waiting','requested'):
+              print('Already rebuilding NBA model; suppress duplicate dispatch')
+              sys.exit(9)
+            created=run.get('createdAt','')
+            try:
+              t=datetime.fromisoformat(created.replace('Z','+00:00'))
+              if now-t<timedelta(minutes=15):
+                print('Recent rebuild occurred; allow it to settle before retry')
+                sys.exit(9)
+            except ValueError:
+              pass
+          PY
+          rc="$?"
+          set -e
+          if [ "$rc" -eq 9 ]; then exit 0; fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Could not evaluate recent model runs"
+            exit "$rc"
+          fi
+          gh workflow run nba-new-ai-all-markets.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'Recovery action dispatched for stale injury/model version.'
