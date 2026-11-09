@@ -1,5 +1,9 @@
 {
-  "requested_at": "2026-11-09",
-  "purpose": "On-demand Phase 1 real deployment verification of Replit ESPN tracker two successful polls, CORS and GitHub Pages front-end; no paid betting API requests",
-  "requested_by": "user"
+  "requested_at": "2026-11-09T10:08:00Z",
+  "purpose": "Post-Replit-backend-merge public API smoke verification",
+  "expected": [
+    "/healthz returns JSON healthy",
+    "/live_player_tracking.json returns real JSON with CORS and moving captured_at"
+  ],
+  "paid_api_credits": 0
 }
