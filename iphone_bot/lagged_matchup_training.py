@@ -18,9 +18,9 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error,mean_squared_error
 import numpy as np
 try:
-    from .points_hit_probability import make_reference,estimate
+    from .points_hit_probability import make_reference,bucket
 except ImportError:
-    from points_hit_probability import make_reference,estimate
+    from points_hit_probability import make_reference,bucket
 
 try:
     from .offensive_involvement_holdout import load_history_with_box_context, predict
@@ -134,12 +134,19 @@ def evaluate(rows):
     # fit but is not an observed pick'em hit rate.
     diagnostic_prediction=np.maximum(model.predict(X(diagnostic)),0)
     brier_sum=0.;scored=0
+    global_errors=np.sort(np.asarray(probability_reference["residuals"]))
+    bucket_errors={k:np.sort(np.asarray(v)) for k,v in probability_reference["by_projection_bucket"].items()}
     for row, projected in zip(diagnostic,diagnostic_prediction):
         fake_line=float(np.floor(projected)+.5)
-        result=estimate(projected,fake_line,probability_reference,
-                        (row["season"],row["game_id"],row["player_id"],"SYNTHETIC_LINE"))
+        # Discrete points above a half-point line are equivalent to
+        # (forecast + residual)>line; use the empirical CDF exactly.
+        threshold=fake_line-projected
+        local=bucket_errors.get(bucket(projected),global_errors)
+        p_local=(len(local)-np.searchsorted(local,threshold,side="right"))/len(local)
+        p_global=(len(global_errors)-np.searchsorted(global_errors,threshold,side="right"))/len(global_errors)
+        p_over=.85*p_local+.15*p_global
         outcome=int(row["actual"]>fake_line)
-        brier_sum+=(result["estimated_over_probability"]-outcome)**2
+        brier_sum+=(p_over-outcome)**2
         scored+=1
     probability_diagnostic={"sample_size":scored,
         "synthetic_half_point_line_brier":round(brier_sum/scored,5),
