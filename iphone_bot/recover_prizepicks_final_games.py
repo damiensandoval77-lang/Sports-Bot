@@ -104,6 +104,36 @@ def main():
     report["recent_research_unmatched_after_recovery"]=len(unresolved)
     report["unmatched_player_stat_markets"]=len({(r.get("game"),r.get("player_id"),r.get("stat")) for r in unresolved})
     report["unmatched_games"]=dict(sorted(__import__("collections").Counter(r.get("game","UNKNOWN") for r in unresolved).items()))
+    from iphone_bot.paper_pick_pipeline import strict_player_name, expected_opponents
+    reason_counts=__import__("collections").Counter()
+    samples={}
+    for p in unresolved:
+        st=utc(p.get("start"))
+        date=st.astimezone(ET).date().isoformat() if st else ""
+        name=strict_player_name(p.get("player"))
+        team=str(p.get("team","")).upper()
+        opponents=expected_opponents(p.get("game"),team)
+        date_rows=[g for g in rows if g.get("date")==date]
+        team_rows=[g for g in date_rows if g.get("team")==team]
+        opponent_rows=[g for g in team_rows if g.get("opponent") in opponents]
+        name_rows=[g for g in opponent_rows if strict_player_name(g.get("player"))==name]
+        if not date_rows:reason="NO_FINAL_FOR_EASTERN_DATE"
+        elif not team_rows:reason="TEAM_NOT_FOUND_IN_FINALS"
+        elif not opponent_rows:reason="OPPONENT_MISMATCH"
+        elif not name_rows:reason="PLAYER_NAME_MISMATCH"
+        elif len(name_rows)>1:reason="DUPLICATE_PLAYER_IDENTITY"
+        else:reason="MATCHED_BUT_SETTLEMENT_REJECTED"
+        reason_counts[reason]+=1
+        if reason not in samples:
+            samples[reason]={
+                "sample_research_name":p.get("player"),
+                "game":p.get("game"),
+                "sample_official_names":[g.get("player") for g in opponent_rows[:4]],
+                "research_team":team,
+                "date":date,
+            }
+    report["unmatched_reason_counts"]=dict(reason_counts)
+    report["unmatched_reason_examples"]=samples
     OUT.parent.mkdir(parents=True,exist_ok=True)
     OUT.write_text(json.dumps(rows,indent=2)+"\n")
     STATUS.write_text(json.dumps({**report,
