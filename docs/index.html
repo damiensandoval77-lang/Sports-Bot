@@ -1771,7 +1771,7 @@ async function refreshSelectedLiveTracker(){
    let backup;
    try{
     const nbaObserved=await fetchJSON("nba_player_tracking_independent.json");
-    if(nbaObserved?.status!=="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"||
+    if(!["OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES","PARTIAL_NBA_PLAYER_BOXSCORES"].includes(nbaObserved?.status)||
        nbaObserved.date_eastern!==easternGameDay(start)||
        !isRecent(nbaObserved.captured_at,.5)||
        !(nbaObserved.games||[]).some(g=>
@@ -1782,7 +1782,8 @@ async function refreshSelectedLiveTracker(){
     backup=nbaObserved;
    }catch(_){backup=await fetchJSON("live_player_tracking.json");}
    if(!["OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
-          "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"].includes(backup?.status)||
+          "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+          "PARTIAL_NBA_PLAYER_BOXSCORES"].includes(backup?.status)||
       backup.date_eastern!==easternGameDay(start)||
       !isRecent(backup.captured_at,.5))throw Error(
         "Direct ESPN unavailable ("+String(directError.message||directError)+
@@ -1805,8 +1806,9 @@ async function refreshSelectedLiveTracker(){
    players=snapshot.player_rows.map(p=>({player:p.player,team:p.team,athlete_id:String(p.player_id||""),
      stats:{PTS:p.PTS,REB:p.REB,AST:p.AST,PRA:p.PRA}}));
    verifiedAt=observedAt;
-   liveSource=backup.status==="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"?
-     "NBA liveData player boxscore (scheduled best-effort refresh)":
+   liveSource=["OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES","PARTIAL_NBA_PLAYER_BOXSCORES"].includes(backup.status)?
+     "NBA liveData player boxscore (scheduled best-effort refresh"+
+       (backup.status==="PARTIAL_NBA_PLAYER_BOXSCORES"?"; partial slate coverage":"")+")":
      snapshot.stale?"ESPN retained game snapshot (STALE; no fresh update)":
      "ESPN server snapshot (scheduled best-effort refresh)";
   }
