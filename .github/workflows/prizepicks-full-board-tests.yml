@@ -4,6 +4,7 @@ on:
     paths:
       - 'iphone_bot/fetch_prizepicks.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_prizepicks_targeted_search.py'
       - 'iphone_bot/tests/test_prizepicks_coverage_diagnostics.py'
       - 'iphone_bot/publish_prizepicks_site.py'
       - 'iphone_bot/tests/test_prizepicks_health_publication.py'
@@ -31,6 +32,7 @@ jobs:
         run: |
           python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_targeted_search.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_coverage_diagnostics.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_health_publication.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_per_date_coverage.py' -v
