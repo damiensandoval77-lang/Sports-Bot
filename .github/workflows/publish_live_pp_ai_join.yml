@@ -14,6 +14,7 @@ on:
       - 'iphone_bot/publish_live_pp_ai_join.py'
       - 'iphone_bot/tests/test_publish_live_pp_ai_join.py'
       - 'iphone_bot/tests/test_prizepicks_pub_handoff.py'
+      - 'iphone_bot/tests/test_pp_unchanged_snapshot_recovery.py'
       - '.github/workflows/nba-prizepicks-site-publish.yml'
       - '.github/workflows/nba-prizepicks-ai-board.yml'
       - '.github/workflows/publish_live_pp_ai_join.yml'
@@ -40,6 +41,7 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_pp_ai_join.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_pub_handoff.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pp_unchanged_snapshot_recovery.py' -v
           python -m py_compile iphone_bot/publish_live_pp_ai_join.py
       - name: Build honest snapshot from already published observed inputs
         if: github.event_name != 'pull_request'
