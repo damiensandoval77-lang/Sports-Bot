@@ -50,6 +50,7 @@ jobs:
           echo 'Detected confirmed NBA injury report not yet reflected in live AI.'
           gh run list --repo "$GITHUB_REPOSITORY" --workflow nba-new-ai-all-markets.yml \
             --branch main --limit 15 --json status,createdAt > "$RUNNER_TEMP/recent-ai-runs.json"
+          set +e
           python - "$RUNNER_TEMP/recent-ai-runs.json" <<'PY'
           import json,sys
           from datetime import datetime,timezone,timedelta
@@ -69,6 +70,11 @@ jobs:
               pass
           PY
           rc="$?"
+          set -e
           if [ "$rc" -eq 9 ]; then exit 0; fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Could not evaluate recent model runs"
+            exit "$rc"
+          fi
           gh workflow run nba-new-ai-all-markets.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'Recovery action dispatched for stale injury/model version.'
