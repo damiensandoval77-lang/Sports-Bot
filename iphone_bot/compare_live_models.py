@@ -463,7 +463,11 @@ def main():
             row["combined_simulation"] = simulate_combined_hit_rate(
                 row["combined_projection"], row["line"], model["experimental_residuals"],
                 (row["player_id"], row["stat"], row["start"], row["line"],
-                 row["combined_projection"], COMBINED_SIM_METHOD))
+                 row["combined_projection"], opponent, COMBINED_SIM_METHOD),
+                opponent=opponent,
+                defense_history=[v[target] for day,v in opp_games
+                                 if day<upcoming_date and target in v][-10:],
+                opponent_defense=row["opponent_defense"])
         row["ev_status"]="UNAVAILABLE_NO_VALIDATED_PROBABILITY"
         row["experimental_ev_available"]=False
         row["experimental_best_quote"]=None
