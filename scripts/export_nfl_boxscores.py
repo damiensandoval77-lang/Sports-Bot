@@ -72,8 +72,14 @@ def build(schedule,frame):
                   "passing_tds","rushing_tds","receiving_tds")
         if not any((numeric(row.get(col)) or 0)>0 for col in activity):
             continue
+        name=str(row.get("player_display_name") or "").strip()
+        # Never publish an anonymous offensive player row. The GSIS ID is
+        # authoritative for joins, and the human-readable name is mandatory
+        # for a usable final boxscore.
+        if not name or name.lower() in {"nan","none","null","<na>"}:
+            raise ValueError(f"Missing verified display name for {row['player_id']} in {game['game_id']}")
         player={"player_id":str(row["player_id"]),
-                "player":str(row["player_display_name"]),
+                "player":name,
                 "team":str(row["team"]),"position":str(row.get("position") or "")}
         for col in sorted(NUMERIC):player[col]=numeric(row.get(col))
         record["players"].append(player)
@@ -82,6 +88,12 @@ def build(schedule,frame):
         game["players"].sort(key=lambda p:(p["team"],p["player"]))
         weeks.setdefault(game["week"],[]).append(game)
     for records in weeks.values():records.sort(key=lambda g:g["game_id"])
+    # A game with no verified offensive player names is not a valid boxscore.
+    # Keep it explicitly pending instead of advertising a blank final table.
+    for week,records in list(weeks.items()):
+        weeks[week]=[g for g in records if g["players"]]
+        if not weeks[week]:
+            del weeks[week]
     return weeks,len(finals)
 
 def prepare(schedule,stats,previous=None):
