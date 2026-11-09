@@ -47,6 +47,8 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
       - name: Test authenticated NBA news and no unvalidated injury uplift
         run: python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
+      - name: Test free official NBA injury transitions
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v
       - name: Fetch existing archival history and retrain older-season models
         run: |
           python -u iphone_bot/download_archived_nba.py
