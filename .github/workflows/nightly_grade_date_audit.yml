@@ -24,26 +24,3 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_nightly_grade_date_audit.py' -v
       - name: Check November 8 real saved captures and grades (read-only)
         run: python -m iphone_bot.nightly_grade_date_audit --date 2026-11-08
-      - name: Inspect stored PrizePicks research record schema safely
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          p=Path('docs/prizepicks_research_ledger.json')
-          if not p.exists():
-              print('PrizePicks research ledger missing')
-          else:
-              j=json.loads(p.read_text())
-              print('PrizePicks ledger type:',type(j).__name__)
-              if isinstance(j,dict):
-                  print('Top keys:',list(j)[:18])
-                  for k,v in j.items():
-                      if isinstance(v,list):
-                          print('List:',k,'length',len(v))
-                          if v and isinstance(v[0],dict):
-                              print('Row field names:',list(v[0])[:35])
-              elif isinstance(j,list):
-                  print('Rows:',len(j))
-                  if j and isinstance(j[0],dict):
-                      print('Row field names:',list(j[0])[:35])
-          PY
