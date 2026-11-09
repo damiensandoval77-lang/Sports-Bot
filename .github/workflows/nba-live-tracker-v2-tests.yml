@@ -7,6 +7,8 @@ on:
       - 'docs/ai_no_line_pregame_archive.json'
       - 'iphone_bot/preserve_no_line_forecasts.py'
       - 'iphone_bot/publish_live_tracker_feed.py'
+      - 'iphone_bot/live_tracker_service.py'
+      - 'iphone_bot/tests/test_live_tracker_service.py'
       - 'iphone_bot/tests/test_live_prop_tracker.cjs'
       - 'iphone_bot/tests/test_publish_live_tracker_feed.py'
       - '.github/workflows/nba-live-tracker-v2-tests.yml'
@@ -36,6 +38,7 @@ jobs:
           node --check docs/live-prop-tracker.js
           node --test iphone_bot/tests/test_live_prop_tracker.cjs
           python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_live_tracker_service.py' -v
       - name: Assert independent 45-second refresh and conservative ESPN backup
         run: |
           python - <<'PY'
@@ -53,6 +56,8 @@ jobs:
           assert 'No unique matching verified player boxscore for ' in html
           assert 'snapshot.observed_at||backup.captured_at' in html
           assert 'snapshot.stale?' in html
+          assert 'liveTrackerServiceUrl' in html
+          assert 'Date.now()-ts>120000' in html
           assert 'setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000);' in html
           assert 'document.addEventListener("visibilitychange"' in html
           assert 'trackerLastUpdated=verifiedAt' in html
