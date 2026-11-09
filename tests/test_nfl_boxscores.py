@@ -3,7 +3,7 @@ import sys,unittest
 from pathlib import Path
 import pandas as pd
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
-from export_nfl_boxscores import build,prepare
+from export_nfl_boxscores import build,prepare,validate_against_published
 class TestNFLBoxscores(unittest.TestCase):
  def setup_data(self):
   schedule={"season":2026,"game_count":272,"games":[dict(
@@ -44,6 +44,18 @@ class TestNFLBoxscores(unittest.TestCase):
   rows.loc[0,"player_display_name"]="   "
   with self.assertRaisesRegex(ValueError,"Missing verified display name"):
    build(sched,rows)
+ def test_truncated_published_player_list_is_rejected(self):
+  import tempfile,json
+  with tempfile.TemporaryDirectory() as folder:
+   out=Path(folder)
+   old_players=[{"player":f"Player {n}","team":"BUF"} for n in range(12)]
+   (out/"week_01.json").write_text(json.dumps({"season":2026,"week":1,
+      "games":[{"game_id":"g0","players":old_players}]}))
+   smaller={1:[{"game_id":"g0","players":[{"player":"Player 1","team":"BUF"}]}]}
+   with self.assertRaisesRegex(ValueError,"truncated player boxscore"):
+    validate_against_published(smaller,out)
+ def test_valid_named_players_allowed(self):
+  self.assertTrue(validate_against_published({1:[{"game_id":"g0","players":[{"player":"Quarterback","team":"BUF"}]}]},Path("/nonexistent-nfl-boxscore-test-directory")))
  def test_duplicate_and_wrong_team_fail(self):
   s,r=self.setup_data()
   with self.assertRaisesRegex(ValueError,"Duplicate"):
