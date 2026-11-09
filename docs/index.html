@@ -414,7 +414,7 @@ function verifiedQuickPrizePicksJoins(source,forecast,roster,now=Date.now()){
      !["standard","goblin","demon"].includes(o.less_tier))continue;
   const observed=Date.parse(o.observed_at),tip=Date.parse(o.starts_at);
   if(!Number.isFinite(observed)||!Number.isFinite(tip)||
-     observed>now+600000||now-observed>21600000||
+     observed>now+600000||now-observed>5400000||
      tip<=now||observed>=tip)continue;
   const p=preds.get([norm(o.player)+"|"+o.team,o.game,o.stat].join("|"));
   if(!p||Math.abs(Date.parse(p.start)-tip)>1800000)continue;
