@@ -90,7 +90,7 @@ def minutes_shift(player_id,out_id,team,day,games):
     rate=(mean(without_m[-8:])/mean(with_m[-8:]))**0.5
     return round(max(.90,min(1.10,rate)),5)
 
-def injury_adjustment(base,player_id,team,opponent,day,game_start,now,injuries,news,games):
+def injury_adjustment(base,player_id,team,opponent,day,game_start,now,injuries,news,games,*,free_watch=None):
     outs=live_out(injuries,news,day,game_start,now)
     self_out=outs.get((str(player_id),team))
     if self_out:return {"status":"PLAYER_REPORTED_OUT_SUPPRESS_ALL_MARKETS",
@@ -111,6 +111,21 @@ def injury_adjustment(base,player_id,team,opponent,day,game_start,now,injuries,n
                     if published<=utc(now) and utc(now)-published<=timedelta(hours=8):
                         alerted.add((str(e["player_id"]),e["team"]))
                 except (ValueError,KeyError,TypeError):pass
+    # A keyless official NBA monitor can detect real status changes even
+    # though no X developer account exists. Only carry forward a transition
+    # while it remains an OUT in the latest verified official report.
+    if (free_watch and free_watch.get("status")=="FREE_OFFICIAL_NBA_INJURY_MONITOR"
+            and free_watch.get("official_confirmed") is True):
+        for e in free_watch.get("events",[]):
+            if (e.get("source")=="OFFICIAL_NBA_REPORT" and e.get("official") is True
+                    and e.get("status")=="OUT" and e.get("game_date")==day):
+                k=(str(e.get("player_id")),e.get("team"))
+                if k not in outs:continue
+                try:
+                    reported=utc(e["reported_at"])
+                    if reported<=utc(now) and utc(now)-reported<=timedelta(hours=12):
+                        alerted.add(k)
+                except (ValueError,TypeError,KeyError):pass
     affected=[v for k,v in outs.items() if k in alerted and v["team"] in (team,opponent)]
     if not affected:return {"status":"NO_REPORTED_OUT","factor":1.0,"affected":[]}
     same=[v for v in affected if v["team"]==team]

@@ -68,10 +68,11 @@ def feature_vector(history,team,opponent,day,team_context):
         return None,"NONFINITE_ALL_MARKET_FEATURES"
     return common,None
 
-def forecasts(records,feed,pack,now=None,*,injuries=None,news=None):
+def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=None):
     now=now or datetime.now(timezone.utc)
     injuries=injuries or {}
     news=news or {}
+    free_watch=free_watch or {}
     if (pack.get("research_only") is not True or pack.get("calibrated") is not False or
         tuple(pack.get("training_seasons") or ())!=tuple(TRAIN) or
         tuple(pack.get("feature_columns") or ())!=tuple(FEATURES)):
@@ -123,7 +124,7 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None):
         p,reason=cache[key]
         if reason:rejected[reason]+=1;continue
         injury=injury_adjustment(p,pid,team,opponent,day,item["start"],now,
-                                 injuries,news,records)
+                                 injuries,news,records,free_watch=free_watch)
         if injury["status"]=="PLAYER_REPORTED_OUT_SUPPRESS_ALL_MARKETS":
             rejected["REPORTED_OUT_PLAYER_SUPPRESSED"]+=1
             continue
@@ -162,6 +163,7 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None):
       "excluded":dict(rejected),"calibrated":False,
       "injury_news_processed":news.get("status")=="UNDERDOGNBA_X_AUTHENTICATED_POLL",
       "official_injury_processed":injuries.get("injury_data_verified") is True,
+      "free_official_injury_transition_watch":free_watch.get("status")=="FREE_OFFICIAL_NBA_INJURY_MONITOR",
       "production_replaced":False,"existing_grades_modified":False}
 
 def main():
@@ -182,9 +184,11 @@ def main():
     if len(checked)<1000:raise RuntimeError("Insufficient crosschecked player-games")
     injury_file=ROOT/"docs/injury_context.json"
     news_file=ROOT/"docs/underdog_nba_injury_alerts.json"
+    free_file=ROOT/"docs/free_nba_injury_watch.json"
     injuries=json.loads(injury_file.read_text()) if injury_file.exists() else {}
     news=json.loads(news_file.read_text()) if news_file.exists() else {}
-    result=forecasts(checked,feed,model,injuries=injuries,news=news)
+    free_watch=json.loads(free_file.read_text()) if free_file.exists() else {}
+    result=forecasts(checked,feed,model,injuries=injuries,news=news,free_watch=free_watch)
     result["source_coverage"]=coverage
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print("NEW_ALL_MARKETS",json.dumps({"total":result["published_projections"],
