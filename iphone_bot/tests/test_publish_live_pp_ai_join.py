@@ -70,7 +70,7 @@ class QuickJoinTests(unittest.TestCase):
             folder=Path(tmp)
             for filename,value in (("provider.json",pp),("ai.json",ai),("form.json",form)):
                 (folder/filename).write_text(json.dumps(value))
-            with patch.object(app,"SOURCE",folder/"provider.json"), patch.object(app,"AI",folder/"ai.json"), patch.object(app,"FORM",folder/"form.json"), patch.object(app,"OUT",folder/"large.json"), patch.object(app,"HEALTH",folder/"health.json"), patch.object(app.dt,"datetime",wraps=dt.datetime) as _:
+            with patch.object(app,"SOURCE",folder/"provider.json"), patch.object(app,"AI",folder/"ai.json"), patch.object(app,"FORM",folder/"form.json"), patch.object(app,"OUT",folder/"large.json"), patch.object(app,"HEALTH",folder/"health.json"):
                 # Use the production main implementation; its result may be empty if
                 # actual clock differs from the fixture. The health report must still exist.
                 try:app.main()
