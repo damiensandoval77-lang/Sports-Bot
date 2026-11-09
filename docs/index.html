@@ -153,7 +153,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 .ai-lean-title{font-size:10px;color:#a9a9a9;font-weight:800;letter-spacing:.3px}
 .ai-lean-choice{border-radius:6px;padding:6px 10px;font-size:11px;font-weight:850;white-space:nowrap}
 .ai-lean-choice.over{background:#183c2f;color:#91e5b7}
-.ai-lean-choice.under{background:#433020;color:#ffcd95}
+.ai-lean-choice.under{background:#7f1d1d;color:#ffe4e6;border:1px solid #dc2626}
 .ai-lean-choice.neutral{background:#343434;color:#eee}
 .ai-lean-sub{margin-left:auto;color:#8c8c8c;font-size:10px;text-align:right}
 .compact-prop .compact-details summary{border-top:1px solid #2e2e2e;color:#bdbdbd;font-size:11px;padding:10px 14px}
@@ -1043,7 +1043,7 @@ function renderAI(){
   if(p.quick_research_only)
    detailNotes.push(node("div","research-note",
     "Exact authenticated PrizePicks player/team/game/stat matched to an independent pre-tip AI forecast. "+
-    "The displayed raw MORE/LESS direction is not a vetted wager, and injury adjustments, "+
+    "The displayed raw OVER/UNDER direction is not a vetted wager, and injury adjustments, "+
     "Combined AI simulations and calibrated confidence are unavailable."));
   const defenseScenario=p.combined_simulation?.opponent_conditioning;
   if(!p.new_model_market&&combinedSimAvailable(p)){
@@ -1101,8 +1101,8 @@ function renderAI(){
    const blockerText=(screen.blockers||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
    const cautionText=(screen.cautions||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
    const label=screen.status==="MODEL_LEAN"?
-     "MODEL LEAN: "+(screen.side==="MORE"?"MORE":screen.side==="LESS"?"LESS":"NO SIDE"):
-     screen.status==="RESEARCH_ONLY"?"UNVALIDATED RESEARCH · raw MORE/LESS only":"PASS";
+     "MODEL LEAN: "+(screen.side==="MORE"?"OVER":screen.side==="LESS"?"UNDER":"NO SIDE"):
+     screen.status==="RESEARCH_ONLY"?"UNVALIDATED RESEARCH · raw OVER/UNDER only":"PASS";
    detailNotes.push(node("div","research-note",
      label+(blockerText.length?" · Why pass: "+blockerText.join("; "):"")+
      (cautionText.length?" · Cautions: "+cautionText.join("; "):"")+
@@ -1120,7 +1120,7 @@ function renderAI(){
   const lean=node("div","ai-lean");
   lean.append(node("span","ai-lean-title","RAW MODEL DIRECTION"),
     node("span","ai-lean-choice "+sideClass(side),
-       side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS":"NO LEAN"),
+       side==="OVER"?"↑ OVER":side==="UNDER"?"↓ UNDER":"NO LEAN"),
     node("span","ai-lean-sub",available?
       (p.combined_model_count===2?"Combined two-model projection":"Original AI projection"):
       "Original AI projection"));
@@ -1241,7 +1241,7 @@ function renderAI(){
     const ppDelta=activeProjection-Number(q.line);
     const ppSide=modelSide(activeProjection,q.line);
     body.append(node("div","mini",(aiArchiveMode?"Archived pregame Combined AI: ":"Current Combined AI: ")+fmt(activeProjection)+
-      " · "+(ppSide==="OVER"?"MORE":ppSide==="UNDER"?"LESS":"NO LEAN")+
+      " · "+(ppSide==="OVER"?"OVER":ppSide==="UNDER"?"UNDER":"NO LEAN")+
       " · difference "+(ppDelta>0?"+":"")+fmt(ppDelta)+
       " · verify the current line in PrizePicks before entering."));
    }
@@ -1274,7 +1274,7 @@ function renderAI(){
     const direction=modelSide(projected,entered);
     manualResult.textContent="Manually entered PrizePicks line: "+fmt(entered)+
       " · Combined AI "+fmt(projected)+
-      " · "+(direction==="OVER"?"MORE":direction==="UNDER"?"LESS":"NO LEAN")+
+      " · "+(direction==="OVER"?"OVER":direction==="UNDER"?"UNDER":"NO LEAN")+
       " · Difference "+(gap>0?"+":"")+fmt(gap)+
       ". Research comparison only; player availability and entry payout not verified.";
   });
