@@ -362,7 +362,7 @@ const $=id=>document.getElementById(id);
 let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
-let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null;
+let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -543,8 +543,11 @@ function renderPrizePicksBoard(){
  status.textContent=ppFresh?
    "Real PrizePicks lines · "+ppBoardOffers.length+" mapped offers across "+
    new Set(ppBoardOffers.filter(Boolean).map(o=>o.game)).size+" upcoming games · "+
-   (ppState==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"?"":"Source coverage incomplete · ")+
-   "updated "+formatTime(ppStamp)+". Markets not on the provider's board cannot be inferred.":
+   (ppProviderPartial?"PARTIAL PROVIDER COVERAGE · ":"")+
+   "updated "+formatTime(ppStamp)+
+   (aiMetadata?.quick_independent_join?
+    " · "+ai.length+" matched model/line research records (not calibrated picks or hit probabilities).":"")+
+   ". Markets not on the provider's board cannot be inferred.":
    ppState==="PROVIDER_RATE_LIMITED"?
    "PrizePicks provider reports quota exhausted; old observations are not shown as current.":
    "No fresh, confirmed PrizePicks lines available right now.";
@@ -2688,6 +2691,7 @@ if(ppAI.status==="fulfilled"&&ppAI.value?.status==="PRIZEPICKS_AI_RESEARCH_ONLY_
 // even when provider credits reach zero or the live sportsbook market closes.
 frozenMatchupForecasts.push(...(window.LivePropTracker?.frozenPrizePicks(
  [...ppAIResearch.values()])||[]));
+ppProviderPartial=ppFresh&&(pp.value.partial_board===true||pp.value.complete_provider_board===false);
 ppBoardOffers=ppFresh&&Array.isArray(pp.value.board_offers)?
   pp.value.board_offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"&&
     x.game&&Date.parse(x.starts_at)>Date.now()):[];

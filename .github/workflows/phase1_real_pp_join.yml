@@ -1,0 +1,27 @@
+name: Phase 1 real PrizePicks and AI join regression
+
+on:
+  pull_request:
+    paths:
+      - "docs/index.html"
+      - "docs/prizepicks_site.json"
+      - "docs/ai_projection_fallback.json"
+      - "docs/current_form.json"
+      - "iphone_bot/tests/test_real_prizepicks_pregame_join.cjs"
+      - ".github/workflows/phase1_real_pp_join.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-pregame-join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test production browser join against saved real provider/model snapshots
+        run: node iphone_bot/tests/test_real_prizepicks_pregame_join.cjs
