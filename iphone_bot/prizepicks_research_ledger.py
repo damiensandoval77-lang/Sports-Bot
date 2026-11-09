@@ -91,8 +91,7 @@ def settle(ledger,games,now=None,final_games=None):
     official_by_name={}
     for g in (final_games or []):
         if (g.get("final_confirmed") is not True or
-            g.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL") or
-            g.get("dnp_final_verified") is True):
+            g.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL")):
             continue
         k=(strict_player_name(g.get("player")),str(g.get("team","")).upper(),
            str(g.get("date")),str(g.get("opponent","")).upper())
@@ -125,6 +124,19 @@ def settle(ledger,games,now=None,final_games=None):
                date,expected[0])
             actual_row=official_by_name.get(k)
         if not actual_row:
+            out.append(row)
+            continue
+        # A recorded final non-participant is a verified VOID, never an UNDER.
+        # Do not infer DNP just because a name is missing from the boxscore.
+        if actual_row.get("dnp_final_verified") is True:
+            if (actual_row.get("final_confirmed") is True and
+                actual_row.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL") and
+                str(actual_row.get("opponent","")).upper() in expected and
+                actual_row.get("dnp_reason")):
+                row.update(status="VOID_DNP",result="VOID",actual=None,
+                           settlement_source=actual_row["source"],
+                           settled_game_date=date,
+                           dnp_reason=actual_row["dnp_reason"])
             out.append(row)
             continue
         # Verify the actual opponent matches the original, exact scheduled game.
@@ -233,7 +245,8 @@ def summarize(ledger,now=None):
                            "distinct_game_dates":len({r.get("settled_game_date") for r in sample})}
     return {"status":"PRIZEPICKS_PRETIP_RESEARCH_GRADED_NOT_ODDS",
             "updated_at":now.isoformat(),"saved":len(rows),
-            "settled":len(settled),"pending":sum(r.get("status")=="PENDING" for r in rows),
+            "settled":len(settled),"void_dnp":sum(r.get("status")=="VOID_DNP" for r in rows),
+            "pending":sum(r.get("status")=="PENDING" for r in rows),
             "independent_player_market_count":len(representatives),
             "independent_settled_center_lines":sum(v["graded"] for v in independent.values()),
             "independent_by_market":independent,

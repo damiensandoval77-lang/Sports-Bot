@@ -67,7 +67,7 @@ def recover(records,now=None,request=None):
     seen=set()
     verified=[]
     for row in found:
-        if row.get("final_confirmed") is not True or row.get("dnp_final_verified"):
+        if row.get("final_confirmed") is not True:
             continue
         if row.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL"):
             continue
@@ -77,6 +77,8 @@ def recover(records,now=None,request=None):
         verified.append(row)
     report["requested_matchups"]=len(pending)
     report["verified_rows"]=len(verified)
+    report["verified_dnp_rows"]=sum(row.get("dnp_final_verified") is True for row in verified)
+    report["verified_played_rows"]=sum(row.get("dnp_final_verified") is not True for row in verified)
     report["recovery_source"]="VERIFIED_FINAL_BOXSCORES_ONLY"
     return verified,report
 
@@ -98,9 +100,11 @@ def main():
                start.astimezone(ET).date().isoformat() in target_dates]
     preview = settle({"records":pending},[],final_games=rows)
     graded = [r for r in preview["records"] if r.get("status")=="SETTLED"]
+    voided=[r for r in preview["records"] if r.get("status")=="VOID_DNP"]
     unresolved=[r for r in preview["records"] if r.get("status")=="PENDING"]
     report["recent_research_pending_before_recovery"]=len(pending)
     report["recent_research_settlement_matches"]=len(graded)
+    report["recent_research_verified_dnp_voids"]=len(voided)
     report["recent_research_unmatched_after_recovery"]=len(unresolved)
     report["unmatched_player_stat_markets"]=len({(r.get("game"),r.get("player_id"),r.get("stat")) for r in unresolved})
     report["unmatched_games"]=dict(sorted(__import__("collections").Counter(r.get("game","UNKNOWN") for r in unresolved).items()))
