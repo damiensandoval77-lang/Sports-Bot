@@ -1,6 +1,15 @@
 name: NBA pretip per-game forecast freeze and comparison watchdog
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/nba_schedule.json'
+      - 'docs/ai_projection_fallback.json'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - 'docs/ai_prizepicks_quick_join_health.json'
+      - 'iphone_bot/pregame_coverage_watchdog.py'
+      - '.github/workflows/pregame_coverage_watchdog.yml'
   schedule:
     - cron: '7,22,37,52 * * * *'
   pull_request:
