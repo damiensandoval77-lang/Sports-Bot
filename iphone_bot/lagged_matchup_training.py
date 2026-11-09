@@ -121,11 +121,21 @@ def evaluate(rows):
                 "involvement_mae":_mae(group,"involvement"),
                 "trained_matchup_mae":_mae(group,"model"),
                 "model_minus_involvement_mae":round(_mae(group,"model")-_mae(group,"involvement"),4)}
+    # Freeze the exact model fitted only on earlier seasons for future,
+    # independently dated prospective research capture.
+    import joblib
+    model_file=ROOT/"models/nba/research/lagged_matchup_2022_24.joblib"
+    model_file.parent.mkdir(parents=True,exist_ok=True)
+    joblib.dump({"model":model,"columns":COLS,"training_seasons":TRAIN,
+                 "validation_season":VALIDATE,"research_only":True,
+                 "production_modified":False},model_file)
     return {"status":"HISTORICAL_LAGGED_MATCHUP_TRAINING_COMPLETE",
        "training_seasons":TRAIN,"train_rows":len(train),
        "validation_season":VALIDATE,"validation":metrics(valid),
        "diagnostic_seen_season":DIAGNOSTIC,"diagnostic":metrics(diagnostic),
-       "feature_columns":COLS,"model_type":"HIST_GRADIENT_BOOSTING_FROZEN_HYPERPARAMETERS",
+       "feature_columns":COLS,
+       "frozen_model_artifact":"models/nba/research/lagged_matchup_2022_24.joblib",
+       "model_type":"HIST_GRADIENT_BOOSTING_FROZEN_HYPERPARAMETERS",
        "no_official_usage_pct":True,
        "no_verified_pretip_injuries":True,
        "no_verified_position_context":True,
