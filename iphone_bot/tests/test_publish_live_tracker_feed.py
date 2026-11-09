@@ -35,6 +35,31 @@ class RealPlayerTrackingFallbackTests(unittest.TestCase):
         self.assertEqual(g["player_rows"][0]["PRA"],40)
         self.assertTrue(r["player_totals_are_observations"])
         self.assertTrue(r["not_ai_predictions"])
+    def test_partial_live_coverage_is_reported_without_hiding_verified_games(self):
+        second=event()
+        second["id"]="401999112"
+        second["competitions"][0]["competitors"][0]["team"]["displayName"]="Brooklyn Nets"
+        second["competitions"][0]["competitors"][1]["team"]["displayName"]="Dallas Mavericks"
+        data=build(AT,{"events":[event(),second]},{"401999111":summary()})
+        self.assertEqual(data["coverage_status"],"PARTIAL_LIVE_DATA")
+        self.assertEqual(data["coverage"]["missing_fresh_matchups"],
+                         ["Brooklyn Nets @ Dallas Mavericks"])
+        self.assertEqual(len(data["games"]),1)
+    def test_preserves_stale_observation_but_not_as_fresh(self):
+        old=build(AT,{"events":[event()]},{"401999111":summary()})
+        now=AT.replace(minute=40)
+        data=build(now,{"events":[event()]},{},old)
+        self.assertEqual(data["coverage_status"],"PARTIAL_LIVE_DATA")
+        self.assertEqual(data["games"][0]["observed_at"],AT.isoformat())
+        self.assertTrue(data["games"][0]["stale"])
+        self.assertIn(GAME,data["coverage"]["missing_fresh_matchups"])
+    def test_does_not_reuse_stale_other_game_or_expired_data(self):
+        old=build(AT,{"events":[event()]},{"401999111":summary()})
+        later=AT.replace(hour=2,minute=15)
+        data=build(later,{"events":[event()]},{},old)
+        self.assertEqual(data["games"],[])
+        self.assertFalse(data["coverage"]["complete"])
+
     def test_wrong_game_identity_rejected(self):
         r=build(AT,{"events":[event()]},{"401999111":summary(False)})
         self.assertEqual(r["games"],[])
