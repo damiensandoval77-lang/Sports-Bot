@@ -16,6 +16,11 @@ class ScoreboardFailureWorkflowTests(unittest.TestCase):
         self.assertIn("git add docs/nba_scoreboard_independent.json",WORKFLOW)
         self.assertIn("if: always() && github.event_name != 'pull_request'",WORKFLOW)
 
+    def test_official_schedule_changes_trigger_scoreboard_revalidation(self):
+        push_section=WORKFLOW.split("  push:",1)[1].split("  schedule:",1)[0]
+        self.assertIn('"docs/nba_schedule.json"',push_section)
+        self.assertIn('"docs/verified_official_nba_fixtures.json"',push_section)
+
     def test_pull_requests_do_not_write_runtime_data(self):
         self.assertIn("steps.refresh.outcome != 'skipped'",WORKFLOW)
         self.assertIn("github.event_name != 'pull_request'",WORKFLOW)
