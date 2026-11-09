@@ -25,11 +25,26 @@
 
 /* Player-level cards keep distinct PrizePicks markets without repeated headers. */
 .player-group{min-width:0}.player-group>.mainline{padding:12px 11px 8px}.player-group .market-list{display:grid;gap:0}.player-group .market-entry{border-top:1px solid var(--border);min-width:0}.player-group .market-entry>.prop{border:0;border-radius:0;background:transparent}.player-group .market-entry .head{display:none}.player-group .market-entry .mainline{padding:8px 11px}.player-group .market-entry .pickbar{margin-top:0}.player-group .market-entry .vals{margin-top:7px}.player-group .market-entry .val{padding:7px}.player-group .market-entry .val b{font-size:16px}.player-group .market-entry details summary{padding:9px 11px}.player-group .market-entry .seasonbar{margin:0 0 10px}.player-group .group-count{font-size:11px;color:var(--sub);white-space:nowrap}.player-group .market-entry .detailbody{padding:10px 11px}.player-group .market-entry .pickbar strong{font-size:14px}
+
+/* Strong player separators without altering the underlying market cards. */
+:root{--player-name:#b4d3ff;--player-head:#203657;--player-edge:#80b4ff}
+.board:has(.player-group){gap:14px}
+.player-group>.mainline{background:var(--player-head);border-bottom:1px solid #44618a;border-left:4px solid var(--player-edge);padding:14px 12px}
+.player-group>.mainline .head strong{color:var(--player-name);font-size:17px;font-weight:850;letter-spacing:.15px}
+.player-group>.mainline .muted{color:#c2d1e7}
+.player-group .group-count{color:#e0eaff;font-weight:750}
+.health-strip{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}
+.health-pill{border:1px solid #435775;background:#1a2b45;border-radius:8px;padding:7px 9px;color:#dce9ff;font-size:11px;font-weight:700}
+.health-pill.warn{color:#ffdea0;border-color:#7a6039;background:#302719}
+.health-pill.ok{color:#9ee8ce;border-color:#286956;background:#17372f}
+.status.problem{background:#48282b;color:#ffd5d5;border-color:#98585f}
+@media(max-width:360px){.player-group>.mainline .head strong{font-size:15px}.health-pill{font-size:10px}}
 </style></head><body><main>
 <div class="top"><div><div class="eyebrow">DAME'S PICKS · NFL</div><h1>AI Prop Board</h1><small>Same interface · separate NFL engine</small></div><span id="status" class="status warn">CONNECTING</span></div>
 <div class="summary"><div class="metric"><b id="allcount">—</b><small>Saved lines</small></div><div class="metric"><b id="gamecount">—</b><small>Scheduled season games</small></div><div class="metric"><b id="gradecount">—</b><small>Graded</small></div></div>
 <div class="bar" style="margin:12px 0 8px"><label for="weekfilter">NFL season week</label><select id="weekfilter" style="max-width:145px"><option value="">Loading schedule</option></select></div>
 <div class="tabs"><button class="tab active" data-tab="board">AI Board</button><button class="tab" data-tab="live">Matchups</button><button class="tab" data-tab="graded">Graded</button></div>
+<div id="healthstrip" class="health-strip" aria-live="polite"></div>
 <div id="notice" class="notice">Loading the latest captured NFL predictions. Confidence is an uncalibrated model estimate, not an actual hit rate.</div>
 <section id="board"><div class="games" id="games"></div><div class="filters"><input id="search" placeholder="Search player or team"><select id="statfilter"><option value="">All markets</option></select><select id="kind"><option value="standard">Standard</option><option value="">All lines</option><option value="goblin">Goblin</option><option value="demon">Demon</option></select></div><div class="bar"><h2>Pregame NFL props</h2><small id="freshness">Latest snapshot</small></div><div class="board" id="cards"></div></section>
 <section id="live" class="hidden"><h2>Matchups & Final Box Scores</h2><p class="muted">Open any completed matchup to view final player stats. Box scores load independently of PrizePicks lines. In-progress games do not display estimated final stats.</p><div id="livegames" class="board"></div></section>
@@ -217,6 +232,32 @@ async function loadSeasonSchedule(){
  document.getElementById("weekfilter").value=state.week;
  document.getElementById("gamecount").textContent=games.length;
 }
+// Operational statuses use explicit verified inputs, never inferred hit rates.
+function boardHealth({loaded,scheduleReady,snapshotAgeHours,gradeHealth,gradingLoaded,hasPartialSnapshot}){
+ if(!loaded)return {label:hasPartialSnapshot||scheduleReady?"PARTIAL DATA":"DATA UNAVAILABLE",type:"problem"};
+ if(!scheduleReady||hasPartialSnapshot||!gradingLoaded)return {label:"PARTIAL DATA",type:"warn"};
+ const pendingReasons=gradeHealth?.pending_reasons||{};
+ const actionable=["boxscore_not_yet_published","boxscore_unverified",
+     "player_not_in_verified_boxscore","missing_required_player_stat"];
+ const delayed=actionable.some(k=>Number(pendingReasons[k]||0)>0) ||
+    (Number(gradeHealth?.expected_final_picks||0)>Number(gradeHealth?.graded_picks||0)+Number(gradeHealth?.pending_picks||0));
+ if(delayed)return {label:"GRADING DELAY",type:"warn"};
+ if(!Number.isFinite(snapshotAgeHours)||snapshotAgeHours>6||snapshotAgeHours<-.5)
+   return {label:"STALE PROPS",type:"warn"};
+ return {label:"SAVED PROPS",type:"ok"};
+}
+function setBoardHealth(health,ageHours,gradeHealth){
+ const badge=document.getElementById("status");
+ badge.textContent=health.label;
+ badge.classList.remove("ok","warn","problem");
+ badge.classList.add(health.type);
+ const strip=document.getElementById("healthstrip");
+ const age=Number.isFinite(ageHours)&&ageHours>=0?ageHours.toFixed(1)+"h old":"Unknown age";
+ const pending=gradeHealth?gradeHealth.pending_picks+" pending":"Grading unverified";
+ strip.innerHTML='<span class="health-pill '+(ageHours>6?'warn':'')+'">Snapshot: '+esc(age)+'</span>'+
+  '<span class="health-pill">Grading: '+esc(pending)+'</span>'+
+  '<span class="health-pill '+(health.type==='ok'?'ok':'warn')+'">'+esc(health.label)+'</span>';
+}
 async function init(){
  let scheduleReady=false;
  try{
@@ -255,9 +296,6 @@ async function init(){
    const stale=!Number.isFinite(ageHours)||ageHours>6||ageHours<-.5;
    const grading=manifest.pipeline_health?.grading;
    const healthWarnings=manifest.health?.warnings||[];
-   const badge=document.getElementById("status");
-   badge.textContent=stale?"STALE PROPS":"SAVED PROPS";
-   badge.classList.toggle("ok",!stale);badge.classList.toggle("warn",stale);
    const details=["The full 2026 NFL schedule is independent of PrizePicks odds. Model confidence is uncalibrated."];
    if(stale)details.push("WARNING: Saved betting lines are over 6 hours old; do not assume they are still available.");
    if(healthWarnings.length)details.push(healthWarnings.join(" | "));
@@ -275,6 +313,12 @@ async function init(){
    try{state.grades=await getCSV("./data/pp_graded_2026.csv")}catch(e){state.grades=[]}
    document.getElementById("gradecount").textContent=state.grades.length;
    const g=state.gradeHealth;
+   setBoardHealth(boardHealth({loaded:true,scheduleReady,snapshotAgeHours:ageHours,
+      gradeHealth:g,gradingLoaded:!!g,hasPartialSnapshot:false}),ageHours,g);
+   if(g && Object.entries(g.pending_reasons||{}).some(([reason,count])=>
+      ["boxscore_not_yet_published","boxscore_unverified","player_not_in_verified_boxscore","missing_required_player_stat"].includes(reason)&&Number(count)>0))
+     details.push("Some completed-game props are waiting for verified player box scores.");
+   document.getElementById("notice").textContent=details.join(" ");
    document.getElementById("gradehealth").textContent=g?
        g.archived_pregame_lines+" archived pre-kickoff lines · "+g.graded_picks+" graded · "+
        g.pending_picks+" pending player stats or unsupported markets · "+
@@ -283,9 +327,10 @@ async function init(){
        (g.source_snapshot_status!=="verified"?" · Snapshot warning: "+g.source_snapshot_status:""):
        "No verified public grading ledger yet. Missing grades are not wins or losses.";
  }catch(error){
-   document.getElementById("status").textContent=scheduleReady?"SCHEDULE ONLY":"DATA UNAVAILABLE";
+   setBoardHealth(boardHealth({loaded:false,scheduleReady,hasPartialSnapshot:scheduleReady,
+      gradingLoaded:false}),NaN,null);
    document.getElementById("notice").textContent=scheduleReady?
-     "All 272 scheduled NFL regular-season games are available. The prop feed is unavailable, so no unverified predictions are displayed.":
+     "The full NFL schedule is available, but the current prop snapshot could not be verified. No incomplete predictions are displayed.":
      "Neither the NFL schedule nor the saved betting lines could be loaded.";
    document.getElementById("allcount").textContent="0";
    document.getElementById("gradecount").textContent="0";
