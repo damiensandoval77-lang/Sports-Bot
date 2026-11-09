@@ -13,10 +13,10 @@
 .logrow:last-child{border-bottom:0}
 .scorewrap{margin-top:10px;display:grid;gap:8px}.scoresection{border:1px solid var(--border);border-radius:9px;overflow:hidden}
 .scoreheading{background:#223249;padding:9px;font-size:12px;font-weight:800}
-.scoretable{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+.scoretable{min-width:520px;width:100%;border-collapse:separate;border-spacing:0;font-size:11px;font-variant-numeric:tabular-nums}
 .scoretable td,.scoretable th{padding:7px 5px;border-bottom:1px solid #283950;text-align:right;white-space:nowrap}
-.scoretable td:first-child,.scoretable th:first-child{text-align:left;max-width:130px;white-space:normal}
-.scoretable th{color:var(--sub);font-weight:650}
+.scoretable td:first-child,.scoretable th:first-child{position:sticky;left:0;z-index:2;min-width:155px;width:155px;max-width:175px;text-align:left;white-space:normal;overflow-wrap:break-word;background:#19283e;box-shadow:2px 0 5px #080d184f}
+.scoretable th{color:var(--sub);font-weight:650}.scoretable td:first-child{color:var(--text);font-weight:750}.scoretable th:first-child{z-index:3}
 .scoretable tr:last-child td{border:0}
 .scorewait{color:var(--sub);font-size:12px;padding:12px}
 .matchdetail{margin-top:9px;border-top:1px solid var(--border)}
@@ -39,7 +39,16 @@ async function getCSV(url){const response=await fetch(url+"?t="+Math.floor(Date.
 function titleGame(g){const found=state.schedule.find(x=>x.game_id===g);if(found)return found.away+" @ "+found.home;const p=g.split("_");return p.length>=4?p.slice(2).join(" @ "):g}
 function currentWeek(games){if(!games.length)return "";const now=Date.now();const future=games.filter(g=>g.status!=="final" && Date.parse(g.kickoff_utc)>now-6*3600000).sort((a,b)=>Date.parse(a.kickoff_utc)-Date.parse(b.kickoff_utc));return String((future[0]||games[games.length-1]).week)}
 function scheduledWeekGames(){return state.schedule.filter(g=>String(g.week)===state.week)}
-function boxMetric(p,key){const v=p[key];return v===undefined||v===null||v===""||!Number.isFinite(Number(v))?"—":esc(v)}
+function boxMetric(p,key){
+ const value=p[key];
+ // Player names, teams and positions are TEXT, never numeric statistics.
+ // Converting "Jacoby Brissett" to Number() used to hide every player name.
+ if(key==="player"||key==="team"||key==="position"){
+   const label=value===undefined||value===null?"":String(value).trim();
+   return label&&label.toLowerCase()!=="nan"&&label.toLowerCase()!=="none"?esc(label):"Unknown";
+ }
+ return value===undefined||value===null||value===""||!Number.isFinite(Number(value))?"—":esc(value);
+}
 function gameStatsTable(game,category){
  const p=game.players||[];
  const active=p.filter(r=>category==="Passing"?Number(r.attempts)>0:
@@ -52,7 +61,7 @@ function gameStatsTable(game,category){
   [["Player","player"],["Team","team"],["TGT","targets"],["REC","receptions"],["YDS","receiving_yards"],["TD","receiving_tds"]];
  active.sort((a,b)=>Number(b[category==="Passing"?"passing_yards":category==="Rushing"?"rushing_yards":"receiving_yards"]||0)-
                           Number(a[category==="Passing"?"passing_yards":category==="Rushing"?"rushing_yards":"receiving_yards"]||0));
- return '<div class="scoresection"><div class="scoreheading">'+category+'</div><div style="overflow-x:auto"><table class="scoretable"><thead><tr>'+
+ return '<div class="scoresection"><div class="scoreheading">'+category+'</div><div class="boxscore-scroll" style="overflow-x:auto;overscroll-behavior-inline:contain"><table class="scoretable"><thead><tr>'+
     columns.map(([title])=>'<th>'+title+'</th>').join('')+'</tr></thead><tbody>'+
     active.map(p=>'<tr>'+columns.map(([,key])=>'<td>'+boxMetric(p,key)+'</td>').join('')+'</tr>').join('')+
     '</tbody></table></div></div>';
@@ -62,7 +71,7 @@ function renderFinalBoxscore(game){
  const sections=["Passing","Rushing","Receiving"].map(category=>gameStatsTable(game,category)).filter(Boolean).join('');
  return '<div class="scorewrap"><strong>'+esc(game.away)+' '+esc(game.away_score)+' – '+esc(game.home_score)+' '+esc(game.home)+'</strong>'+
     (sections||'<div class="scorewait">Player stats not yet available.</div>')+
-    '<small>Verified player-game statistics from nflverse. Missing stats appear as —, not zero.</small></div>';
+    '<small>Scroll the stats table sideways; player names remain pinned on the left. Verified player-game statistics from nflverse. Missing stats appear as —, not zero.</small></div>';
 }
 async function revealBoxscore(el){
  const gameId=el.dataset.boxgame,week=Number(el.dataset.week);
