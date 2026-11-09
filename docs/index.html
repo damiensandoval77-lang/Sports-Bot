@@ -2194,6 +2194,20 @@ function mergeScoreSchedules(existing,incoming){
 }
 async function refreshScoresOnly(){
  if(document.visibilityState==="hidden")return;
+ // GitHub-published, independently refreshed NBA scoreboard; never a prop feed.
+ // Respect its capture timestamp and upstream health. On stale/unavailable
+ // snapshots retain existing fixtures and fall back to the other sources.
+ try{
+  const independent=await fetchJSON("nba_scoreboard_independent.json");
+  if(independent?.status==="OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"&&
+     Array.isArray(independent.games)&&isRecent(independent.generated_at,2)){
+   nbaSchedule=mergeScoreSchedules(nbaSchedule,{
+    ...independent,
+    coverage_complete:true
+   });
+   renderGameStrip();
+  }
+ }catch(_){}
  // The server-published score is preferred when it has a verified paired score.
  // Browser schedule results are allowed to add fixtures without erasing it.
  try{
