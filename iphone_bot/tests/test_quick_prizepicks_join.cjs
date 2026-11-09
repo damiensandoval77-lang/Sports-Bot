@@ -122,7 +122,8 @@ test("iPhone polls free published JSON every 90 seconds and on refocus",()=>{
 });
 test("the raw MORE/LESS line comparison isn't mislabeled as a validated model pass",()=>{
  assert.ok(html.includes('screen.status==="RESEARCH_ONLY"?"UNVALIDATED RESEARCH'));
- assert.ok(html.includes('side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS"'));
+ assert.ok(html.includes('side==="OVER"?"↑ OVER":side==="UNDER"?"↓ UNDER"'));
+ assert.ok(html.includes(".ai-lean-choice.under{background:#7f1d1d;color:#ffe4e6;border:1px solid #dc2626}"));
 });
 
 test("a genuine trained 20K PrizePicks board is never replaced by no-sim lightweight fallback",()=>{
