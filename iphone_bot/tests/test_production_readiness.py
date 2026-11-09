@@ -24,7 +24,12 @@ def fixtures(now=NOW):
          "prizepicks_overdue":0,"paper_overdue":0,"capture_missing":False,
          "ai_forecasts_ungraded":0,
          "ai_forecast_accuracy_status":"AI_PRETIP_FORECASTS_GRADED"},
-     "nba_player_tracking_independent.json":{}
+     "nba_player_tracking_independent.json":{},
+     "data.json":{"updated_at":STAMP,"slate_events_checked":1,
+                  "market_coverage_limited":False,
+                  "picks":[{"game":GAME["game"],"line":18.5}]},
+     "ai_comparisons.json":{"generated_at":STAMP,
+                             "comparisons":[{"game":GAME["game"],"projection":19}]}
     }
 class StrictProductionReadinessTests(unittest.TestCase):
     def test_healthy_complete_pregame_is_ready(self):
@@ -67,6 +72,23 @@ class StrictProductionReadinessTests(unittest.TestCase):
         data=fixtures()
         data["nba_schedule.json"].update({"games":[],"total_games":0})
         self.assertEqual(check(NOW,data)["status"],"BLOCKED")
+
+    def test_empty_production_pick_board_not_healthy(self):
+        data=fixtures()
+        data["data.json"]["picks"]=[]
+        data["ai_comparisons.json"]["comparisons"]=[]
+        r=check(NOW,data)
+        self.assertEqual(r["status"],"DEGRADED")
+        self.assertIn("NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
+                      r["components"]["published_pick_cards"]["reasons"])
+
+    def test_unchanged_stale_cards_fail_even_with_current_automatic_models(self):
+        data=fixtures()
+        data["data.json"]["updated_at"]="2026-11-07T23:51:00Z"
+        data["ai_comparisons.json"]["generated_at"]="2026-11-07T23:52:00Z"
+        r=check(NOW,data)
+        self.assertIn("PUBLISHED_PICK_BOARD_STALE",
+                      r["components"]["published_pick_cards"]["reasons"])
 
     def test_nightly_grade_incomplete_degrades(self):
         data=fixtures()
