@@ -7,8 +7,8 @@ LIGHT=(ROOT/".github/workflows/publish_live_pp_ai_join.yml").read_text()
 
 class PublicationHandoffTests(unittest.TestCase):
     def test_site_refresh_matches_afternoon_provider_window(self):
-        self.assertIn("- cron: '46 16,21,23 * * *'",SITE)
-        self.assertIn("- cron: '08 17,22,0 * * *'",TRAINED)
+        self.assertIn("- cron: '46 0,16,18,20,22,23 * * *'",SITE)
+        self.assertIn("- cron: '08 1,17,19,21,23,0 * * *'",TRAINED)
     def test_both_model_paths_trigger_when_real_lines_published(self):
         self.assertIn("gh workflow run nba-prizepicks-ai-board.yml --ref main",SITE)
         self.assertIn("gh workflow run publish_live_pp_ai_join.yml --ref main",SITE)
