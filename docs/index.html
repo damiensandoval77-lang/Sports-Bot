@@ -912,7 +912,13 @@ function renderAI(){
  renderNoLineForecast();
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
- const baseBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
+ const originalBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
+ // Never show a conflicting legacy alternate threshold beside an authenticated
+ // standard new-AI card. Exactly one main card per player/game/stat.
+ const baseBoard=originalBoard.filter(p=>{
+   const n=newMarketIndex.get(newModelKey(p));
+   return !n||Number(p.line)===n.line;
+ });
  // Verified new-model offers are first-class cards even if the old trained
  // feed is missing an entire scheduled game or stat category.
  const present=new Set(baseBoard.filter(p=>newModelForCard(p)).map(newModelKey));
