@@ -31,6 +31,57 @@ class TestAudit(unittest.TestCase):
             self.make_data(root)
             self.assertEqual(audit(root)["status"], "HEALTHY")
 
+    def test_final_pregame_quote_missing_from_grades_fails(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self.make_data(root)
+            schedule = json.loads((root / "schedule_2026.json").read_text())
+            schedule["games"][0].update(home_score=10, away_score=7)
+            (root / "schedule_2026.json").write_text(json.dumps(schedule))
+            with (root / "frozen_pick_history_2026.csv").open("w", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=[
+                    "captured_at", "game_id", "player_id", "target",
+                    "odds_type", "line", "pick"])
+                writer.writeheader()
+                writer.writerow({"captured_at": "2026-11-09T19:00:00Z",
+                                 "game_id": "game0", "player_id": "p1",
+                                 "target": "REC_YDS", "odds_type": "standard",
+                                 "line": "50.5", "pick": "More"})
+            health = json.loads((root / "grading_health_2026.json").read_text())
+            health["archived_pregame_lines"] = 1
+            (root / "grading_health_2026.json").write_text(json.dumps(health))
+            result = audit(root)
+            self.assertEqual(result["status"], "FAILED")
+            self.assertEqual(result["missing_final_pick_grades"], 1)
+
+    def test_pending_final_quote_counts_as_accounted_for(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self.make_data(root)
+            schedule = json.loads((root / "schedule_2026.json").read_text())
+            schedule["games"][0].update(home_score=10, away_score=7)
+            (root / "schedule_2026.json").write_text(json.dumps(schedule))
+            item = {"captured_at": "2026-11-09T19:00:00Z",
+                    "game_id": "game0", "player_id": "p1",
+                    "target": "REC_YDS", "odds_type": "standard",
+                    "line": "50.5", "pick": "More"}
+            with (root / "frozen_pick_history_2026.csv").open("w", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(item))
+                writer.writeheader()
+                writer.writerow(item)
+            item["grade_status"] = "boxscore_not_yet_published"
+            with (root / "pp_grading_pending_2026.csv").open("w", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(item))
+                writer.writeheader()
+                writer.writerow(item)
+            health = json.loads((root / "grading_health_2026.json").read_text())
+            health.update(archived_pregame_lines=1, pending_picks=1,
+                          expected_final_picks=1)
+            (root / "grading_health_2026.json").write_text(json.dumps(health))
+            result = audit(root)
+            self.assertEqual(result["status"], "HEALTHY")
+            self.assertEqual(result["eligible_frozen_final_picks"], 1)
+
     def test_missing_snapshot_chunk_detected(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
