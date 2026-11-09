@@ -37,7 +37,6 @@ jobs:
           python3 -m http.server 8765 --directory docs > /tmp/nfl-local-server.log 2>&1 &
           node tests/test_nfl_live_ui.cjs
       - name: Test deployed GitHub Pages dashboard
-        if: github.event_name != 'pull_request'
         env:
           NFL_UI_URL: https://damiensandoval77-lang.github.io/Sports-Bot/nfl/
           NFL_SCREENSHOT_DIR: nfl-ui-artifacts/production
