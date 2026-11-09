@@ -22,6 +22,9 @@
 .matchdetail{margin-top:9px;border-top:1px solid var(--border)}
 .matchdetail summary{padding:11px 0 5px;color:var(--accent);font-size:12px;font-weight:800}
 .val{background:var(--panel2);border-radius:8px;padding:8px 7px}.val b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.val small{display:block}.prop details{border-top:1px solid var(--border)}summary{cursor:pointer;padding:10px 11px;color:var(--accent);font-size:12px;font-weight:700}.detailbody{padding:10px 11px;font-size:12px;color:#cbd8eb}.empty{border:1px dashed #39506e;border-radius:12px;padding:26px 16px;color:var(--sub);text-align:center;background:#101b2c}.notice{font-size:12px;color:#e8c58b;background:#34291c;border:1px solid #654b28;border-radius:10px;padding:10px;margin:10px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.mini{background:var(--panel2);padding:10px;border-radius:8px}.hidden{display:none!important}button{touch-action:manipulation}@media(min-width:700px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:360px){.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.val b{font-size:15px}}
+
+/* Player-level cards keep distinct PrizePicks markets without repeated headers. */
+.player-group{min-width:0}.player-group>.mainline{padding:12px 11px 8px}.player-group .market-list{display:grid;gap:0}.player-group .market-entry{border-top:1px solid var(--border);min-width:0}.player-group .market-entry>.prop{border:0;border-radius:0;background:transparent}.player-group .market-entry .head{display:none}.player-group .market-entry .mainline{padding:8px 11px}.player-group .market-entry .pickbar{margin-top:0}.player-group .market-entry .vals{margin-top:7px}.player-group .market-entry .val{padding:7px}.player-group .market-entry .val b{font-size:16px}.player-group .market-entry details summary{padding:9px 11px}.player-group .market-entry .seasonbar{margin:0 0 10px}.player-group .group-count{font-size:11px;color:var(--sub);white-space:nowrap}.player-group .market-entry .detailbody{padding:10px 11px}.player-group .market-entry .pickbar strong{font-size:14px}
 </style></head><body><main>
 <div class="top"><div><div class="eyebrow">DAME'S PICKS · NFL</div><h1>AI Prop Board</h1><small>Same interface · separate NFL engine</small></div><span id="status" class="status warn">CONNECTING</span></div>
 <div class="summary"><div class="metric"><b id="allcount">—</b><small>Saved lines</small></div><div class="metric"><b id="gamecount">—</b><small>Scheduled season games</small></div><div class="metric"><b id="gradecount">—</b><small>Graded</small></div></div>
@@ -135,6 +138,29 @@ function seasonLog(r){
 function pctOrUnknown(value) {return value===undefined||value===null||value===""||!Number.isFinite(Number(value))?"Unknown":(Number(value)*100).toFixed(1)+"%";}
 function numberOrUnknown(value) {return value===undefined||value===null||value===""||!Number.isFinite(Number(value))?"Unknown":Number(value).toFixed(1);}
 function card(r){const more=r.pick==="More",alt=r.odds_type!=="standard";const check=alt?"Alternative payout · model % not directly comparable with standard lines.":"";return '<article class="prop"><div class="mainline"><div class="head"><div><strong>'+esc(r.player)+'</strong><div class="muted" style="font-size:11px">'+esc(r.team)+' vs '+esc(r.opponent)+' · Week '+esc(r.week)+'</div></div><span class="tag">'+esc(r.odds_type)+'</span></div><div class="pickbar"><div><small>'+esc(r.stat)+'</small><br><strong>PrizePicks '+esc(r.line)+'</strong></div><span class="tag '+(more?"over":"under")+'">'+(more?"MORE":"LESS")+'</span></div><div class="vals"><div class="val"><b>'+Number(r.proj).toFixed(1)+'</b><small>AI projection</small></div><div class="val"><b>'+Number(r.model_pct).toFixed(1)+'%</b><small>Model estimate</small></div><div class="val"><b>'+esc(r.injury||"—")+'</b><small>Injury flag</small></div></div>'+seasonRecord(r)+'</div><details><summary>View matchup & AI reasoning</summary><div class="detailbody"><div class="grid"><div class="mini"><b>Market</b><div>'+esc(r.stat)+'</div></div><div class="mini"><b>Frozen selection</b><div>'+esc(r.pick)+' '+esc(r.line)+'</div></div><div class="mini"><b>Opposition</b><div>'+esc(r.opponent)+'</div></div><div class="mini"><b>Depth chart</b><div>'+esc(r.depth_role ? r.depth_role+' · rank '+Number(r.depth_rank) : 'Not verified')+'</div><small>'+esc(r.depth_asof || 'No current chart')+'</small></div><div class="mini"><b>Last 5 vs line</b><div>'+esc(r.season_last5_games? r.season_last5_over+' Over / '+r.season_last5_under+' Under / '+r.season_last5_push+' Push' : 'Not available')+'</div><small>'+esc(r.season_last5_games || '0')+' played games</small></div><div class="mini"><b>Offensive snaps (L3)</b><div>'+esc(pctOrUnknown(r.snap_pct_l3))+'</div><small>Prior reported games only</small></div><div class="mini"><b>Snap trend</b><div>'+esc(pctOrUnknown(r.snap_pct_trend))+'</div><small>L3 minus L5</small></div><div class="mini"><b>Target share (L3)</b><div>'+esc(pctOrUnknown(r.target_share_l3))+'</div><small>Share of team targets</small></div><div class="mini"><b>Carry share (L3)</b><div>'+esc(pctOrUnknown(r.carry_share_l3))+'</div><small>Share of team carries</small></div><div class="mini"><b>Team reported Out</b><div>'+esc(numberOrUnknown(r.team_reported_out))+'</div><small>Confirmed injury report; context only</small></div><div class="mini"><b>Competition</b><div>'+esc(r.depth_ahead === '' || r.depth_ahead == null ? 'Unknown' : Number(r.depth_ahead)+' teammates ahead')+'</div><small>'+esc(r.depth_slot || 'No slot')+'</small></div><div class="mini"><b>Recorded</b><div>'+esc(r.captured_at)+'</div></div></div><p>AI lean is based on the model projection compared with the captured line for '+esc(r.team)+' vs '+esc(r.opponent)+'. Season Over/Under history compares the current captured line to completed 2026 player-game box scores; it does not mean the sportsbook posted that same line in earlier games. Snap and teammate fields are historical context, not proof of a model edge; missing values are unknown. Verified route counts and model attribution are not provided here.</p>'+seasonLog(r)+ ''+ (check?'<p class="notice">'+esc(check)+'</p>':'')+'</div></details></article>'}
+// Stable presentation grouping: never combine odds or prediction values across markets.
+function groupPlayerMarkets(lines){
+ const grouped=new Map();
+ for(const r of lines){
+  const identity=r.player_id||r.player||"unknown";
+  const key=[r.game_id,r.team,identity].join("|");
+  if(!grouped.has(key))grouped.set(key,[]);
+  grouped.get(key).push(r);
+ }
+ return [...grouped.values()];
+}
+function playerMarketCard(group){
+ const first=group[0];
+ const head='<div class="mainline"><div class="head"><div><strong>'+esc(first.player)+'</strong><div class="muted" style="font-size:11px">'+esc(first.team)+' vs '+esc(first.opponent)+' · Week '+esc(first.week)+'</div></div><span class="group-count">'+group.length+' market'+(group.length===1?'':'s')+'</span></div></div>';
+ const markets=group.map(r=>{
+  // Reuse the existing full-detail renderer to avoid changing model values.
+  // Season history moves behind the market-specific disclosure for compactness.
+  const history=seasonRecord(r);
+  const markup=card(r).replace(history,'').replace('<div class="detailbody">','<div class="detailbody">'+history);
+  return '<div class="market-entry">'+markup+'</div>';
+ }).join('');
+ return '<article class="prop player-group">'+head+'<div class="market-list">'+markets+'</div></article>';
+}
 function render(){
  const search=document.getElementById("search").value.trim().toLowerCase(),stat=document.getElementById("statfilter").value,kind=document.getElementById("kind").value;
  const all=state.lines;
@@ -146,7 +172,7 @@ function render(){
  view.sort((a,b)=>Number(b.model_pct)-Number(a.model_pct));
  const selected=state.schedule.find(g=>g.game_id===state.game);
  const missing=selected?'This NFL game is scheduled, but no matching PrizePicks props were captured. The matchup is not missing from the season schedule.':'No matching saved props for this week. The NFL schedule is shown independently of sportsbook availability.';
- document.getElementById("cards").innerHTML=view.length?view.slice(0,180).map(card).join(""):'<div class="empty">'+esc(missing)+'</div>';
+ document.getElementById("cards").innerHTML=view.length?groupPlayerMarkets(view.slice(0,180)).map(playerMarketCard).join(""):'<div class="empty">'+esc(missing)+'</div>';
  document.getElementById("livegames").innerHTML=schedule.length?schedule.map(g=>matchupCard(g,all)).join(""):'<div class="empty">NFL schedule unavailable for this week.</div>';
  document.querySelectorAll("details[data-boxgame]").forEach(el=>el.addEventListener("toggle",()=>{if(el.open)revealBoxscore(el)}));
  document.getElementById("grades").innerHTML=state.grades.length?state.grades.slice(0,200).map(r=>'<article class="prop mainline"><div class="head"><strong>'+esc(r.player)+'</strong><span class="tag '+(Number(r.won)===1?"over":"under")+'">'+esc(r.result||"PENDING")+'</span></div><small>'+esc(r.stat)+' · '+esc(r.team)+' vs '+esc(r.opponent)+'</small><div class="vals"><div class="val"><b>'+esc(r.line)+'</b><small>Frozen line</small></div><div class="val"><b>'+esc(r.actual)+'</b><small>Actual</small></div><div class="val"><b>'+esc(r.pick)+'</b><small>Pick</small></div></div></article>').join(""):'<div class="empty">No real completed-game grading published yet. This does not mean all predictions hit or missed.</div>';
