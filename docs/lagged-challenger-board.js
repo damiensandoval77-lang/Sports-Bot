@@ -36,7 +36,7 @@ function render(data){
    Math.abs(b.projection-b.line)-Math.abs(a.projection-a.line));
  const limited=items.slice(0,120);
  status.textContent=items.length+" verified pregame points comparisons · "+
-   "new model uncalibrated · not approved betting picks. "+
+   "new model per-line simulated chances are experimental, not verified hit rates. "+
    (items.length>limited.length?"Showing first "+limited.length+".":"");
  if(!limited.length){
    board.append(el("div","empty","No unstarted points comparisons with current verified lines."));
@@ -61,7 +61,28 @@ function render(data){
      values.append(cell);
    }
    body.append(values);
-   body.append(el("div","mini","Comparison only · no calibrated hit % · no validated lean"));
+   const chance=x.estimated_hit_chance;
+   const credible=chance?.method==="2024_25_OUT_OF_TRAINING_RESIDUAL_20K_BOOTSTRAP_UNVALIDATED" &&
+       chance.draws===20000 && chance.calibrated===false &&
+       Number.isInteger(chance.validation_residual_count) &&
+       chance.validation_residual_count>=1000 &&
+       ["More","Less"].includes(chance.estimated_selected_side) &&
+       typeof chance.estimated_selected_probability==="number" &&
+       Number.isFinite(chance.estimated_selected_probability) &&
+       chance.estimated_selected_probability>=0 &&
+       chance.estimated_selected_probability<=1;
+   if(credible){
+     const chanceBox=el("div","detail-highlight");
+     const percent=(chance.estimated_selected_probability*100).toFixed(1)+"%";
+     chanceBox.append(el("strong","","Modeled "+chance.estimated_selected_side+" chance: "+percent));
+     chanceBox.append(el("div","mini","20,000 historical-error draws · "+
+       chance.validation_residual_count+" out-of-training observations. "+
+       "Experimental estimate, NOT verified live hit rate."));
+     body.append(chanceBox);
+   }else{
+     body.append(el("div","mini","Hit-chance estimate unavailable or unverified."));
+   }
+   body.append(el("div","mini","Model-based probability only · not a verified betting edge."));
    card.append(body);board.append(card);
  }
 }

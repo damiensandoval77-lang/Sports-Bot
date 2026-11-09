@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/points_hit_probability.py'
+      - 'iphone_bot/tests/test_points_hit_probability.py'
+      - 'docs/lagged-challenger-board.js'
       - 'iphone_bot/lagged_matchup_points_ledger.py'
       - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
       - 'iphone_bot/lagged_matchup_training.py'
@@ -33,6 +36,8 @@ jobs:
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
       - name: Test strict live score and source matching
         run: python -m unittest discover -s iphone_bot/tests -p 'test_live_lagged_matchup_sidecar.py' -v
+      - name: Verify 20,000-draw per-line hit chance simulation
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_points_hit_probability.py' -v
       - name: Test pretip immutable forecast ledger
         run: python -m unittest discover -s iphone_bot/tests -p 'test_lagged_matchup_points_ledger.py' -v
       - name: Build model using older seasons only
@@ -62,6 +67,10 @@ jobs:
           assert r['published_projections']>0, 'No verified points previews: do not erase previously published data'
           assert all(x['stat']=='PTS' and x['real_prizepicks_line'] and
                      x['calibrated_probability'] is None and x['production_replaced'] is False
+                     and x['estimated_hit_chance']['draws']==20000
+                     and x['estimated_hit_chance']['calibrated'] is False
+                     and 0<=x['estimated_hit_chance']['estimated_over_probability']<=1
+                     and 0<=x['estimated_hit_chance']['estimated_under_probability']<=1
                      for x in r['predictions'])
           print('Guarded live points challenger:',r['published_projections'],'cards')
           PY
