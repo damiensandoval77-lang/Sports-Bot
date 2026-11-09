@@ -25,7 +25,7 @@ class LiveBoxscoreTests(unittest.TestCase):
             return {"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else box()
         result=collect_boxscores(DAY,fetch=fetch,now=NOW)
         self.assertEqual(result["status"],"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES")
-        self.assertEqual(result["games"][0]["player_rows"][0]["PRA"],21)
+        self.assertEqual(next(p["PRA"] for p in result["games"][0]["player_rows"] if p["player"]=="Home Player"),21)
         self.assertEqual(result["coverage"]["observed_game_count"],1)
         self.assertTrue(result["not_sportsbook_lines"])
 
