@@ -100,6 +100,30 @@ def check(now,files):
     add("prizepicks_lines","READY" if not issues else "DEGRADED",issues,age,
         required=bool(upcoming))
 
+    # A fresh raw provider board and AI-only projections do NOT mean that
+    # actual live prop cards were published. No recommendations may be inferred.
+    published=load("data.json")
+    comparisons=load("ai_comparisons.json")
+    published_picks=published.get("picks")
+    paired=comparisons.get("comparisons")
+    picks_count=len(published_picks) if isinstance(published_picks,list) else 0
+    pairs_count=len(paired) if isinstance(paired,list) else 0
+    pick_latest=max((t for t in (
+        parse_time(published.get("updated_at")),
+        parse_time(comparisons.get("generated_at"))) if t is not None),default=None)
+    pick_age=round((now-pick_latest).total_seconds()/60,1) if pick_latest else None
+    pick_issues=[]
+    if picks_count+pairs_count==0:
+        pick_issues.append("NO_PUBLISHED_PROJECTION_VS_LINE_CARDS")
+    if pick_age is None or pick_age>120 or pick_age< -5:
+        pick_issues.append("PUBLISHED_PICK_BOARD_STALE")
+    if published.get("slate_events_checked")==0 and upcoming:
+        pick_issues.append("NO_PROVIDER_EVENTS_CHECKED")
+    if published.get("market_coverage_limited") is True:
+        pick_issues.append("SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED")
+    add("published_pick_cards","READY" if not pick_issues else "DEGRADED",
+        pick_issues,pick_age,required=bool(upcoming))
+
     sb=inputs["scoreboard"][0]
     age,issues=common("scoreboard")
     if not isinstance(sb.get("games"),list) or not sb.get("games"):
@@ -166,7 +190,8 @@ def check(now,files):
 def main():
     names=["nba_schedule.json","ai_projection_fallback.json",
            "nba_scoreboard_independent.json","prizepicks_site.json",
-           "nightly_grade_health.json","nba_player_tracking_independent.json"]
+           "nightly_grade_health.json","nba_player_tracking_independent.json",
+           "data.json","ai_comparisons.json"]
     inputs={}
     for name in names:
         path=ROOT/"docs"/name
