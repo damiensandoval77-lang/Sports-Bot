@@ -51,28 +51,40 @@ def live_out(injuries,news,game_day,game_start,now):
 def minutes_shift(player_id,out_id,team,day,games):
     """Require >=3 earlier, complete with/without teammate games.
 
-    Team and opponent player boxes must each have >=7 records in the actual
-    game ID; cannot infer missing player from a partial game log.
+    Both reciprocal team/opponent player boxes must have >=7 unique players
+    on the completed date; cannot infer missing player from partial logs.
     """
     if str(player_id)==str(out_id):return None
-    complete=defaultdict(lambda:defaultdict(list))
+    # Current form CSV supplies date, player, team and actual opponent,
+    # but does NOT contain a game_id. Verify the reciprocal pair instead.
+    # A missing teammate is treated as a completed observed nonappearance
+    # only when both teams have at least 7 recorded active players.
+    pairs=defaultdict(list)
     for g in games:
-        d=str(g.get("date",""));id_=str(g.get("game_id") or "")
-        t=g.get("team")
-        if not d or d>=day or not id_ or t is None:continue
-        complete[id_][t].append(g)
+        d=str(g.get("date",""))
+        t=str(g.get("team") or "")
+        opp=str(g.get("opponent") or "")
+        if not d or d>=day or not t or not opp or t==opp:continue
+        pairs[(d,t,opp)].append(g)
     with_m,without_m=[],[]
-    for teams in complete.values():
-        own=teams.get(team,[])
-        if len(own)<7 or len(teams)!=2 or min(len(v) for v in teams.values())<7:
+    for (date,side,opp),own in pairs.items():
+        if side!=team or len(own)<7:continue
+        reverse=pairs.get((date,opp,side),[])
+        if len(reverse)<7:continue
+        if len({str(g.get("id")) for g in own})!=len(own) or len({str(g.get("id")) for g in reverse})!=len(reverse):
             continue
         me=[g for g in own if str(g.get("id"))==str(player_id)]
         if len(me)!=1:continue
         try:m=float(me[0]["MIN"])
         except (KeyError,TypeError,ValueError):continue
         if not math.isfinite(m) or m<1 or m>48:continue
-        out_plays=any(str(g.get("id"))==str(out_id) and float(g.get("MIN",0))>0 for g in own)
-        (with_m if out_plays else without_m).append(m)
+        present=False
+        for g in own:
+            if str(g.get("id"))!=str(out_id):continue
+            try:played=float(g.get("MIN") or 0)
+            except (ValueError,TypeError):played=0
+            present=math.isfinite(played) and played>0
+        (with_m if present else without_m).append(m)
     if min(len(with_m),len(without_m))<3:return None
     # Shrink strongly because teammate absence alone is not causal.
     rate=(mean(without_m[-8:])/mean(with_m[-8:]))**0.5
