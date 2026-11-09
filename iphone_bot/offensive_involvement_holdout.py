@@ -7,6 +7,7 @@ quotes, actual NBA USG%, or production inference changes.
 Estimated involvement proxy = (FGA + .44*FTA + TOV)/MIN, not team-possession
 USG%. Both the model and baseline consume only same-team PRIOR game logs.
 """
+import csv
 import json
 import math
 from collections import defaultdict
@@ -134,6 +135,33 @@ def evaluate(rows, season=HOLDOUT):
 
 def main():
     rows,rejected=load_history()
+    # Existing shot-profile loader omits TOV even though archived CSV includes it.
+    # Join independently by season, player ID, and GAME_ID; never assume zero.
+    raw_path=ROOT/"data/nba/raw/raw_game_logs.csv"
+    turnover_by_id={}
+    with raw_path.open(encoding="utf-8-sig",newline="") as handle:
+        reader=csv.DictReader(handle)
+        if not {"SEASON_ID","PLAYER_ID","GAME_ID","GAME_DATE","TOV"}.issubset(reader.fieldnames or ()):
+            raise ValueError("Historical archive lacks trusted turnover columns")
+        for line in reader:
+            key=(line["SEASON_ID"],line["PLAYER_ID"],line["GAME_ID"])
+            try:
+                t=float(line["TOV"])
+            except (ValueError,TypeError):
+                continue
+            if not math.isfinite(t) or t<0:
+                continue
+            identity=(line["GAME_DATE"],t)
+            if key in turnover_by_id and turnover_by_id[key]!=identity:
+                raise ValueError("Conflicting turnover game records")
+            turnover_by_id[key]=identity
+    matched=0
+    for row in rows:
+        saved=turnover_by_id.get((row["season"],row["id"],row["game_id"]))
+        if saved and saved[0]==row["date"]:
+            row["TOV"]=saved[1]
+            matched+=1
+    print("Verified turnovers attached to historical player-games:",matched,"of",len(rows),flush=True)
     report=evaluate(rows)
     report["source_rejections"]=rejected
     report["generated_at"]=datetime.now(timezone.utc).isoformat()
