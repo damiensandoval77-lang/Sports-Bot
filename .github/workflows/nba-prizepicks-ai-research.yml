@@ -63,14 +63,23 @@ jobs:
           assert all(x['generated_at']<r['start'] for r in x['comparisons'])
           print('Genuine upcoming PrizePicks AI comparisons:',x['comparison_count'])
           PY
+          cp docs/prizepicks_ai_research.json "$RUNNER_TEMP/validated-prizepicks-ai.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/prizepicks_ai_research.json
-          if git diff --cached --quiet; then echo 'No new AI research'; exit 0; fi
-          git commit -m 'Freeze pretip PrizePicks independent AI model research'
-          for attempt in 1 2 3 4 5; do
-            if git push origin HEAD:main; then exit 0; fi
+          # Retraining modifies local inputs. Keep the validated artifact
+          # outside the working tree, then start from the newest main each
+          # attempt; never rebase a dirty working tree or lose concurrent data.
+          for attempt in 1 2 3 4 5 6; do
             git fetch origin main
-            git rebase origin/main || { git rebase --abort || true; exit 1; }
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/validated-prizepicks-ai.json" docs/prizepicks_ai_research.json
+            git add docs/prizepicks_ai_research.json
+            if git diff --cached --quiet; then echo 'Latest AI research already published'; exit 0; fi
+            git commit -m 'Freeze pretip PrizePicks independent AI model research'
+            if git push origin HEAD:main; then
+              echo 'Authentic PrizePicks AI research published'
+              exit 0
+            fi
+            echo 'Concurrent update, safely retrying from newest main' "$attempt"
           done
           exit 1
