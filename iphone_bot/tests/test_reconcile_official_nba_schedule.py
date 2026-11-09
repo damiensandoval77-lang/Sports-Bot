@@ -17,6 +17,13 @@ def slate():
     return {"games":rows,"total_games":7,"coverage_complete":True,
             "source":"ESPN-derived source","dates_eastern":["2026-11-09"]}
 class OfficialSlateTests(unittest.TestCase):
+    def test_workflow_explicitly_dispatches_fresh_scoreboard(self):
+        workflow=(Path(__file__).resolve().parents[2]/
+                  ".github/workflows/official_nba_fixture_reconciliation.yml").read_text()
+        self.assertIn("actions: write",workflow)
+        self.assertIn("gh workflow run independent_scoreboard_refresh.yml --ref main",workflow)
+        self.assertIn("github.event_name != 'pull_request'",workflow)
+
     def test_seven_game_false_complete_recovered_to_eight(self):
         result=reconcile(slate(),SOURCE)
         self.assertEqual(result["total_games"],8)
