@@ -79,6 +79,33 @@ class AlertsTests(unittest.TestCase):
         self.assertGreater(shift,1.0)
         self.assertLessEqual(shift,1.1)
 
+    def test_free_official_nba_transition_suppresses_unsupported_teammate(self):
+        free={"status":"FREE_OFFICIAL_NBA_INJURY_MONITOR",
+              "official_confirmed":True,
+              "events":[{"player":"Austin Reaves","player_id":"1630559",
+                "team":"LAL","game_date":"2026-11-09",
+                "status":"OUT","source":"OFFICIAL_NBA_REPORT","official":True,
+                "reported_at":"2026-11-09T22:15:00Z"}]}
+        result=injury_adjustment({"PTS":20},"1629656","LAL","ATL",
+             "2026-11-09",TIP,NOW,
+             official("OUT","2026-11-09T22:15:00Z"),{},[],
+             free_watch=free)
+        self.assertEqual(result["status"],"INJURY_MATCHUP_DATA_INSUFFICIENT")
+        self.assertEqual(result["affected"][0]["player_id"],"1630559")
+
+    def test_free_official_watch_cannot_override_newer_available(self):
+        free={"status":"FREE_OFFICIAL_NBA_INJURY_MONITOR",
+              "official_confirmed":True,
+              "events":[{"player":"Austin Reaves","player_id":"1630559",
+                "team":"LAL","game_date":"2026-11-09",
+                "status":"OUT","source":"OFFICIAL_NBA_REPORT","official":True,
+                "reported_at":"2026-11-09T21:00:00Z"}]}
+        result=injury_adjustment({"PTS":20},"1629656","LAL","ATL",
+             "2026-11-09",TIP,NOW,
+             official("Available","2026-11-09T22:15:00Z"),{},[],
+             free_watch=free)
+        self.assertEqual(result["status"],"NO_REPORTED_OUT")
+
     def test_absent_lineup_splits_no_fabrication(self):
         self.assertIsNone(minutes_shift("123","456","LAL","2026-11-09",[]))
         a=player_alerts(post("Austin Reaves (illness) ruled out Monday."),
