@@ -72,10 +72,12 @@ def check(now,files):
     if isinstance(expected,int) and len(todays)!=expected:
         issues.append("OFFICIAL_NBA_SLATE_COUNT_MISMATCH")
     if isinstance(expected,int):
-        official_ids={str(g.get("id")) for g in reference.get("fixtures",[])
-                      if g.get("date_eastern")==day}
-        known_ids={str(g.get("id")) for g in todays}
-        if not official_ids.issubset(known_ids):
+        official_keys={(g.get("away_abbreviation"),g.get("home_abbreviation"))
+                       for g in reference.get("fixtures",[])
+                       if g.get("date_eastern")==day}
+        known_keys={(g.get("away_abbreviation"),g.get("home_abbreviation"))
+                    for g in todays}
+        if not official_keys.issubset(known_keys):
             issues.append("OFFICIAL_NBA_MATCHUP_MISSING")
     add("schedule","READY" if not issues else "BLOCKED",issues,age)
 
