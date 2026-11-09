@@ -66,10 +66,17 @@ def probe():
                 raise RuntimeError("Public dashboard HTTP status not 200")
             try:
                 page.wait_for_function(
-                    "() => document.querySelector('#ai-total')?.textContent?.includes('authentic PrizePicks line matches')",
+                    """() => Array.from(document.querySelectorAll('#ai-board article.compact-prop'))
+                      .some(card => {
+                        const labels=Array.from(card.querySelectorAll('.ai-metric-label')).map(e=>e.textContent.trim());
+                        const values=Array.from(card.querySelectorAll('.ai-metric-value')).map(e=>e.textContent.trim());
+                        return labels.includes('PRIZEPICKS LINE') &&
+                               labels.includes('AI PROJECTION') && values.length>=2 &&
+                               values[0]!=='' && values[0]!=='—' && values[1]!=='' && values[1]!=='—';
+                      })""",
                     timeout=30000)
             except Exception:
-                errors.append("DID_NOT_RENDER_AUTHENTIC_PRIZEPICKS_AI_SUMMARY")
+                errors.append("DID_NOT_RENDER_GENUINE_PRIZEPICKS_LINE_AND_MODEL_CARD")
             cards=page.locator("#ai-board article.compact-prop")
             count=cards.count()
             present=[]
@@ -79,9 +86,8 @@ def probe():
                 labels=item.locator(".ai-metric-label").all_inner_texts()
                 values=item.locator(".ai-metric-value").all_inner_texts()
                 text=item.inner_text()
-                if "PRIZEPICKS LINE" in labels and "AI PROJECTION" in labels and (
-                    "PRIZEPICKS + INDEPENDENT AI" in text
-                ) and len(values)>=2 and all(v.strip() not in ("","—","Unavailable") for v in values[:2]):
+                if ("PRIZEPICKS LINE" in labels and "AI PROJECTION" in labels and
+                    len(values)>=2 and all(v.strip() not in ("","—","Unavailable") for v in values[:2])):
                     present.append(text.splitlines()[0][:75])
             game_tiles=page.locator("#game-strip button.score-tile").all()
             tiles=[t.get_attribute("aria-label") or "" for t in game_tiles]
@@ -97,8 +103,15 @@ def probe():
                     continue
                 try:
                     tile.click(timeout=6000)
-                    names=page.locator("#ai-board article.compact-prop .compact-identity .match").all_inner_texts()
-                    per_game[game]=sum(game in name for name in names)
+                    per_game[game]=page.locator("#ai-board article.compact-prop").evaluate_all(
+                        """(cards,game) => cards.filter(card => {
+                          const labels=Array.from(card.querySelectorAll('.ai-metric-label')).map(n=>n.textContent.trim());
+                          const values=Array.from(card.querySelectorAll('.ai-metric-value')).map(n=>n.textContent.trim());
+                          const identity=card.querySelector('.compact-identity')?.textContent||'';
+                          return identity.includes(game) && labels.includes('PRIZEPICKS LINE') &&
+                                 labels.includes('AI PROJECTION') && values.length>=2 &&
+                                 values.slice(0,2).every(v=>v!==''&&v!=='—'&&v!=='Unavailable');
+                        }).length""",game)
                 except Exception as exc:
                     errors.append("GAME_FILTER_FAILED:"+game+":"+type(exc).__name__)
                     per_game[game]=0
