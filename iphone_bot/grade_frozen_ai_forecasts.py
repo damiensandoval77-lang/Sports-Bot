@@ -16,7 +16,7 @@ from iphone_bot.fetch_final_boxscores import gather
 from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS, expected_opponents, strict_player_name
 from iphone_bot.prizepicks_research_ledger import utc
 from iphone_bot.recover_prizepicks_final_games import multi_origin_request
-from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset
+from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset, additional_verified_ai_inactive_subset
 
 ROOT=Path(__file__).resolve().parents[1]
 ARCHIVE=ROOT/"docs/ai_no_line_pregame_archive.json"
@@ -211,7 +211,8 @@ def main():
     else:
         actuals=[];fetch_report={"status":"NO_ELIGIBLE_ARCHIVED_GAMES"}
     try:
-        confirmed_inactives=verified_inactive_subset(actuals)
+        confirmed_inactives=(verified_inactive_subset(actuals)+
+                             additional_verified_ai_inactive_subset(actuals))
     except (OSError,ValueError,TypeError,KeyError):
         confirmed_inactives=[]
     graded=settle_predictions(selected,actuals,old,confirmed_inactives=confirmed_inactives)
