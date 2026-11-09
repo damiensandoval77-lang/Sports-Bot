@@ -24,3 +24,7 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_nightly_grade_date_audit.py' -v
       - name: Check November 8 real saved captures and grades (read-only)
         run: python -m iphone_bot.nightly_grade_date_audit --date 2026-11-08
+      - name: Locate original PrizePicks grading jobs and final-boxscore sources
+        run: |
+          grep -R -l -E 'prizepicks_research_ledger.json|prizepicks_research_results.json' iphone_bot .github/workflows | head -35 || true
+          grep -R -l 'fetch_final_boxscores' .github/workflows | head -20 || true
