@@ -12,6 +12,8 @@ function between(start, end) {
   assert(i >= 0 && j > i, 'Missing production JavaScript section: '+start);
   return html.slice(i, j);
 }
+assert(html.includes('ppProviderPartial=ppFresh&&(pp.value.partial_board===true||pp.value.complete_provider_board===false)'), 'Partial provider coverage must be shown truthfully');
+assert(html.includes('matched model/line research records (not calibrated picks or hit probabilities)'), 'Research-only join count must be disclosed');
 const normalization = between('const norm=x=>', 'const fmt=x=>');
 const recent = between('function isRecent(', 'function appendValues(');
 const joining = between('function verifiedQuickPrizePicksJoins(', 'function groupAI(');
