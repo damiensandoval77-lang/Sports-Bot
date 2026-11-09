@@ -364,7 +364,7 @@ let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
-let newMultimarketFeed=null,newMarketIndex=new Map();
+let newMultimarketFeed=null,newMarketIndex=new Map(),standardLineCards=[];
 let underdogNews=null,officialInjuryFeed=null,freeOfficialWatch=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").normalize("NFKD").toLowerCase().replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]/g,"");
@@ -520,6 +520,54 @@ function combinedSimAvailable(p){
 }
 // Replace the former legacy SIM estimate ONLY with a verified, pretip,
  // standard-line forecast from the correlated new model; no unsafe fallback.
+// UI COVERAGE FALLBACK: a verified PrizePicks standard line is displayable
+// without a trusted AI forecast. Never invent a projection, lean or hit chance.
+// Require two authentic opposing offers at ONE unambiguous standard threshold.
+function verifiedStandardLineCoverage(feed,fixtures,now=Date.now()){
+ const result=[];
+ if(feed?.status!=="FRESH_AUTHENTIC_PRIZEPICKS_LINES"||
+    feed?.source!=="AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS"||
+    feed?.is_live!==true||!Array.isArray(feed.picks))return result;
+ const freshness=Date.parse(feed.updated_at);
+ if(!Number.isFinite(freshness)||freshness>now+600000||
+    now-freshness>6*3600000)return result;
+ const statNames={Points:"PTS",Rebounds:"REB",Assists:"AST",
+                  "Points Rebounds Assists":"PRA"};
+ const scheduled=new Map((fixtures?.games||[]).map(g=>[g.game,g]));
+ const groups=new Map();
+ for(const p of feed.picks){
+   const stat=statNames[p.stat],tip=Date.parse(p.start),
+         quoted=Date.parse(p.market_updated);
+   if(!stat||p.pickem_tier!=="standard"||
+      !["More","Less"].includes(p.direction)||
+      !p.player||!p.team||!p.game||
+      !Number.isFinite(Number(p.line))||Number(p.line)<0||Number(p.line)>200||
+      !Number.isFinite(tip)||tip<=now||
+      !Number.isFinite(quoted)||quoted>now+600000||
+      now-quoted>6*3600000||quoted>=tip)continue;
+   const game=scheduled.get(p.game);
+   if(!game||!["pre",null,undefined].includes(game.game_state)||
+      ![game.home_abbreviation,game.away_abbreviation].includes(p.team)||
+      Math.abs(Date.parse(game.start)-tip)>30*60000)continue;
+   const key=[norm(p.player),p.team,p.game,stat,tip].join("|");
+   if(!groups.has(key))groups.set(key,[]);
+   groups.get(key).push(p);
+ }
+ for(const group of groups.values()){
+   const lines=new Set(group.map(p=>Number(p.line))),
+         sides=new Set(group.map(p=>p.direction));
+   if(lines.size!==1||!sides.has("More")||!sides.has("Less"))continue;
+   const p=group[0],stat=statNames[p.stat],line=Number(p.line);
+   result.push({player:p.player,team:p.team,game:p.game,start:p.start,stat,line,
+     market_updated:p.market_updated,source:"AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS",
+     sportsbook:"PrizePicks",pickem_tier:"standard",
+     standard_line_two_sided_verified:true,
+     line_only:true,projection:null,combined_projection:null,
+     estimated_hit_chance:null,injury_reprojection_status:"PENDING",
+     research_only:true});
+ }
+ return result;
+}
 function newModelKey(p){
  return [norm(p.player),p.team,p.game,p.stat,Date.parse(p.start)].join("|");
 }
@@ -529,6 +577,7 @@ function newModelForCard(p){
  return item;
 }
 function chance(p){
+ if(p.line_only)return "—";
  const n=newModelForCard(p),c=n?.estimated_hit_chance;
  return c?.method==="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"&&
    c.draws===20000&&c.calibrated===false&&
@@ -945,28 +994,41 @@ function verifiedFreeOfficialOut(){
       String(p.status).toUpperCase()==="OUT");
  });
 }
-function injuryPendingCard(p){
- const posts=validatedOutNews();
- const events=[
-   ...posts.map(a=>({player:a.player,player_id:a.player_id,team:a.team,
-      game_date:a.game_date,reported_at:a.posted_at,
-      start:a.start,game:a.game,status:"OUT"})),
-   ...verifiedFreeOfficialOut()
- ];
+function injuryCardStatus(p){
+ const official=officialInjuryFeed?.status==="OFFICIAL_NBA_REPORT_VERIFIED"&&
+   officialInjuryFeed?.injury_data_verified===true?officialInjuryFeed.players:[];
+ const day=easternGameDay(p.start);
+ // A confirmed OUT player is never shown as a current prop candidate.
+ if(official?.some(a=>a.game_date===day&&a.team===p.team&&
+      norm(a.player)===norm(p.player)&&String(a.status).toUpperCase()==="OUT"))
+   return "OUT";
+ const news=validatedOutNews().map(a=>({
+      ...a,reported_at:a.posted_at}));
+ const events=[...news,...verifiedFreeOfficialOut()];
+ const fixture=(nbaSchedule?.games||[]).find(g=>g.game===p.game&&
+   Math.abs(Date.parse(g.start)-Date.parse(p.start))<=30*60000);
+ if(!fixture)return "CLEAR";
  for(const a of events){
-   const start=Date.parse(p.start);
-   if(a.game && a.game!==p.game)continue;
-   if(a.start && Date.parse(a.start)!==start)continue;
-   if(a.game_date!==easternGameDay(p.start))continue;
-   if(norm(a.player)===norm(p.player)&&p.team===a.team)return true;
-   // Other team's verified absence can also change defensive matchups.
-   // Never show stale before-injury model estimates while retraining.
-   const n=newModelForCard(p);
-   if(!n||Date.parse(n.captured_at)<Date.parse(a.reported_at)||
-      !["CONDITIONAL_INJURY_REPROJECTION"].includes(n.injury_reprojection_status))
-     return true;
+   if(a.game_date!==day||a.game&&a.game!==p.game)continue;
+   if(![fixture.home_abbreviation,fixture.away_abbreviation].includes(a.team))
+     continue;
+   if(norm(a.player)===norm(p.player)&&a.team===p.team)return "OUT";
+   const model=newModelForCard(p);
+   if(!model||!Number.isFinite(Date.parse(model.captured_at))||
+      Date.parse(model.captured_at)<Date.parse(a.reported_at)||
+      model.injury_reprojection_status!=="CONDITIONAL_INJURY_REPROJECTION")
+      return "PENDING_INJURY_REMODEL";
  }
- return false;
+ return "CLEAR";
+}
+function injuryPendingCard(p){return injuryCardStatus(p)==="OUT";}
+function safeLineOnly(p,reason){
+ return {...p,line_only:true,projection:null,combined_projection:null,
+   new_model_market:false,estimated_hit_chance:null,
+   quick_research_only:false,preliminary_edge:null,
+   injury_display_reason:reason,injury_reprojection_status:"PENDING",
+   reliability_screen:null,combined_simulation:null,
+   edge_assessment:null};
 }
 function renderInjuryNewsStatus(){
  const n=$("ai-injury-news-status");
@@ -995,25 +1057,49 @@ function renderAI(){
  const originalBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
  // Never show a conflicting legacy alternate threshold beside an authenticated
  // standard new-AI card. Exactly one main card per player/game/stat.
+ const liveStandardMode=standardLineCards.length>0;
+ const currentStandard=new Map(standardLineCards.map(p=>[newModelKey(p),p]));
+ // The legacy quick-join is an old model, not the new four-market AI.
+ // Once verified standards are available, it must not replace the new AI
+ // with older projections or alternate (Goblin/Demon) player lines.
  const baseBoard=originalBoard.filter(p=>{
    const n=newMarketIndex.get(newModelKey(p));
+   if(liveStandardMode){
+     const quote=currentStandard.get(newModelKey(p));
+     return Boolean(n&&quote&&Number(p.line)===quote.line&&n.line===quote.line);
+   }
    return !n||Number(p.line)===n.line;
  });
  // Verified new-model offers are first-class cards even if the old trained
  // feed is missing an entire scheduled game or stat category.
  const present=new Set(baseBoard.filter(p=>newModelForCard(p)).map(newModelKey));
- const extra=[...newMarketIndex.values()].filter(p=>p&&!present.has(newModelKey(p))).map(p=>({
+ const extra=[...newMarketIndex.values()].filter(p=>{
+    if(!p||present.has(newModelKey(p)))return false;
+    const quote=currentStandard.get(newModelKey(p));
+    return !liveStandardMode||Boolean(quote&&quote.line===p.line);
+ }).map(p=>({
    ...p,books:[],book_quotes:[],combined_projection:p.projection,
    combined_difference:p.projection-p.line,shadow_status:"UNAVAILABLE",
    quick_research_only:false,reliability_screen:null,
    sportsbook:"PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
    line_type:"PRIZEPICKS_PICKEM_LINE"}));
- const allBoard=[...baseBoard,...extra].map(p=>{
+ // Cover all scheduled matchups with verified standard lines. If the AI
+ // doesn't yet support a market, show the line with explicit pending status.
+ // This is NOT a prediction, pick, hit percentage or sportsbook quote.
+ const already=new Set([...baseBoard,...extra].map(newModelKey));
+ const quoteOnly=standardLineCards.filter(p=>!already.has(newModelKey(p)));
+ const allBoard=[...baseBoard,...extra,...quoteOnly].map(p=>{
    const n=newModelForCard(p);
-   return n?{...p,line:n.line,projection:n.projection,
-    combined_projection:n.projection,combined_difference:n.projection-n.line,
-    estimated_hit_chance:n.estimated_hit_chance,new_model_market:true,
-    quick_research_only:false,preliminary_edge:null}:p;
+   const combined=n?{...p,line:n.line,projection:n.projection,
+     combined_projection:n.projection,combined_difference:n.projection-n.line,
+     estimated_hit_chance:n.estimated_hit_chance,new_model_market:true,
+     quick_research_only:false,preliminary_edge:null}:p;
+   const injuryStatus=injuryCardStatus(combined);
+   if(injuryStatus==="PENDING_INJURY_REMODEL")
+     return safeLineOnly(combined,"INJURY_REMODEL_PENDING");
+   if(combined.line_only)return safeLineOnly(combined,
+     combined.injury_display_reason||"NEW_AI_PROJECTION_NOT_PUBLISHED");
+   return combined;
  });
  const today=easternGameDay(new Date());
  const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today);
@@ -1082,7 +1168,7 @@ function renderAI(){
       " · "+cardSeasonForm.games+" games";
     identity.append(average);
   }
-  const side=primaryDirection(p);
+  const side=p.line_only?"NO LEAN":primaryDirection(p);
   if(p.quick_research_only){
     identity.append(node("div","match",
        "PRIZEPICKS + INDEPENDENT AI · provider quote observed "+
@@ -1101,7 +1187,7 @@ function renderAI(){
       (p.stat==="PRA"?"PRA is the coherent sum of PTS, REB and AST scenarios.":"")));
   }
   const available=Number.isFinite(p.combined_projection);
-  const projected=available?p.combined_projection:Number(p.projection);
+  const projected=p.line_only?NaN:available?p.combined_projection:Number(p.projection);
   const values=node("div","ai-metrics");
   function metric(label,value,kind){
    const tile=node("div","ai-metric"+(kind?" "+kind:""));
@@ -1110,8 +1196,8 @@ function renderAI(){
    return tile;
   }
   values.append(
-   metric(p.new_model_market?"PRIZEPICKS STD":aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
-   metric(p.new_model_market?"NEW AI PROJECTION":"AI PROJECTION",fmt(projected),"projection"),
+   metric(p.new_model_market||p.line_only?"PRIZEPICKS STD":aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
+   metric(p.new_model_market||p.line_only?"NEW AI PROJECTION":"AI PROJECTION",fmt(projected),"projection"),
    metric("NEW AI CHANCE",chance(p),"chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
@@ -1134,7 +1220,9 @@ function renderAI(){
     defenseScenario.source_games+" verified earlier team games · game-to-game defensive scenarios added around the already opponent-aware AI center (no double-counted average). Team totals, not positional DvP. Uncalibrated research.":
     "20K residual simulation: opponent-specific defensive scenario history unavailable. The center may include an opponent-aware model, but draw distribution is NOT opponent-conditioned."));
   }
-  const probabilityNote=node("div","match",(p.new_model_market?
+  const probabilityNote=node("div","match",(p.line_only?
+    "Authentic standard PrizePicks line verified, but the new AI projection is not available or is being recalculated. No direction, simulation, chance or pick is implied. ":
+    p.new_model_market?
     "NEW AI: 20,000 jointly sampled historical error scenarios. PRA equals the sum of modeled PTS, REB and AST outcomes. Modeled chance is NOT a calibrated hit rate. ":
     combinedSimAvailable(p)?
     "20,000 bootstrap draws centered on COMBINED projection using original-model holdout errors. Not calibrated on combined-model outcomes. ":
@@ -1197,11 +1285,16 @@ function renderAI(){
      "). Projection and estimated probability were recalculated using prior games; "+
      "injury impact is unvalidated; no verified hit percentage is available."));
   }
+  if(p.line_only)detailNotes.push(node("div","research-note",
+   "VERIFIED STANDARD LINE · "+(p.injury_display_reason==="INJURY_REMODEL_PENDING"?
+    "Awaiting updated injury-aware model; affected older projection deliberately withheld.":
+    "New AI model not yet published for this player and stat.")+
+    " The line remains visible for game coverage; no projection, OVER/UNDER lean or probability is claimed."));
   const lean=node("div","ai-lean");
   lean.append(node("span","ai-lean-title","RAW MODEL DIRECTION"),
     node("span","ai-lean-choice "+sideClass(side),
        side==="OVER"?"↑ OVER":side==="UNDER"?"↓ UNDER":"NO LEAN"),
-    node("span","ai-lean-sub",available?
+    node("span","ai-lean-sub",p.line_only?"AWAITING VERIFIED NEW AI":available?
       (p.combined_model_count===2?"Combined two-model projection":"Original AI projection"):
       "Original AI projection"));
   detailNotes.push(node("div","mini",frozenResearchScreen(p)));
@@ -1866,8 +1959,10 @@ function setGameFilter(game){
    ].some(x=>x.game===game&&x.is_pregame_prediction===true&&
      Number.isFinite(Number(x.projection))&&
      Date.parse(x.captured_at||noLineForecast?.generated_at)<Date.parse(x.start));
- if(game&&!ai.some(x=>x.game===game)&&!independentForecastAvailable&&
-    odds.some(x=>x.game===game)){
+ if(game&&!ai.some(x=>x.game===game)&&
+    !standardLineCards.some(x=>x.game===game)&&
+    ![...newMarketIndex.values()].some(x=>x&&x.game===game)&&
+    !independentForecastAvailable&&odds.some(x=>x.game===game)){
   for(const tab of document.querySelectorAll(".tab"))
    tab.setAttribute("aria-selected",String(tab.dataset.tab==="odds"));
   for(const panel of document.querySelectorAll(".panel"))
@@ -2672,6 +2767,9 @@ async function refresh(){
  const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades,publishedQuick,newMarketResponse]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json"),fetchJSON("ai_prizepicks_quick_join.json"),fetchJSON("lagged_matchup_live_all_markets.json")]);
 newMultimarketFeed=newMarketResponse.status==="fulfilled"?newMarketResponse.value:null;
 newMarketIndex=refreshNewMarketIndex(newMultimarketFeed);
+const providerStandards=await fetchJSON("prizepicks_model_input.json").catch(()=>null);
+standardLineCards=verifiedStandardLineCoverage(providerStandards,
+  sch.status==="fulfilled"?sch.value:null);
 underdogNews=await fetchJSON("underdog_nba_injury_alerts.json").catch(()=>null);
 freeOfficialWatch=await fetchJSON("free_nba_injury_watch.json").catch(()=>null);
 officialInjuryFeed=inj.status==="fulfilled"?inj.value:null;
