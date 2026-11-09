@@ -94,7 +94,7 @@ def evaluate(rows, season=HOLDOUT):
                         "team":team,"actual":actual,**forecast})
             history.append(target)
     if not paired:
-        raise RuntimeError("No matched holdout games")
+        raise RuntimeError("No matched holdout games: "+json.dumps({"source_rows":len(rows),"player_team_groups":len(grouped),"excluded":dict(excluded),"sample_group_sizes":sorted([len(g) for g in grouped.values()],reverse=True)[:12],"sample_rows":list(rows[:2])},default=str))
     def summarise(sample):
         n=len(sample)
         if not n:
