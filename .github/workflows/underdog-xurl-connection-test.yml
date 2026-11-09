@@ -1,0 +1,59 @@
+name: Diagnose Underdog NBA X API connection with xurl
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  xurl-connection-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check X API bearer secret exists without printing it
+        env:
+          UNDERDOG_X_BEARER_TOKEN: ${{ secrets.UNDERDOG_X_BEARER_TOKEN }}
+        run: |
+          if [ -z "${UNDERDOG_X_BEARER_TOKEN:-}" ]; then
+            echo "::error::UNDERDOG_X_BEARER_TOKEN missing. Add an app-only X API bearer secret in Actions repository secrets."
+            exit 1
+          fi
+          echo "X API secret is configured (value not displayed)."
+      - name: Install official xurl diagnostic CLI
+        run: npm install --global @xdevplatform/xurl
+      - name: Validate authenticated UnderdogNBA lookup and recent-read access
+        env:
+          UNDERDOG_X_BEARER_TOKEN: ${{ secrets.UNDERDOG_X_BEARER_TOKEN }}
+        run: |
+          set -euo pipefail
+          TEMP_XURL_HOME="$(mktemp -d)"
+          trap 'rm -rf "$TEMP_XURL_HOME"' EXIT
+          export HOME="$TEMP_XURL_HOME"
+          # Register app-only credentials through stdin; never place token in
+          # shell arguments, echoed commands, or published diagnostic files.
+          set +x
+          printf '%s' "$UNDERDOG_X_BEARER_TOKEN" | xurl auth app-only - >/dev/null
+          xurl --auth app '/2/users/by/username/UnderdogNBA' > "$RUNNER_TEMP/xurl-user.json"
+          python - "$RUNNER_TEMP/xurl-user.json" <<'PY'
+          import json,sys
+          obj=json.load(open(sys.argv[1]))
+          user=obj.get('data',{})
+          if str(user.get('username','')).casefold()!='underdognba' or not str(user.get('id','')).isdigit():
+              raise ValueError('Authenticated xurl call did not resolve UnderdogNBA account')
+          with open(sys.argv[1]+'.id','w') as f:f.write(str(user['id']))
+          print('xurl authorized UnderdogNBA account lookup; account ID verified.')
+          PY
+          owner="$(cat "$RUNNER_TEMP/xurl-user.json.id")"
+          xurl --auth app "/2/users/$owner/tweets?max_results=5&tweet.fields=created_at,author_id" > "$RUNNER_TEMP/xurl-posts.json"
+          python - "$RUNNER_TEMP/xurl-posts.json" "$owner" <<'PY'
+          import json,sys
+          obj=json.load(open(sys.argv[1]))
+          tweets=obj.get('data',[])
+          if not isinstance(tweets,list):raise ValueError('Unexpected X posts response')
+          count=sum(str(p.get('author_id'))==sys.argv[2] for p in tweets)
+          if tweets and count!=len(tweets):raise ValueError('Wrong author in X timeline response')
+          print('Authenticated xurl posts read succeeded; matching posts:',count)
+          print('No API keys or tweet content were logged.')
+          PY
