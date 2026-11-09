@@ -60,6 +60,27 @@ class QuickJoinTests(unittest.TestCase):
         pp,ai,form=data()
         ai["predictions"].append({**ai["predictions"][0],"projection":40})
         self.assertEqual(build(pp,ai,form,now=NOW)["offers_matched"],0)
+    def test_compact_health_manifest_is_generated_without_relying_on_large_file_reader(self):
+        import json, tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        import iphone_bot.publish_live_pp_ai_join as app
+        pp,ai,form=data()
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp)
+            for filename,value in (("provider.json",pp),("ai.json",ai),("form.json",form)):
+                (folder/filename).write_text(json.dumps(value))
+            with patch.object(app,"SOURCE",folder/"provider.json"), patch.object(app,"AI",folder/"ai.json"), patch.object(app,"FORM",folder/"form.json"), patch.object(app,"OUT",folder/"large.json"), patch.object(app,"HEALTH",folder/"health.json"):
+                # Use the production main implementation; its result may be empty if
+                # actual clock differs from the fixture. The health report must still exist.
+                try:app.main()
+                except SystemExit:pass
+            report=json.loads((folder/"health.json").read_text())
+            self.assertIn("offers_matched",report)
+            self.assertIn("matched_by_game",report)
+            self.assertNotIn("comparisons",report)
+            self.assertTrue(report["research_only"])
+
     def test_overlays_existing_model_without_odds_or_probability(self):
         pp,ai,form=data()
         pp["board_offers"].append({**pp["board_offers"][0],"id":"p-2","line":30.5})
