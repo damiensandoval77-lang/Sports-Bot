@@ -34,7 +34,7 @@ def multi_origin_request(url, requester=request_json):
             return requester(candidate,timeout=7)
         except (OSError,TimeoutError,ValueError,RuntimeError) as err:
             errors.append(type(err).__name__)
-    raise RuntimeError("All independent official NBA endpoints failed: "+",".join(errors))
+    raise OSError("All independent official NBA endpoints failed: "+",".join(errors))
 
 def pending_matchup_requests(records,now=None,max_matchups=12,days_back=3):
     now=now or dt.datetime.now(dt.timezone.utc)
