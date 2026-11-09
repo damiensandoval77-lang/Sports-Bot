@@ -78,7 +78,7 @@ def probe():
                     "PRIZEPICKS + INDEPENDENT AI" in text
                 ) and len(values)>=2 and all(v.strip() not in ("","—","Unavailable") for v in values[:2]):
                     present.append(text.splitlines()[0][:75])
-            tiles=page.locator("#game-strip button.game-tile").all_inner_texts()
+            tiles=[t.get_attribute("aria-label") or "" for t in page.locator("#game-strip button.game-tile").all()]
             recognized=[game for game in EXPECTED if any(game in tile for tile in tiles)]
             result=assess(count,present,recognized,errors,now)
             result["ai_summary"]=page.locator("#ai-total").inner_text()[:240]
