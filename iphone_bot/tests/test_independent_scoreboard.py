@@ -125,5 +125,20 @@ class IndependentScoreboardTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             nba_live_scoreboard([DAY],requester=fail)
 
+
+    def test_cached_dated_schedule_cannot_be_called_live(self):
+        baseline={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat()}]}
+        def blocked(_):raise OSError("blocked")
+        def cached(_):
+            return {"events":[{"id":"123","game":"Away @ Home","date_eastern":DAY.isoformat(),
+                    "start":"2026-11-09T23:00:00Z","game_state":"pre",
+                    "away_score":None,"home_score":None}],
+                    "source":"Previously verified NBA schedule cache (NOT live scores)"}
+        r=snapshot([DAY],reader=blocked,fallback=cached,now=NOW,schedule=baseline)
+        self.assertEqual(r["status"],"NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
+        self.assertFalse(r["is_live_score_source"])
+        self.assertEqual(r["total_games"],1)
+
 if __name__=="__main__":
     unittest.main()
