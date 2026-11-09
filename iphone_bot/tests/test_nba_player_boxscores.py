@@ -1,7 +1,7 @@
 import datetime as dt
 import unittest
 
-from iphone_bot.refresh_nba_player_boxscores import collect_boxscores, NBA_LIVE_URLS, BOX_BASES
+from iphone_bot.refresh_nba_player_boxscores import collect_boxscores, waiting_for_tipoff, NBA_LIVE_URLS, BOX_BASES
 
 DAY=dt.date(2026,11,9)
 NOW=dt.datetime(2026,11,9,23,30,tzinfo=dt.timezone.utc)
@@ -62,6 +62,30 @@ class LiveBoxscoreTests(unittest.TestCase):
     def test_previous_day_scoreboard_rejected(self):
         with self.assertRaises(ValueError):
             collect_boxscores(DAY,fetch=lambda _:{"scoreboard":{"gameDate":"2026-11-08","games":[]}},now=NOW)
+
+    def test_verified_full_slate_before_tipoff_waits_without_fake_stats(self):
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat(),
+                           "start":"2026-11-10T00:00:00+00:00"}]}
+        result=waiting_for_tipoff(schedule,DAY,now=NOW)
+        self.assertEqual(result["status"],"WAITING_FOR_SCHEDULED_TIPOFF")
+        self.assertIsNone(result["captured_at"])
+        self.assertEqual(result["games"],[])
+        self.assertFalse(result["coverage"]["complete"])
+
+    def test_after_tipoff_must_attempt_live_data(self):
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat(),
+                           "start":"2026-11-09T20:00:00+00:00"}]}
+        self.assertIsNone(waiting_for_tipoff(schedule,DAY,now=NOW))
+
+    def test_incomplete_or_wrong_day_schedule_cannot_suppress_live_poll(self):
+        base={"coverage_complete":False,"dates_eastern":[DAY.isoformat()],
+              "games":[{"date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00+00:00"}]}
+        self.assertIsNone(waiting_for_tipoff(base,DAY,now=NOW))
+        base["coverage_complete"]=True
+        base["dates_eastern"]=["2026-11-08"]
+        self.assertIsNone(waiting_for_tipoff(base,DAY,now=NOW))
 
     def test_s3_backup_scoreboard_is_attempted(self):
         seen=[]
