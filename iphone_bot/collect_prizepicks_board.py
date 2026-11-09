@@ -62,7 +62,7 @@ def collect(fetch_page, max_pages=MAX_PAGES, now=None):
                 seen.add(s["id"]);rows.append(s)
         cursor=meta.get("next_cursor")
         if cursor is None:
-            return {"generated_at":now.isoformat(),"status":"VERIFIED_NBA_PRIZEPICKS_SNAPSHOT",
+            return {"generated_at":now.isoformat(),"status":("VERIFIED_NBA_PRIZEPICKS_SNAPSHOT" if status=="fresh" else "PARTIAL_NBA_PRIZEPICKS_SNAPSHOT"),
                     "source_status":status,"complete_pagination":True,"pages":page+1,
                     "rows":rows,"line_source":"PrizePicks via prizepicksapi.com",
                     "is_ai_projection":False,"source_observed_at":meta.get("observed_at")}
@@ -106,7 +106,7 @@ def main():
           "rows:",len(result["rows"]),"pages:",result["pages"],
           "complete:",result["complete_pagination"])
     # Partial snapshots are retained for diagnostics, not silently treated as full slate.
-    if not result["complete_pagination"]:
+    if not result["complete_pagination"] or result["source_status"]!="fresh":
         raise SystemExit(2)
 
 if __name__=="__main__":
