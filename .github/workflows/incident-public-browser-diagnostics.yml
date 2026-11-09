@@ -1,0 +1,70 @@
+name: Diagnose deployed NBA AI board state (public browser)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/incident-public-browser-diagnostics.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-public-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public browser only
+        run: |
+          pip install 'playwright==1.56.0'
+          python -m playwright install --with-deps chromium
+      - name: Inspect live page and each JSON without credentials or editing
+        run: |
+          python - <<'PY'
+          import json
+          from playwright.sync_api import sync_playwright
+          u='https://damiensandoval77-lang.github.io/Sports-Bot/'
+          with sync_playwright() as p:
+            browser=p.chromium.launch(headless=True,args=['--no-sandbox'])
+            page=browser.new_page(viewport={'width':390,'height':844},timezone_id='America/New_York')
+            exceptions=[];errors=[]
+            page.on('pageerror',lambda x:exceptions.append(str(x)[:400]))
+            page.on('response',lambda x:errors.append({'status':x.status,'url':x.url.rsplit('/',1)[-1][:95]}) if x.status>=400 else None)
+            response=page.goto(u+'?diagnostic=live',wait_until='domcontentloaded',timeout=45000)
+            page.wait_for_timeout(6500)
+            state=page.evaluate("""() => ({
+              page_status:document.querySelector('#status')?.textContent,
+              ai_total:document.querySelector('#ai-total')?.textContent,
+              ai_cards:document.querySelectorAll('#ai-board article.compact-prop').length,
+              line_only_labels:[...document.querySelectorAll('#ai-board .ai-metric-label')]
+                 .filter(e=>e.textContent.includes('PRIZEPICKS STD')).length,
+              standard_cards:typeof standardLineCards!=='undefined'?standardLineCards.length:null,
+              models:typeof newMarketIndex!=='undefined'?newMarketIndex.size:null,
+              generated:typeof newMultimarketFeed!=='undefined'?newMultimarketFeed?.generated_at:null,
+              line_source:typeof standardLineCards!=='undefined'&&standardLineCards.length?standardLineCards[0].game:null,
+              schedule:typeof nbaSchedule!=='undefined'?{status:nbaSchedule?.status, games:nbaSchedule?.games?.length}:null,
+              filtered_games:typeof nbaSchedule!=='undefined'?nbaSchedule?.games?.map(x=>x.game):null,
+              independent:typeof ai!=='undefined'?ai.length:null,
+              provider_status:typeof ppState!=='undefined'?ppState:null,
+              current_time:new Date().toISOString()
+            })""")
+            print('BROWSER STATE',json.dumps(state,indent=2))
+            print('JS EXCEPTIONS',json.dumps(exceptions[:12]))
+            print('HTTP ERRORS',json.dumps(errors[:30]))
+            report=page.evaluate("""async () => {
+              const paths=['prizepicks_model_input.json','lagged_matchup_live_all_markets.json','nba_schedule.json'];
+              const results=[];
+              for(const file of paths){
+                try{
+                  const r=await fetch('./'+file+'?debug='+Date.now(),{cache:'no-store'});
+                  const x=r.ok?await r.json():null;
+                  results.push({file,status:r.status,kind:x?.status,count:x?.picks?.length||x?.predictions?.length||x?.games?.length||0,
+                     updated:x?.updated_at||x?.generated_at,source:x?.source});
+                }catch(e){results.push({file,error:String(e).slice(0,180)})}
+              }
+              return results;
+            }""")
+            print('LIVE JSON FETCH',json.dumps(report,indent=2))
+            browser.close()
+          PY
