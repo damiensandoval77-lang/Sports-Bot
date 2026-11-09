@@ -19,6 +19,7 @@ SOURCE=ROOT/"docs/prizepicks_site.json"
 AI=ROOT/"docs/ai_projection_fallback.json"
 FORM=ROOT/"docs/current_form.json"
 OUT=ROOT/"docs/ai_prizepicks_quick_join.json"
+HEALTH=ROOT/"docs/ai_prizepicks_quick_join_health.json"
 STAT={"PTS","REB","AST","PRA"}
 MAX_PP_AGE=90*60
 MAX_MODEL_AGE=3*3600
@@ -147,6 +148,23 @@ def main():
         except (OSError,ValueError):return {}
     result=build(read(SOURCE),read(AI),read(FORM))
     OUT.write_text(json.dumps(result,separators=(",",":"),ensure_ascii=False)+"\n")
+    health={
+        "generated_at":result["generated_at"],
+        "status":result["status"],
+        "provider_generated_at":result["provider_generated_at"],
+        "model_generated_at":result["model_generated_at"],
+        "offers_matched":result["offers_matched"],
+        "matched_games":result["matched_games"],
+        "matched_by_game":dict(sorted(__import__("collections").Counter(
+            row["game"] for row in result["comparisons"]).items())),
+        "partial_provider_board":result.get("partial_provider_board"),
+        "source_coverage_complete":result.get("source_coverage_complete"),
+        "research_only":True,
+        "calibrated_hit_probability_available":False,
+        "skipped_reasons":result["skipped_reasons"],
+        "large_file":"docs/ai_prizepicks_quick_join.json",
+    }
+    HEALTH.write_text(json.dumps(health,indent=2)+"\n")
     print("QUICK PP × AI:",result["status"],
           "matches:",result["offers_matched"],
           "games:",result["matched_games"])
