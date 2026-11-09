@@ -12,6 +12,8 @@ on:
     paths:
       - 'scripts/sync_private_nfl_snapshot.py'
       - 'tests/test_nfl_private_sync.py'
+      - 'scripts/audit_nfl_reliability.py'
+      - 'tests/test_nfl_reliability.py'
       - '.github/workflows/nfl-private-sync.yml'
   workflow_dispatch:
   schedule:
@@ -71,6 +73,7 @@ jobs:
             git reset --hard origin/main
             python scripts/sync_private_nfl_snapshot.py
             python scripts/reconcile_nfl_picks.py
+            python scripts/audit_nfl_reliability.py
           done
           echo "::error::Could not complete atomic NFL private-public sync"
           exit 1
