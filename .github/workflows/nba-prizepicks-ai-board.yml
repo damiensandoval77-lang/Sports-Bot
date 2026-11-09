@@ -25,9 +25,9 @@ on:
       - 'iphone_bot/tests/test_build_prizepicks_model_input.py'
       - '.github/workflows/nba-prizepicks-ai-board.yml'
   schedule:
-    # Independent fallback after both 16:28 and 23:28 UTC PrizePicks refreshes.
+    # Fallback after each bounded 16:28, 21:28, 23:28 UTC PrizePicks refresh.
     # Dispatch from site publisher remains the primary fast path.
-    - cron: '08 17,0 * * *'
+    - cron: '08 17,22,0 * * *'
 permissions:
   contents: write
 concurrency:
