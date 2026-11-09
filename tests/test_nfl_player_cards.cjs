@@ -55,6 +55,6 @@ assert.equal(h({...base,gradeHealth:{expected_final_picks:2,graded_picks:0,
  pending_picks:2,pending_reasons:{boxscore_not_yet_published:2}}}).label,'GRADING DELAY');
 assert.equal(h({...base,gradeHealth:{expected_final_picks:2,graded_picks:0,
  pending_picks:2,pending_reasons:{unsupported_exact_fantasy_scoring:2}}}).label,'SAVED PROPS');
-assert(html.includes('--player-name:#b4d3ff') && html.includes('player-group>.mainline .head strong'),
+assert(html.includes('--player-head:#050608') && html.includes('--player-name:#b4d3ff') && html.includes('player-group>.mainline .head strong'),
  'Player name color must remain distinct from market text');
 console.log('NFL health states and player header styling checks passed');
