@@ -185,18 +185,25 @@ def publish(raw_pages,comparisons,now=None,schedule=None):
     schedule_games=(schedule or {}).get("games",[])
     board_offers=[]
     ambiguous=0
+    assignment_reasons=Counter()
     for original in distinct.values():
         item=dict(original)
         possibilities=[]
+        same_team=0
+        opponent_valid=0
+        time_valid=0
         for game in schedule_games:
             try:
                 start=timeparse(game.get("start"))
                 if not start or start<=now:continue
                 opponents=expected_opponents(game.get("game"),item["team"])
                 if not opponents:continue
+                same_team+=1
                 if item["opponent"] and item["opponent"] not in opponents:continue
+                opponent_valid+=1
                 stated=timeparse(item.get("starts_at"))
                 if stated and abs((start-stated).total_seconds())>30*60:continue
+                time_valid+=1
                 if not item["opponent"] and not stated:continue
                 possibilities.append(game)
             except (TypeError,ValueError,KeyError):continue
@@ -208,6 +215,17 @@ def publish(raw_pages,comparisons,now=None,schedule=None):
             board_offers.append(item)
         elif len(possibilities)>1:
             ambiguous+=1
+            assignment_reasons["ambiguous_multiple_games"]+=1
+        elif not item["opponent"] and not item["starts_at"]:
+            assignment_reasons["missing_opponent_and_tipoff"]+=1
+        elif same_team==0:
+            assignment_reasons["team_not_in_future_schedule"]+=1
+        elif opponent_valid==0:
+            assignment_reasons["opponent_mismatch"]+=1
+        elif time_valid==0:
+            assignment_reasons["tipoff_time_mismatch"]+=1
+        else:
+            assignment_reasons["no_unique_verified_fixture"]+=1
     matched=[]
     unmatched=0
     for comparison in comparisons:
@@ -241,6 +259,7 @@ def publish(raw_pages,comparisons,now=None,schedule=None):
         "games_with_independent_lines":len({o["game"] for o in board_offers}),
         "unassigned_or_ambiguous_events":len(distinct)-len(board_offers),
         "ambiguous_event_matches":ambiguous,
+        "unassigned_reason_counts":dict(sorted(assignment_reasons.items())),
         "board_offers":board_offers,
         "offers":matched,
         "notice":"Read-only third-party observations. May lag the app. FanDuel odds and EV are separate; PrizePicks pick'em lines are NOT American-odds quotes."}
@@ -476,6 +495,7 @@ def main():
         "matched_upcoming_offers":out["independent_board_count"],
         "rejected_by_reason":out["filtered_out_reasons"],
         "unassigned_or_ambiguous_events":out["unassigned_or_ambiguous_events"],
+        "unassigned_reason_counts":out["unassigned_reason_counts"],
         "credits_reported_charged":out["total_provider_charged_credits"],
         "monthly_credits_header":out["remaining_provider_credits"],
         "topup_balance_not_exposed_by_monthly_header":True,
