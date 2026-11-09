@@ -51,6 +51,8 @@ def summarize(board,schedule):
         "valid_scheduled_market_rows":len(verified),
         "markets_by_game":dict(sorted(by_game.items())),
         "source_eligible_but_unassigned":board.get("unassigned_or_ambiguous_events"),
+        "source_unassigned_reason_counts":board.get("unassigned_reason_counts",{}),
+        "source_unassigned_reasons_available":isinstance(board.get("unassigned_reason_counts"),dict),
         "known_upcoming_scheduled_games":len(scheduled),
         "known_upcoming_games_with_lines":len(offered),
         "known_upcoming_games_without_lines":sorted(scheduled-offered),
