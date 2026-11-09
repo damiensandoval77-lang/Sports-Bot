@@ -36,3 +36,25 @@ assert.equal((output.match(/class="market-entry"/g)||[]).length,2, 'One market e
 assert.equal((output.match(/class="seasonbar"/g)||[]).length,2, 'No duplicate history');
 assert.deepEqual(lines.map(x=>x.line),['6.5','9.5','7.5','3.5'], 'Input data remains unchanged');
 console.log('NFL player grouping UI smoke tests passed');
+
+const healthStart=html.indexOf('function boardHealth(');
+const healthEnd=html.indexOf('async function init(){',healthStart);
+assert(healthStart>0 && healthEnd>healthStart,'Health state controller must exist');
+vm.runInContext(html.slice(healthStart,healthEnd),context);
+const h=options=>context.boardHealth(options);
+const base={loaded:true,scheduleReady:true,snapshotAgeHours:2,
+  gradingLoaded:true,gradeHealth:{expected_final_picks:0,graded_picks:0,
+  pending_picks:0,pending_reasons:{}},hasPartialSnapshot:false};
+assert.equal(h(base).label,'SAVED PROPS');
+assert.equal(h({...base,snapshotAgeHours:8}).label,'STALE PROPS');
+assert.equal(h({...base,gradingLoaded:false}).label,'PARTIAL DATA');
+assert.equal(h({...base,scheduleReady:false}).label,'PARTIAL DATA');
+assert.equal(h({...base,loaded:false,scheduleReady:false}).label,'DATA UNAVAILABLE');
+assert.equal(h({...base,loaded:false}).label,'PARTIAL DATA');
+assert.equal(h({...base,gradeHealth:{expected_final_picks:2,graded_picks:0,
+ pending_picks:2,pending_reasons:{boxscore_not_yet_published:2}}}).label,'GRADING DELAY');
+assert.equal(h({...base,gradeHealth:{expected_final_picks:2,graded_picks:0,
+ pending_picks:2,pending_reasons:{unsupported_exact_fantasy_scoring:2}}}).label,'SAVED PROPS');
+assert(html.includes('--player-name:#b4d3ff') && html.includes('player-group>.mainline .head strong'),
+ 'Player name color must remain distinct from market text');
+console.log('NFL health states and player header styling checks passed');
