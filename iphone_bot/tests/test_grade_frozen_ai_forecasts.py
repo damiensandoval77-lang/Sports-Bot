@@ -68,6 +68,46 @@ class FrozenAiGradingTests(unittest.TestCase):
         self.assertEqual(audit["ungraded"],0)
         self.assertFalse(audit["is_betting_hit_rate"])
 
+    def test_verified_official_inactive_excluded_without_zero_actual(self):
+        chosen=eligible_predictions([forecast(player="Lauri Markkanen")],NOW)
+        official={**final(player="Other Player")}
+        inactive={"player":"Lauri Markkanen","team":"UTA","opponent":"MIN",
+                  "date":"2026-11-08","source":"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
+                  "source_game_id":"0022600198","dnp_final_verified":True,
+                  "dnp_reason":"INACTIVE_RIGHT_WRIST","final_confirmed":True}
+        graded=settle_predictions(chosen,[official],confirmed_inactives=[inactive])
+        self.assertEqual(graded["new_grades"],0)
+        self.assertEqual(graded["new_exclusions"],1)
+        row=graded["records"][0]
+        self.assertEqual(row["status"],"EXCLUDED_VERIFIED_DNP")
+        self.assertIsNone(row["actual"])
+        self.assertIsNone(row["absolute_error"])
+        self.assertIsNone(row["betting_grade"])
+        audit=report("2026-11-08",chosen,graded,now=NOW)
+        self.assertEqual(audit["verified_dnp_exclusions"],1)
+        self.assertEqual(audit["graded"],0)
+        self.assertEqual(audit["ungraded"],0)
+        self.assertEqual(audit["accounted_for"],1)
+
+    def test_missing_name_unverified_dnp_is_not_excluded(self):
+        chosen=eligible_predictions([forecast(player="Other Player")],NOW)
+        row={"player":"Other Player","team":"UTA","opponent":"MIN",
+             "date":"2026-11-08","source":"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
+             "source_game_id":"0022600198","dnp_final_verified":False,
+             "dnp_reason":"CLAIM","final_confirmed":True}
+        result=settle_predictions(chosen,[],confirmed_inactives=[row])
+        self.assertEqual(result["records"],[])
+        self.assertEqual(result["new_exclusions"],0)
+
+    def test_confirmed_played_and_inactive_conflict_not_silently_excluded(self):
+        chosen=eligible_predictions([forecast()],NOW)
+        row={"player":"Ace Bailey","team":"UTA","opponent":"MIN",
+             "date":"2026-11-08","source":"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
+             "source_game_id":"0022600198","dnp_final_verified":True,
+             "dnp_reason":"CLAIM","final_confirmed":True}
+        result=settle_predictions(chosen,[final()],confirmed_inactives=[row])
+        self.assertEqual(result["records"],[])
+
     def test_ungraded_count_not_falsely_success(self):
         chosen=eligible_predictions([forecast()],NOW)
         result=settle_predictions(chosen,[])
