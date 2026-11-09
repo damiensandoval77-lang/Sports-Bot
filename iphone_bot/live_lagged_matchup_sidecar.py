@@ -104,6 +104,54 @@ def build_features(history,team,opponent,day,team_games):
         return None,"NONFINITE_LAGGED_FEATURE"
     return f,None
 
+def standard_points_offers(picks):
+    """One verified two-sided standard PrizePicks points line per player/game.
+
+    The upstream market feed contains demon and goblin alternatives at
+    different thresholds. Those must NEVER be used for the new AI's standard
+    comparison or probability. Ambiguous distinct standard thresholds fail
+    closed; do not pick the highest, lowest or first arbitrary line.
+    """
+    grouped=defaultdict(list)
+    rejected=defaultdict(int)
+    for p in picks:
+        if p.get("stat")!="Points":
+            continue
+        if p.get("pickem_tier")!="standard":
+            rejected["NON_STANDARD_POINTS_TIER"]+=1
+            continue
+        if p.get("direction") not in ("More","Less"):
+            rejected["INVALID_STANDARD_SIDE"]+=1
+            continue
+        try:
+            line=float(p["line"])
+        except (ValueError,TypeError,KeyError):
+            rejected["INVALID_STANDARD_LINE"]+=1
+            continue
+        if not math.isfinite(line) or line<0 or line>100:
+            rejected["INVALID_STANDARD_LINE"]+=1
+            continue
+        key=(str(p.get("player","")).casefold(),str(p.get("team","")),
+             str(p.get("game","")),str(p.get("start","")))
+        grouped[key].append(p)
+    selected=[]
+    for group in grouped.values():
+        unique_lines={float(p["line"]) for p in group}
+        if len(unique_lines)!=1:
+            rejected["CONFLICTING_STANDARD_LINES"]+=len(group)
+            continue
+        sides={p["direction"] for p in group}
+        if sides!={"More","Less"}:
+            rejected["INCOMPLETE_STANDARD_TWO_SIDED_LINE"]+=len(group)
+            continue
+        # Both directions quote the same standard number. One entry suffices
+        # for the projection and its independently calculated over/under odds.
+        most_recent=max(group,key=lambda p:str(p.get("market_updated") or ""))
+        selected.append({**most_recent,"pickem_tier":"standard",
+                         "standard_line_two_sided_verified":True})
+    return selected,dict(rejected)
+
+
 def forecast(records,offers,model_pack,*,now=None):
     now=now or datetime.now(timezone.utc)
     if model_pack.get("research_only") is not True or model_pack.get("production_modified") is not False:
@@ -122,9 +170,9 @@ def forecast(records,offers,model_pack,*,now=None):
         roster[str(x.get("player","")).casefold()].add((str(x["id"]),x["team"]))
     games=build_team_games(records,season="2026-27")
     out={}
-    excluded=defaultdict(int)
-    for p in offers["picks"]:
-        if p.get("stat")!="Points":continue
+    eligible,standard_rejections=standard_points_offers(offers["picks"])
+    excluded=defaultdict(int,standard_rejections)
+    for p in eligible:
         player=str(p.get("player","")).casefold()
         matches=roster.get(player,set())
         if len(matches)!=1:
@@ -165,6 +213,7 @@ def forecast(records,offers,model_pack,*,now=None):
         item=out.setdefault(key,{"player":p["player"],"player_id":pid,"team":team,
             "opponent":opp,"game":p["game"],"start":p["start"],"stat":"PTS",
             "line":p["line"],"market_updated":p["market_updated"],
+            "pickem_tier":"standard","standard_line_two_sided_verified":True,
             "projection":round(pred,3),"captured_at":now.isoformat(),
             "prediction_model":"TRAINED_2022_24_LAGGED_MATCHUP_POINTS_CHALLENGER",
             "calibrated_probability":None,"simulated_hit_rate":None,
@@ -183,6 +232,7 @@ def forecast(records,offers,model_pack,*,now=None):
       "source":"INDEPENDENT_VERIFIED_PRIZEPICKS_LINES",
       "live_model_replaced":False,"probabilities_validated":False,
       "historical_hit_probability_model":"2024_25_OUT_OF_TRAINING_RESIDUALS",
+      "market_line_policy":"STANDARD_ONLY_BOTH_SIDES_VERIFIED_NO_ALTERNATES",
       "production_grades_modified":False}
 
 def main():
