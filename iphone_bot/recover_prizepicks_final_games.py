@@ -10,7 +10,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
-from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc
+from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
 
 OUT=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 STATUS=ROOT/"docs/prizepicks_final_recovery_status.json"
@@ -88,6 +88,22 @@ def main():
         rows=[]
         report={"status":"PRIZEPICKS_FINAL_RECOVERY_FAILED","requested_matchups":None,
                 "verified_rows":0,"errors":[type(e).__name__]}
+    # Preview only: no mutation to the immutable research ledger here.
+    today = dt.datetime.now(ET).date()
+    target_dates = {(today-dt.timedelta(days=i)).isoformat() for i in range(4)}
+    now = dt.datetime.now(dt.timezone.utc)
+    pending = [r for r in records if r.get("status")=="PENDING" and
+               (start:=utc(r.get("start"))) and
+               (now-start).total_seconds()>=4*3600 and
+               start.astimezone(ET).date().isoformat() in target_dates]
+    preview = settle({"records":pending},[],final_games=rows)
+    graded = [r for r in preview["records"] if r.get("status")=="SETTLED"]
+    unresolved=[r for r in preview["records"] if r.get("status")=="PENDING"]
+    report["recent_research_pending_before_recovery"]=len(pending)
+    report["recent_research_settlement_matches"]=len(graded)
+    report["recent_research_unmatched_after_recovery"]=len(unresolved)
+    report["unmatched_player_stat_markets"]=len({(r.get("game"),r.get("player_id"),r.get("stat")) for r in unresolved})
+    report["unmatched_games"]=dict(sorted(__import__("collections").Counter(r.get("game","UNKNOWN") for r in unresolved).items()))
     OUT.parent.mkdir(parents=True,exist_ok=True)
     OUT.write_text(json.dumps(rows,indent=2)+"\n")
     STATUS.write_text(json.dumps({**report,
