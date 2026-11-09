@@ -42,15 +42,15 @@ jobs:
         run: |
           set -euo pipefail
           cp docs/injury_context.json "$RUNNER_TEMP/fetched-nba-injury.json"
-          python - "$RUNNER_TEMP/fetched-nba-injury.json" <<'PY'
+          if [ "$(python - "$RUNNER_TEMP/fetched-nba-injury.json" <<'PY'
           import json,sys
           x=json.load(open(sys.argv[1]))
-          if x.get('status')!='OFFICIAL_NBA_REPORT_VERIFIED' or x.get('injury_data_verified') is not True:
-            print('No new confirmed official report; leave latest verified feed intact')
-            sys.exit(8)
+          print('yes' if x.get('status')=='OFFICIAL_NBA_REPORT_VERIFIED' and x.get('injury_data_verified') is True else 'no')
           PY
-          rc=$?
-          if [ "$rc" -eq 8 ]; then exit 0; fi
+          )" != yes ]; then
+            echo 'No new confirmed official report; leave latest verified feed intact'
+            exit 0
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4; do
@@ -67,7 +67,7 @@ jobs:
           Path(sys.argv[1]).write_text('yes' if is_changed else 'no')
           print('Official NBA player status transitions:',len(result.get('new_changes',[])))
           PY
-            if ! git diff --quiet -- docs/free_nba_injury_watch.json; then
+            if [ -n "$(git status --porcelain -- docs/free_nba_injury_watch.json)" ]; then
               git add docs/injury_context.json docs/free_nba_injury_watch.json
             else
               echo 'No newer verified official injury report'
