@@ -10,11 +10,41 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from iphone_bot.fetch_nba_schedule import collect, read_schedule, nba_season_schedule
+from iphone_bot.fetch_nba_schedule import collect, read_schedule, nba_season_schedule, parse_nba_game, request_json
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/nba_scoreboard_independent.json"
 EASTERN = ZoneInfo("America/New_York")
+NBA_LIVE_URLS = (
+    "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
+    "https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/scoreboard/todaysScoreboard_00.json",
+)
+
+def nba_live_scoreboard(days, requester=request_json):
+    """Fetch live NBA scoreboard via CDN or original mediaops S3 source."""
+    failures = []
+    for url in NBA_LIVE_URLS:
+        try:
+            result = requester(url)
+            scoreboard = result["scoreboard"]
+            raw = scoreboard["games"]
+            if not isinstance(raw, list):
+                raise ValueError("NBA live games missing")
+            rows = []
+            seen = set()
+            for game in raw:
+                parsed = parse_nba_game(game, set(days))
+                if parsed is not None and parsed["id"] not in seen:
+                    seen.add(parsed["id"])
+                    rows.append(parsed)
+            return {"events": sorted(rows, key=lambda g:g["start"]),
+                    "source": "NBA official liveData scoreboard via "+
+                              ("NBA CDN" if url == NBA_LIVE_URLS[0] else "mediaops S3"),
+                    "rejected": len(raw)-len(rows)}
+        except (OSError, ValueError, TypeError, KeyError, RuntimeError, TimeoutError) as e:
+            failures.append(type(e).__name__)
+    raise RuntimeError("All NBA live scoreboard endpoints failed: "+", ".join(failures))
+
 
 def expected_matchups(schedule, days):
     """Only trust an explicitly complete schedule for the same requested dates."""
@@ -46,7 +76,8 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
             rows = backup["events"]
             report = {"source_records_rejected": backup.get("rejected", 0)}
             source = backup.get("source") or "NBA public CDN season schedule"
-            status = "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"
+            status = ("OBSERVED_NBA_LIVE_SCOREBOARD" if source.startswith("NBA official liveData")
+                      else "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
         if not isinstance(rows, list):
             raise ValueError("Scoreboard games must be a list")
         expected = expected_matchups(schedule, days)
@@ -62,7 +93,7 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
             "generated_at": now.isoformat(),
             "status": status,
             "source": source,
-            "is_live_score_source": status == "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES",
+            "is_live_score_source": status in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES","OBSERVED_NBA_LIVE_SCOREBOARD"),
             "dates_eastern": dates,
             "total_games": len(rows),
             "games": rows,
@@ -94,7 +125,7 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
 
 def main():
     day=dt.datetime.now(EASTERN).date()
-    days=[day,day+dt.timedelta(days=1)]
+    days=[day]
     previous = None
     if OUTPUT.exists():
         try:
@@ -108,11 +139,16 @@ def main():
             baseline = json.loads(baseline_path.read_text())
         except (OSError, ValueError):
             pass
-    result=snapshot(days,previous=previous,schedule=baseline,fallback=nba_season_schedule)
+    def alternative(dates):
+        try:
+            return nba_live_scoreboard(dates)
+        except RuntimeError:
+            return nba_season_schedule(dates)
+    result=snapshot(days,previous=previous,schedule=baseline,fallback=alternative)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps({"status":result["status"],"total_games":result["total_games"],
                       "generated_at":result["generated_at"],"error":result.get("error")}))
-    if result["status"] not in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES", "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"):
+    if result["status"] not in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES", "OBSERVED_NBA_LIVE_SCOREBOARD", "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"):
         raise SystemExit(1)
 
 if __name__=="__main__":

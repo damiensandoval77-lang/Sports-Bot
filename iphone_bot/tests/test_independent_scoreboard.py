@@ -1,6 +1,6 @@
 import datetime as dt
 import unittest
-from iphone_bot.refresh_independent_scoreboard import snapshot
+from iphone_bot.refresh_independent_scoreboard import snapshot, nba_live_scoreboard, NBA_LIVE_URLS
 
 UTC=dt.timezone.utc
 NOW=dt.datetime(2026,11,9,12,tzinfo=UTC)
@@ -95,6 +95,35 @@ class IndependentScoreboardTests(unittest.TestCase):
         r=snapshot([DAY],reader=blocked,fallback=failed,now=NOW)
         self.assertEqual(r["status"],"UNAVAILABLE_UPSTREAM_ERROR")
         self.assertIsNone(r["generated_at"])
+
+
+    def test_nba_live_cdn_scoreboard_parses_real_score_pair(self):
+        def response(_):
+            return {"scoreboard":{"games":[
+                {"gameId":"0022600001","gameDateTimeUTC":"2026-11-09T23:00:00Z",
+                 "gameStatus":2,"period":2,
+                 "awayTeam":{"teamCity":"Away","teamName":"Team","teamTricode":"AWY","score":53},
+                 "homeTeam":{"teamCity":"Home","teamName":"Team","teamTricode":"HOM","score":58}}
+            ]}}
+        result=nba_live_scoreboard([DAY],requester=response)
+        self.assertEqual(result["events"][0]["away_score"],53)
+        self.assertEqual(result["events"][0]["home_score"],58)
+        self.assertEqual(result["events"][0]["game_state"],"in")
+
+    def test_s3_fallback_after_nba_cdn_http_error(self):
+        visited=[]
+        def response(url):
+            visited.append(url)
+            if url==NBA_LIVE_URLS[0]:raise OSError("403")
+            return {"scoreboard":{"games":[]}}
+        r=nba_live_scoreboard([DAY],requester=response)
+        self.assertEqual(visited,list(NBA_LIVE_URLS))
+        self.assertIn("mediaops S3",r["source"])
+
+    def test_both_live_sources_fail_without_false_scores(self):
+        def fail(_):raise OSError("blocked")
+        with self.assertRaises(RuntimeError):
+            nba_live_scoreboard([DAY],requester=fail)
 
 if __name__=="__main__":
     unittest.main()
