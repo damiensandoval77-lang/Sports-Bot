@@ -1,6 +1,10 @@
 name: Refresh independent NBA PrizePicks full-slate lines
 on:
   workflow_dispatch:
+  push:
+    branches: ['main']
+    paths:
+      - 'docs/prizepicks_manual_refresh_request.json'
   schedule:
     # Two daily NBA pregame refresh windows, seven hours apart; up to four compact pages each.
     # Uses proven top-up access even if the monthly remaining-credit header is zero.
