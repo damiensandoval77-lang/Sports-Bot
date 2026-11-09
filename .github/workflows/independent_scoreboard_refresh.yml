@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "iphone_bot/refresh_independent_scoreboard.py"
+      - "iphone_bot/official_game_id_index.py"
       - "docs/nba_schedule.json"
       - "docs/verified_official_nba_fixtures.json"
       - ".github/workflows/independent_scoreboard_refresh.yml"
@@ -15,6 +16,7 @@ on:
     paths:
       - "iphone_bot/refresh_independent_scoreboard.py"
       - "iphone_bot/tests/test_independent_scoreboard.py"
+      - "iphone_bot/tests/test_official_game_id_index.py"
       - "iphone_bot/tests/test_scoreboard_failure_workflow.py"
       - ".github/workflows/independent_scoreboard_refresh.yml"
 
@@ -38,6 +40,8 @@ jobs:
           python-version: "3.11"
       - name: Test scoreboard refresh logic
         run: python -m unittest discover -s iphone_bot/tests -p 'test_independent_scoreboard.py' -v
+      - name: Verify official game ID index and immutable source checks
+        run: python -m unittest discover -s iphone_bot/tests -p "test_official_game_id_index.py" -v
       - name: Test scoreboard workflow failure handling
         run: python -m unittest discover -s iphone_bot/tests -p 'test_scoreboard_failure_workflow.py' -v
       - name: Refresh third-party public NBA scores without odds credits
@@ -50,7 +54,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/nba_scoreboard_independent.json
+          git add docs/nba_scoreboard_independent.json docs/official_nba_game_ids.json
           if ! git diff --cached --quiet; then
             git commit -m "Update NBA scoreboard observation or fetch failure status"
             git pull --rebase origin main
