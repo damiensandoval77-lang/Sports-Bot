@@ -55,6 +55,8 @@ class LiveBoxscoreTests(unittest.TestCase):
         result=collect_boxscores(DAY,fetch=fetch,now=NOW)
         self.assertEqual(result["coverage"]["active_or_final_count"],1)
         self.assertEqual(result["coverage"]["observed_game_count"],0)
+        self.assertEqual(result["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
+        self.assertFalse(result["coverage"]["complete"])
         self.assertEqual(result["games"],[])
 
     def test_s3_backup_scoreboard_is_attempted(self):
