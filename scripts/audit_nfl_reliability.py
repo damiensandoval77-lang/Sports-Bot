@@ -64,8 +64,6 @@ def audit(root=ROOT):
         "archived_pregame_lines": len(archive),
         "graded_picks": len(graded),
         "pending_picks": len(pending),
-        "eligible_frozen_final_picks": len(expected_keys),
-        "missing_final_pick_grades": len(missing),
         "expected_final_picks": len(graded) + len(pending),
     }
     for key, actual in counts.items():
@@ -114,6 +112,8 @@ def audit(root=ROOT):
         "archived_pregame_lines": len(archive),
         "graded_picks": len(graded),
         "pending_picks": len(pending),
+        "eligible_frozen_final_picks": len(expected_keys),
+        "missing_final_pick_grades": len(missing),
         "warnings": warnings,
         "problems": problems,
     }
