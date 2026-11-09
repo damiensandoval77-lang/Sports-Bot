@@ -1056,14 +1056,27 @@ function renderAI(){
  const originalBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
  // Never show a conflicting legacy alternate threshold beside an authenticated
  // standard new-AI card. Exactly one main card per player/game/stat.
+ const liveStandardMode=standardLineCards.length>0;
+ const currentStandard=new Map(standardLineCards.map(p=>[newModelKey(p),p]));
+ // The legacy quick-join is an old model, not the new four-market AI.
+ // Once verified standards are available, it must not replace the new AI
+ // with older projections or alternate (Goblin/Demon) player lines.
  const baseBoard=originalBoard.filter(p=>{
    const n=newMarketIndex.get(newModelKey(p));
+   if(liveStandardMode){
+     const quote=currentStandard.get(newModelKey(p));
+     return Boolean(n&&quote&&Number(p.line)===quote.line&&n.line===quote.line);
+   }
    return !n||Number(p.line)===n.line;
  });
  // Verified new-model offers are first-class cards even if the old trained
  // feed is missing an entire scheduled game or stat category.
  const present=new Set(baseBoard.filter(p=>newModelForCard(p)).map(newModelKey));
- const extra=[...newMarketIndex.values()].filter(p=>p&&!present.has(newModelKey(p))).map(p=>({
+ const extra=[...newMarketIndex.values()].filter(p=>{
+    if(!p||present.has(newModelKey(p)))return false;
+    const quote=currentStandard.get(newModelKey(p));
+    return !liveStandardMode||Boolean(quote&&quote.line===p.line);
+ }).map(p=>({
    ...p,books:[],book_quotes:[],combined_projection:p.projection,
    combined_difference:p.projection-p.line,shadow_status:"UNAVAILABLE",
    quick_research_only:false,reliability_screen:null,
