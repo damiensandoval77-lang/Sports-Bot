@@ -9,12 +9,32 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from iphone_bot.fetch_final_boxscores import gather
+from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc
 
 OUT=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 STATUS=ROOT/"docs/prizepicks_final_recovery_status.json"
 ET=ZoneInfo("America/New_York")
+S3_BASE="https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/"
+
+def multi_origin_request(url, requester=request_json):
+    """Try the independent official mediaops mirror before fragile CDN hosts.
+
+    Never downgrade a failed boxscore to a score-only result.
+    """
+    candidates=[url]
+    if url == NBA_SCOREBOARD:
+        candidates=[S3_BASE+"scoreboard/todaysScoreboard_00.json",url]
+    elif url.startswith(NBA_BOX.split("{}")[0]):
+        filename=url.rsplit("/",1)[-1]
+        candidates=[S3_BASE+"boxscore/"+filename,url]
+    errors=[]
+    for candidate in candidates:
+        try:
+            return requester(candidate,timeout=7)
+        except (OSError,TimeoutError,ValueError,RuntimeError) as err:
+            errors.append(type(err).__name__)
+    raise OSError("All independent official NBA endpoints failed: "+",".join(errors))
 
 def pending_matchup_requests(records,now=None,max_matchups=12,days_back=3):
     now=now or dt.datetime.now(dt.timezone.utc)
@@ -41,7 +61,7 @@ def recover(records,now=None,request=None):
         return [],{"status":"NO_ELIGIBLE_RECENT_PRIZEPICKS_PENDING_GAMES",
                    "requested_matchups":0,"verified_rows":0,"errors":[]}
     if request is None:
-        found,report=gather(pending,now=now)
+        found,report=gather(pending,now=now,request=multi_origin_request)
     else:
         found,report=gather(pending,now=now,request=request)
     seen=set()

@@ -1,7 +1,7 @@
 import datetime as dt
 import unittest
 
-from iphone_bot.recover_prizepicks_final_games import pending_matchup_requests, recover
+from iphone_bot.recover_prizepicks_final_games import pending_matchup_requests, recover, multi_origin_request, S3_BASE
 from iphone_bot.prizepicks_research_ledger import settle
 
 NOW=dt.datetime(2026,11,9,14,tzinfo=dt.timezone.utc)
@@ -63,6 +63,30 @@ class RecoveryTests(unittest.TestCase):
         rows,status=recover([sample],now=NOW,request=provider)
         self.assertEqual(rows,[])
         self.assertEqual(status["verified_rows"],0)
+
+    def test_official_s3_scoreboard_first_and_nba_cdn_backup(self):
+        from iphone_bot.fetch_final_boxscores import NBA_SCOREBOARD
+        seen=[]
+        def fake(url,timeout=7):
+            seen.append(url)
+            if url.startswith(S3_BASE):raise OSError("S3 unavailable")
+            return {"scoreboard":{"games":[]}}
+        result=multi_origin_request(NBA_SCOREBOARD,requester=fake)
+        self.assertEqual(result["scoreboard"]["games"],[])
+        self.assertEqual(seen[0],S3_BASE+"scoreboard/todaysScoreboard_00.json")
+        self.assertEqual(seen[1],NBA_SCOREBOARD)
+
+    def test_mediaops_official_boxscore_path_and_safe_failure(self):
+        from iphone_bot.fetch_final_boxscores import NBA_BOX
+        url=NBA_BOX.format("0022600009")
+        seen=[]
+        def fake(candidate,timeout=7):
+            seen.append(candidate)
+            raise OSError("offline")
+        with self.assertRaises(OSError):
+            multi_origin_request(url,requester=fake)
+        self.assertEqual(seen[0],S3_BASE+"boxscore/boxscore_0022600009.json")
+        self.assertEqual(seen[1],url)
 
     def test_old_games_excluded_from_bounded_automatic_retry(self):
         row={**research(),"start":"2026-11-01T00:00:00Z"}
