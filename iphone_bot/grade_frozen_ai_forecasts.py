@@ -13,6 +13,7 @@ from statistics import mean
 from zoneinfo import ZoneInfo
 
 from iphone_bot.fetch_final_boxscores import gather
+from iphone_bot.verified_final_cache import read_cache, write_cache, row_key
 from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS, expected_opponents, strict_player_name
 from iphone_bot.prizepicks_research_ledger import utc
 from iphone_bot.recover_prizepicks_final_games import multi_origin_request
@@ -22,6 +23,7 @@ ROOT=Path(__file__).resolve().parents[1]
 ARCHIVE=ROOT/"docs/ai_no_line_pregame_archive.json"
 LEDGER=ROOT/"docs/ai_forecast_actual_ledger.json"
 STATUS=ROOT/"docs/ai_forecast_grade_status.json"
+FINAL_CACHE=ROOT/"docs/verified_final_player_cache.json"
 ET=ZoneInfo("America/New_York")
 STATS=("PTS","REB","AST","PRA")
 APPROVED_SOURCES={"NBA_CDN_FINAL","ESPN_FINAL"}
@@ -259,6 +261,21 @@ def main():
             actuals=[];fetch_report={"status":"FINAL_FETCH_FAILED","errors":[type(e).__name__]}
     else:
         actuals=[];fetch_report={"status":"NO_ELIGIBLE_ARCHIVED_GAMES"}
+    try:
+        confirmed_inactives=(verified_inactive_subset(actuals)+
+                             additional_verified_ai_inactive_subset(actuals))
+    except (OSError,ValueError,TypeError,KeyError):
+        confirmed_inactives=[]
+    cached_before=read_cache(FINAL_CACHE)
+    saved=write_cache(FINAL_CACHE,cached_before,actuals)
+    # Reuse only previously verified NBA/ESPN final player rows. If both
+    # sources disagree on an identity, merge_rows omits that identity.
+    actuals=saved
+    fetch_report["verified_cache_rows"]=len(saved)
+    fetch_report["newly_retrieved_verified_rows"]=len([
+        row for row in saved if row_key(row) not in {row_key(x) for x in cached_before}
+    ])
+    fetch_report["cache_recovery_used"]=bool(cached_before)
     try:
         confirmed_inactives=(verified_inactive_subset(actuals)+
                              additional_verified_ai_inactive_subset(actuals))
