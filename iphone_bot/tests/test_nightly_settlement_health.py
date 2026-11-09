@@ -15,6 +15,25 @@ class NightlySettlementHealthTests(unittest.TestCase):
         self.assertEqual(report["prizepicks_void"],1)
         self.assertEqual(report["prizepicks_pending"],0)
 
+    def test_prizepicks_resolved_does_not_claim_ai_forecasts_graded(self):
+        ai={"game_date_eastern":"2026-11-08",
+            "status":"AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+            "recorded_pregame_forecasts":444,"graded":404,"ungraded":40}
+        report=health(NOW,{},{"records":[row("SETTLED")]},ai_grades=ai)
+        self.assertEqual(report["status"],"ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED")
+        self.assertEqual(report["overall_grading_status"],"PRIZEPICKS_RESOLVED_AI_GRADING_INCOMPLETE")
+        self.assertEqual(report["ai_forecasts_graded"],404)
+        self.assertEqual(report["ai_forecasts_ungraded"],40)
+        self.assertFalse(report["ai_forecasts_fully_graded"])
+
+    def test_wrong_day_ai_report_cannot_satisfy_nightly_grading(self):
+        ai={"game_date_eastern":"2026-11-07",
+            "recorded_pregame_forecasts":444,"graded":444,"ungraded":0}
+        report=health(NOW,{},{"records":[row("SETTLED")]},ai_grades=ai)
+        self.assertEqual(report["ai_forecast_accuracy_status"],
+                         "AI_FORECAST_GRADE_REPORT_NOT_PUBLISHED_FOR_DAY")
+        self.assertFalse(report["ai_forecasts_fully_graded"])
+
     def test_overdue_is_not_automatically_loss(self):
         report=health(NOW,{},{"records":[row()]})
         self.assertEqual(report["status"],"OVERDUE_UNRESOLVED_GRADES")
