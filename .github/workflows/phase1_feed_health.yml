@@ -1,0 +1,31 @@
+name: Phase 1 feed health audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "12,42 * * * *"
+  pull_request:
+    paths:
+      - "iphone_bot/health_audit.py"
+      - "iphone_bot/tests/test_health_audit.py"
+      - "docs/data.json"
+      - "docs/live_player_tracking.json"
+      - ".github/workflows/phase1_feed_health.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  feed-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run health audit unit tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_health_audit.py' -v
+      - name: Check published feeds for stale or missing game coverage
+        if: github.event_name != 'pull_request'
+        run: python iphone_bot/health_audit.py
