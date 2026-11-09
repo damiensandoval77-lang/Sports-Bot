@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
-from iphone_bot.verified_prizepicks_inactives import verified_inactive_rows, verified_inactive_subset, FIXTURE
+from iphone_bot.verified_prizepicks_inactives import verified_inactive_rows, verified_inactive_subset, additional_verified_ai_inactive_subset, FIXTURE
 from iphone_bot.prizepicks_research_ledger import settle
 
 FIX=json.loads(FIXTURE.read_text())
@@ -52,6 +52,26 @@ class VerifiedNov8InactiveTests(unittest.TestCase):
         rows=verified_inactive_subset(subset)
         self.assertEqual({r["player"] for r in rows},{"Lauri Markkanen","Domantas Sabonis"})
         self.assertTrue(all(r["source_game_id"] in {g["source_game_id"] for g in subset} for r in rows))
+
+    def test_other_november_eight_ai_inactives_require_exact_final_games(self):
+        headers=[
+            {"source_game_id":"0022600199","date":"2026-11-08",
+             "team":"BKN","opponent":"DAL","final_confirmed":True,
+             "source":"NBA_CDN_FINAL","player":"Other Nets Player"},
+            {"source_game_id":"0022600201","date":"2026-11-08",
+             "team":"LAC","opponent":"NOP","final_confirmed":True,
+             "source":"NBA_CDN_FINAL","player":"Other Clippers Player"}]
+        rows=additional_verified_ai_inactive_subset(headers)
+        self.assertEqual({r["player"] for r in rows},{"Mikel Brown Jr.","Isaiah Jackson"})
+        self.assertEqual(additional_verified_ai_inactive_subset([]),[])
+        self.assertTrue(all(r["PTS"] is None and r["dnp_final_verified"] for r in rows))
+
+    def test_confirmed_played_cannot_be_excluded_from_other_ai_inactives(self):
+        headers=[{"source_game_id":"0022600199","date":"2026-11-08",
+                  "team":"BKN","opponent":"DAL","final_confirmed":True,
+                  "source":"NBA_CDN_FINAL","player":"Mikel Brown Jr."}]
+        with self.assertRaises(ValueError):
+            additional_verified_ai_inactive_subset(headers)
 
     def test_does_not_void_if_verified_game_is_missing(self):
         with self.assertRaises(ValueError):
