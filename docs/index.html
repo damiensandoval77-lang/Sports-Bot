@@ -365,7 +365,7 @@ let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastU
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
 let newMultimarketFeed=null,newMarketIndex=new Map();
-let underdogNews=null,officialInjuryFeed=null;
+let underdogNews=null,officialInjuryFeed=null,freeOfficialWatch=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").normalize("NFKD").toLowerCase().replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -928,15 +928,42 @@ function validatedOutNews(){
    return true;
  });
 }
+function verifiedFreeOfficialOut(){
+ const feed=freeOfficialWatch;
+ if(feed?.status!=="FREE_OFFICIAL_NBA_INJURY_MONITOR"||
+    feed.official_confirmed!==true||!Array.isArray(feed.events))return [];
+ const now=Date.now();
+ const report=feed.report;
+ if(report?.status!=="OFFICIAL_NBA_REPORT_VERIFIED"||
+    report.injury_data_verified!==true)return [];
+ return feed.events.filter(a=>{
+   const t=Date.parse(a.reported_at);
+   if(a.source!=="OFFICIAL_NBA_REPORT"||a.official!==true||
+      a.status!=="OUT"||!Number.isFinite(t)||t>now||now-t>12*3600000)return false;
+   return report.players?.some(p=>String(p.player_id)===String(a.player_id)&&
+      p.team===a.team&&p.game_date===a.game_date&&
+      String(p.status).toUpperCase()==="OUT");
+ });
+}
 function injuryPendingCard(p){
- const alerts=validatedOutNews();
- for(const a of alerts){
-   if(a.game!==p.game||Date.parse(a.start)!==Date.parse(p.start))continue;
+ const posts=validatedOutNews();
+ const events=[
+   ...posts.map(a=>({player:a.player,player_id:a.player_id,team:a.team,
+      game_date:a.game_date,reported_at:a.posted_at,
+      start:a.start,game:a.game,status:"OUT"})),
+   ...verifiedFreeOfficialOut()
+ ];
+ for(const a of events){
+   const start=Date.parse(p.start);
+   if(a.game && a.game!==p.game)continue;
+   if(a.start && Date.parse(a.start)!==start)continue;
+   if(a.game_date!==easternGameDay(p.start))continue;
    if(norm(a.player)===norm(p.player)&&p.team===a.team)return true;
+   // Other team's verified absence can also change defensive matchups.
+   // Never show stale before-injury model estimates while retraining.
    const n=newModelForCard(p);
-   // Never let older unadjusted projection linger while new AI updates.
-   if(!n||Date.parse(n.captured_at)<Date.parse(a.posted_at)||
-      !["CONDITIONAL_INJURY_REPROJECTION","NO_REPORTED_OUT"].includes(n.injury_reprojection_status))
+   if(!n||Date.parse(n.captured_at)<Date.parse(a.reported_at)||
+      !["CONDITIONAL_INJURY_REPROJECTION"].includes(n.injury_reprojection_status))
      return true;
  }
  return false;
@@ -944,18 +971,21 @@ function injuryPendingCard(p){
 function renderInjuryNewsStatus(){
  const n=$("ai-injury-news-status");
  if(!n)return;
- const active=validatedOutNews();
- if(active.length){
-   n.textContent="NEW injury alert from authenticated @UnderdogNBA: "+
-      active.map(a=>a.player+" OUT ("+a.team+")").join(" · ")+
-      ". Original pregame projections retained for grading; affected old cards hidden until injury-aware model refresh.";
- }else if(underdogNews?.status==="UNDERDOGNBA_X_MONITOR_NOT_CONFIGURED"){
-   n.textContent="Underdog NBA injury watch awaiting X API connection; official NBA injury refresh remains active.";
- }else if(underdogNews?.status==="UNDERDOGNBA_X_POLL_FAILED"){
-   n.textContent="Underdog NBA X feed unavailable; official NBA injury report remains the confirmation source.";
- }else if(underdogNews?.status==="UNDERDOGNBA_X_AUTHENTICATED_POLL"){
-   n.textContent="Underdog NBA injury monitoring active · no recent verified OUT alerts.";
- }else n.textContent="Checking authenticated injury news source.";
+ const official=verifiedFreeOfficialOut();
+ const posts=validatedOutNews();
+ if(official.length){
+   n.textContent="NEW officially verified NBA OUT status: "+
+     official.map(a=>a.player+" ("+a.team+")").join(" · ")+
+     ". Updated four-market AI projections are generated when verified lineup splits support them; affected stale cards are withheld.";
+ }else if(posts.length){
+   n.textContent="Authenticated @UnderdogNBA alert: "+
+     posts.map(a=>a.player+" OUT ("+a.team+")").join(" · ")+
+     ". Pending official report and validated injury-aware update.";
+ }else if(freeOfficialWatch?.status==="FREE_OFFICIAL_NBA_INJURY_MONITOR"){
+   n.textContent="Free official NBA injury monitor active · no new verified OUT transitions. No X subscription required.";
+ }else if(officialInjuryFeed?.status==="OFFICIAL_NBA_REPORT_VERIFIED"){
+   n.textContent="NBA official injury report available; free change monitor is starting.";
+ }else n.textContent="Official NBA injury monitor awaiting a verified report; do not assume player availability.";
 }
 function renderAI(){
  renderNoLineForecast();
@@ -2643,6 +2673,7 @@ async function refresh(){
 newMultimarketFeed=newMarketResponse.status==="fulfilled"?newMarketResponse.value:null;
 newMarketIndex=refreshNewMarketIndex(newMultimarketFeed);
 underdogNews=await fetchJSON("underdog_nba_injury_alerts.json").catch(()=>null);
+freeOfficialWatch=await fetchJSON("free_nba_injury_watch.json").catch(()=>null);
 officialInjuryFeed=inj.status==="fulfilled"?inj.value:null;
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
