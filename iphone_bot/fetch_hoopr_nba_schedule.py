@@ -102,7 +102,8 @@ def main():
  STATUS.write_text(json.dumps({
    "generated_at":now.isoformat(),"status":"SCHEDULE_FETCHED",
    "source":report["source"],"total_games":report["total_games"],
-   "coverage_complete":True},indent=2)+"\n")
+   "coverage_complete":report["coverage_complete"],
+   "official_fixture_reconciliation":report.get("official_fixture_reconciliation")},indent=2)+"\n")
  print("NBA schedule from public season dataset:",
        report["total_games"],"games on",report["dates_eastern"])
 if __name__=="__main__":main()
