@@ -950,6 +950,15 @@ function renderAI(){
     "Exact authenticated PrizePicks player/team/game/stat matched to an independent pre-tip AI forecast. "+
     "The displayed raw MORE/LESS direction is not a vetted wager, and injury adjustments, "+
     "Combined AI simulations and calibrated confidence are unavailable."));
+  const defenseScenario=p.combined_simulation?.opponent_conditioning;
+  if(combinedSimAvailable(p)){
+   detailNotes.push(node("div","mini",defenseScenario?.status==="APPLIED_OPPONENT_HISTORICAL_GAME_SCENARIOS"?
+    "OPPONENT-CONDITIONED 20K SCENARIOS: "+defenseScenario.opponent+
+    " · conceded "+(defenseScenario.opponent_vs_league_pct>0?"+":"")+
+    defenseScenario.opponent_vs_league_pct+"% vs league · "+
+    defenseScenario.source_games+" verified earlier team games · game-to-game defensive scenarios added around the already opponent-aware AI center (no double-counted average). Team totals, not positional DvP. Uncalibrated research.":
+    "20K residual simulation: opponent-specific defensive scenario history unavailable. The center may include an opponent-aware model, but draw distribution is NOT opponent-conditioned."));
+  }
   const probabilityNote=node("div","match",(combinedSimAvailable(p)?
     "20,000 bootstrap draws centered on COMBINED projection using original-model holdout errors. Not calibrated on combined-model outcomes. ":
     "20,000-run COMBINED model estimate unavailable until valid holdout residuals are provided. ")+
