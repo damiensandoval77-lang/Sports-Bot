@@ -15,7 +15,8 @@ def rows(path):
         return list(csv.DictReader(handle))
 
 
-def audit(root=ROOT):
+def audit(root=ROOT, now=None):
+    now = now or datetime.now(timezone.utc)
     root = Path(root)
     problems, warnings = [], []
     def load(path):
@@ -51,6 +52,40 @@ def audit(root=ROOT):
             problems.append(f"{name}: unreadable chunk")
     if not isinstance(snapshot.get("rows"), int) or total != snapshot.get("rows") or total < 5:
         problems.append("snapshot manifest row count disagrees with available chunks")
+
+    # Freshness is operational health, independent of CSV structural validity.
+    # Warn ahead of upcoming kickoffs and fail only when a capture is severely
+    # stale close to kickoff. No new rows are invented to make a run pass.
+    captured = snapshot.get("captured_at")
+    capture_age_hours = None
+    try:
+        stamp = datetime.fromisoformat(str(captured).replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            raise ValueError("naive timestamp")
+        capture_age_hours = round((now - stamp.astimezone(timezone.utc)).total_seconds() / 3600, 2)
+        if capture_age_hours < -0.25:
+            problems.append("NFL snapshot timestamp is unexpectedly in the future")
+    except (ValueError, TypeError, OverflowError):
+        problems.append("NFL snapshot capture timestamp is invalid")
+    upcoming_hours = []
+    for game in games:
+        if game.get("status") == "final":
+            continue
+        try:
+            kickoff = datetime.fromisoformat(str(game.get("kickoff_utc")).replace("Z", "+00:00"))
+            if kickoff.tzinfo is None:
+                continue
+            delta = (kickoff.astimezone(timezone.utc) - now).total_seconds() / 3600
+            if 0 <= delta <= 24:
+                upcoming_hours.append(delta)
+        except (ValueError, TypeError, OverflowError):
+            continue
+    nearest_kickoff_hours = round(min(upcoming_hours), 2) if upcoming_hours else None
+    if capture_age_hours is not None and upcoming_hours:
+        if capture_age_hours > 36 and min(upcoming_hours) <= 4:
+            problems.append("NFL capture older than 36 hours within 4 hours of kickoff")
+        elif capture_age_hours > 12:
+            warnings.append("NFL capture older than 12 hours with a game in the next 24 hours")
 
     health = load(root / "grading_health_2026.json")
     try:
@@ -109,6 +144,8 @@ def audit(root=ROOT):
         "final_games": len(finals),
         "boxscore_games": box.get("games_with_stats", 0),
         "snapshot_rows": total,
+        "snapshot_age_hours": capture_age_hours,
+        "nearest_kickoff_hours": nearest_kickoff_hours,
         "archived_pregame_lines": len(archive),
         "graded_picks": len(graded),
         "pending_picks": len(pending),
