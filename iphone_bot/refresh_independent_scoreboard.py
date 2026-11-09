@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from iphone_bot.fetch_nba_schedule import collect, read_schedule
+from iphone_bot.fetch_nba_schedule import collect, read_schedule, nba_season_schedule
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/nba_scoreboard_independent.json"
@@ -28,25 +28,41 @@ def expected_matchups(schedule, days):
             for g in schedule.get("games", [])
             if g.get("date_eastern") in requested and g.get("game")}
 
-def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None):
+def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None, fallback=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     dates = [d.isoformat() for d in days]
     try:
-        report = collect(days, reader=reader)
-        rows = report.get("games", [])
+        try:
+            report = collect(days, reader=reader)
+            rows = report.get("games", [])
+            source = "ESPN public scoreboard (not sportsbook or player prop data)"
+            status = "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"
+        except (OSError, TimeoutError, RuntimeError, ValueError, KeyError, TypeError) as primary_error:
+            if fallback is None:
+                raise
+            backup = fallback(days)
+            if not isinstance(backup, dict) or not isinstance(backup.get("events"), list):
+                raise ValueError("Malformed independent NBA schedule fallback")
+            rows = backup["events"]
+            report = {"source_records_rejected": backup.get("rejected", 0)}
+            source = backup.get("source") or "NBA public CDN season schedule"
+            status = "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"
+        if not isinstance(rows, list):
+            raise ValueError("Scoreboard games must be a list")
         expected = expected_matchups(schedule, days)
         observed = {(str(g.get("date_eastern")), str(g.get("game", "")).strip().casefold())
                     for g in rows if g.get("game")}
         if expected and not expected.issubset(observed):
-            raise ValueError("Incomplete ESPN scoreboard relative to verified scheduled slate")
+            raise ValueError("Incomplete scoreboard response relative to verified scheduled slate")
         if len(dates) != len(set(dates)):
             raise ValueError("Duplicate requested dates")
         if len({str(g.get("id")) for g in rows}) != len(rows):
             raise ValueError("Duplicate game identifiers")
         return {
             "generated_at": now.isoformat(),
-            "status": "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES",
-            "source": "ESPN public scoreboard (not sportsbook or player prop data)",
+            "status": status,
+            "source": source,
+            "is_live_score_source": status == "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES",
             "dates_eastern": dates,
             "total_games": len(rows),
             "games": rows,
@@ -92,11 +108,11 @@ def main():
             baseline = json.loads(baseline_path.read_text())
         except (OSError, ValueError):
             pass
-    result=snapshot(days,previous=previous,schedule=baseline)
+    result=snapshot(days,previous=previous,schedule=baseline,fallback=nba_season_schedule)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps({"status":result["status"],"total_games":result["total_games"],
                       "generated_at":result["generated_at"],"error":result.get("error")}))
-    if result["status"]!="OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES":
+    if result["status"] not in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES", "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"):
         raise SystemExit(1)
 
 if __name__=="__main__":

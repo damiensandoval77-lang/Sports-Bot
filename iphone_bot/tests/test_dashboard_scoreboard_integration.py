@@ -33,7 +33,8 @@ class DashboardScoreboardIntegrationTests(unittest.TestCase):
         start = HTML.index('async function refreshScoresOnly()')
         end = HTML.index('async function refresh()', start)
         fn = HTML[start:end]
-        self.assertIn('status==="OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"', fn)
+        self.assertIn('"OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"', fn)
+        self.assertIn('"NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"', fn)
         self.assertIn('isRecent(independent.generated_at,2)', fn)
         self.assertIn('Array.isArray(independent.games)', fn)
 
