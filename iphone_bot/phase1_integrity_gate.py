@@ -14,7 +14,8 @@ VALID = {"PENDING", "SETTLED", "VOID_DNP", "INVALID_LATE_CAPTURE"}
 def audit(data, now=None):
     now = now or datetime.now(timezone.utc)
     errors, warnings = [], []
-    records = data.get("records", [])
+    sampled = "records" not in data
+    records = data.get("records", data.get("results", []))
     if not isinstance(records, list):
         return {"status": "FAIL", "errors": ["records must be a list"], "warnings": []}
     counts = {status: 0 for status in VALID}
@@ -47,10 +48,18 @@ def audit(data, now=None):
         if status == "SETTLED":
             if row.get("result") not in ("WIN", "LOSS", "PUSH") or row.get("actual") is None or not row.get("settlement_source"):
                 errors.append(f"row {index}: incomplete final grade")
-    for field, expected in (("captured", len(records)), ("pending", counts["PENDING"]),
-                            ("settled", counts["SETTLED"]), ("void_dnp", counts["VOID_DNP"])):
-        if data.get(field) != expected:
-            errors.append(f"{field}: summary={data.get(field)}, records={expected}")
+    if sampled:
+        warnings.append("Only published sample inspected; full immutable ledger not verified")
+        if not isinstance(data.get("captured"), int) or data["captured"] < len(records):
+            errors.append("Captured summary smaller than published sample")
+        if all(isinstance(data.get(k), int) for k in ("pending", "settled", "void_dnp", "captured")):
+            if sum(data[k] for k in ("pending", "settled", "void_dnp")) != data["captured"]:
+                errors.append("Published settlement counts do not add up")
+    else:
+        for field, expected in (("captured", len(records)), ("pending", counts["PENDING"]),
+                                ("settled", counts["SETTLED"]), ("void_dnp", counts["VOID_DNP"])):
+            if data.get(field) != expected:
+                errors.append(f"{field}: summary={data.get(field)}, records={expected}")
     try:
         date = datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
         if not date.tzinfo or (date-now).total_seconds() > 300:
