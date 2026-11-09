@@ -68,6 +68,30 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("SCHEDULE_FALLBACK_NOT_LIVE_SCORES",
                       r["components"]["scoreboard"]["reasons"])
 
+    def test_official_game_count_rejects_false_complete_seven_games(self):
+        data=fixtures()
+        data["verified_official_nba_fixtures.json"]={
+            "official_expected_daily_counts":{"2026-11-09":8},
+            "fixtures":[{"id":"0022600205","date_eastern":"2026-11-09"}]}
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"BLOCKED")
+        self.assertIn("OFFICIAL_NBA_SLATE_COUNT_MISMATCH",
+                      result["components"]["schedule"]["reasons"])
+        self.assertIn("OFFICIAL_NBA_MATCHUP_MISSING",
+                      result["components"]["schedule"]["reasons"])
+
+    def test_scoreboard_missing_even_one_scheduled_matchup_blocks(self):
+        data=fixtures()
+        data["nba_schedule.json"]["games"].append({
+            "game":"Washington Wizards @ Detroit Pistons",
+            "date_eastern":"2026-11-09","start":"2026-11-10T00:00:00Z",
+            "game_state":"pre","away_abbreviation":"WAS","home_abbreviation":"DET"})
+        data["nba_schedule.json"]["total_games"]=2
+        result=check(NOW,data)
+        self.assertIn("SCOREBOARD_MISSING_SCHEDULED_MATCHUPS",
+                      result["components"]["scoreboard"]["reasons"])
+        self.assertEqual(result["status"],"BLOCKED")
+
     def test_empty_games_cannot_claim_healthy(self):
         data=fixtures()
         data["nba_schedule.json"].update({"games":[],"total_games":0})
