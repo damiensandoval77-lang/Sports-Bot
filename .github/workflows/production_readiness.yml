@@ -35,6 +35,14 @@ jobs:
           python-version: '3.11'
       - name: Run fail-closed production data quality tests
         run: python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v
+      - name: Recover independent scoreboard before readiness evaluation
+        id: scoreboard_repair
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: |
+          # Independent no-odds-credit retry when the separate cron is late.
+          # This is best effort; readiness still fails if fresh LIVE scores are missing.
+          python -m iphone_bot.refresh_independent_scoreboard
       - name: Evaluate actual published NBA input freshness and coverage
         id: check
         if: github.event_name != 'pull_request'
@@ -47,11 +55,17 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           cp docs/production_readiness.json "$RUNNER_TEMP/production_readiness.json"
+          if [ -f docs/nba_scoreboard_independent.json ]; then
+            cp docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
+          fi
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
             cp "$RUNNER_TEMP/production_readiness.json" docs/production_readiness.json
-            git add docs/production_readiness.json
+            if [ -f "$RUNNER_TEMP/nba_scoreboard_independent.json" ]; then
+              cp "$RUNNER_TEMP/nba_scoreboard_independent.json" docs/nba_scoreboard_independent.json
+            fi
+            git add docs/production_readiness.json docs/nba_scoreboard_independent.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Record honest NBA production feed readiness'
             if git push origin HEAD:main; then exit 0; fi
