@@ -83,7 +83,23 @@ def injury_adjustment(base,player_id,team,opponent,day,game_start,now,injuries,n
     self_out=outs.get((str(player_id),team))
     if self_out:return {"status":"PLAYER_REPORTED_OUT_SUPPRESS_ALL_MARKETS",
         "factor":None,"out":self_out,"affected":[]}
-    affected=[v for v in outs.values() if v["team"] in (team,opponent)]
+    # A published official report lists persistent long-term absences again
+    # every time it refreshes. Do not treat every old OUT as a newly missing
+    # teammate and re-adjust the entire league repeatedly. Only a matching,
+    # authenticated new Underdog alert enters the teammate-change scenario.
+    # Official updates still remove ruled-out players' OWN lines above.
+    alerted=set()
+    if news.get("status")=="UNDERDOGNBA_X_AUTHENTICATED_POLL" and news.get("verified_x_posts") is True:
+        for e in news.get("alerts",[]):
+            if (e.get("source")=="UNDERDOGNBA_X_VERIFIED_AUTHOR" and
+                e.get("status")=="OUT" and e.get("game_date")==day and
+                e.get("start")==game_start):
+                try:
+                    published=utc(e["posted_at"])
+                    if published<=utc(now) and utc(now)-published<=timedelta(hours=8):
+                        alerted.add((str(e["player_id"]),e["team"]))
+                except (ValueError,KeyError,TypeError):pass
+    affected=[v for k,v in outs.items() if k in alerted and v["team"] in (team,opponent)]
     if not affected:return {"status":"NO_REPORTED_OUT","factor":1.0,"affected":[]}
     same=[v for v in affected if v["team"]==team]
     other=[v for v in affected if v["team"]==opponent]
