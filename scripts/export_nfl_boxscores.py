@@ -64,6 +64,14 @@ def build(schedule,frame):
             "week":int(game["week"]),"home":game["home"],"away":game["away"],
             "home_score":game["home_score"],"away_score":game["away_score"],
             "players":[]})
+        # Export only players with recorded offensive box-score activity.
+        # Defenders with no pass/rush/receiving events need not bloat the
+        # iPhone view, but a real 0-yard game with attempts remains included.
+        activity=("attempts","carries","targets","receptions",
+                  "passing_yards","rushing_yards","receiving_yards",
+                  "passing_tds","rushing_tds","receiving_tds")
+        if not any((numeric(row.get(col)) or 0)>0 for col in activity):
+            continue
         player={"player_id":str(row["player_id"]),
                 "player":str(row["player_display_name"]),
                 "team":str(row["team"]),"position":str(row.get("position") or "")}
