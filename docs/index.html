@@ -577,6 +577,7 @@ function newModelForCard(p){
  return item;
 }
 function chance(p){
+ if(p.line_only)return "—";
  const n=newModelForCard(p),c=n?.estimated_hit_chance;
  return c?.method==="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"&&
    c.draws===20000&&c.calibrated===false&&
