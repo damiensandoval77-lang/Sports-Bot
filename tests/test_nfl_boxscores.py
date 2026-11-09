@@ -28,7 +28,7 @@ class TestNFLBoxscores(unittest.TestCase):
  def test_missing_boxscore_is_pending(self):
   s,r=self.setup_data()
   s["games"][1].update(status="final",home_score=10,away_score=7)
-  _,m=prepare(s,r)
+  _,m=prepare(s,r[r.game_id.ne("g1")].copy())
   self.assertEqual(m["pending_boxscores"],1)
  def test_no_regression(self):
   s,r=self.setup_data()
