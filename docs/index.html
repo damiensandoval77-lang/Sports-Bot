@@ -261,6 +261,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 <div class="filters schedule-roster-control" aria-hidden="true"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
 <div class="source" id="schedule-players">Players from current-season game logs will appear here; this is not an official active roster.</div>
 
+<div class="source" id="prediction-coverage" aria-live="polite">Checking matchup-by-matchup AI projection delivery…</div>
 <div id="ai-no-line-shell" class="source" hidden>
  <strong>AI PLAYER PROJECTIONS · no current prop lines</strong>
  <div id="ai-no-line-status">Checking independently trained NBA estimates…</div>
@@ -2263,6 +2264,20 @@ slateHealth=health.status==="fulfilled"&&health.value?.status==="DESCRIPTIVE_NBA
  health.value.date_eastern===easternGameDay(new Date())&&isRecent(health.value.generated_at,8)?health.value:null;
 noLineForecast=await fetchJSON("ai_projection_fallback.json").catch(()=>null);
 noLineArchive=await fetchJSON("ai_no_line_pregame_archive.json").catch(()=>null);
+const delivery=await fetchJSON("projection_delivery_health.json").catch(()=>null);
+const deliveryLabel=$("prediction-coverage");
+if(deliveryLabel){
+  if(delivery&&isRecent(delivery.generated_at,12)&&
+     ["ALL_LISTED_GAMES_HAVE_PREGAME_AI","PROJECTION_COVERAGE_GAPS"].includes(delivery.status)){
+    const missing=delivery.missing_ai_games||[];
+    deliveryLabel.textContent="AI projection coverage: "+
+      (delivery.listed_games_checked-missing.length)+"/"+
+      delivery.listed_games_checked+" scheduled / recent games have frozen estimates"+
+      (missing.length?" · MISSING: "+missing.join(" · "):" · Captures available")+
+      (delivery.schedule_coverage_complete?"":" · Schedule coverage partial")+
+      ". This is not coverage of live sportsbook lines.";
+  }else deliveryLabel.textContent="Projection coverage check unavailable or stale; cached pretip estimates may still be available.";
+}
 aiFresh=false;aiArchiveMode=false;ai=[];aiMetadata=null;frozenMatchupForecasts=[];
 if(a.status==="fulfilled"&&a.value.status==="EXPERIMENTAL_NON_CALIBRATED"&&a.value.verified_current_matchups===true&&Array.isArray(a.value.comparisons)){
  aiMetadata=a.value;aiFresh=isRecent(a.value.generated_at,6);
