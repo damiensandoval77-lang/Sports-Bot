@@ -92,3 +92,26 @@ def verified_inactive_subset(official_rows):
     if not selected:
         return []
     return verified_inactive_rows(official_rows,{**fixture,"players":selected},require_all=False)
+
+AI_INACTIVE_FIXTURE=ROOT/"docs/verified_ai_inactives_2026-11-08.json"
+
+def additional_verified_ai_inactive_subset(official_rows):
+    """Source-linked, *AI-only* exclusion for other Nov 8 confirmed absences.
+
+    The original PrizePicks evidence fixture is independent. Only rows whose
+    final NBA matchup has been observed from a trusted final source qualify.
+    """
+    if not AI_INACTIVE_FIXTURE.exists():
+        return []
+    fixture=json.loads(AI_INACTIVE_FIXTURE.read_text())
+    final_keys={(str(r.get("source_game_id")),r.get("date"),
+                 r.get("team"),r.get("opponent"))
+                for r in official_rows if r.get("final_confirmed") is True
+                and r.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL")}
+    selected=[r for r in fixture.get("players",[])
+              if (str(r.get("game_id")),fixture.get("game_date_eastern"),
+                  r.get("team"),r.get("opponent")) in final_keys]
+    if not selected:
+        return []
+    return verified_inactive_rows(official_rows,{**fixture,"players":selected},
+                                  require_all=False)
