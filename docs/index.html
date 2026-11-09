@@ -592,7 +592,16 @@ function earlyEdgePreview(p){
    sample_size:n,distinct_event_dates:dates,validated:false}};
 }
 
-function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
+function primaryDirection(p){
+ if(p.new_model_market){
+  const c=p.estimated_hit_chance;
+  if(c?.method!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||
+     c.draws!==20000||c.calibrated!==false)return "NO LEAN";
+  return c.modeled_direction==="More"?"OVER":
+    c.modeled_direction==="Less"?"UNDER":"NO LEAN";
+ }
+ return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line);
+}
 function frozenResearchScreen(p){
  // Pre-registered research thresholds; NOT a verified profitable strategy.
  const margins={PTS:3,REB:1.5,AST:1.5,PRA:4};
@@ -953,7 +962,8 @@ function renderAI(){
     (a.preliminary_edge?.status==="PROVISIONAL_POSITIVE_EV"?1:0))||
    ((b.preliminary_edge?.net_ev_pct??-999)-(a.preliminary_edge?.net_ev_pct??-999))||
    ((b.preliminary_edge?.probability?.probability??-1)-(a.preliminary_edge?.probability?.probability??-1))||
-   ((b.combined_simulation?.selected_hit_rate??-1)-(a.combined_simulation?.selected_hit_rate??-1))||
+   ((b.estimated_hit_chance?.modeled_selected_probability??-1)-
+    (a.estimated_hit_chance?.modeled_selected_probability??-1))||
    Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
  $("ai-total").textContent=aiMetadata?.quick_independent_join?
@@ -994,6 +1004,13 @@ function renderAI(){
   head.append(identity);main.append(head);
   // Exactly the original validated comparison values and chance calculation.
   // This is presentation only: never substitute another projection/probability.
+  if(p.new_model_market){
+   detailNotes.push(node("div","research-note",
+      "NEW MATCHUP AI · "+p.stat+" · standard PrizePicks line verified on both sides. "+
+      "This percentage is the historical-residual modeled chance for the shown "+
+      primaryDirection(p)+" direction, not an observed or calibrated hit rate. "+
+      (p.stat==="PRA"?"PRA is the coherent sum of PTS, REB and AST scenarios.":"")));
+  }
   const available=Number.isFinite(p.combined_projection);
   const projected=available?p.combined_projection:Number(p.projection);
   const values=node("div","ai-metrics");
