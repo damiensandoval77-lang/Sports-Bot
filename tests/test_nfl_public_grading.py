@@ -1,0 +1,105 @@
+"""Public NFL prediction tracking must be repeatable and never retroactive."""
+import csv
+import json
+import sys
+import tempfile
+import unittest
+from datetime import datetime,timezone,timedelta
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
+from reconcile_nfl_picks import (
+    collect_history,closing,grade_finals,read_published_snapshot,run)
+
+def schedule():
+    kickoff="2026-11-15T18:00:00+00:00"
+    return {"g1":{"game_id":"g1","week":10,"status":"final",
+                  "kickoff_utc":kickoff,"home":"BUF","away":"MIA",
+                  "home_score":24,"away_score":17},
+            "g2":{"game_id":"g2","week":10,"status":"scheduled",
+                  "kickoff_utc":"2026-11-22T18:00:00+00:00",
+                  "home":"GB","away":"CHI","home_score":None,"away_score":None}}
+def bet(target="REC_YDS",line="55.5",captured="2026-11-14T17:00:00+00:00",
+        odds="standard"):
+    return {"captured_at":captured,"season":"2026","week":"10","game_id":"g1",
+            "player_id":"gsis-1","player":"Example WR","team":"MIA",
+            "opponent":"BUF","position":"WR","stat":"Receiving Yards",
+            "target":target,"line":line,"odds_type":odds,"proj":"60.0",
+            "pick":"More","model_pct":"58.0"}
+def box():
+    return {"g1":{"gsis-1":{"player":"Example WR","team":"MIA",
+             "player_id":"gsis-1","receiving_yards":65,
+             "receptions":5,"targets":8,"rushing_yards":0,
+             "rushing_tds":0,"receiving_tds":1}}}
+
+class PublicNFLGradeTests(unittest.TestCase):
+    def test_only_pregame_captures_are_archived(self):
+        old=bet()
+        late=bet(captured="2026-11-16T17:00:00+00:00")
+        hist,rejected=collect_history([], [old,late],schedule())
+        self.assertEqual(len(hist),1)
+        self.assertEqual(rejected,1)
+    def test_last_standard_price_and_separate_alternatives(self):
+        items=[bet(line="51.5"),bet(line="55.5",captured="2026-11-14T18:00:00+00:00"),
+               bet(line="30.5",odds="goblin"),bet(line="90.5",odds="demon")]
+        hist,_=collect_history([],items,schedule())
+        choices=closing(hist,{"g1"})
+        self.assertEqual(len(choices),3)
+        self.assertEqual([c["line"] for c in choices if c["odds_type"]=="standard"],["55.5"])
+    def test_verified_grades_push_and_missing_player_pending(self):
+        hist,_=collect_history([],[bet(),bet(target="REC",line="5.0"),
+            bet(target="TGT",line="6.5")],schedule())
+        grades,pending,n=grade_finals(hist,schedule(),box(),set())
+        self.assertEqual(n,3)
+        self.assertEqual(len(grades),3)
+        by_target={r["target"]:r for r in grades}
+        self.assertEqual(by_target["REC_YDS"]["won"],"1")
+        self.assertEqual(by_target["REC"]["result"],"Push")
+        self.assertEqual(by_target["REC"]["won"],"")
+        self.assertEqual(by_target["TGT"]["actual"],"8")
+    def test_unsupported_market_cannot_be_scored(self):
+        hist,_=collect_history([],[bet(target="FPTS")],schedule())
+        grades,pending,_=grade_finals(hist,schedule(),box(),set())
+        self.assertFalse(grades)
+        self.assertEqual(pending[0]["grade_status"],"unsupported_exact_fantasy_scoring")
+        missing,why,_=grade_finals(hist,schedule(),{},set())
+        self.assertEqual(why[0]["grade_status"],"boxscore_not_yet_published")
+    def test_repeat_archive_and_grading_are_idempotent(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            all_games=[dict(game_id=f"g{i+100}",week=10,status="scheduled",
+                  kickoff_utc="2026-11-22T18:00:00+00:00",
+                  home="BUF",away="MIA",home_score=None,away_score=None)
+                  for i in range(272)]
+            all_games[0]=schedule()["g1"]
+            (root/"schedule_2026.json").write_text(json.dumps(
+                {"season":2026,"game_count":272,"games":all_games}))
+            (root/"latest_2026_00.csv").write_text(
+                ",".join(bet().keys())+"\n"+
+                ",".join(bet().values())+"\n")
+            (root/"latest_2026.json").write_text(json.dumps(
+                {"season":2026,"captured_at":bet()["captured_at"],
+                 "rows":1,"files":["latest_2026_00.csv"]}))
+            boxes=root/"boxscores"
+            boxes.mkdir()
+            (boxes/"manifest.json").write_text(json.dumps({"season":2026,"game_ids":["g1"]}))
+            (boxes/"week_10.json").write_text(json.dumps({"season":2026,"week":10,
+               "games":[{"game_id":"g1","week":10,"home":"BUF","away":"MIA",
+               "home_score":24,"away_score":17,
+               "players":[box()["g1"]["gsis-1"]]}]}))
+            result=run(root)
+            self.assertEqual(result["graded_picks"],1)
+            first=(root/"pp_graded_2026.csv").read_bytes()
+            second=run(root)
+            self.assertEqual(first,(root/"pp_graded_2026.csv").read_bytes())
+            self.assertEqual(result,second)
+    def test_invalid_public_snapshot_does_not_wipe_history(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            (root/"latest_2026.json").write_text(json.dumps(
+              {"season":2026,"rows":50,"captured_at":"now",
+               "files":["latest_2026_00.csv"]}))
+            rows,err=read_published_snapshot(root)
+            self.assertEqual(rows,[])
+            self.assertEqual(err,"snapshot_chunk_missing")
+if __name__=="__main__":
+    unittest.main()

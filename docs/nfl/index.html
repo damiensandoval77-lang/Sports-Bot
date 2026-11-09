@@ -30,9 +30,9 @@
 <div id="notice" class="notice">Loading the latest captured NFL predictions. Confidence is an uncalibrated model estimate, not an actual hit rate.</div>
 <section id="board"><div class="games" id="games"></div><div class="filters"><input id="search" placeholder="Search player or team"><select id="statfilter"><option value="">All markets</option></select><select id="kind"><option value="standard">Standard</option><option value="">All lines</option><option value="goblin">Goblin</option><option value="demon">Demon</option></select></div><div class="bar"><h2>Pregame NFL props</h2><small id="freshness">Latest snapshot</small></div><div class="board" id="cards"></div></section>
 <section id="live" class="hidden"><h2>Matchups & Final Box Scores</h2><p class="muted">Open any completed matchup to view final player stats. Box scores load independently of PrizePicks lines. In-progress games do not display estimated final stats.</p><div id="livegames" class="board"></div></section>
-<section id="graded" class="hidden"><h2>Graded NFL lines</h2><p class="muted">Results use frozen pre-kickoff prices, not revised projections.</p><div id="grades" class="board"></div></section>
+<section id="graded" class="hidden"><h2>Graded NFL lines</h2><p class="muted">Results use archived prices captured before kickoff, not backfilled projections. Only standard lines contribute to the published standard hit rate.</p><p id="gradehealth" class="notice">Checking frozen prediction history and grading coverage…</p><div id="grades" class="board"></div></section>
 </main><script>
-const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board",boxManifest:null,boxWeeks:{},boxHealth:null};
+const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board",boxManifest:null,boxWeeks:{},boxHealth:null,gradeHealth:null};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function parseCSV(text){const rows=[];let r=[],v="",quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){r.push(v);v=""}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;r.push(v);if(r.some(x=>x!==""))rows.push(r);r=[];v=""}else v+=c}if(v||r.length){r.push(v);rows.push(r)}if(!rows.length)return[];const cols=rows.shift();return rows.map(row=>Object.fromEntries(cols.map((c,i)=>[c,row[i]??""])));}
 async function getCSV(url){const response=await fetch(url+"?t="+Math.floor(Date.now()/60000),{cache:"no-store"});if(!response.ok)throw Error(response.status+" "+url);return parseCSV(await response.text());}
@@ -239,8 +239,23 @@ async function init(){
    if(scheduleReady){const games=scheduledWeekGames(),covered=games.filter(g=>state.lines.some(r=>r.game_id===g.game_id));details.push("Week "+state.week+": "+games.length+" games scheduled, "+covered.length+" games with captured props.");}
    else details.push("WARNING: NFL schedule could not be verified; showing available prop matchups only.");
    document.getElementById("notice").textContent=details.join(" ");
+   try{
+     const reply=await fetch("./data/grading_health_2026.json?t="+Math.floor(Date.now()/60000),{cache:"no-store"});
+     if(reply.ok){
+       const health=await reply.json();
+       if(health.season===2026&&Number.isInteger(health.expected_final_picks))state.gradeHealth=health;
+     }
+   }catch(error){console.warn("NFL grade health unavailable:",error)}
    try{state.grades=await getCSV("./data/pp_graded_2026.csv")}catch(e){state.grades=[]}
    document.getElementById("gradecount").textContent=state.grades.length;
+   const g=state.gradeHealth;
+   document.getElementById("gradehealth").textContent=g?
+       g.archived_pregame_lines+" archived pre-kickoff lines · "+g.graded_picks+" graded · "+
+       g.pending_picks+" pending player stats or unsupported markets · "+
+       (g.standard_hit_rate===null?"Standard hit rate not available yet":
+        g.standard_hit_rate+"% hit rate over "+g.standard_settled+" settled standard picks")+
+       (g.source_snapshot_status!=="verified"?" · Snapshot warning: "+g.source_snapshot_status:""):
+       "No verified public grading ledger yet. Missing grades are not wins or losses.";
  }catch(error){
    document.getElementById("status").textContent=scheduleReady?"SCHEDULE ONLY":"DATA UNAVAILABLE";
    document.getElementById("notice").textContent=scheduleReady?
