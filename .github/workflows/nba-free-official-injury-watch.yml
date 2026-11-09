@@ -1,5 +1,11 @@
 name: Free NBA official injury changes and AI refresh
 on:
+  pull_request:
+    paths:
+      - 'iphone_bot/free_official_nba_injury_watch.py'
+      - 'iphone_bot/tests/test_free_official_nba_injury_watch.py'
+      - 'iphone_bot/new_ai_injury_context.py'
+      - '.github/workflows/nba-free-official-injury-watch.yml'
   workflow_dispatch:
   push:
     branches: [main]
@@ -24,19 +30,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Parse official published NBA injury PDF
+        if: github.event_name != 'pull_request'
         run: python -m pip install --disable-pip-version-check 'pypdf>=5,<7'
       - name: Validate official transitions and no paid provider requirement
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
       - name: Fetch NBA official injury report with ESPN as informational fallback
+        if: github.event_name != 'pull_request'
         run: python -u iphone_bot/fetch_official_injuries.py
       - name: Publish only verified newer official report and trigger new four-market AI on changed status
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
