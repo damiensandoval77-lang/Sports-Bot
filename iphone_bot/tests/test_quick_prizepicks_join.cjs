@@ -128,7 +128,8 @@ test("the raw MORE/LESS line comparison isn't mislabeled as a validated model pa
 test("a genuine trained 20K PrizePicks board is never replaced by no-sim lightweight fallback",()=>{
  assert.ok(html.includes("const trainedPrizePicksWithSim=aiMetadata?.is_prizepicks===true&&"));
  assert.ok(html.includes("ai.some(p=>combinedSimAvailable(p))"));
- assert.ok(html.includes('if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(html.includes('if(publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(html.includes('if(trainedPrizePicksWithSim){'));
  assert.ok(html.includes('sim?.simulation_count===20000'));
  assert.ok(html.includes('sim?.calibrated===false'));
 });
