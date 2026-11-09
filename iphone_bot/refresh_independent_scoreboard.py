@@ -140,10 +140,34 @@ def main():
         except (OSError, ValueError):
             pass
     def alternative(dates):
+        expected = expected_matchups(baseline, dates)
         try:
-            return nba_live_scoreboard(dates)
+            observed = nba_live_scoreboard(dates)
+            actual = {(str(g.get("date_eastern")), str(g.get("game", "")).strip().casefold())
+                      for g in observed["events"]}
+            # NBA liveData can still carry yesterday's games before its date rollover.
+            # Do not report an empty/previous-day result as today's live scoreboard.
+            if not expected or expected.issubset(actual):
+                return observed
         except RuntimeError:
+            pass
+        try:
             return nba_season_schedule(dates)
+        except RuntimeError:
+            # Last resort: a separately validated existing dated schedule.
+            # This is useful for matchup tabs but never a fresh LIVE scoreboard.
+            if expected and baseline and baseline.get("coverage_complete") is True:
+                rows = [dict(g) for g in baseline.get("games", [])
+                        if g.get("date_eastern") in {d.isoformat() for d in dates}]
+                for row in rows:
+                    row["away_score"] = None
+                    row["home_score"] = None
+                    if row.get("game_state") == "in":
+                        row["game_state"] = "unknown"
+                return {"events": rows,
+                        "source": "Previously verified NBA schedule cache (NOT live scores)",
+                        "rejected": 0}
+            raise
     result=snapshot(days,previous=previous,schedule=baseline,fallback=alternative)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps({"status":result["status"],"total_games":result["total_games"],
