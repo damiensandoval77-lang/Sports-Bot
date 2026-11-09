@@ -11,6 +11,8 @@ class ProjectionDeliverySmoke(unittest.TestCase):
         self.assertIn('const independent=(!entries.length&&noLineForecast?',HTML)
         self.assertIn('independent.length+" independent AI estimates',HTML)
         self.assertIn('if(!list.length&&independent.length)',HTML)
+        self.assertIn('independent?"AI PROJECTIONS READY"',HTML)
+        self.assertIn('const displayed=independent?model:priced',HTML)
         self.assertIn('"PrizePicks line","Unavailable"',HTML)
         self.assertIn('noLineArchive=await fetchJSON("ai_no_line_pregame_archive.json")',HTML)
 
