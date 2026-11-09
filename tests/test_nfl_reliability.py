@@ -1,6 +1,7 @@
 """Offline checks for the non-mutating NFL reliability gate."""
 import csv
 import json
+from datetime import datetime, timezone
 import sys
 import tempfile
 import unittest
@@ -81,6 +82,35 @@ class TestAudit(unittest.TestCase):
             result = audit(root)
             self.assertEqual(result["status"], "HEALTHY")
             self.assertEqual(result["eligible_frozen_final_picks"], 1)
+
+    def test_stale_capture_near_kickoff_is_failure(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self.make_data(root)
+            schedule = json.loads((root / "schedule_2026.json").read_text())
+            schedule["games"][5]["kickoff_utc"] = "2026-11-11T01:00:00Z"
+            (root / "schedule_2026.json").write_text(json.dumps(schedule))
+            result = audit(root, now=datetime(2026, 11, 11, 0, 0, tzinfo=timezone.utc))
+            self.assertEqual(result["status"], "FAILED")
+            self.assertTrue(any("older than 36 hours" in p for p in result["problems"]))
+
+    def test_stale_capture_is_warning_before_distant_kickoff(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self.make_data(root)
+            schedule = json.loads((root / "schedule_2026.json").read_text())
+            schedule["games"][5]["kickoff_utc"] = "2026-11-10T18:00:00Z"
+            (root / "schedule_2026.json").write_text(json.dumps(schedule))
+            result = audit(root, now=datetime(2026, 11, 10, 0, 0, tzinfo=timezone.utc))
+            self.assertEqual(result["status"], "HEALTHY")
+            self.assertTrue(any("older than 12 hours" in w for w in result["warnings"]))
+
+    def test_old_snapshot_without_upcoming_games_does_not_false_fail(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self.make_data(root)
+            result = audit(root, now=datetime(2026, 12, 31, tzinfo=timezone.utc))
+            self.assertEqual(result["status"], "HEALTHY")
 
     def test_missing_snapshot_chunk_detected(self):
         with tempfile.TemporaryDirectory() as d:
