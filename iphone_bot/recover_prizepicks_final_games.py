@@ -136,6 +136,10 @@ def main():
                 "research_team":team,
                 "date":date,
             }
+    report["unmatched_distinct_players_by_game"]={
+        game: sorted({r.get("player","") for r in unresolved if r.get("game")==game})
+        for game in sorted({r.get("game") for r in unresolved}) if game
+    }
     report["unmatched_reason_counts"]=dict(reason_counts)
     report["unmatched_reason_examples"]=samples
     OUT.parent.mkdir(parents=True,exist_ok=True)
