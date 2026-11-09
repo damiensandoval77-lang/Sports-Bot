@@ -1535,7 +1535,15 @@ async function refreshSelectedLiveTracker(){
  const started=Boolean(game&&start&&
     (target?.game_state==="in"||target?.game_state==="post"||
      Date.parse(start)<=Date.now()));
- if(!started||!helper){section.hidden=true;trackerLastGame="";return}
+ if(!started||!helper){
+   section.hidden=false;
+   trackerLastGame="";
+   showTrackerMessage(game||"Live AI matchup tracker",
+     !helper?"Live tracker code did not load. Refresh this page to retry.":
+     !game?"Select a game from the horizontal matchup tabs to see actual player totals, pregame AI and estimated pace.":
+     "Tracker activates after verified tipoff. Pregame estimates remain in the AI and PrizePicks sections.");
+   return;
+ }
  section.hidden=false;
  if(trackerLastGame!==game){
    trackerLastGame=game;
