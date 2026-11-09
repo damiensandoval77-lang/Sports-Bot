@@ -34,6 +34,16 @@ class TestNFLBoxscores(unittest.TestCase):
   s,r=self.setup_data()
   with self.assertRaisesRegex(ValueError,"Regressed game coverage"):
    prepare(s,r,{"game_ids":["g0","g2"]})
+ def test_missing_player_name_blocks_export(self):
+  sched,rows=self.setup_data()
+  rows.loc[0,"player_display_name"]=None
+  with self.assertRaisesRegex(ValueError,"Missing verified display name"):
+   build(sched,rows)
+ def test_blank_name_after_trim_blocks_export(self):
+  sched,rows=self.setup_data()
+  rows.loc[0,"player_display_name"]="   "
+  with self.assertRaisesRegex(ValueError,"Missing verified display name"):
+   build(sched,rows)
  def test_duplicate_and_wrong_team_fail(self):
   s,r=self.setup_data()
   with self.assertRaisesRegex(ValueError,"Duplicate"):
