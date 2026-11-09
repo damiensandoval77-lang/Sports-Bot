@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
   schedule:
     # Recovery run even when the upstream job did not dispatch this workflow.
-    # Scheduled PrizePicks ingestion starts at 16:28 and 23:28 UTC.
-    - cron: '46 16,23 * * *'
+    # PrizePicks ingestion runs at 16:28, 21:28, and 23:28 UTC.
+    - cron: '46 16,21,23 * * *'
   push:
     branches: [main]
     paths:
@@ -69,3 +69,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-ai-research.yml --ref main
+      - name: Immediately publish observed AI-versus-line research after new real PrizePicks offers
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish_live_pp_ai_join.yml --ref main
