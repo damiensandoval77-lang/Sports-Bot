@@ -1,0 +1,48 @@
+name: NBA cross-market projection coherence audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/cross_market_coherence.py'
+      - 'iphone_bot/tests/test_cross_market_coherence.py'
+      - '.github/workflows/nba-cross-market-coherence.yml'
+  schedule:
+    - cron: '20 13 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-cross-market-coherence
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regression tests against lookahead, mismatched players and duplicate projections
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_cross_market_coherence.py' -v
+      - name: Recalculate frozen forecasts component coherence
+        run: python -m iphone_bot.cross_market_coherence
+      - name: Commit descriptive audit
+        run: |
+          set -euo pipefail
+          cp docs/cross_market_coherence.json /tmp/cross_market_coherence.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git checkout -B main origin/main
+            cp /tmp/cross_market_coherence.json docs/cross_market_coherence.json
+            git add docs/cross_market_coherence.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Refresh frozen PRA component coherence audit'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1
