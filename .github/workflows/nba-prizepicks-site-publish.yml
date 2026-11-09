@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
   schedule:
     # Recovery run even when the upstream job did not dispatch this workflow.
-    # PrizePicks ingestion runs at 16:28, 21:28, and 23:28 UTC.
-    - cron: '46 16,21,23 * * *'
+    # Backup publish 18 minutes after each 00:28/16:28/18:28/20:28/22:28/23:28 UTC ingestion.
+    - cron: '46 0,16,18,20,22,23 * * *'
   push:
     branches: [main]
     paths:
