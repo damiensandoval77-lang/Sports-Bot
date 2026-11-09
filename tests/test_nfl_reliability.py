@@ -99,9 +99,9 @@ class TestAudit(unittest.TestCase):
             root = Path(d)
             self.make_data(root)
             schedule = json.loads((root / "schedule_2026.json").read_text())
-            schedule["games"][5]["kickoff_utc"] = "2026-11-10T18:00:00Z"
+            schedule["games"][5]["kickoff_utc"] = "2026-11-11T00:00:00Z"
             (root / "schedule_2026.json").write_text(json.dumps(schedule))
-            result = audit(root, now=datetime(2026, 11, 10, 0, 0, tzinfo=timezone.utc))
+            result = audit(root, now=datetime(2026, 11, 10, 12, 0, tzinfo=timezone.utc))
             self.assertEqual(result["status"], "HEALTHY")
             self.assertTrue(any("older than 12 hours" in w for w in result["warnings"]))
 
