@@ -93,9 +93,9 @@ test("dashboard fetches published quick join before trying to reconstruct manual
 });
 
 test("verified fresh PrizePicks takes priority over nonempty legacy AI sportsbook cards",()=>{
- assert.ok(html.includes('if(publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(html.includes('if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){'));
  assert.ok(!html.includes('if(ai.length===0&&publishedQuick.status==="fulfilled"&&formFresh){'));
- const load=html.indexOf('if(publishedQuick.status==="fulfilled"&&formFresh){');
+ const load=html.indexOf('if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){');
  const display=html.indexOf('ai=groupAI(joined);',load);
  const check=html.indexOf('if(joined.length){',load);
  assert.ok(check>load&&display>check,"Only actual verified joined rows replace legacy board");
@@ -111,7 +111,7 @@ test("iPhone default board prioritizes today's real matched lines, not tomorrow'
  assert.ok(from>=0&&to>from);
  const view=html.slice(from,to);
  assert.ok(view.includes("const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today)"));
- assert.ok(view.includes("const board=(!gameFilter&&todayBoard.length)?todayBoard:allBoard"));
+ assert.ok(view.includes("const board=gameFilter?allBoard:todayBoard;"));
  assert.ok(view.includes("easternGameDay(p.start)===today:p.game===gameFilter"));
  const noLine=html.slice(html.indexOf("function renderNoLineForecast(){"),from);
  assert.ok(noLine.includes("const active=false"));
@@ -123,4 +123,17 @@ test("iPhone polls free published JSON every 90 seconds and on refocus",()=>{
 test("the raw MORE/LESS line comparison isn't mislabeled as a validated model pass",()=>{
  assert.ok(html.includes('screen.status==="RESEARCH_ONLY"?"UNVALIDATED RESEARCH'));
  assert.ok(html.includes('side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS"'));
+});
+
+test("a genuine trained 20K PrizePicks board is never replaced by no-sim lightweight fallback",()=>{
+ assert.ok(html.includes("const trainedPrizePicksWithSim=aiMetadata?.is_prizepicks===true&&"));
+ assert.ok(html.includes("ai.some(p=>combinedSimAvailable(p))"));
+ assert.ok(html.includes('if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(html.includes('sim?.simulation_count===20000'));
+ assert.ok(html.includes('sim?.calibrated===false'));
+});
+test("default AI Board never displays tomorrow when today's published PrizePicks quotes are absent",()=>{
+ assert.ok(html.includes("const board=gameFilter?allBoard:todayBoard;"));
+ assert.ok(html.includes("const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today)"));
+ assert.ok(html.includes('(!gameFilter?easternGameDay(p.start)===today:p.game===gameFilter)'));
 });
