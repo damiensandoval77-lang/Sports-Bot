@@ -137,3 +137,22 @@ test("default AI Board never displays tomorrow when today's published PrizePicks
  assert.ok(html.includes("const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today)"));
  assert.ok(html.includes('(!gameFilter?easternGameDay(p.start)===today:p.game===gameFilter)'));
 });
+
+test("trained 20K PrizePicks cards remain while raw quotes fill missing games only",()=>{
+ const start=html.indexOf("function supplementTrainedPrizePicksGames(");
+ const end=html.indexOf("const trainedPrizePicksWithSim=",start);
+ assert.ok(start>=0&&end>start);
+ const supplement=new Function(html.slice(start,end)+";return supplementTrainedPrizePicksGames;")();
+ const trained=[{player:"Trained Player",game:"A @ B",stat:"PTS",combined_simulation:{simulation_count:20000}}];
+ const raw=[{player:"Duplicate",game:"A @ B",quick_research_only:true},
+            {player:"Other Game",game:"C @ D",quick_research_only:true},
+            {player:"Unverified",game:"E @ F",quick_research_only:false}];
+ const merged=supplement(trained,raw);
+ assert.deepEqual(merged,[trained[0],raw[1]]);
+ assert.equal(merged[0],trained[0],"Never overwrite source-trained simulations");
+ assert.equal(merged[1].quick_research_only,true);
+});
+test("real line+projection cards show independent research notice even on mixed board",()=>{
+ assert.ok(html.includes("aiMetadata?.quick_independent_join||p.quick_research_only"));
+ assert.ok(html.includes("independentExtra"));
+});
