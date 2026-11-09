@@ -39,6 +39,7 @@ on:
       - 'iphone_bot/tests/test_fetch_cbs_final_boxscores.py'
       - 'iphone_bot/tests/test_fetch_final_boxscores.py'
       - 'iphone_bot/tests/test_settlement_merge.py'
+      - 'iphone_bot/tests/test_phase1_e2e_grading.py'
       - '.github/workflows/nba-postgame-settlement.yml'
   schedule:
     # Frequent postgame check, no sportsbook API calls, no retraining.
@@ -65,6 +66,7 @@ jobs:
       - name: Test pregame integrity and settlement merging
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_phase1_e2e_grading.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_dnp_settlement.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_missed_game_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_error_analysis.py' -v
