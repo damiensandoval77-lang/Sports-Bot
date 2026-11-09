@@ -73,6 +73,7 @@ class FrozenAiGradingTests(unittest.TestCase):
         result=settle_predictions(chosen,[])
         audit=report("2026-11-08",chosen,result,now=NOW)
         self.assertEqual(audit["ungraded"],1)
+        self.assertEqual(audit["ungraded_distinct_player_names_by_game"],{"Utah Jazz @ Minnesota Timberwolves":["Ace Bailey"]})
         self.assertEqual(audit["status"],"NO_VERIFIED_AI_FORECAST_ACTUALS")
 
 if __name__=="__main__":
