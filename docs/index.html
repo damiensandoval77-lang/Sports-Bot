@@ -829,7 +829,7 @@ function renderAI(){
  $("ai-total").textContent=aiMetadata?.quick_independent_join?
     entries.length+" authentic PrizePicks line matches · raw AI lean only · no verified hit %":
     independent.length?
-    independent.length+" independent AI estimates · no live prop line":
+    independent.length+" independent AI estimates · no verified PrizePicks lines for these upcoming games"+(ppStamp?" · last provider capture "+new Date(ppStamp).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):""):
     entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
    (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"")+
    (entries.some(p=>p.preliminary_edge?.probability||earlyEdgePreview(p)?.probability)?" · early grades applied":"");
