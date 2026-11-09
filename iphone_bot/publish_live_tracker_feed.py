@@ -71,6 +71,21 @@ def main():
         try:summaries[ident]=get("/summary?event="+ident)
         except Exception as error:print("Summary unavailable",ident,type(error).__name__)
     data=build(now,board,summaries)
+    active=[]
+    for event in board.get("events",[]):
+        if event.get("status",{}).get("type",{}).get("state")!="in":
+            continue
+        comps=event.get("competitions",[])
+        game=matchup(comps[0].get("competitors",[])) if comps else None
+        if game:active.append(game)
+    captured={g["game"] for g in data["games"] if g["state"]=="in"}
+    missing=sorted(set(active)-captured)
+    print("LIVE TRACKER COVERAGE:",
+          json.dumps({"active_matchups":active,"observed_active_matchups":sorted(captured),
+                      "missing_active_matchups":missing},sort_keys=True),flush=True)
+    if missing:
+        raise RuntimeError("Active NBA matchups lack verified live player totals: "+
+                           ", ".join(missing))
     if data["games"]:
         OUTPUT.write_text(json.dumps(data,separators=(",",":"),ensure_ascii=False)+"\n")
     print("ESPN LIVE FALLBACK:",len(data["games"]),"games",
