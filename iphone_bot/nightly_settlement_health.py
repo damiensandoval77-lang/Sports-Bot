@@ -53,9 +53,11 @@ def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12,ai_gr
         ai_saved=matching_ai.get("recorded_pregame_forecasts")
         ai_graded=matching_ai.get("graded")
         ai_missing=matching_ai.get("ungraded")
+        ai_excluded=matching_ai.get("verified_dnp_exclusions",0)
+        ai_accounted=matching_ai.get("accounted_for",None)
     else:
         ai_status="AI_FORECAST_GRADE_REPORT_NOT_PUBLISHED_FOR_DAY"
-        ai_saved=ai_graded=ai_missing=None
+        ai_saved=ai_graded=ai_missing=ai_excluded=ai_accounted=None
     return {
         "checked_at":now.isoformat(),
         "game_date_eastern":day,
@@ -76,11 +78,14 @@ def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12,ai_gr
         "ai_forecasts_recorded":ai_saved,
         "ai_forecasts_graded":ai_graded,
         "ai_forecasts_ungraded":ai_missing,
-        "ai_forecasts_fully_graded":bool(matching_ai and ai_saved and ai_missing==0),
+        "ai_forecasts_verified_dnp_excluded":ai_excluded,
+        "ai_forecasts_accounted_for":ai_accounted,
+        "ai_forecasts_fully_accounted_for":bool(matching_ai and ai_saved and ai_missing==0 and ai_accounted==ai_saved),
+        "ai_forecasts_fully_graded":bool(matching_ai and ai_saved and ai_missing==0 and ai_excluded==0 and ai_graded==ai_saved),
         "overall_grading_status":(
             "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR"
             if status=="ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED"
-            and matching_ai and ai_saved and ai_missing==0
+            and matching_ai and ai_saved and ai_missing==0 and ai_accounted==ai_saved
             else "PRIZEPICKS_RESOLVED_AI_GRADING_INCOMPLETE"
             if status=="ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED"
             else status),

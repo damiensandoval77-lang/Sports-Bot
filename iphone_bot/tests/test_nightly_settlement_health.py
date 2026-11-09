@@ -26,6 +26,17 @@ class NightlySettlementHealthTests(unittest.TestCase):
         self.assertEqual(report["ai_forecasts_ungraded"],40)
         self.assertFalse(report["ai_forecasts_fully_graded"])
 
+    def test_confirmed_ai_dnp_is_accounted_for_but_not_a_model_grade(self):
+        ai={"game_date_eastern":"2026-11-08",
+            "status":"AI_PRETIP_FORECASTS_GRADED",
+            "recorded_pregame_forecasts":444,"graded":404,
+            "verified_dnp_exclusions":40,"accounted_for":444,"ungraded":0}
+        result=health(NOW,{},{"records":[row("SETTLED")]},ai_grades=ai)
+        self.assertEqual(result["ai_forecasts_verified_dnp_excluded"],40)
+        self.assertEqual(result["ai_forecasts_accounted_for"],444)
+        self.assertTrue(result["ai_forecasts_fully_accounted_for"])
+        self.assertFalse(result["ai_forecasts_fully_graded"])
+
     def test_wrong_day_ai_report_cannot_satisfy_nightly_grading(self):
         ai={"game_date_eastern":"2026-11-07",
             "recorded_pregame_forecasts":444,"graded":444,"ungraded":0}
