@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime,timezone,timedelta
-from iphone_bot.daily_projection_fallback import build
+from iphone_bot.daily_projection_fallback import build,retain_verified_upcoming
 class MockEstimator:
  def predict(self,x):return [7.5]
 def schedule(now):
@@ -30,6 +30,22 @@ class ModelFallbackTests(unittest.TestCase):
   self.assertIsNone(report["predictions"][0]["line"])
   self.assertIsNone(report["predictions"][0]["direction"])
   self.assertFalse(report["has_calibrated_hit_percentages"])
+ def test_temporary_failure_keeps_real_upcoming_pretip_forecasts(self):
+  old=build(schedule(self.now),form(self.now),history(self.now),self.models,self.now)
+  failed={"status":"MODEL_OR_INPUT_UNAVAILABLE","generated_at":(self.now+timedelta(minutes=10)).isoformat(),
+          "predictions":[]}
+  recovered=retain_verified_upcoming(old,failed,self.now+timedelta(minutes=10))
+  self.assertEqual(len(recovered["predictions"]),4)
+  self.assertTrue(all(p["retained_verified_pretip"] for p in recovered["predictions"]))
+  self.assertTrue(all(p["captured_at"]==self.now.isoformat() for p in recovered["predictions"]))
+  expired=retain_verified_upcoming(old,failed,self.now+timedelta(hours=13))
+  self.assertEqual(expired["predictions"],[])
+ def test_never_reuses_pretip_projection_after_game_starts(self):
+  old=build(schedule(self.now),form(self.now),history(self.now),self.models,self.now)
+  failed={"status":"MODEL_OR_INPUT_UNAVAILABLE","predictions":[]}
+  after=self.now+timedelta(hours=5)
+  self.assertFalse(retain_verified_upcoming(old,failed,after)["predictions"])
+
  def test_stale_schedule_blocks_future_projections(self):
   p=schedule(self.now);p["generated_at"]=(self.now-timedelta(days=2)).isoformat()
   report=build(p,form(self.now),history(self.now),self.models,self.now)
