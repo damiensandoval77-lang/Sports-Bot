@@ -11,6 +11,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from iphone_bot.fetch_nba_schedule import collect, read_schedule, nba_season_schedule, parse_nba_game, request_json
+from iphone_bot.official_game_id_index import update_index
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/nba_scoreboard_independent.json"
@@ -182,6 +183,10 @@ def main():
             raise
     result=snapshot(days,previous=previous,schedule=baseline,fallback=alternative)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
+    # Game IDs come only from observed official NBA liveData, not ESPN IDs or
+    # third-party schedule guesses. Preserve them across daily rollover.
+    known=update_index(ROOT/"docs/official_nba_game_ids.json",result)
+    print("Saved verified official NBA game IDs:",known)
     print(json.dumps({"status":result["status"],"total_games":result["total_games"],
                       "generated_at":result["generated_at"],"error":result.get("error")}))
     if result["status"] not in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES", "OBSERVED_NBA_LIVE_SCOREBOARD", "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"):
