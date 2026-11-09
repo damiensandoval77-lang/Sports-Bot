@@ -293,7 +293,7 @@ def pending_games(records,now=None):
     return games
 
 
-def gather(records,now=None,request=request_json):
+def gather(records,now=None,request=request_json,known_game_ids=None):
     pending=pending_games(records,now)
     days={key[0] for key in pending}
     # By team abbreviation and event day, never by a similar player's name.
@@ -326,6 +326,24 @@ def gather(records,now=None,request=request_json):
                 report["errors"].append("NBA boxscore unavailable: "+str(exc)[:140])
     except (ValueError,KeyError,TypeError,OSError) as exc:
         report["errors"].append("NBA scoreboard unavailable: "+str(exc)[:140])
+    # Use previously observed official liveData NBA IDs before expensive
+    # season schedule rediscovery. These IDs are only lookup hints: the
+    # returned official box must STILL attest FINAL, date, teams, and game ID.
+    if known_game_ids:
+        from iphone_bot.official_game_id_index import matching_ids
+        pending_ids=matching_ids(known_game_ids,pending-nba_complete)
+        report["cached_official_id_candidates"]=len(pending_ids)
+        for key,gid in pending_ids.items():
+            if key in nba_complete:continue
+            try:
+                rows=final_schedule_boxscore(gid,key,request)
+                if not rows:continue
+                from_nba.extend(rows)
+                nba_complete.add(key)
+                report["final_nba_games"]+=1
+                report["final_cached_id_nba_games"]=report.get("final_cached_id_nba_games",0)+1
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                report["errors"].append("Cached official ID boxscore unavailable: "+str(exc)[:130])
     # The live NBA scoreboard can time out on hosted runners or roll over to
     # the next day. Discover historical IDs from the official season schedule,
     # then read each actual final (gameStatus=3) NBA player boxscore.
