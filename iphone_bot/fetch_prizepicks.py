@@ -504,7 +504,8 @@ def main():
     # games over 24 hours away or rerun the entire source again.
     full_board_partial=bool(cursor)
     baseline=publish(pages,[],schedule=schedule)
-    targeted_queries=targeted_team_searches(schedule,baseline,valid_now)
+    targeted_queries=(targeted_team_searches(schedule,baseline,valid_now)
+                      if full_board_partial else [])
     targeted_attempts=[]
     for code in targeted_queries:
         try:
