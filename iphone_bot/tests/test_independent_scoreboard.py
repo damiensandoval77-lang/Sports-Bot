@@ -63,6 +63,22 @@ class IndependentScoreboardTests(unittest.TestCase):
         self.assertEqual(r["status"],"STALE_UPSTREAM_ERROR")
         self.assertEqual(r["generated_at"],prior["generated_at"])
 
+    def test_espn_http_200_missing_official_game_uses_full_fallback(self):
+        baseline={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat()},
+                           {"game":"Washington Wizards @ Detroit Pistons","date_eastern":DAY.isoformat()}]}
+        def fallback(_):
+            return {"events":[{"id":"123","game":"Away @ Home",
+                    "date_eastern":DAY.isoformat(),"start":"2026-11-09T23:00:00Z"},
+                    {"id":"0022600205","game":"Washington Wizards @ Detroit Pistons",
+                    "date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z"}],
+                    "source":"Previously verified NBA schedule cache (NOT live scores)"}
+        r=snapshot([DAY],reader=lambda _: [event()],now=NOW,
+                   schedule=baseline,fallback=fallback)
+        self.assertEqual(r["total_games"],2)
+        self.assertEqual(r["status"],"NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
+        self.assertFalse(r["is_live_score_source"])
+
     def test_complete_provider_matches_known_slate(self):
         baseline={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
                   "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat()}]}
