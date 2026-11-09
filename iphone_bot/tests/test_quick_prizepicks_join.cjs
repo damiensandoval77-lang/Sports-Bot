@@ -91,3 +91,23 @@ test("dashboard fetches published quick join before trying to reconstruct manual
  const rebuildUse=html.indexOf("verifiedQuickPrizePicksJoins(pp.value,noLineForecast,form)");
  assert.ok(publishedUse>0&&rebuildUse>publishedUse);
 });
+
+test("iPhone main board prioritizes today's matched PrizePicks lines over tomorrow's AI-only wall",()=>{
+ const from=html.indexOf("function renderAI(){");
+ const to=html.indexOf("function groupOdds(",from);
+ assert.ok(from>=0&&to>from);
+ const view=html.slice(from,to);
+ assert.ok(view.includes("const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today)"));
+ assert.ok(view.includes("(!gameFilter&&todayBoard.length)?todayBoard:allBoard"));
+ assert.ok(view.includes("easternGameDay(p.start)===today:p.game===gameFilter"));
+ const noLine=html.slice(html.indexOf("function renderNoLineForecast(){"),from);
+ assert.ok(noLine.includes("const active=false"),"Do not put a second stale no-line wall above real matched cards");
+});
+test("iPhone refresh checks for new published authentic lines within 90 seconds",()=>{
+ assert.ok(html.includes("setInterval(refreshPublishedModels,90000)"));
+ assert.ok(html.includes("dashboardLastReload>45000"));
+});
+test("research-only line has a raw directional lean but never a validated model pass",()=>{
+ assert.ok(html.includes('screen.status==="RESEARCH_ONLY"?"UNVALIDATED RESEARCH'));
+ assert.ok(html.includes('side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS"'));
+});
