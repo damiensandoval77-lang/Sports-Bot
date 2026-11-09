@@ -32,7 +32,7 @@
 <section id="live" class="hidden"><h2>Matchups & Final Box Scores</h2><p class="muted">Open any completed matchup to view final player stats. Box scores load independently of PrizePicks lines. In-progress games do not display estimated final stats.</p><div id="livegames" class="board"></div></section>
 <section id="graded" class="hidden"><h2>Graded NFL lines</h2><p class="muted">Results use frozen pre-kickoff prices, not revised projections.</p><div id="grades" class="board"></div></section>
 </main><script>
-const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board",boxManifest:null,boxWeeks:{}};
+const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board",boxManifest:null,boxWeeks:{},boxHealth:null};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function parseCSV(text){const rows=[];let r=[],v="",quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){r.push(v);v=""}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;r.push(v);if(r.some(x=>x!==""))rows.push(r);r=[];v=""}else v+=c}if(v||r.length){r.push(v);rows.push(r)}if(!rows.length)return[];const cols=rows.shift();return rows.map(row=>Object.fromEntries(cols.map((c,i)=>[c,row[i]??""])));}
 async function getCSV(url){const response=await fetch(url+"?t="+Math.floor(Date.now()/60000),{cache:"no-store"});if(!response.ok)throw Error(response.status+" "+url);return parseCSV(await response.text());}
@@ -103,9 +103,16 @@ function matchupCard(g,lines){
  const finished=g.status==="final";
  const status=finished?"Final "+g.away_score+"–"+g.home_score:g.status==="started_unconfirmed"?"Started · score unverified":"Scheduled";
  const date=new Date(g.kickoff_utc);
+ const retry=state.boxHealth?.games_to_retry?.find(x=>x.game_id===g.game_id);
+ const verified=state.boxHealth?.status&&finished&&!retry&&state.boxManifest?.game_ids?.includes(g.game_id);
+ const boxStatus=finished?
+    '<small class="'+(retry?'muted':'')+'">'+
+    (retry?'Player stats '+(retry.overdue?'overdue — automatic retry scheduled':'awaiting verified update')+
+           ' ('+esc(String(retry.reason).replace(/_/g," "))+')':
+     verified?'Player box score verified':'Player box score pending verification')+'</small>':'';
  return '<div class="prop mainline"><div class="head"><strong>'+esc(g.away+' @ '+g.home)+'</strong><span class="tag">'+esc(status)+'</span></div>'+
  '<small>Week '+esc(g.week)+' · '+esc(Number.isFinite(date.getTime())?date.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):g.kickoff_utc)+'</small>'+
- '<p class="muted">'+(count?count+' frozen PrizePicks prop lines':'No PrizePicks props captured — matchup still available')+'</p>'+
+ '<p class="muted">'+(count?count+' frozen PrizePicks prop lines':'No PrizePicks props captured — matchup still available')+'</p>'+boxStatus+
  (finished?'<details class="matchdetail" data-boxgame="'+esc(g.game_id)+'" data-week="'+esc(g.week)+'"><summary>View final box score & player stats</summary><div class="box-content"><div class="scorewait">Loading verified final stats…</div></div></details>':
   '<small>Final player stats will appear after the game is completed and the feed updates.</small>')+'</div>';
 }
@@ -193,6 +200,14 @@ async function init(){
      if(m.season===2026&&Array.isArray(m.game_ids)&&m.weeks)state.boxManifest=m;
    }
  }catch(error){console.warn("Boxscore manifest pending:",error)}
+ try{
+   const response=await fetch("./data/boxscores/health.json?t="+Math.floor(Date.now()/60000),{cache:"no-store"});
+   if(response.ok){
+     const h=await response.json();
+     if(h.season===2026 && h.scheduled_games===272 && Array.isArray(h.games_to_retry))
+       state.boxHealth=h;
+   }
+ }catch(error){console.warn("NFL postgame reconciliation pending:",error)}
 
  try{await loadSeasonSchedule();scheduleReady=true}
  catch(error){console.error("NFL schedule error:",error);document.getElementById("weekfilter").innerHTML='<option value="">Schedule unavailable</option>'}
