@@ -38,6 +38,24 @@ class NightlyGradeDateAuditTests(unittest.TestCase):
         self.assertFalse(r["prizepicks_date_specific_verified"])
         self.assertEqual(r["prizepicks_cumulative_pending"],0)
 
+    def test_november_8_prizepicks_pending_is_not_marked_complete(self):
+        pp={"records":[
+            {"start":"2026-11-09T00:00:00Z","status":"SETTLED","game":"A @ B"},
+            {"start":"2026-11-09T01:00:00Z","status":"PENDING","game":"C @ D"}
+        ]}
+        r=audit(DAY,{"records":[]},prizepicks_ledger=pp)
+        self.assertEqual(r["prizepicks_date_locked_records"],2)
+        self.assertEqual(r["prizepicks_date_pending"],1)
+        self.assertEqual(r["prizepicks_date_pending_games"],["C @ D"])
+        self.assertFalse(r["prizepicks_date_specific_verified"])
+
+    def test_prizepicks_settled_all_date_verified_separately_from_sportsbook(self):
+        pp={"records":[{"start":"2026-11-09T00:00:00Z",
+                        "status":"SETTLED","game":"A @ B"}]}
+        r=audit(DAY,{"records":[]},prizepicks_ledger=pp)
+        self.assertTrue(r["prizepicks_date_specific_verified"])
+        self.assertEqual(r["verdict"],"NO_LOCKED_PAPER_PICKS_CAPTURED")
+
     def test_latest_completed_form_date_lag_reported(self):
         r=audit(DAY,{"records":[row("PENDING")]},form={"latest_game_date":"2026-11-07"})
         self.assertFalse(r["form_confirmed_through_target_day"])
