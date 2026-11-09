@@ -22,14 +22,14 @@ EXPECTED={"Cleveland Cavaliers @ Charlotte Hornets",
           "San Antonio Spurs @ Phoenix Suns",
           "New Orleans Pelicans @ Golden State Warriors"}
 
-def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=None):
+def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=None,standard_lines=0,model_chances=0,diagnostics=None):
     reasons=[]
     if board_count==0:
         reasons.append("NO_RENDERED_PRIZEPICKS_AI_CARDS")
-    if not labels:
-        reasons.append("NO_RENDERED_LINE_AND_PROJECTION_VALUES")
-    if simulation_count is not None and simulation_count==0:
-        reasons.append("NO_RENDERED_TRAINED_20K_SIMULATIONS")
+    if standard_lines==0:
+        reasons.append("NO_RENDERED_VERIFIED_STANDARD_LINES")
+    if model_chances==0:
+        reasons.append("NO_RENDERED_NEW_AI_CHANCES")
     missing=sorted(EXPECTED-set(tiles))
     if missing:
         reasons.append("OFFICIAL_NBA_GAMES_MISSING_NAVIGATION")
@@ -41,6 +41,9 @@ def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=No
         "status":"READY" if not reasons else "DEGRADED",
         "browser_render_verified":not reasons,
         "rendered_ai_cards":board_count,
+        "rendered_verified_standard_lines":standard_lines,
+        "rendered_new_ai_chances":model_chances,
+        "diagnostics":diagnostics or {},
         "line_and_projection_cards":len(labels),
         "rendered_20k_simulation_cards":simulation_count,
         "game_tiles_seen":sorted(set(tiles)),
@@ -69,34 +72,46 @@ def probe():
                 raise RuntimeError("Public dashboard HTTP status not 200")
             try:
                 page.wait_for_function(
-                    "() => document.querySelector('#ai-board article.compact-prop .ai-metric-label')?.textContent?.includes('PRIZEPICKS LINE')",
+                    "() => document.querySelectorAll('#ai-board article.compact-prop').length > 0",
                     timeout=30000)
             except Exception:
-                errors.append("DID_NOT_RENDER_AUTHENTIC_PRIZEPICKS_AI_CARD")
+                errors.append("NO_RENDERED_AI_CARDS")
             cards=page.locator("#ai-board article.compact-prop")
             count=cards.count()
             present=[]
-            simulated=0
-            # Verify actual rendered line and projection values rather than
-            # confusing no-line cards with provider-backed cards.
-            for item in cards.all()[:300]:
+            standard_lines=0
+            modeled=0
+            for item in cards.all()[:350]:
                 labels=item.locator(".ai-metric-label").all_inner_texts()
                 values=item.locator(".ai-metric-value").all_inner_texts()
-                text=item.inner_text()
-                if ("PRIZEPICKS LINE" in labels and "AI PROJECTION" in labels and
-                    len(values)>=2 and all(v.strip() not in ("","—","Unavailable") for v in values[:2])):
-                    present.append(text.splitlines()[0][:75])
-                    # Never mistake a raw MORE/LESS model lean for a simulated
-                    # hit percentage. Count only explicitly displayed 20K cards.
-                    idx=labels.index("20K SIM EST.") if "20K SIM EST." in labels else -1
-                    if idx>=0 and len(values)>idx and values[idx].strip().endswith("%"):
-                        simulated+=1
+                if "PRIZEPICKS STD" not in labels:continue
+                ix=labels.index("PRIZEPICKS STD")
+                if len(values)<=ix or values[ix].strip() in ("","—"):continue
+                standard_lines+=1
+                present.append(item.inner_text().splitlines()[0][:75])
+                if "NEW AI PROJECTION" in labels and "NEW AI CHANCE" in labels:
+                    pidx=labels.index("NEW AI PROJECTION")
+                    cidx=labels.index("NEW AI CHANCE")
+                    if len(values)>max(pidx,cidx) and values[pidx].strip() not in ("","—") and values[cidx].strip().endswith("%"):modeled+=1
+            diagnostics=page.evaluate("""async () => {
+              const out={standardLineCards:typeof standardLineCards==='undefined'?null:standardLineCards.length,
+                newModelIndexSize:typeof newMarketIndex==='undefined'?null:newMarketIndex.size,
+                aiRows:typeof ai==='undefined'?null:ai.length,
+                now:new Date().toISOString()};
+              try {
+                const [p,sch]=await Promise.all([
+                  fetch('./prizepicks_model_input.json?probe='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
+                  fetch('./nba_schedule.json?probe='+Date.now(),{cache:'no-store'}).then(r=>r.json())]);
+                out.providerTimestamp=p.updated_at;
+                out.rawStandardOffers=p.picks?.filter(x=>x.pickem_tier==='standard').length;
+                out.directVerifiedStandardLines=verifiedStandardLineCoverage(p,sch).length;
+                out.scheduleTimestamp=sch.generated_at;
+              } catch(e) {out.diagnosticError=String(e).slice(0,240);}
+              return out;
+            }""")
             game_tiles=page.locator("#game-strip button.score-tile").all()
             tiles=[t.get_attribute("aria-label") or "" for t in game_tiles]
             recognized=[game for game in EXPECTED if any(game in label for label in tiles)]
-            # Crucial end-to-end check: a game tab existing does not prove it
-            # actually filters to PrizePicks/AI cards. Click every official
-            # game and confirm at least one identity-matched research card.
             per_game={}
             for game in sorted(EXPECTED):
                 tile=next((t for t in game_tiles if game in (t.get_attribute("aria-label") or "")),None)
@@ -105,13 +120,14 @@ def probe():
                     continue
                 try:
                     tile.click(timeout=6000)
-                    names=page.locator("#ai-board article.compact-prop .compact-identity .match").all_inner_texts()
-                    per_game[game]=sum(game in name for name in names)
+                    page.wait_for_timeout(200)
+                    per_game[game]=sum(game in card.inner_text() and "PRIZEPICKS STD" in card.locator(".ai-metric-label").all_inner_texts()
+                      for card in page.locator("#ai-board article.compact-prop").all())
                 except Exception as exc:
                     errors.append("GAME_FILTER_FAILED:"+game+":"+type(exc).__name__)
                     per_game[game]=0
             page.locator("#game-strip button.all-games").click(timeout=6000)
-            result=assess(count,present,recognized,errors,now,per_game,simulation_count=simulated)
+            result=assess(count,present,recognized,errors,now,per_game,standard_lines=standard_lines,model_chances=modeled,diagnostics=diagnostics)
             result["ai_summary"]=page.locator("#ai-total").inner_text()[:240]
             result["public_status"]=page.locator("#status").inner_text()[:120]
             return result
