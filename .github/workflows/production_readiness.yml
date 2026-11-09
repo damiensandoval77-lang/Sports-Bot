@@ -1,0 +1,64 @@
+name: NBA production readiness and stability gate
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '9,29,49 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/production_readiness.py'
+      - '.github/workflows/production_readiness.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/production_readiness.py'
+      - 'iphone_bot/tests/test_production_readiness.py'
+      - '.github/workflows/production_readiness.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nba-production-readiness
+  cancel-in-progress: false
+
+jobs:
+  verify-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run fail-closed production data quality tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v
+      - name: Evaluate actual published NBA input freshness and coverage
+        id: check
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python -u -m iphone_bot.production_readiness
+      - name: Publish actual status even when feeds are broken
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp docs/production_readiness.json "$RUNNER_TEMP/production_readiness.json"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/production_readiness.json" docs/production_readiness.json
+            git add docs/production_readiness.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Record honest NBA production feed readiness'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Fail visibly when bot is not ready for reliable picks
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome == 'failure'
+        run: |
+          echo "::error::NBA live data/projections/line coverage not fully ready. See docs/production_readiness.json"
+          exit 1
