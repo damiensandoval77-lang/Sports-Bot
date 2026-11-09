@@ -56,6 +56,21 @@ jobs:
           for attempt in 1 2 3 4; do
             git fetch origin main
             git reset --hard origin/main
+            # On first installation compare the fetched report against the
+            # ALREADY published official injury context. This catches today's
+            # genuine QUESTIONABLE -> OUT changes on the first run.
+            if [ ! -f docs/free_nba_injury_watch.json ]; then
+              python - <<'PY'
+          import json
+          from pathlib import Path
+          old=Path('docs/injury_context.json')
+          if old.exists():
+            source=json.loads(old.read_text())
+            if source.get('status')=='OFFICIAL_NBA_REPORT_VERIFIED':
+              Path('docs/free_nba_injury_watch.json').write_text(json.dumps({
+                'report':source,'events':[]})+'\\n')
+          PY
+            fi
             cp "$RUNNER_TEMP/fetched-nba-injury.json" docs/injury_context.json
             python -u iphone_bot/free_official_nba_injury_watch.py
             python - "$RUNNER_TEMP/dispatch-needed" <<'PY'
