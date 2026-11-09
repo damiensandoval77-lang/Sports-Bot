@@ -855,7 +855,9 @@ function renderAI(){
  const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today);
  // Show today's posted PrizePicks comparisons first; future matchup tabs
  // still display all observed genuine lines by exact game.
- const board=(!gameFilter&&todayBoard.length)?todayBoard:allBoard;
+ // Never fill today's main AI board with tomorrow's no-line games merely
+ // because today's priced feed is missing. Tomorrow remains in matchup tabs.
+ const board=gameFilter?allBoard:todayBoard;
  const filtered=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
  const entries=[...filtered];
  // The published independent AI feed is price-free and must remain visible
