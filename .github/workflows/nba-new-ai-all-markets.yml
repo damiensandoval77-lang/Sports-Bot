@@ -5,6 +5,8 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/new_ai_injury_context.py'
+      - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - 'iphone_bot/multimarket_forecast_ledger.py'
       - 'iphone_bot/tests/test_multimarket_forecast_ledger.py'
       - 'iphone_bot/lagged_matchup_training.py'
@@ -15,9 +17,13 @@ on:
   push:
     branches: [main]
     paths:
+      - 'docs/underdog_nba_injury_alerts.json'
+      - 'docs/injury_context.json'
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/new_ai_injury_context.py'
+      - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - '.github/workflows/nba-new-ai-all-markets.yml'
   schedule:
     - cron: '27 0,17,20,22,23 * * *'
@@ -39,6 +45,8 @@ jobs:
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
       - name: Test standard-only quotes and correlated PRA math
         run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
+      - name: Test authenticated NBA news and no unvalidated injury uplift
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
       - name: Fetch existing archival history and retrain older-season models
         run: |
           python -u iphone_bot/download_archived_nba.py

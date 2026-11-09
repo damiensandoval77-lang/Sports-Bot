@@ -255,7 +255,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 
 <section class="panel active" id="tab-ai"><div class="bar"><h2>Model vs line</h2><small id="ai-total">—</small></div>
 <div class="filters"><input id="ai-search" aria-label="Search AI player" placeholder="Search player…" autocomplete="off"><select id="ai-game" aria-label="AI game"><option value="">All games</option></select><select id="ai-stat" aria-label="AI market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="ai-sort" aria-label="Sort AI board"><option value="leans">Ranked model leans</option><option value="time">Game time</option><option value="edge">Biggest difference (not verified)</option><option value="name">Player name</option></select></div>
-<div class="source" id="ai-evidence-warning" role="status" aria-live="polite">Reviewing independently graded results before treating simulated estimates as actionable.</div>
+<div class="source" id="ai-injury-news-status" role="status" aria-live="polite">Checking authenticated @UnderdogNBA injury news…</div><div class="source" id="ai-evidence-warning" role="status" aria-live="polite">Reviewing independently graded results before treating simulated estimates as actionable.</div>
 <div class="source" id="slate-coverage" aria-live="polite">Checking game and player line coverage…</div>
 <div class="source" id="full-nba-slate" aria-live="polite">Loading today’s complete NBA schedule…</div>
 <div class="filters schedule-roster-control" aria-hidden="true"><select id="schedule-game" aria-label="Inspect NBA matchup players"><option value="">Select a scheduled game to view player history</option></select></div>
@@ -365,6 +365,7 @@ let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastU
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
 let newMultimarketFeed=null,newMarketIndex=new Map();
+let underdogNews=null,officialInjuryFeed=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").normalize("NFKD").toLowerCase().replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -908,8 +909,57 @@ function renderNoLineForecast(){
  if(filtered.length>140)body.append(node("div","source",
    "Showing first 140 estimates; filter by player or stat to narrow results."));
 }
+function validatedOutNews(){
+ const alerts=underdogNews?.status==="UNDERDOGNBA_X_AUTHENTICATED_POLL"&&
+   underdogNews?.verified_x_posts===true&&Array.isArray(underdogNews.alerts)?
+   underdogNews.alerts:[];
+ const now=Date.now();
+ return alerts.filter(a=>{
+   const posted=Date.parse(a.posted_at),tip=Date.parse(a.start);
+   if(a.source!=="UNDERDOGNBA_X_VERIFIED_AUTHOR"||a.status!=="OUT"||
+      !Number.isFinite(posted)||!Number.isFinite(tip)||
+      tip<=now||posted>now||now-posted>8*3600000)return false;
+   const official=officialInjuryFeed?.status==="OFFICIAL_NBA_REPORT_VERIFIED"&&
+     officialInjuryFeed?.injury_data_verified===true?
+     officialInjuryFeed.players?.find(v=>String(v.player_id)===String(a.player_id)&&
+       v.team===a.team&&v.game_date===a.game_date):null;
+   if(official&&Date.parse(officialInjuryFeed.report_issued_at)>=posted&&
+      String(official.status).toUpperCase()!=="OUT")return false;
+   return true;
+ });
+}
+function injuryPendingCard(p){
+ const alerts=validatedOutNews();
+ for(const a of alerts){
+   if(a.game!==p.game||Date.parse(a.start)!==Date.parse(p.start))continue;
+   if(norm(a.player)===norm(p.player)&&p.team===a.team)return true;
+   const n=newModelForCard(p);
+   // Never let older unadjusted projection linger while new AI updates.
+   if(!n||Date.parse(n.captured_at)<Date.parse(a.posted_at)||
+      !["CONDITIONAL_INJURY_REPROJECTION","NO_REPORTED_OUT"].includes(n.injury_reprojection_status))
+     return true;
+ }
+ return false;
+}
+function renderInjuryNewsStatus(){
+ const n=$("ai-injury-news-status");
+ if(!n)return;
+ const active=validatedOutNews();
+ if(active.length){
+   n.textContent="NEW injury alert from authenticated @UnderdogNBA: "+
+      active.map(a=>a.player+" OUT ("+a.team+")").join(" · ")+
+      ". Original pregame projections retained for grading; affected old cards hidden until injury-aware model refresh.";
+ }else if(underdogNews?.status==="UNDERDOGNBA_X_MONITOR_NOT_CONFIGURED"){
+   n.textContent="Underdog NBA injury watch awaiting X API connection; official NBA injury refresh remains active.";
+ }else if(underdogNews?.status==="UNDERDOGNBA_X_POLL_FAILED"){
+   n.textContent="Underdog NBA X feed unavailable; official NBA injury report remains the confirmation source.";
+ }else if(underdogNews?.status==="UNDERDOGNBA_X_AUTHENTICATED_POLL"){
+   n.textContent="Underdog NBA injury monitoring active · no recent verified OUT alerts.";
+ }else n.textContent="Checking authenticated injury news source.";
+}
 function renderAI(){
  renderNoLineForecast();
+ renderInjuryNewsStatus();
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
  const originalBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
@@ -942,7 +992,7 @@ function renderAI(){
  // Never fill today's main AI board with tomorrow's no-line games merely
  // because today's priced feed is missing. Tomorrow remains in matchup tabs.
  const board=gameFilter?allBoard:todayBoard;
- const filtered=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
+ const filtered=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter)&&!injuryPendingCard(p));
  const entries=[...filtered];
  // The published independent AI feed is price-free and must remain visible
  // when a sportsbook API returns zero matches. Verify every record was made
@@ -2592,6 +2642,8 @@ async function refresh(){
  const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades,publishedQuick,newMarketResponse]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json"),fetchJSON("ai_prizepicks_quick_join.json"),fetchJSON("lagged_matchup_live_all_markets.json")]);
 newMultimarketFeed=newMarketResponse.status==="fulfilled"?newMarketResponse.value:null;
 newMarketIndex=refreshNewMarketIndex(newMultimarketFeed);
+underdogNews=await fetchJSON("underdog_nba_injury_alerts.json").catch(()=>null);
+officialInjuryFeed=inj.status==="fulfilled"?inj.value:null;
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file

@@ -17,12 +17,14 @@ try:
     from .expanded_matchup_research import build_team_games
     from .multimarket_matchup_training import FEATURES,COLS,TRAIN
     from .multimarket_probability import simulate,METHOD
+    from .new_ai_injury_context import injury_adjustment
 except ImportError:
     from live_lagged_matchup_sidecar import (ROOT,ET,stamp,current_games,
        build_features,standard_points_offers)
     from expanded_matchup_research import build_team_games
     from multimarket_matchup_training import FEATURES,COLS,TRAIN
     from multimarket_probability import simulate,METHOD
+    from new_ai_injury_context import injury_adjustment
 
 OUTPUT=ROOT/"docs/lagged_matchup_live_all_markets.json"
 STATS={"Points":"PTS","Rebounds":"REB","Assists":"AST","Points Rebounds Assists":"PRA"}
@@ -66,8 +68,10 @@ def feature_vector(history,team,opponent,day,team_context):
         return None,"NONFINITE_ALL_MARKET_FEATURES"
     return common,None
 
-def forecasts(records,feed,pack,now=None):
+def forecasts(records,feed,pack,now=None,*,injuries=None,news=None):
     now=now or datetime.now(timezone.utc)
+    injuries=injuries or {}
+    news=news or {}
     if (pack.get("research_only") is not True or pack.get("calibrated") is not False or
         tuple(pack.get("training_seasons") or ())!=tuple(TRAIN) or
         tuple(pack.get("feature_columns") or ())!=tuple(FEATURES)):
@@ -118,8 +122,18 @@ def forecasts(records,feed,pack,now=None):
                 cache[key]=(pred,None)
         p,reason=cache[key]
         if reason:rejected[reason]+=1;continue
+        injury=injury_adjustment(p,pid,team,opponent,day,item["start"],now,
+                                 injuries,news,records)
+        if injury["status"]=="PLAYER_REPORTED_OUT_SUPPRESS_ALL_MARKETS":
+            rejected["REPORTED_OUT_PLAYER_SUPPRESSED"]+=1
+            continue
+        if injury["status"]=="INJURY_MATCHUP_DATA_INSUFFICIENT":
+            rejected["INJURY_AFFECTED_PROJECTION_WITHHELD"]+=1
+            continue
+        p={k:float(v)*injury["factor"] for k,v in p.items()}
         stat=STATS[item["stat"]]
-        identity=(pid,team,item["game"],tip.isoformat(),stat,item["line"])
+        identity=(pid,team,item["game"],tip.isoformat(),stat,item["line"],
+                  injury["status"],tuple((v["player_id"],v["reported_at"]) for v in injury["affected"]))
         simulation=simulate(p,item["line"],stat,residuals,identity)
         if simulation["method"]!=METHOD:raise ValueError("Unknown probability method")
         predictions.append({"player":item["player"],"player_id":pid,"team":team,
@@ -131,6 +145,8 @@ def forecasts(records,feed,pack,now=None):
          "captured_at":now.isoformat(),
          "pickem_tier":"standard","standard_line_two_sided_verified":True,
          "estimated_hit_chance":simulation,
+         "injury_reprojection_status":injury["status"],
+         "injury_context":injury,
          "calibrated_probability":None,
          "source_prior_games":sum(r["date"]<day and r["team"]==team for r in by_id[pid]),
          "research_only":True,"production_replaced":False})
@@ -144,6 +160,8 @@ def forecasts(records,feed,pack,now=None):
       "market_counts":{s:sum(r["stat"]==s for r in predictions) for s in STATS.values()},
       "predictions":predictions,"published_projections":len(predictions),
       "excluded":dict(rejected),"calibrated":False,
+      "injury_news_processed":news.get("status")=="UNDERDOGNBA_X_AUTHENTICATED_POLL",
+      "official_injury_processed":injuries.get("injury_data_verified") is True,
       "production_replaced":False,"existing_grades_modified":False}
 
 def main():
@@ -162,7 +180,11 @@ def main():
     data["date"]=pd.to_datetime(data["date"],errors="raise").dt.strftime("%Y-%m-%d")
     checked,coverage=current_games(form,data.to_dict(orient="records"))
     if len(checked)<1000:raise RuntimeError("Insufficient crosschecked player-games")
-    result=forecasts(checked,feed,model)
+    injury_file=ROOT/"docs/injury_context.json"
+    news_file=ROOT/"docs/underdog_nba_injury_alerts.json"
+    injuries=json.loads(injury_file.read_text()) if injury_file.exists() else {}
+    news=json.loads(news_file.read_text()) if news_file.exists() else {}
+    result=forecasts(checked,feed,model,injuries=injuries,news=news)
     result["source_coverage"]=coverage
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print("NEW_ALL_MARKETS",json.dumps({"total":result["published_projections"],
