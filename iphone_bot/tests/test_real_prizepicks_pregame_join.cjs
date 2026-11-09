@@ -17,7 +17,9 @@ assert(html.includes('matched model/line research records (not calibrated picks 
 const normalization = between('const norm=x=>', 'const fmt=x=>');
 const recent = between('function isRecent(', 'function appendValues(');
 const joining = between('function verifiedQuickPrizePicksJoins(', 'function groupAI(');
-const NOW = Date.parse('2026-11-09T17:15:00Z');
+// Model board was published after 18:00 UTC; testing it against a
+// 17:15 UTC clock was chronologically impossible and falsely failed CI.
+const NOW = Date.parse('2026-11-09T19:25:00Z');
 class FixedDate extends Date { static now() { return NOW; } }
 const sandbox = {Date: FixedDate, Number, String, Set, Map, Math, Array};
 const quick = vm.runInNewContext(
@@ -27,8 +29,8 @@ function load(name) { return JSON.parse(fs.readFileSync(path.join(root, 'docs', 
 // Test real saved identities with a deliberately simulated fresh observation time.
 // The source fixture itself is stale in production; this is only a contract test.
 const source = load('prizepicks_site.json');
-source.generated_at='2026-11-09T17:05:00Z';
-source.board_offers=source.board_offers.map(o=>({...o,observed_at:'2026-11-09T17:05:00Z'}));
+source.generated_at='2026-11-09T19:05:00Z';
+source.board_offers=source.board_offers.map(o=>({...o,observed_at:'2026-11-09T19:05:00Z'}));
 const forecast = load('ai_projection_fallback.json');
 const roster = load('current_form.json').players;
 assert.equal(source.status, 'LIVE_THIRD_PARTY_PRIZEPICKS_LINES');
