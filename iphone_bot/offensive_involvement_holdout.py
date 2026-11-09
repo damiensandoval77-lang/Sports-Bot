@@ -97,6 +97,8 @@ def evaluate(rows, season=HOLDOUT):
         raise RuntimeError("No matched holdout games")
     def summarise(sample):
         n=len(sample)
+        if not n:
+            return {"n":0,"dates":0,"baseline_mae":None,"challenger_mae":None,"mae_difference":None,"baseline_rmse":None,"challenger_rmse":None,"challenger_better_rows":0,"baseline_better_rows":0,"ties":0}
         base=[abs(r["baseline"]-r["actual"]) for r in sample]
         chall=[abs(r["challenger"]-r["actual"]) for r in sample]
         return {"n":n,"dates":len({r["date"] for r in sample}),
