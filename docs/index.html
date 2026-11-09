@@ -376,6 +376,68 @@ function appendValues(box,values){const grid=node("div","vals");for(const [title
 function appendForm(box,person,stat){if(!person)return;const row=node("div","formline");const l5=statVal(person,stat,"l5"),l10=statVal(person,stat,"l10");
 row.append(node("span","", "L5 "+fmt(l5)),node("span","", "L10 "+fmt(l10)),node("span","", "Season "+fmt(statVal(person,stat,"season"))));box.append(row)}
 function currentPerson(name,team){const matches=form.filter(p=>norm(p.player)===norm(name)&&p.team===team);return matches.length===1?matches[0]:null}
+function verifiedQuickPrizePicksJoins(source,forecast,roster,now=Date.now()){
+ // Only authenticated pre-tip observations, exact player/team and match,
+ // from the same independently verified schedule. Never invent a quote.
+ if(source?.status!=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"||
+    !["fresh","partial"].includes(source.provider_status)||
+    !isRecent(source.generated_at,6)||
+    forecast?.status!=="PREGAME_PROJECTIONS_NO_LINES"||
+    !isRecent(forecast.generated_at,12)||
+    !Array.isArray(source.board_offers)||!Array.isArray(forecast.predictions)||
+    !Array.isArray(roster))return [];
+ const allowed=new Set(["PTS","REB","AST","PRA"]);
+ const players=new Map(),ambiguous=new Set();
+ for(const r of roster){
+  if(!r?.player||!r?.team)continue;
+  const k=norm(r.player)+"|"+r.team;
+  if(players.has(k))ambiguous.add(k);
+  else players.set(k,String(r.player_id));
+ }
+ const preds=new Map();
+ for(const p of forecast.predictions){
+  if(!p?.is_pregame_prediction||!allowed.has(p.stat)||
+     !p.player||!p.team||!p.game||!p.start||
+     typeof p.projection!=="number"||!Number.isFinite(p.projection)||p.projection<0||
+     Date.parse(p.start)<=now||Date.parse(forecast.generated_at)>=Date.parse(p.start))continue;
+  const playerKey=norm(p.player)+"|"+p.team;
+  if(ambiguous.has(playerKey)||players.get(playerKey)!==String(p.player_id))continue;
+  const k=[playerKey,p.game,p.stat].join("|");
+  preds.set(k,preds.has(k)?null:p);
+ }
+ const matched=[],seen=new Set();
+ for(const o of source.board_offers){
+  if(o?.source!=="independent_prizepicksapi_com"||o.is_demo!==false||
+     !allowed.has(o.stat)||!o.player||!o.team||!o.game||
+     typeof o.line!=="number"||!Number.isFinite(o.line)||o.line<0||o.line>=300||
+     !["standard","goblin","demon"].includes(o.more_tier)&&
+     !["standard","goblin","demon"].includes(o.less_tier))continue;
+  const observed=Date.parse(o.observed_at),tip=Date.parse(o.starts_at);
+  if(!Number.isFinite(observed)||!Number.isFinite(tip)||
+     observed>now+600000||now-observed>21600000||
+     tip<=now||observed>=tip)continue;
+  const p=preds.get([norm(o.player)+"|"+o.team,o.game,o.stat].join("|"));
+  if(!p||Math.abs(Date.parse(p.start)-tip)>1800000)continue;
+  const unique=[o.id,p.player_id,o.stat,o.line,o.game].join("|");
+  if(seen.has(unique))continue;
+  seen.add(unique);
+  matched.push({
+   player:p.player,player_id:String(p.player_id),team:p.team,
+   game:p.game,start:p.start,stat:p.stat,line:o.line,
+   projection:p.projection,combined_projection:p.projection,
+   combined_model_count:1,shadow_status:"UNAVAILABLE",
+   sportsbook:"PrizePicks",source:"independent_prizepicksapi_com",
+   line_type:"PRIZEPICKS_PICKEM_LINE",book_quotes:[],line_book_count:0,
+   market_updated:o.observed_at,provider_projection_id:String(o.id||""),
+   combined_difference:Math.round((p.projection-o.line)*10)/10,
+   quick_research_only:true,
+   reliability_screen:{status:"PASS",validated:false,side:null,
+    blockers:["NO_VERIFIED_COMBINED_OR_INJURY_ADJUSTED_MODEL"],
+    cautions:["NO_CALIBRATED_HIT_PERCENTAGE"]},
+  });
+ }
+ return matched;
+}
 function groupAI(rows){const groups=new Map();for(const p of rows){if(!p||!Number.isFinite(Number(p.line))||!Number.isFinite(Number(p.projection))||!p.player||!p.stat)continue;
 const id=[norm(p.player),p.team,p.game,p.start,p.stat,p.line].join("|");
 if(!groups.has(id))groups.set(id,{...p,books:[]});
@@ -764,7 +826,9 @@ function renderAI(){
    ((b.combined_simulation?.selected_hit_rate??-1)-(a.combined_simulation?.selected_hit_rate??-1))||
    Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
- $("ai-total").textContent=independent.length?
+ $("ai-total").textContent=aiMetadata?.quick_independent_join?
+    entries.length+" authentic PrizePicks line matches · raw AI lean only · no verified hit %":
+    independent.length?
     independent.length+" independent AI estimates · no live prop line":
     entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
    (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"")+
@@ -790,6 +854,12 @@ function renderAI(){
     identity.append(average);
   }
   const side=primaryDirection(p);
+  if(aiMetadata?.quick_independent_join){
+    identity.append(node("div","match",
+       "PRIZEPICKS + INDEPENDENT AI · provider quote observed "+
+       new Date(p.market_updated).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
+       " · no 20K simulation · research only"));
+  }
   if(aiArchiveMode){identity.append(node("div","match","FROZEN PREGAME SNAPSHOT · Historical line and simulation, NOT live"));}
   head.append(identity);main.append(head);
   // Exactly the original validated comparison values and chance calculation.
@@ -814,6 +884,11 @@ function renderAI(){
      "Central posted PrizePicks line shown · "+p.available_threshold_count+
      " authentic alternative thresholds for this player/market in details."));
   }
+  if(aiMetadata?.quick_independent_join)
+   detailNotes.push(node("div","research-note",
+    "Exact authenticated PrizePicks player/team/game/stat matched to an independent pre-tip AI forecast. "+
+    "The displayed raw MORE/LESS direction is not a vetted wager, and injury adjustments, "+
+    "Combined AI simulations and calibrated confidence are unavailable."));
   const probabilityNote=node("div","match",(combinedSimAvailable(p)?
     "20,000 bootstrap draws centered on COMBINED projection using original-model holdout errors. Not calibrated on combined-model outcomes. ":
     "20,000-run COMBINED model estimate unavailable until valid holdout residuals are provided. ")+
@@ -2399,6 +2474,18 @@ if(ai.length===0&&archive.status==="fulfilled"&&
      aiArchiveMode=false;window.lastAI=prizepicksAI.value.generated_at;
    }
  }
+// The full two-model workflow can be empty even when genuine player lines
+// and independent AI forecasts exist. Match both directly, with no fake
+// simulated probability or false wager approval.
+if(ai.length===0&&pp.status==="fulfilled"&&formFresh){
+ const joined=verifiedQuickPrizePicksJoins(pp.value,noLineForecast,form);
+ if(joined.length){
+  ai=groupAI(joined);
+  aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,
+    quick_independent_join:true,verified_current_matchups:true};
+  aiFresh=true;aiArchiveMode=false;window.lastAI=noLineForecast.generated_at;
+ }
+}
 // Saved research quotes are separate from the upcoming-only main board.
  // Use the immutable archive first, then any independently pre-tip current board.
  // Only rows captured before a game's tipoff are eligible for the tracker.
