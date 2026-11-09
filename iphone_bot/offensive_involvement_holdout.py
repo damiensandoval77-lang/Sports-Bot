@@ -133,7 +133,7 @@ def evaluate(rows, season=HOLDOUT):
           "Positive result would require independent confirmation and prospective validation."]}
 
 
-def main():
+def load_history_with_box_context():
     rows,rejected=load_history()
     # Existing shot-profile loader omits TOV even though archived CSV includes it.
     # Join independently by season, player ID, and GAME_ID; never assume zero.
@@ -141,17 +141,18 @@ def main():
     turnover_by_id={}
     with raw_path.open(encoding="utf-8-sig",newline="") as handle:
         reader=csv.DictReader(handle)
-        if not {"SEASON_ID","PLAYER_ID","GAME_ID","GAME_DATE","TOV"}.issubset(reader.fieldnames or ()):
+        if not {"SEASON_ID","PLAYER_ID","GAME_ID","GAME_DATE","TOV","OREB"}.issubset(reader.fieldnames or ()):
             raise ValueError("Historical archive lacks trusted turnover columns")
         for line in reader:
             key=(line["SEASON_ID"],line["PLAYER_ID"],line["GAME_ID"])
             try:
                 t=float(line["TOV"])
+                oreb=float(line["OREB"])
             except (ValueError,TypeError):
                 continue
-            if not math.isfinite(t) or t<0:
+            if not math.isfinite(t) or t<0 or not math.isfinite(oreb) or oreb<0:
                 continue
-            identity=(line["GAME_DATE"],t)
+            identity=(line["GAME_DATE"],t,oreb)
             if key in turnover_by_id and turnover_by_id[key]!=identity:
                 raise ValueError("Conflicting turnover game records")
             turnover_by_id[key]=identity
@@ -160,8 +161,14 @@ def main():
         saved=turnover_by_id.get((row["season"],row["id"],row["game_id"]))
         if saved and saved[0]==row["date"]:
             row["TOV"]=saved[1]
+            row["OREB"]=saved[2]
             matched+=1
-    print("Verified turnovers attached to historical player-games:",matched,"of",len(rows),flush=True)
+    print("Verified turnovers and OREB attached to player-games:",matched,"of",len(rows),flush=True)
+    return rows,rejected
+
+
+def main():
+    rows,rejected=load_history_with_box_context()
     report=evaluate(rows)
     report["source_rejections"]=rejected
     report["generated_at"]=datetime.now(timezone.utc).isoformat()
