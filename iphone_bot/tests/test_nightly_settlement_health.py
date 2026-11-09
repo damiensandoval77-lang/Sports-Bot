@@ -22,7 +22,7 @@ class NightlySettlementHealthTests(unittest.TestCase):
         self.assertEqual(report["prizepicks_overdue_games"],{"Away @ Home":1})
 
     def test_just_finished_game_has_grace_period(self):
-        report=health(NOW,{},{"records":[row(start="2026-11-09T04:00:00Z")]})
+        report=health(NOW-dt.timedelta(hours=1),{},{"records":[row(start="2026-11-09T04:00:00Z")]})
         self.assertEqual(report["status"],"AWAITING_FINALS_OR_SETTLEMENT_GRACE_PERIOD")
         self.assertEqual(report["prizepicks_overdue"],0)
 
