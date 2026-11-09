@@ -5,6 +5,8 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
+from reconcile_nfl_picks import closing
+
 ROOT = Path("docs/nfl/data")
 
 
@@ -67,6 +69,24 @@ def audit(root=ROOT):
     for key, actual in counts.items():
         if health.get(key) != actual:
             problems.append(f"grading health {key}={health.get(key)} disagrees with CSV count={actual}")
+    # Independently derive which pre-kickoff frozen quotes should be represented
+    # in the grading ledger. A successful job must not silently drop eligible picks.
+    finished = {g.get("game_id") for g in games if g.get("status") == "final"
+                and g.get("home_score") is not None and g.get("away_score") is not None}
+    eligible = closing(archive, finished)
+    def grade_key(r):
+        return tuple(str(r.get(field, "")) for field in
+                     ("game_id", "player_id", "target", "odds_type", "line"))
+    expected_keys = {grade_key(r) for r in eligible}
+    actual_keys = [grade_key(r) for r in graded + pending]
+    if len(actual_keys) != len(set(actual_keys)):
+        problems.append("duplicate rows in final pick grading ledger")
+    missing = expected_keys - set(actual_keys)
+    extras = set(actual_keys) - expected_keys
+    if missing:
+        problems.append(f"{len(missing)} eligible frozen final picks absent from grading ledger")
+    if extras:
+        problems.append(f"{len(extras)} ledger picks have no eligible frozen final quote")
     for r in graded + pending:
         if r.get("game_id") not in finals:
             problems.append("grading ledger includes game not marked final")
@@ -92,6 +112,8 @@ def audit(root=ROOT):
         "archived_pregame_lines": len(archive),
         "graded_picks": len(graded),
         "pending_picks": len(pending),
+        "eligible_frozen_final_picks": len(expected_keys),
+        "missing_final_pick_grades": len(missing),
         "warnings": warnings,
         "problems": problems,
     }
