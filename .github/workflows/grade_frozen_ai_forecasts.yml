@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/verified_final_cache.py'
+      - 'iphone_bot/tests/test_verified_final_cache.py'
       - '.github/workflows/grade_frozen_ai_forecasts.yml'
   pull_request:
     paths:
@@ -40,7 +42,8 @@ jobs:
       - name: Validate immutable pretip and final-player identity safeguards
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
-          python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py
+          python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py iphone_bot/verified_final_cache.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_final_cache.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
       - name: Grade frozen actual AI forecasts independently of PrizePicks
         if: github.event_name != 'pull_request'
@@ -53,6 +56,7 @@ jobs:
           set -euo pipefail
           cp docs/ai_forecast_actual_ledger.json "$RUNNER_TEMP/ai_forecast_actual_ledger.json"
           cp docs/ai_forecast_grade_status.json "$RUNNER_TEMP/ai_forecast_grade_status.json"
+          cp docs/verified_final_player_cache.json "$RUNNER_TEMP/verified_final_player_cache.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
@@ -71,8 +75,18 @@ jobs:
               merged.setdefault(key(r),r)
           current.write_text(json.dumps({"version":1,"records":list(merged.values())},indent=2)+"\n")
           PY
+            # Merge source-linked immutable final rows across concurrent publisher commits.
+            # Conflicting source observations are excluded, never silently overwritten.
+            python - <<'PY'
+          import os
+          from pathlib import Path
+          from iphone_bot.verified_final_cache import read_cache, write_cache
+          current=Path("docs/verified_final_player_cache.json")
+          incoming=Path(os.environ["RUNNER_TEMP"])/"verified_final_player_cache.json"
+          write_cache(current,read_cache(current),read_cache(incoming))
+          PY
             cp "$RUNNER_TEMP/ai_forecast_grade_status.json" docs/ai_forecast_grade_status.json
-            git add docs/ai_forecast_actual_ledger.json docs/ai_forecast_grade_status.json
+            git add docs/ai_forecast_actual_ledger.json docs/ai_forecast_grade_status.json docs/verified_final_player_cache.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Grade original locked NBA AI forecasts against verified final player results'
             if git push origin HEAD:main; then exit 0; fi
