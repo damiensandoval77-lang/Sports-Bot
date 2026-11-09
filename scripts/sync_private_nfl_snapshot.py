@@ -110,8 +110,21 @@ def sync(fetch, dest=DEST):
             old_time=timestamp(local.get("captured_at"))
             new_time=timestamp(manifest.get("captured_at"))
             if old_time and new_time and old_time>=new_time:
-                print("Published NFL odds are already as recent as the private snapshot; no overwrite")
-                return {"changed":False,"rows":local.get("rows",0),"reason":"already_current"}
+                # Check the actual existing CSVs too: a corrupt/incomplete
+                # local transfer at the same timestamp must be repairable.
+                local_files=local.get("files",[])
+                complete=bool(local_files) and all(
+                    isinstance(name,str) and SAFE.fullmatch(name) and
+                    (Path(dest)/name).exists() for name in local_files)
+                if complete:
+                    try:
+                        local_data={name:(Path(dest)/name).read_bytes() for name in local_files}
+                        validate_payload(local,local_data)
+                    except (OSError,ValueError,UnicodeError):
+                        complete=False
+                if complete:
+                    print("Published NFL odds are already as recent as the private snapshot; no overwrite")
+                    return {"changed":False,"rows":local.get("rows",0),"reason":"already_current"}
         except (OSError,ValueError,TypeError):
             pass
     blobs={name:fetch(name) for name in filenames}
