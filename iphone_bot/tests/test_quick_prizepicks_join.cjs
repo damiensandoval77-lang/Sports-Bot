@@ -111,7 +111,7 @@ test("iPhone default board prioritizes today's real matched lines, not tomorrow'
  assert.ok(from>=0&&to>from);
  const view=html.slice(from,to);
  assert.ok(view.includes("const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today)"));
- assert.ok(view.includes("const board=(!gameFilter&&todayBoard.length)?todayBoard:allBoard"));
+ assert.ok(view.includes("const board=gameFilter?allBoard:todayBoard;"));
  assert.ok(view.includes("easternGameDay(p.start)===today:p.game===gameFilter"));
  const noLine=html.slice(html.indexOf("function renderNoLineForecast(){"),from);
  assert.ok(noLine.includes("const active=false"));
