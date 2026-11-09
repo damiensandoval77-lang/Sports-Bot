@@ -8,11 +8,15 @@ on:
       - 'docs/index.html'
       - 'iphone_bot/verify_browser_dashboard.py'
       - 'iphone_bot/tests/test_verify_browser_dashboard.py'
+      - 'iphone_bot/reliability_guardrails.py'
+      - 'iphone_bot/tests/test_reliability_guardrails.py'
       - '.github/workflows/verify_browser_dashboard.yml'
   pull_request:
     paths:
       - 'iphone_bot/verify_browser_dashboard.py'
       - 'iphone_bot/tests/test_verify_browser_dashboard.py'
+      - 'iphone_bot/reliability_guardrails.py'
+      - 'iphone_bot/tests/test_reliability_guardrails.py'
       - '.github/workflows/verify_browser_dashboard.yml'
 permissions:
   contents: write
@@ -34,6 +38,7 @@ jobs:
         run: |
           python -m py_compile iphone_bot/verify_browser_dashboard.py
           python -m unittest discover -s iphone_bot/tests -p 'test_verify_browser_dashboard.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_reliability_guardrails.py' -v
       - name: Install headless browser for independent public site rendering
         if: github.event_name != 'pull_request'
         run: |
