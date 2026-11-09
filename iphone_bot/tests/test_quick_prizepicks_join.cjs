@@ -104,3 +104,23 @@ test("verified fresh PrizePicks takes priority over nonempty legacy AI sportsboo
  assert.ok(html.includes('aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,'));
  assert.ok(html.includes('quick_independent_join:true,research_only:true'));
 });
+
+test("iPhone default board prioritizes today's real matched lines, not tomorrow's AI-only wall",()=>{
+ const from=html.indexOf("function renderAI(){");
+ const to=html.indexOf("function groupOdds(",from);
+ assert.ok(from>=0&&to>from);
+ const view=html.slice(from,to);
+ assert.ok(view.includes("const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today)"));
+ assert.ok(view.includes("const board=(!gameFilter&&todayBoard.length)?todayBoard:allBoard"));
+ assert.ok(view.includes("easternGameDay(p.start)===today:p.game===gameFilter"));
+ const noLine=html.slice(html.indexOf("function renderNoLineForecast(){"),from);
+ assert.ok(noLine.includes("const active=false"));
+});
+test("iPhone polls free published JSON every 90 seconds and on refocus",()=>{
+ assert.ok(html.includes("setInterval(refreshPublishedModels,90000)"));
+ assert.ok(html.includes("dashboardLastReload>45000"));
+});
+test("the raw MORE/LESS line comparison isn't mislabeled as a validated model pass",()=>{
+ assert.ok(html.includes('screen.status==="RESEARCH_ONLY"?"UNVALIDATED RESEARCH'));
+ assert.ok(html.includes('side==="OVER"?"↑ MORE":side==="UNDER"?"↓ LESS"'));
+});
