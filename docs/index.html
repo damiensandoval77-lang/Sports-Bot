@@ -364,7 +364,7 @@ let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastU
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
-const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const norm=x=>String(x||"").normalize("NFKD").toLowerCase().replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
 const price=x=>Number.isFinite(x)?(x>0?"+":"")+x:"—";
 function node(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n}
@@ -381,9 +381,9 @@ function verifiedQuickPrizePicksJoins(source,forecast,roster,now=Date.now()){
  // from the same independently verified schedule. Never invent a quote.
  if(source?.status!=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"||
     !["fresh","partial"].includes(source.provider_status)||
-    !isRecent(source.generated_at,6)||
+    !isRecent(source.generated_at,1.5)||
     forecast?.status!=="PREGAME_PROJECTIONS_NO_LINES"||
-    !isRecent(forecast.generated_at,12)||
+    !isRecent(forecast.generated_at,3)||
     !Array.isArray(source.board_offers)||!Array.isArray(forecast.predictions)||
     !Array.isArray(roster))return [];
  const allowed=new Set(["PTS","REB","AST","PRA"]);
@@ -414,7 +414,7 @@ function verifiedQuickPrizePicksJoins(source,forecast,roster,now=Date.now()){
      !["standard","goblin","demon"].includes(o.less_tier))continue;
   const observed=Date.parse(o.observed_at),tip=Date.parse(o.starts_at);
   if(!Number.isFinite(observed)||!Number.isFinite(tip)||
-     observed>now+600000||now-observed>21600000||
+     observed>now+600000||now-observed>5400000||
      tip<=now||observed>=tip)continue;
   const p=preds.get([norm(o.player)+"|"+o.team,o.game,o.stat].join("|"));
   if(!p||Math.abs(Date.parse(p.start)-tip)>1800000)continue;
@@ -2675,7 +2675,7 @@ ppState=pp.status==="fulfilled"?pp.value.status:"UNAVAILABLE";
 ppStamp=pp.status==="fulfilled"?pp.value.generated_at:null;
 ppErrorCode=pp.status==="fulfilled"?pp.value.provider_error_code:null;
 ppFresh=pp.status==="fulfilled"&&pp.value.status==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"&&
- isRecent(pp.value.generated_at,6)&&Array.isArray(pp.value.offers);
+ isRecent(pp.value.generated_at,1.5)&&Array.isArray(pp.value.offers);
 prizepicks=ppFresh?pp.value.offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"):[];
 ppAIResearch=new Map();
 if(ppAI.status==="fulfilled"&&ppAI.value?.status==="PRIZEPICKS_AI_RESEARCH_ONLY_NOT_SPORTSBOOK_ODDS"&&

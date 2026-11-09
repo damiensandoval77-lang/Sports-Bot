@@ -17,14 +17,18 @@ assert(html.includes('matched model/line research records (not calibrated picks 
 const normalization = between('const norm=x=>', 'const fmt=x=>');
 const recent = between('function isRecent(', 'function appendValues(');
 const joining = between('function verifiedQuickPrizePicksJoins(', 'function groupAI(');
-const NOW = Date.parse('2026-11-09T12:15:00Z');
+const NOW = Date.parse('2026-11-09T17:15:00Z');
 class FixedDate extends Date { static now() { return NOW; } }
 const sandbox = {Date: FixedDate, Number, String, Set, Map, Math, Array};
 const quick = vm.runInNewContext(
   normalization+'\n'+recent+'\n'+joining+'\nverifiedQuickPrizePicksJoins', sandbox
 );
 function load(name) { return JSON.parse(fs.readFileSync(path.join(root, 'docs', name), 'utf8')); }
+// Test real saved identities with a deliberately simulated fresh observation time.
+// The source fixture itself is stale in production; this is only a contract test.
 const source = load('prizepicks_site.json');
+source.generated_at='2026-11-09T17:05:00Z';
+source.board_offers=source.board_offers.map(o=>({...o,observed_at:'2026-11-09T17:05:00Z'}));
 const forecast = load('ai_projection_fallback.json');
 const roster = load('current_form.json').players;
 assert.equal(source.status, 'LIVE_THIRD_PARTY_PRIZEPICKS_LINES');
@@ -47,6 +51,9 @@ assert.equal(quick({...source, generated_at:'2026-11-08T00:00:00Z'},forecast,ros
   'Old PrizePicks quotes must not reappear as fresh');
 assert.equal(quick(source,{...forecast,generated_at:'2026-11-08T00:00:00Z'},roster,NOW).length,0,
   'Old forecasts must not be mistaken for current pregame predictions');
+const staleIndividual = {...source, board_offers:source.board_offers.map(o=>({...o,observed_at:'2026-11-09T09:24:00Z'}))};
+assert.equal(quick(staleIndividual,forecast,roster,NOW).length,0,
+  'Stale individual prices must not join even if overall source stamp looks refreshed');
 const modified = JSON.parse(JSON.stringify(source));
 modified.board_offers.forEach(o=>{o.starts_at='2026-11-08T01:00:00Z';});
 assert.equal(quick(modified,forecast,roster,NOW).length,0,'Started games must be filtered');
