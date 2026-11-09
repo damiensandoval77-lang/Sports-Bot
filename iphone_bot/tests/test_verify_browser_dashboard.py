@@ -8,19 +8,20 @@ NOW=dt.datetime(2026,11,9,19,20,tzinfo=dt.timezone.utc)
 
 class BrowserCardProbeTests(unittest.TestCase):
     def test_renders_real_prizepicks_and_ai_metrics_for_full_eight_game_slate(self):
-        report=assess(120,["Game card verified"],list(EXPECTED),[],NOW)
+        report=assess(120,["Game card verified"],list(EXPECTED),[],NOW,
+                      {g:1 for g in EXPECTED},standard_lines=120,model_chances=30)
         self.assertEqual(report["status"],"READY")
         self.assertTrue(report["browser_render_verified"])
         self.assertEqual(report["missing_official_games"],[])
 
-    def test_visible_authenticated_lines_but_no_20k_simulations_fails(self):
+    def test_visible_authenticated_lines_but_no_new_ai_chances_fails(self):
         counts={game:1 for game in EXPECTED}
-        bad=assess(300,["Real PP line"],list(EXPECTED),[],NOW,counts,simulation_count=0)
+        bad=assess(300,["Real PP line"],list(EXPECTED),[],NOW,counts,standard_lines=300,model_chances=0)
         self.assertEqual(bad["status"],"DEGRADED")
-        self.assertIn("NO_RENDERED_TRAINED_20K_SIMULATIONS",bad["reasons"])
-        good=assess(300,["Real PP line"],list(EXPECTED),[],NOW,counts,simulation_count=20)
+        self.assertIn("NO_RENDERED_NEW_AI_CHANCES",bad["reasons"])
+        good=assess(300,["Real PP line"],list(EXPECTED),[],NOW,counts,standard_lines=300,model_chances=20)
         self.assertEqual(good["status"],"READY")
-        self.assertEqual(good["rendered_20k_simulation_cards"],20)
+        self.assertEqual(good["rendered_new_ai_chances"],20)
 
     def test_no_cards_is_not_equivalent_to_loading_page(self):
         report=assess(0,[],list(EXPECTED),[],NOW)
@@ -29,11 +30,11 @@ class BrowserCardProbeTests(unittest.TestCase):
 
     def test_no_genuine_prizepicks_line_must_fail(self):
         report=assess(120,[],list(EXPECTED),[],NOW)
-        self.assertIn("NO_RENDERED_LINE_AND_PROJECTION_VALUES",report["reasons"])
+        self.assertIn("NO_RENDERED_VERIFIED_STANDARD_LINES",report["reasons"])
 
     def test_each_game_must_actually_render_its_own_line_and_ai_cards(self):
         counts={game:1 for game in EXPECTED}
-        good=assess(120,["Card"],list(EXPECTED),[],NOW,counts)
+        good=assess(120,["Card"],list(EXPECTED),[],NOW,counts,standard_lines=120,model_chances=20)
         self.assertEqual(good["status"],"READY")
         game=sorted(EXPECTED)[0]
         counts[game]=0
