@@ -68,6 +68,22 @@ def parse(frame, now):
    "has_verified_player_availability":False,
    "limitations":["Season schedule and dates only; neither player prop lines nor injuries",
                   "A season file cannot guarantee late postponements or last-minute time changes"]}
+def apply_official_evidence(report,evidence_path=ROOT/"docs/verified_official_nba_fixtures.json"):
+ """Validate and recover source-confirmed missing games BEFORE any publication.
+
+ This is deliberately inside the source fetcher, not only a downstream job:
+ all scheduled workflows importing or executing this fetcher receive the
+ same reconciled 8-game slate instead of overwriting it with stale hoopR.
+ """
+ if not evidence_path.exists():
+  return report
+ try:
+  from .reconcile_official_nba_schedule import reconcile
+ except ImportError:
+  from reconcile_official_nba_schedule import reconcile
+ evidence=json.loads(evidence_path.read_text())
+ return reconcile(report,evidence)
+
 def fetch(now=None):
  now=now or datetime.now(timezone.utc)
  req=urllib.request.Request(URL,headers={"User-Agent":"SportsBot-NBA-Schedule/1.0"})
@@ -76,7 +92,7 @@ def fetch(now=None):
  if len(raw)>8_000_000:raise ValueError("Parquet exceeds bounded schedule size")
  frame=pd.read_parquet(io.BytesIO(raw))
  if len(frame)<900 or len(frame)>1600:raise ValueError("Unrecognized NBA full season schedule coverage")
- report=parse(frame,now)
+ report=apply_official_evidence(parse(frame,now))
  # Empty day can legitimately occur; full season fixture file still valid.
  return report
 def main():
