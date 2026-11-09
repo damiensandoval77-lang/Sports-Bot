@@ -662,7 +662,11 @@ function compactPrizePicksDisplay(rows){
 function renderNoLineForecast(){
  const shell=$("ai-no-line-shell"),body=$("ai-no-line-board"),state=$("ai-no-line-status");
  if(!shell||!body||!state)return;
- const active=ai.length===0;
+ // A partial priced AI slate must never hide legitimate, independently
+ // generated no-line projections for other scheduled games (e.g. Dallas).
+ // Keep these estimates clearly separate from real bettable prop cards.
+ const pricedGames=new Set(ai.map(x=>x.game));
+ const active=!selectedGame||!pricedGames.has(selectedGame);
  shell.hidden=!active;
  if(!active)return;
  body.replaceChildren();
@@ -670,7 +674,7 @@ function renderNoLineForecast(){
  const rows=feed?.status==="PREGAME_PROJECTIONS_NO_LINES"&&
    isRecent(feed.generated_at,8)&&Array.isArray(feed.predictions)?
    feed.predictions.filter(x=>Date.parse(x.start)>Date.now()&&
-      x.line==null&&x.direction==null):[];
+      x.line==null&&x.direction==null&&!pricedGames.has(x.game)):[];
  const search=norm($("ai-search").value),stat=$("ai-stat").value;
  const filtered=rows.filter(x=>(!selectedGame||x.game===selectedGame)&&
    (!stat||x.stat===stat)&&(!search||norm(x.player).includes(search)));
