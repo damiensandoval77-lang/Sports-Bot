@@ -933,7 +933,6 @@ function injuryPendingCard(p){
  for(const a of alerts){
    if(a.game!==p.game||Date.parse(a.start)!==Date.parse(p.start))continue;
    if(norm(a.player)===norm(p.player)&&p.team===a.team)return true;
-   if(p.team!==a.team&&p.team!==a.opponent)return false;
    const n=newModelForCard(p);
    // Never let older unadjusted projection linger while new AI updates.
    if(!n||Date.parse(n.captured_at)<Date.parse(a.posted_at)||
