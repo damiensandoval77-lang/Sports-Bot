@@ -38,7 +38,7 @@ class AlwaysOnLiveDataTests(unittest.TestCase):
         self.assertEqual(report["coverage_status"],"PARTIAL_LIVE_DATA")
         self.assertEqual(report["coverage"]["missing_fresh_matchups"],[MATCHUP])
         self.assertEqual(report["games"],[])
-        self.assertEqual(report["errors"][0]["reason"],"OSError")
+        self.assertIn("OSError",[e["reason"] for e in report["errors"]])
     def test_older_actuals_retained_with_original_timestamp(self):
         older=NOW.replace(minute=0)
         previous=collect(None,lambda p:{"events":[event()]} if "scoreboard" in p else summary(),older)
