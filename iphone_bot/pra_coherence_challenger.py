@@ -14,6 +14,7 @@ except ImportError:
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"docs/ai_projection_fallback.json"
+PREGAME_ARCHIVE=ROOT/"docs/ai_no_line_pregame_archive.json"
 ARCHIVE=ROOT/"docs/pra_coherence_shadow.json"
 
 def iso(value):
@@ -72,13 +73,17 @@ def main():
     # Archive current standalone model forecasts only if they were captured
     # prior to the exact event, never infer a game outcome or bookmaker line.
     live=obj.get("predictions",[])
+    locked=json.loads(PREGAME_ARCHIVE.read_text()).get("predictions",[])
     old=json.loads(ARCHIVE.read_text()).get("records",[]) if ARCHIVE.exists() else []
-    data=merge(old,candidates(live))
+    # Derived from already-frozen pretip component estimates; capture is
+    # retrospective arithmetic, not a backdated newly trained model forecast.
+    data=merge(old,candidates(locked+live))
     report={"status":"RESEARCH_ONLY_ADD_COMPONENTS_PRA_CHALLENGER",
             "updated_at":datetime.now(timezone.utc).isoformat(),
             "records":data,"original_pra_changed":False,
             "calibrated_probability_available":False,
             "original_pra_vs_additive_accuracy_not_established":True,
+            "archive_derivation_is_retrospective_arithmetic":True,
             "warning":"Additive PRA is a pregame challenger, not a verified improvement or bet recommendation"}
     ARCHIVE.write_text(json.dumps(report,indent=2)+"\n")
     print("PRA ADDITIVE SHADOW",len(data),"frozen paired forecasts")
