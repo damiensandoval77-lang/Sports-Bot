@@ -17,10 +17,12 @@ try:
     from .lagged_matchup_training import make_rows,COLS,TRAIN
     from .expanded_matchup_research import build_team_games,defense_factor
     from .offensive_involvement_holdout import predict
+    from .points_hit_probability import estimate as estimate_hit_probability
 except ImportError:
     from lagged_matchup_training import make_rows,COLS,TRAIN
     from expanded_matchup_research import build_team_games,defense_factor
     from offensive_involvement_holdout import predict
+    from points_hit_probability import estimate as estimate_hit_probability
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/"docs/lagged_matchup_live_points.json"
@@ -157,12 +159,16 @@ def forecast(records,offers,model_pack,*,now=None):
         if not math.isfinite(pred) or pred<0 or pred>100:
             excluded["INVALID_FORECAST"]+=1;continue
         key=(pid,team,p["game"],p["start"],p["line"])
+        reference=model_pack.get("probability_reference")
+        probability=(estimate_hit_probability(pred,float(p["line"]),reference,key)
+                     if isinstance(reference,dict) else None)
         item=out.setdefault(key,{"player":p["player"],"player_id":pid,"team":team,
             "opponent":opp,"game":p["game"],"start":p["start"],"stat":"PTS",
             "line":p["line"],"market_updated":p["market_updated"],
             "projection":round(pred,3),"captured_at":now.isoformat(),
             "prediction_model":"TRAINED_2022_24_LAGGED_MATCHUP_POINTS_CHALLENGER",
             "calibrated_probability":None,"simulated_hit_rate":None,
+            "estimated_hit_chance":probability,
             "official_usage_applied":False,"verified_injury_applied":False,
             "position_defense_applied":False,
             "source_prior_games":sum(x["date"]<day and x["team"]==team for x in by_id[pid]),
@@ -176,6 +182,7 @@ def forecast(records,offers,model_pack,*,now=None):
       "predictions":list(out.values()),"excluded":dict(excluded),
       "source":"INDEPENDENT_VERIFIED_PRIZEPICKS_LINES",
       "live_model_replaced":False,"probabilities_validated":False,
+      "historical_hit_probability_model":"2024_25_OUT_OF_TRAINING_RESIDUALS",
       "production_grades_modified":False}
 
 def main():
