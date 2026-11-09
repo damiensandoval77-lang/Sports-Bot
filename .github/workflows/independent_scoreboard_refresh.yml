@@ -1,0 +1,46 @@
+name: Independent NBA scoreboard refresh
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "8,28,48 * * * *"
+  pull_request:
+    paths:
+      - "iphone_bot/refresh_independent_scoreboard.py"
+      - "iphone_bot/tests/test_independent_scoreboard.py"
+      - ".github/workflows/independent_scoreboard_refresh.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: independent-scoreboard-refresh
+  cancel-in-progress: false
+
+jobs:
+  scoreboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test scoreboard refresh logic
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_independent_scoreboard.py' -v
+      - name: Refresh third-party public NBA scores without odds credits
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.refresh_independent_scoreboard
+      - name: Commit latest scoreboard snapshot
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/nba_scoreboard_independent.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update independent NBA scoreboard observation"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
