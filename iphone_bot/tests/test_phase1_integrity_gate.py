@@ -42,6 +42,21 @@ class IntegrityGateTests(unittest.TestCase):
         v["generated_at"] = "2026-11-08T22:00:00Z"
         self.assertEqual(audit(v, NOW)["status"], "WARN")
 
+    def test_full_ledger_without_summary_counters(self):
+        v = valid()
+        for field in ("captured", "pending", "settled", "void_dnp"):
+            del v[field]
+        self.assertEqual(audit(v, NOW)["status"], "PASS")
+
+    def test_published_sample_is_not_mistaken_for_complete_ledger(self):
+        v = valid()
+        v["results"] = v.pop("records")
+        v["captured"] = 2980
+        v["pending"] = 0
+        v["settled"] = 2892
+        v["void_dnp"] = 88
+        self.assertEqual(audit(v, NOW)["status"], "WARN")
+
     def test_live_system_is_not_claimed_verified(self):
         report = audit(valid(), NOW)
         self.assertFalse(report["live_prizepicks_verified"])
