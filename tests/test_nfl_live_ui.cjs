@@ -32,6 +32,32 @@ async function verify(browser, name, viewport) {
   assert(reply && reply.ok(),name+' page did not return HTTP 200');
   await page.waitForFunction(()=>document.getElementById('status').textContent!=='CONNECTING',
     {timeout:30000}).catch(()=>{});
+  // Production data integrity: the UI must use the same recent validated
+  // snapshot as main, not a stale Pages artifact or incomplete chunk upload.
+  const manifest=await page.evaluate(async()=>{
+    const response=await fetch('./data/latest_2026.json?t='+Date.now(),{cache:'no-store'});
+    if(!response.ok) throw new Error('NFL latest manifest unavailable');
+    return response.json();
+  });
+  assert(manifest.season===2026 && manifest.rows>=2236,
+    name+' is serving an older/incomplete NFL usage snapshot: '+JSON.stringify({
+      rows:manifest.rows,captured_at:manifest.captured_at}));
+  for(const col of ['snap_pct_l3','snap_pct_trend','target_share_l3',
+                    'carry_share_l3','usage_model_active']){
+    assert(manifest.schema.includes(col),name+' missing validated usage field '+col);
+  }
+  const loaded=await page.evaluate(()=>({
+    rows:state.lines.length,
+    usageCount:state.lines.filter(row=>row.usage_model_active==='1.0'||
+      row.usage_model_active==='1'||row.usage_model_active==='True').length,
+    withSnaps:state.lines.filter(row=>row.snap_pct_l3!==undefined&&
+       row.snap_pct_l3!==null&&row.snap_pct_l3!=='').length
+  }));
+  assert.equal(loaded.rows,manifest.rows,name+' did not load complete snapshot');
+  assert.equal(loaded.usageCount,manifest.rows,
+    name+' trained usage provenance is missing on some lines');
+  assert(loaded.withSnaps>=manifest.rows-2,
+    name+' offensive snap data unexpectedly absent');
   const status=await page.locator('#status').innerText();
   assert(!['CONNECTING','DATA UNAVAILABLE','SCHEDULE ONLY'].includes(status),
     name+' failed to load prediction feed: '+status);
@@ -66,6 +92,15 @@ async function verify(browser, name, viewport) {
   await card.locator('details > summary').first().click();
   assert(await card.locator('.detailbody .seasonbar').count()>0,
     name+' market details did not retain season record');
+  const usageLabels=await card.locator('.detailbody').first().innerText();
+  for(const label of ['Offensive snaps (L3)','Snap trend',
+                      'Target share (L3)','Carry share (L3)','Usage model inputs']){
+    assert(usageLabels.includes(label),name+' expanded prop is missing '+label);
+  }
+  const playerHeaderColor=await card.locator('> .mainline').evaluate(node=>
+    getComputedStyle(node).backgroundColor);
+  assert(['rgb(5, 6, 8)','rgb(0, 0, 0)'].includes(playerHeaderColor),
+    name+' did not retain the black player header: '+playerHeaderColor);
   await page.screenshot({path:output+'/'+name+'-player-card.png',fullPage:false});
   const metrics=await page.evaluate(()=>({screen:innerWidth,page:document.documentElement.scrollWidth,
     body:document.body.scrollWidth}));
