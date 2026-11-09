@@ -58,3 +58,13 @@ assert.equal(h({...base,gradeHealth:{expected_final_picks:2,graded_picks:0,
 assert(html.includes('--player-head:#050608') && html.includes('--player-name:#b4d3ff') && html.includes('player-group>.mainline .head strong'),
  'Player name color must remain distinct from market text');
 console.log('NFL health states and player header styling checks passed');
+
+const uStart=html.indexOf('function usageModelState(');
+const uEnd=html.indexOf('function pctOrUnknown(',uStart);
+assert(uStart>=0&&uEnd>uStart,'Usage feature activation disclosure must exist');
+vm.runInContext(html.slice(uStart,uEnd),context);
+assert.equal(context.usageModelState({usage_model_active:'True'}),'Included in trained model');
+assert.equal(context.usageModelState({usage_model_active:'False'}),'Not all included in saved model');
+assert.equal(context.usageModelState({}),'Not verified for this frozen prediction');
+assert(html.includes('Usage model inputs'),'Market-level usage provenance not visible');
+console.log('NFL feature provenance card checks passed');
