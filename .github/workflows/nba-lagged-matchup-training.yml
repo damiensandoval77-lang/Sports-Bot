@@ -44,5 +44,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: lagged-matchup-training-report
-          path: docs/lagged_opportunity_matchup_training.json
+          path: |
+            docs/lagged_opportunity_matchup_training.json
+            models/nba/research/lagged_matchup_2022_24.joblib
           retention-days: 14
