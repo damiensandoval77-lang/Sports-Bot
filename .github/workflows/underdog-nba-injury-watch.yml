@@ -8,10 +8,7 @@ on:
       - 'iphone_bot/new_ai_injury_context.py'
       - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - '.github/workflows/underdog-nba-injury-watch.yml'
-  schedule:
-    # Best-effort GitHub Actions schedule, approximately every five minutes
-    # across NBA afternoon, evening, overnight and late West Coast windows.
-    - cron: '*/5 0-5,16-23 * * *'
+  # Optional, on-demand only. The free official NBA monitor runs automatically.
 permissions:
   contents: write
 concurrency:
