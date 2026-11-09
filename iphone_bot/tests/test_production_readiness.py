@@ -123,6 +123,37 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("PREVIOUS_DAY_AI_GRADING_INCOMPLETE",
                       r["components"]["nightly_grades"]["reasons"])
 
+    def test_verified_published_quick_join_reports_research_path_separately(self):
+        data=fixtures()
+        data["ai_prizepicks_quick_join_health.json"]={
+            "status":"FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS",
+            "research_only":True,
+            "generated_at":STAMP,"provider_generated_at":STAMP,
+            "offers_matched":6,"matched_by_game":{GAME["game"]:6},
+            "partial_provider_board":False,"source_coverage_complete":True}
+        data["dashboard_html"]='fetchJSON("ai_prizepicks_quick_join.json") verifiedPublishedPrizePicksJoins('
+        data["data.json"]["picks"]=[]
+        data["ai_comparisons.json"]["comparisons"]=[]
+        result=check(NOW,data)
+        self.assertEqual(result["components"]["prizepicks_research_cards"]["state"],"READY")
+        self.assertFalse(result["components"]["prizepicks_research_cards"]["required"])
+        self.assertEqual(result["components"]["published_pick_cards"]["state"],"DEGRADED")
+        self.assertFalse(result["ready_for_trustworthy_picks"])
+
+    def test_quick_join_does_not_masquerade_as_live_if_feed_partial_or_ui_missing(self):
+        data=fixtures()
+        data["ai_prizepicks_quick_join_health.json"]={
+            "status":"FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS",
+            "research_only":True,"generated_at":STAMP,
+            "provider_generated_at":STAMP,"offers_matched":6,
+            "matched_by_game":{GAME["game"]:6},
+            "partial_provider_board":True,"source_coverage_complete":False}
+        result=check(NOW,data)
+        reasons=result["components"]["prizepicks_research_cards"]["reasons"]
+        self.assertIn("PP_RESEARCH_SOURCE_PARTIAL",reasons)
+        self.assertIn("DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT",reasons)
+        self.assertEqual(result["components"]["prizepicks_research_cards"]["state"],"DEGRADED")
+
     def test_missing_nightly_grade_report_degrades(self):
         data=fixtures()
         data["nightly_grade_health.json"]={}

@@ -136,6 +136,33 @@ def check(now,files):
     add("published_pick_cards","READY" if not pick_issues else "DEGRADED",
         pick_issues,pick_age,required=bool(upcoming))
 
+    # Distinguish the newly published PrizePicks research-only dashboard fallback
+    # from the legacy paid sportsbook market card readiness above.
+    # Snapshot existence is NOT proof a browser deployed or rendered the cards.
+    quick=load("ai_prizepicks_quick_join_health.json")
+    quick_age=age_of(quick,"generated_at")
+    quick_issues=[]
+    if quick.get("status")!="FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS" or quick.get("research_only") is not True:
+        quick_issues.append("NO_PUBLISHED_VERIFIED_PP_RESEARCH_JOIN")
+    if quick_age is None or quick_age< -5 or quick_age>90:
+        quick_issues.append("PP_RESEARCH_JOIN_STALE")
+    if (t:=parse_time(quick.get("provider_generated_at"))) is None or not 0<=(now-t).total_seconds()<=90*60:
+        quick_issues.append("PP_RESEARCH_PROVIDER_SOURCE_STALE")
+    if not isinstance(quick.get("offers_matched"),int) or quick.get("offers_matched",0)<=0:
+        quick_issues.append("NO_MATCHED_PP_RESEARCH_OFFERS")
+    match_counts=quick.get("matched_by_game") or {}
+    if not isinstance(match_counts,dict):
+        match_counts={}
+    if upcoming and any(match_counts.get(g.get("game"),0)<=0 for g in upcoming):
+        quick_issues.append("UPCOMING_GAMES_WITHOUT_PP_RESEARCH_MATCHES")
+    html=files.get("dashboard_html", "")
+    if not isinstance(html,str) or 'fetchJSON("ai_prizepicks_quick_join.json")' not in html or "verifiedPublishedPrizePicksJoins(" not in html:
+        quick_issues.append("DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT")
+    if quick.get("partial_provider_board") is True or quick.get("source_coverage_complete") is not True:
+        quick_issues.append("PP_RESEARCH_SOURCE_PARTIAL")
+    add("prizepicks_research_cards","READY" if not quick_issues else "DEGRADED",
+        quick_issues,quick_age,required=False)
+
     sb=inputs["scoreboard"][0]
     age,issues=common("scoreboard")
     if not isinstance(sb.get("games"),list) or not sb.get("games"):
@@ -209,7 +236,8 @@ def main():
     names=["nba_schedule.json","ai_projection_fallback.json",
            "nba_scoreboard_independent.json","prizepicks_site.json",
            "nightly_grade_health.json","nba_player_tracking_independent.json",
-           "data.json","ai_comparisons.json","verified_official_nba_fixtures.json"]
+           "data.json","ai_comparisons.json","verified_official_nba_fixtures.json",
+           "ai_prizepicks_quick_join_health.json"]
     inputs={}
     for name in names:
         path=ROOT/"docs"/name
@@ -217,6 +245,10 @@ def main():
             inputs[name]=json.loads(path.read_text()) if path.exists() else {}
         except (OSError,ValueError):
             inputs[name]={}
+    try:
+        inputs["dashboard_html"]=(ROOT/"docs/index.html").read_text()
+    except OSError:
+        inputs["dashboard_html"]=""
     result=check(dt.datetime.now(dt.timezone.utc),inputs)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print("PRODUCTION READINESS:",json.dumps({"status":result["status"],
