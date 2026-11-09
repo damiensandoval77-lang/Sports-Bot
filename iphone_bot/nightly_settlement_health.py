@@ -1,0 +1,85 @@
+"""Date-scoped NBA nightly settlement health, never infer missing results.
+
+Uses saved immutable PrizePicks / paper captures only. Detects settled, pending,
+verified void, and overdue unresolved by actual Eastern event start. No network.
+"""
+import datetime as dt
+import json
+from pathlib import Path
+from zoneinfo import ZoneInfo
+from collections import Counter
+
+from iphone_bot.nightly_grade_date_audit import audit, eastern_date
+
+ROOT=Path(__file__).resolve().parents[1]
+ET=ZoneInfo("America/New_York")
+OUTPUT=ROOT/"docs/nightly_grade_health.json"
+
+def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12):
+    if now.tzinfo is None:
+        raise ValueError("UTC-aware clock required")
+    day=(now.astimezone(ET).date()-dt.timedelta(days=1)).isoformat()
+    result=audit(day,paper,form,archive,summary,pp)
+    pp_rows=[r for r in pp.get("records",[]) if r.get("start") and
+             eastern_date(r["start"])==day]
+    paper_rows=[r for r in paper.get("records",[]) if r.get("event_start") and
+                eastern_date(r["event_start"])==day]
+    def overdue(row,field):
+        start=dt.datetime.fromisoformat(row[field].replace("Z","+00:00"))
+        return row.get("status")=="PENDING" and start.tzinfo is not None and (
+            now-start).total_seconds()>=grace_hours*3600
+    overdue_pp=[r for r in pp_rows if overdue(r,"start")]
+    overdue_paper=[r for r in paper_rows if overdue(r,"event_start")]
+    all_started=all(
+        (now-dt.datetime.fromisoformat(r["start"].replace("Z","+00:00"))).total_seconds()
+        >=grace_hours*3600
+        for r in pp_rows
+    ) if pp_rows else False
+    if overdue_pp or overdue_paper:
+        status="OVERDUE_UNRESOLVED_GRADES"
+    elif pp_rows and not result["prizepicks_date_pending"] and all_started:
+        status="ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED"
+    elif pp_rows:
+        status="AWAITING_FINALS_OR_SETTLEMENT_GRACE_PERIOD"
+    elif paper_rows:
+        status="NO_PRIZEPICKS_LOCKED_RECORDS"
+    else:
+        status="NO_LOCKED_RECORDS_FOR_TARGET_DATE"
+    return {
+        "checked_at":now.isoformat(),
+        "game_date_eastern":day,
+        "status":status,
+        "grace_hours_from_scheduled_start":grace_hours,
+        "prizepicks_saved":result["prizepicks_date_locked_records"],
+        "prizepicks_settled":result["prizepicks_date_settled"],
+        "prizepicks_void":result["prizepicks_date_void"],
+        "prizepicks_pending":result["prizepicks_date_pending"],
+        "prizepicks_overdue":len(overdue_pp),
+        "prizepicks_overdue_games":dict(sorted(Counter(r.get("game") for r in overdue_pp).items())),
+        "paper_saved":result["locked_paper_records"],
+        "paper_pending":result["pending"],
+        "paper_overdue":len(overdue_paper),
+        "unpriced_forecasts_separate":result["unpriced_pregame_archive_forecasts"],
+        "capture_missing":not (pp_rows or paper_rows),
+        "complete_slate_not_guaranteed":True,
+        "notice":"Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
+    }
+
+def main():
+    def load(path):
+        p=ROOT/path
+        return json.loads(p.read_text()) if p.exists() else {}
+    report=health(dt.datetime.now(dt.timezone.utc),
+                  load("docs/paper_pick_ledger.json"),
+                  load("docs/prizepicks_research_ledger.json"),
+                  load("docs/current_form.json"),
+                  load("docs/ai_no_line_pregame_archive.json"),
+                  load("docs/prizepicks_research_results.json"))
+    OUTPUT.parent.mkdir(parents=True,exist_ok=True)
+    OUTPUT.write_text(json.dumps(report,indent=2)+"\n")
+    print("NIGHTLY GRADE HEALTH:",json.dumps(report,sort_keys=True))
+    if report["status"]=="OVERDUE_UNRESOLVED_GRADES":
+        raise SystemExit(2)
+
+if __name__=="__main__":
+    main()
