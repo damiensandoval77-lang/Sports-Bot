@@ -915,7 +915,7 @@ function renderAI(){
     identity.append(average);
   }
   const side=primaryDirection(p);
-  if(aiMetadata?.quick_independent_join){
+  if(p.quick_research_only){
     identity.append(node("div","match",
        "PRIZEPICKS + INDEPENDENT AI · provider quote observed "+
        new Date(p.market_updated).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
@@ -945,7 +945,7 @@ function renderAI(){
      "Central posted PrizePicks line shown · "+p.available_threshold_count+
      " authentic alternative thresholds for this player/market in details."));
   }
-  if(aiMetadata?.quick_independent_join)
+  if(p.quick_research_only)
    detailNotes.push(node("div","research-note",
     "Exact authenticated PrizePicks player/team/game/stat matched to an independent pre-tip AI forecast. "+
     "The displayed raw MORE/LESS direction is not a vetted wager, and injury adjustments, "+
@@ -2580,12 +2580,21 @@ if(ai.length===0&&archive.status==="fulfilled"&&
 // replace a valid simulated card with a projection-only research fallback.
 const trainedPrizePicksWithSim=aiMetadata?.is_prizepicks===true&&
   ai.some(p=>combinedSimAvailable(p));
-if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){
+if(publishedQuick.status==="fulfilled"&&formFresh){
  const joined=verifiedPublishedPrizePicksJoins(publishedQuick.value,form);
  if(joined.length){
-  ai=groupAI(joined);
-  aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,
-   quick_independent_join:true,research_only:true,verified_current_matchups:true};
+  if(trainedPrizePicksWithSim){
+   // Preserve all trained 20K models and their same-game alternative lines.
+   // Only supplement genuine scheduled matchups the full trained board missed.
+   // Never allow quick projection-only rows to replace a simulated market.
+   const trainedGames=new Set(ai.map(p=>p.game));
+   const uncovered=joined.filter(p=>!trainedGames.has(p.game));
+   if(uncovered.length)ai=[...ai,...groupAI(uncovered)];
+  }else{
+   ai=groupAI(joined);
+   aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,
+    quick_independent_join:true,research_only:true,verified_current_matchups:true};
+  }
   aiFresh=true;aiArchiveMode=false;
   window.lastAI=publishedQuick.value.generated_at;
  }
