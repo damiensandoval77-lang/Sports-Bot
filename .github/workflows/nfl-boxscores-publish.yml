@@ -1,0 +1,42 @@
+name: Publish verified NFL final boxscores
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/export_nfl_boxscores.py'
+      - '.github/workflows/nfl-boxscores-publish.yml'
+      - 'tests/test_nfl_boxscores.py'
+  workflow_dispatch:
+  schedule:
+    - cron: '30 11,17 * 9-12,1-2 *'
+permissions:
+  contents: write
+concurrency:
+  group: nfl-final-boxscores
+  cancel-in-progress: false
+jobs:
+  boxscores:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install parquet reader
+        run: pip install pandas pyarrow
+      - name: Run tests
+        run: python -m unittest discover -s tests -p 'test_nfl_boxscores.py' -v
+      - name: Export finalized player stats
+        run: python scripts/export_nfl_boxscores.py
+      - name: Commit verified records
+        shell: bash
+        run: |
+          git config user.name nfl-boxscore-publisher
+          git config user.email actions@users.noreply.github.com
+          git add docs/nfl/data/boxscores/
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh verified NFL final box scores"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
