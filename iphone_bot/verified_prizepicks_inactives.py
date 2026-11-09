@@ -15,7 +15,7 @@ ROOT=Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"docs/verified_prizepicks_inactive_2026-11-08.json"
 SOURCE="NBA_OFFICIAL_INACTIVE_CROSSCHECKED"
 
-def verified_inactive_rows(official_rows,fixture):
+def verified_inactive_rows(official_rows,fixture,require_all=True):
     if fixture.get("status")!="MANUALLY_CROSSCHECKED_OFFICIAL_NBA_INACTIVE_2026_11_08":
         raise ValueError("Official inactivity evidence not verified")
     day=fixture.get("game_date_eastern")
@@ -31,8 +31,8 @@ def verified_inactive_rows(official_rows,fixture):
             if r.get("final_confirmed") is True
             and not r.get("dnp_final_verified")}
     entries=fixture.get("players")
-    if not isinstance(entries,list) or len(entries)!=4:
-        raise ValueError("Cross-checked November 8 inactive set requires four entries")
+    if not isinstance(entries,list) or (len(entries)!=4 if require_all else not 1<=len(entries)<=4):
+        raise ValueError("Cross-checked November 8 inactive set has invalid entries")
     seen=set()
     result=[]
     for item in entries:
@@ -71,3 +71,24 @@ def verified_inactive_rows(official_rows,fixture):
 def load_verified_inactive_rows(official_rows):
     if not FIXTURE.exists():return []
     return verified_inactive_rows(official_rows,json.loads(FIXTURE.read_text()))
+
+def verified_inactive_subset(official_rows):
+    """Cross-check only fixture games actually corroborated by this official final batch.
+
+    Never assert a player DNP in a game whose final boxscore was not independently
+    retrieved. All selected entries pass the same strict source and identity rules.
+    """
+    if not FIXTURE.exists():
+        return []
+    fixture=json.loads(FIXTURE.read_text())
+    final_keys={(str(r.get("source_game_id")),r.get("date"),
+                 r.get("team"),r.get("opponent"))
+                for r in official_rows
+                if r.get("final_confirmed") is True
+                and r.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL")}
+    selected=[r for r in fixture.get("players",[])
+              if (str(r.get("game_id")),fixture.get("game_date_eastern"),
+                  r.get("team"),r.get("opponent")) in final_keys]
+    if not selected:
+        return []
+    return verified_inactive_rows(official_rows,{**fixture,"players":selected},require_all=False)
