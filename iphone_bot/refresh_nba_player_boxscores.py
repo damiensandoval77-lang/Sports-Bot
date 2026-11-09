@@ -37,6 +37,8 @@ def collect_boxscores(day, fetch=request_json, now=None, max_games=15):
             failures.append(type(err).__name__)
     if scoreboard is None:
         raise RuntimeError("NBA liveData scoreboard unavailable: " + ",".join(failures))
+    if scoreboard.get("gameDate") and scoreboard["gameDate"] != day.isoformat():
+        raise ValueError("NBA liveData scoreboard has not rolled to the requested Eastern date")
     games = []
     for raw in scoreboard["games"]:
         parsed = parse_nba_game(raw, {day})
