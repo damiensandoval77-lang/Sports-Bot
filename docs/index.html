@@ -1593,7 +1593,7 @@ async function refreshSelectedLiveTracker(){
    const backup=await fetchJSON("live_player_tracking.json");
    if(backup?.status!=="OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK"||
       backup.date_eastern!==easternGameDay(start)||
-      !isRecent(backup.captured_at,.25))throw Error(
+      !isRecent(backup.captured_at,.5))throw Error(
         "Direct ESPN unavailable ("+String(directError.message||directError)+
         "); no verified recent server backup");
    const matches=(backup.games||[]).filter(g=>helper.normalize(g.game)===helper.normalize(game)&&
@@ -1605,7 +1605,7 @@ async function refreshSelectedLiveTracker(){
    players=snapshot.player_rows.map(p=>({player:p.player,team:p.team,athlete_id:String(p.player_id||""),
      stats:{PTS:p.PTS,REB:p.REB,AST:p.AST,PRA:p.PRA}}));
    verifiedAt=Date.parse(backup.captured_at);
-   liveSource="ESPN verified server backup (up to 10+ min old)";
+   liveSource="ESPN server snapshot (possibly 30 min old)";
   }
   if(serial!==trackerRequestId)return;
   $("live-prop-title").textContent=game+" · "+(helper.gameStatus(event)==="post"?"FINAL":"LIVE TRACKER");
@@ -1613,7 +1613,7 @@ async function refreshSelectedLiveTracker(){
     (event.status?.type?.shortDetail||"current game")+
     " · Frozen pregame AI vs observed totals · Verified "+
     new Date(verifiedAt).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
-    (liveSource.startsWith("ESPN verified server")?" · Server snapshots refresh on a separate best-effort schedule":" · Direct refresh every 45 seconds");
+    (liveSource.startsWith("ESPN server snapshot")?" · Not real-time; backup refreshes are best effort":" · Direct refresh every 45 seconds");
   const cards=[];
   let matchedProps=0,missingProps=0;
   const missingReasons={};
