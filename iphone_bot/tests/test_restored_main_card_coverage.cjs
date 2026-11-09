@@ -83,6 +83,9 @@ test("Affected card becomes real-line only with no fabricated projection/lean",(
  assert.equal(row.combined_projection,null);
  assert.equal(row.estimated_hit_chance,null);
  assert.equal(row.line_only,true);
+ assert.deepEqual(Array.from(row.books),[]);
+ assert.deepEqual(Array.from(row.book_quotes),[]);
+ assert.deepEqual(Array.from(row.alternative_lines),[24.5]);
  assert.ok(html.includes('const projected=p.line_only?NaN:'));
  assert.ok(html.includes('const side=p.line_only?"NO LEAN":primaryDirection(p);'));
 });

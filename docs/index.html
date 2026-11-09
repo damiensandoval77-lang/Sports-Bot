@@ -1023,7 +1023,13 @@ function injuryCardStatus(p){
 }
 function injuryPendingCard(p){return injuryCardStatus(p)==="OUT";}
 function safeLineOnly(p,reason){
- return {...p,line_only:true,projection:null,combined_projection:null,
+ // Old expanded-card renderer iterates books even when a verified
+ // PrizePicks line has no matching new AI. Never let optional legacy
+ // detail arrays crash an otherwise valid line-only card.
+ return {...p,books:Array.isArray(p.books)?p.books:[],
+   book_quotes:Array.isArray(p.book_quotes)?p.book_quotes:[],
+   alternative_lines:Array.isArray(p.alternative_lines)?p.alternative_lines:[p.line],
+   line_only:true,projection:null,combined_projection:null,
    new_model_market:false,estimated_hit_chance:null,
    quick_research_only:false,preliminary_edge:null,
    injury_display_reason:reason,injury_reprojection_status:"PENDING",
@@ -1453,8 +1459,8 @@ function renderAI(){
   });
   manualControls.append(lineInput,compareButton);
   manual.append(manualControls,manualResult);body.append(manual);
-  body.append(node("div","detail-heading","Actual sportsbook quotes ("+p.books.length+")"));
-  for(const b of p.books){
+  body.append(node("div","detail-heading","Actual sportsbook quotes ("+(Array.isArray(p.books)?p.books.length:0)+")"));
+  for(const b of (Array.isArray(p.books)?p.books:[])){
    const line=node("div","bookrow");
    line.append(node("span","",b.name+" · "+fmt(Number(b.line))),
      node("span","mono","O "+price(b.over)+" / U "+price(b.under)));
@@ -1625,7 +1631,7 @@ function renderAI(){
    body.append(node("div","detail-highlight","Highest hypothetical EV: "+b.book+" · "+b.side+" "+fmt(Number(b.line))+" · "+price(Number(b.odds))+" · "+(Number(b.hypothetical_ev_pct)>0?"+":"")+Number(b.hypothetical_ev_pct).toFixed(1)+"%"));
    body.append(node("div","mini","Experimental and uncalibrated; this is NOT a validated betting edge."));
   }
-  for(const b of p.books){
+  for(const b of (Array.isArray(p.books)?p.books:[])){
    if(false&&b.ev_method==="UNCALIBRATED_MODEL_HYPOTHETICAL_EV"){
     body.append(node("div","mini","Hypothetical "+b.name+" EV · Over "+b.hypothetical_over_ev_pct+"% / Under "+b.hypothetical_under_ev_pct+"% (not verified)"));
    }
