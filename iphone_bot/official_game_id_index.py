@@ -44,11 +44,6 @@ def merge_entries(existing,new):
     conflicts=set()
     for row in list(existing)+list(new):
         if not isinstance(row,dict):continue
-        item=verified_index_entry({
-            "id":row.get("game_id"),"date_eastern":row.get("date"),
-            "away_abbreviation":row.get("away"),"home_abbreviation":row.get("home"),
-            "start":row.get("start") or row.get("date")+"T12:00:00-05:00",
-        }) if isinstance(row.get("date"),str) else None
         # Index entry identity is revalidated without depending on an invented
         # start time; a game date and exact official NBA identity are sufficient.
         day,away,home,gid=row.get("date"),row.get("away"),row.get("home"),str(row.get("game_id") or "")
