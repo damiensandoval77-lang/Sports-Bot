@@ -58,8 +58,8 @@ def audit(data, now=None):
     else:
         for field, expected in (("captured", len(records)), ("pending", counts["PENDING"]),
                                 ("settled", counts["SETTLED"]), ("void_dnp", counts["VOID_DNP"])):
-            if data.get(field) != expected:
-                errors.append(f"{field}: summary={data.get(field)}, records={expected}")
+            if field in data and data[field] != expected:
+                errors.append(f"{field}: summary={data[field]}, records={expected}")
     try:
         date = datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
         if not date.tzinfo or (date-now).total_seconds() > 300:
