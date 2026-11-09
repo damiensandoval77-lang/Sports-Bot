@@ -1,18 +1,18 @@
 {
   "requested_at": "2026-11-09",
   "requested_by": "user",
-  "purpose": "On-demand bounded authentic NBA PrizePicks full-slate refresh for Phase 1 diagnostics",
+  "purpose": "One bounded full-slate collector refresh after confirmed stale snapshot. Verify top-up authorization from vendor response; stop on vendor quota denial.",
   "max_pages": 4,
   "expected_cost_ceiling_credits": 40,
   "topup_credit_handling": "Use provider-authorized existing top-up access, stop on provider quota response; never assume top-up balance from monthly header",
   "no_real_money_wagers": true,
-  "run_request": "2026-11-09-phase1-on-demand-reliability-check-2",
+  "run_request": "2026-11-09-phase1-live-lines-recovery-after-stale-snapshot-3",
   "expected_checks": [
-    "authenticated provider response",
-    "new observation timestamp",
-    "official 8-game matchup coverage",
-    "site board publication",
-    "AI comparison join",
-    "post-refresh production readiness"
+    "authenticated provider response and cost",
+    "new valid observed_at provider timestamp",
+    "eight November 9 NBA game matchups",
+    "no fabricated quotes if quota fails",
+    "site board publisher handoff",
+    "AI quick-join health and deployment readiness"
   ]
 }
