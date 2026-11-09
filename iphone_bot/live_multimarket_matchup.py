@@ -163,6 +163,9 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
       "excluded":dict(rejected),"calibrated":False,
       "injury_news_processed":news.get("status")=="UNDERDOGNBA_X_AUTHENTICATED_POLL",
       "official_injury_processed":injuries.get("injury_data_verified") is True,
+      "official_report_issued_at":injuries.get("report_issued_at") if
+          injuries.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" and
+          injuries.get("injury_data_verified") is True else None,
       "free_official_injury_transition_watch":free_watch.get("status")=="FREE_OFFICIAL_NBA_INJURY_MONITOR",
       "production_replaced":False,"existing_grades_modified":False}
 
