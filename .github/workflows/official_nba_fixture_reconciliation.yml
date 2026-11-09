@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: official-nba-schedule-reconciliation
@@ -64,3 +65,8 @@ jobs:
             fi
           done
           exit 1
+      - name: Explicitly refresh scoreboard after checking official NBA fixtures
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run independent_scoreboard_refresh.yml --ref main
