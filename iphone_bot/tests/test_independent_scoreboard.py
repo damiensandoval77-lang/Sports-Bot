@@ -44,5 +44,37 @@ class IndependentScoreboardTests(unittest.TestCase):
         r=snapshot([DAY,DAY],reader=lambda _: [event()],now=NOW)
         self.assertEqual(r["status"],"UNAVAILABLE_UPSTREAM_ERROR")
 
+
+    def test_empty_provider_response_rejected_if_schedule_has_games(self):
+        baseline={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat()}]}
+        r=snapshot([DAY],reader=lambda _: [],now=NOW,schedule=baseline)
+        self.assertEqual(r["status"],"UNAVAILABLE_UPSTREAM_ERROR")
+        self.assertIsNone(r["generated_at"])
+
+    def test_provider_missing_one_matchup_retains_previous(self):
+        baseline={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat()},
+                           {"game":"Other @ Other Home","date_eastern":DAY.isoformat()}]}
+        prior={"generated_at":"2026-11-09T10:00:00+00:00",
+               "games":[{"id":"saved"}],"total_games":1}
+        r=snapshot([DAY],reader=lambda _: [event()],now=NOW,
+                   previous=prior,schedule=baseline)
+        self.assertEqual(r["status"],"STALE_UPSTREAM_ERROR")
+        self.assertEqual(r["generated_at"],prior["generated_at"])
+
+    def test_complete_provider_matches_known_slate(self):
+        baseline={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat()}]}
+        r=snapshot([DAY],reader=lambda _: [event()],now=NOW,schedule=baseline)
+        self.assertEqual(r["total_games"],1)
+        self.assertEqual(r["status"],"OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES")
+
+    def test_incomplete_schedule_not_used_as_coverage_assertion(self):
+        baseline={"coverage_complete":False,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Other @ Other Home","date_eastern":DAY.isoformat()}]}
+        r=snapshot([DAY],reader=lambda _: [event()],now=NOW,schedule=baseline)
+        self.assertEqual(r["status"],"OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES")
+
 if __name__=="__main__":
     unittest.main()
