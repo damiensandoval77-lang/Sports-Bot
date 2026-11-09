@@ -132,6 +132,46 @@ def recovered_fixture_schedule(schedule,model_input,now):
     "total_games":len(recovered),
     "no_prop_lines_reused":True}
 
+def retain_verified_upcoming(previous,generated,now):
+ """Keep original no-line estimates for still-upcoming fixtures when a new
+ run has partial coverage or a temporary upstream data failure. This does not
+ reconstruct any game after tipoff or reissue stale quotes as live.
+ """
+ if previous.get("status")!="PREGAME_PROJECTIONS_NO_LINES":
+  return generated
+ old_time=parsed(previous.get("generated_at"))
+ if not old_time or old_time>now or now-old_time>timedelta(hours=12):
+  return generated
+ if generated.get("status") not in ("PREGAME_PROJECTIONS_NO_LINES",
+   "NO_ELIGIBLE_PLAYER_PROJECTIONS","SCHEDULE_STALE","PLAYER_HISTORY_STALE",
+   "MODEL_OR_INPUT_UNAVAILABLE","NO_UPCOMING_VERIFIED_SCHEDULE"):
+  return generated
+ newest=list(generated.get("predictions",[]))
+ seen={(p.get("player_id"),p.get("game"),p.get("start"),p.get("stat"))
+       for p in newest}
+ retained=0
+ for old in previous.get("predictions",[]):
+  tip=parsed(old.get("start"))
+  captured=parsed(old.get("captured_at") or previous.get("generated_at"))
+  if not (tip and captured and captured<tip and now<tip<now+timedelta(hours=36)):
+   continue
+  if old.get("is_pregame_prediction") is not True or old.get("line") is not None:
+   continue
+  key=(old.get("player_id"),old.get("game"),old.get("start"),old.get("stat"))
+  if key in seen:continue
+  seen.add(key)
+  newest.append({**old,"captured_at":captured.isoformat(),
+                 "retained_verified_pretip":True})
+  retained+=1
+ if not retained:return generated
+ generated={**generated,"predictions":newest,
+            "status":"PREGAME_PROJECTIONS_NO_LINES",
+            "games_covered":len({p["game"] for p in newest}),
+            "retained_prior_pretip_forecasts":retained,
+            "last_model_refresh_status":generated.get("status"),
+            "message":"Valid independent pre-tipoff estimates; some originally captured before this refresh and retained without modification."}
+ return generated
+
 def main():
  now=datetime.now(timezone.utc)
  status={"status":"UNAVAILABLE","generated_at":now.isoformat(),"predictions":[],
@@ -150,6 +190,8 @@ def main():
  except (OSError,ValueError,KeyError,TypeError) as e:
   status["status"]="MODEL_OR_INPUT_UNAVAILABLE"
   status["error_type"]=type(e).__name__
+ previous=json.loads(OUT.read_text()) if OUT.exists() else {}
+ status=retain_verified_upcoming(previous,status,now)
  OUT.write_text(json.dumps(status,separators=(",",":"))+"\n")
  print("Line-independent NBA forecast:",status["status"],
        "games:",status.get("games_covered",0),
