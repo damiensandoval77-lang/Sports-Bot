@@ -875,6 +875,7 @@ function renderAI(){
      (!stat||p.stat===stat)&&(!q||norm(p.player).includes(q))):[];
  const eligibleLeans=entries.filter(p=>p.reliability_screen?.status==="MODEL_LEAN").length;
  const passed=entries.filter(p=>p.reliability_screen?.status==="PASS").length;
+ const independentExtra=entries.filter(p=>p.quick_research_only===true).length;
  entries.sort((a,b)=>sort==="name"?a.player.localeCompare(b.player):
   sort==="edge"?Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   sort==="leans"?
@@ -893,6 +894,7 @@ function renderAI(){
     independent.length+" independent AI estimates · no verified PrizePicks lines for these upcoming games"+(ppStamp?" · last provider capture "+new Date(ppStamp).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):""):
     entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
    (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"")+
+   (independentExtra?" · "+independentExtra+" additional raw PrizePicks model directions (unvalidated)":"")+
    (entries.some(p=>p.preliminary_edge?.probability||earlyEdgePreview(p)?.probability)?" · early grades applied":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   try{
@@ -915,7 +917,7 @@ function renderAI(){
     identity.append(average);
   }
   const side=primaryDirection(p);
-  if(aiMetadata?.quick_independent_join){
+  if(aiMetadata?.quick_independent_join||p.quick_research_only){
     identity.append(node("div","match",
        "PRIZEPICKS + INDEPENDENT AI · provider quote observed "+
        new Date(p.market_updated).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
@@ -945,7 +947,7 @@ function renderAI(){
      "Central posted PrizePicks line shown · "+p.available_threshold_count+
      " authentic alternative thresholds for this player/market in details."));
   }
-  if(aiMetadata?.quick_independent_join)
+  if(aiMetadata?.quick_independent_join||p.quick_research_only)
    detailNotes.push(node("div","research-note",
     "Exact authenticated PrizePicks player/team/game/stat matched to an independent pre-tip AI forecast. "+
     "The displayed raw MORE/LESS direction is not a vetted wager, and injury adjustments, "+
@@ -2574,20 +2576,33 @@ if(ai.length===0&&archive.status==="fulfilled"&&
 // PrizePicks card even when 1,800+ exact matches had been published.
 // The separate sportsbook tab still retains the independent sportsbook feed.
 // Never mix providers under the global is_prizepicks card label.
-// A full trained PrizePicks model with genuine 20K residual simulations
-// wins over the quick price/projection join. The quick feed exists only to
-// recover genuine lines when trained simulations are not available. Never
-// replace a valid simulated card with a projection-only research fallback.
+// Keep the already-trained PrizePicks 20K simulations, but never let a
+// partially covered trained board conceal genuine, fresh PrizePicks quotes
+// for other official games. Research-only additions have no simulated hit %.
+function supplementTrainedPrizePicksGames(trained,verifiedQuick){
+ const covered=new Set(trained.filter(p=>p&&p.game).map(p=>p.game));
+ return [...trained,...verifiedQuick.filter(p=>p&&p.quick_research_only===true&&
+   !covered.has(p.game))];
+}
 const trainedPrizePicksWithSim=aiMetadata?.is_prizepicks===true&&
   ai.some(p=>combinedSimAvailable(p));
-if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){
+if(publishedQuick.status==="fulfilled"&&formFresh){
  const joined=verifiedPublishedPrizePicksJoins(publishedQuick.value,form);
  if(joined.length){
-  ai=groupAI(joined);
-  aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,
-   quick_independent_join:true,research_only:true,verified_current_matchups:true};
-  aiFresh=true;aiArchiveMode=false;
-  window.lastAI=publishedQuick.value.generated_at;
+  if(trainedPrizePicksWithSim){
+   const missing=supplementTrainedPrizePicksGames(ai,joined);
+   if(missing.length>ai.length){
+    ai=groupAI(missing);
+    aiMetadata={...aiMetadata,mixed_quick_research:true};
+    aiFresh=true;aiArchiveMode=false;
+   }
+  }else{
+   ai=groupAI(joined);
+   aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,
+    quick_independent_join:true,research_only:true,verified_current_matchups:true};
+   aiFresh=true;aiArchiveMode=false;
+   window.lastAI=publishedQuick.value.generated_at;
+  }
  }
 }
 // The full two-model workflow can be empty even when genuine player lines
