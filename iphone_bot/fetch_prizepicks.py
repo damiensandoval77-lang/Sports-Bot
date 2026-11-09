@@ -65,6 +65,7 @@ def clean(row,now,verified_live=False):
     if not isinstance(market,dict):market={"stat":row.get("stat") or market,"period":row.get("period")}
     stat=STAT.get(str(market.get("stat") or row.get("stat") or "").lower().strip())
     period=str(market.get("period") or row.get("period") or "").strip().lower()
+    if stat is None:return None  # Reject unsupported or undefined markets before mapping posted lines.
     if period not in ("full game","full_game","fullgame"):return None
     raw_starts=event.get("starts_at") or row.get("event_starts_at") or row.get("starts_at")
     starts=timeparse(raw_starts)
