@@ -35,7 +35,7 @@ jobs:
           fi
           python -m iphone_bot.collect_prizepicks_board
       - name: Save provider result as workflow artifact, never commit public docs
-        if: github.event_name == 'workflow_dispatch'
+        if: always() && github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: prizepicks-nba-internal-snapshot
