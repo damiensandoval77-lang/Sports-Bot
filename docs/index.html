@@ -1156,6 +1156,41 @@ function renderAI(){
    (entries.some(p=>p.preliminary_edge?.probability||earlyEdgePreview(p)?.probability)?" · early grades applied":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   try{
+  // A genuine standard PrizePicks line can arrive before any trustworthy
+  // new-model projection. Do not pass that line-only card into the legacy
+  // sportsbook detail renderer (which assumes books, odds and model fields).
+  if(p.line_only){
+    const card=node("article","prop compact-prop"),
+          main=node("div","mainline"),
+          heading=node("div","compact-head"),
+          person=node("div","compact-identity");
+    person.append(node("strong","",p.player),
+      node("div","match",p.team+" · "+formatTime(p.start)+" · "+p.game));
+    heading.append(person);
+    const tiles=node("div","ai-metrics");
+    for(const [label,value,kind] of [
+      ["PRIZEPICKS STD",fmt(Number(p.line)),"line"],
+      ["NEW AI PROJECTION","—","projection"],
+      ["NEW AI CHANCE","—","chance"]]){
+      const tile=node("div","ai-metric "+kind);
+      tile.append(node("span","ai-metric-label",label),
+                  node("strong","ai-metric-value",value));
+      tiles.append(tile);
+    }
+    main.append(heading,node("div","ai-market-name",
+      ({PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"})[p.stat]||p.stat),
+      tiles);
+    main.append(node("div","research-note",
+      p.injury_display_reason==="INJURY_REMODEL_PENDING"?
+      "Verified standard line · injury-aware new AI pending. No current over/under lean or probability.":
+      "Verified standard PrizePicks line · new AI prediction pending. No over/under lean or probability."));
+    const recent=formFresh?currentPerson(p.player,p.team):null;
+    if(recent)main.append(node("div","mini",
+      "Observed 2026–27 "+p.stat+" average "+fmt(statVal(recent,p.stat,"season"))+
+      " across "+recent.games+" recorded games · not a projection."));
+    card.append(main);
+    return card;
+  }
   const outer=node("article","prop compact-prop"),main=node("div","mainline"),detailNotes=[];
   const head=node("div","compact-head"),identity=node("div","compact-identity");
   const shortStats={PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"};

@@ -89,6 +89,17 @@ test("Affected card becomes real-line only with no fabricated projection/lean",(
  assert.ok(html.includes('const projected=p.line_only?NaN:'));
  assert.ok(html.includes('const side=p.line_only?"NO LEAN":primaryDirection(p);'));
 });
+test("Verified line-only card returns safely before bookmaker-only details",()=>{
+ const start=html.indexOf("const list=entries.slice(0,selectedGame?");
+ const safe=html.indexOf("if(p.line_only){",start);
+ const books=html.indexOf("p.books.length",start);
+ assert.ok(start>0&&safe>start&&books>safe);
+ const fast=html.slice(safe,books);
+ assert.ok(fast.includes("return card;"));
+ assert.ok(fast.includes('["NEW AI PROJECTION","—"'));
+ assert.ok(fast.includes('["NEW AI CHANCE","—"'));
+ assert.ok(fast.includes("injury-aware new AI pending"));
+});
 test("Opening missing-AI games does not force sportsbook when verified standard exists",()=>{
  assert.ok(html.includes('!standardLineCards.some(x=>x.game===game)'));
  assert.ok(html.includes('const quoteOnly=standardLineCards.filter('));
