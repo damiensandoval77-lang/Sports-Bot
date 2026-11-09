@@ -7,6 +7,7 @@ on:
       - 'docs/ai_no_line_pregame_archive.json'
       - 'iphone_bot/preserve_no_line_forecasts.py'
       - 'iphone_bot/publish_live_tracker_feed.py'
+      - '.replit'
       - 'iphone_bot/live_tracker_service.py'
       - 'iphone_bot/tests/test_live_tracker_service.py'
       - 'iphone_bot/tests/test_live_prop_tracker.cjs'
@@ -43,6 +44,13 @@ jobs:
           node --test iphone_bot/tests/test_live_prop_tracker.cjs
           python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_live_tracker_service.py' -v
+          python - <<'PY'
+          import tomllib,pathlib
+          r=tomllib.loads(pathlib.Path('.replit').read_text())
+          assert r['run']=='python -m iphone_bot.live_tracker_service'
+          assert r['ports'][0]['localPort']==8080
+          print('Replit backend startup configured')
+          PY
       - name: Assert independent 45-second refresh and conservative ESPN backup
         run: |
           python - <<'PY'
