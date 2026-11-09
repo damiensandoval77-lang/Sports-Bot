@@ -56,3 +56,25 @@ jobs:
             sleep 2
           done
           exit 1
+      - name: Assert every active ESPN game has fresh verified player totals
+        run: |
+          python - <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path('docs/live_player_tracking.json')
+          if not p.exists():
+              print("LIVE DATA UNAVAILABLE: no published snapshot")
+              sys.exit(1)
+          data=json.loads(p.read_text())
+          coverage=data.get("coverage")
+          if not isinstance(coverage,dict):
+              print("LIVE COVERAGE UNKNOWN: report missing")
+              sys.exit(1)
+          missing=coverage.get("missing_fresh_matchups",[])
+          print("ACTIVE LIVE GAMES:",len(coverage.get("active_matchups",[])))
+          print("VERIFIED FRESH:",len(coverage.get("fresh_active_matchups",[])))
+          print("MISSING FRESH:",missing)
+          if missing:
+              print("LIVE COVERAGE PARTIAL: publishing available observations but marking run failed")
+              sys.exit(1)
+          PY
