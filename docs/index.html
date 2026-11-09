@@ -1667,14 +1667,25 @@ async function refreshSelectedLiveTracker(){
         "); no verified recent server backup");
    const matches=(backup.games||[]).filter(g=>helper.normalize(g.game)===helper.normalize(game)&&
      ["in","post"].includes(g.state)&&Array.isArray(g.player_rows)&&g.player_rows.length);
-   if(matches.length!==1)throw Error("No unique matching server-verified NBA boxscore");
+   if(matches.length!==1)throw Error(
+     "No unique matching verified player boxscore for "+game+
+     (backup?.coverage?.missing_fresh_matchups?.includes(game)?
+       " · matchup missing from latest live feed":""));
    const snapshot=matches[0];
+   // A newly published *file* may contain a retained older observation
+   // for this specific game. Enforce freshness per-game, not file-level.
+   const observedAt=Date.parse(snapshot.observed_at||backup.captured_at);
+   const age=Date.now()-observedAt;
+   if(!Number.isFinite(observedAt)||age< -600000||age>30*60000)
+     throw Error("No player observations less than 30 min old for "+game);
    event={status:{type:{state:snapshot.state,shortDetail:snapshot.shortDetail},
      period:snapshot.period,displayClock:snapshot.displayClock,clock:snapshot.clock}};
    players=snapshot.player_rows.map(p=>({player:p.player,team:p.team,athlete_id:String(p.player_id||""),
      stats:{PTS:p.PTS,REB:p.REB,AST:p.AST,PRA:p.PRA}}));
-   verifiedAt=Date.parse(backup.captured_at);
-   liveSource="ESPN server snapshot (possibly 30 min old)";
+   verifiedAt=observedAt;
+   liveSource=snapshot.stale?
+     "ESPN retained game snapshot (STALE; no fresh update)":
+     "ESPN server snapshot (scheduled best-effort refresh)";
   }
   if(serial!==trackerRequestId)return;
   $("live-prop-title").textContent=game+" · "+(helper.gameStatus(event)==="post"?"FINAL":"LIVE TRACKER");
@@ -1682,7 +1693,7 @@ async function refreshSelectedLiveTracker(){
     (event.status?.type?.shortDetail||"current game")+
     " · Frozen pregame AI vs observed totals · Verified "+
     new Date(verifiedAt).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
-    (liveSource.startsWith("ESPN server snapshot")?" · Not real-time; backup refreshes are best effort":" · Direct refresh every 45 seconds");
+    (liveSource.startsWith("ESPN")?" · Not real-time; backup refreshes are best effort":" · Direct refresh every 45 seconds");
   const cards=[];
   let matchedProps=0,missingProps=0;
   const missingReasons={};
