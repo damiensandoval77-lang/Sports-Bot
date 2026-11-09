@@ -88,6 +88,27 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(seen[0],S3_BASE+"boxscore/boxscore_0022600009.json")
         self.assertEqual(seen[1],url)
 
+    def test_verified_nba_final_inactive_player_is_void_not_under(self):
+        final={**verified(),"PTS":None,"REB":None,"AST":None,"PRA":None,
+               "MIN":None,"dnp_final_verified":True,
+               "dnp_reason":"INACTIVE"}
+        row=research()
+        result=settle({"records":[row]},[],now=NOW,final_games=[final])["records"][0]
+        self.assertEqual(result["status"],"VOID_DNP")
+        self.assertEqual(result["result"],"VOID")
+        self.assertIsNone(result["actual"])
+        self.assertEqual(result["settlement_source"],"NBA_CDN_FINAL")
+
+    def test_missing_player_is_not_automatically_void(self):
+        result=settle({"records":[research()]},[],now=NOW,
+                      final_games=[verified(name="Another Player")])["records"][0]
+        self.assertEqual(result["status"],"PENDING")
+
+    def test_unverified_dnp_reason_cannot_void(self):
+        final={**verified(),"dnp_final_verified":True,"dnp_reason":None}
+        result=settle({"records":[research()]},[],now=NOW,final_games=[final])["records"][0]
+        self.assertEqual(result["status"],"PENDING")
+
     def test_old_games_excluded_from_bounded_automatic_retry(self):
         row={**research(),"start":"2026-11-01T00:00:00Z"}
         self.assertEqual(pending_matchup_requests([row],now=NOW),[])
