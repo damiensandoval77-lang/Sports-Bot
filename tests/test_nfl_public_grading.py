@@ -92,6 +92,65 @@ class PublicNFLGradeTests(unittest.TestCase):
             second=run(root)
             self.assertEqual(first,(root/"pp_graded_2026.csv").read_bytes())
             self.assertEqual(result,second)
+    def test_full_postgame_transition_and_repeated_grading(self):
+        # A valid pre-kickoff quote should be saved while the game is scheduled,
+        # become pending once final, then settle from a verified player box score.
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            all_games=[dict(game_id=f"dummy{i}",week=10,status="scheduled",
+                kickoff_utc="2026-11-22T18:00:00+00:00",home="BUF",
+                away="MIA",home_score=None,away_score=None)
+                for i in range(271)]
+            target=dict(schedule()["g1"],status="scheduled",
+                home_score=None,away_score=None)
+            def save_schedule():
+                (root/"schedule_2026.json").write_text(json.dumps({
+                    "season":2026,"game_count":272,"games":[target]+all_games}))
+            save_schedule()
+            record=bet()
+            with (root/"latest_2026_00.csv").open("w",newline="") as handle:
+                writer=csv.DictWriter(handle,fieldnames=list(record))
+                writer.writeheader();writer.writerow(record)
+            (root/"latest_2026.json").write_text(json.dumps({
+                "season":2026,"captured_at":record["captured_at"],
+                "rows":1,"files":["latest_2026_00.csv"]}))
+            boxroot=root/"boxscores"
+            boxroot.mkdir()
+            (boxroot/"manifest.json").write_text(json.dumps({
+                "season":2026,"game_ids":[]}))
+            before=run(root)
+            self.assertEqual(before["archived_pregame_lines"],1)
+            self.assertEqual(before["expected_final_picks"],0)
+            self.assertEqual(before["graded_picks"],0)
+            # Verified final score arrives first, but player stats lag.
+            target.update(status="final",home_score=24,away_score=17)
+            save_schedule()
+            waiting=run(root)
+            self.assertEqual(waiting["expected_final_picks"],1)
+            self.assertEqual(waiting["pending_picks"],1)
+            with (root/"pp_grading_pending_2026.csv").open(newline="") as handle:
+                pending=list(csv.DictReader(handle))
+            self.assertEqual(pending[0]["grade_status"],
+                             "boxscore_not_yet_published")
+            # Verified matching player boxscore arrives later.
+            (boxroot/"manifest.json").write_text(json.dumps({
+                "season":2026,"game_ids":["g1"]}))
+            (boxroot/"week_10.json").write_text(json.dumps({
+                "season":2026,"week":10,"games":[{
+                    "game_id":"g1","week":10,"home":"BUF","away":"MIA",
+                    "home_score":24,"away_score":17,
+                    "players":[box()["g1"]["gsis-1"]]}]}))
+            done=run(root)
+            self.assertEqual(done["graded_picks"],1)
+            self.assertEqual(done["pending_picks"],0)
+            self.assertEqual(done["standard_settled"],1)
+            self.assertEqual(done["standard_wins"],1)
+            grade_bytes=(root/"pp_graded_2026.csv").read_bytes()
+            archive_bytes=(root/"frozen_pick_history_2026.csv").read_bytes()
+            self.assertEqual(run(root),done)
+            self.assertEqual((root/"pp_graded_2026.csv").read_bytes(),grade_bytes)
+            self.assertEqual((root/"frozen_pick_history_2026.csv").read_bytes(),
+                             archive_bytes)
     def test_invalid_public_snapshot_does_not_wipe_history(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
