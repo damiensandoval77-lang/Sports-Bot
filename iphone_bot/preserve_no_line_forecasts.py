@@ -5,6 +5,7 @@ Never backfill from after-tipoff estimates, recompute archived estimates, or
 infer a sportsbook line, direction, confidence, or settled grade.
 """
 import json
+import os
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -52,6 +53,12 @@ def merge(existing,feed,now=None):
 
 def main():
     current=json.loads(DEST.read_text()) if DEST.exists() else {}
+    extra_path=os.environ.get("ADDITIONAL_PREGAME_ARCHIVE")
+    if extra_path and Path(extra_path).exists():
+        extra=json.loads(Path(extra_path).read_text())
+        if extra.get("status")=="IMMUTABLE_OBSERVED_PRETIP_NOLINE_AI_ARCHIVE":
+            current={"status":"IMMUTABLE_OBSERVED_PRETIP_NOLINE_AI_ARCHIVE",
+                     "predictions":current.get("predictions",[])+extra.get("predictions",[])}
     fresh=json.loads(SOURCE.read_text()) if SOURCE.exists() else {}
     output=merge(current,fresh)
     DEST.write_text(json.dumps(output,separators=(",",":"))+"\n")
