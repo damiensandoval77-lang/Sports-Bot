@@ -2,7 +2,7 @@ import datetime as dt
 import unittest
 
 from iphone_bot.grade_frozen_ai_forecasts import (
-    eligible_predictions,final_requests,settle_predictions,report
+    eligible_predictions,final_requests,settle_predictions,report,unresolved_reasons
 )
 
 NOW=dt.datetime(2026,11,9,15,tzinfo=dt.timezone.utc)
@@ -107,6 +107,32 @@ class FrozenAiGradingTests(unittest.TestCase):
              "dnp_reason":"CLAIM","final_confirmed":True}
         result=settle_predictions(chosen,[final()],confirmed_inactives=[row])
         self.assertEqual(result["records"],[])
+
+    def test_missing_final_matchup_is_explicit_not_a_player_loss(self):
+        pending=eligible_predictions([forecast()],NOW)
+        details=unresolved_reasons(pending,[])
+        self.assertEqual(next(iter(details.values()))["reason"],
+                         "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED")
+        status=report("2026-11-08",pending,settle_predictions(pending,[]),
+                      now=NOW,final_rows=[])
+        self.assertEqual(status["ungraded"],1)
+        self.assertEqual(status["ungraded_diagnostics"]["by_reason"],
+                         {"VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED":1})
+
+    def test_final_game_present_but_player_missing_is_not_fabricated_dnp(self):
+        pending=eligible_predictions([forecast()],NOW)
+        rows=[final(player="Other Player")]
+        details=unresolved_reasons(pending,rows)
+        self.assertEqual(next(iter(details.values()))["reason"],
+                         "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED")
+        self.assertEqual(settle_predictions(pending,rows)["records"],[])
+
+    def test_wrong_team_identity_diagnosed_without_settlement(self):
+        pending=eligible_predictions([forecast()],NOW)
+        rows=[{**final(), "team":"MIN","opponent":"UTA"}]
+        self.assertEqual(next(iter(unresolved_reasons(pending,rows).values()))["reason"],
+                         "PLAYER_TEAM_OPPONENT_IDENTITY_MISMATCH")
+        self.assertEqual(settle_predictions(pending,rows)["records"],[])
 
     def test_ungraded_count_not_falsely_success(self):
         chosen=eligible_predictions([forecast()],NOW)
