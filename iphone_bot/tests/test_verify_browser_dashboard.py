@@ -8,7 +8,8 @@ NOW=dt.datetime(2026,11,9,19,20,tzinfo=dt.timezone.utc)
 
 class BrowserCardProbeTests(unittest.TestCase):
     def test_renders_real_prizepicks_and_ai_metrics_for_full_eight_game_slate(self):
-        report=assess(120,["Game card verified"],list(EXPECTED),[],NOW,\n                      {g:1 for g in EXPECTED},standard_lines=120,model_chances=30)
+        report=assess(120,["Game card verified"],list(EXPECTED),[],NOW,
+                      {g:1 for g in EXPECTED},standard_lines=120,model_chances=30)
         self.assertEqual(report["status"],"READY")
         self.assertTrue(report["browser_render_verified"])
         self.assertEqual(report["missing_official_games"],[])
