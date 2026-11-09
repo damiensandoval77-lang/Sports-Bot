@@ -808,7 +808,9 @@ function renderNoLineForecast(){
    (!norm($("ai-search").value)||norm(x.player).includes(norm($("ai-search").value))));
  // If the priced board is empty, its fallback is rendered as first-class
  // AI cards directly in #ai-board, not hidden in a secondary source box.
- const active=pricedForSelection&&(!selectedGame||!pricedGames.has(selectedGame));
+ // AI-only fallback is already rendered by the main #ai-board when needed.
+ // Never put tomorrow-only no-line cards above genuine matched lines.
+ const active=false;
  shell.hidden=!active;
  if(!active)return;
  body.replaceChildren();
@@ -848,7 +850,12 @@ function renderAI(){
  renderNoLineForecast();
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
- const board=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
+ const allBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
+ const today=easternGameDay(new Date());
+ const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today);
+ // Show today's posted PrizePicks comparisons first; future matchup tabs
+ // still display all observed genuine lines by exact game.
+ const board=(!gameFilter&&todayBoard.length)?todayBoard:allBoard;
  const filtered=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
  const entries=[...filtered];
  // The published independent AI feed is price-free and must remain visible
@@ -862,7 +869,7 @@ function renderAI(){
      Date.parse(noLineForecast.generated_at)<Date.parse(p.start)&&
      Number.isFinite(p.projection)&&p.projection>=0&&
      ["PTS","REB","AST","PRA"].includes(p.stat)&&p.line==null&&
-     (!gameFilter||p.game===gameFilter)&&
+     (!gameFilter?easternGameDay(p.start)===today:p.game===gameFilter)&&
      (!stat||p.stat===stat)&&(!q||norm(p.player).includes(q))):[];
  const eligibleLeans=entries.filter(p=>p.reliability_screen?.status==="MODEL_LEAN").length;
  const passed=entries.filter(p=>p.reliability_screen?.status==="PASS").length;
@@ -987,7 +994,7 @@ function renderAI(){
    const cautionText=(screen.cautions||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
    const label=screen.status==="MODEL_LEAN"?
      "MODEL LEAN: "+(screen.side==="MORE"?"MORE":screen.side==="LESS"?"LESS":"NO SIDE"):
-     "PASS";
+     screen.status==="RESEARCH_ONLY"?"UNVALIDATED RESEARCH · raw MORE/LESS only":"PASS";
    detailNotes.push(node("div","research-note",
      label+(blockerText.length?" · Why pass: "+blockerText.join("; "):"")+
      (cautionText.length?" · Cautions: "+cautionText.join("; "):"")+
@@ -2878,13 +2885,13 @@ async function refreshPublishedModels(){
    console.error("Published NBA model refresh failed",error);
  }finally{dashboardReloadPending=false;}
 }
-setInterval(refreshPublishedModels,240000);
+setInterval(refreshPublishedModels,90000);
 document.addEventListener("visibilitychange",()=>{
- if(document.visibilityState==="visible"&&Date.now()-dashboardLastReload>120000)
+ if(document.visibilityState==="visible"&&Date.now()-dashboardLastReload>45000)
    refreshPublishedModels();
 });
 window.addEventListener("focus",()=>{
- if(Date.now()-dashboardLastReload>120000)refreshPublishedModels();
+ if(Date.now()-dashboardLastReload>45000)refreshPublishedModels();
 });
 // Tipoffs can happen while the page stays open; remove started-game
 // projections without requiring a manual refresh or another API request.
