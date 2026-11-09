@@ -150,7 +150,7 @@ def run():
         same=True
         for week,games in weeks.items():
             filename=OUT/f"week_{week:02d}.json"
-            expected=json.dumps({"season":YEAR,"week":week,"games":games},separators=(",",":"))+"\\n"
+            expected=json.dumps({"season":YEAR,"week":week,"games":games},separators=(",",":"))+"\n"
             if not filename.exists() or filename.read_text(encoding="utf-8")!=expected:
                 same=False
                 break
