@@ -46,6 +46,16 @@ class DashboardScoreboardIntegrationTests(unittest.TestCase):
         self.assertIn('browserScoreboard(today)', fn)
         self.assertIn('mergeScoreSchedules', fn)
 
+    def test_live_player_backup_keeps_existing_espn_and_requires_freshness(self):
+        start = HTML.index('async function refreshSelectedLiveTracker()')
+        end = HTML.index('async function refreshScoresOnly()', start)
+        block = HTML[start:end]
+        self.assertIn('fetchJSON("nba_player_tracking_independent.json")', block)
+        self.assertIn('fetchJSON("live_player_tracking.json")', block)
+        self.assertIn('"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"', block)
+        self.assertIn('!isRecent(nbaObserved.captured_at,.5)', block)
+        self.assertIn('age>30*60000', block)
+
     def test_has_inline_javascript_to_syntax_check(self):
         parsed = Scripts()
         parsed.feed(HTML)
