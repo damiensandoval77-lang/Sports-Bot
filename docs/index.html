@@ -687,7 +687,13 @@ function renderNoLineForecast(){
  // generated no-line projections for other scheduled games (e.g. Dallas).
  // Keep these estimates clearly separate from real bettable prop cards.
  const pricedGames=new Set(ai.map(x=>x.game));
- const active=!selectedGame||!pricedGames.has(selectedGame);
+ const pricedForSelection=upcomingAIProps(ai).some(x=>
+   (!selectedGame||x.game===selectedGame)&&
+   (!$("ai-stat").value||x.stat===$("ai-stat").value)&&
+   (!norm($("ai-search").value)||norm(x.player).includes(norm($("ai-search").value))));
+ // If the priced board is empty, its fallback is rendered as first-class
+ // AI cards directly in #ai-board, not hidden in a secondary source box.
+ const active=pricedForSelection&&(!selectedGame||!pricedGames.has(selectedGame));
  shell.hidden=!active;
  if(!active)return;
  body.replaceChildren();
@@ -730,6 +736,19 @@ function renderAI(){
  const board=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
  const filtered=board.filter(p=>(!q||norm(p.player).includes(q))&&(!stat||p.stat===stat)&&(!gameFilter||p.game===gameFilter));
  const entries=[...filtered];
+ // The published independent AI feed is price-free and must remain visible
+ // when a sportsbook API returns zero matches. Verify every record was made
+ // before its game's tipoff. No fabricated lines, leans or hit probabilities.
+ const independent=(!entries.length&&noLineForecast?.status==="PREGAME_PROJECTIONS_NO_LINES"&&
+     Array.isArray(noLineForecast.predictions)&&
+     isRecent(noLineForecast.generated_at,12))?
+   noLineForecast.predictions.filter(p=>p&&p.is_pregame_prediction===true&&
+     Number.isFinite(Date.parse(p.start))&&Date.parse(p.start)>Date.now()&&
+     Date.parse(noLineForecast.generated_at)<Date.parse(p.start)&&
+     Number.isFinite(p.projection)&&p.projection>=0&&
+     ["PTS","REB","AST","PRA"].includes(p.stat)&&p.line==null&&
+     (!gameFilter||p.game===gameFilter)&&
+     (!stat||p.stat===stat)&&(!q||norm(p.player).includes(q))):[];
  const eligibleLeans=entries.filter(p=>p.reliability_screen?.status==="MODEL_LEAN").length;
  const passed=entries.filter(p=>p.reliability_screen?.status==="PASS").length;
  entries.sort((a,b)=>sort==="name"?a.player.localeCompare(b.player):
@@ -744,7 +763,9 @@ function renderAI(){
    ((b.combined_simulation?.selected_hit_rate??-1)-(a.combined_simulation?.selected_hit_rate??-1))||
    Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
- $("ai-total").textContent=entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
+ $("ai-total").textContent=independent.length?
+    independent.length+" independent AI estimates · no live prop line":
+    entries.length+(aiMetadata?.is_prizepicks?" player/stat cards":" props")+
    (entries.some(p=>p.reliability_screen)?" · "+eligibleLeans+" model leans · "+passed+" passes":"")+
    (entries.some(p=>p.preliminary_edge?.probability||earlyEdgePreview(p)?.probability)?" · early grades applied":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
@@ -1203,7 +1224,30 @@ function renderAI(){
      " · isolated card error: "+String(error?.message||error));
   }
  });
- $("ai-board").replaceChildren(...(list.length?list:[empty((aiFresh||aiArchiveMode)?"No saved AI predictions match your filters.":"AI comparisons unavailable or no verified pregame snapshot.")]));
+ if(!list.length&&independent.length){
+   independent.sort((a,b)=>Date.parse(a.start)-Date.parse(b.start)||
+     a.game.localeCompare(b.game)||a.player.localeCompare(b.player)||
+     a.stat.localeCompare(b.stat));
+   const cards=independent.slice(0,selectedGame?300:160).map(p=>{
+     const card=node("article","prop compact-prop");
+     const content=node("div","mainline");
+     const heading=node("div","head");
+     const who=node("div","");
+     who.append(node("strong","",p.player+" · "+p.stat),
+       node("div","match",p.team+" · "+formatTime(p.start)+" · "+p.game));
+     heading.append(who,node("span","tag neutral","AI ONLY"));
+     content.append(heading);
+     appendValues(content,[["AI projection",fmt(p.projection)],
+       ["PrizePicks line","Unavailable"],["Hit probability","Not validated"]]);
+     content.append(node("div","mini","Based on "+p.source_recent_games+
+       " prior player games · no verified live line or betting side"));
+     card.append(content);
+     return card;
+   });
+   $("ai-board").replaceChildren(...cards);
+   return;
+ }
+ $("ai-board").replaceChildren(...(list.length?list:[empty((aiFresh||aiArchiveMode)?"No saved AI predictions match your filters.":"No current, verified pregame model projections. The last source refresh may be late; check data health.")]));
 }
 function groupOdds(picks){const groups=new Map();for(const x of picks){if(!x?.player||!Number.isFinite(Number(x.line))||!x.source||!S[x.stat])continue;const id=[norm(x.player),S[x.stat],x.line,x.source,x.game,x.start].join("|");if(!groups.has(id))groups.set(id,{player:x.player,stat:S[x.stat],line:Number(x.line),book:x.source,game:x.game,start:x.start,over:null,under:null});const r=groups.get(id);if(x.direction==="More")r.over=x.odds;else if(x.direction==="Less")r.under=x.odds;}return [...groups.values()].filter(x=>Number.isFinite(x.over)&&Number.isFinite(x.under))}
 function implied(odd){return odd>0?100/(odd+100):Math.abs(odd)/(Math.abs(odd)+100)}
