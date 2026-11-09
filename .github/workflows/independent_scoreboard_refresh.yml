@@ -2,6 +2,11 @@ name: Independent NBA scoreboard refresh
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "iphone_bot/refresh_independent_scoreboard.py"
+      - ".github/workflows/independent_scoreboard_refresh.yml"
   schedule:
     - cron: "8,28,48 * * * *"
   pull_request:
