@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from iphone_bot.official_game_id_index import read_index
 from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
 from iphone_bot.verified_prizepicks_inactives import load_verified_inactive_rows
@@ -62,7 +63,8 @@ def recover(records,now=None,request=None):
         return [],{"status":"NO_ELIGIBLE_RECENT_PRIZEPICKS_PENDING_GAMES",
                    "requested_matchups":0,"verified_rows":0,"errors":[]}
     if request is None:
-        found,report=gather(pending,now=now,request=multi_origin_request)
+        found,report=gather(pending,now=now,request=multi_origin_request,
+                            known_game_ids=read_index(ROOT/"docs/official_nba_game_ids.json"))
     else:
         found,report=gather(pending,now=now,request=request)
     seen=set()
