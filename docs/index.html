@@ -1538,7 +1538,14 @@ function setGameFilter(game){
  if($("schedule-game"))$("schedule-game").value=schedule?.id||"";
  // A game with real sportsbook props but no matched model comparisons should
  // open the sportsbook board, not appear falsely empty on the AI board.
- if(game&&!ai.some(x=>x.game===game)&&odds.some(x=>x.game===game)){
+ const independentForecastAvailable=game&&[
+     ...(noLineForecast?.predictions||[]),
+     ...(noLineArchive?.predictions||[])
+   ].some(x=>x.game===game&&x.is_pregame_prediction===true&&
+     Number.isFinite(Number(x.projection))&&
+     Date.parse(x.captured_at||noLineForecast?.generated_at)<Date.parse(x.start));
+ if(game&&!ai.some(x=>x.game===game)&&!independentForecastAvailable&&
+    odds.some(x=>x.game===game)){
   for(const tab of document.querySelectorAll(".tab"))
    tab.setAttribute("aria-selected",String(tab.dataset.tab==="odds"));
   for(const panel of document.querySelectorAll(".panel"))
