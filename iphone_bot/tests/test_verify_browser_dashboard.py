@@ -22,6 +22,17 @@ class BrowserCardProbeTests(unittest.TestCase):
         report=assess(120,[],list(EXPECTED),[],NOW)
         self.assertIn("NO_RENDERED_LINE_AND_PROJECTION_VALUES",report["reasons"])
 
+    def test_each_game_must_actually_render_its_own_line_and_ai_cards(self):
+        counts={game:1 for game in EXPECTED}
+        good=assess(120,["Card"],list(EXPECTED),[],NOW,counts)
+        self.assertEqual(good["status"],"READY")
+        game=sorted(EXPECTED)[0]
+        counts[game]=0
+        bad=assess(120,["Card"],list(EXPECTED),[],NOW,counts)
+        self.assertEqual(bad["status"],"DEGRADED")
+        self.assertEqual(bad["games_without_rendered_matches"],[game])
+        self.assertIn("SCHEDULED_GAME_WITHOUT_RENDERED_PP_AI_CARDS",bad["reasons"])
+
     def test_missing_even_one_game_tile_fails(self):
         report=assess(120,["Card"],list(EXPECTED)[:-1],[],NOW)
         self.assertEqual(len(report["missing_official_games"]),1)

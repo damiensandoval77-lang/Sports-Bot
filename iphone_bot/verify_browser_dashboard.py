@@ -22,7 +22,7 @@ EXPECTED={"Cleveland Cavaliers @ Charlotte Hornets",
           "San Antonio Spurs @ Phoenix Suns",
           "New Orleans Pelicans @ Golden State Warriors"}
 
-def assess(board_count,labels,tiles,errors,now):
+def assess(board_count,labels,tiles,errors,now,per_game=None):
     reasons=[]
     if board_count==0:
         reasons.append("NO_RENDERED_PRIZEPICKS_AI_CARDS")
@@ -31,6 +31,9 @@ def assess(board_count,labels,tiles,errors,now):
     missing=sorted(EXPECTED-set(tiles))
     if missing:
         reasons.append("OFFICIAL_NBA_GAMES_MISSING_NAVIGATION")
+    unmatched=sorted(game for game in EXPECTED if per_game is not None and per_game.get(game,0)<1)
+    if unmatched:
+        reasons.append("SCHEDULED_GAME_WITHOUT_RENDERED_PP_AI_CARDS")
     return {
         "checked_at":now.isoformat(),
         "status":"READY" if not reasons else "DEGRADED",
@@ -39,6 +42,8 @@ def assess(board_count,labels,tiles,errors,now):
         "line_and_projection_cards":len(labels),
         "game_tiles_seen":sorted(set(tiles)),
         "missing_official_games":missing,
+        "games_without_rendered_matches":unmatched,
+        "rendered_matches_by_game":per_game or {},
         "reasons":reasons,
         "browser_errors":errors[:8],
         "public_site":URL,
@@ -78,9 +83,27 @@ def probe():
                     "PRIZEPICKS + INDEPENDENT AI" in text
                 ) and len(values)>=2 and all(v.strip() not in ("","—","Unavailable") for v in values[:2]):
                     present.append(text.splitlines()[0][:75])
-            tiles=[t.get_attribute("aria-label") or "" for t in page.locator("#game-strip button.game-tile").all()]
-            recognized=[game for game in EXPECTED if any(game in tile for tile in tiles)]
-            result=assess(count,present,recognized,errors,now)
+            game_tiles=page.locator("#game-strip button.score-tile").all()
+            tiles=[t.get_attribute("aria-label") or "" for t in game_tiles]
+            recognized=[game for game in EXPECTED if any(game in label for label in tiles)]
+            # Crucial end-to-end check: a game tab existing does not prove it
+            # actually filters to PrizePicks/AI cards. Click every official
+            # game and confirm at least one identity-matched research card.
+            per_game={}
+            for game in sorted(EXPECTED):
+                tile=next((t for t in game_tiles if game in (t.get_attribute("aria-label") or "")),None)
+                if tile is None:
+                    per_game[game]=0
+                    continue
+                try:
+                    tile.click(timeout=6000)
+                    names=page.locator("#ai-board article.compact-prop .compact-identity .match").all_inner_texts()
+                    per_game[game]=sum(game in name for name in names)
+                except Exception as exc:
+                    errors.append("GAME_FILTER_FAILED:"+game+":"+type(exc).__name__)
+                    per_game[game]=0
+            page.locator("#game-strip button.all-games").click(timeout=6000)
+            result=assess(count,present,recognized,errors,now,per_game)
             result["ai_summary"]=page.locator("#ai-total").inner_text()[:240]
             result["public_status"]=page.locator("#status").inner_text()[:120]
             return result
