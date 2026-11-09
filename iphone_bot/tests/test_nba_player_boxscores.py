@@ -59,6 +59,10 @@ class LiveBoxscoreTests(unittest.TestCase):
         self.assertFalse(result["coverage"]["complete"])
         self.assertEqual(result["games"],[])
 
+    def test_previous_day_scoreboard_rejected(self):
+        with self.assertRaises(ValueError):
+            collect_boxscores(DAY,fetch=lambda _:{"scoreboard":{"gameDate":"2026-11-08","games":[]}},now=NOW)
+
     def test_s3_backup_scoreboard_is_attempted(self):
         seen=[]
         def fetch(url):
