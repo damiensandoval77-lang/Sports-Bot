@@ -1,0 +1,66 @@
+name: Publish lightweight verified PrizePicks AI comparisons
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '03,23,43 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/publish_live_pp_ai_join.py'
+      - '.github/workflows/publish_live_pp_ai_join.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/publish_live_pp_ai_join.py'
+      - 'iphone_bot/tests/test_publish_live_pp_ai_join.py'
+      - '.github/workflows/publish_live_pp_ai_join.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lightweight-pp-ai-join
+  cancel-in-progress: false
+
+jobs:
+  publish-quick-join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test authentic price-free model and PrizePicks joins
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_pp_ai_join.py' -v
+          python -m py_compile iphone_bot/publish_live_pp_ai_join.py
+      - name: Build honest snapshot from already published observed inputs
+        if: github.event_name != 'pull_request'
+        id: build
+        continue-on-error: true
+        run: python -u -m iphone_bot.publish_live_pp_ai_join
+      - name: Publish comparison or explicit stale failure status without exposing provider keys
+        if: always() && github.event_name != 'pull_request' && steps.build.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          cp docs/ai_prizepicks_quick_join.json "$RUNNER_TEMP/ai_prizepicks_quick_join.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/ai_prizepicks_quick_join.json" docs/ai_prizepicks_quick_join.json
+            git add docs/ai_prizepicks_quick_join.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish observed NBA PrizePicks and frozen AI matching diagnostic'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Fail clearly when no fresh source can be matched
+        if: always() && github.event_name != 'pull_request' && steps.build.outcome == 'failure'
+        run: |
+          echo "::error::No verified fresh PrizePicks/model snapshot: see docs/ai_prizepicks_quick_join.json"
+          exit 1
