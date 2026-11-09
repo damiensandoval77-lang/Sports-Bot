@@ -362,7 +362,7 @@ const $=id=>document.getElementById(id);
 let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
-let noLineForecast=null,noLineArchive=null;
+let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -1642,6 +1642,37 @@ async function refreshSelectedLiveTracker(){
   const eastern=easternGameDay(start).replaceAll("-","");
   let event,players,verifiedAt=Date.now(),liveSource="Direct ESPN";
   try{
+   // When the dedicated service is hosted, use its independently polled
+   // verified game feed first. A failed host never disables ESPN direct or
+   // the timestamped static backup.
+   if(liveTrackerServiceUrl){
+    try{
+     const response=await fetch(liveTrackerServiceUrl,{
+       cache:"no-store",signal:typeof AbortSignal!=="undefined"&&AbortSignal.timeout?
+         AbortSignal.timeout(5500):undefined});
+     if(!response.ok)throw Error("Hosted live feed HTTP "+response.status);
+     const live=await response.json();
+     if(live.status!=="OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK"||
+        live.date_eastern!==easternGameDay(start))
+       throw Error("Hosted live feed date or provenance mismatch");
+     const match=(live.games||[]).filter(x=>helper.normalize(x.game)===helper.normalize(game)&&
+       ["in","post"].includes(x.state)&&Array.isArray(x.player_rows)&&x.player_rows.length);
+     if(match.length!==1)throw Error("Hosted service missing exact live matchup");
+     const shot=match[0],ts=Date.parse(shot.observed_at||live.captured_at);
+     if(!Number.isFinite(ts)||ts>Date.now()+600000||Date.now()-ts>120000)
+       throw Error("Hosted game observation older than 2 minutes");
+     event={status:{type:{state:shot.state,shortDetail:shot.shortDetail},
+       period:shot.period,displayClock:shot.displayClock,clock:shot.clock}};
+     players=shot.player_rows.map(p=>({player:p.player,team:p.team,
+       athlete_id:String(p.player_id||""),
+       stats:{PTS:p.PTS,REB:p.REB,AST:p.AST,PRA:p.PRA}}));
+     verifiedAt=ts;
+     liveSource="Dedicated live ESPN poll service"+(shot.stale?" (STALE)":"");
+    }catch(hostError){
+     console.warn("Hosted live feed unavailable; using ESPN direct",String(hostError));
+    }
+   }
+   if(!players){
    const opts={cache:"no-store"};
    if(typeof AbortSignal!=="undefined"&&AbortSignal.timeout)
     opts.signal=AbortSignal.timeout(8000);
@@ -1656,6 +1687,7 @@ async function refreshSelectedLiveTracker(){
    if(!helper.summaryGameMatch(summary,game))throw Error("ESPN scoreboard and boxscore matchup disagree");
    players=helper.athleteRows(summary);
    if(!players.length)throw Error("No verified player rows yet");
+   }
   }catch(directError){
    // The backup is OBSERVED, not a real-time 45-second source. Require
    // exact fixture identity, server timestamp, freshness and source status.
@@ -2311,6 +2343,11 @@ slateHealth=health.status==="fulfilled"&&health.value?.status==="DESCRIPTIVE_NBA
  health.value.date_eastern===easternGameDay(new Date())&&isRecent(health.value.generated_at,8)?health.value:null;
 noLineForecast=await fetchJSON("ai_projection_fallback.json").catch(()=>null);
 noLineArchive=await fetchJSON("ai_no_line_pregame_archive.json").catch(()=>null);
+const liveServiceConfig=await fetchJSON("live_tracker_config.json").catch(()=>null);
+liveTrackerServiceUrl=liveServiceConfig?.status==="HOSTED_LIVE_SERVICE_ENABLED"&&
+  typeof liveServiceConfig.url==="string"&&
+  /^https:\/\/[a-z0-9.-]+(?:\/[^?#]*)?$/i.test(liveServiceConfig.url)?
+  liveServiceConfig.url:null;
 const delivery=await fetchJSON("projection_delivery_health.json").catch(()=>null);
 const deliveryLabel=$("prediction-coverage");
 if(deliveryLabel){
