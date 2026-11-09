@@ -10,7 +10,8 @@ import numpy as np
 METHOD = "COMBINED_PROJECTION_20K_ORIGINAL_RESIDUAL_BOOTSTRAP_UNCALIBRATED"
 DRAWS = 20000
 
-def simulate_combined_hit_rate(combined_projection, line, residuals, identity, draws=DRAWS,\n                               opponent=None, defense_history=None, opponent_defense=None):
+def simulate_combined_hit_rate(combined_projection, line, residuals, identity, draws=DRAWS,
+                               opponent=None, defense_history=None, opponent_defense=None):
     center = float(combined_projection)
     threshold = float(line)
     errors = np.asarray(residuals, dtype=float)
@@ -84,5 +85,6 @@ def simulate_combined_hit_rate(combined_projection, line, residuals, identity, d
         "calibrated": False,
         "residual_provenance": "ORIGINAL_MODEL_CHRONOLOGICAL_HOLDOUT",
         "combined_residuals_validated": False,
-        "independent_game_outcomes": False,\n        "opponent_conditioning": conditioning
+        "independent_game_outcomes": False,
+        "opponent_conditioning": conditioning
     }
