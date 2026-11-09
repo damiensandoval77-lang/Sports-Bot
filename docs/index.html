@@ -915,7 +915,7 @@ function renderAI(){
  const baseBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
  // Verified new-model offers are first-class cards even if the old trained
  // feed is missing an entire scheduled game or stat category.
- const present=new Set(baseBoard.map(newModelKey));
+ const present=new Set(baseBoard.filter(p=>newModelForCard(p)).map(newModelKey));
  const extra=[...newMarketIndex.values()].filter(p=>p&&!present.has(newModelKey(p))).map(p=>({
    ...p,books:[],book_quotes:[],combined_projection:p.projection,
    combined_difference:p.projection-p.line,shadow_status:"UNAVAILABLE",
@@ -956,6 +956,9 @@ function renderAI(){
  entries.sort((a,b)=>sort==="name"?a.player.localeCompare(b.player):
   sort==="edge"?Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   sort==="leans"?
+   ((b.new_model_market?1:0)-(a.new_model_market?1:0))||
+   ((b.estimated_hit_chance?.modeled_selected_probability??-1)-
+    (a.estimated_hit_chance?.modeled_selected_probability??-1))||
    ((b.reliability_screen?.status==="MODEL_LEAN"?1:0)-
     (a.reliability_screen?.status==="MODEL_LEAN"?1:0))||
    ((b.preliminary_edge?.status==="PROVISIONAL_POSITIVE_EV"?1:0)-
