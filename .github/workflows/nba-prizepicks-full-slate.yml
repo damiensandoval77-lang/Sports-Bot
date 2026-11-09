@@ -6,9 +6,9 @@ on:
     paths:
       - 'docs/prizepicks_manual_refresh_request.json'
   schedule:
-    # Three bounded pregame refresh windows, including an afternoon retry before first tip.\n    # Each run can request up to four compact pages; quota errors stop reads.
+    # Six bounded windows across the afternoon and pretip period (UTC).\n    # The prior five-hour gap guaranteed stale lines after 90 minutes.\n    # Each run may use up to four compact pages (up to 40 provider credits).\n    # At most six scheduled runs/day (240-credit possible scheduled ceiling).\n    # Provider 429 responses stop reads; actual top-up balance is not inferred.
     # Uses proven top-up access even if the monthly remaining-credit header is zero.
-    - cron: '28 16,21,23 * * *'
+    - cron: '28 0,16,18,20,22,23 * * *'
 permissions:
   contents: write
   actions: write
