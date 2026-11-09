@@ -6,7 +6,7 @@ never stores model forecasts, and never invents player totals.
 """
 import json
 import urllib.request
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -24,7 +24,7 @@ def get(path):
     req=urllib.request.Request(BASE+path,headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"})
     with urllib.request.urlopen(req,timeout=18) as response:return json.load(response)
 
-def build(now,scoreboard,summaries):
+def build(now,scoreboard,summaries,previous=None):
     data={"status":"OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
           "captured_at":now.isoformat(),
           "date_eastern":now.astimezone(ET).date().isoformat(),
@@ -56,7 +56,35 @@ def build(now,scoreboard,summaries):
             "displayClock":status.get("displayClock"),
             "clock":status.get("clock"),
             "shortDetail":status.get("type",{}).get("shortDetail"),
-            "player_rows":rows})
+            "player_rows":rows,"observed_at":now.isoformat(),"stale":False})
+    active={}
+    for event in scoreboard.get("events",[]):
+        if event.get("status",{}).get("type",{}).get("state")!="in":continue
+        comps=event.get("competitions",[])
+        name=matchup(comps[0].get("competitors",[])) if comps else None
+        ident=str(event.get("id",""))
+        if name and ident.isdecimal():active[name]=ident
+    observed={g["game"] for g in data["games"] if g["state"]=="in"}
+    missing=sorted(set(active)-observed)
+    old=previous or {}
+    if old.get("date_eastern")==data["date_eastern"] and old.get("status")==data["status"]:
+        current={str(g["event_id"]) for g in data["games"]}
+        for prior in old.get("games",[]):
+            ident=str(prior.get("event_id",""))
+            stamp=prior.get("observed_at") or old.get("captured_at")
+            try:age=now-datetime.fromisoformat(str(stamp).replace("Z","+00:00"))
+            except (ValueError,TypeError):continue
+            if age<timedelta(0) or age>timedelta(minutes=30):continue
+            name=prior.get("game")
+            if name in missing and ident==active[name] and ident not in current:
+                data["games"].append({**prior,"observed_at":stamp,"stale":True})
+                current.add(ident)
+    data["coverage"]={"active_matchups":sorted(active),
+        "fresh_active_matchups":sorted(observed),
+        "missing_fresh_matchups":missing,
+        "retained_stale_matchups":sorted(g["game"] for g in data["games"] if g.get("stale")),
+        "complete":not missing}
+    data["coverage_status"]="COMPLETE" if not missing else "PARTIAL_LIVE_DATA"
     return data
 
 def main():
@@ -70,29 +98,18 @@ def main():
         if not ident.isdecimal():continue
         try:summaries[ident]=get("/summary?event="+ident)
         except Exception as error:print("Summary unavailable",ident,type(error).__name__)
-    data=build(now,board,summaries)
-    active=[]
-    for event in board.get("events",[]):
-        if event.get("status",{}).get("type",{}).get("state")!="in":
-            continue
-        comps=event.get("competitions",[])
-        game=matchup(comps[0].get("competitors",[])) if comps else None
-        if game:active.append(game)
-    captured={g["game"] for g in data["games"] if g["state"]=="in"}
-    missing=sorted(set(active)-captured)
-    print("LIVE TRACKER COVERAGE:",
-          json.dumps({"active_matchups":active,"observed_active_matchups":sorted(captured),
-                      "missing_active_matchups":missing},sort_keys=True),flush=True)
-    if missing:
-        raise RuntimeError("Active NBA matchups lack verified live player totals: "+
-                           ", ".join(missing))
-    if data["games"]:
-        OUTPUT.write_text(json.dumps(data,separators=(",",":"),ensure_ascii=False)+"\n")
+    previous={}
+    if OUTPUT.exists():
+        try:previous=json.loads(OUTPUT.read_text())
+        except (OSError,ValueError):pass
+    data=build(now,board,summaries,previous)
+    print("LIVE TRACKER COVERAGE:",json.dumps(data["coverage"],sort_keys=True),flush=True)
+    # Publish data even when one game is missing; never let the dashboard
+    # confuse retained observations with current player totals.
+    OUTPUT.write_text(json.dumps(data,separators=(",",":"),ensure_ascii=False)+"\n")
     print("ESPN LIVE FALLBACK:",len(data["games"]),"games",
           sum(len(g["player_rows"]) for g in data["games"]),
           "verified player rows, errors",len(data["errors"]),
-          "published",bool(data["games"]))
-    if not data["games"] and any(e.get("status",{}).get("type",{}).get("state")=="in" for e in board.get("events",[])):
-        raise RuntimeError("Active ESPN games exist but no verified player rows were available")
+          "coverage",data["coverage_status"],flush=True)
 
 if __name__=="__main__":main()
