@@ -17,6 +17,10 @@ from statistics import mean
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error,mean_squared_error
 import numpy as np
+try:
+    from .points_hit_probability import make_reference,estimate
+except ImportError:
+    from points_hit_probability import make_reference,estimate
 
 try:
     from .offensive_involvement_holdout import load_history_with_box_context, predict
@@ -121,13 +125,34 @@ def evaluate(rows):
                 "involvement_mae":_mae(group,"involvement"),
                 "trained_matchup_mae":_mae(group,"model"),
                 "model_minus_involvement_mae":round(_mae(group,"model")-_mae(group,"involvement"),4)}
+    # Probability reference is restricted to distinct 2024-25 validation
+    # games. Never use 2025-26 diagnostic outcomes in the live residual pool.
+    validation_prediction=np.maximum(model.predict(X(valid)),0)
+    probability_reference=make_reference(validation_prediction,[r["actual"] for r in valid])
+    # Retrospective only: assess probability diagnostic on synthetic,
+    # clearly NON-PRIZEPICKS half-point lines. This measures distribution
+    # fit but is not an observed pick'em hit rate.
+    diagnostic_prediction=np.maximum(model.predict(X(diagnostic)),0)
+    brier_sum=0.;scored=0
+    for row, projected in zip(diagnostic,diagnostic_prediction):
+        fake_line=float(np.floor(projected)+.5)
+        result=estimate(projected,fake_line,probability_reference,
+                        (row["season"],row["game_id"],row["player_id"],"SYNTHETIC_LINE"))
+        outcome=int(row["actual"]>fake_line)
+        brier_sum+=(result["estimated_over_probability"]-outcome)**2
+        scored+=1
+    probability_diagnostic={"sample_size":scored,
+        "synthetic_half_point_line_brier":round(brier_sum/scored,5),
+        "line_source":"SYNTHETIC_MODEL_NEARBY_HALF_POINT_NOT_PRIZEPICKS",
+        "calibrated_for_live_betting":False}
     # Freeze the exact model fitted only on earlier seasons for future,
     # independently dated prospective research capture.
     import joblib
     model_file=ROOT/"models/nba/research/lagged_matchup_2022_24.joblib"
     model_file.parent.mkdir(parents=True,exist_ok=True)
     joblib.dump({"model":model,"columns":COLS,"training_seasons":TRAIN,
-                 "validation_season":VALIDATE,"research_only":True,
+                 "validation_season":VALIDATE,"probability_reference":probability_reference,
+                 "research_only":True,
                  "production_modified":False},model_file)
     return {"status":"HISTORICAL_LAGGED_MATCHUP_TRAINING_COMPLETE",
        "training_seasons":TRAIN,"train_rows":len(train),
@@ -135,6 +160,10 @@ def evaluate(rows):
        "diagnostic_seen_season":DIAGNOSTIC,"diagnostic":metrics(diagnostic),
        "feature_columns":COLS,
        "frozen_model_artifact":"models/nba/research/lagged_matchup_2022_24.joblib",
+       "probability_reference":{"source":probability_reference["source"],
+          "sample_size":probability_reference["sample_size"],
+          "bucket_sizes":{k:len(v) for k,v in probability_reference["by_projection_bucket"].items()}},
+       "probability_diagnostic":probability_diagnostic,
        "model_type":"HIST_GRADIENT_BOOSTING_FROZEN_HYPERPARAMETERS",
        "no_official_usage_pct":True,
        "no_verified_pretip_injuries":True,
