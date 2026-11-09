@@ -102,18 +102,65 @@ def collect_boxscores(day, fetch=request_json, now=None, max_games=15):
                          "complete": complete},
             "not_sportsbook_lines": True, "not_ai_projections": True}
 
+def waiting_for_tipoff(schedule, day, now=None):
+    """No live boxscore is expected before the first independently scheduled tip."""
+    now = now or dt.datetime.now(dt.timezone.utc)
+    if not isinstance(schedule, dict) or schedule.get("coverage_complete") is not True:
+        return None
+    if day.isoformat() not in (schedule.get("dates_eastern") or []):
+        return None
+    games = [g for g in schedule.get("games", [])
+             if g.get("date_eastern") == day.isoformat()]
+    if not games:
+        return None
+    starts = []
+    for g in games:
+        try:
+            stamp = dt.datetime.fromisoformat(str(g["start"]).replace("Z", "+00:00"))
+            if stamp.tzinfo is None:
+                return None
+            starts.append(stamp.astimezone(dt.timezone.utc))
+        except (KeyError, ValueError, TypeError):
+            return None
+    next_tip = min(starts)
+    if now >= next_tip:
+        return None
+    return {
+        "status": "WAITING_FOR_SCHEDULED_TIPOFF",
+        "captured_at": None,
+        "checked_at": now.isoformat(),
+        "date_eastern": day.isoformat(),
+        "first_tip_at": next_tip.isoformat(),
+        "games": [],
+        "errors": [],
+        "source": "Independently verified dated NBA schedule (not live boxscores)",
+        "coverage": {"observed_game_count": 0, "active_or_final_count": 0,
+                     "complete": False},
+        "not_sportsbook_lines": True,
+        "not_ai_projections": True,
+    }
+
 def main():
     day = dt.datetime.now(EASTERN).date()
-    try:
+    schedule = None
+    schedule_path = ROOT / "docs/nba_schedule.json"
+    if schedule_path.exists():
+        try:
+            schedule = json.loads(schedule_path.read_text())
+        except (ValueError, OSError):
+            schedule = None
+    report = waiting_for_tipoff(schedule, day)
+    if report is None:
+     try:
         report = collect_boxscores(day)
-    except (OSError, RuntimeError, ValueError, KeyError, TypeError) as err:
+     except (OSError, RuntimeError, ValueError, KeyError, TypeError) as err:
         report = {"status":"NBA_PLAYER_BOXSCORES_UNAVAILABLE",
                   "captured_at":None, "last_attempt_at":dt.datetime.now(dt.timezone.utc).isoformat(),
                   "date_eastern":day.isoformat(), "games":[], "errors":[type(err).__name__]}
     OUTPUT.write_text(json.dumps(report, indent=2)+"\n")
     print(json.dumps({"status":report["status"],"date":day.isoformat(),
                       "observed_games":len(report["games"]),"errors":report["errors"]}))
-    if report["status"] != "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES":
+    if report["status"] not in ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES", "WAITING_FOR_SCHEDULED_TIPOFF"):
         raise SystemExit(1)
 
 if __name__ == "__main__":
