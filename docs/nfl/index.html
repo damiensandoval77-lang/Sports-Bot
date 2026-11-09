@@ -131,8 +131,8 @@ function render(){
  const selected=state.schedule.find(g=>g.game_id===state.game);
  const missing=selected?'This NFL game is scheduled, but no matching PrizePicks props were captured. The matchup is not missing from the season schedule.':'No matching saved props for this week. The NFL schedule is shown independently of sportsbook availability.';
  document.getElementById("cards").innerHTML=view.length?view.slice(0,180).map(card).join(""):'<div class="empty">'+esc(missing)+'</div>';
- document.getElementById("livegames").innerHTML=schedule.length?schedule.map(g=>matchupCard(g,all)).join("");
- document.querySelectorAll("details[data-boxgame]").forEach(el=>el.addEventListener("toggle",()=>{if(el.open)revealBoxscore(el)})):'<div class="empty">NFL schedule unavailable for this week.</div>';
+ document.getElementById("livegames").innerHTML=schedule.length?schedule.map(g=>matchupCard(g,all)).join(""):'<div class="empty">NFL schedule unavailable for this week.</div>';
+ document.querySelectorAll("details[data-boxgame]").forEach(el=>el.addEventListener("toggle",()=>{if(el.open)revealBoxscore(el)}));
  document.getElementById("grades").innerHTML=state.grades.length?state.grades.slice(0,200).map(r=>'<article class="prop mainline"><div class="head"><strong>'+esc(r.player)+'</strong><span class="tag '+(Number(r.won)===1?"over":"under")+'">'+esc(r.result||"PENDING")+'</span></div><small>'+esc(r.stat)+' · '+esc(r.team)+' vs '+esc(r.opponent)+'</small><div class="vals"><div class="val"><b>'+esc(r.line)+'</b><small>Frozen line</small></div><div class="val"><b>'+esc(r.actual)+'</b><small>Actual</small></div><div class="val"><b>'+esc(r.pick)+'</b><small>Pick</small></div></div></article>').join(""):'<div class="empty">No real completed-game grading published yet. This does not mean all predictions hit or missed.</div>';
 }
 document.querySelectorAll(".tab").forEach(button=>button.onclick=()=>{state.tab=button.dataset.tab;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===button));for(const id of ["board","live","graded"])document.getElementById(id).classList.toggle("hidden",id!==state.tab)});
