@@ -60,7 +60,7 @@ def make_rows(games):
                 rejected["ambiguous_player_date"]+=len(days[day]);continue
             actual=days[day][0]
             baseline=predict(prior)
-            if baseline and actual.get("opponent") and actual.get("PTS") is not None:
+            if baseline and actual.get("opponent") and all(actual.get(x) is not None for x in ("PTS","REB","AST")):
                 prior10=prior[-10:]
                 d=defense_factor(context[season],team,actual["opponent"],day)
                 # A missing opponent sample is a missing feature, not a
@@ -87,11 +87,23 @@ def make_rows(games):
                           "last3_minutes":mean(r["MIN"] for r in prior[-3:]),
                           "last10_minutes":mean(r["MIN"] for r in prior10),
                           "history_count":min(82,len(prior))}
+                        if all(r.get(x) is not None and math.isfinite(float(r[x]))
+                               for r in prior10 for x in ("REB","AST")):
+                            for stat in ("REB","AST"):
+                                f[stat+"_L3"]=mean(float(r[stat]) for r in prior[-3:])
+                                f[stat+"_L10"]=mean(float(r[stat]) for r in prior10)
+                                f[stat+"_PER_MIN_L10"]=mean(float(r[stat])/r["MIN"] for r in prior10)
+                        else:
+                            rejected["MISSING_REB_AST_HISTORY"]+=1
+                            prior.append(actual)
+                            continue
                         if all(math.isfinite(float(f[c])) for c in COLS):
                             made.append({"season":season,"date":day,
                                 "game_id":actual.get("game_id"),"player_id":pid,
                                 "team":team,"features":f,
                                 "actual":float(actual["PTS"]),
+                                "actual_reb":float(actual["REB"]),
+                                "actual_ast":float(actual["AST"]),
                                 "baseline":baseline["baseline"],
                                 "involvement":baseline["challenger"]})
                         else:rejected["nonfinite_features"]+=1

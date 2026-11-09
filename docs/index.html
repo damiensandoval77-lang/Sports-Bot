@@ -269,7 +269,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  <div>Model estimates only. These are NOT PrizePicks or sportsbook lines, betting directions, calibrated probabilities, or verified picks. Coverage may be partial.</div>
 </div>
 <div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div>
-<details class="advanced" id="lagged-challenger-panel" open><summary>New Matchup AI · points only (experimental live comparison)</summary><div class="advbody"><div id="lagged-challenger-status" role="status" aria-live="polite">Checking independent pregame matchup forecasts…</div><div class="board" id="lagged-challenger-board"></div><div class="source">Uses verified current-season game logs and authentic PrizePicks lines. Historical points MAE improvement has not established a profitable edge. No calibrated probability or approved betting lean. Old AI cards and automatic grades are unchanged.</div></div></details></section>
+</section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
 <section class="panel" id="tab-form"><div class="bar"><h2>2026–27 form</h2><small id="form-total">—</small></div>
@@ -364,6 +364,7 @@ let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
+let newMultimarketFeed=null,newMarketIndex=new Map();
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").normalize("NFKD").toLowerCase().replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—";
@@ -516,7 +517,56 @@ function combinedSimAvailable(p){
   typeof sim?.selected_hit_rate==="number"&&Number.isFinite(sim.selected_hit_rate)&&
   sim.selected_hit_rate>=0&&sim.selected_hit_rate<=1;
 }
-function chance(p){return combinedSimAvailable(p)?(100*p.combined_simulation.selected_hit_rate).toFixed(1)+"%":"—"}
+// Replace the former legacy SIM estimate ONLY with a verified, pretip,
+ // standard-line forecast from the correlated new model; no unsafe fallback.
+function newModelKey(p){
+ return [norm(p.player),p.team,p.game,p.stat,Date.parse(p.start)].join("|");
+}
+function newModelForCard(p){
+ const item=newMarketIndex.get(newModelKey(p));
+ if(!item||item.line!==Number(p.line))return null;
+ return item;
+}
+function chance(p){
+ const n=newModelForCard(p),c=n?.estimated_hit_chance;
+ return c?.method==="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"&&
+   c.draws===20000&&c.calibrated===false&&
+   typeof c.modeled_selected_probability==="number"&&
+   Number.isFinite(c.modeled_selected_probability)&&
+   c.modeled_selected_probability>=0&&c.modeled_selected_probability<=1?
+   (100*c.modeled_selected_probability).toFixed(1)+"%":"—";
+}
+function refreshNewMarketIndex(payload){
+ const index=new Map(),now=Date.now(),ts=Date.parse(payload?.generated_at);
+ if(payload?.status!=="LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED"||
+    payload?.calibrated!==false||payload?.correlated_pra_scenarios!==true||
+    payload?.market_line_policy!=="STANDARD_ONLY_BOTH_SIDES_VERIFIED_NO_ALTERNATES"||
+    !Number.isFinite(ts)||ts>now+600000||now-ts>10800000||
+    !Array.isArray(payload?.predictions))return index;
+ for(const p of payload.predictions){
+   const tip=Date.parse(p.start),quote=Date.parse(p.market_updated),created=Date.parse(p.captured_at);
+   const c=p.estimated_hit_chance;
+   if(!p.player||!p.team||!p.game||!["PTS","REB","AST","PRA"].includes(p.stat)||
+      p.pickem_tier!=="standard"||p.standard_line_two_sided_verified!==true||
+      p.research_only!==true||p.production_replaced!==false||
+      !Number.isFinite(p.line)||!Number.isFinite(p.projection)||
+      !Number.isFinite(tip)||tip<=now||created>=tip||quote>=tip||
+      quote>now+600000||now-quote>21600000||
+      c?.method!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||
+      c.draws!==20000||c.calibrated!==false)continue;
+   if(p.stat==="PRA"){
+      const parts=p.components;
+      if(!parts||!["PTS","REB","AST"].every(k=>Number.isFinite(parts[k]))||
+         Math.abs(p.projection-parts.PTS-parts.REB-parts.AST)>.002)continue;
+   }
+   const key=newModelKey(p);
+   if(index.has(key)){
+     // Ambiguous same-game player/stat model predictions fail closed.
+     index.set(key,null);
+   }else index.set(key,p);
+ }
+ return index;
+}
 // Fallback for existing published pregame cards before a new AI workflow runs.
 // Uses only settled grades available BEFORE the matchup; early-sample method
 // matches the backend and makes NO calibration/verified-edge claims.
@@ -542,7 +592,16 @@ function earlyEdgePreview(p){
    sample_size:n,distinct_event_dates:dates,validated:false}};
 }
 
-function primaryDirection(p){return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line)}
+function primaryDirection(p){
+ if(p.new_model_market){
+  const c=p.estimated_hit_chance;
+  if(c?.method!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||
+     c.draws!==20000||c.calibrated!==false)return "NO LEAN";
+  return c.modeled_direction==="More"?"OVER":
+    c.modeled_direction==="Less"?"UNDER":"NO LEAN";
+ }
+ return modelSide(Number.isFinite(p.combined_projection)?p.combined_projection:p.projection,p.line);
+}
 function frozenResearchScreen(p){
  // Pre-registered research thresholds; NOT a verified profitable strategy.
  const margins={PTS:3,REB:1.5,AST:1.5,PRA:4};
@@ -790,7 +849,9 @@ function compactPrizePicksDisplay(rows){
   if(!unique.length)continue;
   // Select the center POSTED threshold, not whichever threshold yields the
   // largest simulated probability. An even count uses the lower middle.
-  const main=unique[Math.floor((unique.length-1)/2)];
+  const standard=newMarketIndex.get(newModelKey(unique[0]));
+  const main=(standard&&unique.find(p=>Number(p.line)===standard.line))||
+    unique[Math.floor((unique.length-1)/2)];
   display.push({...main,alternative_lines:unique.map(p=>Number(p.line)),
    available_threshold_count:unique.length});
  }
@@ -851,7 +912,29 @@ function renderAI(){
  renderNoLineForecast();
  const q=norm($("ai-search").value),stat=$("ai-stat").value,sort=$("ai-sort").value;
  const gameFilter=selectedGame;
- const allBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
+ const originalBoard=aiMetadata?.is_prizepicks?compactPrizePicksDisplay(upcomingAIProps(ai)):upcomingAIProps(ai);
+ // Never show a conflicting legacy alternate threshold beside an authenticated
+ // standard new-AI card. Exactly one main card per player/game/stat.
+ const baseBoard=originalBoard.filter(p=>{
+   const n=newMarketIndex.get(newModelKey(p));
+   return !n||Number(p.line)===n.line;
+ });
+ // Verified new-model offers are first-class cards even if the old trained
+ // feed is missing an entire scheduled game or stat category.
+ const present=new Set(baseBoard.filter(p=>newModelForCard(p)).map(newModelKey));
+ const extra=[...newMarketIndex.values()].filter(p=>p&&!present.has(newModelKey(p))).map(p=>({
+   ...p,books:[],book_quotes:[],combined_projection:p.projection,
+   combined_difference:p.projection-p.line,shadow_status:"UNAVAILABLE",
+   quick_research_only:false,reliability_screen:null,
+   sportsbook:"PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
+   line_type:"PRIZEPICKS_PICKEM_LINE"}));
+ const allBoard=[...baseBoard,...extra].map(p=>{
+   const n=newModelForCard(p);
+   return n?{...p,line:n.line,projection:n.projection,
+    combined_projection:n.projection,combined_difference:n.projection-n.line,
+    estimated_hit_chance:n.estimated_hit_chance,new_model_market:true,
+    quick_research_only:false,preliminary_edge:null}:p;
+ });
  const today=easternGameDay(new Date());
  const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today);
  // Show today's posted PrizePicks comparisons first; future matchup tabs
@@ -879,13 +962,17 @@ function renderAI(){
  entries.sort((a,b)=>sort==="name"?a.player.localeCompare(b.player):
   sort==="edge"?Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   sort==="leans"?
+   ((b.new_model_market?1:0)-(a.new_model_market?1:0))||
+   ((b.estimated_hit_chance?.modeled_selected_probability??-1)-
+    (a.estimated_hit_chance?.modeled_selected_probability??-1))||
    ((b.reliability_screen?.status==="MODEL_LEAN"?1:0)-
     (a.reliability_screen?.status==="MODEL_LEAN"?1:0))||
    ((b.preliminary_edge?.status==="PROVISIONAL_POSITIVE_EV"?1:0)-
     (a.preliminary_edge?.status==="PROVISIONAL_POSITIVE_EV"?1:0))||
    ((b.preliminary_edge?.net_ev_pct??-999)-(a.preliminary_edge?.net_ev_pct??-999))||
    ((b.preliminary_edge?.probability?.probability??-1)-(a.preliminary_edge?.probability?.probability??-1))||
-   ((b.combined_simulation?.selected_hit_rate??-1)-(a.combined_simulation?.selected_hit_rate??-1))||
+   ((b.estimated_hit_chance?.modeled_selected_probability??-1)-
+    (a.estimated_hit_chance?.modeled_selected_probability??-1))||
    Math.abs(Number(b.combined_difference)||0)-Math.abs(Number(a.combined_difference)||0):
   Date.parse(a.start)-Date.parse(b.start)||(aiMetadata?.is_prizepicks?a.stat.localeCompare(b.stat):0)||a.player.localeCompare(b.player));
  $("ai-total").textContent=aiMetadata?.quick_independent_join?
@@ -926,6 +1013,13 @@ function renderAI(){
   head.append(identity);main.append(head);
   // Exactly the original validated comparison values and chance calculation.
   // This is presentation only: never substitute another projection/probability.
+  if(p.new_model_market){
+   detailNotes.push(node("div","research-note",
+      "NEW MATCHUP AI · "+p.stat+" · standard PrizePicks line verified on both sides. "+
+      "This percentage is the historical-residual modeled chance for the shown "+
+      primaryDirection(p)+" direction, not an observed or calibrated hit rate. "+
+      (p.stat==="PRA"?"PRA is the coherent sum of PTS, REB and AST scenarios.":"")));
+  }
   const available=Number.isFinite(p.combined_projection);
   const projected=available?p.combined_projection:Number(p.projection);
   const values=node("div","ai-metrics");
@@ -936,9 +1030,9 @@ function renderAI(){
    return tile;
   }
   values.append(
-   metric(aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
-   metric("AI PROJECTION",fmt(projected),"projection"),
-   metric("20K SIM EST.",chance(p),"chance")
+   metric(p.new_model_market?"PRIZEPICKS STD":aiMetadata?.is_prizepicks?"PRIZEPICKS LINE":"SPORTSBOOK LINE",fmt(Number(p.line)),"line"),
+   metric(p.new_model_market?"NEW AI PROJECTION":"AI PROJECTION",fmt(projected),"projection"),
+   metric("NEW AI CHANCE",chance(p),"chance")
   );
   main.append(node("div","ai-market-name",shortStats[p.stat]||p.stat),values);
   if(aiMetadata?.is_prizepicks&&p.available_threshold_count>1){
@@ -952,7 +1046,7 @@ function renderAI(){
     "The displayed raw MORE/LESS direction is not a vetted wager, and injury adjustments, "+
     "Combined AI simulations and calibrated confidence are unavailable."));
   const defenseScenario=p.combined_simulation?.opponent_conditioning;
-  if(combinedSimAvailable(p)){
+  if(!p.new_model_market&&combinedSimAvailable(p)){
    detailNotes.push(node("div","mini",defenseScenario?.status==="APPLIED_OPPONENT_HISTORICAL_GAME_SCENARIOS"?
     "OPPONENT-CONDITIONED 20K SCENARIOS: "+defenseScenario.opponent+
     " · conceded "+(defenseScenario.opponent_vs_league_pct>0?"+":"")+
@@ -960,7 +1054,9 @@ function renderAI(){
     defenseScenario.source_games+" verified earlier team games · game-to-game defensive scenarios added around the already opponent-aware AI center (no double-counted average). Team totals, not positional DvP. Uncalibrated research.":
     "20K residual simulation: opponent-specific defensive scenario history unavailable. The center may include an opponent-aware model, but draw distribution is NOT opponent-conditioned."));
   }
-  const probabilityNote=node("div","match",(combinedSimAvailable(p)?
+  const probabilityNote=node("div","match",(p.new_model_market?
+    "NEW AI: 20,000 jointly sampled historical error scenarios. PRA equals the sum of modeled PTS, REB and AST outcomes. Modeled chance is NOT a calibrated hit rate. ":
+    combinedSimAvailable(p)?
     "20,000 bootstrap draws centered on COMBINED projection using original-model holdout errors. Not calibrated on combined-model outcomes. ":
     "20,000-run COMBINED model estimate unavailable until valid holdout residuals are provided. ")+
     (aiMetadata?.is_prizepicks?"PrizePicks pick'em line, not sportsbook odds. ":"")+
@@ -970,7 +1066,7 @@ function renderAI(){
   detailNotes.push(probabilityNote);
   // Preliminary, intentionally shrunk use of existing two-date graded results.
   // This is a research ranking, NOT calibrated betting probabilities.
-  const preliminary=p.preliminary_edge||earlyEdgePreview(p);
+  const preliminary=p.new_model_market?null:(p.preliminary_edge||earlyEdgePreview(p));
   const early=preliminary?.probability;
   if(early&&typeof early.probability==="number"){
    const pct=(100*early.probability).toFixed(1)+"%";
@@ -1000,7 +1096,7 @@ function renderAI(){
    detailNotes.push(node("div","mini","Edge not verified · calibrated combined-model"+
      " outcomes and matching payout/price required."));
   }
-  const screen=p.reliability_screen;
+  const screen=p.new_model_market?null:p.reliability_screen;
   if(screen?.validated===false){
    const blockerText=(screen.blockers||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
    const cautionText=(screen.cautions||[]).map(x=>String(x).replaceAll("_"," ").toLowerCase());
@@ -2493,7 +2589,9 @@ async function refresh(){
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
 
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades,publishedQuick]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json"),fetchJSON("ai_prizepicks_quick_join.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades,publishedQuick,newMarketResponse]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json"),fetchJSON("ai_prizepicks_quick_join.json"),fetchJSON("lagged_matchup_live_all_markets.json")]);
+newMultimarketFeed=newMarketResponse.status==="fulfilled"?newMarketResponse.value:null;
+newMarketIndex=refreshNewMarketIndex(newMultimarketFeed);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
@@ -2938,4 +3036,4 @@ refresh().catch(error=>{
  $("global-warning").textContent="Data request failed: "+String(error.message||error);
  $("data-health").textContent="Try Refresh data";
 });
-</script><script src="./lagged-challenger-board.js?v=1" defer></script></body></html>
+</script></body></html>

@@ -1,0 +1,127 @@
+name: Guarded new NBA AI all markets PTS REB AST PRA
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/multimarket_matchup_training.py'
+      - 'iphone_bot/multimarket_probability.py'
+      - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/multimarket_forecast_ledger.py'
+      - 'iphone_bot/tests/test_multimarket_forecast_ledger.py'
+      - 'iphone_bot/lagged_matchup_training.py'
+      - 'iphone_bot/tests/test_live_multimarket_matchup.py'
+      - 'docs/index.html'
+      - '.github/workflows/nba-new-ai-all-markets.yml'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/multimarket_matchup_training.py'
+      - 'iphone_bot/multimarket_probability.py'
+      - 'iphone_bot/live_multimarket_matchup.py'
+      - '.github/workflows/nba-new-ai-all-markets.yml'
+  schedule:
+    - cron: '27 0,17,20,22,23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-new-ai-all-markets
+  cancel-in-progress: false
+jobs:
+  multi-market:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing historical and ML requirements
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Test standard-only quotes and correlated PRA math
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
+      - name: Fetch existing archival history and retrain older-season models
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u iphone_bot/lagged_matchup_training.py
+          python -u iphone_bot/multimarket_matchup_training.py
+      - name: Verify four-market backtest completeness and coherent PRA
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/lagged_matchup_all_market_validation.json'))
+          assert r['probability_reference_rows']>=1000
+          assert r['pra_projection_exact_sum'] is True
+          assert r['correlated_residuals'] is True
+          assert r['live_calibration_verified'] is False
+          assert all(r['validation'][s]['n']>=1000 for s in ('PTS','REB','AST','PRA'))
+          print('Four-market retrospective MAE',r['validation'])
+          PY
+      - name: Fetch current season and verify actual standard PrizePicks lines
+        run: |
+          python -u iphone_bot/fetch_current_form.py
+          python -m iphone_bot.build_prizepicks_model_input
+      - name: Generate distinct points rebounds assists PRA model estimates
+        run: python -u iphone_bot/live_multimarket_matchup.py
+      - name: Validate each posted offer and exact PRA component sum
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('docs/lagged_matchup_live_all_markets.json'))
+          assert d['status']=='LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED'
+          assert d['calibrated'] is False and d['production_replaced'] is False
+          assert d['existing_grades_modified'] is False
+          assert d['correlated_pra_scenarios'] is True
+          assert d['published_projections']>0, 'No verified offers; keep published board intact'
+          assert all(d['market_counts'][s]>0 for s in ('PTS','REB','AST','PRA'))
+          for x in d['predictions']:
+            assert x['pickem_tier']=='standard'
+            assert x['standard_line_two_sided_verified'] is True
+            chance=x['estimated_hit_chance']
+            assert chance['draws']==20000 and chance['calibrated'] is False
+            if x['stat']=='PRA':
+              assert abs(x['projection']-sum(x['components'].values()))<.002
+              assert chance['PRA_joint_distribution'] is True
+          print('Verified new AI market counts:',d['market_counts'])
+          PY
+      - name: Test and freeze pretip offers for independent multi-stat grading
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
+          python -u iphone_bot/multimarket_forecast_ledger.py
+          python - <<'PY'
+          import json
+          d=json.load(open('docs/lagged_matchup_all_market_ledger.json'))
+          assert d['status']=='FROZEN_NEW_AI_ALL_MARKET'
+          assert d['existing_grades_modified'] is False
+          assert d['probabilities_calibrated'] is False
+          assert d['no_retroactive_prediction_recalculation'] is True
+          assert all(d['market_metrics'][s]['recorded']>0 for s in ('PTS','REB','AST','PRA'))
+          print('Frozen new-model stats',d['market_metrics'])
+          PY
+      - name: Retain original research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-ai-four-market-pregame
+          path: |
+            docs/lagged_matchup_all_market_validation.json
+            docs/lagged_matchup_live_all_markets.json
+            docs/lagged_matchup_all_market_ledger.json
+          retention-days: 21
+      - name: Publish ONLY separate new AI feed without rewriting existing cards/grades
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          cp docs/lagged_matchup_live_all_markets.json "$RUNNER_TEMP/new-ai.json"
+          cp docs/lagged_matchup_all_market_ledger.json "$RUNNER_TEMP/new-ai-ledger.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/new-ai.json" docs/lagged_matchup_live_all_markets.json
+            cp "$RUNNER_TEMP/new-ai-ledger.json" docs/lagged_matchup_all_market_ledger.json
+            git add docs/lagged_matchup_live_all_markets.json docs/lagged_matchup_all_market_ledger.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish independent standard-only multi-stat new AI card projections'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
