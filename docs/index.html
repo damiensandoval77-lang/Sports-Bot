@@ -1468,7 +1468,7 @@ function renderPaper(){
  $("real-settled").textContent=String(paper.settled);
  $("real-record").textContent=paper.wins+" / "+paper.losses+" / "+paper.pushes;
  $("real-roi").textContent=paper.paper_roi_per_graded_unit===null?"—":((paper.paper_roi_per_graded_unit>=0?"+":"")+(100*paper.paper_roi_per_graded_unit).toFixed(1)+"%");
- $("real-update").textContent=paper.settled+" settled · "+paper.pending+" pending";
+ $("real-update").textContent=paper.settled+" graded · "+paper.pending+" pending (sportsbook ledger only)";
  $("real-explanation").textContent="REAL pregame book quotes and actual completed box scores. Locked before start; no synthetic lines. Paper returns assume $1 on every recorded pick. Multiple books on the same prop are correlated. This is not real-money profit, proof of +EV, or a betting recommendation.";
  const list=(paper.results||[]).slice(0,60).map(r=>{
    const outer=node("article","prop"),main=node("div","mainline"),head=node("div","head"),left=node("div");
@@ -2422,6 +2422,11 @@ const status=[];
   const g=prizepicksGrades.value;
   status.push("PrizePicks research tracked: "+g.saved+" frozen · "+
     g.settled+" graded · "+g.pending+" pending");
+  // These are two different ledgers: a zero in the historical sportsbook
+  // ledger must never be presented as zero pending current PrizePicks research.
+  if($("real-update"))$("real-update").textContent=
+    "Sportsbook: "+(paper?.pending??"—")+" pending · PrizePicks research: "+
+    g.pending+" pending (all saved dates)";
  }else status.push("PrizePicks independent research grades not yet published");
  status.push(ppState==="PROVIDER_RATE_LIMITED"?"PrizePicks provider quota exhausted":ppState==="NOT_CONFIGURED"?"PrizePicks not connected":ppFresh?"PrizePicks lines loaded":ppState==="LIVE_NO_MATCHED_PRIZEPICKS_LINES"?"PrizePicks no matches":"PrizePicks unavailable/stale");
  $("data-health").textContent=status.join(" · ");
