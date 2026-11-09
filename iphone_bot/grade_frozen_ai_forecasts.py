@@ -156,7 +156,49 @@ def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=
     return {"records":sorted(retained.values(),key=lambda x:(x["start"],x["game"],x["player"],x["stat"])),
             "new_grades":new_grades,"new_exclusions":new_exclusions}
 
-def report(day,predictions,graded,fetch_report=None,now=None):
+def unresolved_reasons(pending, final_rows):
+    """Explain unresolved identities using verified final rows; never infer DNP or zero."""
+    reasons = {}
+    for p in pending:
+        day = eastern_day(p.get("start"))
+        opponents = expected_opponents(p.get("game"), p.get("team"))
+        opponent = next(iter(opponents)) if len(opponents) == 1 else None
+        trusted = [
+            r for r in final_rows
+            if r.get("final_confirmed") is True
+            and r.get("source") in APPROVED_SOURCES
+            and r.get("source_game_id")
+            and r.get("date") == day
+        ]
+        matchup = [
+            r for r in trusted
+            if (r.get("team"), r.get("opponent")) in (
+                (p.get("team"), opponent), (opponent, p.get("team")))
+        ]
+        same_name = [r for r in matchup
+                     if strict_player_name(r.get("player")) == strict_player_name(p.get("player"))]
+        exact = [r for r in same_name
+                 if r.get("team") == p.get("team") and r.get("opponent") == opponent]
+        if not matchup:
+            reason = "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        elif not same_name:
+            reason = "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+        elif not exact:
+            reason = "PLAYER_TEAM_OPPONENT_IDENTITY_MISMATCH"
+        elif len(exact) > 1:
+            reason = "AMBIGUOUS_DUPLICATE_FINAL_IDENTITY"
+        elif exact[0].get("dnp_final_verified"):
+            reason = "INACTIVE_EVIDENCE_NOT_SETTLED"
+        else:
+            reason = "FINAL_PLAYER_ROW_REJECTED_OR_CONFLICTING"
+        reasons[key(p)] = {
+            "player": p.get("player"), "team": p.get("team"),
+            "game": p.get("game"), "stat": p.get("stat"),
+            "reason": reason,
+        }
+    return reasons
+
+def report(day,predictions,graded,fetch_report=None,now=None,final_rows=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     chosen=[p for p in predictions if eastern_day(p["start"])==day]
     resolved=[g for g in graded["records"] if eastern_day(g["start"])==day]
@@ -164,6 +206,7 @@ def report(day,predictions,graded,fetch_report=None,now=None):
     excluded=[g for g in resolved if g.get("status")=="EXCLUDED_VERIFIED_DNP"]
     by_key={key(g):g for g in resolved}
     pending=[p for p in chosen if key(p) not in by_key]
+    missing_details = unresolved_reasons(pending, final_rows or []) if final_rows is not None else {}
     stat_metrics={}
     for stat in STATS:
         rows=[r for r in records if r["stat"]==stat]
@@ -190,6 +233,12 @@ def report(day,predictions,graded,fetch_report=None,now=None):
         "ungraded_distinct_player_markets":len({
             (p["game"],p["player_id"],p["stat"]) for p in pending}),
         "final_feed":fetch_report or {},
+        "ungraded_diagnostics": {
+            "by_reason": dict(sorted(Counter(x["reason"] for x in missing_details.values()).items())),
+            "players": sorted(missing_details.values(),
+                              key=lambda x:(x["game"],x["player"],x["stat"])),
+            "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE" if final_rows is not None else "NOT_EVALUATED",
+        },
         "is_betting_hit_rate":False,
         "note":"Forecast-vs-actual absolute error only; no market line or bet direction. Missing players/DNP are not assigned zero."
     }
@@ -218,7 +267,7 @@ def main():
     graded=settle_predictions(selected,actuals,old,confirmed_inactives=confirmed_inactives)
     LEDGER.write_text(json.dumps({"version":1,"records":graded["records"]},indent=2)+"\n")
     day=(now.astimezone(ET).date()-dt.timedelta(days=1)).isoformat()
-    status=report(day,selected,graded,fetch_report,now)
+    status=report(day,selected,graded,fetch_report,now,final_rows=actuals)
     STATUS.write_text(json.dumps(status,indent=2)+"\n")
     print("AI NO-LINE GRADE:",json.dumps({
         k:status[k] for k in ("game_date_eastern","status","recorded_pregame_forecasts",
