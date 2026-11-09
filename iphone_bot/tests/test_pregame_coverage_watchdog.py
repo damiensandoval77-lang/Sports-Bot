@@ -14,6 +14,19 @@ ARCHIVE={"predictions":[{**PRED,"captured_at":"2026-11-09T23:31:00+00:00"}]}
 QUICK={"matched_by_game":{GAME:17},"partial_provider_board":True}
 
 class CoverageWatchdogTests(unittest.TestCase):
+    def test_source_publications_trigger_coverage_check(self):
+        from pathlib import Path
+        workflow=Path(".github/workflows/pregame_coverage_watchdog.yml").read_text()
+        self.assertIn("  push:",workflow)
+        for input_file in (
+            "docs/nba_schedule.json",
+            "docs/ai_projection_fallback.json",
+            "docs/ai_no_line_pregame_archive.json",
+            "docs/ai_prizepicks_quick_join_health.json",
+        ):
+            self.assertIn(input_file,workflow)
+        self.assertNotIn("'docs/pregame_coverage_watchdog.json'",workflow)
+
     def test_all_eight_style_coverage_counts_are_explicit(self):
         r=check(NOW,SCHEDULE,FORECAST,ARCHIVE,QUICK)
         self.assertEqual(r["status"],"COVERED")
