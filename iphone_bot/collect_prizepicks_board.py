@@ -80,7 +80,7 @@ def main():
         raise SystemExit("PRIZEPICKS_API_KEY missing: no paid request sent")
     max_pages=int(os.environ.get("PP_MAX_PAGES","1"))
     def fetch(cursor):
-        args={"league":"NBA","view":"compact","limit":"1000","status":"active"}
+        args={"league":"NBA","limit":"200","status":"active"}
         if cursor:args["cursor"]=cursor
         url=BASE+"?"+urllib.parse.urlencode(args)
         req=urllib.request.Request(url,headers={
