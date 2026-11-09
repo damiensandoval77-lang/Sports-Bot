@@ -15,9 +15,9 @@ import urllib.parse
 import urllib.request
 
 try:
-    from iphone_bot.paper_pick_pipeline import expected_opponents
+    from iphone_bot.paper_pick_pipeline import expected_opponents, TEAM_ABBREVIATIONS
 except ModuleNotFoundError:
-    from paper_pick_pipeline import expected_opponents
+    from paper_pick_pipeline import expected_opponents, TEAM_ABBREVIATIONS
 
 ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/"docs/prizepicks.json"
@@ -27,6 +27,8 @@ STAT={"points":"PTS","rebounds":"REB","assists":"AST",
       "points+rebounds+assists":"PRA","pts reb ast":"PRA"}
 MAX_PAGES=4  # 4 compact pages, up to 4,000 offers; capped at <=40 new-plan credits.
 PAGE_SIZE=1000
+MAX_TARGETED_READS=3  # At most three additional narrow reads, only inside 24h of tipoff.
+TARGETED_PAGE_SIZE=200
 
 def timeparse(value):
     try:
@@ -333,6 +335,34 @@ def quota_guard(saved,health,now,topup=None):
         return "QUOTA_LOCKED_PRESERVE"
     return "REQUEST_ALLOWED"
 
+def targeted_team_searches(schedule, board, now, limit=MAX_TARGETED_READS):
+    """Select urgent uncovered matchups for narrowly filtered paid reads.
+
+    Only schedule-confirmed games tipping within 24h are eligible. Never
+    pretend the partial four-page board proves that later games have no lines.
+    Each selected team is queried once; the provider may still return no data.
+    """
+    if not isinstance(schedule,dict) or not isinstance(board,dict):return []
+    observed={str(row.get("game")) for row in board.get("board_offers",[])
+              if isinstance(row,dict) and row.get("game")}
+    missing=[]
+    seen=set()
+    for game in schedule.get("games",[]):
+        if not isinstance(game,dict):continue
+        name=game.get("game")
+        start=timeparse(game.get("start"))
+        if not isinstance(name,str) or name in observed or not start:continue
+        seconds=(start-now).total_seconds()
+        if not 0<seconds<=24*3600:continue
+        teams=name.split(" @ ")
+        if len(teams)!=2:continue
+        for team in teams:
+            code=TEAM_ABBREVIATIONS.get(team.strip())
+            if not code or code in seen:continue
+            seen.add(code)
+            missing.append((seconds,code))
+    return [code for _,code in sorted(missing)[:max(0,int(limit))]]
+
 def main():
     key=os.environ.get("PRIZEPICKS_API_KEY","").strip()
     if not key:
@@ -468,7 +498,41 @@ def main():
                 "coverage_complete":False}
             print("Recovered exact verified provider matchup times:",len(appended),
                   "from prior authentic fixture archive; not reusing old lines")
+    # Prefer a few near-tipoff teams missing from the truncated 4-page
+    # board. Search is a documented vendor-side team/player filter, not a
+    # workaround for authentication or payment. Do not spend credits for
+    # games over 24 hours away or rerun the entire source again.
+    full_board_partial=bool(cursor)
+    baseline=publish(pages,[],schedule=schedule)
+    targeted_queries=(targeted_team_searches(schedule,baseline,valid_now)
+                      if full_board_partial else [])
+    targeted_attempts=[]
+    for code in targeted_queries:
+        try:
+            query={"league":"NBA","status":"active","view":"compact",
+                   "search":code,"limit":TARGETED_PAGE_SIZE}
+            target=read_url(BASE+"?"+urllib.parse.urlencode(query),key)
+            if not isinstance(target,dict) or not isinstance(target.get("meta"),dict):
+                raise ValueError("Malformed targeted PrizePicks page")
+            if target["meta"].get("mode")!="live" or target["meta"].get("source_status") in ("failed","stale"):
+                raise ValueError("Unverified targeted source")
+            pages.append(target)
+            requested.append("search:"+code)
+            targeted_attempts.append({"team":code,"status":"RETURNED",
+                                      "rows":len(target.get("data",[]))
+                                      if isinstance(target.get("data"),list) else None,
+                                      "partial":bool(target["meta"].get("next_cursor"))})
+        except urllib.error.HTTPError as err:
+            targeted_attempts.append({"team":code,"status":"HTTP_ERROR",
+                                      "http_status":err.code})
+            # Provider quota enforcement is authoritative: never retry 429.
+            if err.code in (402,403,429):break
+        except (ValueError,TypeError,urllib.error.URLError,TimeoutError):
+            targeted_attempts.append({"team":code,"status":"INVALID_OR_UNAVAILABLE"})
     out=publish(pages,comp["comparisons"],schedule=schedule)
+    out["partial_board"]=out["partial_board"] or full_board_partial
+    out["targeted_team_queries"]=targeted_attempts
+    out["targeted_reads_attempted"]=len(targeted_attempts)
     usage=[p.get("_client_credit_usage",{}) for p in pages]
     out["total_provider_charged_credits"]=sum(int(x["charged_credits"]) for x in usage
         if str(x.get("charged_credits","")).isdigit())
@@ -499,6 +563,9 @@ def main():
         "credits_reported_charged":out["total_provider_charged_credits"],
         "monthly_credits_header":out["remaining_provider_credits"],
         "topup_balance_not_exposed_by_monthly_header":True,
+        "targeted_team_queries":out["targeted_team_queries"],
+        "targeted_reads_attempted":out["targeted_reads_attempted"],
+        "source_board_remains_partial":out["partial_board"],
         "stale_quotes_published_as_current":False}
     health_path.write_text(json.dumps(diagnostic,indent=2)+"\n")
     print("PrizePicks authenticated paid-read result:",
