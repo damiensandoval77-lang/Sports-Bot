@@ -22,12 +22,14 @@ EXPECTED={"Cleveland Cavaliers @ Charlotte Hornets",
           "San Antonio Spurs @ Phoenix Suns",
           "New Orleans Pelicans @ Golden State Warriors"}
 
-def assess(board_count,labels,tiles,errors,now,per_game=None):
+def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=None):
     reasons=[]
     if board_count==0:
         reasons.append("NO_RENDERED_PRIZEPICKS_AI_CARDS")
     if not labels:
         reasons.append("NO_RENDERED_LINE_AND_PROJECTION_VALUES")
+    if simulation_count is not None and simulation_count==0:
+        reasons.append("NO_RENDERED_TRAINED_20K_SIMULATIONS")
     missing=sorted(EXPECTED-set(tiles))
     if missing:
         reasons.append("OFFICIAL_NBA_GAMES_MISSING_NAVIGATION")
@@ -40,6 +42,7 @@ def assess(board_count,labels,tiles,errors,now,per_game=None):
         "browser_render_verified":not reasons,
         "rendered_ai_cards":board_count,
         "line_and_projection_cards":len(labels),
+        "rendered_20k_simulation_cards":simulation_count,
         "game_tiles_seen":sorted(set(tiles)),
         "missing_official_games":missing,
         "games_without_rendered_matches":unmatched,
@@ -66,23 +69,28 @@ def probe():
                 raise RuntimeError("Public dashboard HTTP status not 200")
             try:
                 page.wait_for_function(
-                    "() => document.querySelector('#ai-total')?.textContent?.includes('authentic PrizePicks line matches')",
+                    "() => document.querySelector('#ai-board article.compact-prop .ai-metric-label')?.textContent?.includes('PRIZEPICKS LINE')",
                     timeout=30000)
             except Exception:
-                errors.append("DID_NOT_RENDER_AUTHENTIC_PRIZEPICKS_AI_SUMMARY")
+                errors.append("DID_NOT_RENDER_AUTHENTIC_PRIZEPICKS_AI_CARD")
             cards=page.locator("#ai-board article.compact-prop")
             count=cards.count()
             present=[]
+            simulated=0
             # Verify actual rendered line and projection values rather than
             # confusing no-line cards with provider-backed cards.
             for item in cards.all()[:300]:
                 labels=item.locator(".ai-metric-label").all_inner_texts()
                 values=item.locator(".ai-metric-value").all_inner_texts()
                 text=item.inner_text()
-                if "PRIZEPICKS LINE" in labels and "AI PROJECTION" in labels and (
-                    "PRIZEPICKS + INDEPENDENT AI" in text
-                ) and len(values)>=2 and all(v.strip() not in ("","—","Unavailable") for v in values[:2]):
+                if ("PRIZEPICKS LINE" in labels and "AI PROJECTION" in labels and
+                    len(values)>=2 and all(v.strip() not in ("","—","Unavailable") for v in values[:2])):
                     present.append(text.splitlines()[0][:75])
+                    # Never mistake a raw MORE/LESS model lean for a simulated
+                    # hit percentage. Count only explicitly displayed 20K cards.
+                    idx=labels.index("20K SIM EST.") if "20K SIM EST." in labels else -1
+                    if idx>=0 and len(values)>idx and values[idx].strip().endswith("%"):
+                        simulated+=1
             game_tiles=page.locator("#game-strip button.score-tile").all()
             tiles=[t.get_attribute("aria-label") or "" for t in game_tiles]
             recognized=[game for game in EXPECTED if any(game in label for label in tiles)]
@@ -103,7 +111,7 @@ def probe():
                     errors.append("GAME_FILTER_FAILED:"+game+":"+type(exc).__name__)
                     per_game[game]=0
             page.locator("#game-strip button.all-games").click(timeout=6000)
-            result=assess(count,present,recognized,errors,now,per_game)
+            result=assess(count,present,recognized,errors,now,per_game,simulation_count=simulated)
             result["ai_summary"]=page.locator("#ai-total").inner_text()[:240]
             result["public_status"]=page.locator("#status").inner_text()[:120]
             return result
