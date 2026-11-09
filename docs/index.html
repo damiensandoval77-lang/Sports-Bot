@@ -1766,8 +1766,23 @@ async function refreshSelectedLiveTracker(){
   }catch(directError){
    // The backup is OBSERVED, not a real-time 45-second source. Require
    // exact fixture identity, server timestamp, freshness and source status.
-   const backup=await fetchJSON("live_player_tracking.json");
-   if(backup?.status!=="OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK"||
+   // Prefer published NBA liveData player boxscores when browser ESPN is blocked.
+   // Both backups require exact game identity and per-game observation freshness.
+   let backup;
+   try{
+    const nbaObserved=await fetchJSON("nba_player_tracking_independent.json");
+    if(nbaObserved?.status!=="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"||
+       nbaObserved.date_eastern!==easternGameDay(start)||
+       !isRecent(nbaObserved.captured_at,.5)||
+       !(nbaObserved.games||[]).some(g=>
+         helper.normalize(g.game)===helper.normalize(game)&&
+         ["in","post"].includes(g.state)&&
+         Array.isArray(g.player_rows)&&g.player_rows.length))
+      throw Error("NBA player boxscore fallback not current");
+    backup=nbaObserved;
+   }catch(_){backup=await fetchJSON("live_player_tracking.json");}
+   if(!["OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
+          "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"].includes(backup?.status)||
       backup.date_eastern!==easternGameDay(start)||
       !isRecent(backup.captured_at,.5))throw Error(
         "Direct ESPN unavailable ("+String(directError.message||directError)+
@@ -1790,8 +1805,9 @@ async function refreshSelectedLiveTracker(){
    players=snapshot.player_rows.map(p=>({player:p.player,team:p.team,athlete_id:String(p.player_id||""),
      stats:{PTS:p.PTS,REB:p.REB,AST:p.AST,PRA:p.PRA}}));
    verifiedAt=observedAt;
-   liveSource=snapshot.stale?
-     "ESPN retained game snapshot (STALE; no fresh update)":
+   liveSource=backup.status==="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"?
+     "NBA liveData player boxscore (scheduled best-effort refresh)":
+     snapshot.stale?"ESPN retained game snapshot (STALE; no fresh update)":
      "ESPN server snapshot (scheduled best-effort refresh)";
   }
   if(serial!==trackerRequestId)return;
@@ -1800,7 +1816,8 @@ async function refreshSelectedLiveTracker(){
     (event.status?.type?.shortDetail||"current game")+
     " · Frozen pregame AI vs observed totals · Verified "+
     new Date(verifiedAt).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
-    (liveSource.startsWith("ESPN")?" · Not real-time; backup refreshes are best effort":" · Direct refresh every 45 seconds");
+    (liveSource.includes("scheduled best-effort")||liveSource.includes("STALE")?
+       " · Scheduled backup; not real-time":" · Direct refresh every 45 seconds");
   const cards=[];
   let matchedProps=0,missingProps=0;
   const missingReasons={};
