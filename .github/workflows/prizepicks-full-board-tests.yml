@@ -60,5 +60,7 @@ jobs:
           assert 'python -u iphone_bot/fetch_prizepicks.py' not in old
           assert 'python -u iphone_bot/fetch_prizepicks.py' in new
           assert 'PRIZEPICKS_API_KEY' in new
+          assert "- cron: '28 16,21,23 * * *'" in new, 'Before-tipoff bounded refresh missing'
+          assert 'MAX_PAGES=4' in Path('iphone_bot/fetch_prizepicks.py').read_text()
           print('PrizePicks dedicated workflow only, no duplicate API pulls')
           PY
