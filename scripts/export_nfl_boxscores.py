@@ -44,8 +44,15 @@ def build(schedule,frame):
     f=frame[frame.season.eq(YEAR)&frame.season_type.eq("REG")&
             frame.game_id.isin(finals)].copy()
     if f.empty:raise ValueError("No verified-final player games")
-    if f[["game_id","player_id"]].isna().any().any():
-        raise ValueError("Null player or game identifier")
+    # nflverse can include a few unattributed plays/rows. A player with no
+    # GSIS ID must not be guessed from name or attached to the wrong team.
+    unknown=f[["game_id","player_id"]].isna().any(axis=1)
+    missing_count=int(unknown.sum())
+    if missing_count:
+        if missing_count>max(30,int(len(f)*.01)):
+            raise ValueError(f"Too many unidentified player-game rows: {missing_count}/{len(f)}")
+        print(f"Skipping {missing_count} stats rows without verified player/game IDs")
+        f=f.loc[~unknown].copy()
     if f.duplicated(["game_id","player_id"]).any():
         raise ValueError("Duplicate player-game records")
     games={}
