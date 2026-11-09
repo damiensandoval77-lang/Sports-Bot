@@ -16,6 +16,7 @@ from iphone_bot.fetch_final_boxscores import gather
 from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS, expected_opponents, strict_player_name
 from iphone_bot.prizepicks_research_ledger import utc
 from iphone_bot.recover_prizepicks_final_games import multi_origin_request
+from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset
 
 ROOT=Path(__file__).resolve().parents[1]
 ARCHIVE=ROOT/"docs/ai_no_line_pregame_archive.json"
@@ -76,9 +77,9 @@ def final_requests(predictions):
                                   "player_id":str(p["player_id"])})
     return list(requests.values())
 
-def settle_predictions(predictions,final_rows,existing=None):
+def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=None):
     """No missing player or unverified DNP is ever a zero-stat observation."""
-    retained={key(r):dict(r) for r in (existing or []) if r.get("status")=="GRADED"}
+    retained={key(r):dict(r) for r in (existing or []) if r.get("status") in ("GRADED","EXCLUDED_VERIFIED_DNP")}
     by_name=defaultdict(list)
     for row in final_rows:
         if (row.get("final_confirmed") is not True or
@@ -90,6 +91,17 @@ def settle_predictions(predictions,final_rows,existing=None):
         if not n:continue
         ident=(n,row.get("team"),row.get("date"),row.get("opponent"))
         by_name[ident].append(row)
+    dnp_by_name=defaultdict(list)
+    for row in list(final_rows)+list(confirmed_inactives or []):
+        if (row.get("final_confirmed") is not True or
+            row.get("dnp_final_verified") is not True or
+            row.get("source") not in APPROVED_SOURCES|{"NBA_OFFICIAL_INACTIVE_CROSSCHECKED"} or
+            not row.get("source_game_id") or not row.get("dnp_reason")):
+            continue
+        n=strict_player_name(row.get("player"))
+        if n:
+            dnp_by_name[(n,row.get("team"),row.get("date"),row.get("opponent"))].append(row)
+    new_exclusions=0
     new_grades=0
     for p in predictions:
         ident=key(p)
@@ -98,8 +110,27 @@ def settle_predictions(predictions,final_rows,existing=None):
         opponents=expected_opponents(p["game"],p["team"])
         if len(opponents)!=1:continue
         candidates=by_name.get((strict_player_name(p["player"]),p["team"],day,opponents[0]),[])
-        # Exactly one independently verified player/game; duplicates are ambiguous.
-        if len(candidates)!=1:continue
+        # Exact confirmed nonparticipant excludes forecast error, never a zero-stat game.
+        # Conflicting played/DNP identities remain unresolved.
+        match=(strict_player_name(p["player"]),p["team"],day,opponents[0])
+        inactive=dnp_by_name.get(match,[])
+        if not candidates and len(inactive)==1:
+            dnp=inactive[0]
+            retained[ident]={
+                "status":"EXCLUDED_VERIFIED_DNP",
+                "player_id":str(p["player_id"]),"player":p["player"],
+                "team":p["team"],"game":p["game"],"start":p["start"],
+                "stat":p["stat"],"captured_at":p["captured_at"],
+                "projection":float(p["projection"]),"actual":None,
+                "error":None,"absolute_error":None,"minutes":None,
+                "final_source":dnp["source"],
+                "source_game_id":str(dnp["source_game_id"]),
+                "verified_dnp_reason":dnp["dnp_reason"],
+                "line":None,"betting_grade":None
+            }
+            new_exclusions+=1
+            continue
+        if len(candidates)!=1 or inactive:continue
         actual_row=candidates[0]
         try:
             actual=float(actual_row[p["stat"]]); projection=float(p["projection"])
@@ -123,13 +154,15 @@ def settle_predictions(predictions,final_rows,existing=None):
         }
         new_grades+=1
     return {"records":sorted(retained.values(),key=lambda x:(x["start"],x["game"],x["player"],x["stat"])),
-            "new_grades":new_grades}
+            "new_grades":new_grades,"new_exclusions":new_exclusions}
 
 def report(day,predictions,graded,fetch_report=None,now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     chosen=[p for p in predictions if eastern_day(p["start"])==day]
-    records=[g for g in graded["records"] if eastern_day(g["start"])==day]
-    by_key={key(g):g for g in records}
+    resolved=[g for g in graded["records"] if eastern_day(g["start"])==day]
+    records=[g for g in resolved if g.get("status")=="GRADED"]
+    excluded=[g for g in resolved if g.get("status")=="EXCLUDED_VERIFIED_DNP"]
+    by_key={key(g):g for g in resolved}
     pending=[p for p in chosen if key(p) not in by_key]
     stat_metrics={}
     for stat in STATS:
@@ -144,10 +177,13 @@ def report(day,predictions,graded,fetch_report=None,now=None):
                   "AI_PRETIP_FORECASTS_PARTIALLY_GRADED" if records else
                   "NO_VERIFIED_AI_FORECAST_ACTUALS"),
         "generated_at":now.isoformat(),"game_date_eastern":day,
-        "recorded_pregame_forecasts":len(chosen),"graded":len(records),"ungraded":len(pending),
+        "recorded_pregame_forecasts":len(chosen),"graded":len(records),"verified_dnp_exclusions":len(excluded),
+        "accounted_for":len(records)+len(excluded),"ungraded":len(pending),
         "new_grades":graded["new_grades"],
+        "new_verified_dnp_exclusions":graded.get("new_exclusions",0),
         "by_stat":stat_metrics,
         "ungraded_by_game":dict(sorted(Counter(p["game"] for p in pending).items())),
+        "excluded_verified_dnp_players":sorted({r["player"] for r in excluded}),
         "ungraded_distinct_player_names_by_game":{
             game: sorted({p["player"] for p in pending if p["game"]==game})
             for game in sorted({p["game"] for p in pending})},
@@ -174,7 +210,11 @@ def main():
             actuals=[];fetch_report={"status":"FINAL_FETCH_FAILED","errors":[type(e).__name__]}
     else:
         actuals=[];fetch_report={"status":"NO_ELIGIBLE_ARCHIVED_GAMES"}
-    graded=settle_predictions(selected,actuals,old)
+    try:
+        confirmed_inactives=verified_inactive_subset(actuals)
+    except (OSError,ValueError,TypeError,KeyError):
+        confirmed_inactives=[]
+    graded=settle_predictions(selected,actuals,old,confirmed_inactives=confirmed_inactives)
     LEDGER.write_text(json.dumps({"version":1,"records":graded["records"]},indent=2)+"\n")
     day=(now.astimezone(ET).date()-dt.timedelta(days=1)).isoformat()
     status=report(day,selected,graded,fetch_report,now)
