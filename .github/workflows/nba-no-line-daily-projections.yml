@@ -7,6 +7,8 @@ on:
       - 'iphone_bot/daily_projection_fallback.py'
       - 'iphone_bot/preserve_no_line_forecasts.py'
       - 'iphone_bot/projection_delivery_health.py'
+      - 'iphone_bot/pra_coherence_challenger.py'
+      - 'iphone_bot/tests/test_pra_coherence_challenger.py'
       - 'iphone_bot/tests/test_projection_delivery_health.py'
       - 'iphone_bot/tests/test_preserve_no_line_forecasts.py'
       - 'iphone_bot/fetch_hoopr_nba_schedule.py'
@@ -59,6 +61,8 @@ jobs:
           python -u iphone_bot/preserve_no_line_forecasts.py
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_delivery_health.py' -v
           python -u iphone_bot/projection_delivery_health.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_pra_coherence_challenger.py' -v
+          python -u iphone_bot/pra_coherence_challenger.py
       - name: Verify all estimates are event-specific and price-independent
         run: |
           python - <<'PY'
@@ -93,7 +97,8 @@ jobs:
             cp "$RUNNER_TEMP/nba-schedule-status.json" docs/nba_schedule_status.json
             cp "$RUNNER_TEMP/nba-form.json" docs/current_form.json
             python -u iphone_bot/projection_delivery_health.py
-            git add docs/ai_projection_fallback.json docs/projection_delivery_health.json docs/ai_no_line_pregame_archive.json docs/nba_schedule.json docs/nba_schedule_status.json docs/current_form.json
+            python -u iphone_bot/pra_coherence_challenger.py
+            git add docs/pra_coherence_shadow.json docs/ai_projection_fallback.json docs/projection_delivery_health.json docs/ai_no_line_pregame_archive.json docs/nba_schedule.json docs/nba_schedule_status.json docs/current_form.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish fresh NBA pregame player model projections without paid prop lines'
             if git push origin HEAD:main; then exit 0; fi
