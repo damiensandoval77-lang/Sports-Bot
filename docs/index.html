@@ -1150,6 +1150,46 @@ function renderAI(){
    (entries.some(p=>p.preliminary_edge?.probability||earlyEdgePreview(p)?.probability)?" · early grades applied":"");
  const list=entries.slice(0,selectedGame?entries.length:1000).map((p,index)=>{
   try{
+  // A valid standard PrizePicks quote may have NO trained AI projection.
+  // Use a dedicated, resilient card instead of passing it into legacy
+  // sportsbook/details code that requires p.books, b.odds, a model and an EV.
+  if(p.line_only){
+    const card=node("article","prop compact-prop"),
+          main=node("div","mainline"),
+          heading=node("div","compact-head"),
+          person=node("div","compact-identity");
+    person.append(node("strong","",p.player),
+      node("div","match",p.team+" · "+formatTime(p.start)+" · "+p.game));
+    heading.append(person);
+    const tiles=node("div","ai-metrics");
+    for(const [label,value,kind] of [
+        ["PRIZEPICKS STD",fmt(Number(p.line)),"line"],
+        ["NEW AI PROJECTION","—","projection"],
+        ["NEW AI CHANCE","—","chance"]]){
+      const tile=node("div","ai-metric "+kind);
+      tile.append(node("span","ai-metric-label",label),
+        node("strong","ai-metric-value",value));
+      tiles.append(tile);
+    }
+    main.append(heading,
+      node("div","ai-market-name",({PTS:"Points",REB:"Rebounds",
+        AST:"Assists",PRA:"Pts + Reb + Ast"})[p.stat]||p.stat),
+      tiles);
+    const status=node("div","research-note",
+      p.injury_display_reason==="INJURY_REMODEL_PENDING"?
+      "Verified standard line · injury-adjusted NEW AI pending. No current model lean or chance.":
+      "Verified standard PrizePicks line · NEW AI prediction pending. No OVER/UNDER lean or probability.");
+    main.append(status);
+    const current=formFresh?currentPerson(p.player,p.team):null;
+    if(current){
+      main.append(node("div","mini",
+        "Observed 2026–27 "+p.stat+" average: "+
+        fmt(statVal(current,p.stat,"season"))+
+        " · "+current.games+" games (not a projected result)."));
+    }
+    card.append(main);
+    return card;
+  }
   const outer=node("article","prop compact-prop"),main=node("div","mainline"),detailNotes=[];
   const head=node("div","compact-head"),identity=node("div","compact-identity");
   const shortStats={PTS:"Points",REB:"Rebounds",AST:"Assists",PRA:"Pts + Reb + Ast"};
