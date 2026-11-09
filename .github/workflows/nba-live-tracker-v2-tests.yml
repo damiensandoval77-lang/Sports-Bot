@@ -50,7 +50,9 @@ jobs:
           assert 'if(trackerLastGame!==game)' in html
           assert 'live_player_tracking.json' in html
           assert 'isRecent(backup.captured_at,.5)' in html  # Maximum 30-min observed snapshot window
-          assert 'No unique matching server-verified NBA boxscore' in html
+          assert 'No unique matching verified player boxscore for ' in html
+          assert 'snapshot.observed_at||backup.captured_at' in html
+          assert 'snapshot.stale?' in html
           assert 'setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000);' in html
           assert 'document.addEventListener("visibilitychange"' in html
           assert 'trackerLastUpdated=verifiedAt' in html
