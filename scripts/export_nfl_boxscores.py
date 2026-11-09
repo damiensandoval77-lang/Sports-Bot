@@ -115,6 +115,23 @@ def run():
     manifest_file=OUT/"manifest.json"
     previous=json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
     weeks,manifest=prepare(schedule,fetch_stats(),previous)
+    # Do not commit timestamp-only refreshes; redundant commits repeatedly
+    # cancel GitHub Pages deployments when NBA and NFL jobs share the site.
+    comparable=dict(manifest)
+    comparable.pop("updated_at",None)
+    prior_content=dict(previous)
+    prior_content.pop("updated_at",None)
+    if comparable==prior_content:
+        same=True
+        for week,games in weeks.items():
+            filename=OUT/f"week_{week:02d}.json"
+            expected=json.dumps({"season":YEAR,"week":week,"games":games},separators=(",",":"))+"\\n"
+            if not filename.exists() or filename.read_text(encoding="utf-8")!=expected:
+                same=False
+                break
+        if same:
+            print(f"NFL boxscores unchanged: {manifest['games_with_stats']} verified; no new Pages deployment")
+            return
     OUT.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="nfl-final-boxscores-") as tmp:
         stage=Path(tmp)
