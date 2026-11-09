@@ -49,3 +49,45 @@ test("reject unmatched current-season roster, conflicting duplicate identity",()
 test("reject after-tipoff model and missing pretip capture",()=>{
  assert.deepEqual(quick(source,{...forecast,generated_at:"2026-11-09T03:00:00Z"}),[]);
 });
+
+const publishedStart=html.indexOf("function verifiedPublishedPrizePicksJoins(");
+const publishedEnd=html.indexOf("function groupAI(rows){",publishedStart);
+assert.ok(publishedStart>=0&&publishedEnd>publishedStart,"Published join function available");
+const published=new Function("norm","isRecent","Date",html.slice(publishedStart,publishedEnd)+
+ ";return verifiedPublishedPrizePicksJoins;")(norm,isRecent,Date);
+const publishedRow={
+ player:"Cooper Flagg",player_id:"5041939",team:"DAL",opponent:"BKN",
+ game:"Brooklyn Nets @ Dallas Mavericks",stat:"PTS",start,
+ line:22.5,projection:24.6,difference:2.1,source:"independent_prizepicksapi_com",
+ observed_at:nowTime,model_generated_at:forecast.generated_at,
+ provider_projection_id:"prize-7",research_only:true,
+ more_tier:"standard",less_tier:"standard"
+};
+const publishedBoard={
+ status:"FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS",
+ research_only:true,generated_at:nowTime,
+ provider_generated_at:nowTime,model_generated_at:forecast.generated_at,
+ comparisons:[publishedRow]
+};
+test("real published quick-join converts to PrizePicks card without invented probabilities",()=>{
+ const result=published(publishedBoard,[player],now);
+ assert.equal(result.length,1);
+ assert.equal(result[0].sportsbook,"PrizePicks");
+ assert.equal(result[0].line,22.5);
+ assert.equal(result[0].projection,24.6);
+ assert.equal(result[0].combined_simulation,undefined);
+ assert.equal(result[0].confidence_percent,null);
+ assert.equal(result[0].reliability_screen.validated,false);
+});
+test("published joins reject stale offer, started game, bad roster and stale aggregate",()=>{
+ assert.deepEqual(published({...publishedBoard,generated_at:"2026-11-08T00:00:00Z"},[player],now),[]);
+ assert.deepEqual(published({...publishedBoard,comparisons:[{...publishedRow,observed_at:"2026-11-08T00:00:00Z"}]},[player],now),[]);
+ assert.deepEqual(published(publishedBoard,[{...player,player_id:"wrong"}],now),[]);
+ assert.deepEqual(published(publishedBoard,[player],Date.parse("2026-11-09T03:00:00Z")),[]);
+});
+test("dashboard fetches published quick join before trying to reconstruct manually",()=>{
+ assert.ok(html.includes('fetchJSON("ai_prizepicks_quick_join.json")'));
+ const publishedUse=html.indexOf("verifiedPublishedPrizePicksJoins(publishedQuick.value,form)");
+ const rebuildUse=html.indexOf("verifiedQuickPrizePicksJoins(pp.value,noLineForecast,form)");
+ assert.ok(publishedUse>0&&rebuildUse>publishedUse);
+});
