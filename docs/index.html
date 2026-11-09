@@ -2559,9 +2559,13 @@ if(ai.length===0&&archive.status==="fulfilled"&&
      aiArchiveMode=false;window.lastAI=prizepicksAI.value.generated_at;
    }
  }
-// Independent no-cost publisher already validated exact roster/game/source
-// identities. Use its saved comparisons before an in-browser reconstruct.
-if(ai.length===0&&publishedQuick.status==="fulfilled"&&formFresh){
+// The user's primary AI board is for PrizePicks lines when the independently
+// published fresh source exists. Previously this branch was gated on
+// ai.length===0, so a nonempty legacy sportsbook AI feed hid every genuine
+// PrizePicks card even when 1,800+ exact matches had been published.
+// The separate sportsbook tab still retains the independent sportsbook feed.
+// Never mix providers under the global is_prizepicks card label.
+if(publishedQuick.status==="fulfilled"&&formFresh){
  const joined=verifiedPublishedPrizePicksJoins(publishedQuick.value,form);
  if(joined.length){
   ai=groupAI(joined);
