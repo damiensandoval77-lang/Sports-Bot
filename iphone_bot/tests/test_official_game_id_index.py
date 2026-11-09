@@ -3,7 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 from iphone_bot.official_game_id_index import (
-    entries_from_scoreboard,merge_entries,matching_ids,read_index,update_index)
+    entries_from_scoreboard,merge_entries,matching_ids,read_index,update_index,
+    read_official_page_hints,recovery_game_ids)
 from iphone_bot.fetch_final_boxscores import (
     gather,NBA_SCOREBOARD,NBA_BOX,NBA_SCHEDULE,NBA_SCHEDULE_ALT,ESPN_SCORE)
 
@@ -38,6 +39,42 @@ class OfficialGameIdTests(unittest.TestCase):
         saved=read_index(Path("docs/official_nba_game_ids.json"))
         self.assertGreater(len(saved),0)
         self.assertTrue(all(row["game_id"].startswith("00226") for row in saved))
+
+    def test_nba_com_page_backfills_exact_missing_nov8_game(self):
+        path=Path("docs/verified_official_final_game_ids.json")
+        hints=read_official_page_hints(path)
+        self.assertIn({"date":"2026-11-08","away":"MIA",
+                       "home":"SAC","game_id":"0022600202"},hints)
+        self.assertEqual(matching_ids(hints,{("2026-11-08","MIA","SAC")}),
+                         {("2026-11-08","MIA","SAC"):"0022600202"})
+
+    def test_official_page_hint_cannot_grade_nonfinal_or_wrong_team(self):
+        pending=[{"status":"PENDING","event_start":"2026-11-09T02:00:00Z",
+                  "game":"Miami Heat @ Sacramento Kings","team":"MIA","player_id":"123"}]
+        hints=read_official_page_hints(Path("docs/verified_official_final_game_ids.json"))
+        def request(url):
+            if url==NBA_SCOREBOARD:return {"scoreboard":{"games":[]}}
+            if url==NBA_BOX.format("0022600202"):
+                return {"game":{"gameId":"0022600202","gameStatus":2,
+                        "gameTimeUTC":"2026-11-09T02:00:00Z",
+                        "awayTeam":{"teamTricode":"MIA"},
+                        "homeTeam":{"teamTricode":"SAC"}}}
+            if url in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):raise TimeoutError
+            if url.startswith(ESPN_SCORE):raise TimeoutError
+            raise AssertionError(url)
+        rows,report=gather(pending,now=NOW,request=request,known_game_ids=hints)
+        self.assertEqual(rows,[])
+        self.assertEqual(report["status"],"NO_FINAL_BOXSCORES_AVAILABLE")
+
+    def test_unsourced_or_wrong_url_official_hint_rejected(self):
+        import json
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/"hints.json"
+            p.write_text(json.dumps({"version":1,"games":[{
+                "date":"2026-11-08","away":"MIA","home":"SAC",
+                "game_id":"0022600202","source":"NBA_OFFICIAL_GAME_PAGE",
+                "url":"https://untrusted.example/game/0022600202"}]}))
+            self.assertEqual(read_official_page_hints(p),[])
 
     def test_only_actual_official_nba_scoreboard_yields_game_id(self):
         self.assertEqual(entries_from_scoreboard(SCORE),[
