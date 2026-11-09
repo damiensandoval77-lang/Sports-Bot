@@ -78,3 +78,29 @@ def matching_ids(entries,pending):
         key=(row["date"],row["away"],row["home"])
         if key in pending:matches[key]=row["game_id"]
     return matches
+
+def read_official_page_hints(path):
+    """Sourced NBA.com game page IDs are only hints; final box verifies again."""
+    try:
+        obj=json.loads(Path(path).read_text())
+        if obj.get("version")!=1 or not isinstance(obj.get("games"),list):
+            return []
+        permitted=[]
+        for entry in obj["games"]:
+            if not isinstance(entry,dict) or entry.get("source")!="NBA_OFFICIAL_GAME_PAGE":
+                continue
+            gid=str(entry.get("game_id") or "")
+            if not VALID_ID.fullmatch(gid):continue
+            if entry.get("url")!=f"https://www.nba.com/game/{gid}":continue
+            try:
+                day=entry["date"]
+                if dt.date.fromisoformat(day).isoformat()!=day:continue
+            except (TypeError,ValueError,KeyError):continue
+            permitted.append({k:entry[k] for k in ("date","away","home","game_id")})
+        return merge_entries([],permitted)
+    except (OSError,TypeError,ValueError,AttributeError):
+        return []
+
+def recovery_game_ids(index_path,official_page_path):
+    """Fail closed on conflicting official ID hints for the same matchup."""
+    return merge_entries(read_index(index_path),read_official_page_hints(official_page_path))

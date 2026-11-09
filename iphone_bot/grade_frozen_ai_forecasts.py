@@ -12,7 +12,7 @@ from pathlib import Path
 from statistics import mean
 from zoneinfo import ZoneInfo
 
-from iphone_bot.official_game_id_index import read_index
+from iphone_bot.official_game_id_index import recovery_game_ids
 from iphone_bot.fetch_final_boxscores import gather
 from iphone_bot.verified_final_cache import read_cache, write_cache, row_key
 from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS, expected_opponents, strict_player_name
@@ -258,7 +258,8 @@ def main():
     if requested:
         try:
             actuals,fetch_report=gather(requested,now=now,request=multi_origin_request,
-                                      known_game_ids=read_index(ROOT/"docs/official_nba_game_ids.json"))
+                                      known_game_ids=recovery_game_ids(ROOT/"docs/official_nba_game_ids.json",
+                                          ROOT/"docs/verified_official_final_game_ids.json"))
         except (OSError,ValueError,TypeError,KeyError) as e:
             actuals=[];fetch_report={"status":"FINAL_FETCH_FAILED","errors":[type(e).__name__]}
     else:
