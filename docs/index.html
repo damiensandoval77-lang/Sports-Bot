@@ -539,7 +539,28 @@ function renderPrizePicksBoard(){
        " · Opponent model unavailable")+
      " · No verified hit probability or EV"));
   }else{
-   card.append(node("div","mini","Trained AI unavailable for this prop · posted line shown independently."));
+   // Match only independently trained, immutable pregame projections for the
+   // same exact player/team/stat/matchup. Never invent bettable thresholds or
+   // calibrated success rates for no-line model outputs.
+   const candidates=noLineForecast?.status==="PREGAME_PROJECTIONS_NO_LINES"&&
+     isRecent(noLineForecast.generated_at,8)&&Array.isArray(noLineForecast.predictions)?
+     noLineForecast.predictions:[];
+   const estimate=candidates.find(x=>x.game===p.game&&x.team===p.team&&
+     x.stat===p.stat&&norm(x.player)===norm(p.player)&&
+     Date.parse(x.start)>Date.now()&&Number.isFinite(Number(x.projection))&&
+     Math.abs(Date.parse(x.start)-Date.parse(p.starts_at))<=30*60000);
+   if(estimate){
+    const diff=Number(estimate.projection)-Number(p.line);
+    const lean=Math.abs(diff)<0.05?"NO LEAN":
+      diff>0?(p.more_tier?"MORE":"MORE UNAVAILABLE"):
+             (p.less_tier?"LESS":"LESS UNAVAILABLE");
+    card.append(node("div","mini",
+      "TRAINED AI: "+fmt(Number(estimate.projection))+" "+p.stat+
+      " · PrizePicks line "+fmt(Number(p.line))+
+      " · "+lean+" (research only; no verified hit probability)"));
+   }else{
+    card.append(node("div","mini","Trained AI unavailable for this prop · posted line shown independently."));
+   }
   }
   card.append(vals,node("div","mini","Observed "+formatTime(p.observed_at)+
     " · not American sportsbook odds · independent vendor"));
