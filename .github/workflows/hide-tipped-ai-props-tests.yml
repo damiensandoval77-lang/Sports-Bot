@@ -20,7 +20,9 @@ jobs:
           source=Path('docs/index.html').read_text()
           script=source.split('<script>',1)[1].split('</script>',1)[0]
           Path('/tmp/nba-tipped-board.js').write_text(script)
-          assert 'const entries=upcomingAIProps(ai).filter' in script
+          assert 'compactPrizePicksDisplay(upcomingAIProps(ai))' in script
+          assert 'const filtered=board.filter' in script
+          assert 'const board=(!gameFilter&&todayBoard.length)?todayBoard:allBoard' in script
           assert 'ai=aiFresh?upcomingAIProps(groupAI(a.value.comparisons)):[]' in script
           assert 'const frozen=archive.value.comparisons.filter' in script
           assert 'Date.parse(x.start)>Date.now()' in script
