@@ -19,7 +19,7 @@ def eastern_date(stamp):
     if instant.tzinfo is None:raise ValueError("Timestamp missing offset")
     return instant.astimezone(EASTERN).date().isoformat()
 
-def audit(day,ledger,form=None,archive=None,prizepicks_summary=None):
+def audit(day,ledger,form=None,archive=None,prizepicks_summary=None,prizepicks_ledger=None):
     dt.date.fromisoformat(day)
     records=ledger.get("records") or []
     captured=[r for r in records if r.get("event_start") and eastern_date(r["event_start"])==day]
@@ -31,6 +31,13 @@ def audit(day,ledger,form=None,archive=None,prizepicks_summary=None):
     unpriced_forecasts=[p for p in (archive or {}).get("predictions",[])
                         if p.get("start") and eastern_date(p["start"])==day
                         and p.get("line") is None]
+    pp_records = [r for r in (prizepicks_ledger or {}).get("records",[])
+                  if r.get("start") and eastern_date(r["start"])==day]
+    pp_counts=Counter(r.get("status","UNLABELED") for r in pp_records)
+    pp_games=sorted({r["game"] for r in pp_records if r.get("game")})
+    pp_pending=[r for r in pp_records if r.get("status")=="PENDING"]
+    pp_settled=[r for r in pp_records if r.get("status")=="SETTLED"]
+    pp_void=[r for r in pp_records if r.get("status") in ("VOID_DNP","VOID")]
     if not captured:
         verdict="NO_LOCKED_PAPER_PICKS_CAPTURED"
     elif pending:
@@ -54,12 +61,20 @@ def audit(day,ledger,form=None,archive=None,prizepicks_summary=None):
         "unpriced_pregame_archive_forecasts":len(unpriced_forecasts),
         "prizepicks_cumulative_status":(prizepicks_summary or {}).get("status"),
         "prizepicks_cumulative_pending":(prizepicks_summary or {}).get("pending"),
-        "prizepicks_date_specific_verified":False,
+        "prizepicks_date_specific_verified":bool(pp_records) and not pp_pending and
+                                               len(pp_settled)+len(pp_void)==len(pp_records),
+        "prizepicks_date_locked_records":len(pp_records),
+        "prizepicks_date_settled":len(pp_settled),
+        "prizepicks_date_void":len(pp_void),
+        "prizepicks_date_pending":len(pp_pending),
+        "prizepicks_date_status_counts":dict(sorted(pp_counts.items())),
+        "prizepicks_date_saved_games":pp_games,
+        "prizepicks_date_pending_games":sorted({r["game"] for r in pp_pending if r.get("game")}),
         "notes":[
             "Cumulative settled totals do not prove that this date was captured or graded.",
             "No-line forecasts are separate research observations, not locked wager or sportsbook records.",
             "This audit is not proof of a complete NBA slate without independent game-level capture records.",
-            "PrizePicks totals lack date-level evidence in the published summary and must not be assumed settled."
+            "PrizePicks date verification relies on original pretip research ledger and its settlement statuses."
         ]
     }
 
@@ -75,7 +90,8 @@ def main():
     report=audit(day,load("docs/paper_pick_ledger.json",{}),
                  load("docs/current_form.json",{}),
                  load("docs/ai_no_line_pregame_archive.json",{}),
-                 load("docs/prizepicks_research_results.json",{}))
+                 load("docs/prizepicks_research_results.json",{}),
+                 load("docs/prizepicks_research_ledger.json",{}))
     print(json.dumps(report,indent=2))
     if args.fail_if_ungraded and report["verdict"]!="ALL_CAPTURED_PAPER_PICKS_RESOLVED":
         raise SystemExit(1)
