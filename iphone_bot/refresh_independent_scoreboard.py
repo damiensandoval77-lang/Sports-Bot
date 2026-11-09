@@ -16,12 +16,29 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/nba_scoreboard_independent.json"
 EASTERN = ZoneInfo("America/New_York")
 
-def snapshot(days, reader=read_schedule, now=None, previous=None):
+def expected_matchups(schedule, days):
+    """Only trust an explicitly complete schedule for the same requested dates."""
+    if not isinstance(schedule, dict) or schedule.get("coverage_complete") is not True:
+        return set()
+    requested = {d.isoformat() for d in days}
+    covered_dates = set(schedule.get("dates_eastern") or [])
+    if not requested.issubset(covered_dates):
+        return set()
+    return {(str(g.get("date_eastern")), str(g.get("game", "")).strip().casefold())
+            for g in schedule.get("games", [])
+            if g.get("date_eastern") in requested and g.get("game")}
+
+def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     dates = [d.isoformat() for d in days]
     try:
         report = collect(days, reader=reader)
         rows = report.get("games", [])
+        expected = expected_matchups(schedule, days)
+        observed = {(str(g.get("date_eastern")), str(g.get("game", "")).strip().casefold())
+                    for g in rows if g.get("game")}
+        if expected and not expected.issubset(observed):
+            raise ValueError("Incomplete ESPN scoreboard relative to verified scheduled slate")
         if len(dates) != len(set(dates)):
             raise ValueError("Duplicate requested dates")
         if len({str(g.get("id")) for g in rows}) != len(rows):
@@ -68,7 +85,14 @@ def main():
             previous=json.loads(OUTPUT.read_text())
         except (OSError,ValueError):
             pass
-    result=snapshot(days,previous=previous)
+    baseline = None
+    baseline_path = ROOT / "docs/nba_schedule.json"
+    if baseline_path.exists():
+        try:
+            baseline = json.loads(baseline_path.read_text())
+        except (OSError, ValueError):
+            pass
+    result=snapshot(days,previous=previous,schedule=baseline)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps({"status":result["status"],"total_games":result["total_games"],
                       "generated_at":result["generated_at"],"error":result.get("error")}))
