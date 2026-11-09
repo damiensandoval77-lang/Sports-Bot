@@ -6,9 +6,9 @@ on:
     paths:
       - 'docs/prizepicks_manual_refresh_request.json'
   schedule:
-    # Two daily NBA pregame refresh windows, seven hours apart; up to four compact pages each.
+    # Three bounded pregame refresh windows, including an afternoon retry before first tip.\n    # Each run can request up to four compact pages; quota errors stop reads.
     # Uses proven top-up access even if the monthly remaining-credit header is zero.
-    - cron: '28 16,23 * * *'
+    - cron: '28 16,21,23 * * *'
 permissions:
   contents: write
   actions: write
