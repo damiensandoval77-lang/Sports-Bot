@@ -10,24 +10,96 @@
 .recordnums b{font-variant-numeric:tabular-nums}
 .recordnums .yes{color:var(--green)}.recordnums .no{color:var(--amber)}
 .logrow{display:flex;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
-.logrow:last-child{border-bottom:0}.val{background:var(--panel2);border-radius:8px;padding:8px 7px}.val b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.val small{display:block}.prop details{border-top:1px solid var(--border)}summary{cursor:pointer;padding:10px 11px;color:var(--accent);font-size:12px;font-weight:700}.detailbody{padding:10px 11px;font-size:12px;color:#cbd8eb}.empty{border:1px dashed #39506e;border-radius:12px;padding:26px 16px;color:var(--sub);text-align:center;background:#101b2c}.notice{font-size:12px;color:#e8c58b;background:#34291c;border:1px solid #654b28;border-radius:10px;padding:10px;margin:10px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.mini{background:var(--panel2);padding:10px;border-radius:8px}.hidden{display:none!important}button{touch-action:manipulation}@media(min-width:700px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:360px){.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.val b{font-size:15px}}
+.logrow:last-child{border-bottom:0}
+.scorewrap{margin-top:10px;display:grid;gap:8px}.scoresection{border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.scoreheading{background:#223249;padding:9px;font-size:12px;font-weight:800}
+.scoretable{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+.scoretable td,.scoretable th{padding:7px 5px;border-bottom:1px solid #283950;text-align:right;white-space:nowrap}
+.scoretable td:first-child,.scoretable th:first-child{text-align:left;max-width:130px;white-space:normal}
+.scoretable th{color:var(--sub);font-weight:650}
+.scoretable tr:last-child td{border:0}
+.scorewait{color:var(--sub);font-size:12px;padding:12px}
+.matchdetail{margin-top:9px;border-top:1px solid var(--border)}
+.matchdetail summary{padding:11px 0 5px;color:var(--accent);font-size:12px;font-weight:800}
+.val{background:var(--panel2);border-radius:8px;padding:8px 7px}.val b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.val small{display:block}.prop details{border-top:1px solid var(--border)}summary{cursor:pointer;padding:10px 11px;color:var(--accent);font-size:12px;font-weight:700}.detailbody{padding:10px 11px;font-size:12px;color:#cbd8eb}.empty{border:1px dashed #39506e;border-radius:12px;padding:26px 16px;color:var(--sub);text-align:center;background:#101b2c}.notice{font-size:12px;color:#e8c58b;background:#34291c;border:1px solid #654b28;border-radius:10px;padding:10px;margin:10px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.mini{background:var(--panel2);padding:10px;border-radius:8px}.hidden{display:none!important}button{touch-action:manipulation}@media(min-width:700px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:360px){.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.val b{font-size:15px}}
 </style></head><body><main>
 <div class="top"><div><div class="eyebrow">DAME'S PICKS · NFL</div><h1>AI Prop Board</h1><small>Same interface · separate NFL engine</small></div><span id="status" class="status warn">CONNECTING</span></div>
 <div class="summary"><div class="metric"><b id="allcount">—</b><small>Saved lines</small></div><div class="metric"><b id="gamecount">—</b><small>Scheduled season games</small></div><div class="metric"><b id="gradecount">—</b><small>Graded</small></div></div>
+<div class="bar" style="margin:12px 0 8px"><label for="weekfilter">NFL season week</label><select id="weekfilter" style="max-width:145px"><option value="">Loading schedule</option></select></div>
 <div class="tabs"><button class="tab active" data-tab="board">AI Board</button><button class="tab" data-tab="live">Matchups</button><button class="tab" data-tab="graded">Graded</button></div>
 <div id="notice" class="notice">Loading the latest captured NFL predictions. Confidence is an uncalibrated model estimate, not an actual hit rate.</div>
-<section id="board"><div class="bar" style="margin:0 0 8px"><label for="weekfilter">NFL schedule week</label><select id="weekfilter" style="max-width:145px"><option value="">Loading schedule</option></select></div><div class="games" id="games"></div><div class="filters"><input id="search" placeholder="Search player or team"><select id="statfilter"><option value="">All markets</option></select><select id="kind"><option value="standard">Standard</option><option value="">All lines</option><option value="goblin">Goblin</option><option value="demon">Demon</option></select></div><div class="bar"><h2>Pregame NFL props</h2><small id="freshness">Latest snapshot</small></div><div class="board" id="cards"></div></section>
-<section id="live" class="hidden"><h2>Game & live tracker</h2><p class="muted">Saved picks can be viewed by matchup. Live box-score pace requires a separate verified live NFL feed; no simulated live stats are shown.</p><div id="livegames" class="board"></div></section>
+<section id="board"><div class="games" id="games"></div><div class="filters"><input id="search" placeholder="Search player or team"><select id="statfilter"><option value="">All markets</option></select><select id="kind"><option value="standard">Standard</option><option value="">All lines</option><option value="goblin">Goblin</option><option value="demon">Demon</option></select></div><div class="bar"><h2>Pregame NFL props</h2><small id="freshness">Latest snapshot</small></div><div class="board" id="cards"></div></section>
+<section id="live" class="hidden"><h2>Matchups & Final Box Scores</h2><p class="muted">Open any completed matchup to view final player stats. Box scores load independently of PrizePicks lines. In-progress games do not display estimated final stats.</p><div id="livegames" class="board"></div></section>
 <section id="graded" class="hidden"><h2>Graded NFL lines</h2><p class="muted">Results use frozen pre-kickoff prices, not revised projections.</p><div id="grades" class="board"></div></section>
 </main><script>
-const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board"};
+const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board",boxManifest:null,boxWeeks:{}};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function parseCSV(text){const rows=[];let r=[],v="",quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){r.push(v);v=""}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;r.push(v);if(r.some(x=>x!==""))rows.push(r);r=[];v=""}else v+=c}if(v||r.length){r.push(v);rows.push(r)}if(!rows.length)return[];const cols=rows.shift();return rows.map(row=>Object.fromEntries(cols.map((c,i)=>[c,row[i]??""])));}
 async function getCSV(url){const response=await fetch(url+"?t="+Math.floor(Date.now()/60000),{cache:"no-store"});if(!response.ok)throw Error(response.status+" "+url);return parseCSV(await response.text());}
 function titleGame(g){const found=state.schedule.find(x=>x.game_id===g);if(found)return found.away+" @ "+found.home;const p=g.split("_");return p.length>=4?p.slice(2).join(" @ "):g}
 function currentWeek(games){if(!games.length)return "";const now=Date.now();const future=games.filter(g=>g.status!=="final" && Date.parse(g.kickoff_utc)>now-6*3600000).sort((a,b)=>Date.parse(a.kickoff_utc)-Date.parse(b.kickoff_utc));return String((future[0]||games[games.length-1]).week)}
 function scheduledWeekGames(){return state.schedule.filter(g=>String(g.week)===state.week)}
-function matchupCard(g,lines){const count=lines.filter(x=>x.game_id===g.game_id).length;const status=g.status==="final"?"Final "+g.away_score+"–"+g.home_score:(g.status==="started_unconfirmed"?"Started · score unverified":"Scheduled");const date=new Date(g.kickoff_utc);return '<div class="prop mainline"><div class="head"><strong>'+esc(g.away+' @ '+g.home)+'</strong><span class="tag">'+esc(status)+'</span></div><small>Week '+esc(g.week)+' · '+esc(Number.isFinite(date.getTime())?date.toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):g.kickoff_utc)+'</small><p class="muted">'+(count?count+' saved PrizePicks prop lines':'No PrizePicks props captured for this scheduled game')+'</p></div>'}
+function boxMetric(p,key){const v=p[key];return v===undefined||v===null||v===""||!Number.isFinite(Number(v))?"—":esc(v)}
+function gameStatsTable(game,category){
+ const p=game.players||[];
+ const active=p.filter(r=>category==="Passing"?Number(r.attempts)>0:
+       category==="Rushing"?Number(r.carries)>0:Number(r.targets)>0||Number(r.receptions)>0);
+ if(!active.length)return '';
+ const columns=category==="Passing"?
+  [["Player","player"],["Team","team"],["CMP","completions"],["ATT","attempts"],["YDS","passing_yards"],["TD","passing_tds"],["INT","passing_interceptions"]]:
+  category==="Rushing"?
+  [["Player","player"],["Team","team"],["ATT","carries"],["YDS","rushing_yards"],["TD","rushing_tds"]]:
+  [["Player","player"],["Team","team"],["TGT","targets"],["REC","receptions"],["YDS","receiving_yards"],["TD","receiving_tds"]];
+ active.sort((a,b)=>Number(b[category==="Passing"?"passing_yards":category==="Rushing"?"rushing_yards":"receiving_yards"]||0)-
+                          Number(a[category==="Passing"?"passing_yards":category==="Rushing"?"rushing_yards":"receiving_yards"]||0));
+ return '<div class="scoresection"><div class="scoreheading">'+category+'</div><div style="overflow-x:auto"><table class="scoretable"><thead><tr>'+
+    columns.map(([title])=>'<th>'+title+'</th>').join('')+'</tr></thead><tbody>'+
+    active.map(p=>'<tr>'+columns.map(([,key])=>'<td>'+boxMetric(p,key)+'</td>').join('')+'</tr>').join('')+
+    '</tbody></table></div></div>';
+}
+function renderFinalBoxscore(game){
+ if(!game)return '<div class="scorewait">Final score confirmed, but player box score is not published yet. No stats have been assumed.</div>';
+ const sections=["Passing","Rushing","Receiving"].map(category=>gameStatsTable(game,category)).filter(Boolean).join('');
+ return '<div class="scorewrap"><strong>'+esc(game.away)+' '+esc(game.away_score)+' – '+esc(game.home_score)+' '+esc(game.home)+'</strong>'+
+    (sections||'<div class="scorewait">Player stats not yet available.</div>')+
+    '<small>Verified player-game statistics from nflverse. Missing stats appear as —, not zero.</small></div>';
+}
+async function revealBoxscore(el){
+ const gameId=el.dataset.boxgame,week=Number(el.dataset.week);
+ const host=el.querySelector(".box-content");
+ if(!host||!el.open)return;
+ if(!state.boxManifest){host.innerHTML='<div class="scorewait">Final score available; the player-stat feed has not published a verified box score yet.</div>';return;}
+ if(!Object.prototype.hasOwnProperty.call(state.boxManifest.weeks||{},String(week))){
+  host.innerHTML='<div class="scorewait">Player box scores are pending for this week.</div>';return;
+ }
+ try{
+  if(!state.boxWeeks[week]){
+   const response=await fetch("./data/boxscores/week_"+String(week).padStart(2,"0")+".json?t="+Date.now(),{cache:"no-store"});
+   if(!response.ok)throw Error("Boxscore file HTTP "+response.status);
+   const data=await response.json();
+   if(data.week!==week||data.season!==2026||!Array.isArray(data.games))throw Error("Invalid week box score");
+   const ids=new Set(state.schedule.map(g=>g.game_id));
+   if(data.games.some(g=>!ids.has(g.game_id)))throw Error("Boxscore contains unknown NFL game");
+   state.boxWeeks[week]=data.games;
+  }
+  const game=state.boxWeeks[week].find(g=>g.game_id===gameId);
+  if(el.open)host.innerHTML=renderFinalBoxscore(game);
+ }catch(error){
+  if(el.open)host.innerHTML='<div class="scorewait">Box score unavailable. The game and final score remain visible; try again after the next data refresh.</div>';
+  console.error("NFL boxscore:",error);
+ }
+}
+function matchupCard(g,lines){
+ const count=lines.filter(x=>x.game_id===g.game_id).length;
+ const finished=g.status==="final";
+ const status=finished?"Final "+g.away_score+"–"+g.home_score:g.status==="started_unconfirmed"?"Started · score unverified":"Scheduled";
+ const date=new Date(g.kickoff_utc);
+ return '<div class="prop mainline"><div class="head"><strong>'+esc(g.away+' @ '+g.home)+'</strong><span class="tag">'+esc(status)+'</span></div>'+
+ '<small>Week '+esc(g.week)+' · '+esc(Number.isFinite(date.getTime())?date.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):g.kickoff_utc)+'</small>'+
+ '<p class="muted">'+(count?count+' frozen PrizePicks prop lines':'No PrizePicks props captured — matchup still available')+'</p>'+
+ (finished?'<details class="matchdetail" data-boxgame="'+esc(g.game_id)+'" data-week="'+esc(g.week)+'"><summary>View final box score & player stats</summary><div class="box-content"><div class="scorewait">Loading verified final stats…</div></div></details>':
+  '<small>Final player stats will appear after the game is completed and the feed updates.</small>')+'</div>';
+}
 
 function seasonRecord(r){
   const known=r.season_games!==undefined&&r.season_games!==null&&r.season_games!=="";
@@ -59,7 +131,8 @@ function render(){
  const selected=state.schedule.find(g=>g.game_id===state.game);
  const missing=selected?'This NFL game is scheduled, but no matching PrizePicks props were captured. The matchup is not missing from the season schedule.':'No matching saved props for this week. The NFL schedule is shown independently of sportsbook availability.';
  document.getElementById("cards").innerHTML=view.length?view.slice(0,180).map(card).join(""):'<div class="empty">'+esc(missing)+'</div>';
- document.getElementById("livegames").innerHTML=schedule.length?schedule.map(g=>matchupCard(g,all)).join(""):'<div class="empty">NFL schedule unavailable for this week.</div>';
+ document.getElementById("livegames").innerHTML=schedule.length?schedule.map(g=>matchupCard(g,all)).join("");
+ document.querySelectorAll("details[data-boxgame]").forEach(el=>el.addEventListener("toggle",()=>{if(el.open)revealBoxscore(el)})):'<div class="empty">NFL schedule unavailable for this week.</div>';
  document.getElementById("grades").innerHTML=state.grades.length?state.grades.slice(0,200).map(r=>'<article class="prop mainline"><div class="head"><strong>'+esc(r.player)+'</strong><span class="tag '+(Number(r.won)===1?"over":"under")+'">'+esc(r.result||"PENDING")+'</span></div><small>'+esc(r.stat)+' · '+esc(r.team)+' vs '+esc(r.opponent)+'</small><div class="vals"><div class="val"><b>'+esc(r.line)+'</b><small>Frozen line</small></div><div class="val"><b>'+esc(r.actual)+'</b><small>Actual</small></div><div class="val"><b>'+esc(r.pick)+'</b><small>Pick</small></div></div></article>').join(""):'<div class="empty">No real completed-game grading published yet. This does not mean all predictions hit or missed.</div>';
 }
 document.querySelectorAll(".tab").forEach(button=>button.onclick=()=>{state.tab=button.dataset.tab;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===button));for(const id of ["board","live","graded"])document.getElementById(id).classList.toggle("hidden",id!==state.tab)});
@@ -104,6 +177,14 @@ async function loadSeasonSchedule(){
 }
 async function init(){
  let scheduleReady=false;
+ try{
+   const response=await fetch("./data/boxscores/manifest.json?t="+Date.now(),{cache:"no-store"});
+   if(response.ok){
+     const m=await response.json();
+     if(m.season===2026&&Array.isArray(m.game_ids)&&m.weeks)state.boxManifest=m;
+   }
+ }catch(error){console.warn("Boxscore manifest pending:",error)}
+
  try{await loadSeasonSchedule();scheduleReady=true}
  catch(error){console.error("NFL schedule error:",error);document.getElementById("weekfilter").innerHTML='<option value="">Schedule unavailable</option>'}
  try {
