@@ -27,6 +27,8 @@ jobs:
         run: pip install pandas pyarrow
       - name: Run tests
         run: python -m unittest discover -s tests -p 'test_nfl_boxscores.py' -v
+      - name: Refresh the verified full-season schedule and final scores
+        run: python scripts/export_nfl_schedule.py
       - name: Export finalized player stats
         run: python scripts/export_nfl_boxscores.py
       - name: Commit verified records
@@ -34,7 +36,7 @@ jobs:
         run: |
           git config user.name nfl-boxscore-publisher
           git config user.email actions@users.noreply.github.com
-          git add docs/nfl/data/boxscores/
+          git add docs/nfl/data/boxscores/ docs/nfl/data/schedule_2026.json
           if ! git diff --cached --quiet; then
             git commit -m "Refresh verified NFL final box scores"
             git pull --rebase origin main
