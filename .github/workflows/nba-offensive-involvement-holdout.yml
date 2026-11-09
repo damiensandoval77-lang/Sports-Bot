@@ -1,0 +1,49 @@
+name: Historical offensive involvement vs baseline (research only)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/offensive_involvement_holdout.py'
+      - 'iphone_bot/tests/test_offensive_involvement_holdout.py'
+      - '.github/workflows/nba-offensive-involvement-holdout.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify temporal and opportunity proxy contracts
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_offensive_involvement_holdout.py' -v
+      - name: Install existing historical data dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests
+      - name: Acquire existing historical player-game observations
+        run: python -u iphone_bot/download_archived_nba.py
+      - name: Run chronological holdout against actual 2025-26 game outcomes
+        run: python -u iphone_bot/offensive_involvement_holdout.py
+      - name: Assert no invented lines and inspect date/sample coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('docs/offensive_involvement_holdout_research.json').read_text())
+          assert r['production_modified'] is False
+          assert r['automatic_promotion'] is False
+          assert r['sportsbook_lines_used'] is False
+          assert r['prop_hit_rate'] is None
+          assert r['overall']['n'] >= 1000
+          assert r['overall']['dates'] >= 30
+          print('Actual paired 2025-26 holdout:', r['overall'])
+          print('First calendar half:', r['first_half'])
+          print('Second calendar half:', r['second_half'])
+          PY
+      - name: Publish run-local evaluation artifact (no production write)
+        uses: actions/upload-artifact@v4
+        with:
+          name: offensive-involvement-historical-research
+          path: docs/offensive_involvement_holdout_research.json
+          retention-days: 14

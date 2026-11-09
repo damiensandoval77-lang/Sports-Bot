@@ -1,0 +1,69 @@
+name: External stats research snapshot validation (no provider calls)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/external_stats_snapshot.py'
+      - 'iphone_bot/tests/test_external_stats_snapshot.py'
+      - 'iphone_bot/external_stats_pregame_features.py'
+      - 'iphone_bot/tests/test_external_stats_pregame_features.py'
+      - 'iphone_bot/external_stats_shadow_comparison.py'
+      - 'iphone_bot/tests/test_external_stats_shadow_comparison.py'
+      - 'iphone_bot/external_stats_research_gate.py'
+      - 'iphone_bot/tests/test_external_stats_research_gate.py'
+      - 'iphone_bot/expanded_matchup_research.py'
+      - 'iphone_bot/tests/test_expanded_matchup_research.py'
+      - 'iphone_bot/verified_pregame_context.py'
+      - 'iphone_bot/tests/test_verified_pregame_context.py'
+      - 'iphone_bot/NBASTUFFER_RESEARCH_INTEGRATION.md'
+      - '.github/workflows/external_stats_snapshot_tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/external_stats_snapshot.py'
+      - 'iphone_bot/tests/test_external_stats_snapshot.py'
+      - 'iphone_bot/external_stats_pregame_features.py'
+      - 'iphone_bot/tests/test_external_stats_pregame_features.py'
+      - 'iphone_bot/external_stats_shadow_comparison.py'
+      - 'iphone_bot/tests/test_external_stats_shadow_comparison.py'
+      - 'iphone_bot/external_stats_research_gate.py'
+      - 'iphone_bot/tests/test_external_stats_research_gate.py'
+      - 'iphone_bot/expanded_matchup_research.py'
+      - 'iphone_bot/tests/test_expanded_matchup_research.py'
+      - '.github/workflows/external_stats_snapshot_tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-snapshot-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run offline snapshot contract tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_external_stats_snapshot.py' -v
+      - name: Test point-in-time ID joins and leakage guards
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_external_stats_pregame_features.py' -v
+      - name: Test paired shadow evaluation and leakage safeguards
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_external_stats_shadow_comparison.py' -v
+      - name: Test prospective model promotion safeguards
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_external_stats_research_gate.py' -v
+      - name: Audit existing frozen paper grades without modifying production
+        run: python -m iphone_bot.external_stats_research_gate --paper docs/paper_results.json
+      - name: Validate expanded opponent, minutes and injury isolation
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_expanded_matchup_research.py' -v
+      - name: Test verified official usage, injury and positional pretip gates
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_verified_pregame_context.py' -v
+      - name: Confirm no provider requests in adapter
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('iphone_bot/external_stats_snapshot.py').read_text()
+          for forbidden in ('urllib.request','requests.get','httpx.get','urlopen('):
+              assert forbidden not in source, f'Unexpected network client: {forbidden}'
+          assert 'rights_confirmed' in source
+          assert 'production_modified' in source
+          print('Offline-only source and fail-closed contract verified')
+          PY

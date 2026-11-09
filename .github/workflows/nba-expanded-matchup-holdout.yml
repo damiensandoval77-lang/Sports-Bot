@@ -1,0 +1,50 @@
+name: Expanded NBA pregame matchup historical research
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/expanded_matchup_research.py'
+      - 'iphone_bot/expanded_matchup_holdout.py'
+      - 'iphone_bot/offensive_involvement_holdout.py'
+      - 'iphone_bot/tests/test_expanded_matchup_research.py'
+      - '.github/workflows/nba-expanded-matchup-holdout.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run matchup and injury-source isolation regression tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_expanded_matchup_research.py' -v
+      - name: Install preexisting historical data dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests
+      - name: Collect verified historical player boxes
+        run: python -u iphone_bot/download_archived_nba.py
+      - name: Run 2025-26 same-game paired expanded matchup holdout
+        run: python -u iphone_bot/expanded_matchup_holdout.py
+      - name: Assert genuine historical coverage and nonproduction status
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/expanded_matchup_holdout_research.json'))
+          assert r['overall']['n']>=1000
+          assert r['overall']['distinct_dates']>=30
+          assert r['production_modified'] is False
+          assert r['automatic_promotion'] is False
+          assert r['sportsbook_quotes_included'] is False
+          assert r['feature_availability']['official_usage_pct'] is False
+          assert r['feature_availability']['verified_pretip_injury_splits'] is False
+          print('EXPANDED_MATCHUP_RESULT',r['overall'])
+          print('EXPANDED_MATCHUP_COVERAGE',r['coverage'])
+          PY
+      - name: Save isolated holdout report (no main branch writes)
+        uses: actions/upload-artifact@v4
+        with:
+          name: expanded-matchup-holdout
+          path: docs/expanded_matchup_holdout_research.json
+          retention-days: 14

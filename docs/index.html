@@ -268,7 +268,8 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
  <div class="board" id="ai-no-line-board"></div>
  <div>Model estimates only. These are NOT PrizePicks or sportsbook lines, betting directions, calibrated probabilities, or verified picks. Coverage may be partial.</div>
 </div>
-<div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div></section>
+<div class="board" id="ai-board"><div class="empty">Loading experimental AI comparisons…</div></div>
+<details class="advanced" id="lagged-challenger-panel" open><summary>New Matchup AI · points only (experimental live comparison)</summary><div class="advbody"><div id="lagged-challenger-status" role="status" aria-live="polite">Checking independent pregame matchup forecasts…</div><div class="board" id="lagged-challenger-board"></div><div class="source">Uses verified current-season game logs and authentic PrizePicks lines. Historical points MAE improvement has not established a profitable edge. No calibrated probability or approved betting lean. Old AI cards and automatic grades are unchanged.</div></div></details></section>
 <section class="panel" id="tab-odds"><div class="bar"><h2>Sportsbook lines</h2><small id="odds-total">—</small></div>
 <div class="filters"><input id="odds-search" aria-label="Search sportsbook player" placeholder="Search player…" autocomplete="off"><select id="odds-game" aria-label="Sportsbook game"><option value="">All games</option></select><select id="odds-stat" aria-label="Sportsbook market"><option value="">All stats</option><option>PTS</option><option>REB</option><option>AST</option><option>PRA</option></select><select id="odds-book" aria-label="Sportsbook"><option value="">All books</option></select></div><div class="board" id="odds-board"><div class="empty">Loading sportsbook odds…</div></div></section>
 <section class="panel" id="tab-form"><div class="bar"><h2>2026–27 form</h2><small id="form-total">—</small></div>
@@ -2937,4 +2938,4 @@ refresh().catch(error=>{
  $("global-warning").textContent="Data request failed: "+String(error.message||error);
  $("data-health").textContent="Try Refresh data";
 });
-</script></body></html>
+</script><script src="./lagged-challenger-board.js?v=1" defer></script></body></html>
