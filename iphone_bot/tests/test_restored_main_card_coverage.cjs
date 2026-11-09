@@ -86,6 +86,19 @@ test("Affected card becomes real-line only with no fabricated projection/lean",(
  assert.ok(html.includes('const projected=p.line_only?NaN:'));
  assert.ok(html.includes('const side=p.line_only?"NO LEAN":primaryDirection(p);'));
 });
+test("Line-only cards bypass the legacy sportsbook renderer and show no modeled chance",()=>{
+ const start=html.indexOf("const list=entries.slice(0,selectedGame?");
+ const only=html.indexOf("if(p.line_only){",start);
+ const legacy=html.indexOf("p.books.length",start);
+ assert.ok(start>0&&only>start&&legacy>only,
+   "Quote-only card must return before accessing sportsbook-only data");
+ const text=html.slice(only,legacy);
+ assert.ok(text.includes("card.append(main);"));
+ assert.ok(text.includes("return card;"));
+ assert.ok(text.includes('["NEW AI PROJECTION","—"'));
+ assert.ok(text.includes('["NEW AI CHANCE","—"'));
+ assert.ok(text.includes("VERIFIED")||text.includes("Verified standard"));
+});
 test("Opening missing-AI games does not force sportsbook when verified standard exists",()=>{
  assert.ok(html.includes('!standardLineCards.some(x=>x.game===game)'));
  assert.ok(html.includes('const quoteOnly=standardLineCards.filter('));
