@@ -71,7 +71,7 @@ jobs:
           current=Path("docs/official_nba_game_ids.json")
           incoming=Path(os.environ["RUNNER_TEMP"])/"official_nba_game_ids.json"
           rows=merge_entries(read_index(current),read_index(incoming))
-          current.write_text(json.dumps({"version":1,"games":rows},indent=2)+"\\n")
+          current.write_text(json.dumps({"version":1,"games":rows},indent=2)+"\n")
           PY
             git add docs/nba_scoreboard_independent.json docs/official_nba_game_ids.json
             if git diff --cached --quiet; then exit 0; fi
