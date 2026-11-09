@@ -53,6 +53,10 @@ class DashboardScoreboardIntegrationTests(unittest.TestCase):
         self.assertIn('fetchJSON("nba_player_tracking_independent.json")', block)
         self.assertIn('fetchJSON("live_player_tracking.json")', block)
         self.assertIn('"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"', block)
+        self.assertIn('"PARTIAL_NBA_PLAYER_BOXSCORES"', block)
+        self.assertIn('partial slate coverage', block)
+        self.assertIn('matches.length!==1', block)
+        self.assertIn('age>30*60000', block)
         self.assertIn('!isRecent(nbaObserved.captured_at,.5)', block)
         self.assertIn('age>30*60000', block)
 
