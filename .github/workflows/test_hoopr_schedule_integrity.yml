@@ -1,0 +1,30 @@
+name: Protect verified NBA game counts from schedule overwrite
+
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/fetch_hoopr_nba_schedule.py'
+      - 'iphone_bot/reconcile_official_nba_schedule.py'
+      - 'iphone_bot/tests/test_fetch_hoopr_official_reconcile.py'
+      - 'docs/verified_official_nba_fixtures.json'
+      - '.github/workflows/test_hoopr_schedule_integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install offline source-parser dependencies
+        run: pip install 'pandas>=2,<3'
+      - name: Verify all hoopR schedule publishers preserve official NBA fixtures
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_hoopr_official_reconcile.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_official_nba_schedule.py' -v
