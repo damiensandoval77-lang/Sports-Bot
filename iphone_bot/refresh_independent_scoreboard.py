@@ -159,8 +159,13 @@ def main():
         except RuntimeError:
             pass
         try:
-            return nba_season_schedule(dates)
-        except RuntimeError:
+            season=nba_season_schedule(dates)
+            season_matchups={(str(g.get("date_eastern")),str(g.get("game","")).strip().casefold())
+                             for g in season.get("events",[]) if g.get("game")}
+            if expected and not expected.issubset(season_matchups):
+                raise RuntimeError("NBA season schedule omitted officially verified game")
+            return season
+        except (RuntimeError,ValueError):
             # Last resort: a separately validated existing dated schedule.
             # This is useful for matchup tabs but never a fresh LIVE scoreboard.
             if expected and baseline and baseline.get("coverage_complete") is True:
