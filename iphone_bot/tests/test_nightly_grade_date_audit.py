@@ -47,6 +47,7 @@ class NightlyGradeDateAuditTests(unittest.TestCase):
         self.assertEqual(r["prizepicks_date_locked_records"],2)
         self.assertEqual(r["prizepicks_date_pending"],1)
         self.assertEqual(r["prizepicks_date_pending_games"],["C @ D"])
+        self.assertEqual(r["prizepicks_pending_record_counts_by_game"],{"C @ D":1})
         self.assertFalse(r["prizepicks_date_specific_verified"])
 
     def test_prizepicks_settled_all_date_verified_separately_from_sportsbook(self):
