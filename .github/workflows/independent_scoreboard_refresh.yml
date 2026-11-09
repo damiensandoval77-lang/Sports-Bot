@@ -52,14 +52,35 @@ jobs:
       - name: Commit latest scoreboard observation or honest failure status
         if: always() && github.event_name != 'pull_request' && steps.refresh.outcome != 'skipped'
         run: |
+          set -euo pipefail
+          cp docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
+          cp docs/official_nba_game_ids.json "$RUNNER_TEMP/official_nba_game_ids.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/nba_scoreboard_independent.json docs/official_nba_game_ids.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Update NBA scoreboard observation or fetch failure status"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.merge_scoreboard_snapshot \
+              docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
+            # Merge saved official IDs by exact matchup. Conflicting IDs are
+            # excluded rather than silently changing a verified identity.
+            python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from iphone_bot.official_game_id_index import merge_entries,read_index
+          current=Path("docs/official_nba_game_ids.json")
+          incoming=Path(os.environ["RUNNER_TEMP"])/"official_nba_game_ids.json"
+          rows=merge_entries(read_index(current),read_index(incoming))
+          current.write_text(json.dumps({"version":1,"games":rows},indent=2)+"\\n")
+          PY
+            git add docs/nba_scoreboard_independent.json docs/official_nba_game_ids.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "Update NBA scoreboard and durable official game IDs"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent scoreboard publish; safely retrying ($attempt/5)"
+          done
+          echo "::error::Could not publish independently verified NBA scores/IDs after safe retries"
+          exit 1
       - name: Fail workflow if provider refresh failed
         if: always() && github.event_name != 'pull_request' && steps.refresh.outcome == 'failure'
         run: |
