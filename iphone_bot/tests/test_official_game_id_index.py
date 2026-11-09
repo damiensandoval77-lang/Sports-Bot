@@ -29,6 +29,16 @@ def final_box(status=3,away="MIA"):
             "homeTeam":{"teamTricode":"SAC","players":[]}}}
 
 class OfficialGameIdTests(unittest.TestCase):
+    def test_publisher_serializes_valid_json_and_saved_index_parses(self):
+        from pathlib import Path
+        script=Path(".github/workflows/independent_scoreboard_refresh.yml").read_text()
+        self.assertIn('current.write_text(json.dumps(',script)
+        self.assertIn('+"\\n")',script)
+        self.assertNotIn('+"\\\\n")',script)
+        saved=read_index(Path("docs/official_nba_game_ids.json"))
+        self.assertGreater(len(saved),0)
+        self.assertTrue(all(row["game_id"].startswith("00226") for row in saved))
+
     def test_only_actual_official_nba_scoreboard_yields_game_id(self):
         self.assertEqual(entries_from_scoreboard(SCORE),[
             {"date":DAY,"away":"MIA","home":"SAC","game_id":GID}])
