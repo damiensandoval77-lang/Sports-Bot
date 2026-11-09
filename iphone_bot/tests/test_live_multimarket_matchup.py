@@ -13,7 +13,7 @@ class MultimarketTests(unittest.TestCase):
         samples=np.tile([[-5,-3,-2],[0,0,0],[5,3,2],[3,1,1]],(300,1))
         p={"PTS":20.,"REB":7.,"AST":6.}
         a=simulate(p,33.5,"PRA",samples,"fixture")
-        b=simulate(p,20.5,"PTS",samples,"fixture")
+        b=simulate(p,16.5,"PTS",samples,"fixture")
         self.assertEqual(a["projection"],33.)
         self.assertEqual(a["component_projections"],{"PTS":20.,"REB":7.,"AST":6.})
         self.assertTrue(a["PRA_joint_distribution"])
