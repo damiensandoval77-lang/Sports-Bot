@@ -4,6 +4,8 @@ on:
     paths:
       - 'iphone_bot/external_stats_snapshot.py'
       - 'iphone_bot/tests/test_external_stats_snapshot.py'
+      - 'iphone_bot/external_stats_pregame_features.py'
+      - 'iphone_bot/tests/test_external_stats_pregame_features.py'
       - 'iphone_bot/NBASTUFFER_RESEARCH_INTEGRATION.md'
       - '.github/workflows/external_stats_snapshot_tests.yml'
   push:
@@ -11,6 +13,8 @@ on:
     paths:
       - 'iphone_bot/external_stats_snapshot.py'
       - 'iphone_bot/tests/test_external_stats_snapshot.py'
+      - 'iphone_bot/external_stats_pregame_features.py'
+      - 'iphone_bot/tests/test_external_stats_pregame_features.py'
       - '.github/workflows/external_stats_snapshot_tests.yml'
   workflow_dispatch:
 permissions:
@@ -26,6 +30,8 @@ jobs:
           python-version: '3.11'
       - name: Run offline snapshot contract tests
         run: python -m unittest discover -s iphone_bot/tests -p 'test_external_stats_snapshot.py' -v
+      - name: Test point-in-time ID joins and leakage guards
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_external_stats_pregame_features.py' -v
       - name: Confirm no provider requests in adapter
         run: |
           python - <<'PY'
