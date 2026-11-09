@@ -69,8 +69,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-ai-research.yml --ref main
-      - name: Immediately publish observed AI-versus-line research after new real PrizePicks offers
-        if: steps.publish.outputs.changed == 'true'
+      - name: Recover AI-versus-line research even when saved provider snapshot is unchanged
+        # The provider's 40-credit refresh is NOT called here. If the previous
+        # quick-join publisher failed after a successful site snapshot, replay
+        # its zero-cost snapshot join instead of waiting for another paid fetch.
+        # This also handles unchanged data whose downstream dispatch was lost.
+        if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run publish_live_pp_ai_join.yml --ref main
