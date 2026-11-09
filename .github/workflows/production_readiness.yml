@@ -35,6 +35,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Inspect current provider refresh and board publication paths
+        if: github.event_name == 'pull_request'
+        run: |
+          echo '=== PrizePicks and odds workflow names ==='
+          find .github/workflows -maxdepth 1 -type f | grep -Ei 'prize|odd|board|projection|site|line' | sort || true
+          echo '=== Python files referencing the committed provider board ==='
+          grep -rl 'prizepicks_site.json' iphone_bot .github/workflows --include='*.py' --include='*.yml' | head -40 || true
+          echo '=== Current line/board production files ==='
+          grep -rl 'board_offers' iphone_bot --include='*.py' | head -30 || true
       - name: Run fail-closed production data quality tests
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v
