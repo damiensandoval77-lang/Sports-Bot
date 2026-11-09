@@ -70,6 +70,11 @@ def audit(day,ledger,form=None,archive=None,prizepicks_summary=None,prizepicks_l
         "prizepicks_date_status_counts":dict(sorted(pp_counts.items())),
         "prizepicks_date_saved_games":pp_games,
         "prizepicks_date_pending_games":sorted({r["game"] for r in pp_pending if r.get("game")}),
+        "prizepicks_pending_record_counts_by_game":dict(sorted(
+            Counter(r.get("game","UNKNOWN") for r in pp_pending).items())),
+        "prizepicks_pending_distinct_player_stat_markets":len({
+            (r.get("game"),r.get("player_id"),r.get("stat"))
+            for r in pp_pending}),
         "notes":[
             "Cumulative settled totals do not prove that this date was captured or graded.",
             "No-line forecasts are separate research observations, not locked wager or sportsbook records.",
