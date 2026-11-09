@@ -17,7 +17,7 @@ class LaggedTrainingTests(unittest.TestCase):
             rows.append({"season":"2024-25","date":f"2025-01-{n+1:02}",
                          "team":"BOS","opponent":"NYK","id":"12",
                          "game_id":f"g{n}","PTS":20.,"MIN":30.,
-                         "FGA":15.,"FTA":4.,"TOV":2.,"OREB":1.})
+                         "FGA":15.,"FTA":4.,"TOV":2.,"OREB":1.,"REB":6.,"AST":4.})
         samples,excluded=make_rows(rows)
         self.assertEqual(samples,[])
         self.assertGreater(excluded.get("insufficient_opponent_history",0),0)
