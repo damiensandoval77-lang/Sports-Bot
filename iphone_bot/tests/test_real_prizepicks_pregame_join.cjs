@@ -24,7 +24,11 @@ const quick = vm.runInNewContext(
   normalization+'\n'+recent+'\n'+joining+'\nverifiedQuickPrizePicksJoins', sandbox
 );
 function load(name) { return JSON.parse(fs.readFileSync(path.join(root, 'docs', name), 'utf8')); }
-// Test real saved identities with a deliberately simulated fresh observation time.\n// The source fixture itself is stale in production; this is only a contract test.\nconst source = load('prizepicks_site.json');\nsource.generated_at='2026-11-09T17:05:00Z';\nsource.board_offers=source.board_offers.map(o=>({...o,observed_at:'2026-11-09T17:05:00Z'}));
+// Test real saved identities with a deliberately simulated fresh observation time.
+// The source fixture itself is stale in production; this is only a contract test.
+const source = load('prizepicks_site.json');
+source.generated_at='2026-11-09T17:05:00Z';
+source.board_offers=source.board_offers.map(o=>({...o,observed_at:'2026-11-09T17:05:00Z'}));
 const forecast = load('ai_projection_fallback.json');
 const roster = load('current_form.json').players;
 assert.equal(source.status, 'LIVE_THIRD_PARTY_PRIZEPICKS_LINES');
