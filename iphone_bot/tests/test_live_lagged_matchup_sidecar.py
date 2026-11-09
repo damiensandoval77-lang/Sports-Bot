@@ -2,7 +2,7 @@
 from datetime import datetime,timezone
 import unittest
 try:
-    from iphone_bot.live_lagged_matchup_sidecar import forecast,current_games,build_features
+    from iphone_bot.live_lagged_matchup_sidecar import forecast,current_games,build_features,standard_points_offers
 except ImportError:
     from live_lagged_matchup_sidecar import forecast,current_games,build_features
 
@@ -33,6 +33,40 @@ class SidecarTests(unittest.TestCase):
         f,why=build_features([],"BOS","NYK","2026-11-09",{})
         self.assertIsNone(f)
         self.assertIsNotNone(why)
+
+    def test_only_standard_points_two_sided_line_selected(self):
+        base={"player":"Jokić","team":"DEN","game":"Denver Nuggets @ Houston Rockets",
+              "start":"2026-11-10T01:30:00Z","stat":"Points",
+              "market_updated":"2026-11-09T21:00:00Z"}
+        offers=[]
+        for line,tier in ((23.5,"goblin"),(27.5,"standard"),(32.5,"demon")):
+            for side in ("More","Less"):
+                offers.append({**base,"line":line,"pickem_tier":tier,"direction":side})
+        selected,excluded=standard_points_offers(offers)
+        self.assertEqual(len(selected),1)
+        self.assertEqual(selected[0]["line"],27.5)
+        self.assertEqual(selected[0]["pickem_tier"],"standard")
+        self.assertTrue(selected[0]["standard_line_two_sided_verified"])
+        self.assertEqual(excluded["NON_STANDARD_POINTS_TIER"],4)
+
+    def test_conflicting_standard_lines_fail_closed(self):
+        base={"player":"Test","team":"DEN","game":"Denver Nuggets @ Houston Rockets",
+              "start":"2026-11-10T01:30:00Z","stat":"Points",
+              "market_updated":"2026-11-09T21:00:00Z","pickem_tier":"standard"}
+        offered=[{**base,"line":line,"direction":side} for line in (23.5,24.5)
+                 for side in ("More","Less")]
+        selected,excluded=standard_points_offers(offered)
+        self.assertEqual(selected,[])
+        self.assertEqual(excluded["CONFLICTING_STANDARD_LINES"],4)
+
+    def test_one_sided_standard_line_is_not_safely_verified(self):
+        base={"player":"Test","team":"DEN","game":"Denver Nuggets @ Houston Rockets",
+              "start":"2026-11-10T01:30:00Z","stat":"Points",
+              "market_updated":"2026-11-09T21:00:00Z",
+              "pickem_tier":"standard","line":24.5,"direction":"More"}
+        selected,excluded=standard_points_offers([base])
+        self.assertEqual(selected,[])
+        self.assertEqual(excluded["INCOMPLETE_STANDARD_TWO_SIDED_LINE"],1)
 
     def test_stale_prizepicks_rejected(self):
         pack={"research_only":True,"production_modified":False,

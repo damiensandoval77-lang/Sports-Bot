@@ -61,12 +61,15 @@ jobs:
           r=json.load(open('docs/lagged_matchup_live_points.json'))
           assert r['status']=='LIVE_POINTS_CHALLENGER_UNCALIBRATED'
           assert r['points_only'] is True
+          assert r['market_line_policy']=='STANDARD_ONLY_BOTH_SIDES_VERIFIED_NO_ALTERNATES'
           assert r['live_model_replaced'] is False
           assert r['production_grades_modified'] is False
           assert r['probabilities_validated'] is False
           assert r['published_projections']>0, 'No verified points previews: do not erase previously published data'
           assert all(x['stat']=='PTS' and x['real_prizepicks_line'] and
                      x['calibrated_probability'] is None and x['production_replaced'] is False
+                     and x['pickem_tier']=='standard'
+                     and x['standard_line_two_sided_verified'] is True
                      and x['estimated_hit_chance']['draws']==20000
                      and x['estimated_hit_chance']['calibrated'] is False
                      and 0<=x['estimated_hit_chance']['estimated_over_probability']<=1
