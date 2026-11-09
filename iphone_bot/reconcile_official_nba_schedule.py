@@ -35,7 +35,10 @@ def reconcile(schedule,evidence):
         if not all(k) or k in known:raise ValueError("Duplicate or invalid games")
         known[k]=dict(g)
     additions=[]
+    active_dates=set(schedule.get("dates_eastern") or [])
     for src in evidence.get("fixtures",[]):
+        if src.get("date_eastern") not in active_dates:
+            continue
         fixture=dict(src)
         date=fixture.get("date_eastern")
         stamp=dt.datetime.fromisoformat(str(fixture.get("start")).replace("Z","+00:00"))
@@ -66,6 +69,8 @@ def reconcile(schedule,evidence):
     expectations=evidence.get("official_expected_daily_counts",{})
     daily={}
     for day,expected in expectations.items():
+        if day not in active_dates:
+            continue
         actual=sum(g.get("date_eastern")==day for g in games)
         daily[day]={"observed":actual,"official_expected":expected,
                     "complete":actual==expected}
