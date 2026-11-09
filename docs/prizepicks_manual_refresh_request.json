@@ -5,5 +5,14 @@
   "max_pages": 4,
   "expected_cost_ceiling_credits": 40,
   "topup_credit_handling": "Use provider-authorized existing top-up access, stop on provider quota response; never assume top-up balance from monthly header",
-  "no_real_money_wagers": true
+  "no_real_money_wagers": true,
+  "run_request": "2026-11-09-phase1-on-demand-reliability-check-2",
+  "expected_checks": [
+    "authenticated provider response",
+    "new observation timestamp",
+    "official 8-game matchup coverage",
+    "site board publication",
+    "AI comparison join",
+    "post-refresh production readiness"
+  ]
 }
