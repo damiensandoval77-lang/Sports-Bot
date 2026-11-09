@@ -6,6 +6,8 @@ on:
       - 'tests/test_nfl_private_sync.py'
       - 'scripts/audit_nfl_reliability.py'
       - 'tests/test_nfl_reliability.py'
+      - 'scripts/reconcile_nfl_picks.py'
+      - 'tests/test_nfl_public_grading.py'
       - '.github/workflows/nfl-private-sync.yml'
   push:
     branches: [main]
@@ -36,6 +38,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_nfl_private_sync.py' -v
           python -m unittest discover -s tests -p 'test_nfl_reliability.py' -v
+          python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
       - name: Copy verified private NFL snapshots, never reveal the token
         if: github.event_name != 'pull_request'
         env:
