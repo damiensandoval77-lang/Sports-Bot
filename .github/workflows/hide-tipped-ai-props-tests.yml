@@ -27,7 +27,7 @@ jobs:
           assert 'const frozen=archive.value.comparisons.filter' in script
           assert 'Date.parse(x.start)>Date.now()' in script
           assert 'setInterval(()=>{refreshOverview();renderAI();renderPrizePicksBoard();},30000);' in script
-          assert 'const upcoming=upcomingAIProps(ai)' in script
+          assert 'const priced=upcomingAIProps(ai)' in script
           print('Main AI cards, archive, counts and ongoing timer use upcoming-only forecasts.')
           PY
           node --check /tmp/nba-tipped-board.js
