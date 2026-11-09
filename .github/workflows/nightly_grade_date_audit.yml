@@ -1,0 +1,30 @@
+name: Phase 1 verify nightly paper grades by Eastern game date
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "iphone_bot/nightly_grade_date_audit.py"
+      - "iphone_bot/tests/test_nightly_grade_date_audit.py"
+      - ".github/workflows/nightly_grade_date_audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-grades:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Date-specific grading audit tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_nightly_grade_date_audit.py' -v
+      - name: Check November 8 real saved captures and grades (read-only)
+        run: python -m iphone_bot.nightly_grade_date_audit --date 2026-11-08
+      - name: Locate original PrizePicks grading jobs and final-boxscore sources
+        run: |
+          grep -R -l -E 'prizepicks_research_ledger.json|prizepicks_research_results.json' iphone_bot .github/workflows | head -35 || true
+          grep -R -l 'fetch_final_boxscores' .github/workflows | head -20 || true
