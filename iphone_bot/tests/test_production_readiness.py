@@ -72,7 +72,8 @@ class StrictProductionReadinessTests(unittest.TestCase):
         data=fixtures()
         data["verified_official_nba_fixtures.json"]={
             "official_expected_daily_counts":{"2026-11-09":8},
-            "fixtures":[{"id":"0022600205","date_eastern":"2026-11-09"}]}
+            "fixtures":[{"id":"0022600205","date_eastern":"2026-11-09",
+                         "away_abbreviation":"WAS","home_abbreviation":"DET"}]}
         result=check(NOW,data)
         self.assertEqual(result["status"],"BLOCKED")
         self.assertIn("OFFICIAL_NBA_SLATE_COUNT_MISMATCH",
