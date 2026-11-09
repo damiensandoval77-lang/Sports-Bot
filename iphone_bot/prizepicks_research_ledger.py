@@ -14,6 +14,7 @@ SOURCE=ROOT/"docs/prizepicks_ai_research.json"
 LEDGER=ROOT/"docs/prizepicks_research_ledger.json"
 RESULTS=ROOT/"docs/prizepicks_research_results.json"
 CURRENT=ROOT/"data/nba/current/current_games.json"
+OFFICIAL=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 SUPPORTED=("PTS","REB","AST","PRA")
 
 def utc(s):
@@ -66,7 +67,7 @@ def freeze(existing,source):
         except (TypeError,ValueError):continue
     return {"records":list(records.values()),"new":added}
 
-def settle(ledger,games,now=None):
+def settle(ledger,games,now=None,final_games=None):
     now=now or datetime.now(timezone.utc)
     games_by={}
     for g in games:
@@ -80,6 +81,26 @@ def settle(ledger,games,now=None):
                 games_by[key]=None
             elif key not in games_by:games_by[key]=g
         except (KeyError,TypeError):continue
+    # Official final boxscores lack the CSV provider's player ID. Match by
+    # COMPLETE normalized name + team + Eastern date + exact opponent, only
+    # for independently verified final sources. Ambiguity is never graded.
+    try:
+        from .paper_pick_pipeline import strict_player_name, expected_opponents
+    except ImportError:
+        from paper_pick_pipeline import strict_player_name, expected_opponents
+    official_by_name={}
+    for g in (final_games or []):
+        if (g.get("final_confirmed") is not True or
+            g.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL") or
+            g.get("dnp_final_verified") is True):
+            continue
+        k=(strict_player_name(g.get("player")),str(g.get("team","")).upper(),
+           str(g.get("date")),str(g.get("opponent","")).upper())
+        if not all(k):continue
+        if k in official_by_name:
+            official_by_name[k]=None
+        else:
+            official_by_name[k]=g
     out=[]
     for record in ledger.get("records",[]):
         row=dict(record)
@@ -95,15 +116,18 @@ def settle(ledger,games,now=None):
             continue
         date=start.astimezone(ZoneInfo("America/New_York")).date().isoformat()
         actual_row=games_by.get((str(row.get("player_id")),str(row.get("team")).upper(),date))
+        expected=expected_opponents(row.get("game"),row.get("team"))
+        if not expected:
+            out.append(row)
+            continue
+        if not actual_row:
+            k=(strict_player_name(row.get("player")),str(row.get("team","")).upper(),
+               date,expected[0])
+            actual_row=official_by_name.get(k)
         if not actual_row:
             out.append(row)
             continue
         # Verify the actual opponent matches the original, exact scheduled game.
-        try:
-            from .paper_pick_pipeline import expected_opponents
-        except ImportError:
-            from paper_pick_pipeline import expected_opponents
-        expected=expected_opponents(row.get("game"),row.get("team"))
         if not expected or str(actual_row.get("opponent","")).upper() not in expected:
             out.append(row)
             continue
@@ -120,7 +144,8 @@ def settle(ledger,games,now=None):
                      (prediction<line and value<line) else
             "LOSS" if prediction!=line else "NO_LEAN")
         row.update(status="SETTLED",actual=value,result=result,
-                   settlement_source="HISTORICAL_CSV_COMPLETED_GAME",
+                   settlement_source=(actual_row.get("source") if actual_row.get("final_confirmed") is True
+                                      else "HISTORICAL_CSV_COMPLETED_GAME"),
                    settled_game_date=date,
                    actual_minutes=float(actual_row["MIN"])
                       if actual_row.get("MIN") is not None and
@@ -222,7 +247,8 @@ def main():
     source=json.loads(SOURCE.read_text()) if SOURCE.exists() else {}
     frozen=freeze(old,source)
     games=json.loads(CURRENT.read_text()) if CURRENT.exists() else []
-    graded=settle(frozen,games)
+    official=json.loads(OFFICIAL.read_text()) if OFFICIAL.exists() else []
+    graded=settle(frozen,games,final_games=official)
     if (graded["records"]==old.get("records",[]) and LEDGER.exists() and
         RESULTS.exists() and
         json.loads(RESULTS.read_text()).get("selection_method")==
