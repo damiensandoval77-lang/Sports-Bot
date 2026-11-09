@@ -2,6 +2,11 @@ name: Independent NBA player boxscores
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "iphone_bot/refresh_nba_player_boxscores.py"
+      - ".github/workflows/independent_nba_player_boxscores.yml"
   schedule:
     - cron: "6,21,36,51 * * * *"
   pull_request:
