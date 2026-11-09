@@ -65,6 +65,13 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
         try:
             report = collect(days, reader=reader)
             rows = report.get("games", [])
+            expected = expected_matchups(schedule, days)
+            primary_matchups={(str(g.get("date_eastern")),str(g.get("game","")).strip().casefold())
+                              for g in rows if g.get("game")}
+            if expected and not expected.issubset(primary_matchups):
+                # ESPN returned HTTP 200, but dropped one or more verified
+                # NBA fixtures; do not let that masquerade as full coverage.
+                raise ValueError("Incomplete ESPN slate; invoke independent NBA fallback")
             source = "ESPN public scoreboard (not sportsbook or player prop data)"
             status = "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"
         except (OSError, TimeoutError, RuntimeError, ValueError, KeyError, TypeError) as primary_error:
@@ -152,8 +159,13 @@ def main():
         except RuntimeError:
             pass
         try:
-            return nba_season_schedule(dates)
-        except RuntimeError:
+            season=nba_season_schedule(dates)
+            season_matchups={(str(g.get("date_eastern")),str(g.get("game","")).strip().casefold())
+                             for g in season.get("events",[]) if g.get("game")}
+            if expected and not expected.issubset(season_matchups):
+                raise RuntimeError("NBA season schedule omitted officially verified game")
+            return season
+        except (RuntimeError,ValueError):
             # Last resort: a separately validated existing dated schedule.
             # This is useful for matchup tabs but never a fresh LIVE scoreboard.
             if expected and baseline and baseline.get("coverage_complete") is True:
