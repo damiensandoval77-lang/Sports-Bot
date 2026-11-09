@@ -85,15 +85,19 @@ def collect_boxscores(day, fetch=request_json, now=None, max_games=15):
                       "shortDetail": raw.get("gameStatusText"),
                       "clock": raw.get("gameClock"),
                       "observed_at": now.isoformat(), "player_rows": rows})
-    return {"status": "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+    count_active = sum(
+        1 for raw in scoreboard["games"]
+        if (parsed := parse_nba_game(raw, {day}))
+        and parsed["game_state"] in ("in", "post"))
+    complete = len(games) == count_active
+    return {"status": ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"
+                       if complete else "PARTIAL_NBA_PLAYER_BOXSCORES"),
             "captured_at": now.isoformat(), "date_eastern": day.isoformat(),
             "source": "NBA public liveData scoreboard and game boxscore",
             "games": games, "errors": failures,
             "coverage": {"observed_game_count": len(games),
-                         "active_or_final_count": sum(
-                             1 for raw in scoreboard["games"]
-                             if (parsed := parse_nba_game(raw, {day}))
-                             and parsed["game_state"] in ("in", "post"))},
+                         "active_or_final_count": count_active,
+                         "complete": complete},
             "not_sportsbook_lines": True, "not_ai_projections": True}
 
 def main():
