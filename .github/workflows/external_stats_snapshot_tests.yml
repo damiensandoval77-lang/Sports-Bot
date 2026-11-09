@@ -12,6 +12,8 @@ on:
       - 'iphone_bot/tests/test_external_stats_research_gate.py'
       - 'iphone_bot/expanded_matchup_research.py'
       - 'iphone_bot/tests/test_expanded_matchup_research.py'
+      - 'iphone_bot/verified_pregame_context.py'
+      - 'iphone_bot/tests/test_verified_pregame_context.py'
       - 'iphone_bot/NBASTUFFER_RESEARCH_INTEGRATION.md'
       - '.github/workflows/external_stats_snapshot_tests.yml'
   push:
@@ -52,6 +54,8 @@ jobs:
         run: python -m iphone_bot.external_stats_research_gate --paper docs/paper_results.json
       - name: Validate expanded opponent, minutes and injury isolation
         run: python -m unittest discover -s iphone_bot/tests -p 'test_expanded_matchup_research.py' -v
+      - name: Test verified official usage, injury and positional pretip gates
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_verified_pregame_context.py' -v
       - name: Confirm no provider requests in adapter
         run: |
           python - <<'PY'
