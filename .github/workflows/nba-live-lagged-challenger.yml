@@ -7,6 +7,11 @@ on:
       - 'iphone_bot/lagged_matchup_training.py'
       - '.github/workflows/nba-live-lagged-challenger.yml'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - '.github/workflows/nba-live-lagged-challenger.yml'
   schedule:
     - cron: '20 0,17,20,22,23 * * *'
 permissions:
