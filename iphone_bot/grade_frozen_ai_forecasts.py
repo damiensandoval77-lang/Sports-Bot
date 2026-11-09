@@ -148,6 +148,11 @@ def report(day,predictions,graded,fetch_report=None,now=None):
         "new_grades":graded["new_grades"],
         "by_stat":stat_metrics,
         "ungraded_by_game":dict(sorted(Counter(p["game"] for p in pending).items())),
+        "ungraded_distinct_player_names_by_game":{
+            game: sorted({p["player"] for p in pending if p["game"]==game})
+            for game in sorted({p["game"] for p in pending})},
+        "ungraded_distinct_player_markets":len({
+            (p["game"],p["player_id"],p["stat"]) for p in pending}),
         "final_feed":fetch_report or {},
         "is_betting_hit_rate":False,
         "note":"Forecast-vs-actual absolute error only; no market line or bet direction. Missing players/DNP are not assigned zero."
