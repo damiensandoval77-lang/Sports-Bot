@@ -61,6 +61,24 @@ class AlertsTests(unittest.TestCase):
           NOW,official("OUT"),{},[])
         self.assertEqual(x["status"],"PLAYER_REPORTED_OUT_SUPPRESS_ALL_MARKETS")
 
+    def test_complete_reciprocal_player_games_enable_teammate_reprojection(self):
+        rows=[]
+        for n in range(6):
+            day="2026-10-"+str(21+n).zfill(2)
+            for i in range(8):
+                pid="123" if i==0 else str(200+i)
+                rows.append({"date":day,"team":"LAL","opponent":"ATL",
+                  "id":pid,"MIN":30. if i==0 and n>=3 else 25. if i==0 else 17.})
+                rows.append({"date":day,"team":"ATL","opponent":"LAL",
+                  "id":str(300+i),"MIN":20.})
+            if n<3:
+                rows.append({"date":day,"team":"LAL","opponent":"ATL",
+                             "id":"1630559","MIN":28.})
+        shift=minutes_shift("123","1630559","LAL","2026-11-09",rows)
+        self.assertIsNotNone(shift)
+        self.assertGreater(shift,1.0)
+        self.assertLessEqual(shift,1.1)
+
     def test_absent_lineup_splits_no_fabrication(self):
         self.assertIsNone(minutes_shift("123","456","LAL","2026-11-09",[]))
         a=player_alerts(post("Austin Reaves (illness) ruled out Monday."),
