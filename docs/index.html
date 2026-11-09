@@ -438,6 +438,55 @@ function verifiedQuickPrizePicksJoins(source,forecast,roster,now=Date.now()){
  }
  return matched;
 }
+// Accept the already-published and independently identity-checked PrizePicks × AI
+// snapshot. Recheck individual quote age and frozen model source before displaying.
+function verifiedPublishedPrizePicksJoins(snapshot,roster,now=Date.now()){
+ if(snapshot?.status!=="FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS"||
+    snapshot.research_only!==true||
+    !isRecent(snapshot.generated_at,1.5)||
+    !isRecent(snapshot.provider_generated_at,1.5)||
+    !isRecent(snapshot.model_generated_at,3)||
+    !Array.isArray(snapshot.comparisons)||!Array.isArray(roster))return [];
+ const rosterIds=new Map(),ambiguous=new Set();
+ for(const p of roster){
+  if(!p?.player||!p?.team||p.player_id==null)continue;
+  const key=norm(p.player)+"|"+p.team;
+  if(rosterIds.has(key))ambiguous.add(key);
+  else rosterIds.set(key,String(p.player_id));
+ }
+ const matched=[],seen=new Set();
+ for(const p of snapshot.comparisons){
+  if(!p||p.research_only!==true||p.source!=="independent_prizepicksapi_com"||
+     !p.player||!p.player_id||!p.team||!p.game||!p.start||
+     !["PTS","REB","AST","PRA"].includes(p.stat)||
+     typeof p.line!=="number"||!Number.isFinite(p.line)||p.line<0||p.line>=250||
+     typeof p.projection!=="number"||!Number.isFinite(p.projection)||
+     p.projection<0||p.projection>250||!p.provider_projection_id||
+     !(p.more_tier||p.less_tier))continue;
+  const identity=norm(p.player)+"|"+p.team;
+  if(ambiguous.has(identity)||rosterIds.get(identity)!==String(p.player_id))continue;
+  const observed=Date.parse(p.observed_at),tip=Date.parse(p.start),
+        generated=Date.parse(p.model_generated_at);
+  if(!Number.isFinite(observed)||!Number.isFinite(tip)||!Number.isFinite(generated)||
+     observed>now+600000||now-observed>5400000||
+     tip<=now||observed>=tip||generated>=tip||
+     generated>now+600000||now-generated>10800000)continue;
+  const key=[p.provider_projection_id,p.player_id,p.game,p.stat,p.line].join("|");
+  if(seen.has(key))continue;
+  seen.add(key);
+  matched.push({
+   ...p,combined_projection:p.projection,combined_model_count:1,
+   sportsbook:"PrizePicks",line_type:"PRIZEPICKS_PICKEM_LINE",
+   book_quotes:[],line_book_count:0,market_updated:p.observed_at,
+   combined_difference:p.difference,quick_research_only:true,
+   confidence_percent:null,estimated_ev:null,
+   reliability_screen:{status:"RESEARCH_ONLY",validated:false,side:null,
+    blockers:["NO_VERIFIED_COMBINED_OR_INJURY_ADJUSTED_MODEL"],
+    cautions:["NO_CALIBRATED_HIT_PERCENTAGE"]}
+  });
+ }
+ return matched;
+}
 function groupAI(rows){const groups=new Map();for(const p of rows){if(!p||!Number.isFinite(Number(p.line))||!Number.isFinite(Number(p.projection))||!p.player||!p.stat)continue;
 const id=[norm(p.player),p.team,p.game,p.start,p.stat,p.line].join("|");
 if(!groups.has(id))groups.set(id,{...p,books:[]});
@@ -2425,7 +2474,7 @@ async function refresh(){
  }).catch(()=>{$("upgrade-research-summary").textContent=
    "Research report not published yet. Combined AI and current estimates unchanged.";});
 
- const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json")]);
+ const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades,publishedQuick]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json"),fetchJSON("ai_prizepicks_quick_join.json")]);
 if(f.status==="fulfilled"&&f.value.season==="2026-27"&&Array.isArray(f.value.players)){form=f.value.players;formFresh=isRecent(f.value.updated_at,48);$("form-source").textContent="2026–27 observed player games · source dated "+(f.value.source_version||"unknown")+(formFresh?"":" · CHECK FRESHNESS");}
 else {form=[];formFresh=false}
 // Prefer the smaller full-slate feed on iPhone. Keep the legacy raw file
@@ -2510,6 +2559,18 @@ if(ai.length===0&&archive.status==="fulfilled"&&
      aiArchiveMode=false;window.lastAI=prizepicksAI.value.generated_at;
    }
  }
+// Independent no-cost publisher already validated exact roster/game/source
+// identities. Use its saved comparisons before an in-browser reconstruct.
+if(ai.length===0&&publishedQuick.status==="fulfilled"&&formFresh){
+ const joined=verifiedPublishedPrizePicksJoins(publishedQuick.value,form);
+ if(joined.length){
+  ai=groupAI(joined);
+  aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,
+   quick_independent_join:true,research_only:true,verified_current_matchups:true};
+  aiFresh=true;aiArchiveMode=false;
+  window.lastAI=publishedQuick.value.generated_at;
+ }
+}
 // The full two-model workflow can be empty even when genuine player lines
 // and independent AI forecasts exist. Match both directly, with no fake
 // simulated probability or false wager approval.
