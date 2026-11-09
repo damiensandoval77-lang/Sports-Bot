@@ -67,6 +67,16 @@ def check(now,files):
         issues.append("NO_TODAY_GAMES_IN_SCHEDULE")
     if schedule.get("total_games")!=len(games):
         issues.append("SCHEDULE_COUNT_MISMATCH")
+    reference=load("verified_official_nba_fixtures.json")
+    expected=(reference.get("official_expected_daily_counts") or {}).get(day)
+    if isinstance(expected,int) and len(todays)!=expected:
+        issues.append("OFFICIAL_NBA_SLATE_COUNT_MISMATCH")
+    if isinstance(expected,int):
+        official_ids={str(g.get("id")) for g in reference.get("fixtures",[])
+                      if g.get("date_eastern")==day}
+        known_ids={str(g.get("id")) for g in todays}
+        if not official_ids.issubset(known_ids):
+            issues.append("OFFICIAL_NBA_MATCHUP_MISSING")
     add("schedule","READY" if not issues else "BLOCKED",issues,age)
 
     ai=inputs["ai_forecasts"][0]
@@ -128,6 +138,12 @@ def check(now,files):
     age,issues=common("scoreboard")
     if not isinstance(sb.get("games"),list) or not sb.get("games"):
         issues.append("NO_SCOREBOARD_GAMES")
+    scoreboard_keys={(g.get("date_eastern"),g.get("away_abbreviation"),g.get("home_abbreviation"))
+                     for g in (sb.get("games") or []) if isinstance(g,dict)}
+    scheduled_keys={(g.get("date_eastern"),g.get("away_abbreviation"),g.get("home_abbreviation"))
+                    for g in todays}
+    if scheduled_keys-scoreboard_keys:
+        issues.append("SCOREBOARD_MISSING_SCHEDULED_MATCHUPS")
     if in_progress and sb.get("is_live_score_source") is not True:
         issues.append("SCHEDULE_FALLBACK_NOT_LIVE_SCORES")
     if in_progress:
@@ -191,7 +207,7 @@ def main():
     names=["nba_schedule.json","ai_projection_fallback.json",
            "nba_scoreboard_independent.json","prizepicks_site.json",
            "nightly_grade_health.json","nba_player_tracking_independent.json",
-           "data.json","ai_comparisons.json"]
+           "data.json","ai_comparisons.json","verified_official_nba_fixtures.json"]
     inputs={}
     for name in names:
         path=ROOT/"docs"/name
