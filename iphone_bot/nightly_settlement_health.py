@@ -15,7 +15,7 @@ ROOT=Path(__file__).resolve().parents[1]
 ET=ZoneInfo("America/New_York")
 OUTPUT=ROOT/"docs/nightly_grade_health.json"
 
-def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12):
+def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12,ai_grades=None):
     if now.tzinfo is None:
         raise ValueError("UTC-aware clock required")
     day=(now.astimezone(ET).date()-dt.timedelta(days=1)).isoformat()
@@ -45,6 +45,17 @@ def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12):
         status="NO_PRIZEPICKS_LOCKED_RECORDS"
     else:
         status="NO_LOCKED_RECORDS_FOR_TARGET_DATE"
+    # This is an independent accuracy workflow, not a sportsbook settlement.
+    ai = ai_grades or {}
+    matching_ai = ai if ai.get("game_date_eastern")==day else {}
+    if matching_ai:
+        ai_status=matching_ai.get("status","UNKNOWN")
+        ai_saved=matching_ai.get("recorded_pregame_forecasts")
+        ai_graded=matching_ai.get("graded")
+        ai_missing=matching_ai.get("ungraded")
+    else:
+        ai_status="AI_FORECAST_GRADE_REPORT_NOT_PUBLISHED_FOR_DAY"
+        ai_saved=ai_graded=ai_missing=None
     return {
         "checked_at":now.isoformat(),
         "game_date_eastern":day,
@@ -60,6 +71,19 @@ def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12):
         "paper_pending":result["pending"],
         "paper_overdue":len(overdue_paper),
         "unpriced_forecasts_separate":result["unpriced_pregame_archive_forecasts"],
+        "prizepicks_scope_status":status,
+        "ai_forecast_accuracy_status":ai_status,
+        "ai_forecasts_recorded":ai_saved,
+        "ai_forecasts_graded":ai_graded,
+        "ai_forecasts_ungraded":ai_missing,
+        "ai_forecasts_fully_graded":bool(matching_ai and ai_saved and ai_missing==0),
+        "overall_grading_status":(
+            "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR"
+            if status=="ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED"
+            and matching_ai and ai_saved and ai_missing==0
+            else "PRIZEPICKS_RESOLVED_AI_GRADING_INCOMPLETE"
+            if status=="ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED"
+            else status),
         "capture_missing":not (pp_rows or paper_rows),
         "complete_slate_not_guaranteed":True,
         "notice":"Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
@@ -74,7 +98,8 @@ def main():
                   load("docs/prizepicks_research_ledger.json"),
                   load("docs/current_form.json"),
                   load("docs/ai_no_line_pregame_archive.json"),
-                  load("docs/prizepicks_research_results.json"))
+                  load("docs/prizepicks_research_results.json"),
+                  ai_grades=load("docs/ai_forecast_grade_status.json"))
     OUTPUT.parent.mkdir(parents=True,exist_ok=True)
     OUTPUT.write_text(json.dumps(report,indent=2)+"\n")
     print("NIGHTLY GRADE HEALTH:",json.dumps(report,sort_keys=True))
