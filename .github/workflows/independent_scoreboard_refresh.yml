@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "iphone_bot/refresh_independent_scoreboard.py"
+      - "docs/nba_schedule.json"
+      - "docs/verified_official_nba_fixtures.json"
       - ".github/workflows/independent_scoreboard_refresh.yml"
   schedule:
     - cron: "8,28,48 * * * *"
