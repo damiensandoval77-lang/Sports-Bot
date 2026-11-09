@@ -2199,7 +2199,7 @@ async function refreshScoresOnly(){
  // snapshots retain existing fixtures and fall back to the other sources.
  try{
   const independent=await fetchJSON("nba_scoreboard_independent.json");
-  if(independent?.status==="OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"&&
+  if(["OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES","NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"].includes(independent?.status)&&
      Array.isArray(independent.games)&&isRecent(independent.generated_at,2)){
    nbaSchedule=mergeScoreSchedules(nbaSchedule,{
     ...independent,
