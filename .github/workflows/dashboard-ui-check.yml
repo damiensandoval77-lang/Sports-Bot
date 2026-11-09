@@ -7,6 +7,7 @@ on:
       - 'docs/ai_no_line_pregame_archive.json'
       - 'docs/ai_projection_fallback.json'
       - 'iphone_bot/tests/test_projection_delivery_smoke.py'
+      - 'iphone_bot/tests/test_quick_prizepicks_join.cjs'
       - '.github/workflows/dashboard-ui-check.yml'
   workflow_dispatch:
 permissions:
@@ -19,6 +20,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify real AI forecasts render without a sportsbook quote
         run: python -m unittest discover -s iphone_bot/tests -p 'test_projection_delivery_smoke.py' -v
+      - name: Verify fresh authentic PrizePicks line + AI direction fallback
+        run: node --test iphone_bot/tests/test_quick_prizepicks_join.cjs
       - name: Check JavaScript and horizontal game strip
         run: |
           python - <<'PY'
