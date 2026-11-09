@@ -66,7 +66,7 @@ class PublicNFLGradeTests(unittest.TestCase):
     def test_repeat_archive_and_grading_are_idempotent(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
-            all_games=[dict(game_id=f"g{i}",week=10,status="scheduled",
+            all_games=[dict(game_id=f"g{i+100}",week=10,status="scheduled",
                   kickoff_utc="2026-11-22T18:00:00+00:00",
                   home="BUF",away="MIA",home_score=None,away_score=None)
                   for i in range(272)]
