@@ -13,6 +13,8 @@ on:
     paths:
       - 'iphone_bot/grade_frozen_ai_forecasts.py'
       - 'iphone_bot/tests/test_grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/verified_prizepicks_inactives.py'
+      - 'docs/verified_prizepicks_inactive_2026-11-08.json'
       - '.github/workflows/grade_frozen_ai_forecasts.yml'
 
 permissions:
@@ -38,6 +40,7 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
           python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
       - name: Grade frozen actual AI forecasts independently of PrizePicks
         if: github.event_name != 'pull_request'
         id: grade

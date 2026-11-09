@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
-from iphone_bot.verified_prizepicks_inactives import verified_inactive_rows, FIXTURE
+from iphone_bot.verified_prizepicks_inactives import verified_inactive_rows, verified_inactive_subset, FIXTURE
 from iphone_bot.prizepicks_research_ledger import settle
 
 FIX=json.loads(FIXTURE.read_text())
@@ -45,6 +45,13 @@ class VerifiedNov8InactiveTests(unittest.TestCase):
         self.assertEqual([g["line"] for g in graded],[20.5]*4)
         self.assertTrue(all(g["actual"] is None for g in graded))
         self.assertTrue(all(g["combined_projection"]==23.7 for g in graded))
+
+    def test_partial_official_slate_confirms_only_that_games_inactive(self):
+        # The AI archive includes UTA/MIN and MIA/SAC; not every fixture game.
+        subset=[g for g in final_game_headers() if g["team"] in ("UTA","SAC")]
+        rows=verified_inactive_subset(subset)
+        self.assertEqual({r["player"] for r in rows},{"Lauri Markkanen","Domantas Sabonis"})
+        self.assertTrue(all(r["source_game_id"] in {g["source_game_id"] for g in subset} for r in rows))
 
     def test_does_not_void_if_verified_game_is_missing(self):
         with self.assertRaises(ValueError):
