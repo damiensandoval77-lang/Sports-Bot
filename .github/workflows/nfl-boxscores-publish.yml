@@ -35,9 +35,11 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_nfl_reconciliation.py' -v
       - name: Refresh the verified full-season schedule and final scores
         run: python scripts/export_nfl_schedule.py
-      - name: Export finalized player stats
+      - name: Export finalized player stats without risking last-good data
+        id: final_export
+        continue-on-error: true
         run: python scripts/export_nfl_boxscores.py
-      - name: Audit every finalized game and identify missing or incomplete boxscores
+      - name: Audit every finalized game even if nflverse export failed
         run: python scripts/reconcile_nfl_boxscores.py
       - name: Commit verified records
         shell: bash
@@ -50,3 +52,8 @@ jobs:
             git pull --rebase origin main
             git push origin HEAD:main
           fi
+      - name: Keep the workflow visibly failed if data export failed
+        if: steps.final_export.outcome == 'failure'
+        run: |
+          echo "::error::NFL boxscore source refresh failed. Previous verified results are preserved and reconciliation was run."
+          exit 1
