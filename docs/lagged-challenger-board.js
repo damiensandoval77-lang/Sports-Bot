@@ -15,7 +15,9 @@ function render(data){
  board.replaceChildren();
  const now=Date.now(),generated=Date.parse(data?.generated_at);
  const valid=data?.status==="LIVE_POINTS_CHALLENGER_UNCALIBRATED" &&
-   data?.points_only===true && data?.live_model_replaced===false &&
+   data?.points_only===true &&
+   data?.market_line_policy==="STANDARD_ONLY_BOTH_SIDES_VERIFIED_NO_ALTERNATES" &&
+   data?.live_model_replaced===false &&
    data?.probabilities_validated===false &&
    Number.isFinite(generated) && generated<=now+600000 &&
    now-generated<10800000 && Array.isArray(data?.predictions);
@@ -26,6 +28,7 @@ function render(data){
  const items=data.predictions.filter(x=>{
    const tip=Date.parse(x.start),quoted=Date.parse(x.market_updated);
    return x.stat==="PTS"&&x.real_prizepicks_line===true &&
+     x.pickem_tier==="standard"&&x.standard_line_two_sided_verified===true &&
      x.research_only===true&&x.production_replaced===false &&
      x.calibrated_probability===null &&
      typeof x.projection==="number"&&Number.isFinite(x.projection)&&
@@ -35,7 +38,7 @@ function render(data){
  items.sort((a,b)=>Date.parse(a.start)-Date.parse(b.start) ||
    Math.abs(b.projection-b.line)-Math.abs(a.projection-a.line));
  const limited=items.slice(0,120);
- status.textContent=items.length+" verified pregame points comparisons · "+
+ status.textContent=items.length+" verified STANDARD PrizePicks points comparisons · "+
    "new model per-line simulated chances are experimental, not verified hit rates. "+
    (items.length>limited.length?"Showing first "+limited.length+".":"");
  if(!limited.length){
@@ -53,7 +56,7 @@ function render(data){
    const values=el("div","vals");
    for(const [caption,value] of [
      ["New projection",x.projection.toFixed(1)],
-     ["PrizePicks line",x.line.toFixed(1)],
+     ["PrizePicks STANDARD",x.line.toFixed(1)],
      ["Projection − line",(x.projection-x.line>0?"+":"")+(x.projection-x.line).toFixed(1)]
    ]){
      const cell=el("div","val");
