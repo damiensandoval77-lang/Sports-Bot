@@ -91,3 +91,16 @@ test("dashboard fetches published quick join before trying to reconstruct manual
  const rebuildUse=html.indexOf("verifiedQuickPrizePicksJoins(pp.value,noLineForecast,form)");
  assert.ok(publishedUse>0&&rebuildUse>publishedUse);
 });
+
+test("verified fresh PrizePicks takes priority over nonempty legacy AI sportsbook cards",()=>{
+ assert.ok(html.includes('if(publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(!html.includes('if(ai.length===0&&publishedQuick.status==="fulfilled"&&formFresh){'));
+ const load=html.indexOf('if(publishedQuick.status==="fulfilled"&&formFresh){');
+ const display=html.indexOf('ai=groupAI(joined);',load);
+ const check=html.indexOf('if(joined.length){',load);
+ assert.ok(check>load&&display>check,"Only actual verified joined rows replace legacy board");
+ assert.ok(html.indexOf('if(ai.length===0&&pp.status==="fulfilled"&&formFresh){',display)>display,
+           "Browser-side quote matching is still final fallback");
+ assert.ok(html.includes('aiMetadata={is_prizepicks:true,no_sportsbook_prices:true,'));
+ assert.ok(html.includes('quick_independent_join:true,research_only:true'));
+});
