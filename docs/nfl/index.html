@@ -65,8 +65,87 @@ function render(){
 document.querySelectorAll(".tab").forEach(button=>button.onclick=()=>{state.tab=button.dataset.tab;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===button));for(const id of ["board","live","graded"])document.getElementById(id).classList.toggle("hidden",id!==state.tab)});
 document.getElementById("weekfilter").addEventListener("change",e=>{state.week=e.target.value;state.game="";render()});
 for(const id of ["search","statfilter","kind"])document.getElementById(id).addEventListener(id==="search"?"input":"change",render);
-async function init(){try{const manifest=await (await fetch("./data/latest_2026.json?t="+Date.now(),{cache:"no-store"})).json();const parts=await Promise.all(manifest.files.map(name=>getCSV("./data/"+name)));const rows=parts.flat();
-try{const reply=await fetch("./data/schedule_2026.json?t="+Date.now(),{cache:"no-store"});if(!reply.ok)throw Error("Schedule "+reply.status);const schedule=await reply.json();if(schedule.game_count!==272||schedule.games.length!==272)throw Error("Incomplete NFL schedule");state.schedule=schedule.games;state.week=currentWeek(state.schedule);document.getElementById("weekfilter").innerHTML=[...new Set(state.schedule.map(g=>g.week))].sort((a,b)=>a-b).map(w=>'<option value="'+w+'">Week '+w+'</option>').join("");document.getElementById("weekfilter").value=state.week;}catch(scheduleError){console.error("Schedule unavailable:",scheduleError);state.schedule=[];state.week="";document.getElementById("weekfilter").innerHTML='<option value="">Schedule not published</option>';}
-if(!manifest.files.length||rows.length!==manifest.rows)throw Error("Snapshot chunks incomplete; refusing partial data");const latest=[...new Set(rows.map(r=>r.captured_at))].sort().at(-1);state.lines=rows.filter(r=>r.captured_at===latest);document.getElementById("freshness").textContent=latest?"Snapshot "+latest:"No snapshots";document.getElementById("allcount").textContent=state.lines.length;document.getElementById("gamecount").textContent=state.schedule.length||new Set(state.lines.map(r=>r.game_id)).size;const stats=[...new Set(state.lines.map(r=>r.stat))].sort();document.getElementById("statfilter").innerHTML='<option value="">All markets</option>'+stats.map(s=>'<option>'+esc(s)+'</option>').join("");const ageHours=(Date.now()-new Date(latest).getTime())/3600000;const stale=!Number.isFinite(ageHours)||ageHours>6||ageHours<-.5;const grading=manifest.pipeline_health?.grading;const healthWarnings=manifest.health?.warnings||[];const statusEl=document.getElementById("status");statusEl.textContent=stale?"STALE SNAPSHOT":"SAVED DATA";statusEl.classList.toggle("ok",!stale);statusEl.classList.toggle("warn",stale);const details=["Saved NFL prediction snapshot; not live sportsbook odds. Model confidence is uncalibrated."];if(stale)details.push("CAUTION: Capture is over 6 hours old or has an invalid timestamp. Do not treat these as current PrizePicks lines.");if(healthWarnings.length)details.push(healthWarnings.join(" | "));if(!state.schedule.length)details.push("WARNING: Full NFL schedule unavailable; games may be missing from this view.");else {const matches=scheduledWeekGames();const withProps=matches.filter(g=>state.lines.some(r=>r.game_id===g.game_id));details.push("Week "+state.week+": "+matches.length+" scheduled games, "+withProps.length+" with captured props. Missing props do not remove games.");}if(grading?.missing_lines>0)details.push(grading.missing_lines+" final-game lines need grading review.");document.getElementById("notice").textContent=details.join(" ");try{state.grades=await getCSV("./data/pp_graded_2026.csv")}catch(e){state.grades=[]}document.getElementById("gradecount").textContent=state.grades.length;render()}catch(e){document.getElementById("status").textContent="DATA UNAVAILABLE";document.getElementById("notice").textContent="No published NFL snapshot is available. The interface is ready, but the data export needs to run first.";document.getElementById("cards").innerHTML='<div class="empty">Data connection unavailable. No fake predictions are shown.</div>';document.getElementById("allcount").textContent="0";document.getElementById("gamecount").textContent="0";document.getElementById("gradecount").textContent="0";console.error("NFL data load:",e.message)}}
+async function loadSeasonSchedule(){
+ let games=[];
+ try {
+   const reply=await fetch("./data/schedule_2026.json?t="+Date.now(),{cache:"no-store"});
+   if(!reply.ok)throw Error("Saved schedule: HTTP "+reply.status);
+   const saved=await reply.json();
+   if(saved.game_count!==272||saved.games.length!==272)throw Error("Incomplete saved schedule");
+   games=saved.games;
+ }catch(savedError){
+   // Independently published league schedule, not the sportsbook odds feed.
+   // This also works if GitHub Actions fails to refresh the local JSON file.
+   const raw=await fetch("https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv",{cache:"no-store"});
+   if(!raw.ok)throw Error("Public NFL schedule unavailable: HTTP "+raw.status);
+   const rows=parseCSV(await raw.text());
+   const relevant=rows.filter(x=>x.season==="2026"&&(x.game_type||x.season_type)==="REG");
+   if(relevant.length!==272||new Set(relevant.map(x=>x.game_id)).size!==272)
+     throw Error("Refusing incomplete public NFL schedule: "+relevant.length+"/272");
+   games=relevant.map(g=>{
+     const day=new Date(g.gameday+"T18:00:00Z");
+     const part=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",timeZoneName:"shortOffset"}).formatToParts(day).find(x=>x.type==="timeZoneName");
+     const delta=Number((part?.value||"GMT-5").replace("GMT",""));
+     const offset=(delta<0?"-":"+")+String(Math.abs(delta)).padStart(2,"0")+":00";
+     const when=new Date(g.gameday+"T"+g.gametime+":00"+offset).toISOString();
+     const away=g.away_score===""?null:Number(g.away_score),home=g.home_score===""?null:Number(g.home_score);
+     const final=Number.isFinite(away)&&Number.isFinite(home)&&away!==null&&home!==null;
+     return {game_id:g.game_id,season:2026,week:Number(g.week),kickoff_utc:when,
+       away:g.away_team,home:g.home_team,away_score:away,home_score:home,
+       status:final?"final":Date.parse(when)<Date.now()?"started_unconfirmed":"scheduled",
+       has_lines:false,has_projections:false};
+   }).sort((a,b)=>a.week-b.week||Date.parse(a.kickoff_utc)-Date.parse(b.kickoff_utc));
+ }
+ state.schedule=games;
+ state.week=currentWeek(games);
+ document.getElementById("weekfilter").innerHTML=[...new Set(games.map(g=>g.week))].sort((a,b)=>a-b).map(w=>'<option value="'+w+'">Week '+w+'</option>').join("");
+ document.getElementById("weekfilter").value=state.week;
+ document.getElementById("gamecount").textContent=games.length;
+}
+async function init(){
+ let scheduleReady=false;
+ try{await loadSeasonSchedule();scheduleReady=true}
+ catch(error){console.error("NFL schedule error:",error);document.getElementById("weekfilter").innerHTML='<option value="">Schedule unavailable</option>'}
+ try {
+   const response=await fetch("./data/latest_2026.json?t="+Date.now(),{cache:"no-store"});
+   if(!response.ok)throw Error("Snapshot HTTP "+response.status);
+   const manifest=await response.json();
+   const parts=await Promise.all(manifest.files.map(name=>getCSV("./data/"+name)));
+   const rows=parts.flat();
+   if(!manifest.files.length||rows.length!==manifest.rows)throw Error("Incomplete snapshot chunks");
+   const latest=[...new Set(rows.map(r=>r.captured_at))].sort().at(-1);
+   state.lines=rows.filter(r=>r.captured_at===latest);
+   document.getElementById("freshness").textContent=latest?"Snapshot "+latest:"No snapshots";
+   document.getElementById("allcount").textContent=state.lines.length;
+   if(!scheduleReady)document.getElementById("gamecount").textContent=new Set(state.lines.map(r=>r.game_id)).size;
+   const stats=[...new Set(state.lines.map(r=>r.stat))].sort();
+   document.getElementById("statfilter").innerHTML='<option value="">All markets</option>'+stats.map(x=>'<option>'+esc(x)+'</option>').join("");
+   const ageHours=(Date.now()-new Date(latest).getTime())/3600000;
+   const stale=!Number.isFinite(ageHours)||ageHours>6||ageHours<-.5;
+   const grading=manifest.pipeline_health?.grading;
+   const healthWarnings=manifest.health?.warnings||[];
+   const badge=document.getElementById("status");
+   badge.textContent=stale?"STALE PROPS":"SAVED PROPS";
+   badge.classList.toggle("ok",!stale);badge.classList.toggle("warn",stale);
+   const details=["The full 2026 NFL schedule is independent of PrizePicks odds. Model confidence is uncalibrated."];
+   if(stale)details.push("WARNING: Saved betting lines are over 6 hours old; do not assume they are still available.");
+   if(healthWarnings.length)details.push(healthWarnings.join(" | "));
+   if(grading?.missing_lines>0)details.push(grading.missing_lines+" final-game lines need grading review.");
+   if(scheduleReady){const games=scheduledWeekGames(),covered=games.filter(g=>state.lines.some(r=>r.game_id===g.game_id));details.push("Week "+state.week+": "+games.length+" games scheduled, "+covered.length+" games with captured props.");}
+   else details.push("WARNING: NFL schedule could not be verified; showing available prop matchups only.");
+   document.getElementById("notice").textContent=details.join(" ");
+   try{state.grades=await getCSV("./data/pp_graded_2026.csv")}catch(e){state.grades=[]}
+   document.getElementById("gradecount").textContent=state.grades.length;
+ }catch(error){
+   document.getElementById("status").textContent=scheduleReady?"SCHEDULE ONLY":"DATA UNAVAILABLE";
+   document.getElementById("notice").textContent=scheduleReady?
+     "All 272 scheduled NFL regular-season games are available. The prop feed is unavailable, so no unverified predictions are displayed.":
+     "Neither the NFL schedule nor the saved betting lines could be loaded.";
+   document.getElementById("allcount").textContent="0";
+   document.getElementById("gradecount").textContent="0";
+   console.error("NFL prop data load:",error);
+ }
+ render();
+}
 init();
 </script></body></html>
