@@ -93,9 +93,9 @@ test("dashboard fetches published quick join before trying to reconstruct manual
 });
 
 test("verified fresh PrizePicks takes priority over nonempty legacy AI sportsbook cards",()=>{
- assert.ok(html.includes('if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(html.includes('if(publishedQuick.status==="fulfilled"&&formFresh){'));
  assert.ok(!html.includes('if(ai.length===0&&publishedQuick.status==="fulfilled"&&formFresh){'));
- const load=html.indexOf('if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){');
+ const load=html.indexOf('if(publishedQuick.status==="fulfilled"&&formFresh){');
  const display=html.indexOf('ai=groupAI(joined);',load);
  const check=html.indexOf('if(joined.length){',load);
  assert.ok(check>load&&display>check,"Only actual verified joined rows replace legacy board");
@@ -128,7 +128,8 @@ test("the raw MORE/LESS line comparison isn't mislabeled as a validated model pa
 test("a genuine trained 20K PrizePicks board is never replaced by no-sim lightweight fallback",()=>{
  assert.ok(html.includes("const trainedPrizePicksWithSim=aiMetadata?.is_prizepicks===true&&"));
  assert.ok(html.includes("ai.some(p=>combinedSimAvailable(p))"));
- assert.ok(html.includes('if(!trainedPrizePicksWithSim&&publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(html.includes('if(publishedQuick.status==="fulfilled"&&formFresh){'));
+ assert.ok(html.includes('if(trainedPrizePicksWithSim){'));
  assert.ok(html.includes('sim?.simulation_count===20000'));
  assert.ok(html.includes('sim?.calibrated===false'));
 });
@@ -136,4 +137,13 @@ test("default AI Board never displays tomorrow when today's published PrizePicks
  assert.ok(html.includes("const board=gameFilter?allBoard:todayBoard;"));
  assert.ok(html.includes("const todayBoard=allBoard.filter(p=>easternGameDay(p.start)===today)"));
  assert.ok(html.includes('(!gameFilter?easternGameDay(p.start)===today:p.game===gameFilter)'));
+});
+
+test("full PrizePicks simulations survive while quick published cards fill absent scheduled games",()=>{
+ assert.ok(html.includes("if(trainedPrizePicksWithSim){"));
+ assert.ok(html.includes("const trainedGames=new Set(ai.map(p=>p.game))"));
+ assert.ok(html.includes("const uncovered=joined.filter(p=>!trainedGames.has(p.game))"));
+ assert.ok(html.includes("if(uncovered.length)ai=[...ai,...groupAI(uncovered)]"));
+ assert.ok(html.includes('if(p.quick_research_only){'));
+ assert.ok(html.includes('if(p.quick_research_only)'));
 });

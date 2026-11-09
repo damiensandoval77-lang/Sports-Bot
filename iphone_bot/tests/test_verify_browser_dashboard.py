@@ -13,6 +13,15 @@ class BrowserCardProbeTests(unittest.TestCase):
         self.assertTrue(report["browser_render_verified"])
         self.assertEqual(report["missing_official_games"],[])
 
+    def test_visible_authenticated_lines_but_no_20k_simulations_fails(self):
+        counts={game:1 for game in EXPECTED}
+        bad=assess(300,["Real PP line"],list(EXPECTED),[],NOW,counts,simulation_count=0)
+        self.assertEqual(bad["status"],"DEGRADED")
+        self.assertIn("NO_RENDERED_TRAINED_20K_SIMULATIONS",bad["reasons"])
+        good=assess(300,["Real PP line"],list(EXPECTED),[],NOW,counts,simulation_count=20)
+        self.assertEqual(good["status"],"READY")
+        self.assertEqual(good["rendered_20k_simulation_cards"],20)
+
     def test_no_cards_is_not_equivalent_to_loading_page(self):
         report=assess(0,[],list(EXPECTED),[],NOW)
         self.assertEqual(report["status"],"DEGRADED")
