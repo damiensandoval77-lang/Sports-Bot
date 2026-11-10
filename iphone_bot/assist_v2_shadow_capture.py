@@ -4,6 +4,7 @@ Append-only: original snapshots are never recalculated or overwritten.
 """
 import json
 import argparse
+from iphone_bot.verified_research_no_play import exclude_pending
 from datetime import datetime, timezone
 from pathlib import Path
 try:
@@ -94,7 +95,7 @@ def verified_completed_games(root=ROOT):
 
 def grade(records,completed_games,now=None):
     """Use the production verifier without changing pretip V2 predictions."""
-    return settle(records,completed_games,now=now)
+    return exclude_pending(settle(records,completed_games,now=now),now=utc(now) if now else None)
 
 def paired_direction_metrics(records):
     """Same frozen lines, same finals, one observation per player/event/stat/line.
@@ -163,6 +164,7 @@ def summary(records):
     bn=baseline_wins+baseline_losses
     return {"captured":len(records),"settled":sum(r.get("status")=="SETTLED" for r in records),
             "pending":sum(r.get("status")=="PENDING" for r in records),
+            "verified_no_play_voids":sum(r.get("status")=="VOID_DNP" for r in records),
             "independent_settled_markets":len(unique),
             "v2_direction_eligible":n,
             "wins":sum(r["result"]=="WIN" for r in decisions),
