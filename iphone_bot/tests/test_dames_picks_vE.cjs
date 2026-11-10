@@ -74,3 +74,61 @@ test("Real published NBA and NFL artifacts both produce nonempty integrated play
  assert.ok(b.every(x=>x.player&&Number.isFinite(x.line)&&Number.isFinite(x.projection)));
  console.log("Live contract counts: NBA",a.length,"NFL",b.length);
 });
+
+test("Live NBA snapshot overlays only matched named player, same team and matchup",()=>{
+ const saved=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[pt]},{players:[]});
+ const at=Date.parse("2026-11-10T03:15:00Z");
+ const live={status:"OK",captured_at:"2026-11-10T03:14:00Z",games:[{
+ game:pt.game,state:"in",period:1,shortDetail:"9:00 - 1st",observed_at:"2026-11-10T03:14:00Z",
+ player_rows:[{player:"Stephen Curry",team:"GSW",PTS:9},{player:"Stephen Curry",team:"NOP",PTS:22}]}]};
+ const fresh=m.attachLive(saved,live,null,at);
+ assert.equal(fresh[0].live.actual,9);
+ assert.equal(fresh[0].projection,31.391);assert.equal(fresh[0].line,28.5);
+ assert.equal(m.attachLive(saved,{...live,captured_at:"2026-11-10T02:00:00Z"},null,at)[0].live,null);
+ assert.equal(m.attachLive(saved,{...live,games:[{...live.games[0],state:"post"}]},null,at)[0].live,null);
+});
+test("NFL live join uses original stat target and matches exact game/player",()=>{
+ const row={sport:"NFL",player:"Josh Allen",team:"BUF",gameId:"2026_09_BUF_MIN",target:"PASS_YDS",line:240.5,projection:265,stat:"Pass Yards"};
+ const now=Date.parse("2026-11-10T03:15:00Z");
+ const live={status:"ok",checked_at:"2026-11-10T03:14:00Z",games:[{
+ game_id:row.gameId,status:"in",status_text:"3rd",players:[
+ {player:"Josh Allen",team:"BUF",stats:{PASS_YDS:150}},
+ {player:"Josh Allen",team:"MIN",stats:{PASS_YDS:400}}]}]};
+ const rows=m.attachLive([row],null,live,now);
+ assert.equal(rows[0].live.actual,150);assert.equal(rows[0].line,240.5);
+ assert.equal(m.attachLive([row],null,{...live,checked_at:"2026-11-09T01:00:00Z"},now)[0].live,null);
+});
+test("NFL confirmed result joins only the exact original captured line",()=>{
+ const row={sport:"NFL",gameId:"2026_09_BUF_MIN",playerId:"42",stat:"Pass Yards",
+ line:240.5,captured:"2026-11-09T18:00:00Z",grade:"PENDING",hit:null,actual:null};
+ const verified={game_id:row.gameId,player_id:row.playerId,stat:row.stat,line:"240.5",
+ captured_at:row.captured,odds_type:"standard",actual:"250",won:"true",grade_status:"GRADED"};
+ const graded=m.attachNFLGrades([row],[verified])[0];
+ assert.equal(graded.grade,"GRADED");assert.equal(graded.hit,true);assert.equal(graded.actual,250);
+ assert.equal(m.attachNFLGrades([row],[{...verified,line:"245.5"}])[0].grade,"PENDING");
+ assert.equal(m.attachNFLGrades([row],[{...verified,grade_status:"PENDING"}])[0].grade,"PENDING");
+ assert.equal(m.attachNFLGrades([row],[verified,verified])[0].grade,"PENDING");
+});
+test("NFL missing grades cannot inherit NBA hit-rate stats",()=>{
+ const s=m.summarize([], {standard_settled:0,standard_wins:0,pending_picks:0},Date.now(),"NFL");
+ assert.equal(s.hitRate,null);assert.equal(s.graded,0);
+});
+test("Production source feeds keep expected real stat keys and health flags",()=>{
+ const liveNBA=JSON.parse(fs.readFileSync("docs/live_player_tracking.json","utf8"));
+ const liveNFL=JSON.parse(fs.readFileSync("docs/nfl/data/live_2026.json","utf8"));
+ const nba=JSON.parse(fs.readFileSync("docs/tonight_capture_gradeability.json","utf8"));
+ assert.ok(Array.isArray(liveNBA.games));
+ assert.ok(Array.isArray(liveNFL.games));
+ assert.ok(nba.summary&&typeof nba.summary.total_standard_markets_without_frozen_model==="number");
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ for(const name of ["live_player_tracking.json","nfl/data/live_2026.json","pp_graded_2026.csv",
+ "tonight_capture_gradeability.json","ai_forecast_today_grade_status.json","dames-picks-bookmarks-v1"])
+ assert.ok(page.includes(name),name);
+});
+
+test("Different saved thresholds or observation times never share one player card identity",()=>{
+ const base={sport:"NBA",playerId:"201939",game:"NOP @ GSW",start:"2026-11-10T03:00:00Z",
+ stat:"PTS",line:27.5,captured:"2026-11-09T21:00:00Z"};
+ assert.notEqual(m.key(base),m.key({...base,line:28.5}));
+ assert.notEqual(m.key(base),m.key({...base,captured:"2026-11-09T21:01:00Z"}));
+});

@@ -4,7 +4,7 @@
 const n=v=>v===null||v===undefined||v===""?null:Number.isFinite(Number(v))?Number(v):null;
 const norm=v=>String(v||"").normalize("NFKD").toLowerCase().replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const stamp=v=>{const d=Date.parse(v);return Number.isFinite(d)?d:NaN};
-const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat].join("|");
+const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat,p.line,p.captured].join("|");
 function csv(text){
  let cells=[],row=[],field="",quoted=false;
  for(let i=0;i<text.length;i++){
@@ -59,7 +59,7 @@ function nfl(chunks,schedule){
   let logs=[];try{logs=JSON.parse(p.season_game_log||"[]")}catch(_){}
   const obj={
    sport:"NFL",playerId:p.player_id,player:p.player,position:p.position||"",team:p.team,opponent:p.opponent,
-   game:p.team+" vs "+p.opponent,gameId:p.game_id,start:game.kickoff_utc,stat:p.stat,
+   game:p.team+" vs "+p.opponent,gameId:p.game_id,start:game.kickoff_utc,stat:p.stat,target:p.target,
    source:"PrizePicks",line:n(p.line),projection:n(p.proj),direction,chance,
    chanceSource:"NFL model estimate; not a calibrated hit probability",
    captured:p.captured_at,grade:"PENDING",actual:null,hit:null,gradeSource:null,
@@ -72,11 +72,11 @@ function nfl(chunks,schedule){
  }
  return [...found.values()];
 }
-function summarize(rows,nflHealth,now=Date.now()){
+function summarize(rows,nflHealth,now=Date.now(),league=null){
  const pre=rows.filter(r=>stamp(r.start)>now),gameCount=new Set(pre.map(r=>r.gameId)).size;
  // Only the NBA market ledger has individually verified directional grading here.
  const graded=rows.filter(r=>r.grade==="GRADED"&&typeof r.hit==="boolean");
- if(rows[0]?.sport==="NFL"){
+ if((league||rows[0]?.sport)==="NFL"){
   const settled=n(nflHealth?.standard_settled),wins=n(nflHealth?.standard_wins);
   return {games:gameCount,wins:settled!==null&&wins!==null?wins:null,
    losses:settled!==null&&wins!==null?settled-wins:null,
@@ -88,5 +88,46 @@ function summarize(rows,nflHealth,now=Date.now()){
   hitRate:graded.length?wins/graded.length:null,graded:graded.length,
   pending:rows.filter(x=>x.grade==="PENDING").length};
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key};
+
+/* Merge observation feeds by exact game/player/team. No observations alter frozen projections. */
+function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
+ const nbaFresh=nbaFeed?.status&&Number.isFinite(stamp(nbaFeed.captured_at))&&
+  Math.abs(now-stamp(nbaFeed.captured_at))<20*60000;
+ const nflFresh=nflFeed?.status==="ok"&&Number.isFinite(stamp(nflFeed.checked_at))&&
+  Math.abs(now-stamp(nflFeed.checked_at))<20*60000;
+ const nbaGames=new Map((nbaFresh?nbaFeed.games:[]).filter(g=>g.state==="in").map(g=>[g.game,g]));
+ const nflGames=new Map((nflFresh?nflFeed.games:[]).filter(g=>g.status==="in").map(g=>[g.game_id,g]));
+ return rows.map(p=>{
+  if(p.sport==="NBA"){
+   const game=nbaGames.get(p.game);
+   const hits=(game?.player_rows||[]).filter(x=>x.team===p.team&&norm(x.player)===norm(p.player));
+   if(hits.length!==1)return {...p,live:null};
+   const actual=n(hits[0][p.stat]);
+   return {...p,live:actual===null?null:{actual,gameStatus:game.shortDetail||game.displayClock||"In progress",
+    period:game.period,observedAt:game.observed_at||nbaFeed.captured_at,source:"ESPN player snapshot"}};
+  }
+  const game=nflGames.get(p.gameId);
+  const hits=(game?.players||[]).filter(x=>x.team===p.team&&norm(x.player)===norm(p.player));
+  if(hits.length!==1||!p.target)return {...p,live:null};
+  const actual=n(hits[0].stats?.[p.target]);
+  return {...p,live:actual===null?null:{actual,gameStatus:game.status_text||"In progress",
+   period:game.period,observedAt:nflFeed.checked_at,source:"ESPN player snapshot"}};
+ });
+}
+/* NFL settlement is joined ONLY with full immutable quote identity. */
+function attachNFLGrades(rows,graded){
+ const entries=new Map();
+ for(const x of graded||[]){
+  if(x.grade_status!=="GRADED"||x.odds_type!=="standard"||n(x.actual)===null||
+   !["true","false","1","0"].includes(String(x.won).toLowerCase()))continue;
+  const k=[x.game_id,x.player_id,x.stat,x.line,x.captured_at].join("|");
+  if(entries.has(k))entries.set(k,null);else entries.set(k,x);
+ }
+ return rows.map(p=>{
+  if(p.sport!=="NFL")return p;
+  const x=entries.get([p.gameId,p.playerId,p.stat,p.line,p.captured].join("|"));
+  return x?{...p,grade:"GRADED",actual:n(x.actual),hit:["true","1"].includes(String(x.won).toLowerCase()),gradeSource:"NFL verified final prop ledger"}:p;
+ });
+}
+root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades};
 })(typeof window!=="undefined"?window:globalThis);

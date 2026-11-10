@@ -29,7 +29,10 @@
 <script src="feeds.js"></script><script>
 "use strict";
 const $=id=>document.getElementById(id),m=window.DamesPicksModel;
-const state={league:"NBA",mode:"board",nba:[],nfl:[],nflHealth:null,picked:null,loading:false,errors:[],selected:new Set(),updated:null};
+const state={league:"NBA",mode:"board",nba:[],nfl:[],nflHealth:null,picked:null,loading:false,errors:[],selected:new Set(),updated:null,health:null};
+try{state.selected=new Set(JSON.parse(localStorage.getItem("dames-picks-bookmarks-v1")||"[]"))}catch(_){state.selected=new Set()}
+function saveBookmarks(){try{localStorage.setItem("dames-picks-bookmarks-v1",JSON.stringify([...state.selected]))}catch(_){}}
+
 const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—",pct=x=>typeof x==="number"&&Number.isFinite(x)?Math.round(x*100)+"%":"—";
 const escapeText=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const when=t=>{const d=new Date(t);return isNaN(d)? "Time unavailable":d.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})};
@@ -38,10 +41,12 @@ async function getJSON(p){const r=await fetch("../"+p+"?v="+Date.now(),{cache:"n
 async function getCSV(p){const r=await fetch("../nfl/data/"+p+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("NFL "+p+" HTTP "+r.status);return m.csv(await r.text())}
 async function refresh(){
  if(state.loading)return;state.loading=true;$("status").textContent="Loading actual NBA and NFL bot outputs…";
- const [ledger,form,manifest,schedule,health]=await Promise.allSettled([
+ const [ledger,form,manifest,schedule,health,nbaLive,nflLive,gradedNFL,capture,forecastHealth]=await Promise.allSettled([
  getJSON("lagged_matchup_all_market_ledger.json"),getJSON("current_form.json"),
  getJSON("nfl/data/latest_2026.json"),getJSON("nfl/data/schedule_2026.json"),
- getJSON("nfl/data/grading_health_2026.json")]);
+ getJSON("nfl/data/grading_health_2026.json"),getJSON("live_player_tracking.json"),
+ getJSON("nfl/data/live_2026.json"),getCSV("pp_graded_2026.csv"),
+ getJSON("tonight_capture_gradeability.json"),getJSON("ai_forecast_today_grade_status.json")]);
  const errors=[];
  if(ledger.status==="fulfilled")state.nba=m.nba(ledger.value,form.status==="fulfilled"?form.value:null);
  else errors.push("NBA frozen ledger unavailable");
@@ -51,24 +56,38 @@ async function refresh(){
   if(results.some(x=>x.status==="rejected"))errors.push("NFL feed partially loaded");
  }else errors.push("NFL export unavailable");
  state.nflHealth=health.status==="fulfilled"?health.value:null;
+ if(gradedNFL.status==="fulfilled")state.nfl=m.attachNFLGrades(state.nfl,gradedNFL.value);
+ const nb=nbaLive.status==="fulfilled"?nbaLive.value:null,nf=nflLive.status==="fulfilled"?nflLive.value:null;
+ state.nba=m.attachLive(state.nba,nb,nf);
+ state.nfl=m.attachLive(state.nfl,nb,nf);
+ state.health={capture:capture.status==="fulfilled"?capture.value:null,forecasts:forecastHealth.status==="fulfilled"?forecastHealth.value:null,
+ nfl:state.nflHealth,nbaLive:nb,nflLive:nf};
+ if(capture.status==="fulfilled"&&capture.value.status!=="CAPTURE_VERIFIED")errors.push("NBA capture incomplete");
+ if(health.status==="fulfilled"&&health.value.standard_settled===0)errors.push("NFL final-grade coverage unverified");
  state.errors=errors;state.updated=new Date();state.loading=false;render();
+ if(state.picked){const current=rows().find(x=>m.key(x)===m.key(state.picked));if(current){state.picked=current;renderDetail()}}
+
 }
 function rows(){return state.league==="NBA"?state.nba:state.nfl}
 function shown(){
  const now=Date.now(),term=$("query").value.toLowerCase().trim();let data=rows();
  if(state.mode==="board")data=data.filter(x=>timestamp(x.start)>now);
- if(state.mode==="live")data=data.filter(x=>timestamp(x.start)<=now&&timestamp(x.start)>now-7*3600000);
+ if(state.mode==="live")data=data.filter(x=>x.live!==null&&x.live!==undefined);
  if(state.mode==="saved")data=data.filter(x=>state.selected.has(m.key(x)));
  if(term)data=data.filter(x=>(x.player+" "+x.team+" "+x.opponent+" "+x.stat).toLowerCase().includes(term));
  return [...data].sort((a,b)=>state.mode==="tracker"?timestamp(b.start)-timestamp(a.start):timestamp(a.start)-timestamp(b.start)||(b.chance??0)-(a.chance??0)).slice(0,240);
 }
 function render(){
- const a=rows(),sum=m.summarize(a,state.nflHealth),items=shown();
+ const a=rows(),sum=m.summarize(a,state.nflHealth,Date.now(),state.league),items=shown();
  $("wl").textContent=sum.wins===null?"—":sum.wins+"–"+sum.losses;
  $("rate").textContent=pct(sum.hitRate);$("games").textContent=sum.games;
  $("section-title").textContent=state.mode==="board"?"Top picks":state.mode==="live"?"Started games":state.mode==="tracker"?"Frozen forecast archive":"Saved props";
- $("status").textContent=(state.updated?"Refreshed "+state.updated.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"")+(state.errors.length?" · "+state.errors.join(" · "):"")+" · All values reflect published saved snapshots";
- $("cards").innerHTML=items.length?items.map((p,i)=>'<button class="pick" data-id="'+escapeText(m.key(p))+'"><div class="pick-top"><span class="name">'+escapeText(p.player)+'</span><span class="grade">'+escapeText(p.grade==="GRADED"?(p.hit===true?"HIT":p.hit===false?"MISS":"SETTLED"):"SAVED")+'</span></div><div class="context">'+escapeText(p.team+(p.position?" · "+p.position:"")+" · "+p.opponent+" · "+p.source+" · "+when(p.start))+'</div><div class="stat-grid"><div><small>'+escapeText(p.stat)+'</small><strong>'+fmt(p.line)+'</strong></div><div><small>Proj</small><strong>'+fmt(p.projection)+'</strong></div><div><small>Sim est.</small><strong>'+pct(p.chance)+'</strong></div><span class="chip '+(p.direction==="MORE"?"over":p.direction==="LESS"?"under":"pass")+'">'+escapeText(p.direction||"PASS")+(p.direction==="MORE"?" ↑":p.direction==="LESS"?" ↓":"")+'</span></div><div class="stampband"><span>'+escapeText(p.grade==="GRADED"?"Final result verified":p.grade==="PENDING"?"Frozen pregame forecast · not graded":"Unverified")+'</span><span class="dots">●●●●●</span></div></button>').join(""):'<div class="empty">No '+escapeText(state.league)+' '+(state.mode==="board"?"upcoming frozen predictions":state.mode==="live"?"recently started records":state.mode==="saved"?"saved props":"archived forecasts")+' available from the current published feed. No sample data is substituted.</div>';
+ $("status").textContent=(state.updated?"Checked "+state.updated.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"")+
+ (state.errors.length?" · ISSUES: "+state.errors.join(" · "):"")+
+ " · "+(state.health?.capture?.summary?.total_standard_markets_without_frozen_model??"—")+" NBA standard markets missing models"+
+ " · "+(state.health?.forecasts?.ungraded??"—")+" AI-only forecasts still ungraded"+
+ " · Live values show only fresh verified player snapshots";
+ $("cards").innerHTML=items.length?items.map((p,i)=>'<button class="pick" data-id="'+escapeText(m.key(p))+'"><div class="pick-top"><span class="name">'+escapeText(p.player)+'</span><span class="grade">'+escapeText(p.grade==="GRADED"?(p.hit===true?"HIT":p.hit===false?"MISS":"SETTLED"):"SAVED")+'</span></div><div class="context">'+escapeText(p.team+(p.position?" · "+p.position:"")+" · "+p.opponent+" · "+p.source+" · "+when(p.start))+'</div><div class="stat-grid"><div><small>'+escapeText(p.stat)+'</small><strong>'+fmt(p.line)+'</strong></div><div><small>Proj</small><strong>'+fmt(p.projection)+'</strong></div><div><small>Sim est.</small><strong>'+pct(p.chance)+'</strong></div><span class="chip '+(p.direction==="MORE"?"over":p.direction==="LESS"?"under":"pass")+'">'+escapeText(p.direction||"PASS")+(p.direction==="MORE"?" ↑":p.direction==="LESS"?" ↓":"")+'</span></div><div class="stampband"><span>'+escapeText(p.live?"LIVE "+fmt(p.live.actual)+" vs original line "+fmt(p.line)+" · "+p.live.gameStatus:p.grade==="GRADED"?"Final result verified":p.grade==="PENDING"?"Frozen pregame forecast · not graded":"Unverified")+'</span><span class="dots">●●●●●</span></div></button>').join(""):'<div class="empty">No '+escapeText(state.league)+' '+(state.mode==="board"?"upcoming frozen predictions":state.mode==="live"?"recently started records":state.mode==="saved"?"saved props":"archived forecasts")+' available from the current published feed. No sample data is substituted.</div>';
  for(const b of $("cards").querySelectorAll("[data-id]"))b.onclick=()=>open(b.dataset.id);
 }
 function open(id){
@@ -88,16 +107,19 @@ function renderDetail(){
   const vals=[...p.logs].reverse(),max=Math.max(1,p.line,...vals.map(x=>Number(x.actual)||0));
   logs='<div class="chart">'+vals.map(x=>{const v=Number(x.actual)||0;return '<div class="barcol"><b>'+fmt(v)+'</b><div class="bar '+(v<p.line?"low":"")+'" style="height:'+Math.max(5,Math.round(v/max*105))+'px"></div><small>W'+escapeText(x.week)+'</small></div>'}).join("")+'</div>';
  }
+ const live=p.live?'<section class="box"><h2>Live tracker · observed</h2><div class="box-row"><span>Actual '+escapeText(p.stat)+'</span><strong>'+fmt(p.live.actual)+'</strong></div><div class="box-row"><span>Frozen projection</span><strong>'+fmt(p.projection)+'</strong></div><div class="box-row"><span>Original line</span><strong>'+fmt(p.line)+'</strong></div><div class="box-row"><span>Game</span><strong>'+escapeText(p.live.gameStatus)+'</strong></div><div class="note">'+escapeText(p.live.source)+' · '+escapeText(when(p.live.observedAt))+'. Observed stats are not verified final grades.</div></section>':'';
  $("detail-content").innerHTML='<section class="box hero"><div class="hero-head"><h2>Dame’s projection</h2><span class="grade">'+escapeText(p.grade==="GRADED"?"GRADED":"FROZEN")+'</span></div><div class="triple"><div><label>LINE</label><strong>'+fmt(p.line)+'</strong></div><div><label>PROJ</label><strong class="neon">'+fmt(p.projection)+'</strong></div><div><label>SIM EST.</label><strong>'+pct(chance)+'</strong></div></div>'+(chosen?'<div class="meter"><div class="meter-fill" style="width:'+Math.round(chance*100)+'%"></div></div><div class="meter-labels"><span>Nah</span><span>Maybe</span><span>Ooh</span><span>Lock</span></div>':'')+'<div class="lean '+(p.direction==="LESS"?"under":p.direction?"":"pass")+'">'+escapeText(p.direction?p.direction+" "+fmt(p.line)+" "+p.stat:"NO VERIFIED LEAN")+(p.direction==="MORE"?" ↑":p.direction==="LESS"?" ↓":"")+'</div><div class="note">'+escapeText(p.chanceSource)+'. This is not an independently validated betting edge. The original saved threshold is never recalculated after tipoff.</div></section>'+
- '<section class="box"><div class="hero-head"><h2>Last games</h2><span class="muted tiny">'+(p.form?.games??"—")+' season games</span></div>'+(logs||'<div class="note">A verified individual game-by-game series is not yet available for this stat. No chart is fabricated.</div>')+'<div class="box-row"><span>Season average</span><strong>'+fmt(p.form?.season)+'</strong></div><div class="box-row"><span>Last 5 average</span><strong>'+fmt(p.form?.l5)+'</strong></div><div class="box-row"><span>Last 10 average</span><strong>'+fmt(p.form?.l10)+'</strong></div></section>'+
+ live+'<section class="box"><div class="hero-head"><h2>Last games</h2><span class="muted tiny">'+(p.form?.games??"—")+' season games</span></div>'+(logs||'<div class="note">A verified individual game-by-game series is not yet available for this stat. No chart is fabricated.</div>')+'<div class="box-row"><span>Season average</span><strong>'+fmt(p.form?.season)+'</strong></div><div class="box-row"><span>Last 5 average</span><strong>'+fmt(p.form?.l5)+'</strong></div><div class="box-row"><span>Last 10 average</span><strong>'+fmt(p.form?.l10)+'</strong></div></section>'+
  '<section class="box"><h2>Matchup</h2><div class="box-row"><span>Opponent</span><strong>'+escapeText(p.opponent||"—")+'</strong></div><div class="box-row"><span>Game</span><strong>'+escapeText(p.game)+'</strong></div><div class="box-row"><span>Positional defense rank</span><strong>Unverified</strong></div><div class="box-row"><span>Saved at</span><strong>'+escapeText(when(p.captured))+'</strong></div></section>'+
- '<section class="take"><strong>Dame’s take</strong><p>'+escapeText(p.grade==="GRADED"?(p.hit===true?"The saved direction hit.":p.hit===false?"The saved direction missed.":"Final verified; directional result unavailable."):"Research-only projection. This estimate is not a guaranteed pick.")+'</p></section>'+
+ '<section class="box"><h2>Original research dashboards</h2><div class="note">The original model, matchup, injury, minutes, and grading research remains accessible.</div><a href="'+(p.sport==="NBA"?"../index.html":"../nfl/index.html")+'" class="smallbtn" style="display:block;text-align:center;margin-top:12px;color:white;text-decoration:none">Open full '+escapeText(p.sport)+' dashboard</a></section>'+'<section class="take"><strong>Dame’s take</strong><p>'+escapeText(p.grade==="GRADED"?(p.hit===true?"The saved direction hit.":p.hit===false?"The saved direction missed.":"Final verified; directional result unavailable."):"Research-only projection. This estimate is not a guaranteed pick.")+'</p></section>'+
  '<section class="box"><h2>Automatic grading</h2><div class="box-row"><span>Status</span><strong>'+escapeText(p.grade)+'</strong></div><div class="box-row"><span>Actual</span><strong>'+fmt(p.actual)+'</strong></div><div class="box-row"><span>Verified source</span><strong>'+escapeText(p.gradeSource||"Pending")+'</strong></div><div class="note">Pending results do not count as losses. NFL settled market-level grading will appear after the bot publishes verified individual result records.</div></section>';
 }
 function back(){state.picked=null;$("detail").classList.add("hidden");$("board").classList.remove("hidden");render()}
-$("back").onclick=back;$("bookmark").onclick=()=>{const p=state.picked;if(!p)return;const k=m.key(p);state.selected.has(k)?state.selected.delete(k):state.selected.add(k);renderDetail()};
+$("back").onclick=back;$("bookmark").onclick=()=>{const p=state.picked;if(!p)return;const k=m.key(p);state.selected.has(k)?state.selected.delete(k):state.selected.add(k);saveBookmarks();renderDetail()};
 $("refresh").onclick=refresh;$("query").oninput=render;
 for(const b of document.querySelectorAll("[data-league]"))b.onclick=()=>{state.league=b.dataset.league;document.querySelectorAll("[data-league]").forEach(x=>x.classList.toggle("active",x===b));back()};
 for(const b of document.querySelectorAll("[data-view]"))b.onclick=()=>{state.mode=b.dataset.view;document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x===b));back()};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh().catch(()=>{})});
+setInterval(()=>{if(!document.hidden)refresh().catch(()=>{})},120000);
 $("date").textContent=new Date().toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"});refresh().catch(e=>{$("status").textContent="Cannot load published bot outputs: "+e.message;state.loading=false});
 </script></body></html>
