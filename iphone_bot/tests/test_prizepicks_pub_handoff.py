@@ -24,6 +24,7 @@ class PublicationHandoffTests(unittest.TestCase):
 
     def test_both_model_paths_trigger_when_real_lines_published(self):
         self.assertIn("gh workflow run nba-prizepicks-ai-board.yml --ref main",SITE)
+        self.assertIn("gh workflow run nba-new-ai-all-markets.yml --ref main",SITE)
         self.assertIn("gh workflow run publish_live_pp_ai_join.yml --ref main",SITE)
         self.assertIn("if: steps.publish.outputs.changed == 'true'",SITE)
     def test_no_paid_provider_calls_in_join_workflow(self):
