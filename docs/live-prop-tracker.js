@@ -237,6 +237,69 @@
   }
   return null;
  }
+ // Join frozen line-backed and immutable AI-only forecasts BY player/stat.
+ // A single frozen pick in a game must not suppress unpriced players.
+ // Keep all distinct genuine frozen thresholds; never copy a quote into the
+ // original AI-only record or assign it a betting grade.
+ function mergeLiveForecasts(priced,unpriced,game){
+  const found=[],pricedMarkets=new Set(),unpricedMarkets=new Set();
+  function marketKey(p){
+   return [normalize(p.player),canonicalTeam(p.team),normalize(p.game),
+           p.stat,Date.parse(p.start)].join("|");
+  }
+  for(const p of priced||[]){
+   if(!isFrozenForecast(p)||normalize(p.game)!==normalize(game))continue;
+   found.push(p);pricedMarkets.add(marketKey(p));
+  }
+  for(const p of unpriced||[]){
+   if(!p||normalize(p.game)!==normalize(game)||!MARKETS.has(p.stat)||
+      !p.player||!p.team||p.line!=null||p.is_pregame_prediction!==true||
+      numeric(p.projection)===null)continue;
+   const captured=Date.parse(p.captured_at),tip=Date.parse(p.start);
+   if(!Number.isFinite(captured)||!Number.isFinite(tip)||captured>=tip||
+      !Number.isFinite(tip)||tip>Date.now()||pricedMarkets.has(marketKey(p))||
+      unpricedMarkets.has(marketKey(p)))continue;
+   unpricedMarkets.add(marketKey(p));found.push(p);
+  }
+  return found;
+ }
+ // Previously captured verified quotes persist across subsequent provider
+ // refreshes. They remain observations, NOT saved graded picks.
+ function archivedPregameLine(forecast,archive){
+  if(archive?.status!=="VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE"||
+     !Array.isArray(archive.quotes))return null;
+  const tip=Date.parse(forecast?.start);
+  if(!Number.isFinite(tip))return null;
+  const matches=archive.quotes.filter(q=>
+     q?.source==="independent_prizepicksapi_com"&&
+     q.is_demo===false&&
+     normalize(q.player)===normalize(forecast.player)&&
+     canonicalTeam(q.team)===canonicalTeam(forecast.team)&&
+     normalize(q.game)===normalize(forecast.game)&&
+     q.stat===forecast.stat&&
+     Number.isFinite(Date.parse(q.starts_at))&&
+     Math.abs(Date.parse(q.starts_at)-tip)<=30*60000&&
+     Number.isFinite(Date.parse(q.observed_at))&&
+     Date.parse(q.observed_at)<tip&&
+     Number.isFinite(Date.parse(q.source_generated_at))&&
+     Date.parse(q.source_generated_at)<tip&&
+     numeric(q.line)!==null&&numeric(q.line)<=200&&
+     ["standard","goblin","demon"].includes(q.tier)&&
+     q.more_tier===q.tier&&q.less_tier===q.tier);
+  for(const tier of ["standard","goblin","demon"]){
+   const rows=matches.filter(q=>q.tier===tier);
+   if(!rows.length)continue;
+   const sorted=[...rows].sort((a,b)=>Date.parse(b.observed_at)-Date.parse(a.observed_at));
+   const latest=sorted[0].observed_at;
+   const tied=sorted.filter(q=>q.observed_at===latest);
+   if(new Set(tied.map(q=>Number(q.line))).size!==1)return null;
+   return {line:Number(tied[0].line),tier,observed_at:latest,
+      provider_projection_id:String(tied[0].id||""),
+      source:"independent_prizepicksapi_com",
+      status:"OBSERVED_PRETIP_QUOTE_NOT_FROZEN_PICK"};
+  }
+  return null;
+ }
  function pickRows(forecasts,game){
   const dedup=new Map();
   for(const x of forecasts||[]){
@@ -248,5 +311,5 @@
   return [...dedup.values()];
  }
  return {numeric,normalize,matchup,identifyGame,gameStatus,summaryGameMatch,
-         athleteRows,canonicalTeam,matchPlayer,matchDiagnostics,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows,observedPregameLine};
+         athleteRows,canonicalTeam,matchPlayer,matchDiagnostics,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows,observedPregameLine,mergeLiveForecasts,archivedPregameLine};
 });

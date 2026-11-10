@@ -364,7 +364,7 @@ let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
-let verifiedHistoricalProviderSnapshot=null;
+let verifiedHistoricalProviderSnapshot=null,verifiedPregameLineArchive=null;
 let newMultimarketFeed=null,newMarketIndex=new Map(),standardLineCards=[];
 let underdogNews=null,officialInjuryFeed=null,freeOfficialWatch=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
@@ -2121,7 +2121,7 @@ async function refreshSelectedLiveTracker(){
  const feedCandidates=noLineForecast?.status==="PREGAME_PROJECTIONS_NO_LINES"&&
    Array.isArray(noLineForecast.predictions)?
    noLineForecast.predictions.map(x=>({...x,captured_at:noLineForecast.generated_at})):[];
- const noLinePregame=!pricedPregame.length?
+ const noLinePregame=
    [...archiveCandidates,...feedCandidates].filter(x=>
        x.game===game&&x.is_pregame_prediction===true&&
        x.line==null&&x.direction==null&&
@@ -2132,8 +2132,8 @@ async function refreshSelectedLiveTracker(){
        Date.parse(x.captured_at)<Date.parse(x.start)&&
        Date.parse(x.start)<=Date.now()).filter((x,i,all)=>
          all.findIndex(y=>y.player_id===x.player_id&&y.team===x.team&&
-           y.game===x.game&&y.start===x.start&&y.stat===x.stat)===i):[];
- const pregame=pricedPregame.length?pricedPregame:noLinePregame;
+           y.game===x.game&&y.start===x.start&&y.stat===x.stat)===i);
+ const pregame=helper.mergeLiveForecasts(pricedPregame,noLinePregame,game);
  if(!pregame.length){
   showTrackerMessage(game,"No saved, verifiably pre-tipoff AI forecasts exist for this matchup. Live outcomes cannot be compared to forecasts created after tipoff.");
   return;
@@ -2264,7 +2264,8 @@ async function refreshSelectedLiveTracker(){
    // Show a separately verified pretip provider quote without rewriting
    // the frozen AI-only forecast into a supposed line-backed wager.
    const historicalQuote=hasLine?null:
-     helper.observedPregameLine(p,verifiedHistoricalProviderSnapshot);
+     (helper.archivedPregameLine(p,verifiedPregameLineArchive)||
+      helper.observedPregameLine(p,verifiedHistoricalProviderSnapshot));
    const observedLine=historicalQuote?
      fmt(historicalQuote.line)+" ("+historicalQuote.tier.toUpperCase()+")":null;
    const outcome=hasLine?helper.evaluate(p,actual,event):null;
@@ -2868,6 +2869,7 @@ async function refresh(){
 newMultimarketFeed=newMarketResponse.status==="fulfilled"?newMarketResponse.value:null;
 newMarketIndex=refreshNewMarketIndex(newMultimarketFeed);
 const providerStandards=await fetchJSON("prizepicks_model_input.json").catch(()=>null);
+verifiedPregameLineArchive=await fetchJSON("prizepicks_pregame_line_archive.json").catch(()=>null);
 standardLineCards=verifiedStandardLineCoverage(providerStandards,
   sch.status==="fulfilled"?sch.value:null);
 underdogNews=await fetchJSON("underdog_nba_injury_alerts.json").catch(()=>null);
