@@ -104,6 +104,11 @@ def build(provider,ai,form,now=None):
         if len(options)!=1:
             skip["no_unique_pregame_forecast"]+=1;continue
         p,projection=options[0]
+        # Identity must agree with the unique season roster, not just the name/team.
+        # A reused name or stale model player ID must never inherit a real quote.
+        roster_id=next(iter(people))[1]
+        if not roster_id or str(p.get("player_id") or "")!=roster_id:
+            skip["roster_player_id_mismatch"]+=1;continue
         try:line=float(offer.get("line"))
         except (TypeError,ValueError):
             skip["invalid_line"]+=1;continue
