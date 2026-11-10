@@ -42,11 +42,16 @@ jobs:
           set -euo pipefail
           mode="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.build_type')"
           if [ "$mode" != "workflow" ]; then
-            echo "::warning::Pages Source is '$mode'. Open Settings > Pages > Build and deployment > Source, select GitHub Actions. Leaving branch-based publication untouched."
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Pages Source is '$mode'; attempting GitHub Actions deployment mode."
+            if gh api -X PUT "repos/${GITHUB_REPOSITORY}/pages" -f build_type=workflow >/dev/null; then
+              mode="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.build_type')"
+            fi
           fi
+          if [ "$mode" != "workflow" ]; then
+            echo "::error::Pages Source is '$mode'. GitHub Actions deployment cannot run; check Settings > Pages > Source. Never report success on a skipped deployment."
+            exit 1
+          fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
       - name: Configure GitHub Pages
         if: steps.mode.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
