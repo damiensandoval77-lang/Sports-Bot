@@ -10,10 +10,15 @@ from datetime import datetime,timedelta,timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import pandas as pd
+try:
+ from .season_schedule_baseline import build as build_season_baseline, START, END
+except ImportError:
+ from season_schedule_baseline import build as build_season_baseline, START, END
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/"docs/nba_schedule.json"
 STATUS=ROOT/"docs/nba_schedule_status.json"
+SEASON_ARCHIVE=ROOT/"docs/nba_season_schedule_2026_27.json"
 URL="https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-data/main/nba/schedules/parquet/nba_schedule_2027.parquet"
 ET=ZoneInfo("America/New_York")
 TEAM={
@@ -25,12 +30,12 @@ ALIASES={"NO":"NOP","NY":"NYK","GS":"GSW","SA":"SAS","UTAH":"UTA","PHO":"PHX","B
 def value(v):
  if v is None or pd.isna(v):return ""
  return str(v).strip()
-def parse(frame, now):
+def parse(frame, now, days=None):
  if not all(c in frame.columns for c in (
     "date","home_display_name","away_display_name",
     "home_abbreviation","away_abbreviation","status_type_state","season_type","id")):
   raise ValueError("Published NBA schedule parquet changed columns")
- days={(now.astimezone(ET).date()+timedelta(days=n)).isoformat() for n in (0,1)}
+ days=set(days) if days is not None else {(now.astimezone(ET).date()+timedelta(days=n)).isoformat() for n in (0,1)}
  games=[]
  seen=set()
  for row in frame.to_dict(orient="records"):
@@ -92,8 +97,24 @@ def fetch(now=None):
  if len(raw)>8_000_000:raise ValueError("Parquet exceeds bounded schedule size")
  frame=pd.read_parquet(io.BytesIO(raw))
  if len(frame)<900 or len(frame)>1600:raise ValueError("Unrecognized NBA full season schedule coverage")
+ # Freeze the entire published regular-season fixture calendar independently
+ # of the next-two-days dashboard view. A truncated/corrupt source must never
+ # replace an existing valid season baseline.
+ season_days=set()
+ cursor=START
+ while cursor<=END:
+  season_days.add(cursor.isoformat())
+  cursor+=timedelta(days=1)
+ season_rows=parse(frame,now,days=season_days)["games"]
+ baseline=build_season_baseline(season_rows,now=now,
+   source="sportsdataverse hoopR 2026-27 ESPN-sourced regular-season schedule",
+   source_url=URL)
  report=apply_official_evidence(parse(frame,now))
- # Empty day can legitimately occur; full season fixture file still valid.
+ report["season_baseline_status"]=baseline["status"]
+ report["season_baseline_total"]=baseline["total_games"]
+ # Persist the master only after the entire source and the active slate
+ # both pass validation. A downstream GitHub commit stages both atomically.
+ SEASON_ARCHIVE.write_text(json.dumps(baseline,indent=2)+"\n")
  return report
 def main():
  now=datetime.now(timezone.utc)
