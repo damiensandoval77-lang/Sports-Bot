@@ -41,6 +41,7 @@
 @media(max-width:360px){.player-group>.mainline .head strong{font-size:15px}.health-pill{font-size:10px}}
 .tracker-team th{text-align:left;background:var(--surface2,#192532);font-weight:800;padding:9px 10px;border-top:1px solid var(--border,#334155);}
 .tracker-position th{text-align:left;font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;padding:6px 10px;background:var(--surface,#101a26);color:var(--muted,#94a3b8);}
+.tracker-mode-note{font-size:.76rem;opacity:.87;margin:6px 0 8px;}
 </style></head><body><main>
 <div class="top"><div><div class="eyebrow">DAME'S PICKS · NFL</div><h1>AI Prop Board</h1><small>Same interface · separate NFL engine</small></div><span id="status" class="status warn">CONNECTING</span></div>
 <div class="summary"><div class="metric"><b id="allcount">—</b><small>Saved lines</small></div><div class="metric"><b id="gamecount">—</b><small>Scheduled season games</small></div><div class="metric"><b id="gradecount">—</b><small>Graded</small></div></div>
@@ -171,6 +172,7 @@ function liveComparisonRows(game,rows){
   !players.length?'Player stats awaiting publication; saved lines remain visible.':'Live ESPN box-score statistics are provisional.';
  return '<div class="scorewrap"><strong>Frozen line vs live stats · '+esc(source?.status_text||"Feed pending")+'</strong>'+
   '<small>'+esc(notice)+' Final grades use independently verified nflverse stats. Feed updated '+esc(state.live?.checked_at||"unavailable")+'.</small>'+
+  '<div class="tracker-mode-note" data-tracker-mode="standard-team-position-v2">Standard lines only · grouped by team → position → player</div>'+
   '<div class="boxscore-scroll"><table class="scoretable"><thead><tr><th>Player / stat</th><th>Frozen</th><th>AI</th><th>Live</th><th>Pace</th><th>Pick</th></tr></thead><tbody>'+
   rows.slice(0,MAX).map((r,i,visible)=>{
     const previous=visible[i-1];
@@ -289,7 +291,12 @@ function render(){
  const selected=state.schedule.find(g=>g.game_id===state.game);
  const missing=selected?'This NFL game is scheduled, but no matching PrizePicks props were captured. The matchup is not missing from the season schedule.':'No matching saved props for this week. The NFL schedule is shown independently of sportsbook availability.';
  document.getElementById("cards").innerHTML=view.length?groupPlayerMarkets(view.slice(0,180)).map(playerMarketCard).join(""):'<div class="empty">'+esc(missing)+'</div>';
+ // An auto-refresh must not close a matchup the user is inspecting.
+ const wasOpen=new Set([...document.querySelectorAll('#livegames details[data-livegame][open]')].map(el=>el.dataset.livegame));
  document.getElementById("livegames").innerHTML=schedule.length?schedule.map(g=>matchupCard(g,all)).join(""):'<div class="empty">NFL schedule unavailable for this week.</div>';
+ for(const el of document.querySelectorAll('#livegames details[data-livegame]')){
+   if(wasOpen.has(el.dataset.livegame))el.open=true;
+ }
  document.querySelectorAll("details[data-boxgame]").forEach(el=>el.addEventListener("toggle",()=>{if(el.open)revealBoxscore(el)}));
  document.getElementById("grades").innerHTML=state.grades.length?state.grades.slice(0,200).map(r=>'<article class="prop mainline"><div class="head"><strong>'+esc(r.player)+'</strong><span class="tag '+(Number(r.won)===1?"over":"under")+'">'+esc(r.result||"PENDING")+'</span></div><small>'+esc(r.stat)+' · '+esc(r.team)+' vs '+esc(r.opponent)+'</small><div class="vals"><div class="val"><b>'+esc(r.line)+'</b><small>Frozen line</small></div><div class="val"><b>'+esc(r.actual)+'</b><small>Actual</small></div><div class="val"><b>'+esc(r.pick)+'</b><small>Pick</small></div></div></article>').join(""):'<div class="empty">No real completed-game grading published yet. This does not mean all predictions hit or missed.</div>';
 }
