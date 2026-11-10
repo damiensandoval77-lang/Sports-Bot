@@ -8,7 +8,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'docs/nfl/**'
+      - 'docs/nfl/index.html'
       - 'tests/test_nfl_live_ui.cjs'
       - '.github/workflows/nfl-live-ui-qa.yml'
   schedule:
@@ -40,6 +40,7 @@ jobs:
         env:
           NFL_UI_URL: https://damiensandoval77-lang.github.io/Sports-Bot/nfl/
           NFL_SCREENSHOT_DIR: nfl-ui-artifacts/production
+          NFL_REQUIRE_DEPLOYED_VERSION: ${{ github.event_name != 'pull_request' }}
         run: node tests/test_nfl_live_ui.cjs
       - name: Preserve mobile and desktop screenshots for review
         if: always()
