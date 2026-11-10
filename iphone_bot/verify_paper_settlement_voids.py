@@ -16,10 +16,19 @@ def verify(rows,report):
         url=row.get("void_source_url","")
         parsed=urlparse(url)
         parts=parsed.path.strip("/").split("/")
-        if (row.get("result")!="VOID" or not str(row.get("void_reason") or "").strip()
-            or parsed.scheme!="https" or parsed.netloc!="www.nba.com"
-            or len(parts)<2 or parts[0]!="game" or not parts[1]):
-            raise ValueError("NBA_DNP_VOID_MISSING_VERIFIED_FINAL_PROVENANCE")
+        reasons=[]
+        if row.get("result")!="VOID":reasons.append("not_void_result")
+        if not str(row.get("void_reason") or "").strip():reasons.append("no_dnp_reason")
+        if parsed.scheme!="https" or parsed.netloc!="www.nba.com":
+            reasons.append("unexpected_url_origin")
+        if len(parts)<2 or parts[0]!="game" or not parts[1]:
+            reasons.append("missing_source_game_id")
+        if reasons:
+            raise ValueError("NBA_DNP_VOID_MISSING_VERIFIED_FINAL_PROVENANCE: "+
+                             ",".join(reasons)+
+                             " url_path="+parsed.path[:80]+
+                             " evidence_keys="+",".join(sorted(
+                               k for k in row if k.startswith("void_"))))
         try:
             at=dt.datetime.fromisoformat(row["void_recorded_at"].replace("Z","+00:00"))
         except (KeyError,AttributeError,ValueError) as exc:
