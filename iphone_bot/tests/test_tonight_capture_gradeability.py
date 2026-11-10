@@ -8,12 +8,12 @@ SCHEDULE={"status":"THIRD_PARTY_NBA_SCHEDULE_ONLY","coverage_complete":True,
           {"game":"C @ D","date_eastern":"2026-11-09","start":"2026-11-10T01:00:00Z"}]}
 def quote(game="A @ B"):
  return {"source":"independent_prizepicksapi_com","is_demo":False,
-  "game":game,"starts_at":"2026-11-10T00:00:00Z","player":"X","team":"A","stat":"PTS","tier":"standard"}
+  "game":game,"starts_at":"2026-11-10T00:00:00Z","player":"X","team":"A","stat":"PTS","line":15.5,"tier":"standard"}
 def ai(game="A @ B"):
  return {"is_pregame_prediction":True,"line":None,"game":game,
    "start":"2026-11-10T00:00:00Z"}
 def frozen(game="A @ B"):
- return {"game":game,"start":"2026-11-10T00:00:00Z","grade":"PENDING", "player":"X","team":"A","stat":"PTS"}
+ return {"game":game,"start":"2026-11-10T00:00:00Z","grade":"PENDING", "player":"X","team":"A","stat":"PTS","line":15.5}
 def audit(q=None,a=None,f=None,actual=None,now=NOW):
  q=q if q is not None else [quote(),quote("C @ D")]
  a=a if a is not None else [ai(),ai("C @ D")]
@@ -31,6 +31,12 @@ class CaptureAuditTests(unittest.TestCase):
  def test_standard_market_missing_even_with_other_frozen_market(self):
   second={**quote(),"player":"Y","tier":"standard"}
   out=audit(q=[quote(),second,quote("C @ D")])
+  self.assertEqual(out["status"],"CAPTURE_INCOMPLETE")
+  self.assertIn("A @ B: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",out["issues"])
+  self.assertEqual(out["games"][0]["standard_markets_without_frozen_model"],1)
+ def test_different_saved_standard_threshold_is_missing_not_covered(self):
+  moved={**quote(),"line":16.5}
+  out=audit(q=[quote(),moved,quote("C @ D")])
   self.assertEqual(out["status"],"CAPTURE_INCOMPLETE")
   self.assertIn("A @ B: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",out["issues"])
   self.assertEqual(out["games"][0]["standard_markets_without_frozen_model"],1)
