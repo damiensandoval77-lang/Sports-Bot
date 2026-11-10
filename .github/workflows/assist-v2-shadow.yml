@@ -5,6 +5,9 @@ on:
     paths:
       - 'iphone_bot/assist_v2_*.py'
       - 'iphone_bot/tests/test_assist_v2_*.py'
+      - 'iphone_bot/verified_research_no_play.py'
+      - 'iphone_bot/tests/test_verified_research_no_play.py'
+      - 'docs/verified_research_dnps_2026-11-06_07.json'
       - '.github/workflows/assist-v2-shadow.yml'
   workflow_dispatch:
   schedule:
@@ -32,6 +35,7 @@ jobs:
         run: |
           python -m py_compile iphone_bot/assist_v2_research.py iphone_bot/assist_v2_shadow_capture.py
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_v2_*.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_research_no_play.py' -v
       # A current-form outage must not prevent settling historical snapshots.
       - name: Load current player form for strictly prior game logs
         id: refresh_form
@@ -62,10 +66,10 @@ jobs:
           r=json.load(open('docs/assist_v2_shadow_results.json'))
           assert len(p)==len({identity(x) for x in p}), 'Duplicate market snapshots'
           assert all(x['model']=='ASSIST_V2_SHADOW_RESEARCH' and x['production_applied'] is False for x in p)
-          assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in p)
+          assert all(x['status'] in ('PENDING','SETTLED','VOID_DNP','INVALID_LATE_CAPTURE') for x in p)
           assert all(utc(x['captured_at'])<utc(x['event_start']) for x in p if x['status']!='INVALID_LATE_CAPTURE')
           assert r['research_only'] is True and r['prospective_pretip_locked'] is True
-          assert r['captured']==len(p) and r['settled']+r['pending']<=len(p)
+          assert r['captured']==len(p) and r['settled']+r['pending']+r.get('verified_no_play_voids',0)==len(p)
           paired=r['paired_comparison']
           assert paired['paired_direction_markets']<=r['independent_settled_markets']
           assert paired['paired_v2_wins']<=paired['paired_direction_markets']
