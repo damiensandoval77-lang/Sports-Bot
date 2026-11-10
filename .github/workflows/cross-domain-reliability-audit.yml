@@ -1,0 +1,28 @@
+name: Cross-domain Sports-Bot reliability audit (no provider credits)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '9,39 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/audit_failure_domains.py'
+      - '.github/workflows/cross-domain-reliability-audit.yml'
+permissions:
+  contents: read
+concurrency:
+  group: sports-bot-readonly-reliability-audit
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate audit script syntax without using provider APIs
+        run: python -m py_compile iphone_bot/audit_failure_domains.py
+      - name: Check preserved standard NFL grades, source readiness, captures and live data
+        run: python -m iphone_bot.audit_failure_domains
