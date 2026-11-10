@@ -52,6 +52,25 @@ def select_standard(offers):
         for k,v in excluded.items():reasons[k]+=v
     return selected,dict(reasons)
 
+def resolve_current_roster_identity(player, game, roster, latest_team):
+    """Match a name to one last-observed team present in this exact fixture.
+
+    Never infer a roster assignment from a sportsbook quote alone. Historical
+    traded-team rows are not independent identities for the same player.
+    """
+    sides=[TEAM.get(x.strip()) for x in str(game or "").split(" @ ")]
+    if len(sides)!=2 or None in sides or sides[0]==sides[1]:
+        return None,"GAME_TEAM_IDENTITY_MISMATCH"
+    candidates=set()
+    for pid,team in roster.get(str(player or "").casefold(),set()):
+        if team in sides and latest_team.get(pid)==team:
+            candidates.add((pid,team))
+    if len(candidates)!=1:
+        return None,("CURRENT_ROSTER_IDENTITY_NOT_VERIFIED" if not candidates
+                     else "PLAYER_IDENTITY_NOT_UNIQUE")
+    pid,team=next(iter(candidates))
+    return (pid,team,sides[0] if sides[1]==team else sides[1]),None
+
 def feature_vector(history,team,opponent,day,team_context):
     common,reason=build_features(history,team,opponent,day,team_context)
     if reason:return None,reason
@@ -90,21 +109,28 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
     rejected=defaultdict(int,excluded)
     by_id=defaultdict(list)
     roster=defaultdict(set)
+    latest_by_id={}
     for r in records:
-        by_id[str(r["id"])].append(r)
-        roster[str(r.get("player","")).casefold()].add((str(r["id"]),r["team"]))
+        pid=str(r["id"])
+        by_id[pid].append(r)
+        roster[str(r.get("player","")).casefold()].add((pid,r["team"]))
+        # Resolve traded histories using the latest actual player-game date,
+        # not a historical team from the same season or a guessed quote team.
+        day_seen=str(r.get("date") or "")
+        if day_seen and (pid not in latest_by_id or day_seen>latest_by_id[pid][0]):
+            latest_by_id[pid]=(day_seen,r["team"])
+        elif pid in latest_by_id and day_seen==latest_by_id[pid][0] and r["team"]!=latest_by_id[pid][1]:
+            latest_by_id[pid]=(day_seen,None)
+    latest_team={pid:team for pid,(_,team) in latest_by_id.items()}
     defense=build_team_games(records,season="2026-27")
     cache={}
     predictions=[]
     for item in selected:
-        matches=roster.get(str(item.get("player","")).casefold(),set())
-        if len(matches)!=1:
-            rejected["PLAYER_IDENTITY_NOT_UNIQUE"]+=1;continue
-        pid,team=next(iter(matches))
-        sides=[TEAM.get(x.strip()) for x in str(item.get("game","")).split(" @ ")]
-        if len(sides)!=2 or None in sides or team not in sides or sides[0]==sides[1]:
-            rejected["GAME_TEAM_IDENTITY_MISMATCH"]+=1;continue
-        opponent=sides[0] if sides[1]==team else sides[1]
+        identity,reason=resolve_current_roster_identity(
+            item.get("player"),item.get("game"),roster,latest_team)
+        if reason:
+            rejected[reason]+=1;continue
+        pid,team,opponent=identity
         tip=stamp(item["start"]);observed=stamp(item["market_updated"])
         if not(now<tip and observed<=now and observed<tip):
             rejected["LATE_OR_INVALID_MARKET"]+=1;continue
