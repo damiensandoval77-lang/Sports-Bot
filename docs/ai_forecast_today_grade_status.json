@@ -1,37 +1,37 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-10T02:52:52.070443+00:00",
+  "generated_at": "2026-11-10T03:21:52.879764+00:00",
   "game_date_eastern": "2026-11-09",
-  "recorded_pregame_forecasts": 656,
-  "graded": 216,
+  "recorded_pregame_forecasts": 756,
+  "graded": 296,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 216,
-  "ungraded": 440,
-  "new_grades": 0,
+  "accounted_for": 296,
+  "ungraded": 460,
+  "new_grades": 80,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 54,
-      "mae": 4.948,
-      "mean_signed_error": -0.433
+      "graded": 74,
+      "mae": 5.001,
+      "mean_signed_error": -0.345
     },
     "REB": {
-      "graded": 54,
-      "mae": 2.059,
-      "mean_signed_error": 0.337
+      "graded": 74,
+      "mae": 1.946,
+      "mean_signed_error": 0.47
     },
     "AST": {
-      "graded": 54,
-      "mae": 1.309,
-      "mean_signed_error": -0.065
+      "graded": 74,
+      "mae": 1.327,
+      "mean_signed_error": -0.073
     },
     "PRA": {
-      "graded": 54,
-      "mae": 6.759,
-      "mean_signed_error": -0.115
+      "graded": 74,
+      "mae": 6.714,
+      "mean_signed_error": -0.038
     }
   },
   "ungraded_by_game": {
@@ -39,7 +39,8 @@
     "Denver Nuggets @ Houston Rockets": 96,
     "Indiana Pacers @ Dallas Mavericks": 108,
     "Los Angeles Lakers @ Atlanta Hawks": 24,
-    "Memphis Grizzlies @ Toronto Raptors": 96,
+    "Memphis Grizzlies @ Toronto Raptors": 16,
+    "New Orleans Pelicans @ Golden State Warriors": 100,
     "San Antonio Spurs @ Phoenix Suns": 92,
     "Washington Wizards @ Detroit Pistons": 8
   },
@@ -115,30 +116,37 @@
       "Quentin Grimes"
     ],
     "Memphis Grizzlies @ Toronto Raptors": [
-      "Alijah Martin",
-      "Allen Graves",
-      "Cam Spencer",
-      "Cameron Boozer",
-      "Cedric Coward",
       "Collin Murray-Boyles",
-      "GG Jackson",
       "Immanuel Quickley",
       "Isaiah Stewart",
-      "Ja'Kobe Walter",
-      "Jaden Bradley",
-      "Jakob Poeltl",
-      "Jamal Shead",
-      "Jamison Battle",
-      "Jaylen Wells",
-      "Jerami Grant",
-      "Kris Murray",
-      "Kyle Anderson",
-      "Quinten Post",
-      "RJ Barrett",
-      "Scottie Barnes",
-      "Trayce Jackson-Davis",
-      "Ty Jerome",
-      "Zach Edey"
+      "Scottie Barnes"
+    ],
+    "New Orleans Pelicans @ Golden State Warriors": [
+      "Al Horford",
+      "Bennedict Mathurin",
+      "Brandin Podziemski",
+      "Brandon Williams",
+      "Bryce McGowens",
+      "Charles Bassey",
+      "De'Anthony Melton",
+      "Dejounte Murray",
+      "Derik Queen",
+      "Draymond Green",
+      "Gary Payton II",
+      "Georges Niang",
+      "Graham Ike",
+      "Gui Santos",
+      "Herbert Jones",
+      "Jeremiah Fears",
+      "Karlo Matkovi\u0107",
+      "LJ Cryer",
+      "Saddiq Bey",
+      "Stephen Curry",
+      "Trendon Watford",
+      "Trey Murphy III",
+      "Will Richard",
+      "Yaxel Lendeborg",
+      "Zion Williamson"
     ],
     "San Antonio Spurs @ Phoenix Suns": [
       "Carter Bryant",
@@ -170,13 +178,13 @@
       "Tolu Smith"
     ]
   },
-  "ungraded_distinct_player_markets": 440,
+  "ungraded_distinct_player_markets": 460,
   "final_feed": {
-    "pending_matchups": 11,
-    "final_nba_games": 4,
+    "pending_matchups": 12,
+    "final_nba_games": 5,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 86,
+    "retrieved_player_lines": 110,
     "errors": [
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
@@ -190,14 +198,14 @@
     "cached_official_id_candidates": 4,
     "final_cached_id_nba_games": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 86,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 110,
+    "newly_retrieved_verified_rows": 24,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 48,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 392
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 64,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 396
     },
     "players": [
       {
@@ -1909,674 +1917,814 @@
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cam Spencer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cam Spencer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cam Spencer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cam Spencer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Boozer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Boozer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Boozer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Boozer",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cedric Coward",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cedric Coward",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cedric Coward",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cedric Coward",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Collin Murray-Boyles",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Collin Murray-Boyles",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Collin Murray-Boyles",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Collin Murray-Boyles",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "GG Jackson",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "GG Jackson",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "GG Jackson",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "GG Jackson",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Immanuel Quickley",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Immanuel Quickley",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Immanuel Quickley",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Immanuel Quickley",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Isaiah Stewart",
         "team": "MEM",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Isaiah Stewart",
         "team": "MEM",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Isaiah Stewart",
         "team": "MEM",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Isaiah Stewart",
         "team": "MEM",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Wells",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Wells",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Wells",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Wells",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jerami Grant",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jerami Grant",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jerami Grant",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jerami Grant",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quinten Post",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quinten Post",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quinten Post",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quinten Post",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Scottie Barnes",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Scottie Barnes",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Scottie Barnes",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Scottie Barnes",
         "team": "TOR",
         "game": "Memphis Grizzlies @ Toronto Raptors",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Ty Jerome",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Bennedict Mathurin",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Ty Jerome",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Bennedict Mathurin",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Ty Jerome",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Bennedict Mathurin",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Ty Jerome",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Bennedict Mathurin",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Zach Edey",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Zach Edey",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Zach Edey",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Zach Edey",
-        "team": "MEM",
-        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dejounte Murray",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dejounte Murray",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dejounte Murray",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dejounte Murray",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephen Curry",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephen Curry",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephen Curry",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephen Curry",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
