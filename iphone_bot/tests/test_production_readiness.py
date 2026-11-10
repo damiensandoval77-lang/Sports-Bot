@@ -110,12 +110,14 @@ class StrictProductionReadinessTests(unittest.TestCase):
         data["nba_schedule.json"].update({"games":[],"total_games":0})
         self.assertEqual(check(NOW,data)["status"],"BLOCKED")
 
-    def test_empty_production_pick_board_not_healthy(self):
+    def test_legacy_sportsbook_outage_does_not_block_verified_prizepicks_site(self):
         data=fixtures()
         data["data.json"]["picks"]=[]
         data["ai_comparisons.json"]["comparisons"]=[]
         r=check(NOW,data)
-        self.assertEqual(r["status"],"DEGRADED")
+        self.assertEqual(r["status"],"READY")
+        self.assertFalse(r["components"]["published_pick_cards"]["required"])
+        self.assertEqual(r["components"]["published_pick_cards"]["state"],"DEGRADED")
         self.assertIn("NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
                       r["components"]["published_pick_cards"]["reasons"])
 
@@ -230,6 +232,15 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("PP_RESEARCH_SOURCE_PARTIAL",reasons)
         self.assertIn("DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT",reasons)
         self.assertEqual(result["components"]["prizepicks_research_cards"]["state"],"DEGRADED")
+
+    def test_legacy_sportsbook_outage_does_not_hide_missing_prizepicks_browser(self):
+        data=fixtures()
+        data["data.json"]["picks"]=[]
+        data["ai_comparisons.json"]["comparisons"]=[]
+        data["browser_card_probe.json"]["browser_render_verified"]=False
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertIn("public_browser",result["degraded_components"])
 
     def test_missing_nightly_grade_report_degrades(self):
         data=fixtures()
