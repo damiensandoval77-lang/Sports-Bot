@@ -16,7 +16,13 @@ on:
       - '.github/workflows/nba-ai-comparisons.yml'
       - '.github/workflows/prizepicks-full-board-tests.yml'
   push:
-    branches: ['fix/20261107-full-prizepicks-slate']
+    branches: ['main','fix/20261107-full-prizepicks-slate']
+    paths:
+      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/publish_prizepicks_site.py'
+      - 'iphone_bot/tests/test_prizepicks_per_date_coverage.py'
+      - '.github/workflows/prizepicks-full-board-tests.yml'
 permissions:
   contents: read
 jobs:
