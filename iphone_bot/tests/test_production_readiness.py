@@ -24,6 +24,14 @@ def fixtures(now=NOW):
          "prizepicks_overdue":0,"paper_overdue":0,"capture_missing":False,
          "ai_forecasts_ungraded":0,
          "ai_forecast_accuracy_status":"AI_PRETIP_FORECASTS_GRADED"},
+     "tonight_capture_gradeability.json":{
+         "status":"CAPTURE_VERIFIED","checked_at":STAMP,
+         "game_date_eastern":"2026-11-09",
+         "summary":{"schedule_games":1,"games_with_saved_source_quotes":1,
+                    "games_with_frozen_ai":1,"total_standard_source_quotes":3,
+                    "total_standard_markets_without_frozen_model":0,
+                    "total_missing_primary_with_separate_research_receipt":0,
+                    "total_missing_primary_without_any_ai_receipt":0}},
      "nba_player_tracking_independent.json":{},
      "data.json":{"updated_at":STAMP,"slate_events_checked":1,
                   "market_coverage_limited":False,
@@ -114,6 +122,53 @@ class StrictProductionReadinessTests(unittest.TestCase):
         r=check(NOW,data)
         self.assertIn("PUBLISHED_PICK_BOARD_STALE",
                       r["components"]["published_pick_cards"]["reasons"])
+
+    def test_unfrozen_standard_quotes_block_full_production_readiness(self):
+        data=fixtures()
+        capture=data["tonight_capture_gradeability.json"]
+        capture["status"]="CAPTURE_INCOMPLETE"
+        capture["summary"].update(
+            total_standard_markets_without_frozen_model=3,
+            total_missing_primary_with_separate_research_receipt=2,
+            total_missing_primary_without_any_ai_receipt=1)
+        result=check(NOW,data)
+        self.assertFalse(result["ready_for_trustworthy_picks"])
+        self.assertIn("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL",
+                      result["components"]["pregame_capture"]["reasons"])
+        self.assertTrue(result["components"]["pregame_capture"]["required"])
+
+    def test_research_receipt_cannot_erase_primary_model_gap(self):
+        data=fixtures()
+        capture=data["tonight_capture_gradeability.json"]
+        capture["status"]="CAPTURE_INCOMPLETE"
+        capture["summary"].update(
+            total_standard_markets_without_frozen_model=3,
+            total_missing_primary_with_separate_research_receipt=3,
+            total_missing_primary_without_any_ai_receipt=0)
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertIn("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL",
+                      result["components"]["pregame_capture"]["reasons"])
+
+    def test_wrong_slate_and_stale_capture_cannot_claim_ready(self):
+        data=fixtures()
+        capture=data["tonight_capture_gradeability.json"]
+        capture["checked_at"]="2026-11-08T11:00:00Z"
+        capture["game_date_eastern"]="2026-11-08"
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertIn("CAPTURE_REPORT_STALE",result["components"]["pregame_capture"]["reasons"])
+        self.assertIn("CAPTURE_REPORT_WRONG_SLATE_DATE",result["components"]["pregame_capture"]["reasons"])
+
+    def test_inconsistent_capture_counts_fail_closed(self):
+        data=fixtures()
+        data["tonight_capture_gradeability.json"]["summary"].update(
+            total_standard_markets_without_frozen_model=2,
+            total_missing_primary_with_separate_research_receipt=2,
+            total_missing_primary_without_any_ai_receipt=2)
+        result=check(NOW,data)
+        self.assertIn("CAPTURE_RECONCILIATION_INCONSISTENT",
+                      result["components"]["pregame_capture"]["reasons"])
 
     def test_nightly_grade_incomplete_degrades(self):
         data=fixtures()
