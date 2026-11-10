@@ -21,6 +21,8 @@ on:
 
 permissions:
   contents: write
+  issues: write
+  actions: write
 
 concurrency:
   group: nba-production-readiness
@@ -41,6 +43,7 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_scoreboard_snapshot.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_readiness_recovery.py' -v
       - name: Recover independent scoreboard before readiness evaluation
         id: scoreboard_repair
         if: github.event_name != 'pull_request'
@@ -77,6 +80,78 @@ jobs:
             if git push origin HEAD:main; then exit 0; fi
           done
           exit 1
+      - name: Route degraded components to bounded automatic recovery
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Schedule checks remain red until a later real browser/feed audit
+          # passes. Recovery dispatch must not modify or fabricate predictions.
+          python -m iphone_bot.readiness_recovery docs/production_readiness.json > "$RUNNER_TEMP/recovery_targets"
+          while IFS= read -r workflow; do
+            [ -n "$workflow" ] || continue
+            case "$workflow" in
+              nba-prizepicks-full-slate.yml) cooldown_minutes=90 ;;
+              *) cooldown_minutes=35 ;;
+            esac
+            # Compare with actual started runs, including in-progress.
+            # Prevent every 20-minute audit from buying another board.
+            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status |
+              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" '
+                [.[] | select((.createdAt | fromdateiso8601) >= $cutoff)] | length')
+            if [ "$recent" -gt 0 ]; then
+              echo "Skipping $workflow: an execution started within $cooldown_minutes minutes"
+              continue
+            fi
+            echo "Dispatching bounded recovery: $workflow"
+            gh workflow run "$workflow" --ref main
+          done < "$RUNNER_TEMP/recovery_targets"
+      - name: Open or resolve recurring production incident automatically
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          report=docs/production_readiness.json
+          test -f "$report"
+          title="Automated incident: NBA production readiness degraded"
+          existing=$(gh issue list --state all --limit 100 --json number,title,state |
+            jq -r --arg title "$title" '[.[] | select(.title == $title)] | first | .number // empty')
+          status=$(jq -r '.status // "UNKNOWN"' "$report")
+          if [ "$status" = "READY" ]; then
+            if [ -n "$existing" ]; then
+              state=$(gh issue view "$existing" --json state --jq '.state')
+              if [ "$state" = "OPEN" ]; then
+                gh issue close "$existing" --comment "Readiness gate recovered to READY. Verification report: docs/production_readiness.json. Reopen automatically on regression."
+              fi
+            fi
+            exit 0
+          fi
+          {
+            echo "Automated incident from the scheduled NBA readiness gate."
+            echo
+            echo "Current status: **$status**"
+            echo "Checked at: $(jq -r '.checked_at // "unknown"' "$report")"
+            echo "Required checks passing: $(jq -r '.passing_required_checks // 0' "$report") / $(jq -r '.required_checks // 0' "$report")"
+            echo
+            echo "### Failing required components"
+            jq -r '.components | to_entries[] | select(.value.required == true and .value.state != "READY") | "- **" + .key + "** (" + .value.state + "): " + (.value.reasons | join(", "))' "$report"
+            echo
+            echo "See [production readiness report](https://github.com/$GH_REPO/blob/main/docs/production_readiness.json) and [workflow history](https://github.com/$GH_REPO/actions/workflows/production_readiness.yml)."
+            echo
+            echo "Do not label live picks READY until the fail-closed readiness gate passes."
+          } > "$RUNNER_TEMP/incident.md"
+          if [ -z "$existing" ]; then
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/incident.md"
+          else
+            gh issue reopen "$existing" 2>/dev/null || true
+            gh issue edit "$existing" --body-file "$RUNNER_TEMP/incident.md"
+          fi
       - name: Fail visibly when bot is not ready for reliable picks
         if: always() && github.event_name != 'pull_request' && steps.check.outcome == 'failure'
         run: |

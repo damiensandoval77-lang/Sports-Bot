@@ -133,6 +133,15 @@ def check(now,files):
     live_offers=[p for p in offers if isinstance(p,dict) and not p.get("is_demo") and
                  (t:=parse_time(p.get("starts_at"))) and t>now]
     if upcoming and not live_offers:issues.append("NO_UPCOMING_REAL_PROVIDER_LINES")
+    # A board can be fresh and nonempty while an entire scheduled matchup has
+    # zero actual standard lines. Never let one game's offers mask another.
+    live_games={p.get("game") for p in live_offers if
+                p.get("more_tier") in (None,"standard") and
+                p.get("less_tier") in (None,"standard")}
+    missing_provider_games=sorted({g.get("game") for g in upcoming
+                                   if g.get("game") not in live_games})
+    if missing_provider_games:
+        issues.append("UPCOMING_MATCHUPS_WITHOUT_STANDARD_PROVIDER_LINES")
     add("prizepicks_lines","READY" if not issues else "DEGRADED",issues,age,
         required=bool(upcoming))
 
@@ -238,6 +247,13 @@ def check(now,files):
         browser_issues.append("NO_PUBLIC_AI_CHANCES")
     if browser.get("games_without_rendered_matches"):
         browser_issues.append("PUBLIC_GAMES_MISSING_RENDERED_PROPS")
+    # Verify every not-yet-started matchup independently. A total count of
+    # hundreds of cards is not evidence that all games render any cards.
+    rendered_by_game=browser.get("rendered_matches_by_game")
+    if upcoming and (not isinstance(rendered_by_game,dict) or
+                     any(not isinstance(rendered_by_game.get(g.get("game")),int)
+                         or rendered_by_game[g.get("game")]<1 for g in upcoming)):
+        browser_issues.append("UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES")
     add("public_browser","READY" if not browser_issues else "DEGRADED",
         browser_issues,browser_age,required=bool(todays))
 

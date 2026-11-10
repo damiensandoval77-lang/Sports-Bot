@@ -18,7 +18,7 @@ def fixtures(now=NOW):
          "is_live_score_source":False,"games":[dict(GAME)]},
      "prizepicks_site.json":{"generated_at":STAMP,
          "status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES","complete_provider_board":True,
-         "partial_board":False,"board_coverage_scope":"NBA_ACTIVE_STANDARD_TIER_ONLY","board_offers":[{"starts_at":GAME["start"],"is_demo":False}]},
+         "partial_board":False,"board_coverage_scope":"NBA_ACTIVE_STANDARD_TIER_ONLY","board_offers":[{"starts_at":GAME["start"],"game":GAME["game"],"is_demo":False,"more_tier":"standard","less_tier":"standard"}]},
      "nightly_grade_health.json":{"checked_at":STAMP,
          "game_date_eastern":"2026-11-08",
          "prizepicks_overdue":0,"paper_overdue":0,"capture_missing":False,
@@ -35,7 +35,7 @@ def fixtures(now=NOW):
      "browser_card_probe.json":{
          "checked_at":STAMP,"status":"READY","browser_render_verified":True,
          "rendered_verified_standard_lines":3,"rendered_new_ai_chances":2,
-         "games_without_rendered_matches":[]},
+         "games_without_rendered_matches":[],"rendered_matches_by_game":{GAME["game"]:3}},
      "nba_schedule_horizon_audit.json":{
          "status":"READY","checked_at":STAMP,"season_fixed_games":1200,
          "next_14_days":[{"date_eastern":(NOW.date()+dt.timedelta(days=n)).isoformat(),
@@ -88,6 +88,21 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("STANDARD_ONLY_PROVIDER_SCOPE_UNVERIFIED",
                       result["components"]["prizepicks_lines"]["reasons"])
         self.assertFalse(result["ready_for_trustworthy_picks"])
+
+    def test_fresh_provider_board_missing_entire_matchup_fails(self):
+        data=fixtures()
+        data["prizepicks_site.json"]["board_offers"][0]["game"]="Another @ Matchup"
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertIn("UPCOMING_MATCHUPS_WITHOUT_STANDARD_PROVIDER_LINES",
+                      result["components"]["prizepicks_lines"]["reasons"])
+
+    def test_alternate_tiers_cannot_masquerade_as_standard_coverage(self):
+        data=fixtures()
+        data["prizepicks_site.json"]["board_offers"][0]["more_tier"]="demon"
+        result=check(NOW,data)
+        self.assertIn("UPCOMING_MATCHUPS_WITHOUT_STANDARD_PROVIDER_LINES",
+                      result["components"]["prizepicks_lines"]["reasons"])
 
     def test_missing_projections_block(self):
         data=fixtures()
@@ -214,6 +229,16 @@ class StrictProductionReadinessTests(unittest.TestCase):
         result=check(NOW,data)
         self.assertIn("CAPTURE_RECONCILIATION_INCONSISTENT",
                       result["components"]["pregame_capture"]["reasons"])
+
+    def test_browser_many_cards_but_one_matchup_missing_fails(self):
+        data=fixtures()
+        browser=data["browser_card_probe.json"]
+        browser["rendered_verified_standard_lines"]=191
+        browser["rendered_matches_by_game"]={}
+        result=check(NOW,data)
+        self.assertFalse(result["ready_for_trustworthy_picks"])
+        self.assertIn("UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES",
+                      result["components"]["public_browser"]["reasons"])
 
     def test_public_browser_missing_live_standard_cards_blocks_ready(self):
         data=fixtures()
