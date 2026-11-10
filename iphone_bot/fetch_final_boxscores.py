@@ -201,9 +201,20 @@ def espn_boxscore_rows(event,summary):
             keys={str(label).upper():i for i,label in enumerate(labels)}
             if not {"PTS","REB","AST","MIN"}.issubset(keys):continue
             for entry in table.get("athletes",[]):
+                if not isinstance(entry,dict):continue
+                player=entry.get("athlete") or {}
+                if not isinstance(player,dict):continue
                 values=entry.get("stats") or []
-                if not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):continue
-                player=entry.get("athlete",{})
+                # Explicit finalized ESPN DNP only: never treat missing numeric
+                # stats, empty arrays, or a roster omission as proof of absence.
+                reason=entry.get("reason") or entry.get("notPlayingReason")
+                if entry.get("didNotPlay") is True and isinstance(reason,str) and reason.strip():
+                    row=verified_dnp_player(player.get("displayName"),code,opp,day,
+                                            reason,"ESPN_FINAL",event_id)
+                    if row:rows.append(row)
+                    continue
+                if not isinstance(values,list) or not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):
+                    continue
                 row=box_player(player.get("displayName"),code,opp,day,
                                values[keys["PTS"]],values[keys["REB"]],
                                values[keys["AST"]],values[keys["MIN"]],
