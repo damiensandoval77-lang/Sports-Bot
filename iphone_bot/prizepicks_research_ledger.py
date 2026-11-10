@@ -370,8 +370,8 @@ def main():
         return
     graded["updated_at"]=datetime.now(timezone.utc).isoformat()
     LEDGER.parent.mkdir(parents=True,exist_ok=True)
-    LEDGER.write_text(json.dumps(graded,indent=2)+"\\n")
-    RESULTS.write_text(json.dumps(report,indent=2)+"\\n")
+    LEDGER.write_text(json.dumps(graded,indent=2)+"\n")
+    RESULTS.write_text(json.dumps(report,indent=2)+"\n")
     print("PrizePicks research ledger:",len(graded["records"]),
           "new:",frozen["new"],"settled:",
           sum(r.get("status")=="SETTLED" for r in graded["records"]))
