@@ -44,6 +44,28 @@ class ObservedPregameArchiveTests(unittest.TestCase):
         out=build(newer,old,now=NOW)
         self.assertEqual(out["count"],1)
         self.assertEqual(out["quotes"][0]["line"],15.5)
+    def test_price_movement_keeps_both_original_standard_thresholds(self):
+        at=dt.datetime(2026,11,9,23,59,tzinfo=dt.timezone.utc)
+        first=build(board(),now=at)
+        moved=board(generated_at="2026-11-09T23:59:00Z",
+                    board_offers=[line(id="pp_456",line=17.5,
+                                       observed_at="2026-11-09T23:58:30Z")])
+        out=build(moved,first,now=at)
+        self.assertEqual({q["line"] for q in out["quotes"]},{15.5,17.5})
+        self.assertEqual(out["count"],2)
+        again=build(moved,out,now=at)
+        self.assertEqual(again["count"],2)
+        self.assertEqual(next(q["observed_at"] for q in again["quotes"] if q["line"]==15.5),
+                         first["quotes"][0]["observed_at"])
+    def test_unchanged_price_does_not_change_original_observation(self):
+        at=dt.datetime(2026,11,9,23,59,tzinfo=dt.timezone.utc)
+        first=build(board(),now=at)
+        new=board(generated_at="2026-11-09T23:59:00Z",
+                  board_offers=[line(id="pp_456",observed_at="2026-11-09T23:58:30Z")])
+        again=build(new,first,now=at)
+        self.assertEqual(again["count"],1)
+        self.assertEqual(again["quotes"][0]["observed_at"],"2026-11-09T23:54:00Z")
+
     def test_provider_outage_keeps_pretip_archive(self):
         old=build(board(),now=NOW)
         self.assertEqual(build({},old,now=NOW)["quotes"],old["quotes"])
