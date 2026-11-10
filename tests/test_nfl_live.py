@@ -55,6 +55,20 @@ class NFLLiveTests(unittest.TestCase):
             self.assertEqual(result["status"],"ok")
             self.assertEqual(result["games"][0]["players"][0]["stats"]["REC"],3)
             self.assertEqual(json.loads((path/"schedule_2026.json").read_text()),original)
+    def test_monday_night_scoreboard_queries_eastern_and_utc_dates(self):
+        with tempfile.TemporaryDirectory() as root:
+            path=Path(root)
+            (path/"schedule_2026.json").write_text(json.dumps({"games":[self.game()]}))
+            queried=[]
+            def fetch(url):
+                if "scoreboard?" in url:
+                    queried.append(url)
+                    return self.scoreboard()
+                return self.summary()
+            snapshot(datetime(2026,11,10,1,20,tzinfo=timezone.utc),
+                     fetch=fetch,data_dir=path)
+            self.assertTrue(any("dates=20261109" in url for url in queried))
+            self.assertTrue(any("dates=20261110" in url for url in queried))
     def test_feed_failures_have_explicit_status_not_fabricated_stats(self):
         with tempfile.TemporaryDirectory() as root:
             path=Path(root)

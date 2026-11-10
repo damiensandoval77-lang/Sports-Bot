@@ -8,6 +8,7 @@ import json
 import os
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 from urllib.request import Request, urlopen
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -109,8 +110,16 @@ def snapshot(now=None,fetch=load,data_dir=DATA):
     if not games:return {"season":2026,"checked_at":now.isoformat(),"source":"espn_public_scoreboard",
                          "games":[],"status":"no_active_window"}
     # Query source gameday and current UTC day to cover ET evening games.
-    dates={datetime.fromisoformat(g["kickoff_utc"].replace("Z","+00:00")).strftime("%Y%m%d") for g in games}
+    # ESPN scoreboard date filters can be keyed to the US game day rather
+    # than the UTC calendar day. Monday 8:15pm ET is Tuesday 01:15 UTC.
+    ny=ZoneInfo("America/New_York")
+    dates=set()
+    for game in games:
+        kickoff=datetime.fromisoformat(game["kickoff_utc"].replace("Z","+00:00"))
+        dates.add(kickoff.strftime("%Y%m%d"))
+        dates.add(kickoff.astimezone(ny).strftime("%Y%m%d"))
     dates.add(now.strftime("%Y%m%d"))
+    dates.add(now.astimezone(ny).strftime("%Y%m%d"))
     found={}
     errors=[]
     for date in sorted(dates):
