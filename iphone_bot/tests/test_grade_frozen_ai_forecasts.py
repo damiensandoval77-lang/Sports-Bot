@@ -1,4 +1,5 @@
 import datetime as dt
+import inspect
 import unittest
 
 from iphone_bot.grade_frozen_ai_forecasts import (
@@ -88,6 +89,15 @@ class FrozenAiGradingTests(unittest.TestCase):
         self.assertEqual(audit["graded"],0)
         self.assertEqual(audit["ungraded"],0)
         self.assertEqual(audit["accounted_for"],1)
+
+    def test_cache_rebuild_keeps_explicit_boxscore_dnp_source(self):
+        # Regression: the first inactivity pass included verified DNPs, but
+        # the second pass after final-cache reconciliation dropped them.
+        from iphone_bot import grade_frozen_ai_forecasts as grader
+        source=inspect.getsource(grader.main)
+        second=source.split("actuals=saved",1)[1]
+        self.assertIn("verified_boxscore_dnp_subset(actuals)",second)
+        self.assertIn("confirmed_inactives=confirmed_inactives",second)
 
     def test_missing_name_unverified_dnp_is_not_excluded(self):
         chosen=eligible_predictions([forecast(player="Other Player")],NOW)
