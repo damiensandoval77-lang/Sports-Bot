@@ -11,9 +11,9 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 try:
-    from .capture_live_research import players,matchup
+    from .capture_live_research import players,matchup,get as fetch_espn
 except ImportError:
-    from capture_live_research import players,matchup
+    from capture_live_research import players,matchup,get as fetch_espn
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/"docs/live_player_tracking.json"
@@ -21,8 +21,9 @@ BASE="https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
 ET=ZoneInfo("America/New_York")
 
 def get(path):
-    req=urllib.request.Request(BASE+path,headers={"User-Agent":"Mozilla/5.0","Accept":"application/json"})
-    with urllib.request.urlopen(req,timeout=18) as response:return json.load(response)
+    # Share JSON validation / retry behavior with immutable research capture.
+    # A broken ESPN scoreboard must not overwrite the last verified snapshot.
+    return fetch_espn(path)
 
 def build(now,scoreboard,summaries,previous=None):
     data={"status":"OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
