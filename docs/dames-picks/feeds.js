@@ -129,7 +129,7 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
 function attachNFLGrades(rows,graded){
  const entries=new Map();
  for(const x of graded||[]){
-  if(x.grade_status!=="GRADED"||x.odds_type!=="standard"||n(x.actual)===null||
+  if(String(x.grade_status||"").toLowerCase()!=="graded"||x.odds_type!=="standard"||n(x.actual)===null||
    !["true","false","1","0"].includes(String(x.won).toLowerCase()))continue;
   const k=[x.game_id,x.player_id,x.stat,x.line,x.captured_at].join("|");
   if(entries.has(k))entries.set(k,null);else entries.set(k,x);

@@ -10,6 +10,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/merge_ai_actual_publishing.py'
+      - 'iphone_bot/tests/test_merge_ai_actual_publishing.py'
       - 'iphone_bot/fetch_final_boxscores.py'
       - 'iphone_bot/tests/test_final_boxscores.py'
       - 'iphone_bot/tests/test_direct_espn_final_recovery.py'
@@ -54,6 +56,7 @@ jobs:
       - name: Validate immutable pretip and final-player identity safeguards
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_ai_actual_publishing.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_final_boxscores.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_direct_espn_final_recovery.py' -v
           python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py iphone_bot/verified_final_cache.py
@@ -79,19 +82,10 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            python - <<'PY'
-          import json
-          from pathlib import Path
-          current=Path("docs/ai_forecast_actual_ledger.json")
-          new=Path(__import__("os").environ["RUNNER_TEMP"])/"ai_forecast_actual_ledger.json"
-          prior=json.loads(current.read_text()).get("records",[]) if current.exists() else []
-          recent=json.loads(new.read_text()).get("records",[])
-          def key(r):return tuple(r.get(k) for k in ("player_id","team","game","start","stat"))
-          merged={key(r):r for r in prior}
-          for r in recent:
-              merged.setdefault(key(r),r)
-          current.write_text(json.dumps({"version":1,"records":list(merged.values())},indent=2)+"\n")
-          PY
+            python -m iphone_bot.merge_ai_actual_publishing \
+              --current docs/ai_forecast_actual_ledger.json \
+              --incoming "$RUNNER_TEMP/ai_forecast_actual_ledger.json" \
+              --output docs/ai_forecast_actual_ledger.json
             # Merge source-linked immutable final rows across concurrent publisher commits.
             # Conflicting source observations are excluded, never silently overwritten.
             python - <<'PY'

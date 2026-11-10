@@ -205,3 +205,16 @@ test("Retained stale NBA backup observations never display as live even with fre
  const fresh={...base,games:[{...base.games[0],stale:false,observed_at:"2026-11-10T03:14:00Z"}]};
  assert.equal(m.attachLive(saved,fresh,null,now)[0].live.actual,12);
 });
+
+test("NFL published grader's actual lowercase 'graded' result is recognized exactly",()=>{
+ const p={sport:"NFL",gameId:"2026_10_BUF_MIA",playerId:"42",stat:"Pass Yards",
+  line:248.5,captured:"2026-11-09T18:00:00Z",grade:"PENDING",hit:null,actual:null};
+ const row={game_id:p.gameId,player_id:p.playerId,stat:p.stat,
+ line:String(p.line),captured_at:p.captured,odds_type:"standard",actual:"251",
+ won:"1",grade_status:"graded"};
+ const result=m.attachNFLGrades([p],[row])[0];
+ assert.equal(result.grade,"GRADED");
+ assert.equal(result.hit,true);
+ assert.equal(result.actual,251);
+ assert.equal(m.attachNFLGrades([p],[{...row,grade_status:"boxscore_unverified"}])[0].grade,"PENDING");
+});

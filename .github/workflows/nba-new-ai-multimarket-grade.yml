@@ -16,7 +16,11 @@ on:
       - 'docs/ai_forecast_actual_ledger.json'
       - '.github/workflows/nba-new-ai-multimarket-grade.yml'
   schedule:
-    - cron: '39 8,10,12 * * *'
+    # Check every 20 minutes during NBA game and postgame hours (UTC).
+    # The final player ledger may publish before the next morning's batch.
+    - cron: '07,27,47 0-10 * * *'
+    # Daytime catch-up after verified final sources recover.
+    - cron: '17 12,15,18,21 * * *'
 permissions:
   contents: write
 concurrency:
