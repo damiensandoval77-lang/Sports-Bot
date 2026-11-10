@@ -42,7 +42,7 @@ def safe_row(q):
     start,observed,generated=map(moment,(q["starts_at"],q["observed_at"],q["source_generated_at"]))
     return bool(start and observed and generated and observed<=generated<start and
                 (generated-observed).total_seconds()<=5400 and
-                (start-generated).total_seconds()<=21600)
+                (start-generated).total_seconds()<=86400)  # Valid quotes up to 24h pretip
 
 def build(site,old=None,now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
