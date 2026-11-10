@@ -215,14 +215,12 @@ def espn_boxscore_rows(event,summary):
                 played_minutes=(minutes(values[keys["MIN"]])
                                 if isinstance(values,list) and "MIN" in keys and keys["MIN"]<len(values) else None)
                 if entry.get("didNotPlay") is True:
-                    # The explicit final ESPN didNotPlay flag is proof even if
-                    # a separate reason string is unavailable. Missing players
-                    # and numeric-stat omissions never imply a DNP.
-                    if not (played_minutes is not None and played_minutes>0):
-                        explicit_reason=(reason.strip() if isinstance(reason,str) and reason.strip()
-                                         else "DNP - explicit ESPN final boxscore")
+                    # Require an explicit final-game reason; a blank or
+                    # contradictory DNP flag is not settlement evidence.
+                    if (isinstance(reason,str) and reason.strip() and
+                        not (played_minutes is not None and played_minutes>0)):
                         row=verified_dnp_player(player.get("displayName"),code,opp,day,
-                                                explicit_reason,"ESPN_FINAL",event_id)
+                                                reason,"ESPN_FINAL",event_id)
                         if row:rows.append(row)
                     continue
                 if not isinstance(values,list) or not {"PTS","REB","AST","MIN"}.issubset(keys) or not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):
