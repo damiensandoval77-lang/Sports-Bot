@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-10T03:32:43.105244+00:00",
+  "checked_at": "2026-11-10T04:33:52.785825+00:00",
   "game_date_eastern": "2026-11-09",
   "status": "BLOCKED",
   "ready_for_trustworthy_picks": false,
@@ -10,16 +10,20 @@
   "next_tip_at": null,
   "components": {
     "schedule": {
-      "state": "READY",
+      "state": "BLOCKED",
       "required": true,
-      "reasons": [],
-      "age_minutes": 80.7
+      "reasons": [
+        "STALE_SOURCE"
+      ],
+      "age_minutes": 141.9
     },
     "ai_forecasts": {
-      "state": "READY",
+      "state": "BLOCKED",
       "required": false,
-      "reasons": [],
-      "age_minutes": 80.7
+      "reasons": [
+        "STALE_SOURCE"
+      ],
+      "age_minutes": 141.9
     },
     "prizepicks_lines": {
       "state": "DEGRADED",
@@ -27,7 +31,7 @@
       "reasons": [
         "STALE_SOURCE"
       ],
-      "age_minutes": 120.8
+      "age_minutes": 182.0
     },
     "published_pick_cards": {
       "state": "DEGRADED",
@@ -37,7 +41,7 @@
         "PUBLISHED_PICK_BOARD_STALE",
         "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
       ],
-      "age_minutes": 3100.5
+      "age_minutes": 3161.7
     },
     "prizepicks_research_cards": {
       "state": "DEGRADED",
@@ -48,7 +52,7 @@
         "NO_MATCHED_PP_RESEARCH_OFFERS",
         "PP_RESEARCH_SOURCE_PARTIAL"
       ],
-      "age_minutes": 2.7
+      "age_minutes": 63.9
     },
     "scoreboard": {
       "state": "READY",
@@ -70,14 +74,15 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 2.3
+      "age_minutes": 63.5
     }
   },
   "blocking_components": [
+    "schedule",
     "live_player_stats"
   ],
   "degraded_components": [],
   "required_checks": 4,
-  "passing_required_checks": 3,
+  "passing_required_checks": 2,
   "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
 }
