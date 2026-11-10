@@ -2133,7 +2133,9 @@ async function refreshSelectedLiveTracker(){
        Date.parse(x.start)<=Date.now()).filter((x,i,all)=>
          all.findIndex(y=>y.player_id===x.player_id&&y.team===x.team&&
            y.game===x.game&&y.start===x.start&&y.stat===x.stat)===i);
- const pregame=helper.mergeLiveForecasts(pricedPregame,noLinePregame,game);
+ const combinedPregame=helper.mergeLiveForecasts(pricedPregame,noLinePregame,game);
+ const pregame=[...combinedPregame,...helper.quoteOnlyLiveRows(
+   verifiedPregameLineArchive,game,combinedPregame)];
  if(!pregame.length){
   showTrackerMessage(game,"No saved, verifiably pre-tipoff AI forecasts exist for this matchup. Live outcomes cannot be compared to forecasts created after tipoff.");
   return;
@@ -2271,10 +2273,11 @@ async function refreshSelectedLiveTracker(){
    const outcome=hasLine?helper.evaluate(p,actual,event):null;
    const fraction=helper.gameFraction(event);
    const pace=hasLine?outcome.pace:
-     (typeof actual==="number"&&fraction!==null&&fraction>=.15&&fraction<1&&
+     (!p.quote_only&&typeof actual==="number"&&fraction!==null&&fraction>=.15&&fraction<1&&
        helper.gameStatus(event)!=="post"?
        Math.round(actual/fraction*10)/10:null);
    const paceStatus=hasLine?trackerStatusLabel(outcome.label):
+     p.quote_only?"OBSERVED PREGAME LINE · NO AI MODEL":
      actual===null?"STATS UNAVAILABLE":
      helper.gameStatus(event)==="post"?"FINAL · PROJECTION COMPARISON":
      pace===null?"PACE UNAVAILABLE / TOO EARLY":
@@ -2283,19 +2286,20 @@ async function refreshSelectedLiveTracker(){
    card.append(node("div","live-name",p.player),
      node("div","live-stat",p.team+" · "+p.stat+
        (hasLine?" · Model lean "+outcome.side:
+        p.quote_only?" · Verified pretip line · no saved AI model":
         historicalQuote?" · AI estimate · separately observed pretip line":
         " · AI estimate only · no saved line")));
    const values=node("div","live-prop-values");
    for(const [caption,value] of [
      ["ACTUAL",actual===null?"—":String(actual)],
-     ["AI PROJECTION",fmt(Number(p.combined_projection??p.projection))],
+     ["AI PROJECTION",p.quote_only?"—":fmt(Number(p.combined_projection??p.projection))],
      ["PREGAME LINE",hasLine?fmt(Number(p.line)):
        observedLine||"Not captured"]]){
     const item=node("div","");item.append(node("span","",caption),node("b","",value));
     values.append(item);
    }
    const paceClass=hasLine?trackerClass(outcome.label):
-     pace===null?"wait":pace>=Number(p.projection)?"good":"bad";
+     p.quote_only?"wait":pace===null?"wait":pace>=Number(p.projection)?"good":"bad";
    card.append(values,node("div","live-prop-result "+paceClass,paceStatus));
    if(pace!==null)card.append(node("div","live-prop-foot",
      "Simple regulation-time estimated final pace: "+fmt(pace)+" "+p.stat+
