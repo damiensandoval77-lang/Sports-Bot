@@ -7,10 +7,12 @@ ROW={"id":"pp1","player":"Player A","game":"A @ B","source":"independent_prizepi
      "is_demo":False,"starts_at":"2026-11-10T01:00:00Z","line":20.5,"more_tier":"standard"}
 def fixtures():
     raw={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES","generated_at":"2026-11-09T23:55:00Z",
-         "board_offers":[copy.deepcopy(ROW)],"partial_board":True,"complete_provider_board":False}
+         "board_offers":[copy.deepcopy(ROW)],"partial_board":True,"complete_provider_board":False,
+         "board_coverage_scope":"NBA_ACTIVE_STANDARD_TIER_ONLY"}
     site={"status":raw["status"],"source":"independent_prizepicksapi_com","generated_at":raw["generated_at"],
           "board_offers":[copy.deepcopy(ROW)],"independent_board_count":1,
-          "partial_board":True,"complete_provider_board":False}
+          "partial_board":True,"complete_provider_board":False,
+          "board_coverage_scope":"NBA_ACTIVE_STANDARD_TIER_ONLY"}
     model={"source":"AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS","source_generated_at":raw["generated_at"],
            "real_american_odds_provided":False,"status":"FRESH_AUTHENTIC_PRIZEPICKS_LINES",
            "is_live":True,"picks":[{"player":"Player A"}]}
@@ -18,6 +20,20 @@ def fixtures():
 class PublishGateTests(unittest.TestCase):
     def test_valid_partial_board(self):
         self.assertEqual(validate(*fixtures(),now=NOW),[])
+    def test_legacy_provider_scope_cannot_claim_complete_standard_board(self):
+        a,b,c=fixtures()
+        a["complete_provider_board"]=True
+        b["complete_provider_board"]=True
+        a["partial_board"]=False
+        b["partial_board"]=False
+        a["board_coverage_scope"]="UNVERIFIED_LEGACY_SCOPE"
+        b["board_coverage_scope"]="UNVERIFIED_LEGACY_SCOPE"
+        self.assertIn("STANDARD_BOARD_COMPLETENESS_NOT_VERIFIED",validate(a,b,c,now=NOW))
+    def test_mismatched_source_scope_is_rejected(self):
+        a,b,c=fixtures()
+        b["board_coverage_scope"]="UNVERIFIED_LEGACY_SCOPE"
+        self.assertIn("PROVIDER_SCOPE_MISREPORTED",validate(a,b,c,now=NOW))
+
     def test_empty_does_not_overwrite(self):
         a,b,c=fixtures();b["board_offers"]=[];self.assertTrue(validate(a,b,c,now=NOW))
     def test_missing_offer_rejected(self):
