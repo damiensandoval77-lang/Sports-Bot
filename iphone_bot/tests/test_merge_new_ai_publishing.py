@@ -33,10 +33,21 @@ class DurableNewAiTests(unittest.TestCase):
   p=forecast()
   out=durable_merge(frozen(p),frozen(p,forecast(2)),finished(p))
   self.assertEqual(next(x for x in out["records"] if x["player_id"]=="1")["grade"],"GRADED")
- def test_same_market_moved_line_must_fail_instead_of_rewrite(self):
+ def test_line_move_adds_distinct_frozen_version_without_rewriting_original(self):
   p=forecast()
+  moved=forecast(price=16.5)
+  moved["market_updated"]="2026-11-09T22:10:00Z"
+  moved["captured_at"]="2026-11-09T22:15:00Z"
+  out=durable_merge(frozen(p),frozen(moved),{})
+  self.assertEqual(len(out["records"]),2)
+  self.assertEqual(sorted(x["line"] for x in out["records"]),[15.5,16.5])
+  self.assertEqual(out["records"][0]["projection"],14.3)
+ def test_same_threshold_cannot_rewrite_original_projection(self):
+  p=forecast()
+  changed=forecast()
+  changed["projection"]=11.8
   with self.assertRaises(ValueError):
-   durable_merge(frozen(p),frozen(forecast(price=16.5)),{})
+   durable_merge(frozen(p),frozen(changed),{})
  def test_grade_conflict_rejected(self):
   p=forecast()
   old=merge(frozen(p),{},finished(p))

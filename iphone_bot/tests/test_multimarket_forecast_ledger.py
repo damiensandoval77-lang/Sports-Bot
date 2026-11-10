@@ -18,14 +18,41 @@ def feed(*values):
     return {"status":"LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED","predictions":list(values)}
 
 class ImmutableMarketsTests(unittest.TestCase):
-    def test_first_prediction_kept_when_line_moves(self):
+    def test_first_prediction_preserved_and_new_pretip_threshold_separately_frozen(self):
         before=merge({},feed(prediction()),{})
         changed=prediction(p=100.0,capture="2026-11-09T22:00:00Z")
         changed["line"]=35.5
         result=merge(before,feed(changed),{})
+        self.assertEqual(len(result["records"]),2)
+        original=next(x for x in result["records"] if x["line"]==31.5)
+        moved=next(x for x in result["records"] if x["line"]==35.5)
+        self.assertEqual(original["projection"],30.)
+        self.assertEqual(moved["projection"],100.)
+
+    def test_multiple_pretip_thresholds_grade_independently_at_original_lines(self):
+        first=prediction()
+        moved=prediction(p=30.,capture="2026-11-09T22:00:00Z")
+        moved["market_updated"]="2026-11-09T21:00:00Z"
+        moved["line"]=35.5
+        frozen=merge({},feed(first,moved),{})
+        final={"records":[{"status":"GRADED","player_id":"123","team":"BOS",
+           "game":first["game"],"start":first["start"],"stat":"PRA",
+           "actual":33.,"final_source":"NBA_CDN_FINAL","source_game_id":"0022600999"}]}
+        result=merge(frozen,{},final)
+        self.assertEqual(len(result["records"]),2)
+        original=next(x for x in result["records"] if x["line"]==31.5)
+        revision=next(x for x in result["records"] if x["line"]==35.5)
+        self.assertTrue(original["direction_hit"] is False)
+        self.assertTrue(revision["direction_hit"] is True)
+        self.assertEqual(original["grade"],"GRADED")
+        self.assertEqual(revision["grade"],"GRADED")
+
+    def test_revised_threshold_captured_after_tipoff_never_frozen(self):
+        original=prediction()
+        changed=prediction(capture="2026-11-10T00:02:00Z")
+        changed["line"]=35.5
+        result=merge(merge({},feed(original),{}),feed(changed),{})
         self.assertEqual(len(result["records"]),1)
-        self.assertEqual(result["records"][0]["projection"],30.)
-        self.assertEqual(result["records"][0]["line"],31.5)
 
     def test_four_markets_can_grade_independently(self):
         before=merge({},feed(*(prediction(stat) for stat in ("PTS","REB","AST","PRA"))),{})

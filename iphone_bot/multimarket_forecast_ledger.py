@@ -1,8 +1,8 @@
 """Freeze new four-market projections before tipoff; grade verified final boxes.
 
 No recalculation after game start, no guessed results and no changes to
-existing Combined AI grading. Keep first standard PrizePicks line per player,
-event and market, even if source posts another threshold later.
+existing Combined AI grading. Each independently observed pretip standard
+threshold is its own immutable version; original grades are never repriced.
 """
 import json,math
 from datetime import datetime,timezone
@@ -21,8 +21,13 @@ def utc(value):
         return t.astimezone(timezone.utc)
     except (TypeError,ValueError) as exc:raise ValueError("Naive/invalid timestamp") from exc
 
-def key(x):
+def outcome_key(x):
+    """Final player totals belong to player/game/stat, not one quote price."""
     return tuple(str(x.get(z) or "") for z in ("player_id","team","game","start","stat"))
+
+def key(x):
+    """Each genuinely frozen standard line has independent gradeability."""
+    return (*outcome_key(x), str(float(x["line"])))
 
 def valid(x):
     if not isinstance(x,dict) or x.get("stat") not in STATS or not all(x.get(k) for k in ("player_id","team","game")):
@@ -61,13 +66,13 @@ def merge(previous,feed,finals):
         if (x.get("status")!="GRADED" or x.get("stat") not in STATS or
             x.get("final_source") not in {"NBA_CDN_FINAL","ESPN_FINAL"} or
             not x.get("source_game_id")):continue
-        k=key(x)
+        k=outcome_key(x)
         if k in outcomes and outcomes[k]!=x:outcomes[k]=None
         elif k not in outcomes:outcomes[k]=x
     new_grades=0
     for k,x in frozen.items():
         if x.get("grade")!="PENDING":continue
-        actual=outcomes.get(k)
+        actual=outcomes.get(outcome_key(x))
         if not actual:continue
         try:
             a=float(actual["actual"]);p=float(x["projection"]);q=float(x["line"])
@@ -82,7 +87,7 @@ def merge(previous,feed,finals):
         x["final_source"]=actual["final_source"]
         x["source_game_id"]=actual["source_game_id"]
         new_grades+=1
-    values=sorted(frozen.values(),key=lambda x:(x["start"],x["player_id"],x["stat"]))
+    values=sorted(frozen.values(),key=lambda x:(x["start"],x["player_id"],x["stat"],float(x["line"])))
     by_stat={}
     for stat in sorted(STATS):
         arr=[x for x in values if x["stat"]==stat]
