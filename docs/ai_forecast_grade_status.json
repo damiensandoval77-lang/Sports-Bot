@@ -1,79 +1,1080 @@
 {
-  "status": "AI_PRETIP_FORECASTS_GRADED",
-  "generated_at": "2026-11-10T04:52:49.528388+00:00",
-  "game_date_eastern": "2026-11-08",
-  "recorded_pregame_forecasts": 444,
-  "graded": 404,
-  "verified_dnp_exclusions": 36,
-  "verified_pretip_transfer_exclusions": 4,
-  "accounted_for": 444,
-  "ungraded": 0,
-  "new_grades": 0,
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-10T05:27:48.209536+00:00",
+  "game_date_eastern": "2026-11-09",
+  "recorded_pregame_forecasts": 756,
+  "graded": 620,
+  "verified_dnp_exclusions": 0,
+  "verified_pretip_transfer_exclusions": 0,
+  "accounted_for": 620,
+  "ungraded": 136,
+  "new_grades": 80,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
-  "excluded_verified_transfer_players": [
-    "Nique Clifford"
-  ],
+  "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 101,
-      "mae": 4.826,
-      "mean_signed_error": 0.915
+      "graded": 155,
+      "mae": 4.915,
+      "mean_signed_error": 0.335
     },
     "REB": {
-      "graded": 101,
-      "mae": 1.808,
-      "mean_signed_error": 0.743
+      "graded": 155,
+      "mae": 2.025,
+      "mean_signed_error": 0.541
     },
     "AST": {
-      "graded": 101,
-      "mae": 1.398,
-      "mean_signed_error": 0.244
+      "graded": 155,
+      "mae": 1.443,
+      "mean_signed_error": 0.061
     },
     "PRA": {
-      "graded": 101,
-      "mae": 6.36,
-      "mean_signed_error": 2.137
+      "graded": 155,
+      "mae": 6.401,
+      "mean_signed_error": 0.966
     }
   },
-  "ungraded_by_game": {},
-  "excluded_verified_dnp_players": [
-    "Alex Karaban",
-    "Domantas Sabonis",
-    "Dru Smith",
-    "Isaiah Jackson",
-    "Lauri Markkanen",
-    "Mikel Brown Jr.",
-    "Myron Gardner",
-    "Nick Richards",
-    "Nikola Jovi\u0107"
-  ],
-  "ungraded_distinct_player_names_by_game": {},
-  "ungraded_distinct_player_markets": 0,
+  "ungraded_by_game": {
+    "Cleveland Cavaliers @ Charlotte Hornets": 16,
+    "Denver Nuggets @ Houston Rockets": 12,
+    "Indiana Pacers @ Dallas Mavericks": 32,
+    "Los Angeles Lakers @ Atlanta Hawks": 24,
+    "Memphis Grizzlies @ Toronto Raptors": 16,
+    "New Orleans Pelicans @ Golden State Warriors": 20,
+    "San Antonio Spurs @ Phoenix Suns": 8,
+    "Washington Wizards @ Detroit Pistons": 8
+  },
+  "excluded_verified_dnp_players": [],
+  "ungraded_distinct_player_names_by_game": {
+    "Cleveland Cavaliers @ Charlotte Hornets": [
+      "Brandon Miller",
+      "Dennis Schr\u00f6der",
+      "Moussa Diabat\u00e9",
+      "Sam Merrill"
+    ],
+    "Denver Nuggets @ Houston Rockets": [
+      "Clint Capela",
+      "Jae'Sean Tate",
+      "Oscar Tshiebwe"
+    ],
+    "Indiana Pacers @ Dallas Mavericks": [
+      "Jalen Slawson",
+      "Jay Huff",
+      "Jett Howard",
+      "Kobe Brown",
+      "Marcus Sasser",
+      "Morez Johnson Jr.",
+      "Moussa Ciss\u00e9",
+      "Tobi Lawal"
+    ],
+    "Los Angeles Lakers @ Atlanta Hawks": [
+      "Asa Newell",
+      "Austin Reaves",
+      "Bronny James",
+      "Corey Kispert",
+      "Jaden Hardy",
+      "Quentin Grimes"
+    ],
+    "Memphis Grizzlies @ Toronto Raptors": [
+      "Collin Murray-Boyles",
+      "Immanuel Quickley",
+      "Isaiah Stewart",
+      "Scottie Barnes"
+    ],
+    "New Orleans Pelicans @ Golden State Warriors": [
+      "Gary Payton II",
+      "Trendon Watford",
+      "Trey Murphy III",
+      "Will Richard",
+      "Zion Williamson"
+    ],
+    "San Antonio Spurs @ Phoenix Suns": [
+      "Devin Vassell",
+      "Jordan Goodwin"
+    ],
+    "Washington Wizards @ Detroit Pistons": [
+      "Bilal Coulibaly",
+      "Tolu Smith"
+    ]
+  },
+  "ungraded_distinct_player_markets": 136,
   "final_feed": {
     "pending_matchups": 13,
-    "final_nba_games": 8,
+    "final_nba_games": 9,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 181,
+    "retrieved_player_lines": 205,
     "errors": [
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "NBA schedule unavailable: All independent official NBA endpoints failed: TimeoutError",
       "NBA schedule unavailable: All independent official NBA endpoints failed: TimeoutError",
-      "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError",
       "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 2,
-    "final_cached_id_nba_games": 1,
+    "final_cached_id_nba_games": 2,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 179,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 203,
+    "newly_retrieved_verified_rows": 24,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {},
-    "players": [],
+    "by_reason": {
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 136
+    },
+    "players": [
+      {
+        "player": "Brandon Miller",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Brandon Miller",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Brandon Miller",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Brandon Miller",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Dennis Schr\u00f6der",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Dennis Schr\u00f6der",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Dennis Schr\u00f6der",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Dennis Schr\u00f6der",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Diabat\u00e9",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Diabat\u00e9",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Diabat\u00e9",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Diabat\u00e9",
+        "team": "CHA",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Sam Merrill",
+        "team": "CLE",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Sam Merrill",
+        "team": "CLE",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Sam Merrill",
+        "team": "CLE",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Sam Merrill",
+        "team": "CLE",
+        "game": "Cleveland Cavaliers @ Charlotte Hornets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Clint Capela",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Clint Capela",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Clint Capela",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Clint Capela",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jae'Sean Tate",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jae'Sean Tate",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jae'Sean Tate",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jae'Sean Tate",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Oscar Tshiebwe",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Oscar Tshiebwe",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Oscar Tshiebwe",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Oscar Tshiebwe",
+        "team": "HOU",
+        "game": "Denver Nuggets @ Houston Rockets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jalen Slawson",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jalen Slawson",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jalen Slawson",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jalen Slawson",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jay Huff",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jay Huff",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jay Huff",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jay Huff",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jett Howard",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jett Howard",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jett Howard",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jett Howard",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Kobe Brown",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Kobe Brown",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Kobe Brown",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Kobe Brown",
+        "team": "IND",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Marcus Sasser",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Marcus Sasser",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Marcus Sasser",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Marcus Sasser",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Morez Johnson Jr.",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Morez Johnson Jr.",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Morez Johnson Jr.",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Morez Johnson Jr.",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Ciss\u00e9",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Ciss\u00e9",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Ciss\u00e9",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Moussa Ciss\u00e9",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Indiana Pacers @ Dallas Mavericks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Asa Newell",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Asa Newell",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Asa Newell",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Asa Newell",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Austin Reaves",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Austin Reaves",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Austin Reaves",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Austin Reaves",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Corey Kispert",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Corey Kispert",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Corey Kispert",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Corey Kispert",
+        "team": "ATL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ Atlanta Hawks",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Collin Murray-Boyles",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Collin Murray-Boyles",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Collin Murray-Boyles",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Collin Murray-Boyles",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Immanuel Quickley",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Immanuel Quickley",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Immanuel Quickley",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Immanuel Quickley",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Isaiah Stewart",
+        "team": "MEM",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Isaiah Stewart",
+        "team": "MEM",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Isaiah Stewart",
+        "team": "MEM",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Isaiah Stewart",
+        "team": "MEM",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Scottie Barnes",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Scottie Barnes",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Scottie Barnes",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Scottie Barnes",
+        "team": "TOR",
+        "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trendon Watford",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ Golden State Warriors",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bilal Coulibaly",
+        "team": "WAS",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bilal Coulibaly",
+        "team": "WAS",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bilal Coulibaly",
+        "team": "WAS",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bilal Coulibaly",
+        "team": "WAS",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tolu Smith",
+        "team": "DET",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tolu Smith",
+        "team": "DET",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tolu Smith",
+        "team": "DET",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tolu Smith",
+        "team": "DET",
+        "game": "Washington Wizards @ Detroit Pistons",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      }
+    ],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,
