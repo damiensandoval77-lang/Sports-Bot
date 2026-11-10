@@ -232,28 +232,34 @@ def check(now,files):
     add("prizepicks_research_cards","READY" if not quick_issues else "DEGRADED",
         quick_issues,quick_age,required=False)
 
-    # Real public browser proof is distinct from source files, GitHub commits
-    # and healthy API JSON. A rendering regression must prevent READY.
-    browser=load("browser_card_probe.json")
+    # The only user-facing app is /dames-picks/. Legacy docs/index.html
+    # redirects and its old #ai-board probe cannot certify that NBA+NFL
+    # renders successfully. Keep current slate quote/freeze checks separate.
+    browser=load("dames-picks/browser_readiness.json")
     browser_age=age_of(browser,"checked_at")
     browser_issues=[]
     if browser.get("status")!="READY" or browser.get("browser_render_verified") is not True:
-        browser_issues.append("PUBLIC_BROWSER_CARDS_NOT_VERIFIED")
+        browser_issues.append("UNIFIED_BROWSER_NOT_VERIFIED")
     if browser_age is None or browser_age< -5 or browser_age>90:
-        browser_issues.append("PUBLIC_BROWSER_PROBE_STALE")
-    if upcoming and browser.get("rendered_verified_standard_lines",0)<1:
-        browser_issues.append("NO_PUBLIC_VERIFIED_STANDARD_CARDS")
-    if upcoming and browser.get("rendered_new_ai_chances",0)<1:
-        browser_issues.append("NO_PUBLIC_AI_CHANCES")
-    if browser.get("games_without_rendered_matches"):
-        browser_issues.append("PUBLIC_GAMES_MISSING_RENDERED_PROPS")
-    # Verify every not-yet-started matchup independently. A total count of
-    # hundreds of cards is not evidence that all games render any cards.
-    rendered_by_game=browser.get("rendered_matches_by_game")
-    if upcoming and (not isinstance(rendered_by_game,dict) or
-                     any(not isinstance(rendered_by_game.get(g.get("game")),int)
-                         or rendered_by_game[g.get("game")]<1 for g in upcoming)):
-        browser_issues.append("UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES")
+        browser_issues.append("UNIFIED_BROWSER_PROBE_STALE")
+    if not str(browser.get("site_url","")).rstrip("/").endswith("/Sports-Bot/dames-picks"):
+        browser_issues.append("PUBLIC_SITE_NOT_UNIFIED_APP")
+    if "NBA + NFL" not in str(browser.get("app_title","")):
+        browser_issues.append("UNIFIED_APP_TITLE_MISSING")
+    for sport in ("NBA","NFL"):
+        observation=browser.get(sport)
+        if not isinstance(observation,dict):
+            browser_issues.append(sport+"_PUBLIC_FEED_UNVERIFIED")
+            continue
+        if observation.get("selected")!=sport or observation.get("loaded") is not True:
+            browser_issues.append(sport+"_PUBLIC_FEED_NOT_LOADED")
+        if not isinstance(observation.get("rows"),int) or observation["rows"]<1:
+            browser_issues.append(sport+"_NO_SAVED_PROPS_RENDERED")
+        if not isinstance(observation.get("rendered"),int) or observation["rendered"]<1:
+            browser_issues.append(sport+"_PUBLIC_CARDS_NOT_RENDERED")
+        if sport=="NFL" and any("NFL feed partially loaded" in str(err) or
+                              "NFL export unavailable" in str(err) for err in observation.get("errors",[])):
+            browser_issues.append("NFL_PUBLIC_EXPORT_PARTIAL")
     add("public_browser","READY" if not browser_issues else "DEGRADED",
         browser_issues,browser_age,required=bool(todays))
 
@@ -332,7 +338,7 @@ def main():
            "nightly_grade_health.json","nba_player_tracking_independent.json",
            "data.json","ai_comparisons.json","verified_official_nba_fixtures.json",
            "ai_prizepicks_quick_join_health.json",
-           "tonight_capture_gradeability.json","browser_card_probe.json",
+           "tonight_capture_gradeability.json","dames-picks/browser_readiness.json",
            "nba_schedule_horizon_audit.json"]
     inputs={}
     for name in names:
@@ -342,7 +348,7 @@ def main():
         except (OSError,ValueError):
             inputs[name]={}
     try:
-        inputs["dashboard_html"]=(ROOT/"docs/index.html").read_text()
+        inputs["dashboard_html"]=(ROOT/"docs/dames-picks/index.html").read_text()
     except OSError:
         inputs["dashboard_html"]=""
     result=check(dt.datetime.now(dt.timezone.utc),inputs)
