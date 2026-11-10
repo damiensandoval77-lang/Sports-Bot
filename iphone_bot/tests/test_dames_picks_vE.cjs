@@ -218,3 +218,45 @@ test("NFL published grader's actual lowercase 'graded' result is recognized exac
  assert.equal(result.actual,251);
  assert.equal(m.attachNFLGrades([p],[{...row,grade_status:"boxscore_unverified"}])[0].grade,"PENDING");
 });
+
+
+test("Game visibility never depends on an eligible saved prop",()=>{
+ const now=Date.parse("2026-11-10T04:00:00Z");
+ const nba={captured_at:"2026-11-10T03:59:00Z",games:[
+  {game:"New Orleans Pelicans @ Golden State Warriors",event_id:"4019",state:"in",
+   observed_at:"2026-11-10T03:59:00Z",player_rows:[{player:"Example",team:"GSW",PTS:12}]},
+  {game:"San Antonio Spurs @ Phoenix Suns",event_id:"4020",state:"post",
+   observed_at:"2026-11-10T03:58:00Z",player_rows:[]}]};
+ const nfl={checked_at:"2026-11-10T03:59:00Z",games:[
+  {game_id:"2026_09_BUF_MIN",status:"in",away:"BUF",home:"MIN",
+   players:[{player:"Josh Allen",team:"BUF",stats:{PASS_YDS:220}}]}]};
+ const games=m.liveGames(nba,nfl,now);
+ assert.equal(games.length,3);
+ assert.deepEqual([...games.map(g=>g.sport)],["NBA","NBA","NFL"]);
+ assert.equal(games[0].state,"in");
+ assert.equal(games[1].state,"final");
+ assert.equal(games[2].state,"in");
+ assert.equal(games[2].players[0].stats.PASS_YDS,220);
+});
+test("Stale NFL and NBA scoreboards remain discoverable but cannot claim live-now",()=>{
+ const now=Date.parse("2026-11-10T04:30:00Z");
+ const nba={captured_at:"2026-11-10T03:00:00Z",games:[
+  {game:"NOP @ GSW",state:"in",observed_at:"2026-11-10T03:00:00Z",player_rows:[]}]};
+ const nfl={checked_at:"2026-11-10T03:00:00Z",games:[
+  {game_id:"2026_09_BUF_MIN",status:"in",away:"BUF",home:"MIN",players:[]}]};
+ const games=m.liveGames(nba,nfl,now);
+ assert.equal(games.length,2);
+ assert.ok(games.every(g=>g.state==="stale"&&!g.fresh));
+ assert.ok(games.every(g=>g.statusText.includes("Last observed")));
+});
+test("Real published scoreboard game count is independent of model records",()=>{
+ const nba=JSON.parse(fs.readFileSync("docs/live_player_tracking.json","utf8"));
+ const nfl=JSON.parse(fs.readFileSync("docs/nfl/data/live_2026.json","utf8"));
+ const games=m.liveGames(nba,nfl,Date.parse("2026-11-10T04:00:00Z"));
+ assert.equal(games.filter(g=>g.sport==="NBA").length,nba.games.length);
+ assert.equal(games.filter(g=>g.sport==="NFL").length,nfl.games.length);
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(page.includes("renderLiveGames()"));
+ assert.ok(page.includes("function openGame(game)"));
+ assert.ok(page.includes("No saved props found. The game remains visible independently."));
+});
