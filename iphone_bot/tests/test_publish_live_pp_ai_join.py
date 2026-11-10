@@ -65,6 +65,13 @@ class QuickJoinTests(unittest.TestCase):
         pp,ai,form=data()
         self.assertEqual(build(pp,ai,form,now=NOW)["offers_matched"],1)
 
+    def test_roster_player_id_must_agree_with_ai_player_id(self):
+        pp,ai,form=data()
+        ai["predictions"][0]["player_id"]="999999"
+        report=build(pp,ai,form,now=NOW)
+        self.assertEqual(report["offers_matched"],0)
+        self.assertEqual(report["skipped_reasons"].get("roster_player_id_mismatch"),1)
+
     def test_unmatched_forecast_does_not_invent_pick(self):
         pp,ai,form=data()
         ai["predictions"]=[]
