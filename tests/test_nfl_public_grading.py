@@ -8,7 +8,7 @@ from datetime import datetime,timezone,timedelta
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 from reconcile_nfl_picks import (
-    collect_history,closing,grade_finals,read_published_snapshot,run)
+    collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,run)
 
 def schedule():
     kickoff="2026-11-15T18:00:00+00:00"
@@ -32,6 +32,25 @@ def box():
              "rushing_tds":0,"receiving_tds":1}}}
 
 class PublicNFLGradeTests(unittest.TestCase):
+    def test_real_bills_vikings_final_has_gradeable_archived_picks(self):
+        # Regression: 2026 Nov 9 game is final, 1,374 pretip lines saved;
+        # a stale health file said 0 graded and 0 pending despite a verified box.
+        root=Path(__file__).resolve().parents[1]/"docs"/"nfl"/"data"
+        schedule_data=json.loads((root/"schedule_2026.json").read_text())
+        games={g["game_id"]:g for g in schedule_data["games"]}
+        gid="2026_09_BUF_MIN"
+        self.assertEqual(games[gid]["status"],"final")
+        history=read_csv(root/"frozen_pick_history_2026.csv")
+        frozen=[r for r in history if r["game_id"]==gid]
+        self.assertGreater(len(frozen),0,"Saved pretip BUF-MIN lines were lost")
+        boxscores,issues=verified_boxscores(games,root/"boxscores")
+        self.assertNotIn(gid,issues)
+        self.assertIn(gid,boxscores,"Final BUF-MIN player boxscore missing")
+        grades,pending,candidates=grade_finals(frozen,games,boxscores,issues)
+        self.assertGreater(candidates,0,"Final game with frozen picks incorrectly reported no grading candidates")
+        self.assertGreater(len(grades),0,"Final verified player stats produced no grades")
+        self.assertEqual(candidates,len(grades)+len(pending))
+        self.assertTrue(all(g["grade_status"]=="graded" for g in grades))
     def test_only_pregame_captures_are_archived(self):
         old=bet()
         late=bet(captured="2026-11-16T17:00:00+00:00")
