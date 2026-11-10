@@ -329,3 +329,35 @@ test("Bad grading math and stale audit never look healthy",()=>{
  assert.equal(m.gradingAuditSummary({...valid,checked_at:"2026-11-09T10:00:00Z"},now).stale,true);
  assert.equal(m.gradingAuditSummary({...valid,days:{"2026-11-09":{...valid.days["2026-11-09"],pending:0}}},now),null);
 });
+
+test("Production NFL grades in immutable archive all join Tracker, including older frozen prices",()=>{
+ const root="docs/nfl/data/";
+ const manifest=JSON.parse(fs.readFileSync(root+"latest_2026.json","utf8"));
+ const schedule=JSON.parse(fs.readFileSync(root+"schedule_2026.json","utf8"));
+ const latest=m.nfl(manifest.files.map(file=>m.csv(fs.readFileSync(root+file,"utf8"))),schedule);
+ const graded=m.csv(fs.readFileSync(root+"pp_graded_2026.csv","utf8"));
+ const pending=m.csv(fs.readFileSync(root+"pp_grading_pending_2026.csv","utf8"));
+ const rows=m.reconcileNFLSettlementCards(latest,graded,pending,schedule);
+ const health=JSON.parse(fs.readFileSync(root+"grading_health_2026.json","utf8"));
+ const directional=rows.filter(p=>p.grade==="GRADED"&&typeof p.hit==="boolean");
+ const winners=directional.filter(p=>p.hit).length;
+ assert.equal(directional.length,health.standard_settled,"A published standard NFL win/loss was hidden in the player UI");
+ assert.equal(winners,health.standard_wins);
+ assert.ok(rows.some(p=>p.frozenSettlementArchive===true&&p.captured==="2026-11-09T19:58:51.614124+00:00"&&p.player==="Ray Davis"&&p.grade==="GRADED"),
+   "Historic Ray Davis standard prop not retained after latest snapshot rolled");
+ assert.ok(rows.some(p=>p.pendingReason),"Missing final boxscore players must remain explicitly pending");
+ console.log("NFL standard outcomes rendered",directional.length,"wins",winners,"pending",rows.filter(p=>p.pendingReason).length);
+});
+test("Source-mismatched final prop is never attached as a real grade",()=>{
+ const schedule={games:[{game_id:"2026_09_BUF_MIN",status:"final",
+  kickoff_utc:"2026-11-10T01:15:00Z",home_score:6,away_score:23}]};
+ const current=[{sport:"NFL",gameId:"2026_09_BUF_MIN",playerId:"123",player:"Player A",team:"BUF",
+   stat:"Rush Yards",line:30.5,captured:"2026-11-10T00:30:00Z",projection:40,
+   direction:"MORE",grade:"PENDING"}];
+ const fake={game_id:"2026_09_BUF_MIN",player_id:"123",player:"Player A",team:"BUF",
+  stat:"Rush Yards",line:"30.5",captured_at:"2026-11-10T00:30:00Z",
+  odds_type:"standard",proj:"60",pick:"More",actual:"49",result:"More",won:"1",grade_status:"graded"};
+ const result=m.reconcileNFLSettlementCards(current,[fake],[],schedule);
+ assert.equal(result[0].grade,"PENDING");
+ assert.equal(result.length,1);
+});
