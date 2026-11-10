@@ -69,9 +69,17 @@ class PublicNFLGradeTests(unittest.TestCase):
         self.assertEqual(sum(r["target"]=="FPTS" for r in graded),33)
         self.assertEqual(sum(r["target"]=="ANY_TD" and r["player"] in
             ("Tai Felton","Ben Yurosek") for r in graded),2)
-        self.assertEqual(len(pending),1)
-        self.assertEqual(pending[0]["player"],"Gavin Bartholomew")
-        self.assertEqual(pending[0]["grade_status"],"player_not_in_verified_boxscore")
+        self.assertEqual(len(pending),0)
+        self.assertEqual(sum(r["target"]=="ANY_TD" and r["player"] in
+            ("Tai Felton","Ben Yurosek","Gavin Bartholomew") for r in graded),3)
+        # Participation evidence is mandatory: removing Gavin's verified
+        # snap returns precisely one unsettled TD rather than a false loss.
+        snaps=verified_zero_snaps(root)
+        snaps.remove(("2026_09_BUF_MIN","00-0040215"))
+        grades_without,pending_without,_=grade_finals(frozen,games,boxes,problems,
+             verified_inactives(root),snaps,full)
+        self.assertEqual(len(pending_without),1)
+        self.assertEqual(pending_without[0]["player"],"Gavin Bartholomew")
 
     def test_fantasy_scoring_rejects_unverified_extra_td_and_missing_game(self):
         root=Path(__file__).resolve().parents[1]/"docs"/"nfl"/"data"
