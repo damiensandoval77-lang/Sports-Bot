@@ -64,7 +64,7 @@ function nflRows(files,schedule){
    chance:chosen!==null&&chosen>=0&&chosen<=1?chosen:null,side:direction,
    draws:null,source:"PrizePicks",snapshot:p.captured_at,status:"PENDING",actual:null,hit:null,
    seasonAverage:number(p.season_avg),last5Average:null,last10Average:null,
-   seasonGames:number(p.season_games),lastGames:Array.isArray(logs)?logs.slice(0,6):[],
+   seasonGames:number(p.season_games),lastGames:Array.isArray(logs)?logs.slice(0,6):[],gradeSource:null,
    chanceLabel:"Model estimate, calibration not verified",isHistorical:Date.parse(tip)<=Date.now()});
  }
  return out;
