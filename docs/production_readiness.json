@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-10T23:18:18.666996+00:00",
+  "checked_at": "2026-11-10T23:28:22.140353+00:00",
   "game_date_eastern": "2026-11-10",
   "status": "DEGRADED",
   "ready_for_trustworthy_picks": false,
@@ -13,25 +13,25 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 38.0
+      "age_minutes": 48.1
     },
     "season_calendar": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 138.0
+      "age_minutes": 148.1
     },
     "ai_forecasts": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 89.1
+      "age_minutes": 99.2
     },
     "prizepicks_lines": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 12.8
+      "age_minutes": 22.9
     },
     "pregame_capture": {
       "state": "DEGRADED",
@@ -40,7 +40,7 @@
         "PRETIP_CAPTURE_NOT_VERIFIED",
         "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
       ],
-      "age_minutes": 1.9
+      "age_minutes": 4.2
     },
     "published_pick_cards": {
       "state": "DEGRADED",
@@ -51,7 +51,7 @@
         "NO_PROVIDER_EVENTS_CHECKED",
         "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
       ],
-      "age_minutes": 4286.1
+      "age_minutes": 4296.2
     },
     "prizepicks_research_cards": {
       "state": "DEGRADED",
@@ -59,18 +59,13 @@
       "reasons": [
         "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT"
       ],
-      "age_minutes": 0.7
+      "age_minutes": 10.8
     },
     "public_browser": {
-      "state": "DEGRADED",
+      "state": "READY",
       "required": true,
-      "reasons": [
-        "PUBLIC_BROWSER_CARDS_NOT_VERIFIED",
-        "NO_PUBLIC_VERIFIED_STANDARD_CARDS",
-        "NO_PUBLIC_AI_CHANCES",
-        "UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES"
-      ],
-      "age_minutes": 4.6
+      "reasons": [],
+      "age_minutes": 5.6
     },
     "scoreboard": {
       "state": "READY",
@@ -88,15 +83,14 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 54.8
+      "age_minutes": 8.8
     }
   },
   "blocking_components": [],
   "degraded_components": [
-    "pregame_capture",
-    "public_browser"
+    "pregame_capture"
   ],
   "required_checks": 8,
-  "passing_required_checks": 6,
+  "passing_required_checks": 7,
   "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
 }
