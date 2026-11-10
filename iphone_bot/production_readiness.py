@@ -164,8 +164,13 @@ def check(now,files):
         pick_issues.append("NO_PROVIDER_EVENTS_CHECKED")
     if published.get("market_coverage_limited") is True:
         pick_issues.append("SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED")
+    # Legacy American-odds sportsbook cards are optional for the
+    # PrizePicks-first dashboard. They remain separately audited and visibly
+    # degraded, but must not be confused with the authenticated pick'em board.
+    # The actual PrizePicks cards are independently required and verified by
+    # the public_browser gate, including real standard lines and model chances.
     add("published_pick_cards","READY" if not pick_issues else "DEGRADED",
-        pick_issues,pick_age,required=bool(upcoming))
+        pick_issues,pick_age,required=False)
 
     # Distinguish the newly published PrizePicks research-only dashboard fallback
     # from the legacy paid sportsbook market card readiness above.
