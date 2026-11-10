@@ -7,7 +7,7 @@ from scripts.fetch_nfl_live import parse_scoreboard,parse_summary,snapshot
 
 class NFLLiveTests(unittest.TestCase):
     def game(self):
-        return {"game_id":"2026_09_BUF_MIN","away":"BUF","home":"MIN",
+        return {"game_id":"2026_09_BUF_MIN","season":2026,"week":9,"away":"BUF","home":"MIN",
                 "kickoff_utc":"2026-11-10T01:15:00+00:00"}
     def scoreboard(self):
         return {"events":[{"id":"12345","date":"2026-11-10T01:15:00Z",
