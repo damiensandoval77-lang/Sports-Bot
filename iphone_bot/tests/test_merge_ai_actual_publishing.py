@@ -46,6 +46,16 @@ class PublishedFinalGradesTests(unittest.TestCase):
         out=merge({"records":[first]},{"records":[second]})
         self.assertEqual(len(out["records"]),2)
         self.assertEqual({r["stat"] for r in out["records"]},{"PTS","REB"})
+    def test_real_published_final_ledger_is_idempotent(self):
+        import json
+        from pathlib import Path
+        ledger=json.loads((Path(__file__).resolve().parents[2]/
+                           "docs/ai_forecast_actual_ledger.json").read_text())
+        merged=merge(ledger,ledger)
+        self.assertEqual(len(merged["records"]),len(ledger["records"]))
+        self.assertEqual(
+            sum(r["status"]=="GRADED" for r in merged["records"]),
+            sum(r["status"]=="GRADED" for r in ledger["records"]))
     def test_unknown_outcome_does_not_get_guessed(self):
         with self.assertRaisesRegex(ValueError,"Unknown"):
             merge({"records":[]},{"records":[{**row(),"status":"WIN"}]})
