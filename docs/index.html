@@ -467,7 +467,7 @@ function verifiedPublishedPrizePicksJoins(snapshot,roster,now=Date.now()){
      typeof p.line!=="number"||!Number.isFinite(p.line)||p.line<0||p.line>=250||
      typeof p.projection!=="number"||!Number.isFinite(p.projection)||
      p.projection<0||p.projection>250||!p.provider_projection_id||
-     !(p.more_tier||p.less_tier))continue;
+     p.more_tier!=="standard"||p.less_tier!=="standard")continue;
   const identity=norm(p.player)+"|"+p.team;
   if(ambiguous.has(identity)||rosterIds.get(identity)!==String(p.player_id))continue;
   const observed=Date.parse(p.observed_at),tip=Date.parse(p.start),
