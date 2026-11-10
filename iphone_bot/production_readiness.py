@@ -348,7 +348,7 @@ def main():
         except (OSError,ValueError):
             inputs[name]={}
     try:
-        inputs["dashboard_html"]=(ROOT/"docs/index.html").read_text()
+        inputs["dashboard_html"]=(ROOT/"docs/dames-picks/index.html").read_text()
     except OSError:
         inputs["dashboard_html"]=""
     result=check(dt.datetime.now(dt.timezone.utc),inputs)
