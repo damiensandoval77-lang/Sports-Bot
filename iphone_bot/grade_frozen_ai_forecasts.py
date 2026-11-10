@@ -13,6 +13,7 @@ from statistics import mean
 from zoneinfo import ZoneInfo
 
 from iphone_bot.official_game_id_index import recovery_game_ids
+from iphone_bot.archived_espn_game_ids import archived_espn_hints,combine_espn_hints
 from iphone_bot.fetch_final_boxscores import gather, verified_espn_schedule_hints
 from iphone_bot.verified_final_cache import read_cache, write_cache, row_key
 from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS, expected_opponents, strict_player_name
@@ -293,6 +294,12 @@ def main():
                 espn_hints=verified_espn_schedule_hints(schedule)
             except (OSError,ValueError,TypeError):
                 espn_hints={}
+            # Daily schedule rollover must not erase historical ESPN lookup
+            # hints. Final evidence still comes solely from the direct
+            # completed boxscore's event ID, date and team checks.
+            requested_days={eastern_day(p["start"]) for p in selected}
+            historical=archived_espn_hints(dates=requested_days)
+            espn_hints=combine_espn_hints(espn_hints,historical)
             actuals,fetch_report=gather(requested,now=now,request=multi_origin_request,
                                       known_game_ids=recovery_game_ids(ROOT/"docs/official_nba_game_ids.json",
                                           ROOT/"docs/verified_official_final_game_ids.json"),
