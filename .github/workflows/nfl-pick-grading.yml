@@ -16,6 +16,8 @@ on:
       - 'docs/nfl/data/boxscores/week_*.json'
       - 'docs/nfl/data/boxscores/manifest.json'
       - 'docs/nfl/data/verified_inactives_2026.json'
+      - 'docs/nfl/data/verified_zero_snap_stats_2026.json'
+      - 'scripts/recover_nfl_zero_stat_snaps.py'
   workflow_dispatch:
   # GitHub Actions commits made with GITHUB_TOKEN do not fire downstream
   # push workflows. Listen for the completed upstream publishers directly.
@@ -44,6 +46,11 @@ jobs:
           python-version: '3.11'
       - name: Run deterministic public NFL grading unit tests
         run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+      - name: Attempt independent snap-count zero-target recovery
+        # A source outage must not discard already published grades.
+        run: |
+          pip install --disable-pip-version-check pandas pyarrow
+          python scripts/recover_nfl_zero_stat_snaps.py
       - name: Reconcile captured pregame lines with verified final player stats
         run: python scripts/reconcile_nfl_picks.py
       - name: Check grading coverage, including pending results
