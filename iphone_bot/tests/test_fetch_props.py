@@ -9,7 +9,11 @@ from iphone_bot import fetch_props
 
 
 def fixture_event(i):
-    return {"id":str(i),"commence_time":"2026-11-08T03:00:00Z",
+    # This is an UPCOMING-event fixture. A hardcoded Nov 8 timestamp made
+    # the credit-budget test silently select zero events after that date,
+    # giving a misleading failed pipeline even with the correct publisher.
+    kickoff=fetch_props.dt.datetime.now(fetch_props.dt.timezone.utc)+fetch_props.dt.timedelta(hours=3)
+    return {"id":str(i),"commence_time":kickoff.isoformat(),
             "away_team":f"Away {i}","home_team":f"Home {i}"}
 
 
