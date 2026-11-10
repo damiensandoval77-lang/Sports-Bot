@@ -42,7 +42,7 @@ def fixtures(now=NOW):
 class StrictProductionReadinessTests(unittest.TestCase):
     def test_healthy_complete_pregame_is_ready(self):
         r=check(NOW,fixtures())
-        self.assertEqual(r["status"],"READY")
+        self.assertEqual(r["status"],"READY",r["components"])
         self.assertTrue(r["ready_for_trustworthy_picks"])
         self.assertFalse(r["readiness_is_not_model_accuracy"] is False)
 
