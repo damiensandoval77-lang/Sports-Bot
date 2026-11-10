@@ -168,7 +168,7 @@ function liveComparisonRows(game,rows){
  if(!rows.length)return '<div class="scorewait">No verified pre-kickoff standard PrizePicks lines available for this game.</div>';
  const players=source?.players||[];
  const MAX=180;
- const notice=!source?('Live player feed unavailable ('+(state.liveError||"no verified current snapshot")+'); frozen lines remain visible.'):
+ const notice=!source?('Live feed unavailable ('+(state.liveError||"no verified current snapshot")+'); frozen lines remain visible.'):
   !players.length?'Player stats awaiting publication; saved lines remain visible.':'Live ESPN box-score statistics are provisional.';
  return '<div class="scorewrap"><strong>Frozen line vs live stats · '+esc(source?.status_text||"Feed pending")+'</strong>'+
   '<small>'+esc(notice)+' Final grades use independently verified nflverse stats. Feed updated '+esc(state.live?.checked_at||"unavailable")+'.</small>'+
