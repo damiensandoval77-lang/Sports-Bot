@@ -64,3 +64,23 @@ Scope: read-only review of the published GitHub Pages artifacts, key GitHub Acti
 7. Audit each workflow's trigger, error propagation, permissions, write conflicts and cost guardrails before calling the whole bot stable.
 
 **Status: DEGRADED.** There is no basis for claiming 100% reliability until these remaining gaps are resolved and observed over multiple slates.
+
+
+## November 10 follow-up — verified recovery and remaining blockers
+
+**Newly confirmed safeguards**
+- Independent verified standard-line and pregame-AI comparison refreshed: 209 research-only matched offers across six games; excludes one-sided, demon, goblin, and unverified tiers. This is *not* a calibrated betting model.
+- Immutable separate research capture `docs/standard_quote_ai_research_archive.json`: 209 receipts, one record per exact player/game/stat/standard threshold. The earliest captured projection is retained; replay and outages do not multiply records or rewrite frozen values.
+- Research-only settlement `iphone_bot/grade_standard_quote_ai_research.py` and scheduled workflow independently reconcile verified NBA final-player rows to those receipts. Outcomes are HIT/MISS/PUSH/VOID/NO_LEAN/UNSETTLED_RESEARCH, separate from official model hit rates. Missing or conflicting final identities stay unsettled; retries cannot rewrite a settled result.
+- No-op archive and grading replays preserve the old artifact byte-for-byte, avoiding unnecessary commits, Pages rebuilds and provider usage.
+- Regression tests cover moved prices, alternate tiers, stale/future snapshots, duplicated quotes, verified final matching, DNP voids, push, conflicting finals and repeat-run stability. Latest independent grading and join jobs passed.
+- The pregame capture health report now explicitly distinguishes unmatched validated model locks from separate research receipts. For the November 10 Eastern slate: 212 standard source quotes, **63 without exact primary frozen-model matches**, of which **60 have separately preserved research receipts** and **3 have no AI forecast**. These are *not* silently promoted to validated primary picks.
+
+**Unresolved, do not mark production green**
+1. The 63 exact-primary-model gaps remain, including 36 legitimately moved original prices, 24 AI-only cases with no validated freeze, and 3 markets with no matching archived AI forecast. The new separate research receipts do not rewrite the historical primary-model denominator.
+2. The independent source board is marked partial; fresh 209 matched quotes do not prove complete provider coverage.
+3. `production_readiness.json` is DEGRADED, and `tonight_capture_gradeability.json` deliberately remains CAPTURE_INCOMPLETE.
+4. The GitHub Pages repository remains in legacy branch publishing mode. The controlled Actions publisher cannot change the Pages setting with its token (HTTP 403). A repository administrator must switch **Settings → Pages → Build and deployment → Source → GitHub Actions**. Until then, cancelled branch builds may recur.
+5. Existing NBA retrospective/final-grade coverage and per-player live observations require separate final-boxscore and active-game checks. No postgame research grades exist yet for these future games.
+
+**Invariant:** no source fallback, archived research result, or completed GitHub Actions job is proof of a live, validated betting pick. Standard original lines and frozen identities control all settlement; alternate tiers never count.
