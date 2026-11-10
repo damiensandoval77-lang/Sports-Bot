@@ -10,6 +10,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from iphone_bot.official_game_id_index import recovery_game_ids
+from iphone_bot.archived_espn_game_ids import archived_espn_hints
 from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
 from iphone_bot.verified_prizepicks_inactives import load_verified_inactive_rows
@@ -63,9 +64,17 @@ def recover(records,now=None,request=None):
         return [],{"status":"NO_ELIGIBLE_RECENT_PRIZEPICKS_PENDING_GAMES",
                    "requested_matchups":0,"verified_rows":0,"errors":[]}
     if request is None:
+        # The daily schedule rolls forward before all pending research settles.
+        # Reuse immutable ESPN fixture IDs solely as hints; gather independently
+        # checks FINAL status, game ID, Eastern date, and exact teams.
+        days={utc(r["event_start"]).astimezone(ET).date().isoformat()
+              for r in pending}
+        espn_ids=archived_espn_hints(dates=days)
         found,report=gather(pending,now=now,request=multi_origin_request,
                             known_game_ids=recovery_game_ids(ROOT/"docs/official_nba_game_ids.json",
-                                          ROOT/"docs/verified_official_final_game_ids.json"))
+                                          ROOT/"docs/verified_official_final_game_ids.json"),
+                            known_espn_games=espn_ids)
+        report["archived_espn_game_id_hints"]=len(espn_ids)
     else:
         found,report=gather(pending,now=now,request=request)
     seen=set()
