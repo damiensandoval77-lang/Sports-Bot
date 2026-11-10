@@ -20,6 +20,7 @@ NBA_CDN_SCHEDULES=(
     "https://cdn.nba.com/static/json/staticData/scheduleLeagueV2.json",
 )
 STATUS=ROOT/"docs/nba_schedule_status.json"
+SEASON_ARCHIVE=ROOT/"docs/nba_season_schedule_2026_27.json"
 EASTERN=ZoneInfo("America/New_York")
 
 
@@ -244,6 +245,30 @@ def main():
             schedule=odds_schedule_fallback(days)
         except (ValueError,OSError,TypeError) as exc:
             errors.append("Odds cache:"+str(exc))
+    # A verified published season calendar is the persistent safety net.
+    # ESPN's daily feed can omit games or go offline; never replace genuine
+    # fixed future fixtures with a short/empty sportsbook fallback.
+    if SEASON_ARCHIVE.exists():
+        try:
+            try:
+                from .season_schedule_baseline import reconcile_window
+            except ImportError:
+                from season_schedule_baseline import reconcile_window
+            archive=json.loads(SEASON_ARCHIVE.read_text())
+            trusted_daily=(schedule or {}).get("events",[]) if schedule and (
+                "Cached sportsbook" not in schedule.get("source","")) else []
+            restored=reconcile_window(archive,days,trusted_daily)
+            schedule={
+                "events":restored["games"],
+                "source":("NBA published full-season baseline + "
+                          + str(schedule.get("source","daily source unavailable"))
+                          if trusted_daily else "Cached verified NBA published full-season baseline"),
+                "rejected":(schedule or {}).get("rejected",0),
+                "baseline_total":restored["season_baseline_total"],
+                "baseline_recovered":restored["baseline_recovered"],
+            }
+        except (OSError,ValueError,TypeError,KeyError) as exc:
+            errors.append("NBA full-season cache:"+type(exc).__name__)
     if schedule is None:
         report["status"]="SCHEDULE_UNAVAILABLE"
         report["source"]="No validated schedule source"
@@ -253,6 +278,10 @@ def main():
                       source=schedule["source"],
                       source_records_rejected=schedule["rejected"])
         report["coverage_complete"]=("Cached sportsbook" not in schedule["source"])
+        if schedule.get("baseline_total"):
+            report["season_baseline_status"]="VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE"
+            report["season_baseline_total"]=schedule["baseline_total"]
+            report["baseline_recovered"]=schedule["baseline_recovered"]
         if not report["coverage_complete"]:
             report["status"]="PARTIAL_CACHED_SPORTSBOOK_SCHEDULE"
     report["source_failures"]=errors
