@@ -8,7 +8,7 @@ from datetime import datetime,timezone,timedelta
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 from reconcile_nfl_picks import (
-    collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,run)
+    collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,verified_zero_snaps,verified_full_game_scoring,exact_fantasy_score,run)
 
 def schedule():
     kickoff="2026-11-15T18:00:00+00:00"
@@ -51,6 +51,39 @@ class PublicNFLGradeTests(unittest.TestCase):
         self.assertGreater(len(grades),0,"Final verified player stats produced no grades")
         self.assertEqual(candidates,len(grades)+len(pending))
         self.assertTrue(all(g["grade_status"]=="graded" for g in grades))
+    def test_exact_prizepicks_full_ppr_for_verified_bills_vikings(self):
+        root=Path(__file__).resolve().parents[1]/"docs"/"nfl"/"data"
+        schedule_data=json.loads((root/"schedule_2026.json").read_text())
+        games={g["game_id"]:g for g in schedule_data["games"]}
+        boxes,problems=verified_boxscores(games,root/"boxscores")
+        full=verified_full_game_scoring(root)
+        gid="2026_09_BUF_MIN"
+        self.assertEqual(len(full[gid]["verified_game_scoring"]["touchdowns"]),2)
+        self.assertAlmostEqual(exact_fantasy_score(boxes[gid]["00-0034857"],full[gid]),14.36)
+        self.assertAlmostEqual(exact_fantasy_score(boxes[gid]["00-0037248"],full[gid]),16.7)
+        frozen=[r for r in read_csv(root/"frozen_pick_history_2026.csv") if r["game_id"]==gid]
+        graded,pending,expected=grade_finals(frozen,games,boxes,problems,
+              verified_inactives(root),verified_zero_snaps(root),full)
+        self.assertEqual(expected,len(graded)+len(pending))
+        self.assertFalse(any(r["target"]=="FPTS" for r in pending))
+        self.assertEqual(sum(r["target"]=="FPTS" for r in graded),33)
+        self.assertEqual(sum(r["target"]=="ANY_TD" and r["player"] in
+            ("Tai Felton","Ben Yurosek") for r in graded),2)
+        self.assertEqual(len(pending),1)
+        self.assertEqual(pending[0]["player"],"Gavin Bartholomew")
+        self.assertEqual(pending[0]["grade_status"],"player_not_in_verified_boxscore")
+
+    def test_fantasy_scoring_rejects_unverified_extra_td_and_missing_game(self):
+        root=Path(__file__).resolve().parents[1]/"docs"/"nfl"/"data"
+        scoring=verified_full_game_scoring(root)["2026_09_BUF_MIN"]
+        player={"player_id":"00-0037248","team":"BUF","passing_yards":0,
+          "passing_tds":0,"passing_interceptions":0,"rushing_yards":107,
+          "rushing_tds":1,"receptions":0,"receiving_yards":0,"receiving_tds":0}
+        self.assertAlmostEqual(exact_fantasy_score(player,scoring),16.7)
+        self.assertIsNone(exact_fantasy_score(player,None))
+        self.assertIsNone(exact_fantasy_score({**player,"receiving_tds":1},scoring))
+        self.assertIsNone(exact_fantasy_score({**player,"passing_yards":None},scoring))
+
     def test_only_pregame_captures_are_archived(self):
         old=bet()
         late=bet(captured="2026-11-16T17:00:00+00:00")
