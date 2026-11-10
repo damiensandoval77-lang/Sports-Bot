@@ -157,3 +157,53 @@ test("duplicate same-team display names resolve only on a verified shared athlet
  assert.equal(L.matchDiagnostics(rows,{player:"Alex Smith",team:"GSW",player_id:"999"}).reason,"DUPLICATE_PLAYER");
  assert.equal(L.matchDiagnostics(rows,{player:"Alex Smith",team:"ORL",player_id:"200"}).reason,"TEAM_MISMATCH");
 });
+
+test("AJ Dybantsa previously observed standard and Demon lines are shown as non-bet quotes",()=>{
+ const game="Washington Wizards @ Detroit Pistons",start="2026-11-10T00:00:00Z";
+ const src={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+   source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:58:23.454418+00:00",
+   board_offers:[
+    {id:"pp_pts",player:"AJ Dybantsa",team:"WAS",game,stat:"PTS",line:15.5,
+     starts_at:start,observed_at:"2026-11-09T23:54:28.212Z",is_demo:false,
+     source:"independent_prizepicksapi_com",more_tier:"standard",less_tier:"standard"},
+    {id:"pp_reb",player:"AJ Dybantsa",team:"WAS",game,stat:"REB",line:5,
+     starts_at:start,observed_at:"2026-11-09T23:54:00.836Z",is_demo:false,
+     source:"independent_prizepicksapi_com",more_tier:"standard",less_tier:"standard"},
+    {id:"pp_pra",player:"AJ Dybantsa",team:"WAS",game,stat:"PRA",line:23.5,
+     starts_at:start,observed_at:"2026-11-09T23:54:00.836Z",is_demo:false,
+     source:"independent_prizepicksapi_com",more_tier:"standard",less_tier:"standard"},
+    {id:"pp_ast",player:"AJ Dybantsa",team:"WAS",game,stat:"AST",line:2.5,
+     starts_at:start,observed_at:"2026-11-09T23:54:00.836Z",is_demo:false,
+     source:"independent_prizepicksapi_com",more_tier:"demon",less_tier:"demon"}
+   ]};
+ for(const [stat,value,tier] of [["PTS",15.5,"standard"],["REB",5,"standard"],
+                                  ["PRA",23.5,"standard"],["AST",2.5,"demon"]]){
+  const row={player:"AJ Dybantsa",team:"WAS",game,start,stat,projection:11.2,line:null};
+  const quote=L.observedPregameLine(row,src);
+  assert.equal(quote?.line,value);
+  assert.equal(quote?.tier,tier);
+  assert.equal(quote?.status,"OBSERVED_PRETIP_QUOTE_NOT_FROZEN_PICK");
+  assert.equal(row.line,null,"The original AI-only prediction must remain unchanged");
+ }
+});
+test("Observed pretip line never guessed from post-tip, stale, one-sided or conflicting quotes",()=>{
+ const game="Washington Wizards @ Detroit Pistons",start="2026-11-10T00:00:00Z";
+ const row={player:"AJ Dybantsa",team:"WAS",game,start,stat:"PTS",line:null,projection:16.6};
+ const quote={player:"AJ Dybantsa",team:"WAS",game,stat:"PTS",line:15.5,
+  starts_at:start,observed_at:"2026-11-09T23:54:00Z",
+  more_tier:"standard",less_tier:"standard",is_demo:false,
+  source:"independent_prizepicksapi_com"};
+ const source={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+   source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:58:00Z",
+   board_offers:[quote]};
+ const read=(patch={},offers=[quote])=>L.observedPregameLine(row,{...source,...patch,board_offers:offers});
+ assert.equal(read({generated_at:"2026-11-10T00:01:00Z"}),null);
+ assert.equal(read({generated_at:"2026-11-09T16:00:00Z"}),null);
+ assert.equal(read({},[{...quote,observed_at:"2026-11-10T00:01:00Z"}]),null);
+ assert.equal(read({},[{...quote,less_tier:null}]),null);
+ assert.equal(read({},[{...quote,team:"DET"}]),null);
+ assert.equal(read({},[{...quote,player:"Another Player"}]),null);
+ assert.equal(read({},[{...quote,is_demo:true}]),null);
+ assert.equal(read({},[quote,{...quote,line:16.5}]),null);
+ assert.equal(read({},[{...quote,source:"unverified"}]),null);
+});
