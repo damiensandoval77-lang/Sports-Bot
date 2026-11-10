@@ -10,6 +10,8 @@ The legacy NBA dashboard (`docs/index.html`), NFL dashboard (`docs/nfl/index.htm
 | --- | --- | --- |
 | NBA standard pretip lines, frozen projections and modeled direction | `lagged_matchup_all_market_ledger.json` | Integrated, no post-tip repricing |
 | NBA recorded season, last five, last ten form | `current_form.json` | Integrated, where available |
+| NBA official injury status, dated | `injury_context.json` | Integrated exact player/team/game-date label only; frozen models unchanged |
+| NFL depth-chart, recent snap share, line-specific season Over/Under | NFL latest CSV fields | Integrated, where source values exist |
 | NBA verified individual model grades | Same frozen market ledger | Integrated; pending is not a loss |
 | NFL standard pretip props and projections | `nfl/data/latest_2026.json` CSV manifest | Integrated; does not display goblin/demon as standard |
 | NFL season averages and recent per-game history | NFL latest CSV rows | Integrated when recorded |
@@ -24,7 +26,7 @@ The legacy NBA dashboard (`docs/index.html`), NFL dashboard (`docs/nfl/index.htm
 
 ## Still not feature-parity complete
 - Full NBA individual last-six-game chart and opponent positional-defense rank are not published in a verified Version E feed; do not invent these values.
-- Injury alerts, on/off teammate splits, minutes v2/v3, pace projection, advanced shooting statistics, and depth-chart model evidence still live on the original research surfaces.
+- Injury transitions and automatic injury-aware reprojections, on/off teammate splits, minutes v2/v3, pace projection, advanced shooting statistics, and deeper depth-chart model evidence still live on the original research surfaces; static injury labels and core NFL depth fields are now integrated.
 - Full NFL grading is blocked upstream: the grading health file reports zero settled standard picks even though pregame lines exist; dashboard cannot invent final grades.
 - NFL full-slate standard-quote coverage and NBA missing-prediction markets require upstream repairs, not only UI work.
 - NBA/NFL live observations are periodic and may be stale. Version E suppresses stale snapshots rather than calling them live.

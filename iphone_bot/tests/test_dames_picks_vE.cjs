@@ -132,3 +132,29 @@ test("Different saved thresholds or observation times never share one player car
  assert.notEqual(m.key(base),m.key({...base,line:28.5}));
  assert.notEqual(m.key(base),m.key({...base,captured:"2026-11-09T21:01:00Z"}));
 });
+
+test("Verified official NBA injury matches only same player team and eastern game date",()=>{
+ const rows=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[pt]},{players:[]});
+ const issued="2026-11-09T21:00:00Z";
+ const report={status:"OFFICIAL_NBA_REPORT_VERIFIED",injury_data_verified:true,
+  report_issued_at:issued,generated_at:"2026-11-09T21:10:00Z",
+  players:[{player_id:pt.player_id,team:"GSW",game_date:"2026-11-09",status:"Questionable"},
+   {player_id:pt.player_id,team:"BOS",game_date:"2026-11-09",status:"Out"}]};
+ const out=m.attachInjuries(rows,report);
+ assert.equal(out[0].injury.status,"Questionable");
+ assert.equal(out[0].projection,31.391);
+ assert.equal(m.attachInjuries(rows,{...report,injury_data_verified:false})[0].injury,undefined);
+ assert.equal(m.attachInjuries(rows,{...report,players:[{...report.players[0],game_date:"2026-11-10"}]})[0].injury,null);
+});
+test("NFL source historical line results and depth context are retained without recalculation",()=>{
+ const p={captured_at:"2026-11-09T20:00:00Z",game_id:"2026_10_WAS_NYG",player:"Test RB",
+ player_id:"123",team:"WAS",opponent:"NYG",position:"RB",stat:"Rush Yards",target:"RUSH_YDS",
+ odds_type:"standard",line:"75.5",proj:"82.0",p_more:".6",pick:"More",
+ season_avg:"70.2",season_games:"8",season_over:"4",season_under:"4",season_push:"0",
+ season_last5_over:"2",season_last5_under:"3",depth_role:"Starter",depth_rank:"1",
+ depth_asof:"2026-11-09T17:00:00Z",snap_pct_l3:"0.75"};
+ const r=m.nfl([[p]],{games:[{game_id:p.game_id,kickoff_utc:"2026-11-10T01:00:00Z"}]})[0];
+ assert.equal(r.form.over,4);assert.equal(r.form.last5Under,3);
+ assert.equal(r.depth.role,"Starter");assert.equal(r.depth.snapPct,.75);
+ assert.equal(r.line,75.5);
+});
