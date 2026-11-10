@@ -14,6 +14,8 @@ from urllib.request import Request, urlopen
 ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/"docs/nfl/data"
 SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={date}&limit=100"
+CURRENT_SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+WEEK_SCOREBOARD="https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season}&seasontype=2&week={week}&limit=100"
 SUMMARY="https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event={event}"
 STAT_KEYS={
  "passing":{"YDS":"PASS_YDS","TD":"PASS_TD","INT":"PASS_INT","C/ATT":"PASS_CMP_ATT"},
@@ -128,6 +130,22 @@ def snapshot(now=None,fetch=load,data_dir=DATA):
             found.update(returned)
         except Exception as exc:
             errors.append(f"scoreboard {date}: {type(exc).__name__}")
+    # ESPN's NFL date query may return zero events even while the unfiltered
+    # current-week endpoint reports a real active game. Fallbacks use the same
+    # strict matchup + kickoff timestamp verifier (parse_scoreboard).
+    if not found:
+        lookup_urls=[CURRENT_SCOREBOARD]
+        for season,week in sorted({(int(g["season"]),int(g["week"])) for g in games}):
+            lookup_urls.append(WEEK_SCOREBOARD.format(season=season,week=week))
+        for url in lookup_urls:
+            try:
+                matches=parse_scoreboard(fetch(url),games)
+                found.update(matches)
+                if found:break
+            except Exception as exc:
+                errors.append(f"scoreboard fallback: {type(exc).__name__}")
+    if not found:
+        errors.append(f"no_matching_scheduled_game: {len(games)} nearby scheduled games")
     for game in found.values():
         if game["status"] not in ("in","post") or not game["espn_event_id"]:continue
         try:
@@ -147,7 +165,7 @@ def main():
     args=a.parse_args()
     result=snapshot()
     if result["status"]=="partial_or_unavailable" and not result["games"]:
-        raise SystemExit("ESPN NFL live provider unavailable; refusing empty overwrite")
+        raise SystemExit("ESPN NFL live provider unavailable: "+", ".join(result["errors"])+"; refusing empty overwrite")
     args.output.parent.mkdir(parents=True,exist_ok=True)
     tmp=args.output.with_suffix(".json.tmp")
     tmp.write_text(json.dumps(result,indent=2)+"\n")
