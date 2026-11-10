@@ -35,7 +35,7 @@ def fixtures(now=NOW):
      "browser_card_probe.json":{
          "checked_at":STAMP,"status":"READY","browser_render_verified":True,
          "rendered_verified_standard_lines":3,"rendered_new_ai_chances":2,
-         "games_without_rendered_matches":[]},
+         "games_without_rendered_matches":[],"rendered_matches_by_game":{GAME["game"]:3}},
      "nba_schedule_horizon_audit.json":{
          "status":"READY","checked_at":STAMP,"season_fixed_games":1200,
          "next_14_days":[{"date_eastern":(NOW.date()+dt.timedelta(days=n)).isoformat(),
@@ -229,6 +229,16 @@ class StrictProductionReadinessTests(unittest.TestCase):
         result=check(NOW,data)
         self.assertIn("CAPTURE_RECONCILIATION_INCONSISTENT",
                       result["components"]["pregame_capture"]["reasons"])
+
+    def test_browser_many_cards_but_one_matchup_missing_fails(self):
+        data=fixtures()
+        browser=data["browser_card_probe.json"]
+        browser["rendered_verified_standard_lines"]=191
+        browser["rendered_matches_by_game"]={}
+        result=check(NOW,data)
+        self.assertFalse(result["ready_for_trustworthy_picks"])
+        self.assertIn("UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES",
+                      result["components"]["public_browser"]["reasons"])
 
     def test_public_browser_missing_live_standard_cards_blocks_ready(self):
         data=fixtures()
