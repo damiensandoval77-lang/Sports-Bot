@@ -309,6 +309,7 @@ input:focus-visible,select:focus-visible{outline:2px solid #cfcfcf;outline-offse
 </div>
 <div class="source">Compare pregame-locked projections against actual NBA box scores. One earliest sportsbook quote per player/game/stat is used to reduce duplicate weighting. No backfilled picks.</div>
 <div class="source" id="pipeline-health" aria-live="polite">Checking last completed box score and grading backlog…</div>
+<section class="source" id="verified-grade-reconciliation" aria-live="polite" aria-label="Verified historical versus tonight game grading">Reviewing independently graded historical markets and today’s pending final games…</section>
 <section class="prob-audit" aria-label="Combined direction probability validation">
   <div class="prob-audit-top"><strong>COMBINED DIRECTION PROBABILITY CHECK</strong><small id="combined-prob-sample">Awaiting frozen estimates</small></div>
   <div class="prob-audit-summary" id="combined-prob-summary">The displayed simulated estimate is not a calibrated probability for Combined AI. Future pregame-locked estimates will be tested against completed results.</div>
@@ -2697,8 +2698,48 @@ async function refreshScoresOnly(){
   }
  }catch(_){}
 }
+async function refreshGradeReconciliation(){
+ const target=$("verified-grade-reconciliation");
+ if(!target)return;
+ const files=["prizepicks_research_results.json",
+   "ai_forecast_today_grade_status.json",
+   "lagged_matchup_all_market_ledger.json",
+   "frozen_baseline_pregame_line_grades.json"];
+ const results=await Promise.allSettled(files.map(fetchJSON));
+ const [history,today,newAI,baseline]=results.map(r=>r.status==="fulfilled"?r.value:null);
+ const chunks=[];
+ if(history?.status==="PRIZEPICKS_PRETIP_RESEARCH_GRADED_NOT_ODDS"){
+  const independent=history.independent_by_market||{};
+  chunks.push("Historical PrizePicks research: "+(history.independent_settled_center_lines??"—")+
+   " independent graded player/stat markets across saved dates ("+
+   (history.settled??"—")+" total source-line observations settled). "+
+   ["PTS","REB","AST","PRA"].map(stat=>{
+    const v=independent[stat]||{};
+    return stat+": "+(v.graded??0)+" graded"+
+     (typeof v.hit_rate==="number"?" · "+(100*v.hit_rate).toFixed(1)+"% directional hit":"");
+   }).join(" | "));
+ }else chunks.push("Historical PrizePicks grading report unavailable.");
+ if(today?.game_date_eastern){
+  chunks.push("NBA "+today.game_date_eastern+" AI-only forecasts: "+
+    (today.graded??"—")+" graded, "+(today.ungraded??"—")+
+    " unresolved; verified DNPs excluded "+
+    (today.verified_dnp_exclusions??0)+". Pending is NOT a loss.");
+ }else chunks.push("Current-day AI grading status unavailable.");
+ if(newAI?.status==="FROZEN_NEW_AI_ALL_MARKET"&&Array.isArray(newAI.records)){
+  const total=newAI.records.length,complete=newAI.records.filter(r=>r.grade==="GRADED").length;
+  chunks.push("New AI line-backed markets: "+complete+" graded / "+total+
+    " frozen records across dates; ungraded markets are not counted as misses.");
+ }else chunks.push("New AI grade ledger unavailable.");
+ if(baseline?.status==="BASELINE_PRETIP_PROSPECTIVE_GRADING"){
+  chunks.push("Separate baseline quote/model comparisons: "+
+    (baseline.verified_final_grades??0)+" graded, "+
+    (baseline.pending??0)+" pending (research only, not placed bets).");
+ }
+ target.textContent=chunks.join("  •  ");
+}
 async function refresh(){
  $("data-health").textContent="Checking feeds…";
+ refreshGradeReconciliation().catch(()=>{});
  fetchJSON("selection_quality_audit.json").then(d=>{
   const o=d.overall||{}, n=$("selection-quality-summary");
   n.textContent=(o.independent_markets||0)+" independent graded props across "+
