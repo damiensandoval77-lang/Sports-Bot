@@ -1,13 +1,13 @@
 {
   "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-10T01:40:56.489206+00:00",
+  "generated_at": "2026-11-10T02:06:24.526695+00:00",
   "game_date_eastern": "2026-11-09",
-  "recorded_pregame_forecasts": 564,
+  "recorded_pregame_forecasts": 656,
   "graded": 0,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
   "accounted_for": 0,
-  "ungraded": 564,
+  "ungraded": 656,
   "new_grades": 0,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
@@ -40,6 +40,7 @@
     "Indiana Pacers @ Dallas Mavericks": 108,
     "Los Angeles Lakers @ Atlanta Hawks": 96,
     "Memphis Grizzlies @ Toronto Raptors": 96,
+    "San Antonio Spurs @ Phoenix Suns": 92,
     "Washington Wizards @ Detroit Pistons": 80
   },
   "excluded_verified_dnp_players": [],
@@ -175,6 +176,31 @@
       "Ty Jerome",
       "Zach Edey"
     ],
+    "San Antonio Spurs @ Phoenix Suns": [
+      "Carter Bryant",
+      "Collin Gillespie",
+      "De'Aaron Fox",
+      "Devin Booker",
+      "Devin Vassell",
+      "Dillon Brooks",
+      "Duop Reath",
+      "Dylan Harper",
+      "Harrison Barnes",
+      "Jalen Green",
+      "Jordan Goodwin",
+      "Jordan McLaughlin",
+      "Julian Champagnie",
+      "Keldon Johnson",
+      "Khaman Maluach",
+      "Luke Kennard",
+      "Luke Kornet",
+      "Miles Bridges",
+      "Oso Ighodaro",
+      "Ryan Dunn",
+      "Stephon Castle",
+      "Tarris Reed Jr.",
+      "Victor Wembanyama"
+    ],
     "Washington Wizards @ Detroit Pistons": [
       "AJ Dybantsa",
       "Alex Sarr",
@@ -198,20 +224,25 @@
       "Will Riley"
     ]
   },
-  "ungraded_distinct_player_markets": 564,
+  "ungraded_distinct_player_markets": 656,
   "final_feed": {
-    "pending_matchups": 5,
+    "pending_matchups": 9,
     "final_nba_games": 1,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
     "retrieved_player_lines": 20,
     "errors": [
+      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
+      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
+      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
+      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "NBA schedule unavailable: All independent official NBA endpoints failed: TimeoutError",
       "NBA schedule unavailable: All independent official NBA endpoints failed: TimeoutError",
+      "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError",
       "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 1,
+    "cached_official_id_candidates": 5,
     "final_cached_id_nba_games": 1,
     "status": "FINAL_BOXSCORES_FOUND",
     "verified_cache_rows": 20,
@@ -220,7 +251,7 @@
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 564
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 656
     },
     "players": [
       {
@@ -3608,6 +3639,650 @@
         "player": "Zach Edey",
         "team": "MEM",
         "game": "Memphis Grizzlies @ Toronto Raptors",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Gillespie",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Gillespie",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Gillespie",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Gillespie",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Booker",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Booker",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Booker",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Booker",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dillon Brooks",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dillon Brooks",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dillon Brooks",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dillon Brooks",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Duop Reath",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Duop Reath",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Duop Reath",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Duop Reath",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Harper",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Harper",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Harper",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Harper",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Green",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Green",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Green",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Green",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Goodwin",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Khaman Maluach",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Khaman Maluach",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Khaman Maluach",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Khaman Maluach",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kennard",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kennard",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kennard",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kennard",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Miles Bridges",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Miles Bridges",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Miles Bridges",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Miles Bridges",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Oso Ighodaro",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Oso Ighodaro",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Oso Ighodaro",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Oso Ighodaro",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ryan Dunn",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ryan Dunn",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ryan Dunn",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ryan Dunn",
+        "team": "PHX",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "San Antonio Spurs @ Phoenix Suns",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
