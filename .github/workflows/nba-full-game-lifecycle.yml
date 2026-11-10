@@ -4,6 +4,8 @@ on:
   schedule:
     # Multiple pretip checkpoints. GitHub cron is best-effort, not guaranteed.
     - cron: '11 17,19,21,23 * * *'
+    # Follow each bounded provider window after its 28-minute intake + 46-minute publish.
+    - cron: '51 0,16,18,20,22,23 * * *'
   pull_request:
     paths:
       - 'iphone_bot/tests/test_nba_full_game_lifecycle.cjs'
