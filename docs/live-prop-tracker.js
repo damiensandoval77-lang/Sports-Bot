@@ -300,6 +300,35 @@
   }
   return null;
  }
+ // Complete a started matchup with authentic saved pretip PrizePicks
+ // thresholds that have NO available frozen AI forecast. No projection,
+ // direction, probability, or wager grade can be inferred from these rows.
+ function quoteOnlyLiveRows(archive,game,existing,now=Date.now()){
+  if(archive?.status!=="VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE"||
+     !Array.isArray(archive.quotes))return [];
+  const key=p=>[normalize(p.player),canonicalTeam(p.team),
+      normalize(p.game),p.stat,Date.parse(p.start)].join("|");
+  const covered=new Set((existing||[]).map(key));
+  const seen=new Set(),rows=[];
+  for(const quote of archive.quotes){
+   if(!quote||normalize(quote.game)!==normalize(game)||
+      !Number.isFinite(Date.parse(quote.starts_at))||
+      Date.parse(quote.starts_at)>now||
+      !quote.player||!quote.team||!MARKETS.has(quote.stat))continue;
+   const p={player:quote.player,team:quote.team,game:quote.game,
+     start:quote.starts_at,stat:quote.stat,line:null,
+     projection:null,combined_projection:null,quote_only:true,
+     is_pregame_prediction:false};
+   const id=key(p);
+   if(covered.has(id)||seen.has(id))continue;
+   // archivedPregameLine rejects post-tip source capture, nonstandard
+   // identities, invalid values and ambiguous latest-tier offers.
+   if(!archivedPregameLine(p,archive))continue;
+   seen.add(id);
+   rows.push(p);
+  }
+  return rows;
+ }
  function pickRows(forecasts,game){
   const dedup=new Map();
   for(const x of forecasts||[]){
@@ -311,5 +340,5 @@
   return [...dedup.values()];
  }
  return {numeric,normalize,matchup,identifyGame,gameStatus,summaryGameMatch,
-         athleteRows,canonicalTeam,matchPlayer,matchDiagnostics,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows,observedPregameLine,mergeLiveForecasts,archivedPregameLine};
+         athleteRows,canonicalTeam,matchPlayer,matchDiagnostics,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows,observedPregameLine,mergeLiveForecasts,archivedPregameLine,quoteOnlyLiveRows};
 });
