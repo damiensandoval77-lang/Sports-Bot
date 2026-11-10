@@ -94,7 +94,11 @@ jobs:
           while IFS= read -r workflow; do
             [ -n "$workflow" ] || continue
             case "$workflow" in
+              # The collector is top-up billable. Never buy a board every audit.
               nba-prizepicks-full-slate.yml) cooldown_minutes=90 ;;
+              # Model training can run up to 40m. Do not queue overlapping
+              # generation runs or hammer injury/current-form endpoints.
+              nba-new-ai-all-markets.yml) cooldown_minutes=90 ;;
               *) cooldown_minutes=35 ;;
             esac
             # Compare with actual started runs, including in-progress.

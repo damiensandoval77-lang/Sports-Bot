@@ -33,6 +33,7 @@ on:
     - cron: '27 0,17,20,22,23 * * *'
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: nba-new-ai-all-markets
   cancel-in-progress: false
@@ -152,6 +153,12 @@ jobs:
             git add docs/lagged_matchup_live_all_markets.json docs/lagged_matchup_all_market_ledger.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish independent standard-only multi-stat new AI card projections'
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then
+              # Commits made by GITHUB_TOKEN do not reliably trigger push
+              # workflows. Explicitly recheck frozen-line capture after
+              # successful publishing, not before generation finishes.
+              GH_TOKEN="${{ github.token }}" gh workflow run nba-tonight-capture-gradeability.yml --ref main
+              exit 0
+            fi
           done
           exit 1
