@@ -14,14 +14,14 @@ def ai(game="A @ B"):
    "start":"2026-11-10T00:00:00Z"}
 def frozen(game="A @ B"):
  return {"game":game,"start":"2026-11-10T00:00:00Z","grade":"PENDING"}
-def audit(q=None,a=None,f=None,actual=None):
+def audit(q=None,a=None,f=None,actual=None,now=NOW):
  q=q if q is not None else [quote(),quote("C @ D")]
  a=a if a is not None else [ai(),ai("C @ D")]
  f=f if f is not None else [frozen(),frozen("C @ D")]
  return reconcile(SCHEDULE,{"status":"VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE","count":len(q),"quotes":q},
    {"status":"IMMUTABLE_OBSERVED_PRETIP_NOLINE_AI_ARCHIVE","predictions":a},
    {"status":"FROZEN_NEW_AI_ALL_MARKET","records":f},
-   {"version":1,"records":actual or []},now=NOW)
+   {"version":1,"records":actual or []},now=now)
 class CaptureAuditTests(unittest.TestCase):
  def test_complete_capture_not_confused_with_zero_final_grades(self):
   out=audit()
@@ -32,6 +32,18 @@ class CaptureAuditTests(unittest.TestCase):
   out=audit(f=[frozen()])
   self.assertEqual(out["status"],"CAPTURE_INCOMPLETE")
   self.assertIn("C @ D: PROVIDER_QUOTES_WITH_NO_FROZEN_LINE_BACKED_MODEL",out["issues"])
+ def test_one_graded_market_does_not_hide_other_overdue_markets(self):
+  first={**frozen(),"grade":"GRADED"}
+  second=frozen()
+  out=audit(f=[first,second,frozen("C @ D")],
+            now=dt.datetime(2026,11,10,11,tzinfo=dt.timezone.utc))
+  self.assertEqual(out["status"],"CAPTURE_INCOMPLETE")
+  self.assertIn("A @ B: LINE_BACKED_GRADING_OVERDUE_CHECK_FINAL_FEED",out["issues"])
+  self.assertEqual(out["games"][0]["line_backed_graded"],1)
+  self.assertEqual(out["games"][0]["line_backed_pending"],1)
+ def test_pending_games_before_grace_period_are_not_called_overdue(self):
+  out=audit()
+  self.assertNotIn("A @ B: LINE_BACKED_GRADING_OVERDUE_CHECK_FINAL_FEED",out["issues"])
  def test_missing_source_data_cannot_pass(self):
   out=audit(q=[quote()])
   self.assertIn("C @ D: NO_CAPTURED_PROVIDER_LINES",out["issues"])
