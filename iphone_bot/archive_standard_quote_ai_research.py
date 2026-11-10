@@ -91,6 +91,10 @@ def merge(incoming, previous=None, now=None):
                 "frozen_at": now.isoformat()
             }
             added += 1
+    # Replaying an unchanged provider/model snapshot must not produce another
+    # git commit or GitHub Pages rebuild; retain the old archive byte-for-byte.
+    if added == 0 and old.get("status") == STATUS:
+        return old
     result = sorted(records.values(), key=lambda x: (
         x.get("start", ""), x.get("game", ""), x.get("player_id", ""), x.get("stat", ""), str(x.get("line", ""))
     ))
