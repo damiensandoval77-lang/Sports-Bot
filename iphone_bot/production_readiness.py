@@ -194,6 +194,24 @@ def check(now,files):
     add("prizepicks_research_cards","READY" if not quick_issues else "DEGRADED",
         quick_issues,quick_age,required=False)
 
+    # Real public browser proof is distinct from source files, GitHub commits
+    # and healthy API JSON. A rendering regression must prevent READY.
+    browser=load("browser_card_probe.json")
+    browser_age=age_of(browser,"checked_at")
+    browser_issues=[]
+    if browser.get("status")!="READY" or browser.get("browser_render_verified") is not True:
+        browser_issues.append("PUBLIC_BROWSER_CARDS_NOT_VERIFIED")
+    if browser_age is None or browser_age< -5 or browser_age>90:
+        browser_issues.append("PUBLIC_BROWSER_PROBE_STALE")
+    if upcoming and browser.get("rendered_verified_standard_lines",0)<1:
+        browser_issues.append("NO_PUBLIC_VERIFIED_STANDARD_CARDS")
+    if upcoming and browser.get("rendered_new_ai_chances",0)<1:
+        browser_issues.append("NO_PUBLIC_AI_CHANCES")
+    if browser.get("games_without_rendered_matches"):
+        browser_issues.append("PUBLIC_GAMES_MISSING_RENDERED_PROPS")
+    add("public_browser","READY" if not browser_issues else "DEGRADED",
+        browser_issues,browser_age,required=bool(todays))
+
     sb=inputs["scoreboard"][0]
     age,issues=common("scoreboard")
     if not isinstance(sb.get("games"),list) or not sb.get("games"):
@@ -269,7 +287,7 @@ def main():
            "nightly_grade_health.json","nba_player_tracking_independent.json",
            "data.json","ai_comparisons.json","verified_official_nba_fixtures.json",
            "ai_prizepicks_quick_join_health.json",
-           "tonight_capture_gradeability.json"]
+           "tonight_capture_gradeability.json","browser_card_probe.json"]
     inputs={}
     for name in names:
         path=ROOT/"docs"/name
