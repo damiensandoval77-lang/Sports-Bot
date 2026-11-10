@@ -83,7 +83,7 @@ test("final grading is separate from source quotes and refuses missing stats",()
  const priced=forecast(game,team,0,"PTS",20,15.5);
  const live={status:{type:{state:"in"},period:3,displayClock:"6:00"}};
  const finished={status:{type:{state:"post"},period:4,displayClock:"0:00"}};
- assert.equal(L.evaluate(priced,10,live).label,"BEHIND_PACE");
+ assert.equal(L.evaluate(priced,10,live).label,"ON_PACE");
  assert.equal(L.evaluate(priced,20,finished).label,"FINAL_HIT");
  assert.equal(L.evaluate(priced,12,finished).label,"FINAL_MISS");
  assert.equal(L.evaluate(priced,null,finished).label,"STATS_UNAVAILABLE");
