@@ -109,8 +109,8 @@ def build(provider,ai,form,now=None):
             skip["invalid_line"]+=1;continue
         if not math.isfinite(line) or line<0 or line>=250:
             skip["invalid_line"]+=1;continue
-        if not (offer.get("more_tier") or offer.get("less_tier")):
-            skip["no_selectable_tier"]+=1;continue
+        if offer.get("more_tier")!="standard" or offer.get("less_tier")!="standard":
+            skip["not_two_sided_standard_line"]+=1;continue
         original_id=str(offer.get("id") or "")
         identity=(original_id,key,line)
         if identity in seen:continue
