@@ -10,6 +10,8 @@ on:
       - 'iphone_bot/tests/test_injury_refresh_integrity.py'
       - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - 'iphone_bot/multimarket_forecast_ledger.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
       - 'iphone_bot/tests/test_multimarket_forecast_ledger.py'
       - 'iphone_bot/lagged_matchup_training.py'
       - 'iphone_bot/tests/test_live_multimarket_matchup.py'
@@ -111,6 +113,8 @@ jobs:
           assert all(d['market_metrics'][s]['recorded']>0 for s in ('PTS','REB','AST','PRA'))
           print('Frozen new-model stats',d['market_metrics'])
           PY
+      - name: Test durable merge preserves concurrent finalized grades
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
       - name: Retain original research artifact
         uses: actions/upload-artifact@v4
         with:
@@ -140,7 +144,11 @@ jobs:
                 exit 1
               }
             cp "$RUNNER_TEMP/new-ai.json" docs/lagged_matchup_live_all_markets.json
-            cp "$RUNNER_TEMP/new-ai-ledger.json" docs/lagged_matchup_all_market_ledger.json
+            python -m iphone_bot.merge_new_ai_publishing \
+              --current docs/lagged_matchup_all_market_ledger.json \
+              --incoming "$RUNNER_TEMP/new-ai-ledger.json" \
+              --finals docs/ai_forecast_actual_ledger.json \
+              --output docs/lagged_matchup_all_market_ledger.json
             git add docs/lagged_matchup_live_all_markets.json docs/lagged_matchup_all_market_ledger.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish independent standard-only multi-stat new AI card projections'

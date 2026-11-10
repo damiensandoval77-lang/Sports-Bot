@@ -1,0 +1,69 @@
+"""Conflict-safe publication of independent New AI frozen market records.
+
+Fresh runner artifacts must NEVER replace main's newer grades or snapshots.
+A saved pretip line and projection are immutable. Grades only use verified
+NBA/ESPN final-player ledger, never live totals or implied probabilities.
+"""
+import argparse
+import json
+from pathlib import Path
+from iphone_bot.multimarket_forecast_ledger import merge, key, valid
+
+IMMUTABLE=("player_id","player","team","game","start","stat",
+           "line","projection","market_updated","captured_at","pickem_tier",
+           "standard_line_two_sided_verified")
+
+def durable_merge(current,incoming,finals):
+    if current and current.get("status")!="FROZEN_NEW_AI_ALL_MARKET":
+        raise ValueError("Current frozen ledger status invalid")
+    if incoming.get("status")!="FROZEN_NEW_AI_ALL_MARKET":
+        raise ValueError("Incoming frozen ledger status invalid")
+    old={}
+    for r in current.get("records",[]):
+        if not valid(r):
+            raise ValueError("Invalid existing original pretip record")
+        if key(r) in old and old[key(r)]!=r:
+            raise ValueError("Conflicting existing frozen records")
+        old[key(r)]=r
+    runner={}
+    for r in incoming.get("records",[]):
+        if not valid(r):
+            raise ValueError("Invalid runner original pretip record")
+        if key(r) in runner and runner[key(r)]!=r:
+            raise ValueError("Conflicting runner frozen records")
+        runner[key(r)]=r
+    for ident,r in runner.items():
+        prev=old.get(ident)
+        if prev is not None and any(prev.get(f)!=r.get(f) for f in IMMUTABLE):
+            raise ValueError("Original frozen pretip market changed: "+str(ident))
+        if prev and prev.get("grade")=="GRADED" and r.get("grade")=="GRADED":
+            if any(prev.get(k)!=r.get(k) for k in
+                   ("actual","final_source","source_game_id","absolute_error","direction_hit")):
+                raise ValueError("Conflicting verified final grades: "+str(ident))
+    # Feed form only adds previously absent, originally timestamped records.
+    result=merge(current,{"status":"LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
+                          "predictions":list(runner.values())},finals)
+    for ident,prev in old.items():
+        after=next((x for x in result["records"] if key(x)==ident),None)
+        if after is None or any(after.get(f)!=prev.get(f) for f in IMMUTABLE):
+            raise ValueError("Frozen pregame record disappeared or changed")
+        if prev.get("grade")=="GRADED" and after.get("grade")!="GRADED":
+            raise ValueError("Previously graded record reverted to pending")
+    return result
+
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--current",required=True)
+    parser.add_argument("--incoming",required=True)
+    parser.add_argument("--finals",required=True)
+    parser.add_argument("--output",required=True)
+    args=parser.parse_args()
+    def load(path):
+        f=Path(path)
+        return json.loads(f.read_text()) if f.exists() else {}
+    result=durable_merge(load(args.current),load(args.incoming),load(args.finals))
+    dest=Path(args.output)
+    dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
+    print("DURABLE NEW AI RECORDS",len(result["records"]),"NEW",result["new_pregame_frozen"],
+          "GRADED",sum(x.get("grade")=="GRADED" for x in result["records"]))
+if __name__=="__main__":main()
