@@ -17,6 +17,18 @@ class UnifiedBrowserAssessmentTests(unittest.TestCase):
                       {"selected":"NFL","loaded":True,"rows":1,"rendered":1},[],
                       app_title="Sports-Bot · NBA Prop Board")
         self.assertIn("NOT_UNIFIED_APP",result["reasons"])
+    def test_partial_nfl_shard_is_degraded_even_when_cards_show(self):
+        result=assess({"selected":"NBA","loaded":True,"rows":12,"rendered":4,"errors":[]},
+                      {"selected":"NFL","loaded":True,"rows":18,"rendered":5,
+                       "errors":["NFL feed partially loaded"]},[],
+                      app_title="Dame's Picks · NBA + NFL")
+        self.assertIn("NFL_REQUIRED_FEED_ERRORS",result["reasons"])
+    def test_missing_nba_ledger_not_masked_by_archived_quote_cards(self):
+        result=assess({"selected":"NBA","loaded":True,"rows":12,"rendered":4,
+                       "errors":["NBA frozen ledger unavailable"]},
+                      {"selected":"NFL","loaded":True,"rows":18,"rendered":5},[],
+                      app_title="Dame's Picks · NBA + NFL")
+        self.assertIn("NBA_REQUIRED_FEED_ERRORS",result["reasons"])
     def test_js_errors_are_not_silently_hidden(self):
         result=assess({"selected":"NBA","loaded":True,"rows":1,"rendered":1},
                       {"selected":"NFL","loaded":True,"rows":1,"rendered":1},["Cannot read properties of null"],

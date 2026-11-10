@@ -22,6 +22,14 @@ def assess(nba,nfl,errors, *, app_title, url=URL, now=None):
         if not obs.get("loaded"):reasons.append(sport+"_DATA_NOT_LOADED")
         if obs.get("rows",0)<1:reasons.append(sport+"_NO_SAVED_RECORDS")
         if obs.get("rows",0)>0 and obs.get("rendered",0)<1:reasons.append(sport+"_NO_RENDERED_PICK_CARDS")
+        # A partially loaded NFL export can still leave many visible cards.
+        # The site's own warning must not be masked by a nonzero card count.
+        observed_errors=obs.get("errors") or []
+        markers=("NFL feed partially loaded","NFL export unavailable",
+                 "NFL permanent grading ledgers unavailable") if sport=="NFL" else (
+                 "NBA frozen ledger unavailable","NBA standard quote archive unavailable")
+        if any(any(marker in str(err) for marker in markers) for err in observed_errors):
+            reasons.append(sport+"_REQUIRED_FEED_ERRORS")
     if errors:reasons.append("UNHANDLED_JS_ERRORS")
     return {"checked_at":now.isoformat(),"status":"READY" if not reasons else "DEGRADED",
             "browser_render_verified":not reasons,"site_url":url,
