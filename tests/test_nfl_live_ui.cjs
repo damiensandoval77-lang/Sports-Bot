@@ -7,19 +7,22 @@ const assert = require('node:assert/strict');
 
 const url = process.env.NFL_UI_URL || 'http://127.0.0.1:8765/nfl/';
 const isLive = url.startsWith('https://');
+const requireDeployed = isLive && process.env.NFL_REQUIRE_DEPLOYED_VERSION === 'true';
 const output = process.env.NFL_SCREENSHOT_DIR || 'nfl-ui-artifacts';
 fs.mkdirSync(output, { recursive: true });
 
 async function ensurePublished() {
   if (!isLive) return;
-  for (let attempt=1; attempt<=12; attempt++) {
+  for (let attempt=1; attempt<=(requireDeployed?28:12); attempt++) {
     try {
       const response = await fetch(url, {cache:'no-store'});
-      if (response.ok && (await response.text()).includes('function groupPlayerMarkets(')) return;
+      const html=response.ok?await response.text():'';
+      if (html.includes('function groupPlayerMarkets(') &&
+          (!requireDeployed || html.includes('standard-team-position-v2'))) return;
     } catch (error) {
       console.log('Live site not yet reachable: '+error.message);
     }
-    if(attempt===12) throw new Error('Live GitHub Pages does not yet serve grouped NFL player cards');
+    if(attempt===(requireDeployed?28:12)) throw new Error(requireDeployed?'Production Pages has NOT deployed standard-only team-position tracker v2':'Live GitHub Pages does not yet serve grouped NFL player cards');
     await new Promise(resolve=>setTimeout(resolve,15000));
   }
 }
@@ -136,7 +139,11 @@ async function verify(browser, name, viewport) {
     detail.includes(tracker.line),name+' frozen standard line / live actual not rendered');
   const standardFilterPublished=await page.evaluate(()=>
     typeof gameFrozenLines==='function'&&
-    gameFrozenLines.toString().includes('&&r.odds_type==="standard"&&Date.parse'));
+    gameFrozenLines.toString().includes('&&r.odds_type==="standard"&&Date.parse')&&
+    typeof liveComparisonRows==='function'&&
+    liveComparisonRows.toString().includes('standard-team-position-v2'));
+  if(requireDeployed)assert(standardFilterPublished,
+    name+' production Pages is still on the old live tracker; do not report deployment success');
   // GitHub Pages can lag the PR source. Always enforce the new behavior
   // locally; require it in production as soon as the deployment includes it.
   if(!isLive||standardFilterPublished){
@@ -149,7 +156,7 @@ async function verify(browser, name, viewport) {
   }
   // Verify deterministic team -> position -> player ordering and headers
   // with five injected standard records, independent of feed availability.
-  if(!isLive){
+  if(!isLive||standardFilterPublished){
     const grouped=await page.evaluate(()=>{
       const g=state.schedule.find(x=>x.game_id===state.game);
       const original=state.frozen.slice();
@@ -182,6 +189,15 @@ async function verify(browser, name, viewport) {
     }
     assert.equal(grouped.teams,2,name+' expected two team headers');
     assert.equal(grouped.positions,5,name+' expected five position headers');
+    // Every automatic refresh re-renders markup. The expanded card must stay open.
+    await page.evaluate(()=>{
+      const item=document.querySelector('#livegames details[data-livegame="'+state.game+'"]');
+      if(!item)throw Error('Missing matchup for refresh test');
+      item.open=true;
+      render();
+    });
+    assert(await page.locator('details[data-livegame="'+tracker.game+'"]').evaluate(el=>el.open),
+      name+' auto-refresh collapsed open live matchup');
   }
   // On Pages, a pending network fetch can race this synthetic offline state.
   // The local source test is authoritative until the new Pages build deploys.
