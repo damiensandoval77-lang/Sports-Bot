@@ -24,6 +24,9 @@ class PublishGateTests(unittest.TestCase):
         a,b,c=fixtures();a["board_offers"].append({**ROW,"id":"pp2"});self.assertIn("VERIFIED_OFFER_COUNT_MISMATCH",validate(a,b,c,now=NOW))
     def test_modified_offer_id_rejected(self):
         a,b,c=fixtures();b["board_offers"][0]["id"]="fake";self.assertIn("OFFER_IDENTITIES_CHANGED_OR_MISSING",validate(a,b,c,now=NOW))
+    def test_changed_line_rejected(self):
+        a,b,c=fixtures();b["board_offers"][0]["line"]=19.5
+        self.assertIn("EXPORTED_OFFER_DIFFERS_FROM_VERIFIED_SOURCE",validate(a,b,c,now=NOW))
     def test_fake_line_rejected(self):
         a,b,c=fixtures();b["board_offers"][0]["line"]=float("nan");self.assertIn("INVALID_EXPORTED_LINE",validate(a,b,c,now=NOW))
     def test_stale_rejected(self):
