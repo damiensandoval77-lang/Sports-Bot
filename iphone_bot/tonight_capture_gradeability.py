@@ -71,6 +71,12 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None):
         frozen_markets={market_key(x) for x in l}
         standard_markets={market_key(x) for x in standard}
         missing_markets=standard_markets-frozen_markets
+        # Keep the exact-quote gap visible, but distinguish a genuine later
+        # standard price move from a player/stat with no primary freeze at all.
+        # Historical model projections must never be repriced retroactively.
+        frozen_identity={key[:3] for key in frozen_markets}
+        moved_price_markets={key for key in missing_markets if key[:3] in frozen_identity}
+        entirely_unfrozen_markets=missing_markets-moved_price_markets
         # Research receipts are a separate fallback, never validated model picks.
         archived_research=(research or {}).get("records",[]) if (research or {}).get("status")=="IMMUTABLE_PRETIP_STANDARD_QUOTE_AI_RESEARCH" else []
         eligible_research={
@@ -103,6 +109,8 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None):
              "standard_source_quotes":len(standard),
              "standard_unique_markets":len(standard_markets),
              "standard_markets_without_frozen_model":len(missing_markets),
+             "standard_price_moves_from_original_frozen_line":len(moved_price_markets),
+             "standard_player_stat_markets_never_primary_frozen":len(entirely_unfrozen_markets),
              "missing_primary_with_separate_research_receipt":len(research_backed),
              "missing_primary_without_any_ai_receipt":len(no_ai_receipt),
              "unique_provider_player_stat_markets":len({(x.get("player"),x.get("team"),x.get("stat")) for x in q}),
@@ -121,6 +129,8 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None):
        "total_quotes":sum(g["source_quotes"] for g in result["games"]),
        "total_standard_source_quotes":sum(g["standard_source_quotes"] for g in result["games"]),
        "total_standard_markets_without_frozen_model":sum(g["standard_markets_without_frozen_model"] for g in result["games"]),
+       "total_price_moves_from_original_frozen_line":sum(g["standard_price_moves_from_original_frozen_line"] for g in result["games"]),
+       "total_player_stat_markets_never_primary_frozen":sum(g["standard_player_stat_markets_never_primary_frozen"] for g in result["games"]),
        "total_missing_primary_with_separate_research_receipt":sum(g["missing_primary_with_separate_research_receipt"] for g in result["games"]),
        "total_missing_primary_without_any_ai_receipt":sum(g["missing_primary_without_any_ai_receipt"] for g in result["games"]),
        "total_ai_only":sum(g["frozen_ai_only"] for g in result["games"]),
