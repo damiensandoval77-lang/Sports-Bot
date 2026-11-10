@@ -64,6 +64,11 @@ def validate(raw,site,model,now=None,max_source_age_minutes=360):
             break
     if site.get("partial_board")!=raw.get("partial_board") or site.get("complete_provider_board")!=raw.get("complete_provider_board"):
         issues.append("PROVIDER_COMPLETENESS_MISREPORTED")
+    scope=raw.get("board_coverage_scope") or "UNVERIFIED_LEGACY_SCOPE"
+    if site.get("board_coverage_scope")!=scope:
+        issues.append("PROVIDER_SCOPE_MISREPORTED")
+    if site.get("complete_provider_board") is True and scope!="NBA_ACTIVE_STANDARD_TIER_ONLY":
+        issues.append("STANDARD_BOARD_COMPLETENESS_NOT_VERIFIED")
     # Research input may have zero eligible future markets after tipoff. It must
     # still not claim model-ready status with fabricated/unverified rows.
     picks=model.get("picks")
