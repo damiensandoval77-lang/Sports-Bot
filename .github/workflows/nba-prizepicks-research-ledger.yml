@@ -5,7 +5,9 @@ on:
     branches: [main]
     paths:
       - 'docs/prizepicks_ai_research.json'
+      - 'docs/prizepicks_pregame_line_archive.json'
       - 'iphone_bot/prizepicks_research_ledger.py'
+      - 'docs/prizepicks_pregame_line_archive.json'
       - 'iphone_bot/recover_prizepicks_final_games.py'
       - 'iphone_bot/verified_nov9_nonparticipants.py'
       - 'iphone_bot/tests/test_verified_nov9_nonparticipants.py'
@@ -50,6 +52,14 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_research_ledger.py' -v
           python -m py_compile iphone_bot/prizepicks_research_ledger.py
+          python - <<'PY'
+          import json
+          from iphone_bot.prizepicks_research_ledger import summarize
+          report=summarize({"records":[]})
+          assert report["official_grading_scope"]=="VERIFIED_PRETIP_STANDARD_LINES_ONLY"
+          assert report["independent_by_market"]["PTS"]["graded"]==0
+          assert report["by_market"]["PTS"]["line_hit_rate"] is None
+          PY
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_final_recovery.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_nov9_nonparticipants.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v

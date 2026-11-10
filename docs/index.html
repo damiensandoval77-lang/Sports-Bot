@@ -2744,9 +2744,12 @@ async function refreshGradeReconciliation(){
  const chunks=[];
  if(history?.status==="PRIZEPICKS_PRETIP_RESEARCH_GRADED_NOT_ODDS"){
   const independent=history.independent_by_market||{};
-  chunks.push("Historical PrizePicks research: "+(history.independent_settled_center_lines??"—")+
-   " independent graded player/stat markets across saved dates ("+
-   (history.settled??"—")+" total source-line observations settled). "+
+  chunks.push("Verified STANDARD PrizePicks lines only: "+(history.independent_settled_standard_lines??history.independent_settled_center_lines??"—")+
+   " independent graded player/stat markets across saved dates. "+
+   "Goblin, Demon and unknown tiers excluded from these hit rates ("+
+   (history.verified_quote_tier_counts?.goblin??"—")+" goblin, "+
+   (history.verified_quote_tier_counts?.demon??"—")+" demon, "+
+   (history.verified_quote_tier_counts?.unverified??"—")+" unverified saved quotes). "+
    ["PTS","REB","AST","PRA"].map(stat=>{
     const v=independent[stat]||{};
     return stat+": "+(v.graded??0)+" graded"+

@@ -66,6 +66,9 @@ jobs:
           assert r["expected_final_picks"] == r["graded_picks"]+r["pending_picks"]+r.get("void_picks",0)
           assert r["frozen_final_pick_candidates"] == r["expected_final_picks"]
           assert r["standard_wins"] <= r["standard_settled"]
+          assert r["official_grading_scope"] == "FROZEN_STANDARD_LINE_ONLY"
+          assert r["standard_graded_picks_including_pushes"] >= r["standard_settled"]
+          assert r["alternative_tier_historical_grades_excluded"] + r["standard_graded_picks_including_pushes"] == r["graded_picks"]
           assert r["final_games_with_frozen_picks"] == 0 or r["expected_final_picks"] > 0, "Completed NFL games with frozen props cannot publish zero eligible records"
           print("2026 frozen grading:",r["graded_picks"],"graded,",
                 r["pending_picks"],"pending,",r.get("void_picks",0),"verified voids,",
