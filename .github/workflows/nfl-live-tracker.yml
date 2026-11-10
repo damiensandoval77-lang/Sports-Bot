@@ -1,5 +1,16 @@
 name: NFL live player-stat snapshots
 on:
+  pull_request:
+    paths:
+      - 'scripts/fetch_nfl_live.py'
+      - 'tests/test_nfl_live.py'
+      - 'docs/nfl/index.html'
+      - '.github/workflows/nfl-live-tracker.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/fetch_nfl_live.py'
+      - '.github/workflows/nfl-live-tracker.yml'
   workflow_dispatch:
   schedule:
     # Frequent game-night updates; GitHub Actions cron may run late.
@@ -22,8 +33,10 @@ jobs:
       - name: Verify live-stat normalization and non-destructive updates
         run: python -m unittest discover -s tests -p 'test_nfl_live.py' -v
       - name: Fetch current ESPN NFL live summary and player stats
+        if: github.event_name != 'pull_request'
         run: python scripts/fetch_nfl_live.py
       - name: Publish only the separate live-stat JSON
+        if: github.event_name != 'pull_request'
         run: |
           set -euo pipefail
           git config user.name nfl-live-tracker
