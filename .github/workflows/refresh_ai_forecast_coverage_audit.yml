@@ -41,15 +41,14 @@ jobs:
         if: github.event_name != 'pull_request' && steps.audit.outcome == 'success'
         run: |
           set -euo pipefail
-          cp docs/ai_forecast_coverage_audit.json "$RUNNER_TEMP/ai_forecast_coverage_audit.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for n in 1 2 3 4 5 6; do
             git fetch origin main
             git reset --hard origin/main
-            # Reconciliation output was produced against a particular
-            # immutable ledger version. Never publish it over newer changes.
-            cp "$RUNNER_TEMP/ai_forecast_coverage_audit.json" docs/ai_forecast_coverage_audit.json
+            # Recompute from freshly fetched permanent ledgers each retry.
+            # Never overwrite a newer grade ledger with a stale summary.
+            python -m iphone_bot.audit_ai_forecast_coverage
             git add docs/ai_forecast_coverage_audit.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Refresh immutable archived NBA forecast grade coverage'
