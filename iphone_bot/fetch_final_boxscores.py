@@ -399,6 +399,7 @@ def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_
     # Use previously observed official liveData NBA IDs before expensive
     # season schedule rediscovery. These IDs are only lookup hints: the
     # returned official box must STILL attest FINAL, date, teams, and game ID.
+    pending_ids={}
     if known_game_ids:
         from iphone_bot.official_game_id_index import matching_ids
         pending_ids=matching_ids(known_game_ids,pending-nba_complete)
@@ -437,10 +438,14 @@ def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_
     # the next day. Discover historical IDs from the official season schedule,
     # then read each actual final (gameStatus=3) NBA player boxscore.
     remaining=pending-nba_complete-espn_complete
-    if remaining:
+    # Do not redownload gigantic season schedules for matchups whose exact
+    # official NBA ID was already safely recorded (the box itself checks FINAL).
+    # Reusing the same known game ID is the correct recovery path.
+    season_id_unknown=remaining-set(pending_ids)
+    if season_id_unknown:
         for endpoint in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):
             try:
-                candidates=verified_schedule_ids(request(endpoint),remaining)
+                candidates=verified_schedule_ids(request(endpoint),season_id_unknown)
                 for key,gid in candidates.items():
                     if key in nba_complete:continue
                     try:
