@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "iphone_bot/refresh_nba_player_boxscores.py"
+      - "iphone_bot/merge_nba_player_boxscore_publish.py"
+      - "iphone_bot/tests/test_merge_nba_player_boxscore_publish.py"
       - ".github/workflows/independent_nba_player_boxscores.yml"
   schedule:
     - cron: "6,21,36,51 * * * *"
@@ -33,7 +35,9 @@ jobs:
         with:
           python-version: "3.11"
       - name: Validate player boxscore source and failure handling
-        run: python -m unittest discover -s iphone_bot/tests -p 'test_nba_player_boxscores.py' -v
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_nba_player_boxscores.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_nba_player_boxscore_publish.py' -v
       - name: Refresh observed NBA player totals without paid odds API calls
         id: refresh
         if: github.event_name != 'pull_request'
@@ -49,29 +53,9 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            python - <<'PY'
-          import datetime,json,os
-          from pathlib import Path
-          target=Path("docs/nba_player_tracking_independent.json")
-          incoming=Path(os.environ["RUNNER_TEMP"])/target.name
-          new=json.loads(incoming.read_text())
-          old=json.loads(target.read_text()) if target.exists() else {}
-          def stamp(obj):
-              raw=obj.get("captured_at") or obj.get("checked_at")
-              if not raw:return None
-              try:
-                  t=datetime.datetime.fromisoformat(str(raw).replace("Z","+00:00"))
-                  return t if t.tzinfo else None
-              except (TypeError,ValueError):return None
-          prev,now=stamp(old),stamp(new)
-          # A delayed job cannot replace a newer verified observation.
-          if prev is not None and now is not None and prev>now:
-              print("Keeping newer independent player observation")
-          elif old.get("date_eastern")==new.get("date_eastern") and old.get("status")=="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES" and new.get("status")=="WAITING_FOR_SCHEDULED_TIPOFF":
-              print("Keeping verified live scores over pregame placeholder")
-          else:
-              target.write_text(json.dumps(new,indent=2)+"\\n")
-          PY
+            python -m iphone_bot.merge_nba_player_boxscore_publish \
+              --current docs/nba_player_tracking_independent.json \
+              --incoming "$RUNNER_TEMP/nba_player_tracking_independent.json"
             git add docs/nba_player_tracking_independent.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m "Safely refresh independently observed NBA player totals"
