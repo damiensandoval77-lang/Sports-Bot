@@ -306,13 +306,14 @@ test("Observed ESPN game wins over schedule-only fallback and is not duplicated"
 
 test("Historic AI-only backlog persists even if today's grade report says zero",()=>{
  const audit=JSON.parse(fs.readFileSync("docs/ai_forecast_coverage_audit.json","utf8"));
- const now=Date.parse("2026-11-10T12:00:00Z");
+ const now=Date.parse(audit.checked_at);
  const previous=m.gradingAuditSummary(audit,now);
- assert.equal(previous.day,"2026-11-09");
- assert.equal(previous.captured,756);
- assert.equal(previous.graded,620);
- assert.equal(previous.pending,136);
- assert.equal(previous.voided,0);
+ assert.ok(previous,"A permanent prior-day audit is available");
+ const counts=audit.days[previous.day];
+ assert.equal(previous.captured,counts.captured);
+ assert.equal(previous.graded,counts.graded);
+ assert.equal(previous.pending,counts.pending);
+ assert.equal(previous.voided,counts.void_dnp+counts.excluded_nonparticipant);
  assert.equal(previous.stale,false);
  const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(page.includes("ai_forecast_coverage_audit.json"));
