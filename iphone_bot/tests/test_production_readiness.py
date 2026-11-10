@@ -18,7 +18,7 @@ def fixtures(now=NOW):
          "is_live_score_source":False,"games":[dict(GAME)]},
      "prizepicks_site.json":{"generated_at":STAMP,
          "status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES","complete_provider_board":True,
-         "partial_board":False,"board_offers":[{"starts_at":GAME["start"],"is_demo":False}]},
+         "partial_board":False,"board_coverage_scope":"NBA_ACTIVE_STANDARD_TIER_ONLY","board_offers":[{"starts_at":GAME["start"],"is_demo":False}]},
      "nightly_grade_health.json":{"checked_at":STAMP,
          "game_date_eastern":"2026-11-08",
          "prizepicks_overdue":0,"paper_overdue":0,"capture_missing":False,
@@ -80,6 +80,14 @@ class StrictProductionReadinessTests(unittest.TestCase):
         result=check(NOW,data)
         self.assertIn("SEASON_HORIZON_AUDIT_STALE",
                       result["components"]["season_calendar"]["reasons"])
+
+    def test_unscoped_complete_provider_never_makes_standard_board_green(self):
+        data=fixtures()
+        data["prizepicks_site.json"]["board_coverage_scope"]="UNVERIFIED_LEGACY_SCOPE"
+        result=check(NOW,data)
+        self.assertIn("STANDARD_ONLY_PROVIDER_SCOPE_UNVERIFIED",
+                      result["components"]["prizepicks_lines"]["reasons"])
+        self.assertFalse(result["ready_for_trustworthy_picks"])
 
     def test_missing_projections_block(self):
         data=fixtures()
