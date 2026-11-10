@@ -28,7 +28,10 @@ def recovery_targets(report):
         out.append(RECOVERABLE["prizepicks_lines"])
     if "public_browser" in failed:
         out.append(RECOVERABLE["public_browser"])
-    # Rerunning a capture AUDIT cannot repair absent frozen projections. Route\n    # pretip gaps to guarded generation/merge, then allow the next independent\n    # scheduled capture audit to confirm whether the gap really closed.\n    if "pregame_capture" in failed and report.get("upcoming_games", 0) > 0:\n        out.append(RECOVERABLE["pregame_capture"])
+    # Rerunning a capture audit cannot repair absent frozen projections.
+    # Route pretip gaps to model generation and verify in the next audit.
+    if "pregame_capture" in failed and report.get("upcoming_games", 0) > 0:
+        out.append(RECOVERABLE["pregame_capture"])
     return out
 
 def main():
