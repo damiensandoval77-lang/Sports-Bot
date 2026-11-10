@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-10T22:41:34.178805+00:00",
+  "checked_at": "2026-11-10T23:09:02.178661+00:00",
   "game_date_eastern": "2026-11-10",
   "status": "DEGRADED",
   "ready_for_trustworthy_picks": false,
@@ -13,27 +13,25 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 1.3
+      "age_minutes": 28.7
     },
     "season_calendar": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 101.3
+      "age_minutes": 128.7
     },
     "ai_forecasts": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 52.4
+      "age_minutes": 79.9
     },
     "prizepicks_lines": {
-      "state": "DEGRADED",
+      "state": "READY",
       "required": true,
-      "reasons": [
-        "STALE_SOURCE"
-      ],
-      "age_minutes": 91.2
+      "reasons": [],
+      "age_minutes": 3.6
     },
     "pregame_capture": {
       "state": "DEGRADED",
@@ -42,7 +40,7 @@
         "PRETIP_CAPTURE_NOT_VERIFIED",
         "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
       ],
-      "age_minutes": 17.9
+      "age_minutes": 3.1
     },
     "published_pick_cards": {
       "state": "DEGRADED",
@@ -53,25 +51,23 @@
         "NO_PROVIDER_EVENTS_CHECKED",
         "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
       ],
-      "age_minutes": 4249.4
+      "age_minutes": 4276.8
     },
     "prizepicks_research_cards": {
-      "state": "DEGRADED",
+      "state": "READY",
       "required": false,
-      "reasons": [
-        "PP_RESEARCH_PROVIDER_SOURCE_STALE",
-        "UPCOMING_GAMES_WITHOUT_PP_RESEARCH_MATCHES"
-      ],
-      "age_minutes": 17.9
+      "reasons": [],
+      "age_minutes": 3.1
     },
     "public_browser": {
       "state": "DEGRADED",
       "required": true,
       "reasons": [
         "PUBLIC_BROWSER_CARDS_NOT_VERIFIED",
-        "PUBLIC_GAMES_MISSING_RENDERED_PROPS"
+        "PUBLIC_GAMES_MISSING_RENDERED_PROPS",
+        "UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES"
       ],
-      "age_minutes": 24.2
+      "age_minutes": 51.7
     },
     "scoreboard": {
       "state": "READY",
@@ -89,16 +85,15 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 18.0
+      "age_minutes": 45.5
     }
   },
   "blocking_components": [],
   "degraded_components": [
-    "prizepicks_lines",
     "pregame_capture",
     "public_browser"
   ],
   "required_checks": 8,
-  "passing_required_checks": 5,
+  "passing_required_checks": 6,
   "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
 }
