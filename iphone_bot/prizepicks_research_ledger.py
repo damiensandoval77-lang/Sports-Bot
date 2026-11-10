@@ -133,7 +133,7 @@ def settle(ledger,games,now=None,final_games=None):
         if actual_row.get("dnp_final_verified") is True:
             if (actual_row.get("final_confirmed") is True and
                 actual_row.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL",
-                                              "NBA_OFFICIAL_INACTIVE_CROSSCHECKED") and
+                                              "NBA_OFFICIAL_INACTIVE_CROSSCHECKED",CROSSCHECKED_DNP_SOURCE) and
                 str(actual_row.get("opponent","")).upper() in expected and
                 actual_row.get("dnp_reason")):
                 row.update(status="VOID_DNP",result="VOID",actual=None,
