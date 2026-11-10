@@ -158,3 +158,37 @@ test("NFL source historical line results and depth context are retained without 
  assert.equal(r.depth.role,"Starter");assert.equal(r.depth.snapPct,.75);
  assert.equal(r.line,75.5);
 });
+
+test("Every unmatched verified standard NBA quote is visible as explicitly unmodeled",()=>{
+ const frozen=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[pt]},null);
+ const same={id:"1",player:pt.player,team:pt.team,game:pt.game,stat:pt.stat,
+  starts_at:pt.start,observed_at:"2026-11-09T23:00:00Z",line:28.5,
+  tier:"standard",more_tier:"standard",less_tier:"standard",is_demo:false};
+ const other={...same,id:"2",line:27.5,observed_at:"2026-11-09T23:03:00Z"};
+ const noModel={...same,id:"3",player:"Example Player",line:13.5};
+ const rows=m.includeArchivedStandard(frozen,{quotes:[same,other,noModel,
+  {...noModel,id:"4",tier:"demon"},
+  {...noModel,id:"5",observed_at:"2026-11-10T04:00:00Z"}]});
+ assert.equal(rows.length,3);
+ assert.equal(rows.filter(x=>x.quoteOnly).length,2);
+ assert.equal(rows.filter(x=>x.quoteOnly&&x.projection===null&&x.chance===null&&x.direction===null).length,2);
+ assert.equal(rows.filter(x=>x.quoteOnly&&x.grade==="UNMODELED").length,2);
+ assert.equal(rows[0].projection,31.391);
+});
+test("Published standard quote archive coverage is not silently lost in the combined dashboard",()=>{
+ const archive=JSON.parse(fs.readFileSync("docs/prizepicks_pregame_line_archive.json","utf8"));
+ const ledger=JSON.parse(fs.readFileSync("docs/lagged_matchup_all_market_ledger.json","utf8"));
+ const form=JSON.parse(fs.readFileSync("docs/current_form.json","utf8"));
+ const rows=m.includeArchivedStandard(m.nba(ledger,form),archive);
+ const valid=archive.quotes.filter(q=>q.tier==="standard"&&q.more_tier==="standard"&&
+ q.less_tier==="standard"&&q.is_demo===false&&Date.parse(q.observed_at)<Date.parse(q.starts_at)&&
+ ["PTS","REB","AST","PRA"].includes(q.stat));
+ const norm=x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,"");
+ const k=x=>[norm(x.player),x.team,x.game,x.stat,Number(x.line)].join("|");
+ const offered=new Set(valid.map(k)),shown=new Set(rows.map(k));
+ for(const key of offered)assert.ok(shown.has(key),"Missing archived standard prop "+key);
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(!page.includes(".slice(0,240)"),"Silently truncated player cards");
+ assert.ok(page.includes("prizepicks_pregame_line_archive.json"));
+ console.log("Standard source markets",offered.size,"all represented; total cards",rows.length);
+});
