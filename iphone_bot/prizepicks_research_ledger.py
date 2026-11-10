@@ -202,7 +202,8 @@ def _quote_tier(row, quote_index):
            for k in ("player","team","game","stat")):
         return None
     try:
-        if float(row["line"])!=float(quote["line"]):
+        if float(row["line"])!=float(quote["line"]) or (
+            str(row.get("start") or "")!=str(quote.get("starts_at") or "")):
             return None
         observed=utc(quote.get("observed_at"))
         published=utc(quote.get("source_generated_at"))
@@ -210,7 +211,10 @@ def _quote_tier(row, quote_index):
         captured=utc(row.get("captured_at"))
         if not all((observed,published,start,captured)):
             return None
-        if not (observed<=published<start and captured<start):
+        # Only evidence available when the pick was actually frozen can
+        # establish the tier. A quote published afterward is not a safe
+        # retroactive standard-line label.
+        if not (observed<=published<=captured<start):
             return None
     except (TypeError,ValueError):
         return None
@@ -340,6 +344,7 @@ def summarize(ledger,now=None,quote_archive=None):
             "ambiguous_standard_line_markets_excluded":ambiguous_groups,
             "official_grading_scope":"VERIFIED_PRETIP_STANDARD_LINES_ONLY",
             "independent_settled_center_lines":sum(v["graded"] for v in independent.values()),
+            "independent_settled_standard_lines":sum(v["graded"] for v in independent.values()),
             "independent_by_market":independent,
             "minutes_v3_opportunity_v2_paired":paired_joint_metrics(representatives),
             "by_market":{stat:{"graded_lines":item["graded"],
