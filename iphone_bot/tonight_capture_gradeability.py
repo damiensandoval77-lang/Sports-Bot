@@ -61,11 +61,16 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
         q=[x for x in qs if x.get("game")==name]
         a=[x for x in preds if x.get("game")==name]
         l=[x for x in backed if x.get("game")==name]
+        standard=[x for x in q if x.get("tier")=="standard"]
+        frozen_markets={(x.get("player"),x.get("team"),x.get("stat")) for x in l}
+        standard_markets={(x.get("player"),x.get("team"),x.get("stat")) for x in standard}
+        missing_markets=standard_markets-frozen_markets
         g=[x for x in grade_rows if x.get("game")==name]
         issue=[]
         if not q:issue.append("NO_CAPTURED_PROVIDER_LINES")
         if not a:issue.append("NO_SAVED_PREGAME_AI")
-        if q and not l:issue.append("PROVIDER_QUOTES_WITH_NO_FROZEN_LINE_BACKED_MODEL")
+        if standard and not l:issue.append("PROVIDER_QUOTES_WITH_NO_FROZEN_LINE_BACKED_MODEL")
+        if missing_markets:issue.append("STANDARD_MARKETS_WITHOUT_FROZEN_MODEL")
         # Only a verified final can create a grade. Do not fail because
         # an actual game is still in progress or yet to start.
         try:started=(now-dt.datetime.fromisoformat(game["start"].replace("Z","+00:00"))).total_seconds()
@@ -77,6 +82,9 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
             issue.append("LINE_BACKED_GRADING_OVERDUE_CHECK_FINAL_FEED")
         row={"game":name,"start":game.get("start"),
              "source_quotes":len(q),
+             "standard_source_quotes":len(standard),
+             "standard_unique_markets":len(standard_markets),
+             "standard_markets_without_frozen_model":len(missing_markets),
              "unique_provider_player_stat_markets":len({(x.get("player"),x.get("team"),x.get("stat")) for x in q}),
              "frozen_ai_only":len(a),
              "frozen_line_backed":len(l),
@@ -91,6 +99,8 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
        "games_with_frozen_ai":sum(g["frozen_ai_only"]>0 for g in result["games"]),
        "games_with_line_backed_models":sum(g["frozen_line_backed"]>0 for g in result["games"]),
        "total_quotes":sum(g["source_quotes"] for g in result["games"]),
+       "total_standard_source_quotes":sum(g["standard_source_quotes"] for g in result["games"]),
+       "total_standard_markets_without_frozen_model":sum(g["standard_markets_without_frozen_model"] for g in result["games"]),
        "total_ai_only":sum(g["frozen_ai_only"] for g in result["games"]),
        "total_line_backed":sum(g["frozen_line_backed"] for g in result["games"]),
        "total_line_backed_graded":sum(g["line_backed_graded"] for g in result["games"]),
