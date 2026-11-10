@@ -30,6 +30,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: frozen-ai-forecast-grades
@@ -67,6 +68,7 @@ jobs:
           set -euo pipefail
           cp docs/ai_forecast_actual_ledger.json "$RUNNER_TEMP/ai_forecast_actual_ledger.json"
           cp docs/ai_forecast_grade_status.json "$RUNNER_TEMP/ai_forecast_grade_status.json"
+          cp docs/ai_forecast_today_grade_status.json "$RUNNER_TEMP/ai_forecast_today_grade_status.json"
           cp docs/verified_final_player_cache.json "$RUNNER_TEMP/verified_final_player_cache.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -97,13 +99,19 @@ jobs:
           write_cache(current,read_cache(current),read_cache(incoming))
           PY
             cp "$RUNNER_TEMP/ai_forecast_grade_status.json" docs/ai_forecast_grade_status.json
-            git add docs/ai_forecast_actual_ledger.json docs/ai_forecast_grade_status.json docs/verified_final_player_cache.json
+            cp "$RUNNER_TEMP/ai_forecast_today_grade_status.json" docs/ai_forecast_today_grade_status.json
+            git add docs/ai_forecast_actual_ledger.json docs/ai_forecast_grade_status.json docs/ai_forecast_today_grade_status.json docs/verified_final_player_cache.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Grade original locked NBA AI forecasts against verified final player results'
             if git push origin HEAD:main; then exit 0; fi
           done
           echo "::error::Concurrent publisher prevented safe AI grade updates"
           exit 1
+      - name: Regrade frozen line-backed New AI markets using newly verified finals
+        if: github.event_name != 'pull_request' && steps.grade.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-new-ai-multimarket-grade.yml --ref main
       - name: Surface errors instead of silently calling a night graded
         if: always() && github.event_name != 'pull_request' && steps.grade.outcome == 'failure'
         run: |
