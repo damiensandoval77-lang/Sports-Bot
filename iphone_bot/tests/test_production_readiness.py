@@ -32,6 +32,10 @@ def fixtures(now=NOW):
                     "total_standard_markets_without_frozen_model":0,
                     "total_missing_primary_with_separate_research_receipt":0,
                     "total_missing_primary_without_any_ai_receipt":0}},
+     "browser_card_probe.json":{
+         "checked_at":STAMP,"status":"READY","browser_render_verified":True,
+         "rendered_verified_standard_lines":3,"rendered_new_ai_chances":2,
+         "games_without_rendered_matches":[]},
      "nba_player_tracking_independent.json":{},
      "data.json":{"updated_at":STAMP,"slate_events_checked":1,
                   "market_coverage_limited":False,
@@ -169,6 +173,24 @@ class StrictProductionReadinessTests(unittest.TestCase):
         result=check(NOW,data)
         self.assertIn("CAPTURE_RECONCILIATION_INCONSISTENT",
                       result["components"]["pregame_capture"]["reasons"])
+
+    def test_public_browser_missing_live_standard_cards_blocks_ready(self):
+        data=fixtures()
+        data["browser_card_probe.json"].update(
+            status="DEGRADED",browser_render_verified=False,
+            rendered_verified_standard_lines=0,rendered_new_ai_chances=0)
+        result=check(NOW,data)
+        self.assertIn("public_browser",result["degraded_components"])
+        self.assertIn("NO_PUBLIC_VERIFIED_STANDARD_CARDS",
+                      result["components"]["public_browser"]["reasons"])
+        self.assertFalse(result["ready_for_trustworthy_picks"])
+
+    def test_stale_browser_proof_cannot_make_deployment_ready(self):
+        data=fixtures()
+        data["browser_card_probe.json"]["checked_at"]="2026-11-09T10:00:00Z"
+        result=check(NOW,data)
+        self.assertIn("PUBLIC_BROWSER_PROBE_STALE",
+                      result["components"]["public_browser"]["reasons"])
 
     def test_nightly_grade_incomplete_degrades(self):
         data=fixtures()
