@@ -25,9 +25,10 @@ def moment(value):
         return None
 
 def identity(record):
+    # One immutable research observation per exact player/event/stat/standard
+    # threshold. Repeated refreshes do not inflate historical hit-rate samples.
     return tuple(str(record.get(k, "")) for k in (
-        "source", "provider_projection_id", "player_id", "team",
-        "game", "start", "stat", "line", "observed_at"
+        "source", "player_id", "team", "game", "start", "stat", "line"
     ))
 
 def valid(row, now):
@@ -45,7 +46,7 @@ def valid(row, now):
     start = moment(row.get("start"))
     observed = moment(row.get("observed_at"))
     model_time = moment(row.get("model_generated_at"))
-    if not start or not observed or not model_time or not (observed < start and model_time < start and now < start):
+    if not start or not observed or not model_time or not (observed <= now and model_time <= now and observed < start and model_time < start and now < start):
         return False
     try:
         line = float(row["line"])
@@ -66,19 +67,16 @@ def merge(incoming, previous=None, now=None):
             raise ValueError("Contradictory previously frozen research quote")
         records[key] = row
     added = 0
-    if incoming.get("status") == SOURCE_STATUS:
+    captured = moment(incoming.get("generated_at"))
+    fresh_snapshot = captured is None or (dt.timedelta(0) <= now - captured <= dt.timedelta(minutes=90))
+    if incoming.get("status") == SOURCE_STATUS and fresh_snapshot:
         for row in incoming.get("comparisons", []):
             if not valid(row, now):
                 continue
             key = identity(row)
             if key in records:
-                if records[key]["source_snapshot"] != {
-                    k: row.get(k) for k in (
-                        "source", "provider_projection_id", "player", "player_id", "team",
-                        "opponent", "game", "start", "stat", "line", "observed_at",
-                        "model_generated_at", "projection", "ai_direction", "more_tier", "less_tier"
-                    )}:
-                    raise ValueError("Immutable research receipt changed")
+                # The originally frozen projection wins. Never rewrite it when
+                # a repeated provider observation or refreshed model differs.
                 continue
             source_snapshot = {k: row.get(k) for k in (
                 "source", "provider_projection_id", "player", "player_id", "team",
