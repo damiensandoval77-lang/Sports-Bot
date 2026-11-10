@@ -63,7 +63,13 @@ function nfl(chunks,schedule){
    source:"PrizePicks",line:n(p.line),projection:n(p.proj),direction,chance,
    chanceSource:"NFL model estimate; not a calibrated hit probability",
    captured:p.captured_at,grade:"PENDING",actual:null,hit:null,gradeSource:null,
-   form:{season:n(p.season_avg),l5:null,l10:null,games:n(p.season_games)},
+   form:{season:n(p.season_avg),l5:null,l10:null,games:n(p.season_games),
+    over:n(p.season_over),under:n(p.season_under),push:n(p.season_push),
+    last5Over:n(p.season_last5_over),last5Under:n(p.season_last5_under)},
+   depth:{role:p.depth_role||null,rank:n(p.depth_rank),ahead:n(p.depth_ahead),
+    slot:p.depth_slot||null,asOf:p.depth_asof||null,
+    snapPct:n(p.snap_pct_l3),targetShare:n(p.target_share_l3),
+    carryShare:n(p.carry_share_l3)},
    logs:Array.isArray(logs)?logs.slice(0,6):[],modelId:p.projection_id||null,component:null
   };
   const k=key(obj);
@@ -129,5 +135,23 @@ function attachNFLGrades(rows,graded){
   return x?{...p,grade:"GRADED",actual:n(x.actual),hit:["true","1"].includes(String(x.won).toLowerCase()),gradeSource:"NFL verified final prop ledger"}:p;
  });
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades};
+
+/* Official NBA injury labels are context only; do not retroactively alter picks. */
+function attachInjuries(rows,report){
+ if(report?.status!=="OFFICIAL_NBA_REPORT_VERIFIED"||
+    report.injury_data_verified!==true||!Array.isArray(report.players))return rows;
+ const issued=stamp(report.report_issued_at),updated=stamp(report.generated_at);
+ if(!Number.isFinite(issued)||!Number.isFinite(updated)||issued>updated+10*60000)return rows;
+ const eastern=t=>{
+  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(t));
+  const get=type=>parts.find(p=>p.type===type)?.value||"";
+  return get("year")+"-"+get("month")+"-"+get("day");
+ };
+ return rows.map(row=>{
+  if(row.sport!=="NBA")return row;
+  const found=report.players.filter(p=>String(p.player_id)===String(row.playerId)&&p.team===row.team&&p.game_date===eastern(row.start));
+  return {...row,injury:found.length===1?{status:found[0].status,asOf:report.report_issued_at,source:"Official NBA report"}:null};
+ });
+}
+root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries};
 })(typeof window!=="undefined"?window:globalThis);
