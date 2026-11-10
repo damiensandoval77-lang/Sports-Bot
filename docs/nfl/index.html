@@ -122,11 +122,12 @@ function gameFrozenLines(id){
  const game=state.schedule.find(g=>g.game_id===id);
  if(!game)return[];
  const cutoff=Date.parse(game.kickoff_utc);
- const eligible=state.frozen.filter(r=>r.game_id===id&&Date.parse(r.captured_at)<cutoff);
+ const eligible=state.frozen.filter(r=>r.game_id===id&&r.odds_type==="standard"&&Date.parse(r.captured_at)<cutoff);
  const latest=new Map();
  for(const r of eligible){
-   // Keep distinct alternative payouts; closing standard lines replace older standard quotes.
-   const key=[r.player_id,r.target,r.odds_type==="standard"?"standard":r.odds_type+"|"+r.line].join("|");
+   // Display only the last verified standard quote for each player/market.
+   // Alternative goblin/demon payouts remain in the immutable archive.
+   const key=[r.player_id,r.target].join("|");
    if(!latest.has(key)||r.captured_at>latest.get(key).captured_at)latest.set(key,r);
  }
  return [...latest.values()].sort((a,b)=>a.player.localeCompare(b.player)||a.target.localeCompare(b.target));
@@ -153,7 +154,7 @@ function livePlayerFor(row,players){
 }
 function liveComparisonRows(game,rows){
  const source=liveGame(game.game_id);
- if(!rows.length)return '<div class="scorewait">No verified pre-kickoff PrizePicks quotes available for this game.</div>';
+ if(!rows.length)return '<div class="scorewait">No verified pre-kickoff standard PrizePicks lines available for this game.</div>';
  const players=source?.players||[];
  const MAX=180;
  const notice=!source?'Live feed unavailable; saved lines remain visible.':
@@ -164,7 +165,7 @@ function liveComparisonRows(game,rows){
   rows.slice(0,MAX).map(r=>{
     const p=livePlayerFor(r,players),actual=liveActual(r,p);
     const pace=actual===null?null:livePace(actual,source);
-    return '<tr><td>'+esc(r.player)+'<small> '+esc(r.stat)+' · '+esc(r.odds_type)+'</small></td>'+
+    return '<tr><td>'+esc(r.player)+'<small> '+esc(r.stat)+'</small></td>'+
      '<td>'+esc(r.line)+'</td><td>'+esc(Number.isFinite(Number(r.proj))?Number(r.proj).toFixed(1):"—")+'</td>'+
      '<td>'+esc(actual===null?"—":actual)+'</td><td>'+esc(pace===null?"—":pace.toFixed(1))+'</td>'+
      '<td>'+esc(r.pick)+'</td></tr>';
@@ -191,7 +192,7 @@ async function loadFrozenAndLive(){
  render();
 }
 function matchupCard(g,lines){
- const count=gameFrozenLines(g.game_id).length||lines.filter(x=>x.game_id===g.game_id).length;
+ const count=gameFrozenLines(g.game_id).length;
  const finished=g.status==="final";
  const onAir=liveGame(g.game_id);
  const status=onAir?.status==="in"?"LIVE "+(onAir.status_text||"In progress"):
@@ -207,7 +208,7 @@ function matchupCard(g,lines){
      verified?'Player box score verified':'Player box score pending verification')+'</small>':'';
  return '<div class="prop mainline"><div class="head"><strong>'+esc(g.away+' @ '+g.home)+'</strong><span class="tag">'+esc(status)+'</span></div>'+
  '<small>Week '+esc(g.week)+' · '+esc(Number.isFinite(date.getTime())?date.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):g.kickoff_utc)+'</small>'+
- '<p class="muted">'+(count?count+' frozen PrizePicks prop lines':'No PrizePicks props captured — matchup still available')+'</p>'+boxStatus+
+ '<p class="muted">'+(count?count+' frozen standard PrizePicks lines':'No frozen standard PrizePicks lines — matchup still available')+'</p>'+boxStatus+
  '<details class="matchdetail" data-livegame="'+esc(g.game_id)+'"><summary>'+esc(finished?"Frozen props & live/final comparison":"Live tracker · frozen line vs player stats")+'</summary><div class="box-content">'+liveComparisonRows(g,gameFrozenLines(g.game_id))+'</div></details>'+
  (finished?'<details class="matchdetail" data-boxgame="'+esc(g.game_id)+'" data-week="'+esc(g.week)+'"><summary>View independently verified final box score</summary><div class="box-content"><div class="scorewait">Loading verified final stats…</div></div></details>':"")+'</div>';
 }
