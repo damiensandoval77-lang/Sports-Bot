@@ -310,8 +310,11 @@ def main():
     ])
     fetch_report["cache_recovery_used"]=bool(cached_before)
     try:
+        # Recreate every verified exclusion from the final confirmed/cached rows.
+        # Do not discard explicit boxscore DNP evidence after cache reconciliation.
         confirmed_inactives=(verified_inactive_subset(actuals)+
-                             additional_verified_ai_inactive_subset(actuals))
+                             additional_verified_ai_inactive_subset(actuals)+
+                             verified_boxscore_dnp_subset(actuals))
     except (OSError,ValueError,TypeError,KeyError):
         confirmed_inactives=[]
     try:
