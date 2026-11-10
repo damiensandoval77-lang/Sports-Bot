@@ -112,6 +112,37 @@ def check(now,files):
     add("prizepicks_lines","READY" if not issues else "DEGRADED",issues,age,
         required=bool(upcoming))
 
+    # Independent exact pretip capture gate. A research-only price/model
+    # receipt is valuable history, but NOT a validated primary frozen pick.
+    capture=load("tonight_capture_gradeability.json")
+    capture_age=age_of(capture,"checked_at")
+    capture_issues=[]
+    summary=capture.get("summary") if isinstance(capture.get("summary"),dict) else {}
+    if capture.get("game_date_eastern")!=day:
+        capture_issues.append("CAPTURE_REPORT_WRONG_SLATE_DATE")
+    if capture_age is None or capture_age< -5 or capture_age>90:
+        capture_issues.append("CAPTURE_REPORT_STALE")
+    if upcoming:
+        if capture.get("status")!="CAPTURE_VERIFIED":
+            capture_issues.append("PRETIP_CAPTURE_NOT_VERIFIED")
+        if summary.get("schedule_games")!=len(todays):
+            capture_issues.append("CAPTURE_SCHEDULE_COUNT_MISMATCH")
+        if summary.get("games_with_saved_source_quotes",0)<len(upcoming):
+            capture_issues.append("UPCOMING_GAMES_WITHOUT_FROZEN_QUOTES")
+        if summary.get("games_with_frozen_ai",0)<len(upcoming):
+            capture_issues.append("UPCOMING_GAMES_WITHOUT_FROZEN_AI")
+        missing=summary.get("total_standard_markets_without_frozen_model")
+        fallback=summary.get("total_missing_primary_with_separate_research_receipt")
+        no_ai=summary.get("total_missing_primary_without_any_ai_receipt")
+        if any(type(x) is not int or x<0 for x in (missing,fallback,no_ai)) or missing!=fallback+no_ai:
+            capture_issues.append("CAPTURE_RECONCILIATION_INCONSISTENT")
+        elif missing>0:
+            capture_issues.append("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL")
+        if summary.get("total_standard_source_quotes",0)==0:
+            capture_issues.append("NO_ARCHIVED_STANDARD_QUOTES")
+    add("pregame_capture","READY" if not capture_issues else "DEGRADED",
+        list(dict.fromkeys(capture_issues)),capture_age,required=bool(upcoming))
+
     # A fresh raw provider board and AI-only projections do NOT mean that
     # actual live prop cards were published. No recommendations may be inferred.
     published=load("data.json")
@@ -237,7 +268,8 @@ def main():
            "nba_scoreboard_independent.json","prizepicks_site.json",
            "nightly_grade_health.json","nba_player_tracking_independent.json",
            "data.json","ai_comparisons.json","verified_official_nba_fixtures.json",
-           "ai_prizepicks_quick_join_health.json"]
+           "ai_prizepicks_quick_join_health.json",
+           "tonight_capture_gradeability.json"]
     inputs={}
     for name in names:
         path=ROOT/"docs"/name
