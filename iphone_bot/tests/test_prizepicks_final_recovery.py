@@ -1,5 +1,6 @@
 import datetime as dt
 import unittest
+from unittest.mock import patch
 
 from iphone_bot.recover_prizepicks_final_games import pending_matchup_requests, recover, multi_origin_request, S3_BASE
 from iphone_bot.prizepicks_research_ledger import settle
@@ -63,6 +64,21 @@ class RecoveryTests(unittest.TestCase):
         rows,status=recover([sample],now=NOW,request=provider)
         self.assertEqual(rows,[])
         self.assertEqual(status["verified_rows"],0)
+
+    def test_saved_espn_ids_reach_automatic_recovery_without_provider_charges(self):
+        row=research()
+        expected={("2026-11-08","LAL","DET"):"401909001"}
+        with patch("iphone_bot.recover_prizepicks_final_games.archived_espn_hints",
+                   return_value=expected) as archive, patch(
+                   "iphone_bot.recover_prizepicks_final_games.gather",
+                   return_value=([verified()],{"status":"FINAL_BOXSCORES_FOUND"})
+                   ) as fetch:
+            rows,status=recover([row],now=NOW)
+        archive.assert_called_once_with(dates={"2026-11-08"})
+        self.assertEqual(fetch.call_args.kwargs["known_espn_games"],expected)
+        self.assertEqual(status["archived_espn_game_id_hints"],1)
+        self.assertEqual(status["verified_rows"],1)
+        self.assertEqual(rows[0]["source"],"NBA_CDN_FINAL")
 
     def test_official_s3_scoreboard_first_and_nba_cdn_backup(self):
         from iphone_bot.fetch_final_boxscores import NBA_SCOREBOARD
