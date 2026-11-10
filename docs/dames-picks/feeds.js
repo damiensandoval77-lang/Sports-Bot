@@ -4,7 +4,7 @@
 const n=v=>v===null||v===undefined||v===""?null:Number.isFinite(Number(v))?Number(v):null;
 const norm=v=>String(v||"").normalize("NFKD").toLowerCase().replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const stamp=v=>{const d=Date.parse(v);return Number.isFinite(d)?d:NaN};
-const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat].join("|");
+const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat,p.line,p.captured].join("|");
 function csv(text){
  let cells=[],row=[],field="",quoted=false;
  for(let i=0;i<text.length;i++){
@@ -72,11 +72,11 @@ function nfl(chunks,schedule){
  }
  return [...found.values()];
 }
-function summarize(rows,nflHealth,now=Date.now()){
+function summarize(rows,nflHealth,now=Date.now(),league=null){
  const pre=rows.filter(r=>stamp(r.start)>now),gameCount=new Set(pre.map(r=>r.gameId)).size;
  // Only the NBA market ledger has individually verified directional grading here.
  const graded=rows.filter(r=>r.grade==="GRADED"&&typeof r.hit==="boolean");
- if(rows[0]?.sport==="NFL"||arguments[3]==="NFL"){
+ if((league||rows[0]?.sport)==="NFL"){
   const settled=n(nflHealth?.standard_settled),wins=n(nflHealth?.standard_wins);
   return {games:gameCount,wins:settled!==null&&wins!==null?wins:null,
    losses:settled!==null&&wins!==null?settled-wins:null,
