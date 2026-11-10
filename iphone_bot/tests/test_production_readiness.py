@@ -32,10 +32,12 @@ def fixtures(now=NOW):
                     "total_standard_markets_without_frozen_model":0,
                     "total_missing_primary_with_separate_research_receipt":0,
                     "total_missing_primary_without_any_ai_receipt":0}},
-     "browser_card_probe.json":{
+     "dames-picks/browser_readiness.json":{
          "checked_at":STAMP,"status":"READY","browser_render_verified":True,
-         "rendered_verified_standard_lines":3,"rendered_new_ai_chances":2,
-         "games_without_rendered_matches":[],"rendered_matches_by_game":{GAME["game"]:3}},
+         "site_url":"https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+         "app_title":"Dame's Picks · NBA + NFL",
+         "NBA":{"selected":"NBA","loaded":True,"rows":3,"rendered":3,"errors":[]},
+         "NFL":{"selected":"NFL","loaded":True,"rows":3,"rendered":3,"errors":[]}},
      "nba_schedule_horizon_audit.json":{
          "status":"READY","checked_at":STAMP,"season_fixed_games":1200,
          "next_14_days":[{"date_eastern":(NOW.date()+dt.timedelta(days=n)).isoformat(),
@@ -230,32 +232,44 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("CAPTURE_RECONCILIATION_INCONSISTENT",
                       result["components"]["pregame_capture"]["reasons"])
 
-    def test_browser_many_cards_but_one_matchup_missing_fails(self):
+    def test_unified_browser_requires_both_leagues_even_if_nba_has_many_cards(self):
         data=fixtures()
-        browser=data["browser_card_probe.json"]
-        browser["rendered_verified_standard_lines"]=191
-        browser["rendered_matches_by_game"]={}
+        browser=data["dames-picks/browser_readiness.json"]
+        browser["NBA"]["rendered"]=191
+        browser["NFL"]["rendered"]=0
         result=check(NOW,data)
         self.assertFalse(result["ready_for_trustworthy_picks"])
-        self.assertIn("UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES",
+        self.assertIn("NFL_PUBLIC_CARDS_NOT_RENDERED",
                       result["components"]["public_browser"]["reasons"])
 
-    def test_public_browser_missing_live_standard_cards_blocks_ready(self):
+    def test_unified_browser_missing_published_cards_blocks_ready(self):
         data=fixtures()
-        data["browser_card_probe.json"].update(
-            status="DEGRADED",browser_render_verified=False,
-            rendered_verified_standard_lines=0,rendered_new_ai_chances=0)
+        data["dames-picks/browser_readiness.json"].update(
+            status="DEGRADED",browser_render_verified=False)
+        data["dames-picks/browser_readiness.json"]["NBA"]["rendered"]=0
         result=check(NOW,data)
         self.assertIn("public_browser",result["degraded_components"])
-        self.assertIn("NO_PUBLIC_VERIFIED_STANDARD_CARDS",
+        self.assertIn("UNIFIED_BROWSER_NOT_VERIFIED",
                       result["components"]["public_browser"]["reasons"])
-        self.assertFalse(result["ready_for_trustworthy_picks"])
+        self.assertIn("NBA_PUBLIC_CARDS_NOT_RENDERED",
+                      result["components"]["public_browser"]["reasons"])
 
-    def test_stale_browser_proof_cannot_make_deployment_ready(self):
+    def test_old_standalone_browser_cannot_make_unified_ready(self):
         data=fixtures()
-        data["browser_card_probe.json"]["checked_at"]="2026-11-09T10:00:00Z"
+        data["dames-picks/browser_readiness.json"]={}
+        data["browser_card_probe.json"]={
+           "status":"READY","browser_render_verified":True,
+           "rendered_verified_standard_lines":999}
         result=check(NOW,data)
-        self.assertIn("PUBLIC_BROWSER_PROBE_STALE",
+        self.assertFalse(result["ready_for_trustworthy_picks"])
+        self.assertIn("UNIFIED_BROWSER_NOT_VERIFIED",
+                      result["components"]["public_browser"]["reasons"])
+
+    def test_stale_unified_browser_proof_fails(self):
+        data=fixtures()
+        data["dames-picks/browser_readiness.json"]["checked_at"]="2026-11-09T10:00:00Z"
+        result=check(NOW,data)
+        self.assertIn("UNIFIED_BROWSER_PROBE_STALE",
                       result["components"]["public_browser"]["reasons"])
 
     def test_nightly_grade_incomplete_degrades(self):
@@ -305,7 +319,7 @@ class StrictProductionReadinessTests(unittest.TestCase):
         data=fixtures()
         data["data.json"]["picks"]=[]
         data["ai_comparisons.json"]["comparisons"]=[]
-        data["browser_card_probe.json"]["browser_render_verified"]=False
+        data["dames-picks/browser_readiness.json"]["browser_render_verified"]=False
         result=check(NOW,data)
         self.assertEqual(result["status"],"DEGRADED")
         self.assertIn("public_browser",result["degraded_components"])
