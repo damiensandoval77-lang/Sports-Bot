@@ -345,7 +345,9 @@ test("Production NFL grades in immutable archive all join Tracker, including old
  assert.equal(winners,health.standard_wins);
  assert.ok(rows.some(p=>p.frozenSettlementArchive===true&&p.captured==="2026-11-09T19:58:51.614124+00:00"&&p.player==="Ray Davis"&&p.grade==="GRADED"),
    "Historic Ray Davis standard prop not retained after latest snapshot rolled");
- assert.ok(rows.some(p=>p.pendingReason),"Missing final boxscore players must remain explicitly pending");
+ const pendingCards=rows.filter(p=>p.grade==="PENDING"&&p.frozenSettlementArchive===true&&p.pendingReason);
+ assert.equal(pendingCards.length,health.pending_picks,
+   "Every published NFL pending record must be represented by a pending reason, without inventing missing players");
  console.log("NFL standard outcomes rendered",directional.length,"wins",winners,"pending",rows.filter(p=>p.pendingReason).length);
 });
 test("Source-mismatched final prop is never attached as a real grade",()=>{
