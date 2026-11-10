@@ -221,5 +221,50 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
  }
  return result;
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard,liveGames};
+/* Game catalog is schedule-first, then updated with genuine scoreboard observations.
+   Schedule-only data is never promoted to a live score or fabricated final. */
+function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now()){
+ const observed=liveGames(nbaFeed,nflFeed,now);
+ const result=new Map();
+ const identity=g=>g.sport+"|"+g.gameId;
+ for(const g of observed)result.set(identity(g),g);
+ const nbaDates=Array.isArray(nbaSchedule?.dates_eastern)?nbaSchedule.dates_eastern:[];
+ if(Array.isArray(nbaSchedule?.games)){
+  for(const g of nbaSchedule.games){
+   if(!g?.id||!g.game||!Number.isFinite(stamp(g.start)))continue;
+   if(nbaDates.length && !nbaDates.includes(g.date_eastern))continue;
+   const id="NBA|"+g.id;
+   const existing=result.get(id)||observed.find(x=>x.sport==="NBA"&&x.game===g.game);
+   if(existing)continue;
+   const start=stamp(g.start);
+   result.set(id,{sport:"NBA",gameId:g.id,game:g.game,away:g.away||"",home:g.home||"",
+    start:g.start,observedAt:null,state:start<=now?"unknown":"scheduled",
+    sourceState:"schedule",fresh:false,source:"Independent NBA schedule",
+    statusText:start<=now?"Started or finished · live status unavailable":"Scheduled · no live player data",
+    players:[],awayScore:null,homeScore:null});
+  }
+ }
+ if(Array.isArray(nflSchedule?.games)){
+  for(const g of nflSchedule.games){
+   if(!g?.game_id||!Number.isFinite(stamp(g.kickoff_utc)))continue;
+   const start=stamp(g.kickoff_utc);
+   // Only show practical recent and upcoming games; do not crowd Live with 272 fixtures.
+   if(start<now-48*3600000||start>now+8*86400000)continue;
+   const id="NFL|"+g.game_id;
+   if(result.has(id))continue;
+   const verifiedFinal=g.status==="final"&&
+     numberOrNull(g.away_score)!==null&&numberOrNull(g.home_score)!==null;
+   result.set(id,{sport:"NFL",gameId:g.game_id,game:(g.away||"Away")+" @ "+(g.home||"Home"),
+    away:g.away||"",home:g.home||"",awayScore:verifiedFinal?numberOrNull(g.away_score):null,
+    homeScore:verifiedFinal?numberOrNull(g.home_score):null,
+    start:g.kickoff_utc,observedAt:null,players:[],sourceState:"schedule",fresh:false,
+    state:verifiedFinal?"final":start>now?"scheduled":"unknown",
+    statusText:verifiedFinal?"Final · schedule-verified score":
+      start>now?"Scheduled · no live player data":"Started or finished · live status unavailable"});
+  }
+ }
+ return [...result.values()];
+}
+function numberOrNull(v){return n(v)}
+root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard,liveGames,gameCatalog};
 })(typeof window!=="undefined"?window:globalThis);

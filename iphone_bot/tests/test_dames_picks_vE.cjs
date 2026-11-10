@@ -270,3 +270,36 @@ test("Every game detail exposes original locked model, observed actual, ungraded
  assert.ok(html.includes('normalize(x.player)===normalize(p.player)'),"Exact player-name guard");
  assert.ok(html.includes('matches.length!==1'),"Ambiguous matches not fabricated");
 });
+
+test("Empty NBA live player feed still exposes every verified scheduled game",()=>{
+ const schedule=JSON.parse(fs.readFileSync("docs/nba_schedule.json","utf8"));
+ const now=Date.parse("2026-11-10T11:00:00Z");
+ const games=m.gameCatalog({games:[],captured_at:"2026-11-10T10:35:00Z"},
+   {games:[],checked_at:"2026-11-10T10:40:00Z"},schedule,{games:[]},now);
+ assert.equal(games.filter(g=>g.sport==="NBA").length,schedule.games.length);
+ assert.ok(games.filter(g=>g.sport==="NBA").every(g=>g.fresh===false&&g.players.length===0));
+ assert.ok(games.filter(g=>g.sport==="NBA"&&g.start&&Date.parse(g.start)<now)
+   .every(g=>g.state==="unknown"),"Schedule-only started games cannot claim LIVE");
+});
+test("NFL schedule fallback includes near-term fixtures, not entire season, and preserves verified scores",()=>{
+ const schedule=JSON.parse(fs.readFileSync("docs/nfl/data/schedule_2026.json","utf8"));
+ const now=Date.parse("2026-11-10T11:00:00Z");
+ const games=m.gameCatalog({games:[]},{games:[]},null,schedule,now);
+ const nfl=games.filter(g=>g.sport==="NFL");
+ assert.ok(nfl.length>0);
+ assert.ok(nfl.length<schedule.games.length);
+ assert.ok(nfl.every(g=>g.start&&Date.parse(g.start)>=now-48*3600000&&Date.parse(g.start)<=now+8*86400000));
+ assert.ok(nfl.filter(g=>g.state==="scheduled").every(g=>g.awayScore===null&&g.homeScore===null));
+});
+test("Observed ESPN game wins over schedule-only fallback and is not duplicated",()=>{
+ const now=Date.parse("2026-11-10T03:40:00Z");
+ const nba={captured_at:"2026-11-10T03:39:00Z",games:[
+ {game:"NOP @ GSW",event_id:"401",state:"in",observed_at:"2026-11-10T03:39:00Z",
+ player_rows:[{player:"Stephen Curry",team:"GSW",PTS:25}]}]};
+ const schedule={dates_eastern:["2026-11-09"],games:[{
+ id:"401",game:"NOP @ GSW",date_eastern:"2026-11-09",
+ away:"NOP",home:"GSW",start:"2026-11-10T03:00:00Z",game_state:"pre"}]};
+ const out=m.gameCatalog(nba,{games:[]},schedule,{games:[]},now);
+ assert.equal(out.length,1);assert.equal(out[0].state,"in");
+ assert.equal(out[0].players[0].stats.PTS,25);
+});
