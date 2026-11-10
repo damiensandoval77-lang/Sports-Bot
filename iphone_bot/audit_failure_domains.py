@@ -55,6 +55,18 @@ def check_artifacts(now=None):
             record(domain, "warning", "STALE_HEALTH_REPORT",
                    f"{field} aged {age:.0f} minutes; maximum {max_age_minutes}")
 
+    horizon = load("nba_schedule_horizon_audit.json")
+    if horizon.get("status") != "READY":
+        record("NBA full-season schedule", "critical", "MISSING_PUBLISHED_FIXTURES",
+               f"14-day fixture coverage status={horizon.get('status')}; reasons={horizon.get('reason_codes',[])}")
+    elif horizon.get("season_fixed_games", 0) < 900:
+        record("NBA full-season schedule", "critical", "SHORT_SEASON_ARCHIVE",
+               "The published season archive contains too few games")
+    else:
+        record("NBA full-season schedule", "ok", "NEXT_14_DAYS_ACCOUNTED",
+               f"{horizon['season_fixed_games']} fixed released fixtures saved and next two days reconciled")
+    freshness("NBA full-season schedule", horizon, "checked_at", 480)
+
     readiness = load("production_readiness.json")
     freshness("NBA readiness", readiness, "checked_at", 120)
     if readiness.get("_read_error"):
