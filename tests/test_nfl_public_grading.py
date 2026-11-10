@@ -104,6 +104,22 @@ class PublicNFLGradeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"Unattributed NFL inactive"):
                 verified_inactives(folder)
 
+    def test_participating_zero_target_player_grades_only_receiving(self):
+        hist,_=collect_history([],[bet(target="REC",line="0.5"),
+            bet(target="REC_YDS",line="4.5"),bet(target="ANY_TD",line="0.5"),
+            bet(target="FPTS",line="5.5")],schedule())
+        grades,pending,n=grade_finals(hist,schedule(),{"g1":{}},set(),
+                                     zero_snaps={("g1","gsis-1")})
+        self.assertEqual(n,4)
+        self.assertEqual(len(grades),2)
+        self.assertEqual(len(pending),2)
+        self.assertTrue(all(row["actual"]=="0" and row["result"]=="Less" for row in grades))
+        self.assertEqual({row["target"] for row in pending},{"ANY_TD","FPTS"})
+        # A missing row alone is still not evidence of zero.
+        grades,pending,_=grade_finals(hist,schedule(),{"g1":{}},set())
+        self.assertEqual(len(grades),0)
+        self.assertEqual(len(pending),4)
+
     def test_unsupported_market_cannot_be_scored(self):
         hist,_=collect_history([],[bet(target="FPTS")],schedule())
         grades,pending,_=grade_finals(hist,schedule(),box(),set())
