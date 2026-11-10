@@ -25,7 +25,7 @@ def ident(row):
     return tuple(str(row.get(k) or "") for k in ("player_id","team","game","start","stat"))
 
 def grade(snapshot,finals):
-    if snapshot.get("status")!="FROZEN_BASELINE_PRETIP_PP_LINES_FOR_RESEARCH" or snapshot.get("immutable_predictions") is not True:
+    if snapshot.get("status") not in {"FROZEN_BASELINE_PRETIP_PP_LINES_FOR_RESEARCH","FROZEN_BASELINE_PRETIP_MARKETS_APPEND_ONLY"} or snapshot.get("immutable_predictions") is not True:
         raise ValueError("Original baseline snapshot absent/invalid")
     results=finals.get("records",[])
     index={}
@@ -72,7 +72,7 @@ def grade(snapshot,finals):
                      "verified_source_game_id":source_game_id})
     return {"status":"BASELINE_PRETIP_PROSPECTIVE_GRADING",
         "game_date_eastern":snapshot.get("game_date_eastern"),
-        "original_frozen_at":snapshot.get("captured_at"),
+        "original_frozen_at":snapshot.get("captured_at") or snapshot.get("updated_at"),
         "total_original_records":len(rows),
         "verified_final_grades":sum(x["grade_status"]=="GRADED_BASELINE_RESEARCH_ONLY" for x in rows),
         "pushes":sum(x["grade_status"]=="VERIFIED_PUSH" for x in rows),
