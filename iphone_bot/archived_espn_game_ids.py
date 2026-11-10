@@ -35,6 +35,8 @@ def archived_espn_hints(root=ARCHIVES,dates=None):
             # The base parser performs exact ESPN ID, Eastern date, team,
             # event-start, and schedule status validation.
             for key,event_id in verified_espn_schedule_hints(slate).items():
+                # NBA official game IDs are not ESPN summary endpoints.
+                if len(event_id)<9 or event_id.startswith("00226"):continue
                 if dates is not None and key[0] not in dates:continue
                 if key in candidates and candidates[key]!=event_id:
                     conflicting.add(key)
