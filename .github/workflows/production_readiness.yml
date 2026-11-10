@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: nba-production-readiness
@@ -77,6 +78,49 @@ jobs:
             if git push origin HEAD:main; then exit 0; fi
           done
           exit 1
+      - name: Open or resolve recurring production incident automatically
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          report=docs/production_readiness.json
+          test -f "$report"
+          title="Automated incident: NBA production readiness degraded"
+          existing=$(gh issue list --state all --limit 100 --json number,title,state |
+            jq -r --arg title "$title" '[.[] | select(.title == $title)] | first | .number // empty')
+          status=$(jq -r '.status // "UNKNOWN"' "$report")
+          if [ "$status" = "READY" ]; then
+            if [ -n "$existing" ]; then
+              state=$(gh issue view "$existing" --json state --jq '.state')
+              if [ "$state" = "OPEN" ]; then
+                gh issue close "$existing" --comment "Readiness gate recovered to READY. Verification report: docs/production_readiness.json. Reopen automatically on regression."
+              fi
+            fi
+            exit 0
+          fi
+          {
+            echo "Automated incident from the scheduled NBA readiness gate."
+            echo
+            echo "Current status: **$status**"
+            echo "Checked at: $(jq -r '.checked_at // "unknown"' "$report")"
+            echo "Required checks passing: $(jq -r '.passing_required_checks // 0' "$report") / $(jq -r '.required_checks // 0' "$report")"
+            echo
+            echo "### Failing required components"
+            jq -r '.components | to_entries[] | select(.value.required == true and .value.state != "READY") | "- **" + .key + "** (" + .value.state + "): " + (.value.reasons | join(", "))' "$report"
+            echo
+            echo "See [production readiness report](https://github.com/$GH_REPO/blob/main/docs/production_readiness.json) and [workflow history](https://github.com/$GH_REPO/actions/workflows/production_readiness.yml)."
+            echo
+            echo "Do not label live picks READY until the fail-closed readiness gate passes."
+          } > "$RUNNER_TEMP/incident.md"
+          if [ -z "$existing" ]; then
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/incident.md"
+          else
+            gh issue reopen "$existing" 2>/dev/null || true
+            gh issue edit "$existing" --body-file "$RUNNER_TEMP/incident.md"
+          fi
       - name: Fail visibly when bot is not ready for reliable picks
         if: always() && github.event_name != 'pull_request' && steps.check.outcome == 'failure'
         run: |
