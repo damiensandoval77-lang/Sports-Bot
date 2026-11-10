@@ -7,6 +7,7 @@ retrospective changes to forecasts, no false ROI or hit probabilities.
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from iphone_bot.verified_nov9_nonparticipants import SOURCE as CROSSCHECKED_DNP_SOURCE
 from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -92,7 +93,7 @@ def settle(ledger,games,now=None,final_games=None):
     for g in (final_games or []):
         if (g.get("final_confirmed") is not True or
             g.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL",
-                                     "NBA_OFFICIAL_INACTIVE_CROSSCHECKED")):
+                                     "NBA_OFFICIAL_INACTIVE_CROSSCHECKED",CROSSCHECKED_DNP_SOURCE)):
             continue
         k=(strict_player_name(g.get("player")),str(g.get("team","")).upper(),
            str(g.get("date")),str(g.get("opponent","")).upper())
@@ -143,7 +144,7 @@ def settle(ledger,games,now=None,final_games=None):
             continue
         # Manually crosschecked evidence may ONLY void verified DNPs. It can
         # never supply played points/rebounds/assists or an apparent WIN/LOSS.
-        if actual_row.get("source")=="NBA_OFFICIAL_INACTIVE_CROSSCHECKED":
+        if actual_row.get("source") in ("NBA_OFFICIAL_INACTIVE_CROSSCHECKED",CROSSCHECKED_DNP_SOURCE):
             out.append(row)
             continue
         # Verify the actual opponent matches the original, exact scheduled game.
