@@ -1,13 +1,42 @@
 {
-  "status": "NO_OVERDUE_PENDING",
-  "checked_at": "2026-11-10T03:26:22.836191+00:00",
+  "status": "OVERDUE_UNGRADED",
+  "checked_at": "2026-11-10T04:29:43.795779+00:00",
   "threshold_minutes": 240,
-  "games": [],
-  "issues": [],
+  "games": [
+    {
+      "game": "Cleveland Cavaliers @ Charlotte Hornets",
+      "start": "2026-11-10T00:00:00+00:00",
+      "eligible_saved_forecasts": 88,
+      "settled_verified": 72,
+      "overdue_unresolved": 16,
+      "status": "OVERDUE_UNGRADED"
+    },
+    {
+      "game": "Los Angeles Lakers @ Atlanta Hawks",
+      "start": "2026-11-10T00:00:00+00:00",
+      "eligible_saved_forecasts": 96,
+      "settled_verified": 72,
+      "overdue_unresolved": 24,
+      "status": "OVERDUE_UNGRADED"
+    },
+    {
+      "game": "Washington Wizards @ Detroit Pistons",
+      "start": "2026-11-10T00:00:00+00:00",
+      "eligible_saved_forecasts": 80,
+      "settled_verified": 72,
+      "overdue_unresolved": 8,
+      "status": "OVERDUE_UNGRADED"
+    }
+  ],
+  "issues": [
+    "Cleveland Cavaliers @ Charlotte Hornets: 16 FORECASTS_OVERDUE_FINAL_VERIFICATION",
+    "Los Angeles Lakers @ Atlanta Hawks: 24 FORECASTS_OVERDUE_FINAL_VERIFICATION",
+    "Washington Wizards @ Detroit Pistons: 8 FORECASTS_OVERDUE_FINAL_VERIFICATION"
+  ],
   "note": "Overdue age is a diagnostic, not proof a game finished. Grading requires separately verified final player rows.",
   "totals": {
-    "overdue_game_count": 0,
-    "overdue_forecasts": 0,
-    "settled_forecasts": 0
+    "overdue_game_count": 3,
+    "overdue_forecasts": 48,
+    "settled_forecasts": 216
   }
 }
