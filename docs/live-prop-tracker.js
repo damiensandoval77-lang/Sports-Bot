@@ -195,6 +195,48 @@
   }
   return result;
  }
+ // A historical provider observation may be displayed next to an AI-only
+ // pretip projection. It is NOT a locked bet, line-backed prediction or grade.
+ // Require the provider snapshot itself to have been saved before this tipoff.
+ function observedPregameLine(forecast,provider){
+  const tip=Date.parse(forecast?.start),captured=Date.parse(provider?.generated_at);
+  if(provider?.status!=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"||
+     provider?.source!=="independent_prizepicksapi_com"||
+     !Array.isArray(provider.board_offers)||
+     !Number.isFinite(tip)||!Number.isFinite(captured)||
+     captured>=tip||tip-captured>6*3600000||
+     !MARKETS.has(forecast?.stat)||!forecast?.player||!forecast?.team||!forecast?.game)
+    return null;
+  const matches=[];
+  for(const q of provider.board_offers){
+   if(!q||q.source!=="independent_prizepicksapi_com"||q.is_demo!==false||
+      normalize(q.player)!==normalize(forecast.player)||
+      canonicalTeam(q.team)!==canonicalTeam(forecast.team)||
+      normalize(q.game)!==normalize(forecast.game)||q.stat!==forecast.stat||
+      numeric(q.line)===null||numeric(q.line)>200||
+      !q.more_tier||!q.less_tier||q.more_tier!==q.less_tier||
+      !["standard","goblin","demon"].includes(q.more_tier))continue;
+   const start=Date.parse(q.starts_at),observed=Date.parse(q.observed_at);
+   if(!Number.isFinite(start)||Math.abs(start-tip)>30*60000||
+      !Number.isFinite(observed)||observed>=tip||observed>captured+600000||
+      observed>captured||captured-observed>90*60000)continue;
+   matches.push(q);
+  }
+  // Standard is the canonical threshold; fall back to separately tagged
+  // selectable alternative tiers. Never pick from conflicting thresholds.
+  for(const tier of ["standard","goblin","demon"]){
+   const rows=matches.filter(q=>q.more_tier===tier);
+   if(!rows.length)continue;
+   const lines=new Set(rows.map(q=>Number(q.line)));
+   if(lines.size!==1)return null;
+   const first=rows[0];
+   return {line:Number(first.line),tier,
+     observed_at:first.observed_at,provider_projection_id:String(first.id||""),
+     source:"independent_prizepicksapi_com",
+     status:"OBSERVED_PRETIP_QUOTE_NOT_FROZEN_PICK"};
+  }
+  return null;
+ }
  function pickRows(forecasts,game){
   const dedup=new Map();
   for(const x of forecasts||[]){
@@ -206,5 +248,5 @@
   return [...dedup.values()];
  }
  return {numeric,normalize,matchup,identifyGame,gameStatus,summaryGameMatch,
-         athleteRows,canonicalTeam,matchPlayer,matchDiagnostics,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows};
+         athleteRows,canonicalTeam,matchPlayer,matchDiagnostics,isFrozenForecast,frozenPrizePicks,gameFraction,evaluate,pickRows,observedPregameLine};
 });

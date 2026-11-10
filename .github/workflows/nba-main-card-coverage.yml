@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'iphone_bot/tests/test_live_prop_tracker.cjs'
       - 'iphone_bot/tests/test_restored_main_card_coverage.cjs'
       - '.github/workflows/nba-main-card-coverage.yml'
   push:
@@ -24,7 +26,9 @@ jobs:
         with:
           node-version: '22'
       - name: Test live standard PrizePicks card coverage and isolated injury updates
-        run: node --test iphone_bot/tests/test_restored_main_card_coverage.cjs
+        run: |
+          node --test iphone_bot/tests/test_restored_main_card_coverage.cjs
+          node --test iphone_bot/tests/test_live_prop_tracker.cjs
       - name: Verify dashboard JavaScript parsing
         run: |
           node - <<'JS'
