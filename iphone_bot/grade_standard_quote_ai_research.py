@@ -95,6 +95,12 @@ def reconcile(archive, finals, now=None):
             counts[grade]+=1
         output.append(row)
     eligible=counts["HIT"]+counts["MISS"]
+    # Idempotent grading: no new results means no new published timestamp.
+    # This avoids a needless Pages rebuild every scheduled postgame check.
+    if (output == archive["records"]
+            and archive.get("research_results") == counts
+            and archive.get("research_directional_sample") == eligible):
+        return archive
     return {
         **archive,"records":output,"count":len(output),
         "research_grading_checked_at":now.isoformat(),
