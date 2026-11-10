@@ -67,6 +67,25 @@ class CaptureAuditTests(unittest.TestCase):
  def test_missing_ai_cannot_pass(self):
   out=audit(a=[ai()])
   self.assertIn("C @ D: NO_SAVED_PREGAME_AI",out["issues"])
+ def test_research_fallback_counts_separately_and_never_grades_model(self):
+  original=quote()
+  moved={**quote(),"line":16.5}
+  archive={"status":"IMMUTABLE_PRETIP_STANDARD_QUOTE_AI_RESEARCH",
+           "records":[{**moved,"research_only":True,"calibrated":False,
+                       "grade":"UNSETTLED_RESEARCH","more_tier":"standard","less_tier":"standard"}]}
+  base=audit(q=[original,moved,quote("C @ D")])
+  self.assertEqual(base["summary"]["total_standard_markets_without_frozen_model"],1)
+  report=reconcile(SCHEDULE,
+    {"status":"VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE","count":3,"quotes":[original,moved,quote("C @ D")]},
+    {"status":"IMMUTABLE_OBSERVED_PRETIP_NOLINE_AI_ARCHIVE","predictions":[ai(),ai("C @ D")]},
+    {"status":"FROZEN_NEW_AI_ALL_MARKET","records":[frozen(),frozen("C @ D")]},
+    {"records":[]},now=NOW,research=archive)
+  self.assertEqual(report["summary"]["total_missing_primary_with_separate_research_receipt"],1)
+  self.assertEqual(report["summary"]["total_missing_primary_without_any_ai_receipt"],0)
+  self.assertEqual(report["summary"]["total_standard_markets_without_frozen_model"],1)
+  self.assertEqual(report["status"],"CAPTURE_INCOMPLETE")
+  self.assertEqual(report["summary"]["total_line_backed_graded"],0)
+
  def test_actual_grading_requires_prior_prediction_identity(self):
   grades=[{"game":"A @ B","start":"2026-11-10T00:00:00Z","status":"GRADED"}]
   out=audit(actual=grades)
