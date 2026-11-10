@@ -84,11 +84,35 @@ def check_artifacts(now=None):
     if capture.get("_read_error"):
         record("Pregame capture", "critical", "CAPTURE_REPORT_UNAVAILABLE", capture["_read_error"])
     elif capture.get("status") == "CAPTURE_INCOMPLETE":
-        record("Pregame capture", "critical", "CAPTURE_INCOMPLETE",
-               "At least one game has incomplete archived standard lines / forecasts")
+        summary = capture.get("summary", {})
+        missing = summary.get("total_standard_markets_without_frozen_model")
+        fallback = summary.get("total_missing_primary_with_separate_research_receipt")
+        unrecovered = summary.get("total_missing_primary_without_any_ai_receipt")
+        if all(type(v) is int and v >= 0 for v in (missing, fallback, unrecovered)):
+            if missing != fallback + unrecovered:
+                record("Pregame capture", "critical", "CAPTURE_MATH_INCONSISTENT",
+                       f"unmatched={missing}, research_fallback={fallback}, no_ai_receipt={unrecovered}")
+            record("Pregame capture", "critical", "PRIMARY_FROZEN_MODEL_INCOMPLETE",
+                   f"{missing} exact standard prices lack primary frozen models; "
+                   f"{fallback} have independently preserved research receipts, "
+                   f"{unrecovered} have no AI receipt")
+        else:
+            record("Pregame capture", "critical", "CAPTURE_INCOMPLETE",
+                   "Saved quote and model coverage incomplete or missing exact reconciliation counts")
     else:
         record("Pregame capture", "ok", "CAPTURE_STATUS",
                str(capture.get("status", "UNVERIFIED")))
+
+    receipt = load("standard_quote_ai_research_archive.json")
+    if receipt.get("status") != "IMMUTABLE_PRETIP_STANDARD_QUOTE_AI_RESEARCH":
+        record("Research archive", "critical", "RECEIPT_ARCHIVE_UNAVAILABLE",
+               "Credit-free standard-line research receipts missing or invalid")
+    elif receipt.get("count") != len(receipt.get("records", [])):
+        record("Research archive", "critical", "RECEIPT_COUNT_MISMATCH",
+               "Archived standard quote-AI receipt count does not match rows")
+    else:
+        record("Research archive", "ok", "RECEIPTS_RETAINED",
+               f"{receipt.get('count')} separate historical research receipts (not official grades)")
 
     audit = load("ai_forecast_coverage_audit.json")
     freshness("NBA grading", audit, "checked_at", 240)
@@ -99,6 +123,15 @@ def check_artifacts(now=None):
                "Frozen forecasts still require verified final reconciliation")
     else:
         record("NBA grading", "ok", "GRADE_AUDIT_STATUS", str(audit.get("status", "UNVERIFIED")))
+
+    provider = load("prizepicks_site.json")
+    if provider.get("status") != "LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
+        record("PrizePicks provider", "critical", "NO_VERIFIED_SOURCE", str(provider.get("status")))
+    elif provider.get("partial_board") is True or provider.get("complete_provider_board") is not True:
+        record("PrizePicks provider", "warning", "PARTIAL_PROVIDER_COVERAGE",
+               "Some upcoming standard offers may be missing despite valid captured quotes")
+    else:
+        record("PrizePicks provider", "ok", "COMPLETE_SOURCE", "Provider board reports complete coverage")
 
     tracker = load("live_player_tracking.json")
     freshness("NBA live tracking", tracker, "captured_at", 120)
