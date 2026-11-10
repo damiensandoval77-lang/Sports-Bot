@@ -1,6 +1,9 @@
 name: Verify rendered NBA PrizePicks AI cards in public mobile browser
 on:
   workflow_dispatch:
+  schedule:
+    # Credit-free periodic real browser check; source commits are not proof of deployment.
+    - cron: '36 * * * *'
   push:
     branches: [main]
     paths:
