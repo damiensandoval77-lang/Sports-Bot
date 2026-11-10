@@ -64,6 +64,24 @@ class FinalBoxscoreSettlementTests(unittest.TestCase):
         box["game"]["gameStatus"]=2
         with self.assertRaises(ValueError):nba_boxscore_rows(game,box)
 
+    def test_inactive_with_null_stats_recovers_but_missing_player_does_not(self):
+        game={"gameId":"0022600099","gameStatus":3,
+              "gameTimeUTC":"2026-11-08T01:40:00Z",
+              "awayTeam":{"teamTricode":"ORL"},
+              "homeTeam":{"teamTricode":"GSW"}}
+        box={"game":dict(game)}
+        box["game"]["awayTeam"]={"teamTricode":"ORL","players":[
+            {"name":"Verified Inactive","played":False,"status":"INACTIVE",
+             "statistics":None},
+            {"name":"No Evidence","played":False,"statistics":None},
+            {"name":"Contradictory","played":False,"status":"INACTIVE",
+             "statistics":{"points":15}}]}
+        box["game"]["homeTeam"]={"teamTricode":"GSW","players":[]}
+        rows=nba_boxscore_rows(game,box)
+        self.assertEqual([x["player"] for x in rows],["Verified Inactive"])
+        self.assertEqual(rows[0]["dnp_reason"],"INACTIVE")
+        self.assertTrue(rows[0]["dnp_final_verified"])
+
     def test_verified_official_schedule_finds_exact_2026_nba_matchup(self):
         wanted={("2026-11-06","BOS","CHA")}
         payload={"leagueSchedule":{"seasonYear":"2026-27","gameDates":[

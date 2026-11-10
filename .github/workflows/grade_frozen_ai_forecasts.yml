@@ -26,6 +26,9 @@ on:
       - '.github/workflows/grade_frozen_ai_forecasts.yml'
   pull_request:
     paths:
+      - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/tests/test_fetch_final_boxscores.py'
+      - 'iphone_bot/tests/test_direct_espn_final_recovery.py'
       - 'iphone_bot/grade_frozen_ai_forecasts.py'
       - 'iphone_bot/tests/test_grade_frozen_ai_forecasts.py'
       - 'iphone_bot/verified_prizepicks_inactives.py'
@@ -59,6 +62,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_ai_actual_publishing.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_final_boxscores.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_direct_espn_final_recovery.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_final_boxscores.py' -v
           python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py iphone_bot/verified_final_cache.py
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_final_cache.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
