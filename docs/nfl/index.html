@@ -140,7 +140,7 @@ function liveActual(row,player){
 }
 function livePace(actual,game){
  const period=Number(game?.period),clock=String(game?.clock||"");
- const m=clock.match(/^(\\d{1,2}):(\\d{2})$/);
+ const m=clock.match(/^([0-9]{1,2}):([0-9]{2})$/);
  if(!m||!Number.isFinite(period)||period<1||period>4)return null;
  const secondsRemaining=Number(m[1])*60+Number(m[2]);
  const elapsed=(period-1)*900+(900-secondsRemaining);
