@@ -21,6 +21,7 @@ from iphone_bot.prizepicks_research_ledger import utc
 from iphone_bot.recover_prizepicks_final_games import multi_origin_request
 from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset, additional_verified_ai_inactive_subset
 from iphone_bot.verified_boxscore_dnps import verified_boxscore_dnp_subset, SOURCE as BOXSCORE_DNP_SOURCE
+from iphone_bot.verified_nba_official_dnps import load_official_dnp
 from iphone_bot.verified_pretip_trade import verified_trade_subset, SOURCE as TRADE_SOURCE
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -311,7 +312,8 @@ def main():
     try:
         confirmed_inactives=(verified_inactive_subset(actuals)+
                              additional_verified_ai_inactive_subset(actuals)+
-                             verified_boxscore_dnp_subset(actuals))
+                             verified_boxscore_dnp_subset(actuals)+
+                             load_official_dnp(actuals))
     except (OSError,ValueError,TypeError,KeyError):
         confirmed_inactives=[]
     cached_before=read_cache(FINAL_CACHE)
@@ -329,7 +331,8 @@ def main():
         # Do not discard explicit boxscore DNP evidence after cache reconciliation.
         confirmed_inactives=(verified_inactive_subset(actuals)+
                              additional_verified_ai_inactive_subset(actuals)+
-                             verified_boxscore_dnp_subset(actuals))
+                             verified_boxscore_dnp_subset(actuals)+
+                             load_official_dnp(actuals))
     except (OSError,ValueError,TypeError,KeyError):
         confirmed_inactives=[]
     try:
