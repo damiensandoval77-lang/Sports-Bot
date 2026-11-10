@@ -76,7 +76,7 @@ def freeze(prior,quotes,models,schedule,now=None,seed=None):
            q.get("team") not in {game.get("home_abbreviation"),game.get("away_abbreviation")} or
            not start or not observed or not generated or not (observed<=generated<=now<start) or
            abs((moment(game["start"])-start).total_seconds())>1800 or
-           type(q.get("line")) not in (int,float) or not math.isfinite(q["line"]) or not 0<=q["line"]<=200:
+           type(q.get("line")) not in (int,float) or not math.isfinite(q["line"]) or not 0<=q["line"]<=200):
             continue
         k=(norm(q.get("player")),q["team"],q["game"],q["stat"],start.isoformat())
         offers[k].append(q)
