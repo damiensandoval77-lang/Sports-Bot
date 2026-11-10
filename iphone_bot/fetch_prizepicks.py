@@ -30,6 +30,19 @@ PAGE_SIZE=1000
 MAX_TARGETED_READS=3  # At most three additional narrow reads, only inside 24h of tipoff.
 TARGETED_PAGE_SIZE=200
 
+def standard_query(*, cursor=None, search=None, limit=PAGE_SIZE):
+    """Server-side filter means paid pages are spent on needed standard offers.
+    Pagination remains bounded and may still be partial; never claim the
+    unrestricted Demon/Goblin board was fully retrieved.
+    """
+    if not 1<=limit<=PAGE_SIZE:
+        raise ValueError("Invalid bounded compact page size")
+    params={"league":"NBA","status":"active","tier":"standard",
+            "view":"compact","limit":limit}
+    if cursor:params["cursor"]=cursor
+    if search:params["search"]=search
+    return params
+
 def timeparse(value):
     try:
         d=dt.datetime.fromisoformat(str(value).replace("Z","+00:00"))
@@ -420,8 +433,7 @@ def main():
     seen_cursors=set()
     try:
         for index in range(MAX_PAGES):
-            params={"league":"NBA","status":"active","view":"compact","limit":PAGE_SIZE}
-            if cursor:params["cursor"]=cursor
+            params=standard_query(cursor=cursor)
             page=read_url(BASE+"?"+urllib.parse.urlencode(params),key)
             if not isinstance(page,dict) or not isinstance(page.get("meta"),dict):
                 raise ValueError("Invalid authenticated PrizePicks page")
@@ -509,8 +521,7 @@ def main():
     targeted_attempts=[]
     for code in targeted_queries:
         try:
-            query={"league":"NBA","status":"active","view":"compact",
-                   "search":code,"limit":TARGETED_PAGE_SIZE}
+            query=standard_query(search=code,limit=TARGETED_PAGE_SIZE)
             target=read_url(BASE+"?"+urllib.parse.urlencode(query),key)
             if not isinstance(target,dict) or not isinstance(target.get("meta"),dict):
                 raise ValueError("Malformed targeted PrizePicks page")
@@ -542,7 +553,8 @@ def main():
     out["page_size_requested"]=PAGE_SIZE
     out["page_view"]="compact"
     out["max_pages_budget"]=MAX_PAGES
-    out["source_query"]="NBA_ACTIVE_ALL_PLAYERS_CURSOR_PAGED"
+    out["source_query"]="NBA_ACTIVE_STANDARD_TIER_CURSOR_PAGED"
+    out["board_coverage_scope"]="NBA_ACTIVE_STANDARD_TIER_ONLY"
     out["complete_provider_board"]=not out["partial_board"] and out["provider_status"]=="fresh"
     out["pages_requested"]=len(requested)
     # Always record the actual paid API outcome, even if it supplied no
