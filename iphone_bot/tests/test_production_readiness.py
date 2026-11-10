@@ -18,7 +18,7 @@ def fixtures(now=NOW):
          "is_live_score_source":False,"games":[dict(GAME)]},
      "prizepicks_site.json":{"generated_at":STAMP,
          "status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES","complete_provider_board":True,
-         "partial_board":False,"board_coverage_scope":"NBA_ACTIVE_STANDARD_TIER_ONLY","board_offers":[{"starts_at":GAME["start"],"is_demo":False}]},
+         "partial_board":False,"board_coverage_scope":"NBA_ACTIVE_STANDARD_TIER_ONLY","board_offers":[{"starts_at":GAME["start"],"game":GAME["game"],"is_demo":False,"more_tier":"standard","less_tier":"standard"}]},
      "nightly_grade_health.json":{"checked_at":STAMP,
          "game_date_eastern":"2026-11-08",
          "prizepicks_overdue":0,"paper_overdue":0,"capture_missing":False,
@@ -88,6 +88,21 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("STANDARD_ONLY_PROVIDER_SCOPE_UNVERIFIED",
                       result["components"]["prizepicks_lines"]["reasons"])
         self.assertFalse(result["ready_for_trustworthy_picks"])
+
+    def test_fresh_provider_board_missing_entire_matchup_fails(self):
+        data=fixtures()
+        data["prizepicks_site.json"]["board_offers"][0]["game"]="Another @ Matchup"
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertIn("UPCOMING_MATCHUPS_WITHOUT_STANDARD_PROVIDER_LINES",
+                      result["components"]["prizepicks_lines"]["reasons"])
+
+    def test_alternate_tiers_cannot_masquerade_as_standard_coverage(self):
+        data=fixtures()
+        data["prizepicks_site.json"]["board_offers"][0]["more_tier"]="demon"
+        result=check(NOW,data)
+        self.assertIn("UPCOMING_MATCHUPS_WITHOUT_STANDARD_PROVIDER_LINES",
+                      result["components"]["prizepicks_lines"]["reasons"])
 
     def test_missing_projections_block(self):
         data=fixtures()
