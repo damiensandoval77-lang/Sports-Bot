@@ -69,6 +69,13 @@ jobs:
             git rebase origin/main || { git rebase --abort || true; exit 1; }
           done
           exit 1
+      - name: Reconcile pregame archive and grading health after saved quotes change
+        # GitHub Actions token commits do not trigger downstream push workflows.
+        # Explicitly hand off committed immutable quotes to the no-cost audit.
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-tonight-capture-gradeability.yml --ref main
       - name: Generate actual player AI projections immediately from new authentic lines
         if: steps.publish.outputs.changed == 'true'
         env:
