@@ -73,7 +73,7 @@ class DirectEspnFinalFallback(unittest.TestCase):
             raise AssertionError(url)
         rows,status=gather(pending(),now=NOW,request=request,
                            known_espn_games={IDENT:EVENT_ID},
-                           known_game_ids={IDENT:"0022600204"})
+                           known_game_ids=[{"date":"2026-11-09","away":"CLE","home":"CHA","game_id":"0022600204"}])
         self.assertEqual(len(rows),1)
         self.assertEqual(rows[0]["source"],"ESPN_FINAL")
         self.assertEqual(status["direct_espn_final_games"],1)
