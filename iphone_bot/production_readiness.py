@@ -133,6 +133,15 @@ def check(now,files):
     live_offers=[p for p in offers if isinstance(p,dict) and not p.get("is_demo") and
                  (t:=parse_time(p.get("starts_at"))) and t>now]
     if upcoming and not live_offers:issues.append("NO_UPCOMING_REAL_PROVIDER_LINES")
+    # A board can be fresh and nonempty while an entire scheduled matchup has
+    # zero actual standard lines. Never let one game's offers mask another.
+    live_games={p.get("game") for p in live_offers if
+                p.get("more_tier") in (None,"standard") and
+                p.get("less_tier") in (None,"standard")}
+    missing_provider_games=sorted({g.get("game") for g in upcoming
+                                   if g.get("game") not in live_games})
+    if missing_provider_games:
+        issues.append("UPCOMING_MATCHUPS_WITHOUT_STANDARD_PROVIDER_LINES")
     add("prizepicks_lines","READY" if not issues else "DEGRADED",issues,age,
         required=bool(upcoming))
 
