@@ -81,6 +81,28 @@ def check(now,files):
             issues.append("OFFICIAL_NBA_MATCHUP_MISSING")
     add("schedule","READY" if not issues else "BLOCKED",issues,age)
 
+    # Published season is known long before betting lines appear. A missing
+    # known fixture must fail production even if the provider lists no props.
+    calendar=load("nba_schedule_horizon_audit.json")
+    calendar_age=age_of(calendar,"checked_at")
+    calendar_issues=[]
+    if calendar.get("status")!="READY":
+        calendar_issues.append("FULL_SEASON_CALENDAR_NOT_VERIFIED")
+    if calendar_age is None or calendar_age< -5 or calendar_age>480:
+        calendar_issues.append("SEASON_HORIZON_AUDIT_STALE")
+    if calendar.get("season_fixed_games",0)<900:
+        calendar_issues.append("SEASON_ARCHIVE_INCOMPLETE")
+    horizon=calendar.get("next_14_days")
+    if not isinstance(horizon,list) or len(horizon)!=14 or not horizon or horizon[0].get("date_eastern")!=day:
+        calendar_issues.append("SEASON_HORIZON_WRONG_DATE_OR_LENGTH")
+    current=calendar.get("next_two_days_reconciliation")
+    if not isinstance(current,dict) or day not in current:
+        calendar_issues.append("SEASON_DAILY_RECONCILIATION_UNAVAILABLE")
+    elif current[day].get("missing"):
+        calendar_issues.append("KNOWN_TODAY_GAMES_MISSING")
+    add("season_calendar","READY" if not calendar_issues else "BLOCKED",
+        calendar_issues,calendar_age,required=True)
+
     ai=inputs["ai_forecasts"][0]
     age,issues=common("ai_forecasts")
     preds=ai.get("predictions",[])
@@ -292,7 +314,8 @@ def main():
            "nightly_grade_health.json","nba_player_tracking_independent.json",
            "data.json","ai_comparisons.json","verified_official_nba_fixtures.json",
            "ai_prizepicks_quick_join_health.json",
-           "tonight_capture_gradeability.json","browser_card_probe.json"]
+           "tonight_capture_gradeability.json","browser_card_probe.json",
+           "nba_schedule_horizon_audit.json"]
     inputs={}
     for name in names:
         path=ROOT/"docs"/name
