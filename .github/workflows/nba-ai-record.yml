@@ -69,8 +69,20 @@ jobs:
           assert challenger['live_model_unchanged'] is True
           assert challenger['historical_unscreened_excluded'] is True
           assert challenger['locked_markets']<=result['captured']
-          assert len(rows)==len({identity(r) for r in rows})
-          assert all(r['status'] in ('SETTLED','PENDING','INVALID_LATE_CAPTURE') for r in rows)
+          from collections import Counter
+          from itertools import islice
+          keys=[identity(r) for r in rows]
+          if len(keys)!=len(set(keys)):
+              repeated=[str(k) for k,count in Counter(keys).items() if count>1]
+              raise AssertionError('NBA_DUPLICATE_FROZEN_RECORD_IDENTITIES count='+
+                                   str(len(repeated))+' sample='+str(repeated[:5]))
+          allowed={'SETTLED','PENDING','INVALID_LATE_CAPTURE'}
+          statuses=Counter(r.get('status','MISSING') for r in rows)
+          unexpected={k:v for k,v in statuses.items() if k not in allowed}
+          print('NBA FROZEN LEDGER STATUSES:',dict(statuses),flush=True)
+          if unexpected:
+              raise AssertionError('NBA_UNEXPECTED_FROZEN_LEDGER_STATUSES: '+
+                                   json.dumps(unexpected,sort_keys=True))
           # Do not weaken immutable record checks. Print each mismatch in the
           # failed Actions step so a passing workflow never hides lost grades.
           observed={'captured':len(rows),
