@@ -79,6 +79,18 @@ test("real published quick-join converts to PrizePicks card without invented pro
  assert.equal(result[0].confidence_percent,null);
  assert.equal(result[0].reliability_screen.validated,false);
 });
+test("published PrizePicks joins reject goblin demon and one-sided offers",()=>{
+ for(const tiers of [
+  {more_tier:"demon",less_tier:"standard"},
+  {more_tier:"standard",less_tier:"goblin"},
+  {more_tier:"standard",less_tier:null},
+  {more_tier:null,less_tier:"standard"},
+  {more_tier:"demon",less_tier:"demon"}
+ ]){
+  const result=published({...publishedBoard,comparisons:[{...publishedRow,...tiers}]},[player],now);
+  assert.equal(result.length,0,JSON.stringify(tiers));
+ }
+});
 test("published joins reject stale offer, started game, bad roster and stale aggregate",()=>{
  assert.deepEqual(published({...publishedBoard,generated_at:"2026-11-08T00:00:00Z"},[player],now),[]);
  assert.deepEqual(published({...publishedBoard,comparisons:[{...publishedRow,observed_at:"2026-11-08T00:00:00Z"}]},[player],now),[]);
