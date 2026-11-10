@@ -259,3 +259,45 @@ test("full-slate historical archive displays exact pretip quote after provider s
  assert.equal(L.archivedPregameLine(forecast,{...archive,quotes:[{...q,
    source_generated_at:"2026-11-10T00:01:00Z"}]}),null);
 });
+
+test("all eight started NBA games can show authentic line-only player markets",()=>{
+ const games=["Cleveland Cavaliers @ Charlotte Hornets",
+ "Los Angeles Lakers @ Atlanta Hawks","Washington Wizards @ Detroit Pistons",
+ "Memphis Grizzlies @ Toronto Raptors","Indiana Pacers @ Dallas Mavericks",
+ "Denver Nuggets @ Houston Rockets","San Antonio Spurs @ Phoenix Suns",
+ "New Orleans Pelicans @ Golden State Warriors"];
+ const start="2026-11-10T00:00:00Z",observed="2026-11-09T23:54:00Z",
+       captured="2026-11-09T23:58:00Z";
+ const quotes=games.map((game,i)=>({id:"pp_"+i,player:"Line Only Player "+i,
+   team:"WAS",game,stat:"PTS",line:15.5+i,starts_at:start,
+   observed_at:observed,source_generated_at:captured,source:"independent_prizepicksapi_com",
+   is_demo:false,tier:"standard",more_tier:"standard",less_tier:"standard"}));
+ const archive={status:"VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE",quotes};
+ for(const game of games){
+  const cards=L.quoteOnlyLiveRows(archive,game,[],Date.parse("2026-11-10T00:15:00Z"));
+  assert.equal(cards.length,1,game);
+  assert.equal(cards[0].quote_only,true);
+  assert.equal(cards[0].projection,null);
+  assert.equal(cards[0].line,null);
+  assert.ok(L.archivedPregameLine(cards[0],archive)?.line>0);
+ }
+});
+test("frozen or AI-only market is not duplicated by quote-only tracker fallback",()=>{
+ const game="Los Angeles Lakers @ Atlanta Hawks",start="2026-11-10T00:00:00Z";
+ const q={id:"pp_1",player:"Tracked Player",team:"LAL",game,stat:"AST",line:4.5,
+  starts_at:start,observed_at:"2026-11-09T23:54:00Z",
+  source_generated_at:"2026-11-09T23:58:00Z",source:"independent_prizepicksapi_com",
+  is_demo:false,tier:"standard",more_tier:"standard",less_tier:"standard"};
+ const a={status:"VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE",quotes:[q]};
+ const existing={player:"Tracked Player",team:"LAL",game,stat:"AST",
+  start,projection:4.1,line:null};
+ assert.equal(L.quoteOnlyLiveRows(a,game,[existing],Date.parse("2026-11-10T00:30:00Z")).length,0);
+ assert.equal(L.quoteOnlyLiveRows(a,game,[],Date.parse("2026-11-09T23:30:00Z")).length,0);
+ assert.equal(L.quoteOnlyLiveRows(a,game,[],Date.parse("2026-11-10T00:30:00Z")).length,1);
+});
+test("line-only tracker does not turn a captured quote into an AI projection",()=>{
+ const fs=require("node:fs"),html=fs.readFileSync("docs/index.html","utf8");
+ assert.ok(html.includes("helper.quoteOnlyLiveRows("));
+ assert.ok(html.includes('p.quote_only?"—"'));
+ assert.ok(html.includes('p.quote_only?"OBSERVED PREGAME LINE · NO AI MODEL"'));
+});
