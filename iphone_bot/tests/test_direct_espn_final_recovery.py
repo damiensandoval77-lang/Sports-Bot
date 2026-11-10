@@ -56,6 +56,21 @@ class DirectEspnFinalFallback(unittest.TestCase):
         del s["header"]["competitions"][0]["status"]
         self.assertEqual(verified_direct_espn_summary(EVENT_ID,IDENT,s),[])
 
+    def test_explicit_espn_final_dnp_without_reason_is_verified_exclusion(self):
+        record=summary()
+        players=record["boxscore"]["players"][0]["statistics"][0]["athletes"]
+        players.append({"athlete":{"displayName":"Explicit DNP"},
+                        "didNotPlay":True,"stats":[]})
+        players.append({"athlete":{"displayName":"Not Shown To Be DNP"},
+                        "stats":[]})
+        players.append({"athlete":{"displayName":"Conflicting Minutes"},
+                        "didNotPlay":True,"stats":["12:30","0","0","0"]})
+        rows=verified_direct_espn_summary(EVENT_ID,IDENT,record)
+        dnps=[x for x in rows if x.get("dnp_final_verified")]
+        self.assertEqual(len(dnps),1)
+        self.assertEqual(dnps[0]["player"],"Explicit DNP")
+        self.assertEqual(dnps[0]["dnp_reason"],"DNP - explicit ESPN final boxscore")
+
     def test_direct_summary_bypasses_both_failed_scoreboards_and_season_schedule(self):
         called=[]
         def request(url):
