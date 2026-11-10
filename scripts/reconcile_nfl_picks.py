@@ -22,6 +22,7 @@ HEALTH=ROOT/"grading_health_2026.json"
 INACTIVES=ROOT/"verified_inactives_2026.json"
 ZERO_SNAPS=ROOT/"verified_zero_snap_stats_2026.json"
 FULL_SCORING=ROOT/"verified_full_scoring_2026_09_BUF_MIN.json"
+SUPPLEMENTAL_SNAPS=ROOT/"verified_supplemental_snaps_2026.json"
 FIELDS=["captured_at","season","week","game_id","player_id","player",
         "position","team","opponent","stat","target","line","odds_type",
         "proj","pick","model_pct"]
@@ -204,6 +205,20 @@ def verified_zero_snaps(root=ROOT):
         key=(r["game_id"],r["player_id"])
         if key in seen:raise ValueError("Duplicate zero receiving evidence")
         seen.add(key)
+    supplemental=Path(root)/SUPPLEMENTAL_SNAPS.name
+    if supplemental.exists():
+        extra=json.loads(supplemental.read_text(encoding="utf-8"))
+        if extra.get("season")!=2026:raise ValueError("Wrong supplemental snap season")
+        allowed={("2026_09_BUF_MIN","00-0040215","Gavin Bartholomew","MIN","BUF",6)}
+        for r in extra.get("records",[]):
+            identity=(r.get("game_id"),r.get("player_id"),r.get("player"),
+                      r.get("team"),r.get("opponent"),r.get("offense_snaps"))
+            if identity not in allowed or not str(r.get("source_url","")).startswith(
+                    "https://nfl-depth-charts.com/games/"):
+                raise ValueError("Unverified supplemental participation evidence")
+            key=(r["game_id"],r["player_id"])
+            if key in seen:raise ValueError("Duplicate supplemental snap record")
+            seen.add(key)
     return seen
 
 def verified_full_game_scoring(root=ROOT):
