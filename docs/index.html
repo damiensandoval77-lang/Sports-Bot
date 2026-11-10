@@ -2132,7 +2132,7 @@ async function refreshSelectedLiveTracker(){
        Date.parse(x.captured_at)<Date.parse(x.start)&&
        Date.parse(x.start)<=Date.now()).filter((x,i,all)=>
          all.findIndex(y=>y.player_id===x.player_id&&y.team===x.team&&
-           y.game===x.game&&y.start===x.start&&y.stat===x.stat)===i):[];
+           y.game===x.game&&y.start===x.start&&y.stat===x.stat)===i);
  const pregame=helper.mergeLiveForecasts(pricedPregame,noLinePregame,game);
  if(!pregame.length){
   showTrackerMessage(game,"No saved, verifiably pre-tipoff AI forecasts exist for this matchup. Live outcomes cannot be compared to forecasts created after tipoff.");
