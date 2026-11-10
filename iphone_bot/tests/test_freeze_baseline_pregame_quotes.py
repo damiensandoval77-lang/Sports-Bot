@@ -1,5 +1,6 @@
 import copy,datetime as dt,unittest
 from iphone_bot.freeze_baseline_pregame_quotes import freeze,STATUS
+from iphone_bot.grade_frozen_baseline_join import grade
 NOW=dt.datetime(2026,11,10,1,40,tzinfo=dt.timezone.utc)
 GAME={"game":"San Antonio Spurs @ Phoenix Suns","start":"2026-11-10T02:00:00Z",
  "date_eastern":"2026-11-09","home_abbreviation":"PHX","away_abbreviation":"SAS"}
@@ -43,6 +44,18 @@ class FreezeBaselineTests(unittest.TestCase):
                  {"source":"unverified"},{"is_demo":True}):
         wrong=copy.deepcopy(Q);wrong["quotes"][0].update(diff)
         self.assertEqual(freeze({},wrong,AI,SC,now=NOW)["record_count"],0)
+ def test_same_automatic_snapshot_is_gradeable_only_on_verified_final(self):
+    snapshot=freeze({},Q,AI,SC,now=NOW)
+    cold=grade(snapshot,{"records":[]})
+    self.assertEqual(cold["pending"],1)
+    r=snapshot["records"][0]
+    valid={k:r[k] for k in ("player_id","team","game","start","stat")}
+    valid.update({"status":"GRADED","actual":27,
+       "final_source":"ESPN_FINAL","source_game_id":"0022601001"})
+    completed=grade(snapshot,{"records":[valid]})
+    self.assertEqual(completed["verified_final_grades"],1)
+    self.assertEqual(completed["pending"],0)
+    self.assertEqual(snapshot["records"][0]["grade"],"PENDING")
  def test_no_duplicated_identity(self):
     q=copy.deepcopy(Q);q["quotes"]=[Q["quotes"][0],copy.deepcopy(Q["quotes"][0])]
     out=freeze({},q,AI,SC,now=NOW)
