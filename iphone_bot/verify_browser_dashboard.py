@@ -22,18 +22,22 @@ EXPECTED={"Cleveland Cavaliers @ Charlotte Hornets",
           "San Antonio Spurs @ Phoenix Suns",
           "New Orleans Pelicans @ Golden State Warriors"}
 
-def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=None,standard_lines=0,model_chances=0,diagnostics=None):
+def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=None,standard_lines=0,model_chances=0,diagnostics=None,expected_games=None,required_upcoming=None):
     reasons=[]
-    if board_count==0:
+    expected=set(EXPECTED if expected_games is None else expected_games)
+    upcoming=set(expected if required_upcoming is None else required_upcoming)
+    if not upcoming.issubset(expected):
+        reasons.append("UPCOMING_GAME_NOT_IN_OFFICIAL_SCHEDULE")
+    if upcoming and board_count==0:
         reasons.append("NO_RENDERED_PRIZEPICKS_AI_CARDS")
-    if standard_lines==0:
+    if upcoming and standard_lines==0:
         reasons.append("NO_RENDERED_VERIFIED_STANDARD_LINES")
-    if model_chances==0:
+    if upcoming and model_chances==0:
         reasons.append("NO_RENDERED_NEW_AI_CHANCES")
-    missing=sorted(EXPECTED-set(tiles))
+    missing=sorted(expected-set(tiles))
     if missing:
         reasons.append("OFFICIAL_NBA_GAMES_MISSING_NAVIGATION")
-    unmatched=sorted(game for game in EXPECTED if per_game is not None and per_game.get(game,0)<1)
+    unmatched=sorted(game for game in upcoming if per_game is not None and per_game.get(game,0)<1)
     if unmatched:
         reasons.append("SCHEDULED_GAME_WITHOUT_RENDERED_PP_AI_CARDS")
     return {
@@ -47,6 +51,9 @@ def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=No
         "line_and_projection_cards":len(labels),
         "rendered_20k_simulation_cards":simulation_count,
         "game_tiles_seen":sorted(set(tiles)),
+        "scheduled_game_count":len(expected),
+        "upcoming_game_count":len(upcoming),
+        "upcoming_games_checked":sorted(upcoming),
         "missing_official_games":missing,
         "games_without_rendered_matches":unmatched,
         "rendered_matches_by_game":per_game or {},
@@ -106,14 +113,32 @@ def probe():
                 out.rawStandardOffers=p.picks?.filter(x=>x.pickem_tier==='standard').length;
                 out.directVerifiedStandardLines=verifiedStandardLineCoverage(p,sch).length;
                 out.scheduleTimestamp=sch.generated_at;
+                const parts=new Intl.DateTimeFormat('en-US',{
+                  timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'
+                }).formatToParts(new Date());
+                const part=kind=>parts.find(p=>p.type===kind)?.value||'';
+                const day=part('year')+'-'+part('month')+'-'+part('day');
+                out.scheduledToday=(sch.games||[]).filter(g=>g.date_eastern===day&&
+                    typeof g.game==='string').map(g=>g.game);
+                out.upcomingToday=(sch.games||[]).filter(g=>g.date_eastern===day&&
+                    typeof g.game==='string'&&Number.isFinite(Date.parse(g.start))&&
+                    Date.parse(g.start)>Date.now()).map(g=>g.game);
+                out.scheduleUsable=sch.coverage_complete===true&&
+                    Array.isArray(sch.games)&&Array.isArray(sch.dates_eastern)&&
+                    sch.dates_eastern.includes(day);
               } catch(e) {out.diagnosticError=String(e).slice(0,240);}
               return out;
             }""")
             game_tiles=page.locator("#game-strip button.score-tile").all()
             tiles=[t.get_attribute("aria-label") or "" for t in game_tiles]
-            recognized=[game for game in EXPECTED if any(game in label for label in tiles)]
+            # Navigation must still include every official game, but stopped
+            # pregame cards after tipoff are an intentional UI safety feature.
+            schedule_valid=diagnostics.get("scheduleUsable") is True
+            expected=set(diagnostics.get("scheduledToday") or []) if schedule_valid else set(EXPECTED)
+            upcoming=set(diagnostics.get("upcomingToday") or []) if schedule_valid else set(EXPECTED)
+            recognized=[game for game in expected if any(game in label for label in tiles)]
             per_game={}
-            for game in sorted(EXPECTED):
+            for game in sorted(upcoming):
                 tile=next((t for t in game_tiles if game in (t.get_attribute("aria-label") or "")),None)
                 if tile is None:
                     per_game[game]=0
@@ -127,7 +152,14 @@ def probe():
                     errors.append("GAME_FILTER_FAILED:"+game+":"+type(exc).__name__)
                     per_game[game]=0
             page.locator("#game-strip button.all-games").click(timeout=6000)
-            result=assess(count,present,recognized,errors,now,per_game,standard_lines=standard_lines,model_chances=modeled,diagnostics=diagnostics)
+            result=assess(count,present,recognized,errors,now,per_game,
+                          standard_lines=standard_lines,model_chances=modeled,
+                          diagnostics=diagnostics,expected_games=expected,
+                          required_upcoming=upcoming)
+            if not schedule_valid:
+                result["reasons"].append("OFFICIAL_SLATE_DIAGNOSTICS_MISSING")
+                result["status"]="DEGRADED"
+                result["browser_render_verified"]=False
             result["ai_summary"]=page.locator("#ai-total").inner_text()[:240]
             result["public_status"]=page.locator("#status").inner_text()[:120]
             return result
