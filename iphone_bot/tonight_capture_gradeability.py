@@ -70,7 +70,10 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
         # an actual game is still in progress or yet to start.
         try:started=(now-dt.datetime.fromisoformat(game["start"].replace("Z","+00:00"))).total_seconds()
         except (TypeError,ValueError):started=None
-        if started is not None and started>8*3600 and l and not any(x.get("grade")=="GRADED" for x in l):
+        # Flag *partial* settlement as well as nights with zero grades.
+        # The grace window is only a diagnostic, not proof the game went final.
+        pending=[x for x in l if x.get("grade")=="PENDING"]
+        if started is not None and started>8*3600 and pending:
             issue.append("LINE_BACKED_GRADING_OVERDUE_CHECK_FINAL_FEED")
         row={"game":name,"start":game.get("start"),
              "source_quotes":len(q),
@@ -79,7 +82,7 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
              "frozen_line_backed":len(l),
              "line_backed_graded":sum(x.get("grade")=="GRADED" for x in l),
              "ai_only_graded":sum(x.get("status")=="GRADED" for x in g),
-             "line_backed_pending":sum(x.get("grade")=="PENDING" for x in l),
+             "line_backed_pending":len(pending),
              "issues":issue}
         result["games"].append(row)
         result["issues"].extend(name+": "+i for i in issue)
