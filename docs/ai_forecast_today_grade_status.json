@@ -1,73 +1,55 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-10T02:06:24.526695+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-10T02:51:56.034041+00:00",
   "game_date_eastern": "2026-11-09",
   "recorded_pregame_forecasts": 656,
-  "graded": 0,
+  "graded": 216,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 656,
-  "new_grades": 0,
+  "accounted_for": 216,
+  "ungraded": 440,
+  "new_grades": 216,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 54,
+      "mae": 4.948,
+      "mean_signed_error": -0.433
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 54,
+      "mae": 2.059,
+      "mean_signed_error": 0.337
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 54,
+      "mae": 1.309,
+      "mean_signed_error": -0.065
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 54,
+      "mae": 6.759,
+      "mean_signed_error": -0.115
     }
   },
   "ungraded_by_game": {
-    "Cleveland Cavaliers @ Charlotte Hornets": 88,
+    "Cleveland Cavaliers @ Charlotte Hornets": 16,
     "Denver Nuggets @ Houston Rockets": 96,
     "Indiana Pacers @ Dallas Mavericks": 108,
-    "Los Angeles Lakers @ Atlanta Hawks": 96,
+    "Los Angeles Lakers @ Atlanta Hawks": 24,
     "Memphis Grizzlies @ Toronto Raptors": 96,
     "San Antonio Spurs @ Phoenix Suns": 92,
-    "Washington Wizards @ Detroit Pistons": 80
+    "Washington Wizards @ Detroit Pistons": 8
   },
   "excluded_verified_dnp_players": [],
   "ungraded_distinct_player_names_by_game": {
     "Cleveland Cavaliers @ Charlotte Hornets": [
       "Brandon Miller",
-      "Christian Anderson",
-      "Craig Porter Jr.",
       "Dennis Schr\u00f6der",
-      "Donovan Mitchell",
-      "Evan Mobley",
-      "Grayson Allen",
-      "James Harden",
-      "Jarrett Allen",
-      "Liam McNeeley",
-      "Mario Hezonja",
-      "Meleek Thomas",
       "Moussa Diabat\u00e9",
-      "Naz Reid",
-      "Peyton Watson",
-      "Royce O'Neale",
-      "Ryan Kalkbrenner",
-      "Sam Merrill",
-      "Sion James",
-      "Thomas Bryant",
-      "Tidjane Sala\u00fcn",
-      "Tyrese Proctor"
+      "Sam Merrill"
     ],
     "Denver Nuggets @ Houston Rockets": [
       "Aaron Gordon",
@@ -125,30 +107,12 @@
       "Zaccharie Risacher"
     ],
     "Los Angeles Lakers @ Atlanta Hawks": [
-      "Aaron Wiggins",
       "Asa Newell",
       "Austin Reaves",
       "Bronny James",
-      "CJ McCollum",
-      "Collin Sexton",
       "Corey Kispert",
-      "Dyson Daniels",
       "Jaden Hardy",
-      "Jake LaRavia",
-      "Jalen Johnson",
-      "Jarred Vanderbilt",
-      "Jock Landale",
-      "Kingston Flemings",
-      "Luguentz Dort",
-      "Luka Don\u010di\u0107",
-      "Matisse Thybulle",
-      "Nickeil Alexander-Walker",
-      "Onyeka Okongwu",
-      "Quentin Grimes",
-      "Sandro Mamukelashvili",
-      "Walker Kessler",
-      "Ziaire Williams",
-      "Zuby Ejiofor"
+      "Quentin Grimes"
     ],
     "Memphis Grizzlies @ Toronto Raptors": [
       "Alijah Martin",
@@ -202,37 +166,18 @@
       "Victor Wembanyama"
     ],
     "Washington Wizards @ Detroit Pistons": [
-      "AJ Dybantsa",
-      "Alex Sarr",
-      "Anthony Davis",
-      "Ausar Thompson",
       "Bilal Coulibaly",
-      "Bub Carrington",
-      "Cade Cunningham",
-      "Daniss Jenkins",
-      "Deandre Ayton",
-      "Duncan Robinson",
-      "Javonte Green",
-      "John Collins",
-      "Kevin Huerter",
-      "Kyshawn George",
-      "Paul Reed",
-      "Ronald Holland II",
-      "Tolu Smith",
-      "Trae Young",
-      "Tre Johnson",
-      "Will Riley"
+      "Tolu Smith"
     ]
   },
-  "ungraded_distinct_player_markets": 656,
+  "ungraded_distinct_player_markets": 440,
   "final_feed": {
-    "pending_matchups": 9,
-    "final_nba_games": 1,
+    "pending_matchups": 11,
+    "final_nba_games": 4,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 20,
+    "retrieved_player_lines": 86,
     "errors": [
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
@@ -242,16 +187,17 @@
       "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 5,
+    "cached_official_id_candidates": 4,
     "final_cached_id_nba_games": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 20,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 86,
+    "newly_retrieved_verified_rows": 66,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 656
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 48,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 392
     },
     "players": [
       {
@@ -259,616 +205,112 @@
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Brandon Miller",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Brandon Miller",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Brandon Miller",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Dennis Schr\u00f6der",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Dennis Schr\u00f6der",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Dennis Schr\u00f6der",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Dennis Schr\u00f6der",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Mitchell",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Mitchell",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Mitchell",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Mitchell",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Evan Mobley",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Evan Mobley",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Evan Mobley",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Evan Mobley",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Grayson Allen",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Grayson Allen",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Grayson Allen",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Grayson Allen",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Harden",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Harden",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Harden",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Harden",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarrett Allen",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarrett Allen",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarrett Allen",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarrett Allen",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mario Hezonja",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mario Hezonja",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mario Hezonja",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mario Hezonja",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Meleek Thomas",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Meleek Thomas",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Meleek Thomas",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Meleek Thomas",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Moussa Diabat\u00e9",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Moussa Diabat\u00e9",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Moussa Diabat\u00e9",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Moussa Diabat\u00e9",
         "team": "CHA",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Peyton Watson",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Peyton Watson",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Peyton Watson",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Peyton Watson",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Sam Merrill",
         "team": "CLE",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Sam Merrill",
         "team": "CLE",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Sam Merrill",
         "team": "CLE",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Sam Merrill",
         "team": "CLE",
         "game": "Cleveland Cavaliers @ Charlotte Hornets",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Proctor",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Proctor",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Proctor",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Proctor",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Aaron Gordon",
@@ -2299,676 +1741,172 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Asa Newell",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Asa Newell",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Asa Newell",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Asa Newell",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Austin Reaves",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Austin Reaves",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Austin Reaves",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Austin Reaves",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bronny James",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bronny James",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bronny James",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bronny James",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Sexton",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Sexton",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Sexton",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Sexton",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Corey Kispert",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Corey Kispert",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Corey Kispert",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Corey Kispert",
         "team": "ATL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaden Hardy",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaden Hardy",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaden Hardy",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaden Hardy",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jake LaRavia",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jake LaRavia",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jake LaRavia",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jake LaRavia",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarred Vanderbilt",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarred Vanderbilt",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarred Vanderbilt",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarred Vanderbilt",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Don\u010di\u0107",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Don\u010di\u0107",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Don\u010di\u0107",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Don\u010di\u0107",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matisse Thybulle",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matisse Thybulle",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matisse Thybulle",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matisse Thybulle",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Quentin Grimes",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Quentin Grimes",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Quentin Grimes",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Quentin Grimes",
         "team": "LAL",
         "game": "Los Angeles Lakers @ Atlanta Hawks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sandro Mamukelashvili",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sandro Mamukelashvili",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sandro Mamukelashvili",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sandro Mamukelashvili",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walker Kessler",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walker Kessler",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walker Kessler",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walker Kessler",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ziaire Williams",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ziaire Williams",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ziaire Williams",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ziaire Williams",
-        "team": "LAL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Los Angeles Lakers @ Atlanta Hawks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Alijah Martin",
@@ -4287,564 +3225,60 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Bilal Coulibaly",
         "team": "WAS",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bilal Coulibaly",
         "team": "WAS",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bilal Coulibaly",
         "team": "WAS",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bilal Coulibaly",
         "team": "WAS",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Duncan Robinson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Duncan Robinson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Duncan Robinson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Duncan Robinson",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tolu Smith",
         "team": "DET",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tolu Smith",
         "team": "DET",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tolu Smith",
         "team": "DET",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tolu Smith",
         "team": "DET",
         "game": "Washington Wizards @ Detroit Pistons",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Washington Wizards @ Detroit Pistons",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       }
     ],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
