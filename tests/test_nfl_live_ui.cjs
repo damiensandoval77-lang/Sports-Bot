@@ -193,6 +193,22 @@ async function verify(browser, name, viewport) {
     }
     assert.equal(grouped.teams,2,name+' expected two team headers');
     assert.equal(grouped.positions,5,name+' expected five position headers');
+    if(!isLive){
+      const matched=await page.evaluate(()=>{
+        const a=livePlayerFor({team:'MIN',player:'Aaron Jones'},[
+          {team:'MIN',player:'Aaron Jones Sr.',stats:{RUSH_YDS:12}}]);
+        const b=livePlayerFor({team:'BUF',player:'James Cook'},[
+          {team:'BUF',player:'James Cook III',stats:{RUSH_YDS:7}}]);
+        const collision=livePlayerFor({team:'MIN',player:'Aaron Jones'},[
+          {team:'MIN',player:'Aaron Jones Sr.'},
+          {team:'MIN',player:'Aaron Jones Jr.'}
+        ]);
+        return {a:a?.stats?.RUSH_YDS,b:b?.stats?.RUSH_YDS,collision};
+      });
+      assert.equal(matched.a,12,name+' ESPN Sr. name mismatch');
+      assert.equal(matched.b,7,name+' ESPN III name mismatch');
+      assert.equal(matched.collision,null,name+' ambiguous player names must stay unmatched');
+    }
     // Every automatic refresh re-renders markup. The expanded card must stay open.
     await page.evaluate(()=>{
       const item=document.querySelector('#livegames details[data-livegame="'+state.game+'"]');
