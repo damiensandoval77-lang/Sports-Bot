@@ -192,3 +192,16 @@ test("Published standard quote archive coverage is not silently lost in the comb
  assert.ok(page.includes("prizepicks_pregame_line_archive.json"));
  console.log("Standard source markets",offered.size,"all represented; total cards",rows.length);
 });
+
+test("Retained stale NBA backup observations never display as live even with fresh wrapper timestamp",()=>{
+ const saved=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[pt]},{players:[]});
+ const now=Date.parse("2026-11-10T03:15:00Z");
+ const base={status:"OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",captured_at:"2026-11-10T03:14:00Z",
+ games:[{game:pt.game,state:"in",stale:true,observed_at:"2026-11-10T03:00:00Z",
+ player_rows:[{player:pt.player,team:pt.team,PTS:12}]}]};
+ assert.equal(m.attachLive(saved,base,null,now)[0].live,null);
+ const nonFlagged={...base,games:[{...base.games[0],stale:false,observed_at:"2026-11-10T02:30:00Z"}]};
+ assert.equal(m.attachLive(saved,nonFlagged,null,now)[0].live,null);
+ const fresh={...base,games:[{...base.games[0],stale:false,observed_at:"2026-11-10T03:14:00Z"}]};
+ assert.equal(m.attachLive(saved,fresh,null,now)[0].live.actual,12);
+});
