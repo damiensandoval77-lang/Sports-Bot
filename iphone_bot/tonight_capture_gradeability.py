@@ -62,8 +62,14 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
         a=[x for x in preds if x.get("game")==name]
         l=[x for x in backed if x.get("game")==name]
         standard=[x for x in q if x.get("tier")=="standard"]
-        frozen_markets={(x.get("player"),x.get("team"),x.get("stat")) for x in l}
-        standard_markets={(x.get("player"),x.get("team"),x.get("stat")) for x in standard}
+        # Compare original standard thresholds, not merely player and stat.
+        # A 24.5 freeze must never satisfy capture coverage for a moved 25.5.
+        def market_key(x):
+            try: threshold=float(x["line"])
+            except (TypeError,ValueError,KeyError): threshold=None
+            return (x.get("player"),x.get("team"),x.get("stat"),threshold)
+        frozen_markets={market_key(x) for x in l}
+        standard_markets={market_key(x) for x in standard}
         missing_markets=standard_markets-frozen_markets
         g=[x for x in grade_rows if x.get("game")==name]
         issue=[]
