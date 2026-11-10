@@ -83,6 +83,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-ai-board.yml --ref main
+      - name: Generate and freeze guarded four-market AI when new verified lines are published
+        # No paid sportsbook request. The four-market model independently
+        # verifies standard tiers and pretip timestamps before any freeze.
+        # Its concurrency lock avoids colliding with scheduled model runs.
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-new-ai-all-markets.yml --ref main
       - name: Freeze separate PrizePicks research predictions when new lines appear
         if: steps.publish.outputs.changed == 'true'
         env:
