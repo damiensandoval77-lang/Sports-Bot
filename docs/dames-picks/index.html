@@ -41,11 +41,11 @@ async function getJSON(p){const r=await fetch("../"+p+"?v="+Date.now(),{cache:"n
 async function getCSV(p){const r=await fetch("../nfl/data/"+p+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("NFL "+p+" HTTP "+r.status);return m.csv(await r.text())}
 async function refresh(){
  if(state.loading)return;state.loading=true;$("status").textContent="Loading actual NBA and NFL bot outputs…";
- const [ledger,form,manifest,schedule,health,nbaLive,nflLive,gradedNFL,capture,forecastHealth,injury,quoteArchive,nbaSchedule,gradeCoverage]=await Promise.allSettled([
+ const [ledger,form,manifest,schedule,health,nbaLive,nflLive,gradedNFL,pendingNFL,capture,forecastHealth,injury,quoteArchive,nbaSchedule,gradeCoverage]=await Promise.allSettled([
  getJSON("lagged_matchup_all_market_ledger.json"),getJSON("current_form.json"),
  getJSON("nfl/data/latest_2026.json"),getJSON("nfl/data/schedule_2026.json"),
  getJSON("nfl/data/grading_health_2026.json"),getJSON("live_player_tracking.json"),
- getJSON("nfl/data/live_2026.json"),getCSV("pp_graded_2026.csv"),
+ getJSON("nfl/data/live_2026.json"),getCSV("pp_graded_2026.csv"),getCSV("pp_grading_pending_2026.csv"),
  getJSON("tonight_capture_gradeability.json"),getJSON("ai_forecast_today_grade_status.json"),getJSON("injury_context.json"),getJSON("prizepicks_pregame_line_archive.json"),getJSON("nba_schedule.json"),getJSON("ai_forecast_coverage_audit.json")]);
  const errors=[];
  if(ledger.status==="fulfilled")state.nba=m.nba(ledger.value,form.status==="fulfilled"?form.value:null);
@@ -56,7 +56,9 @@ async function refresh(){
   if(results.some(x=>x.status==="rejected"))errors.push("NFL feed partially loaded");
  }else errors.push("NFL export unavailable");
  state.nflHealth=health.status==="fulfilled"?health.value:null;
- if(gradedNFL.status==="fulfilled")state.nfl=m.attachNFLGrades(state.nfl,gradedNFL.value);
+ if(gradedNFL.status==="fulfilled"&&pendingNFL.status==="fulfilled"&&schedule.status==="fulfilled")
+  state.nfl=m.reconcileNFLSettlementCards(state.nfl,gradedNFL.value,pendingNFL.value,schedule.value);
+ else errors.push("NFL permanent grading ledgers unavailable");
  const nb=nbaLive.status==="fulfilled"?nbaLive.value:null,nf=nflLive.status==="fulfilled"?nflLive.value:null;
  state.liveGames=m.gameCatalog(nb,nf,nbaSchedule.status==="fulfilled"?nbaSchedule.value:null,schedule.status==="fulfilled"?schedule.value:null);
  state.nba=m.attachLive(state.nba,nb,nf);
@@ -71,6 +73,9 @@ async function refresh(){
  if(!state.health.gradeCoverage)errors.push("NBA historical grade audit unavailable");
  else if(state.health.gradeCoverage.stale)errors.push("NBA grading audit stale");
  if(health.status==="fulfilled"&&health.value.standard_settled===0)errors.push("NFL final-grade coverage unverified");
+ if(state.nflHealth?.standard_settled>0&&
+    state.nfl.filter(p=>p.grade==="GRADED"&&p.hit!==null).length<state.nflHealth.standard_settled)
+    errors.push("NFL published standard grades not fully displayed");
  state.errors=errors;state.updated=new Date();state.loading=false;render();
  if(state.picked){const current=rows().find(x=>m.key(x)===m.key(state.picked));if(current){state.picked=current;renderDetail()}}
  if(state.gamePicked){const current=state.liveGames.find(x=>x.sport===state.gamePicked.sport&&x.gameId===state.gamePicked.gameId);if(current){state.gamePicked=current;renderGameDetail()}}
@@ -194,7 +199,7 @@ function renderDetail(){
  live+'<section class="box"><div class="hero-head"><h2>Last games</h2><span class="muted tiny">'+(p.form?.games??"—")+' season games</span></div>'+(logs||'<div class="note">A verified individual game-by-game series is not yet available for this stat. No chart is fabricated.</div>')+'<div class="box-row"><span>Season average</span><strong>'+fmt(p.form?.season)+'</strong></div><div class="box-row"><span>Last 5 average</span><strong>'+fmt(p.form?.l5)+'</strong></div><div class="box-row"><span>Last 10 average</span><strong>'+fmt(p.form?.l10)+'</strong></div></section>'+
  '<section class="box"><h2>Matchup</h2>'+(p.injury?'<div class="box-row"><span>Official NBA injury report</span><strong>'+escapeText(p.injury.status)+'</strong></div><div class="note">Report issued '+escapeText(when(p.injury.asOf))+'. This does not modify the frozen pick.</div>':'')+(p.depth?'<div class="box-row"><span>Depth chart</span><strong>'+escapeText(p.depth.role||"Unverified")+(p.depth.rank!==null?" · #"+fmt(p.depth.rank):"")+'</strong></div><div class="box-row"><span>Depth snapshot</span><strong>'+escapeText(p.depth.asOf?when(p.depth.asOf):"Unverified")+'</strong></div><div class="box-row"><span>Snap share, last 3</span><strong>'+(p.depth.snapPct!==null?Math.round(p.depth.snapPct*100)+"%":"—")+'</strong></div>':'')+'<div class="box-row"><span>Opponent</span><strong>'+escapeText(p.opponent||"—")+'</strong></div><div class="box-row"><span>Game</span><strong>'+escapeText(p.game)+'</strong></div><div class="box-row"><span>Positional defense rank</span><strong>Unverified</strong></div><div class="box-row"><span>Saved at</span><strong>'+escapeText(when(p.captured))+'</strong></div></section>'+
  '<section class="box"><h2>Season vs saved line</h2>'+(p.form?.over!==undefined?'<div class="box-row"><span>Over / Under / Push</span><strong>'+[p.form.over,p.form.under,p.form.push].map(x=>x??"—").join(" / ")+'</strong></div><div class="box-row"><span>Last 5 over / under</span><strong>'+[p.form.last5Over,p.form.last5Under].map(x=>x??"—").join(" / ")+'</strong></div><div class="note">Results are from the original NFL source’s recorded line and season games, not a recomputed current-market hit rate.</div>':'<div class="note">Original line-specific seasonal outcomes unavailable in this verified feed.</div>')+'</section>'+ '<section class="box"><h2>Original research dashboards</h2><div class="note">The original model, matchup, injury, minutes, and grading research remains accessible.</div><a href="'+(p.sport==="NBA"?"../index.html":"../nfl/index.html")+'" class="smallbtn" style="display:block;text-align:center;margin-top:12px;color:white;text-decoration:none">Open full '+escapeText(p.sport)+' dashboard</a></section>'+'<section class="take"><strong>Dame’s Take</strong><p>'+escapeText(window.DamesTake.forSlate([...state.nba,...state.nfl]).get([p.sport,p.start,p.gameId||p.game,p.playerId||p.player,p.stat,p.line,p.captured,p.source||p.provider||""].join("|"))||"No verified model lean for this line.")+'</p></section>'+
- '<section class="box"><h2>Automatic grading</h2><div class="box-row"><span>Status</span><strong>'+escapeText(p.grade)+'</strong></div><div class="box-row"><span>Actual</span><strong>'+fmt(p.actual)+'</strong></div><div class="box-row"><span>Verified source</span><strong>'+escapeText(p.gradeSource||"Pending")+'</strong></div><div class="note">Pending results do not count as losses. NFL settled market-level grading will appear after the bot publishes verified individual result records.</div></section>';
+ '<section class="box"><h2>Automatic grading</h2><div class="box-row"><span>Status</span><strong>'+escapeText(p.grade)+'</strong></div><div class="box-row"><span>Actual</span><strong>'+fmt(p.actual)+'</strong></div><div class="box-row"><span>Verified source</span><strong>'+escapeText(p.gradeSource||"Pending")+'</strong></div>'+(p.pendingReason?'<div class="box-row"><span>Pending reason</span><strong>'+escapeText(p.pendingReason)+'</strong></div>':'')+'<div class="note">Pending results do not count as losses. Grading is based on verified final player statistics.</div></section>';
 }
 function back(){state.gamePicked=null;state.picked=null;$("detail").classList.add("hidden");$("board").classList.remove("hidden");render()}
 $("back").onclick=back;$("bookmark").onclick=()=>{const p=state.picked;if(!p)return;const k=m.key(p);state.selected.has(k)?state.selected.delete(k):state.selected.add(k);saveBookmarks();renderDetail()};
