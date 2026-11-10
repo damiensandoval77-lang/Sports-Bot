@@ -19,6 +19,7 @@ from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS, expected_opponent
 from iphone_bot.prizepicks_research_ledger import utc
 from iphone_bot.recover_prizepicks_final_games import multi_origin_request
 from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset, additional_verified_ai_inactive_subset
+from iphone_bot.verified_boxscore_dnps import verified_boxscore_dnp_subset, SOURCE as BOXSCORE_DNP_SOURCE
 
 ROOT=Path(__file__).resolve().parents[1]
 ARCHIVE=ROOT/"docs/ai_no_line_pregame_archive.json"
@@ -98,7 +99,7 @@ def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=
     for row in list(final_rows)+list(confirmed_inactives or []):
         if (row.get("final_confirmed") is not True or
             row.get("dnp_final_verified") is not True or
-            row.get("source") not in APPROVED_SOURCES|{"NBA_OFFICIAL_INACTIVE_CROSSCHECKED"} or
+            row.get("source") not in APPROVED_SOURCES|{"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",BOXSCORE_DNP_SOURCE} or
             not row.get("source_game_id") or not row.get("dnp_reason")):
             continue
         n=strict_player_name(row.get("player"))
@@ -266,7 +267,8 @@ def main():
         actuals=[];fetch_report={"status":"NO_ELIGIBLE_ARCHIVED_GAMES"}
     try:
         confirmed_inactives=(verified_inactive_subset(actuals)+
-                             additional_verified_ai_inactive_subset(actuals))
+                             additional_verified_ai_inactive_subset(actuals)+
+                             verified_boxscore_dnp_subset(actuals))
     except (OSError,ValueError,TypeError,KeyError):
         confirmed_inactives=[]
     cached_before=read_cache(FINAL_CACHE)
