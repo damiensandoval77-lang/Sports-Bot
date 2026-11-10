@@ -26,7 +26,7 @@ function sourceFunction(name){
 function setup(extra={}){
  const context={Date,Map,Set,Number,Math,String,Array,Boolean,norm,...extra};
  vm.createContext(context);
- for(const name of ["verifiedStandardLineCoverage","injuryCardStatus","injuryPendingCard","safeLineOnly"])
+ for(const name of ["verifiedStandardLineCoverage","verifiedBoardStandardLineCoverage","injuryCardStatus","injuryPendingCard","safeLineOnly"])
    vm.runInContext(sourceFunction(name),context);
  return context;
 }
@@ -104,4 +104,43 @@ test("Opening missing-AI games does not force sportsbook when verified standard 
  assert.ok(html.includes('!standardLineCards.some(x=>x.game===game)'));
  assert.ok(html.includes('const quoteOnly=standardLineCards.filter('));
  assert.ok(html.includes('const liveStandardMode=standardLineCards.length>0;'));
+});
+
+test("Provider-board backup rescues genuine upcoming standard line when derived feed is missing",()=>{
+ const ctx=setup(),g=eight[4];
+ const row={id:"pp_123",player:"Test Player",team:"DEN",game:g.game,stat:"PTS",
+  line:10.5,starts_at:g.start,observed_at:"2026-11-09T23:05:00Z",
+  more_tier:"standard",less_tier:"standard",source:"independent_prizepicksapi_com",is_demo:false};
+ const provider={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+  source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:08:00Z",
+  board_offers:[row]};
+ const out=ctx.verifiedBoardStandardLineCoverage(provider,{games:eight},now);
+ assert.equal(out.length,1);
+ assert.equal(out[0].line,10.5);
+ assert.equal(out[0].game,g.game);
+ assert.equal(out[0].line_only,true);
+ assert.equal(out[0].projection,null);
+ assert.equal(out[0].estimated_hit_chance,null);
+});
+test("Provider-board fallback rejects stale, alternate, mismatched and started games",()=>{
+ const ctx=setup(),g=eight[4],base={id:"pp_123",player:"Test Player",
+   team:"DEN",game:g.game,stat:"PTS",line:10.5,starts_at:g.start,
+   observed_at:"2026-11-09T23:05:00Z",more_tier:"standard",less_tier:"standard",
+   source:"independent_prizepicksapi_com",is_demo:false};
+ const provider={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+   source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:08:00Z",
+   board_offers:[base]};
+ const verify=(feed,at=now)=>ctx.verifiedBoardStandardLineCoverage(feed,{games:eight},at).length;
+ assert.equal(verify({...provider,generated_at:"2026-11-09T20:00:00Z"}),0);
+ assert.equal(verify({...provider,board_offers:[{...base,more_tier:"goblin"}]}),0);
+ assert.equal(verify({...provider,board_offers:[{...base,team:"LAL"}]}),0);
+ assert.equal(verify({...provider,board_offers:[{...base,source:"unverified"}]}),0);
+ assert.equal(verify({...provider,board_offers:[{...base,observed_at:"2026-11-09T19:00:00Z"}]}),0);
+ assert.equal(verify({...provider,board_offers:[base,{...base,id:"pp_124",line:11.5}]}),0);
+ assert.equal(verify(provider,Date.parse("2026-11-10T02:00:00Z")),0);
+});
+test("Main NBA board merges independent verified provider standard-line fallback",()=>{
+ assert.ok(html.includes("verifiedBoardStandardLineCoverage(pp.value"));
+ assert.ok(html.includes("standardLineCards=[...canonical.values()]"));
+ assert.ok(html.includes("const quoteOnly=standardLineCards.filter("));
 });
