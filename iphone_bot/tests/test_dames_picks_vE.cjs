@@ -125,3 +125,10 @@ test("Production source feeds keep expected real stat keys and health flags",()=
  "tonight_capture_gradeability.json","ai_forecast_today_grade_status.json","dames-picks-bookmarks-v1"])
  assert.ok(page.includes(name),name);
 });
+
+test("Different saved thresholds or observation times never share one player card identity",()=>{
+ const base={sport:"NBA",playerId:"201939",game:"NOP @ GSW",start:"2026-11-10T03:00:00Z",
+ stat:"PTS",line:27.5,captured:"2026-11-09T21:00:00Z"};
+ assert.notEqual(m.key(base),m.key({...base,line:28.5}));
+ assert.notEqual(m.key(base),m.key({...base,captured:"2026-11-09T21:01:00Z"}));
+});
