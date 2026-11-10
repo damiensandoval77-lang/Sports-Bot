@@ -13,6 +13,7 @@ on:
       - 'iphone_bot/build_prizepicks_model_input.py'
       - 'iphone_bot/tests/test_build_prizepicks_model_input.py'
       - 'iphone_bot/tests/test_publish_prizepicks_site.py'
+      - 'iphone_bot/tests/test_prizepicks_per_date_coverage.py'
       - 'iphone_bot/validate_prizepicks_publish.py'
       - 'iphone_bot/archive_prizepicks_pregame_lines.py'
       - 'iphone_bot/tests/test_archive_prizepicks_pregame_lines.py'
@@ -39,6 +40,7 @@ jobs:
         run: |
           python -m py_compile iphone_bot/publish_prizepicks_site.py
           python -m unittest discover -s iphone_bot/tests -p 'test_publish_prizepicks_site.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_per_date_coverage.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_build_prizepicks_model_input.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_validate_prizepicks_publish.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_archive_prizepicks_pregame_lines.py' -v
