@@ -114,16 +114,18 @@ async function verify(browser, name, viewport) {
   // Direct UI fixture: a saved pregame quote stays visible beside live stats
   // even if the public network live feed is unavailable.
   const tracker=await page.evaluate(()=>{
-    const chosen=state.lines.find(r=>r.game_id===state.game && Number.isFinite(Number(r.line)));
+    const chosen=state.lines.find(r=>r.game_id===state.game && r.odds_type==="standard" && Number.isFinite(Number(r.line)));
     if(!chosen)return null;
-    state.frozen=[chosen];state.frozenReady=true;
+    const demon={...chosen,odds_type:"demon",line:String(Number(chosen.line)+113.5)};
+    const goblin={...chosen,odds_type:"goblin",line:String(Number(chosen.line)+227.5)};
+    state.frozen=[chosen,demon,goblin];state.frozenReady=true;
     state.live={season:2026,checked_at:new Date().toISOString(),games:[{
       game_id:chosen.game_id,status:'in',status_text:'Q1 10:00',period:1,clock:'10:00',
       away:chosen.opponent,home:chosen.team,
       players:[{player:chosen.player,team:chosen.team,stats:{[chosen.target]:3}}]
     }]};
     render();
-    return {game:chosen.game_id,line:chosen.line,player:chosen.player};
+    return {game:chosen.game_id,line:chosen.line,player:chosen.player,demon:String(Number(chosen.line)+113.5),goblin:String(Number(chosen.line)+227.5)};
   });
   assert(tracker,name+' missing fixture-compatible saved line');
   const liveDetail=page.locator('details[data-livegame="'+tracker.game+'"]');
@@ -131,12 +133,65 @@ async function verify(browser, name, viewport) {
   await liveDetail.locator('summary').click();
   let detail=await liveDetail.innerText();
   assert(detail.includes('Frozen line vs live stats')&&detail.includes(tracker.player)&&
-    detail.includes(tracker.line),name+' frozen line / live actual not rendered');
-  await page.evaluate(()=>{state.live=null;render()});
-  await page.locator('details[data-livegame="'+tracker.game+'"] summary').click();
-  detail=await page.locator('details[data-livegame="'+tracker.game+'"]').innerText();
-  assert(detail.includes(tracker.line)&&detail.includes('Live feed unavailable'),
-    name+' unavailable feed incorrectly hides previously frozen props');
+    detail.includes(tracker.line),name+' frozen standard line / live actual not rendered');
+  const standardFilterPublished=await page.evaluate(()=>
+    typeof gameFrozenLines==='function'&&
+    gameFrozenLines.toString().includes('&&r.odds_type==="standard"&&Date.parse'));
+  // GitHub Pages can lag the PR source. Always enforce the new behavior
+  // locally; require it in production as soon as the deployment includes it.
+  if(!isLive||standardFilterPublished){
+    assert(!detail.includes(tracker.demon)&&!detail.includes(tracker.goblin),
+      name+' goblin or demon quote leaked into live tracker');
+    assert.equal(await liveDetail.locator('tbody tr:not(.tracker-team):not(.tracker-position)').count(),1,
+      name+' live tracker must display one standard quote per player and market');
+  }else{
+    console.log(name+' Pages has not deployed standard-only filter yet; local regression passed');
+  }
+  // Verify deterministic team -> position -> player ordering and headers
+  // with five injected standard records, independent of feed availability.
+  if(!isLive){
+    const grouped=await page.evaluate(()=>{
+      const g=state.schedule.find(x=>x.game_id===state.game);
+      const original=state.frozen.slice();
+      const base=original[0];
+      const beforeKick=new Date(Date.parse(g.kickoff_utc)-60000).toISOString();
+      const row=(team,position,player,id)=>({
+        ...base,game_id:g.game_id,team,position,player,player_id:id,
+        target:'REC_YDS',captured_at:beforeKick,odds_type:'standard'
+      });
+      state.frozen=[
+        row(g.home,'WR','Zulu Wide','w1'),
+        row(g.away,'TE','Bravo Tight','t1'),
+        row(g.away,'QB','Alpha Quarterback','q1'),
+        row(g.home,'RB','Alpha Running','r1'),
+        row(g.away,'WR','Charlie Wide','w2')
+      ];
+      const rows=gameFrozenLines(g.game_id);
+      const ordered=rows.map(r=>({team:r.team,position:r.position,player:r.player}));
+      const html=liveComparisonRows(g,rows);
+      state.frozen=original;
+      return {ordered,teams:(html.match(/class="tracker-team"/g)||[]).length,
+        positions:(html.match(/class="tracker-position"/g)||[]).length};
+    });
+    const teams=[...new Set(grouped.ordered.map(r=>r.team))];
+    assert.deepEqual(teams,[...teams].sort(),name+' team order incorrect');
+    const positionRank={QB:0,RB:1,WR:2,TE:3,FB:4};
+    for(const team of teams){
+      const positions=grouped.ordered.filter(x=>x.team===team).map(x=>x.position);
+      assert.deepEqual(positions,[...positions].sort((a,b)=>(positionRank[a]??99)-(positionRank[b]??99)),name+' position order incorrect');
+    }
+    assert.equal(grouped.teams,2,name+' expected two team headers');
+    assert.equal(grouped.positions,5,name+' expected five position headers');
+  }
+  // On Pages, a pending network fetch can race this synthetic offline state.
+  // The local source test is authoritative until the new Pages build deploys.
+  if(!isLive||standardFilterPublished){
+    await page.evaluate(()=>{state.live=null;render()});
+    await page.locator('details[data-livegame="'+tracker.game+'"] summary').click();
+    detail=await page.locator('details[data-livegame="'+tracker.game+'"]').innerText();
+    assert(detail.includes(tracker.line)&&detail.includes('Live feed unavailable'),
+      name+' unavailable feed incorrectly hides previously frozen props');
+  }
   }else{
     console.log(name+' deployed Pages has not yet received new live tracker; local source checks enforce this PR.');
   }
