@@ -34,12 +34,16 @@ class CaptureAuditTests(unittest.TestCase):
   self.assertEqual(out["status"],"CAPTURE_INCOMPLETE")
   self.assertIn("A @ B: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",out["issues"])
   self.assertEqual(out["games"][0]["standard_markets_without_frozen_model"],1)
+  self.assertEqual(out["games"][0]["standard_price_moves_from_original_frozen_line"],0)
+  self.assertEqual(out["games"][0]["standard_player_stat_markets_never_primary_frozen"],1)
  def test_different_saved_standard_threshold_is_missing_not_covered(self):
   moved={**quote(),"line":16.5}
   out=audit(q=[quote(),moved,quote("C @ D")])
   self.assertEqual(out["status"],"CAPTURE_INCOMPLETE")
   self.assertIn("A @ B: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",out["issues"])
   self.assertEqual(out["games"][0]["standard_markets_without_frozen_model"],1)
+  self.assertEqual(out["games"][0]["standard_price_moves_from_original_frozen_line"],1)
+  self.assertEqual(out["games"][0]["standard_player_stat_markets_never_primary_frozen"],0)
  def test_goblin_demon_quoted_lines_do_not_count_as_unfrozen_standard_markets(self):
   alternative={**quote(),"player":"Y","tier":"demon"}
   out=audit(q=[quote(),alternative,quote("C @ D")])
