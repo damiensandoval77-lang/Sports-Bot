@@ -303,3 +303,28 @@ test("Observed ESPN game wins over schedule-only fallback and is not duplicated"
  assert.equal(out.length,1);assert.equal(out[0].state,"in");
  assert.equal(out[0].players[0].stats.PTS,25);
 });
+
+test("Historic AI-only backlog persists even if today's grade report says zero",()=>{
+ const audit=JSON.parse(fs.readFileSync("docs/ai_forecast_coverage_audit.json","utf8"));
+ const now=Date.parse("2026-11-10T12:00:00Z");
+ const previous=m.gradingAuditSummary(audit,now);
+ assert.equal(previous.day,"2026-11-09");
+ assert.equal(previous.captured,756);
+ assert.equal(previous.graded,620);
+ assert.equal(previous.pending,136);
+ assert.equal(previous.voided,0);
+ assert.equal(previous.stale,false);
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(page.includes("ai_forecast_coverage_audit.json"));
+ assert.ok(page.includes("NBA AI-only: "));
+ assert.ok(!page.includes('+" AI-only forecasts still ungraded"'));
+});
+test("Bad grading math and stale audit never look healthy",()=>{
+ const now=Date.parse("2026-11-10T12:00:00Z");
+ const valid={checked_at:"2026-11-10T11:59:00Z",days:{
+ "2026-11-09":{captured:10,graded:7,pending:3,void_dnp:0,
+ excluded_nonparticipant:0,accounted_for:7}}};
+ assert.equal(m.gradingAuditSummary(valid,now).pending,3);
+ assert.equal(m.gradingAuditSummary({...valid,checked_at:"2026-11-09T10:00:00Z"},now).stale,true);
+ assert.equal(m.gradingAuditSummary({...valid,days:{"2026-11-09":{...valid.days["2026-11-09"],pending:0}}},now),null);
+});

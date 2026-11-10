@@ -266,5 +266,24 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now()){
  return [...result.values()];
 }
 function numberOrNull(v){return n(v)}
-root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard,liveGames,gameCatalog};
+function gradingAuditSummary(payload,now=Date.now()){
+ if(!payload||!payload.days||typeof payload.days!=="object")return null;
+ const checked=stamp(payload.checked_at);
+ if(!Number.isFinite(checked))return null;
+ const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(now));
+ const value=type=>parts.find(p=>p.type===type)?.value||"";
+ const today=value("year")+"-"+value("month")+"-"+value("day");
+ const previous=Object.keys(payload.days).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d<today).sort().at(-1);
+ if(!previous)return null;
+ const d=payload.days[previous];
+ for(const k of ["captured","graded","pending","void_dnp","excluded_nonparticipant","accounted_for"]){
+  if(!Number.isSafeInteger(d?.[k])||d[k]<0)return null;
+ }
+ if(d.captured!==d.graded+d.pending+d.void_dnp+d.excluded_nonparticipant||
+   d.accounted_for!==d.graded+d.void_dnp+d.excluded_nonparticipant)return null;
+ return {day:previous,captured:d.captured,graded:d.graded,
+  pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
+  stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
+}
+root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
