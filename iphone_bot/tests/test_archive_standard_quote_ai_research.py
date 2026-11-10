@@ -65,11 +65,26 @@ class ResearchReceiptTests(unittest.TestCase):
             merge(incoming(sample()),now=dt.datetime(2026,11,11,1,1,tzinfo=dt.timezone.utc))["count"],0
         )
 
-    def test_modified_frozen_receipt_fails_closed(self):
+    def test_repeated_price_retains_original_projection_without_double_count(self):
         original=merge(incoming(sample()),now=NOW)
-        changed=sample(projection=99.0)
-        with self.assertRaises(ValueError):
-            merge(incoming(changed),original,now=NOW)
+        changed=sample(provider_projection_id="pp-new",projection=99.0,
+                       observed_at="2026-11-10T17:30:00+00:00")
+        updated=merge(incoming(changed),original,now=NOW)
+        self.assertEqual(updated["count"],1)
+        self.assertEqual(updated["new_records"],0)
+        self.assertEqual(updated["records"][0]["projection"],26.2)
+        self.assertEqual(updated["records"][0]["provider_projection_id"],"pp-1")
+
+    def test_future_dated_observations_never_enter_archive(self):
+        future = sample(observed_at="2026-11-10T18:01:00+00:00")
+        self.assertEqual(merge(incoming(future),now=NOW)["count"],0)
+        future_model = sample(model_generated_at="2026-11-10T18:01:00+00:00")
+        self.assertEqual(merge(incoming(future_model),now=NOW)["count"],0)
+
+    def test_stale_comparison_snapshot_does_not_create_new_receipt(self):
+        source=incoming(sample())
+        source["generated_at"]="2026-11-10T15:00:00+00:00"
+        self.assertEqual(merge(source,now=NOW)["count"],0)
 
     def test_bad_existing_archive_never_overwritten(self):
         with self.assertRaises(ValueError):
