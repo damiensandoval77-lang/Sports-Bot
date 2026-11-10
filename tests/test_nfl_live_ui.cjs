@@ -108,6 +108,7 @@ async function verify(browser, name, viewport) {
     name+' horizontal overflow detected: '+JSON.stringify(metrics));
   await page.locator('button[data-tab="live"]').click();
   assert(await page.locator('#live').isVisible(),name+' matchups tab broken');
+  await page.waitForFunction(()=>state.frozenReady,{timeout:15000}).catch(()=>{});
   // Direct UI fixture: a saved pregame quote stays visible beside live stats
   // even if the public network live feed is unavailable.
   const tracker=await page.evaluate(()=>{
@@ -130,6 +131,7 @@ async function verify(browser, name, viewport) {
   assert(detail.includes('Frozen line vs live stats')&&detail.includes(tracker.player)&&
     detail.includes(tracker.line),name+' frozen line / live actual not rendered');
   await page.evaluate(()=>{state.live=null;render()});
+  await page.locator('details[data-livegame="'+tracker.game+'"] summary').click();
   detail=await page.locator('details[data-livegame="'+tracker.game+'"]').innerText();
   assert(detail.includes(tracker.line)&&detail.includes('Live feed unavailable'),
     name+' unavailable feed incorrectly hides previously frozen props');
