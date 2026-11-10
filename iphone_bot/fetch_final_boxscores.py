@@ -135,27 +135,32 @@ def nba_boxscore_rows(score_event,box):
     rows=[]
     for side,tcode,opp in ((a,away,home),(h,home,away)):
         for player in side.get("players",[]):
-            stats=player.get("statistics",{})
-            if not isinstance(stats,dict):continue
-            row=box_player(player.get("name") or
-                  " ".join(str(player.get(v) or "").strip()
-                    for v in ("firstName","familyName")).strip(),
-                  tcode,opp,day,stats.get("points"),stats.get("reboundsTotal"),
-                  stats.get("assists"),stats.get("minutes") or stats.get("minutesCalculated"),
-                  "NBA_CDN_FINAL",game_id)
-            if row:
-                rows.append(row)
-            elif player.get("played") is False and (
-                    player.get("notPlayingReason") or
-                    str(player.get("status","")).upper() in ("INACTIVE","DNP","NOT_PLAYING")):
-                dnp=verified_dnp_player(
-                    player.get("name") or
-                    " ".join(str(player.get(v) or "").strip()
-                             for v in ("firstName","familyName")).strip(),
-                    tcode,opp,day,str(player.get("notPlayingReason") or
-                                      player.get("status")),
-                    "NBA_CDN_FINAL",game_id)
+            stats=player.get("statistics")
+            name=player.get("name") or " ".join(
+                str(player.get(v) or "").strip()
+                for v in ("firstName","familyName")).strip()
+            # A source-explicit inactive entry may have no statistics object.
+            # Never mistake a missing row or absent numerical stats for a DNP.
+            explicit_dnp=(player.get("played") is False and (
+                player.get("notPlayingReason") or
+                str(player.get("status","")).upper() in ("INACTIVE","DNP","NOT_PLAYING")))
+            if explicit_dnp:
+                numbers=stats if isinstance(stats,dict) else {}
+                # Contradictory minutes/points are not safe to exclude.
+                if any(str(numbers.get(field) or "").strip() not in ("","0","0.0","00:00","0:00")
+                       for field in ("points","reboundsTotal","assists","minutes","minutesCalculated")):
+                    continue
+                dnp=verified_dnp_player(name,tcode,opp,day,
+                      str(player.get("notPlayingReason") or player.get("status")),
+                      "NBA_CDN_FINAL",game_id)
                 if dnp:rows.append(dnp)
+                continue
+            if not isinstance(stats,dict):continue
+            row=box_player(name,tcode,opp,day,stats.get("points"),
+                  stats.get("reboundsTotal"),stats.get("assists"),
+                  stats.get("minutes") or stats.get("minutesCalculated"),
+                  "NBA_CDN_FINAL",game_id)
+            if row:rows.append(row)
     return rows
 
 
@@ -210,11 +215,14 @@ def espn_boxscore_rows(event,summary):
                 played_minutes=(minutes(values[keys["MIN"]])
                                 if isinstance(values,list) and "MIN" in keys and keys["MIN"]<len(values) else None)
                 if entry.get("didNotPlay") is True:
-                    # DNP + nonzero minutes is contradictory; settle neither way.
-                    if (isinstance(reason,str) and reason.strip() and
-                        not (played_minutes is not None and played_minutes>0)):
+                    # The explicit final ESPN didNotPlay flag is proof even if
+                    # a separate reason string is unavailable. Missing players
+                    # and numeric-stat omissions never imply a DNP.
+                    if not (played_minutes is not None and played_minutes>0):
+                        explicit_reason=(reason.strip() if isinstance(reason,str) and reason.strip()
+                                         else "DNP - explicit ESPN final boxscore")
                         row=verified_dnp_player(player.get("displayName"),code,opp,day,
-                                                reason,"ESPN_FINAL",event_id)
+                                                explicit_reason,"ESPN_FINAL",event_id)
                         if row:rows.append(row)
                     continue
                 if not isinstance(values,list) or not {"PTS","REB","AST","MIN"}.issubset(keys) or not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):
