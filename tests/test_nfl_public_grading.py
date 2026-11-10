@@ -8,7 +8,7 @@ from datetime import datetime,timezone,timedelta
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 from reconcile_nfl_picks import (
-    collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,run)
+    collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,run)
 
 def schedule():
     kickoff="2026-11-15T18:00:00+00:00"
@@ -75,6 +75,35 @@ class PublicNFLGradeTests(unittest.TestCase):
         self.assertEqual(by_target["REC"]["result"],"Push")
         self.assertEqual(by_target["REC"]["won"],"")
         self.assertEqual(by_target["TGT"]["actual"],"8")
+    def test_verified_inactive_voids_instead_of_incorrect_losses(self):
+        inactive=bet(target="REC",line="0.5")
+        hist,_=collect_history([],[inactive],schedule())
+        grades,pending,n=grade_finals(hist,schedule(),{"g1":{}},set(),{("g1","gsis-1")})
+        self.assertEqual((n,len(grades),len(pending)),(1,1,0))
+        self.assertEqual(grades[0]["result"],"Void")
+        self.assertEqual(grades[0]["won"],"")
+        self.assertEqual(grades[0]["grade_status"],"void_verified_inactive")
+        # Absence of a row without independent inactive evidence is never 0.
+        grades,pending,_=grade_finals(hist,schedule(),{"g1":{}},set())
+        self.assertEqual(len(grades),0)
+        self.assertEqual(pending[0]["grade_status"],"player_not_in_verified_boxscore")
+        # Contradictory official data must stop publication, not choose a side.
+        with self.assertRaisesRegex(ValueError,"inactive has offensive boxscore"):
+            grade_finals(hist,schedule(),box(),set(),{("g1","gsis-1")})
+
+    def test_inactive_verification_requires_source_and_exact_ids(self):
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/"verified_inactives_2026.json"
+            p.write_text(json.dumps({"season":2026,"inactives":[
+                {"game_id":"g1","player_id":"gsis-1","player":"Example WR",
+                 "source_url":"https://example.com/source",
+                 "published_at":"2026-11-15T12:00:00+00:00"}]}))
+            self.assertEqual(verified_inactives(folder),{("g1","gsis-1")})
+            p.write_text(json.dumps({"season":2026,"inactives":[
+                {"game_id":"g1","player_id":"gsis-1"}]}))
+            with self.assertRaisesRegex(ValueError,"Unattributed NFL inactive"):
+                verified_inactives(folder)
+
     def test_unsupported_market_cannot_be_scored(self):
         hist,_=collect_history([],[bet(target="FPTS")],schedule())
         grades,pending,_=grade_finals(hist,schedule(),box(),set())

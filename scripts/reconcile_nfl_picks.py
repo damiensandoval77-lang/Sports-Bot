@@ -19,6 +19,7 @@ ARCHIVE=ROOT/"frozen_pick_history_2026.csv"
 GRADES=ROOT/"pp_graded_2026.csv"
 PENDING=ROOT/"pp_grading_pending_2026.csv"
 HEALTH=ROOT/"grading_health_2026.json"
+INACTIVES=ROOT/"verified_inactives_2026.json"
 FIELDS=["captured_at","season","week","game_id","player_id","player",
         "position","team","opponent","stat","target","line","odds_type",
         "proj","pick","model_pct"]
@@ -168,17 +169,43 @@ def actual_for(target,player):
     # component necessary for an exact Fantasy Score. Refuse to guess.
     return None
 
-def grade_finals(history,schedule,boxes,box_problems):
+def verified_inactives(root=ROOT):
+    """Only explicit, source-attributed inactive rows may void a frozen prop.
+
+    Missing from a box score is NOT proof that a player did not play.
+    """
+    path=Path(root)/INACTIVES.name
+    if not path.exists():return set()
+    data=json.loads(path.read_text(encoding="utf-8"))
+    if data.get("season")!=2026:raise ValueError("Wrong verified inactive season")
+    result=set()
+    for r in data.get("inactives",[]):
+        if not all(str(r.get(key) or "").strip() for key in ("game_id","player_id","player","source_url","published_at")):
+            raise ValueError("Unattributed NFL inactive; refusing void")
+        pair=(r["game_id"],r["player_id"])
+        if pair in result:raise ValueError("Duplicate verified inactive")
+        result.add(pair)
+    return result
+
+def grade_finals(history,schedule,boxes,box_problems,inactives=None):
     finals={g for g,s in schedule.items() if s.get("status")=="final" and
             s.get("home_score") is not None and s.get("away_score") is not None}
     expected=closing(history,finals)
     grades=[]
     pending=[]
+    inactives=inactives or set()
     for r in expected:
         out=dict(r)
         gid=r["game_id"]
         p=boxes.get(gid,{}).get(r["player_id"])
         reason=None
+        if (gid,r["player_id"]) in inactives and gid in boxes and gid not in box_problems:
+            # Exact player ID and game must match the published inactive report;
+            # void is not counted in hit rate, even for More/Less lines.
+            if p:raise ValueError("Verified inactive has offensive boxscore stats: "+gid)
+            out.update(actual="",result="Void",won="",grade_status="void_verified_inactive")
+            grades.append(out)
+            continue
         if gid in box_problems:reason="boxscore_unverified"
         elif gid not in boxes:reason="boxscore_not_yet_published"
         elif not p:reason="player_not_in_verified_boxscore"
@@ -253,15 +280,18 @@ def run(root=ROOT):
                and game.get("away_score") is not None}
     frozen_final_ids={r["game_id"] for r in history if r["game_id"] in final_ids}
     expected_independent=len(closing(history,final_ids))
-    graded,pending,expected=grade_finals(history,schedule,boxscores,invalid)
+    graded,pending,expected=grade_finals(history,schedule,boxscores,invalid,verified_inactives(root))
     if expected!=expected_independent or expected!=len(graded)+len(pending):
         raise ValueError("NFL_FINAL_GRADE_COVERAGE_MISMATCH: no records written")
     standard=[g for g in graded if g["odds_type"]=="standard" and g["won"] in ("0","1")]
+    genuine_grades=sum(g["grade_status"]=="graded" for g in graded)
+    voids=sum(g["grade_status"]=="void_verified_inactive" for g in graded)
     metrics={"season":2026,"archived_pregame_lines":len(history),
              "rejected_non_pregame_or_invalid_lines":rejected,
              "final_games_with_frozen_picks":len(frozen_final_ids),
              "frozen_final_pick_candidates":expected_independent,
-             "expected_final_picks":expected,"graded_picks":len(graded),
+             "expected_final_picks":expected,"graded_picks":genuine_grades,
+             "void_picks":voids,
              "pending_picks":len(pending),
              "pushes":sum(x["result"]=="Push" for x in graded),
              "standard_settled":len(standard),
