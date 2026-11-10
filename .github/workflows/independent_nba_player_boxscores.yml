@@ -39,17 +39,46 @@ jobs:
         if: github.event_name != 'pull_request'
         continue-on-error: true
         run: python -m iphone_bot.refresh_nba_player_boxscores
-      - name: Commit observed player totals or explicit source failure
-        if: always() && github.event_name != 'pull_request' && steps.refresh.outcome != 'skipped'
+      - name: Safely publish only verified player observations with concurrent writer retries
+        if: github.event_name != 'pull_request' && steps.refresh.outcome == 'success'
         run: |
+          set -euo pipefail
+          cp docs/nba_player_tracking_independent.json "$RUNNER_TEMP/nba_player_tracking_independent.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/nba_player_tracking_independent.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Refresh independent NBA player observation"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python - <<'PY'
+          import datetime,json,os
+          from pathlib import Path
+          target=Path("docs/nba_player_tracking_independent.json")
+          incoming=Path(os.environ["RUNNER_TEMP"])/target.name
+          new=json.loads(incoming.read_text())
+          old=json.loads(target.read_text()) if target.exists() else {}
+          def stamp(obj):
+              raw=obj.get("captured_at") or obj.get("checked_at")
+              if not raw:return None
+              try:
+                  t=datetime.datetime.fromisoformat(str(raw).replace("Z","+00:00"))
+                  return t if t.tzinfo else None
+              except (TypeError,ValueError):return None
+          prev,now=stamp(old),stamp(new)
+          # A delayed job cannot replace a newer verified observation.
+          if prev is not None and now is not None and prev>now:
+              print("Keeping newer independent player observation")
+          elif old.get("date_eastern")==new.get("date_eastern") and old.get("status")=="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES" and new.get("status")=="WAITING_FOR_SCHEDULED_TIPOFF":
+              print("Keeping verified live scores over pregame placeholder")
+          else:
+              target.write_text(json.dumps(new,indent=2)+"\\n")
+          PY
+            git add docs/nba_player_tracking_independent.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "Safely refresh independently observed NBA player totals"
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Concurrent publishers prevented player tracking persistence after five attempts"
+          exit 1
       - name: Fail visibly when independent player data unavailable
         if: always() && github.event_name != 'pull_request' && steps.refresh.outcome == 'failure'
         run: |
