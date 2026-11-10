@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-11-10T14:11:49.191788+00:00",
+  "checked_at": "2026-11-10T15:12:48.402114+00:00",
   "game_date_eastern": "2026-11-10",
-  "status": "BLOCKED",
+  "status": "DEGRADED",
   "ready_for_trustworthy_picks": false,
   "readiness_is_not_model_accuracy": true,
   "today_schedule_games": 6,
@@ -13,15 +13,13 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 2.4
+      "age_minutes": 52.1
     },
     "ai_forecasts": {
-      "state": "BLOCKED",
+      "state": "READY",
       "required": true,
-      "reasons": [
-        "STALE_SOURCE"
-      ],
-      "age_minutes": 719.8
+      "reasons": [],
+      "age_minutes": 52.0
     },
     "prizepicks_lines": {
       "state": "DEGRADED",
@@ -29,7 +27,7 @@
       "reasons": [
         "STALE_SOURCE"
       ],
-      "age_minutes": 759.9
+      "age_minutes": 820.9
     },
     "published_pick_cards": {
       "state": "DEGRADED",
@@ -40,7 +38,7 @@
         "NO_PROVIDER_EVENTS_CHECKED",
         "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
       ],
-      "age_minutes": 3739.6
+      "age_minutes": 3800.6
     },
     "prizepicks_research_cards": {
       "state": "DEGRADED",
@@ -52,7 +50,7 @@
         "UPCOMING_GAMES_WITHOUT_PP_RESEARCH_MATCHES",
         "PP_RESEARCH_SOURCE_PARTIAL"
       ],
-      "age_minutes": 72.4
+      "age_minutes": 59.2
     },
     "scoreboard": {
       "state": "READY",
@@ -73,18 +71,16 @@
         "OVERDUE_GRADING",
         "PREVIOUS_DAY_AI_GRADING_INCOMPLETE"
       ],
-      "age_minutes": 18.4
+      "age_minutes": 79.4
     }
   },
-  "blocking_components": [
-    "ai_forecasts"
-  ],
+  "blocking_components": [],
   "degraded_components": [
     "prizepicks_lines",
     "published_pick_cards",
     "nightly_grades"
   ],
   "required_checks": 6,
-  "passing_required_checks": 2,
+  "passing_required_checks": 3,
   "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
 }
