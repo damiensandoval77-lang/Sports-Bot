@@ -26,6 +26,7 @@ ROOT=Path(__file__).resolve().parents[1]
 ARCHIVE=ROOT/"docs/ai_no_line_pregame_archive.json"
 LEDGER=ROOT/"docs/ai_forecast_actual_ledger.json"
 STATUS=ROOT/"docs/ai_forecast_grade_status.json"
+CURRENT_STATUS=ROOT/"docs/ai_forecast_today_grade_status.json"
 FINAL_CACHE=ROOT/"docs/verified_final_player_cache.json"
 ET=ZoneInfo("America/New_York")
 STATS=("PTS","REB","AST","PRA")
@@ -46,7 +47,7 @@ def eligible_predictions(predictions,now=None,days_back=3):
         if p.get("is_pregame_prediction") is not True or p.get("line") is not None:
             continue
         start=utc(p.get("start"));locked=utc(p.get("captured_at"))
-        if not start or not locked or locked>=start or (now-start).total_seconds()<4*3600:
+        if not start or not locked or locked>=start or now<=start:
             continue
         if start.astimezone(ET).date()<floor:
             continue
@@ -327,6 +328,13 @@ def main():
     day=(now.astimezone(ET).date()-dt.timedelta(days=1)).isoformat()
     status=report(day,selected,graded,fetch_report,now,final_rows=actuals)
     STATUS.write_text(json.dumps(status,indent=2)+"\n")
+    # Expose today's verified grades while games are still in progress.
+    # Never infer final results from live scores or simulated performance.
+    current_day=now.astimezone(ET).date().isoformat()
+    current_report=report(current_day,selected,graded,fetch_report,now,final_rows=actuals)
+    current_report["is_current_day_live_grade_status"]=True
+    current_report["final_only_no_live_wins"]=True
+    CURRENT_STATUS.write_text(json.dumps(current_report,indent=2)+"\n")
     print("AI NO-LINE GRADE:",json.dumps({
         k:status[k] for k in ("game_date_eastern","status","recorded_pregame_forecasts",
                            "graded","ungraded","new_grades")},sort_keys=True))
