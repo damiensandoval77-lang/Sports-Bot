@@ -127,19 +127,45 @@ function renderGameDetail(){
  $("markets").innerHTML="";
  $("bookmark").textContent="—";
  const related=rows().filter(p=>p.gameId===g.gameId||p.game===g.game);
+ const normalize=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+ const actualFor=p=>{
+  const matches=g.players.filter(x=>x.team===p.team&&normalize(x.player)===normalize(p.player));
+  if(matches.length!==1)return null;
+  const statKey=g.sport==="NFL"?p.target:p.stat;
+  const value=matches[0].stats?.[statKey];
+  return typeof value==="number"&&Number.isFinite(value)?value:null;
+ };
+ const watched=related.map(p=>{
+  const actual=actualFor(p),text=p.direction==="MORE"?"OVER":p.direction==="LESS"?"UNDER":"NO AI";
+  // A live total crossing the line is not an official win until verified final grading.
+  const versus=actual===null?"Actual unavailable":"Actual "+fmt(actual);
+  const grade=p.grade==="GRADED"?(p.hit===true?"GRADED HIT":p.hit===false?"GRADED MISS":"GRADED"):g.state==="in"?"LIVE · NOT GRADED":g.state==="stale"?"STALE · NOT GRADED":"PENDING FINAL GRADE";
+  return '<button class="pick" data-prop="'+escapeText(m.key(p))+'"><div class="pick-top"><span class="name">'+escapeText(p.player)+" · "+escapeText(p.stat)+'</span><span class="grade">'+escapeText(grade)+'</span></div>'+
+   '<div class="context">'+escapeText(p.source)+" · "+escapeText(text)+'</div>'+
+   '<div class="stat-grid"><div><small>FROZEN LINE</small><strong>'+fmt(p.line)+'</strong></div><div><small>FROZEN PROJ</small><strong>'+fmt(p.projection)+'</strong></div><div><small>ACTUAL</small><strong>'+fmt(actual)+'</strong></div><span class="chip '+(p.direction==="MORE"?"over":p.direction==="LESS"?"under":"pass")+'">'+escapeText(p.direction||"PASS")+'</span></div>'+
+   '<div class="stampband"><span>'+escapeText(versus)+" · Saved "+escapeText(when(p.captured))+'</span><span>Details</span></div></button>';
+ }).join("");
  const playerRows=g.players.map(p=>{
   const fields=Object.entries(p.stats||{}).filter(([k,v])=>typeof v==="number"&&Number.isFinite(v))
-   .slice(0,9).map(([k,v])=>k+" "+fmt(v)).join(" · ");
+   .map(([k,v])=>k+" "+fmt(v)).join(" · ");
   return '<div class="box-row"><span>'+escapeText(p.player)+" · "+escapeText(p.team)+'</span><strong>'+escapeText(fields||"No verified stat")+'</strong></div>';
  }).join("");
- const locked=related.map(p=>'<div class="box-row"><span>'+escapeText(p.player)+" · "+escapeText(p.stat)+'</span><strong>'+fmt(p.line)+" line · "+fmt(p.projection)+' proj</strong></div>').join("");
- $("detail-content").innerHTML='<section class="box"><h2>Game observation</h2><div class="note">'+
- escapeText(g.fresh?"Fresh scoreboard snapshot":"Historical or stale snapshot — not live now")+
- '. Player totals are observations, not final settlement grades.</div>'+
- (playerRows||'<p class="note">No player statistics published for this game.</p>')+'</section>'+
- '<section class="box"><h2>Saved pregame props ('+related.length+')</h2>'+
- (locked||'<p class="note">No saved props found. The game remains visible independently.</p>')+'</section>';
+ const scoreboard=g.sport==="NFL"&&g.awayScore!==null&&g.homeScore!==null?
+  '<div class="box-row"><span>'+escapeText(g.away)+'</span><strong>'+fmt(g.awayScore)+'</strong></div><div class="box-row"><span>'+escapeText(g.home)+'</span><strong>'+fmt(g.homeScore)+'</strong></div>':
+  '<div class="note">Verified score not present in this published NBA feed.</div>';
+ $("detail-content").innerHTML='<section class="box"><h2>Scoreboard</h2>'+scoreboard+
+ '<div class="note">'+escapeText(g.fresh?"Current observed game snapshot":"Historical or stale snapshot — not live now")+
+ ' · '+escapeText(g.statusText)+'. Stats are observations, not verified settlement grades.</div></section>'+
+ '<section class="box"><h2>Frozen pregame props ('+related.length+')</h2>'+
+ (watched?'<div class="cards">'+watched+'</div>':'<p class="note">No frozen props saved for this game. Its scoreboard and box score remain visible.</p>')+'</section>'+
+ '<section class="box"><h2>Full published player box score ('+g.players.length+')</h2>'+
+ (playerRows||'<p class="note">No player statistics published for this game.</p>')+'</section>';
+ for(const b of $("detail-content").querySelectorAll("[data-prop]"))b.onclick=()=>{
+   const p=rows().find(x=>m.key(x)===b.dataset.prop);
+   if(p){state.gamePicked=null;state.picked=p;renderDetail()}
+ };
 }
+
 function open(id){
  const p=rows().find(x=>m.key(x)===id);if(!p)return;
  state.picked=p;$("board").classList.add("hidden");$("detail").classList.remove("hidden");renderDetail();scrollTo({top:0,behavior:"instant"});
