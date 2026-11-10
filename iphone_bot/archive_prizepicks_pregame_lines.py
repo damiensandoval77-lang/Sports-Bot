@@ -23,8 +23,13 @@ def moment(value):
     except (TypeError,ValueError,OverflowError):
         return None
 
-def identity(q):
+def market_identity(q):
     return tuple(q[k] for k in ("player","team","game","stat","starts_at","tier"))
+
+def identity(q):
+    # Retain genuine historical price versions instead of overwriting a frozen
+    # line when the same provider market moves before tipoff.
+    return market_identity(q)+(q["line"],)
 
 def safe_row(q):
     if not isinstance(q,dict) or q.get("source")!=SOURCE or q.get("is_demo") is not False:
@@ -61,16 +66,19 @@ def build(site,old=None,now=None):
                 q["tier"]=q["more_tier"]
                 q["source_generated_at"]=timestamp
                 if not safe_row(q):continue
-                key=identity(q)
+                key=market_identity(q)
                 current.setdefault(key,[]).append(q)
             for key,offers in current.items():
                 # Ambiguous simultaneous quotes cannot be promoted as a single line.
                 if len({q["line"] for q in offers})!=1:continue
                 q=max(offers,key=lambda x:x["observed_at"])
-                prior=saved.get(key)
-                if prior is None or moment(q["observed_at"])>moment(prior["observed_at"]):
-                    saved[key]=q
-    rows=sorted(saved.values(),key=lambda q:(q["starts_at"],q["game"],q["player"],q["stat"],q["tier"]))
+                # Each distinct standard price is a separate historical receipt.
+                # Keep the *earliest* captured observation for its original price.
+                price_key=identity(q)
+                prior=saved.get(price_key)
+                if prior is None or moment(q["observed_at"])<moment(prior["observed_at"]):
+                    saved[price_key]=q
+    rows=sorted(saved.values(),key=lambda q:(q["starts_at"],q["game"],q["player"],q["stat"],q["tier"],q["line"],q["observed_at"]))
     return {"status":STATUS,"generated_at":now.isoformat(),"quotes":rows,
             "count":len(rows),"note":"Observed before tipoff; not frozen AI betting picks. Tier shown separately."}
 
