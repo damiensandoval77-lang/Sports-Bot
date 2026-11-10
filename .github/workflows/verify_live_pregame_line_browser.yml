@@ -1,0 +1,66 @@
+name: Check saved pregame lines in started NBA matchup cards
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'docs/prizepicks_pregame_line_archive.json'
+      - 'iphone_bot/verify_live_pregame_line_browser.py'
+      - '.github/workflows/verify_live_pregame_line_browser.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/verify_live_pregame_line_browser.py'
+      - '.github/workflows/verify_live_pregame_line_browser.yml'
+permissions:
+  contents: write
+concurrency:
+  group: verify-live-pregame-lines
+  cancel-in-progress: false
+jobs:
+  started-game-lines:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate read-only live line probe
+        run: |
+          python -m py_compile iphone_bot/verify_live_pregame_line_browser.py
+      - name: Install Chromium and inspect actual deployed iPhone live cards
+        if: github.event_name != 'pull_request'
+        run: |
+          python -m pip install --disable-pip-version-check 'playwright==1.56.0'
+          python -m playwright install --with-deps chromium
+      - name: Audit archived source lines in started game cards
+        if: github.event_name != 'pull_request'
+        id: audit
+        continue-on-error: true
+        run: python -m iphone_bot.verify_live_pregame_line_browser
+      - name: Publish line-coverage audit regardless of pass or failure
+        if: always() && github.event_name != 'pull_request' && steps.audit.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          cp docs/live_pregame_line_probe.json "$RUNNER_TEMP/live_pregame_line_probe.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/live_pregame_line_probe.json" docs/live_pregame_line_probe.json
+            git add docs/live_pregame_line_probe.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Audit live matchup frozen line source coverage'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Fail visibly if confirmed pregame quotes are absent in the live UI
+        if: always() && github.event_name != 'pull_request' && steps.audit.outcome == 'failure'
+        run: |
+          echo "::error::Verified pretip PrizePicks lines are missing in live matchup cards. Inspect docs/live_pregame_line_probe.json"
+          exit 1
