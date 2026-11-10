@@ -13,7 +13,7 @@ from statistics import mean
 from zoneinfo import ZoneInfo
 
 from iphone_bot.official_game_id_index import recovery_game_ids
-from iphone_bot.fetch_final_boxscores import gather
+from iphone_bot.fetch_final_boxscores import gather, verified_espn_schedule_hints
 from iphone_bot.verified_final_cache import read_cache, write_cache, row_key
 from iphone_bot.paper_pick_pipeline import TEAM_ABBREVIATIONS, expected_opponents, strict_player_name
 from iphone_bot.prizepicks_research_ledger import utc
@@ -287,9 +287,16 @@ def main():
         raise SystemExit("More than 25 final matchups; refusing incomplete grade fetch")
     if requested:
         try:
+            schedule_path=ROOT/"docs/nba_schedule.json"
+            try:
+                schedule=json.loads(schedule_path.read_text())
+                espn_hints=verified_espn_schedule_hints(schedule)
+            except (OSError,ValueError,TypeError):
+                espn_hints={}
             actuals,fetch_report=gather(requested,now=now,request=multi_origin_request,
                                       known_game_ids=recovery_game_ids(ROOT/"docs/official_nba_game_ids.json",
-                                          ROOT/"docs/verified_official_final_game_ids.json"))
+                                          ROOT/"docs/verified_official_final_game_ids.json"),
+                                      known_espn_games=espn_hints)
         except (OSError,ValueError,TypeError,KeyError) as e:
             actuals=[];fetch_report={"status":"FINAL_FETCH_FAILED","errors":[type(e).__name__]}
     else:

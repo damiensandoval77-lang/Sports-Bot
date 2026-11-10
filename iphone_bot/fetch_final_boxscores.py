@@ -227,6 +227,61 @@ def espn_boxscore_rows(event,summary):
     return rows
 
 
+def verified_espn_schedule_hints(payload):
+    """Use saved ESPN schedule IDs only for lookup, NEVER as final-game proof."""
+    result={}
+    if payload.get("status")!="THIRD_PARTY_NBA_SCHEDULE_ONLY":
+        return result
+    for g in payload.get("games",[]):
+        if not isinstance(g,dict) or not str(g.get("id","")).isdigit():
+            continue
+        try:
+            day=local_date(g["start"])
+            away=team(g["away_abbreviation"])
+            home=team(g["home_abbreviation"])
+            if g.get("date_eastern")!=day or not away or not home or away==home:
+                continue
+            k=(day,away,home)
+            if k in result and result[k]!=str(g["id"]):
+                result.pop(k,None)
+                continue
+            result[k]=str(g["id"])
+        except (KeyError,ValueError,TypeError):
+            continue
+    return result
+
+
+def verified_direct_espn_summary(event_id,matchup_key,summary):
+    """Only an independently COMPLETED ESPN game summary is final evidence.
+
+    Exact event ID, tip date, home and away teams must all match. A stale or
+    in-progress server-side live tracking snapshot can never create grades.
+    """
+    day,away,home=matchup_key
+    header=summary.get("header") or {}
+    if str(header.get("id"))!=str(event_id):
+        raise ValueError("Direct ESPN event ID mismatch")
+    comps=header.get("competitions") or []
+    if len(comps)!=1 or not isinstance(comps[0],dict):
+        raise ValueError("Missing unambiguous ESPN game competition")
+    comp=comps[0]
+    status=comp.get("status") or {}
+    typ=status.get("type") or {}
+    if typ.get("completed") is not True or typ.get("state") not in (None,"post"):
+        return []
+    teams={r.get("homeAway"):team((r.get("team") or {}).get("abbreviation"))
+           for r in comp.get("competitors",[]) if isinstance(r,dict)}
+    if teams.get("away")!=away or teams.get("home")!=home:
+        raise ValueError("Direct ESPN final matchup mismatch")
+    timestamp=comp.get("date") or comp.get("startDate")
+    if not timestamp or local_date(timestamp)!=day:
+        raise ValueError("Direct ESPN final game-date mismatch")
+    event={"id":str(event_id),"date":timestamp,
+           "status":{"type":{"completed":True}},
+           "competitions":[{"competitors":comp["competitors"]}]}
+    return espn_boxscore_rows(event,summary)
+
+
 def verified_schedule_ids(payload,pending):
     """Find official NBA game IDs for exact scheduled date + opponents only.
 
@@ -292,7 +347,7 @@ def pending_games(records,now=None):
             age=(current-start).total_seconds()
             # Retry every historical pending game, not just the last four days.
             # Settlement still requires an independently verified final box score.
-            if age<2*3600:continue
+            if age<75*60:continue
             day=local_date(r["event_start"])
             pair=r["game"].split(" @ ")
             if len(pair)!=2:continue
@@ -308,7 +363,7 @@ def pending_games(records,now=None):
     return games
 
 
-def gather(records,now=None,request=request_json,known_game_ids=None):
+def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_games=None):
     pending=pending_games(records,now)
     days={key[0] for key in pending}
     # By team abbreviation and event day, never by a similar player's name.
@@ -344,6 +399,7 @@ def gather(records,now=None,request=request_json,known_game_ids=None):
     # Use previously observed official liveData NBA IDs before expensive
     # season schedule rediscovery. These IDs are only lookup hints: the
     # returned official box must STILL attest FINAL, date, teams, and game ID.
+    pending_ids={}
     if known_game_ids:
         from iphone_bot.official_game_id_index import matching_ids
         pending_ids=matching_ids(known_game_ids,pending-nba_complete)
@@ -359,14 +415,37 @@ def gather(records,now=None,request=request_json,known_game_ids=None):
                 report["final_cached_id_nba_games"]=report.get("final_cached_id_nba_games",0)+1
             except (OSError,ValueError,KeyError,TypeError) as exc:
                 report["errors"].append("Cached official ID boxscore unavailable: "+str(exc)[:130])
+    # The app's saved schedule already includes ESPN event IDs for every
+    # matchup. Bypass unreliable daily scoreboard if necessary: the fetched
+    # summary itself MUST prove final status and exact ID/date/team identity.
+    espn_complete=set()
+    if known_espn_games:
+        for key in sorted(pending-nba_complete):
+            event_id=known_espn_games.get(key)
+            if not event_id or not str(event_id).isdigit():
+                continue
+            try:
+                summary=request(ESPN_BOX+"?"+urllib.parse.urlencode({"event":str(event_id)}))
+                rows=verified_direct_espn_summary(event_id,key,summary)
+                if not rows:continue
+                from_espn.extend(rows)
+                espn_complete.add(key)
+                report["final_espn_games"]+=1
+                report["direct_espn_final_games"]=report.get("direct_espn_final_games",0)+1
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                report["errors"].append("Direct ESPN final unavailable: "+str(exc)[:140])
     # The live NBA scoreboard can time out on hosted runners or roll over to
     # the next day. Discover historical IDs from the official season schedule,
     # then read each actual final (gameStatus=3) NBA player boxscore.
-    remaining={k for k in pending if k not in nba_complete}
-    if remaining:
+    remaining=pending-nba_complete-espn_complete
+    # Do not redownload gigantic season schedules for matchups whose exact
+    # official NBA ID was already safely recorded (the box itself checks FINAL).
+    # Reusing the same known game ID is the correct recovery path.
+    season_id_unknown=remaining-set(pending_ids)
+    if season_id_unknown:
         for endpoint in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):
             try:
-                candidates=verified_schedule_ids(request(endpoint),remaining)
+                candidates=verified_schedule_ids(request(endpoint),season_id_unknown)
                 for key,gid in candidates.items():
                     if key in nba_complete:continue
                     try:
@@ -383,7 +462,7 @@ def gather(records,now=None,request=request_json,known_game_ids=None):
                 report["errors"].append("NBA schedule unavailable: "+str(exc)[:130])
     # ESPN is a fallback for missed games (e.g. NBA daily scoreboard has rolled).
     for date in sorted(days):
-        if all(key in nba_complete for key in pending if key[0]==date):continue
+        if all(key in nba_complete|espn_complete for key in pending if key[0]==date):continue
         try:
             board=request(ESPN_SCORE+"?"+urllib.parse.urlencode({"dates":date.replace("-",""),"limit":100}))
             for event in espn_final_events(board):
@@ -392,7 +471,7 @@ def gather(records,now=None,request=request_json,known_game_ids=None):
                            for c in event["competitions"][0]["competitors"]}
                     ateam,hteam=teams.get("away"),teams.get("home")
                     key=(local_date(event["date"]),ateam,hteam)
-                    if key in nba_complete or key not in pending:continue
+                    if key in nba_complete or key in espn_complete or key not in pending:continue
                     rows=espn_boxscore_rows(event,request(ESPN_BOX+"?"+urllib.parse.urlencode({"event":str(event["id"])})))
                     if not rows:continue
                     from_espn.extend(rows)
