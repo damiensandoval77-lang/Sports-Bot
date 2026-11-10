@@ -199,7 +199,6 @@ def espn_boxscore_rows(event,summary):
             labels=table.get("names",[])
             if not isinstance(labels,list):continue
             keys={str(label).upper():i for i,label in enumerate(labels)}
-            if not {"PTS","REB","AST","MIN"}.issubset(keys):continue
             for entry in table.get("athletes",[]):
                 if not isinstance(entry,dict):continue
                 player=entry.get("athlete") or {}
@@ -209,14 +208,14 @@ def espn_boxscore_rows(event,summary):
                 # stats, empty arrays, or a roster omission as proof of absence.
                 reason=entry.get("reason") or entry.get("notPlayingReason")
                 played_minutes=(minutes(values[keys["MIN"]])
-                                if isinstance(values,list) and keys["MIN"]<len(values) else None)
+                                if isinstance(values,list) and "MIN" in keys and keys["MIN"]<len(values) else None)
                 if (entry.get("didNotPlay") is True and isinstance(reason,str) and
                     reason.strip() and not (played_minutes is not None and played_minutes>0)):
                     row=verified_dnp_player(player.get("displayName"),code,opp,day,
                                             reason,"ESPN_FINAL",event_id)
                     if row:rows.append(row)
                     continue
-                if not isinstance(values,list) or not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):
+                if not isinstance(values,list) or not {"PTS","REB","AST","MIN"}.issubset(keys) or not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):
                     continue
                 row=box_player(player.get("displayName"),code,opp,day,
                                values[keys["PTS"]],values[keys["REB"]],
