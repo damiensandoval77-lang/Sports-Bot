@@ -45,7 +45,7 @@ def run():
             response=page.goto(SITE,wait_until="domcontentloaded",timeout=50000)
             if not response or response.status!=200:raise RuntimeError("Public site not HTTP 200")
             page.wait_for_selector("#game-strip button.score-tile",timeout=35000)
-            for game,markets in sorted(grouped.items(),key=lambda kv:-len(kv[1]))[:3]:
+            for game,markets in sorted(grouped.items(),key=lambda kv:-len(kv[1])):
                 tile=next((t for t in page.locator("#game-strip button.score-tile").all()
                            if game in str(t.get_attribute("aria-label") or "")),None)
                 if not tile:
@@ -78,7 +78,7 @@ def run():
                 out["checks"].append({"game":game,"status":"COVERED" if ratio>=.9 else "MISSING_SAVED_LINES",
                     "expected_unique_markets":len(markets),"shown_with_lines":len(covered),
                     "coverage_fraction":round(ratio,3),"rendered_cards":len(cards)})
-            out["status"]="READY" if out["checks"] and all(
+            out["status"]="READY" if len(out["checks"])==len(grouped) and all(
                 x["status"]=="COVERED" for x in out["checks"]) and not out["errors"] else "DEGRADED"
         finally:
             browser.close()
