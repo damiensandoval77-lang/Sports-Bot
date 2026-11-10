@@ -21,6 +21,7 @@ PENDING=ROOT/"pp_grading_pending_2026.csv"
 HEALTH=ROOT/"grading_health_2026.json"
 INACTIVES=ROOT/"verified_inactives_2026.json"
 ZERO_SNAPS=ROOT/"verified_zero_snap_stats_2026.json"
+FULL_SCORING=ROOT/"verified_full_scoring_2026_09_BUF_MIN.json"
 FIELDS=["captured_at","season","week","game_id","player_id","player",
         "position","team","opponent","stat","target","line","odds_type",
         "proj","pick","model_pct"]
@@ -205,7 +206,73 @@ def verified_zero_snaps(root=ROOT):
         seen.add(key)
     return seen
 
-def grade_finals(history,schedule,boxes,box_problems,inactives=None,zero_snaps=None):
+def verified_full_game_scoring(root=ROOT):
+    """Only a source-attributed complete game scoring record is accepted.
+
+    Conflicting boxscore TDs/team scores or mismatched fumble attributions
+    stop grading instead of making up a zero.
+    """
+    path=Path(root)/FULL_SCORING.name
+    if not path.exists():return {}
+    data=json.loads(path.read_text(encoding="utf-8"))
+    if (data.get("season")!=2026 or data.get("week")!=9 or
+        data.get("game_id")!="2026_09_BUF_MIN" or
+        data.get("away")!="BUF" or data.get("home")!="MIN" or
+        (data.get("away_score"),data.get("home_score"))!=(23,6) or
+        data.get("verified_final") is not True):
+        raise ValueError("Unverified full NFL game scoring evidence")
+    if len(data.get("source_urls",[]))<2 or not data.get("prizepicks_scoring_reference"):
+        raise ValueError("Full NFL scoring source references missing")
+    scoring=data["verified_game_scoring"]
+    tds=scoring.get("touchdowns",[])
+    if {(r.get("player_id"),r.get("type")) for r in tds}!={
+        ("00-0040363","receiving"),("00-0037248","rushing")}:
+        raise ValueError("Unexpected verified NFL touchdown ledger")
+    for k in ("two_point_conversions","return_touchdowns","offensive_fumble_recovery_touchdowns"):
+        if scoring.get(k)!=[]:raise ValueError("Unresolved extra NFL scoring event")
+    fumbles=data["verified_fumbles_lost"]
+    if (fumbles.get("BUF",{}).get("team_lost")!=0 or
+        fumbles.get("BUF",{}).get("player_lost")!=[] or
+        fumbles.get("MIN",{}).get("team_lost")!=1 or
+        fumbles.get("MIN",{}).get("player_lost")!=[
+         {"player_id":"00-0032950","player":"Carson Wentz","lost":1}]):
+        raise ValueError("Unverified team fumble attribution")
+    return {data["game_id"]:data}
+
+def exact_fantasy_score(player,game_scoring):
+    """PrizePicks offensive full-PPR, only when all components are proven."""
+    if not game_scoring or player.get("team") not in ("BUF","MIN"):
+        return None
+    game_id=str(player.get("player_id") or "")
+    # Confirm the boxscore matches the only two final-game touchdown scorers.
+    tds=game_scoring["verified_game_scoring"]["touchdowns"]
+    rush=sum(r["player_id"]==game_id and r["type"]=="rushing" for r in tds)
+    rec=sum(r["player_id"]==game_id and r["type"]=="receiving" for r in tds)
+    if (number(player.get("rushing_tds"))!=rush or
+        number(player.get("receiving_tds"))!=rec):
+        return None
+    fields=("passing_yards","passing_tds","passing_interceptions",
+            "rushing_yards","rushing_tds","receptions",
+            "receiving_yards","receiving_tds")
+    values={k:number(player.get(k)) for k in fields}
+    if any(v is None for v in values.values()):return None
+    # Source attributes the game's only lost fumble to Carson Wentz, who is
+    # not an eligible fantasy pick in this frozen game; all others lost zero.
+    lost=1 if game_id=="00-0032950" else 0
+    return (0.04*values["passing_yards"]+4*values["passing_tds"]
+            -values["passing_interceptions"]+0.1*values["rushing_yards"]
+            +6*values["rushing_tds"]+values["receptions"]
+            +0.1*values["receiving_yards"]+6*values["receiving_tds"]-lost)
+
+def verified_zero_anytime_td(row,scoring,zero_snaps):
+    """Zero TD requires complete game scoring AND independently verified snap."""
+    key=(row["game_id"],row["player_id"])
+    game=scoring.get(row["game_id"])
+    if not game or key not in zero_snaps:return None
+    all_td_ids={x["player_id"] for x in game["verified_game_scoring"]["touchdowns"]}
+    return 0.0 if row["player_id"] not in all_td_ids else None
+
+def grade_finals(history,schedule,boxes,box_problems,inactives=None,zero_snaps=None,full_scoring=None):
     finals={g for g,s in schedule.items() if s.get("status")=="final" and
             s.get("home_score") is not None and s.get("away_score") is not None}
     expected=closing(history,finals)
@@ -213,6 +280,7 @@ def grade_finals(history,schedule,boxes,box_problems,inactives=None,zero_snaps=N
     pending=[]
     inactives=inactives or set()
     zero_snaps=zero_snaps or set()
+    full_scoring=full_scoring or {}
     for r in expected:
         out=dict(r)
         gid=r["game_id"]
@@ -237,8 +305,14 @@ def grade_finals(history,schedule,boxes,box_problems,inactives=None,zero_snaps=N
             continue
         if gid in box_problems:reason="boxscore_unverified"
         elif gid not in boxes:reason="boxscore_not_yet_published"
-        elif not p:reason="player_not_in_verified_boxscore"
-        elif r["target"]=="FPTS":reason="unsupported_exact_fantasy_scoring"
+        elif not p:
+            if r["target"]=="ANY_TD":
+                actual=verified_zero_anytime_td(r,full_scoring,zero_snaps)
+                if actual is None:reason="player_not_in_verified_boxscore"
+            else:reason="player_not_in_verified_boxscore"
+        elif r["target"]=="FPTS":
+            actual=exact_fantasy_score(p,full_scoring.get(gid))
+            if actual is None:reason="unsupported_exact_fantasy_scoring"
         elif r["target"] not in MARKET and r["target"] not in ("RUSH_REC_YDS","PASS_RUSH_YDS","ANY_TD"):
             reason="unsupported_market"
         else:
@@ -309,7 +383,7 @@ def run(root=ROOT):
                and game.get("away_score") is not None}
     frozen_final_ids={r["game_id"] for r in history if r["game_id"] in final_ids}
     expected_independent=len(closing(history,final_ids))
-    graded,pending,expected=grade_finals(history,schedule,boxscores,invalid,verified_inactives(root),verified_zero_snaps(root))
+    graded,pending,expected=grade_finals(history,schedule,boxscores,invalid,verified_inactives(root),verified_zero_snaps(root),verified_full_game_scoring(root))
     if expected!=expected_independent or expected!=len(graded)+len(pending):
         raise ValueError("NFL_FINAL_GRADE_COVERAGE_MISMATCH: no records written")
     standard=[g for g in graded if g["odds_type"]=="standard" and g["won"] in ("0","1")]
