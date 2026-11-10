@@ -40,8 +40,23 @@ def check():
                 page.locator(".pick").first.click()
                 page.locator("#detail:not(.hidden)").wait_for()
                 assert page.locator("#detail-content .hero").count()==1,"NFL player detail did not render"
+                page.locator("#back").click()
+                page.locator('[data-view="live"]').click()
+                page.locator('[data-league="NBA"]').click()
+                nba_live_games=page.locator("[data-game]").count()
+                assert nba_live_games>0,"Published NBA scoreboard games are missing from Live"
+                page.locator("[data-game]").first.click()
+                assert page.locator("#detail-content").get_by_text("Full published player box score",exact=False).count()>0
+                assert page.locator("#detail-content").get_by_text("Frozen pregame props",exact=False).count()>0
+                page.locator("#back").click()
+                page.locator('[data-league="NFL"]').click()
+                nfl_live_games=page.locator("[data-game]").count()
+                assert nfl_live_games>0,"Published NFL scoreboard games are missing from Live"
+                page.locator("[data-game]").first.click()
+                assert page.locator("#detail-content").get_by_text("Full published player box score",exact=False).count()>0
+                assert page.locator("#detail-content").get_by_text("Scoreboard",exact=True).count()>0
                 assert not errors, f"Client-side JavaScript exceptions: {errors[:5]}"
-                print(f"Version E Chromium PASS: {nba_count} NBA tracker cards, {nfl_count} NFL cards, both detail pages")
+                print(f"Version E Chromium PASS: {nba_count} NBA / {nfl_count} NFL forecast cards, {nba_live_games} NBA / {nfl_live_games} NFL live-scoreboard game cards")
             finally:
                 browser.close()
     finally:

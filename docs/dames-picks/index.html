@@ -29,7 +29,7 @@
 <script src="feeds.js"></script><script src="dames_take.js"></script><script>
 "use strict";
 const $=id=>document.getElementById(id),m=window.DamesPicksModel;
-const state={league:"NBA",mode:"board",nba:[],nfl:[],nflHealth:null,picked:null,loading:false,errors:[],selected:new Set(),updated:null,health:null};
+const state={league:"NBA",mode:"board",nba:[],nfl:[],nflHealth:null,picked:null,gamePicked:null,liveGames:[],loading:false,errors:[],selected:new Set(),updated:null,health:null};
 try{state.selected=new Set(JSON.parse(localStorage.getItem("dames-picks-bookmarks-v1")||"[]"))}catch(_){state.selected=new Set()}
 function saveBookmarks(){try{localStorage.setItem("dames-picks-bookmarks-v1",JSON.stringify([...state.selected]))}catch(_){}}
 
@@ -58,6 +58,7 @@ async function refresh(){
  state.nflHealth=health.status==="fulfilled"?health.value:null;
  if(gradedNFL.status==="fulfilled")state.nfl=m.attachNFLGrades(state.nfl,gradedNFL.value);
  const nb=nbaLive.status==="fulfilled"?nbaLive.value:null,nf=nflLive.status==="fulfilled"?nflLive.value:null;
+ state.liveGames=m.liveGames(nb,nf);
  state.nba=m.attachLive(state.nba,nb,nf);
  if(injury.status==="fulfilled")state.nba=m.attachInjuries(state.nba,injury.value);
  if(quoteArchive.status==="fulfilled")state.nba=m.includeArchivedStandard(state.nba,quoteArchive.value);
@@ -69,13 +70,14 @@ async function refresh(){
  if(health.status==="fulfilled"&&health.value.standard_settled===0)errors.push("NFL final-grade coverage unverified");
  state.errors=errors;state.updated=new Date();state.loading=false;render();
  if(state.picked){const current=rows().find(x=>m.key(x)===m.key(state.picked));if(current){state.picked=current;renderDetail()}}
+ if(state.gamePicked){const current=state.liveGames.find(x=>x.sport===state.gamePicked.sport&&x.gameId===state.gamePicked.gameId);if(current){state.gamePicked=current;renderGameDetail()}}
 
 }
 function rows(){return state.league==="NBA"?state.nba:state.nfl}
 function shown(){
  const now=Date.now(),term=$("query").value.toLowerCase().trim();let data=rows();
  if(state.mode==="board")data=data.filter(x=>timestamp(x.start)>now);
- if(state.mode==="live")data=data.filter(x=>x.live!==null&&x.live!==undefined);
+ // Game cards on the Live tab are sourced from the scoreboard independently of props.
  if(state.mode==="saved")data=data.filter(x=>state.selected.has(m.key(x)));
  if(term)data=data.filter(x=>(x.player+" "+x.team+" "+x.opponent+" "+x.stat).toLowerCase().includes(term));
  return [...data].sort((a,b)=>state.mode==="tracker"?timestamp(b.start)-timestamp(a.start):timestamp(a.start)-timestamp(b.start)||(b.chance??0)-(a.chance??0));
@@ -90,9 +92,80 @@ function render(){
  " · "+(state.health?.capture?.summary?.total_standard_markets_without_frozen_model??"—")+" NBA standard markets missing models"+
  " · "+(state.health?.forecasts?.ungraded??"—")+" AI-only forecasts still ungraded"+
  " · Live values show only fresh verified player snapshots";
+ if(state.mode==="live"){renderLiveGames();return}
  $("cards").innerHTML=items.length?items.map((p,i)=>'<button class="pick" data-id="'+escapeText(m.key(p))+'"><div class="pick-top"><span class="name">'+escapeText(p.player)+'</span><span class="grade">'+escapeText(p.quoteOnly?"NO AI":p.grade==="GRADED"?(p.hit===true?"HIT":p.hit===false?"MISS":"SETTLED"):"SAVED")+'</span></div><div class="context">'+escapeText(p.team+(p.position?" · "+p.position:"")+" · "+p.opponent+" · "+p.source+" · "+when(p.start))+'</div><div class="stat-grid"><div><small>'+escapeText(p.stat)+'</small><strong>'+fmt(p.line)+'</strong></div><div><small>Proj</small><strong>'+fmt(p.projection)+'</strong></div><div><small>Sim est.</small><strong>'+pct(p.chance)+'</strong></div><span class="chip '+(p.direction==="MORE"?"over":p.direction==="LESS"?"under":"pass")+'">'+escapeText(p.direction||"PASS")+(p.direction==="MORE"?" ↑":p.direction==="LESS"?" ↓":"")+'</span></div><div class="stampband"><span>'+escapeText(p.live?"LIVE "+fmt(p.live.actual)+" vs original line "+fmt(p.line)+" · "+p.live.gameStatus:p.quoteOnly?"Verified standard line · missing frozen AI model":p.grade==="GRADED"?"Final result verified":p.grade==="PENDING"?"Frozen pregame forecast · not graded":"Unverified")+'</span><span class="dots">●●●●●</span></div></button>').join(""):'<div class="empty">No '+escapeText(state.league)+' '+(state.mode==="board"?"upcoming frozen predictions":state.mode==="live"?"recently started records":state.mode==="saved"?"saved props":"archived forecasts")+' available from the current published feed. No sample data is substituted.</div>';
  for(const b of $("cards").querySelectorAll("[data-id]"))b.onclick=()=>open(b.dataset.id);
 }
+
+function renderLiveGames(){
+ const term=$("query").value.toLowerCase().trim();
+ const games=state.liveGames.filter(g=>g.sport===state.league&&
+  (!term||(g.game+" "+g.away+" "+g.home).toLowerCase().includes(term)));
+ const order={in:0,stale:1,final:2,scheduled:3,unknown:4};
+ games.sort((a,b)=>(order[a.state]??4)-(order[b.state]??4)||a.game.localeCompare(b.game));
+ $("cards").innerHTML=games.length?games.map(g=>{
+   const count=rows().filter(p=>p.gameId===g.gameId||p.game===g.game).length;
+   const title=g.state==="in"?"LIVE":g.state==="stale"?"STALE":g.state==="final"?"FINAL":"GAME";
+   const score=g.sport==="NFL"&&g.awayScore!==null&&g.homeScore!==null?
+    g.away+" "+fmt(g.awayScore)+" · "+g.home+" "+fmt(g.homeScore):g.game;
+   return '<button class="pick" data-game="'+escapeText(g.sport+"|"+g.gameId)+'"><div class="pick-top"><span class="name">'+escapeText(score)+'</span><span class="grade">'+title+'</span></div><div class="context">'+escapeText(g.statusText)+' · Last snapshot '+escapeText(when(g.observedAt))+'</div><div class="stampband"><span>'+g.players.length+' observed players · '+count+' saved prop records</span><span>Open game</span></div></button>'
+ }).join(""):'<div class="empty">No '+escapeText(state.league)+' game snapshots published for this view. This is a feed coverage issue, not proof there are no games.</div>';
+ for(const b of $("cards").querySelectorAll("[data-game]"))b.onclick=()=>{
+   const game=state.liveGames.find(g=>g.sport+"|"+g.gameId===b.dataset.game);
+   if(game)openGame(game);
+ };
+}
+function openGame(game){
+ state.picked=null;state.gamePicked=game;
+ $("board").classList.add("hidden");$("detail").classList.remove("hidden");
+ renderGameDetail();scrollTo({top:0,behavior:"instant"});
+}
+function renderGameDetail(){
+ const g=state.gamePicked;if(!g)return;
+ $("player").textContent=g.game;
+ $("matchup").textContent=g.sport+" · "+g.statusText+" · Last snapshot "+when(g.observedAt);
+ $("markets").innerHTML="";
+ $("bookmark").textContent="—";
+ const related=rows().filter(p=>p.gameId===g.gameId||p.game===g.game);
+ const normalize=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+ const actualFor=p=>{
+  const matches=g.players.filter(x=>x.team===p.team&&normalize(x.player)===normalize(p.player));
+  if(matches.length!==1)return null;
+  const statKey=g.sport==="NFL"?p.target:p.stat;
+  const value=matches[0].stats?.[statKey];
+  return typeof value==="number"&&Number.isFinite(value)?value:null;
+ };
+ const watched=related.map(p=>{
+  const actual=actualFor(p),text=p.direction==="MORE"?"OVER":p.direction==="LESS"?"UNDER":"NO AI";
+  // A live total crossing the line is not an official win until verified final grading.
+  const versus=actual===null?"Actual unavailable":"Actual "+fmt(actual);
+  const grade=p.grade==="GRADED"?(p.hit===true?"GRADED HIT":p.hit===false?"GRADED MISS":"GRADED"):g.state==="in"?"LIVE · NOT GRADED":g.state==="stale"?"STALE · NOT GRADED":"PENDING FINAL GRADE";
+  return '<button class="pick" data-prop="'+escapeText(m.key(p))+'"><div class="pick-top"><span class="name">'+escapeText(p.player)+" · "+escapeText(p.stat)+'</span><span class="grade">'+escapeText(grade)+'</span></div>'+
+   '<div class="context">'+escapeText(p.source)+" · "+escapeText(text)+'</div>'+
+   '<div class="stat-grid"><div><small>FROZEN LINE</small><strong>'+fmt(p.line)+'</strong></div><div><small>FROZEN PROJ</small><strong>'+fmt(p.projection)+'</strong></div><div><small>ACTUAL</small><strong>'+fmt(actual)+'</strong></div><span class="chip '+(p.direction==="MORE"?"over":p.direction==="LESS"?"under":"pass")+'">'+escapeText(p.direction||"PASS")+'</span></div>'+
+   '<div class="stampband"><span>'+escapeText(versus)+" · Saved "+escapeText(when(p.captured))+'</span><span>Details</span></div></button>';
+ }).join("");
+ const playerRows=g.players.map(p=>{
+  const fields=Object.entries(p.stats||{}).filter(([k,v])=>typeof v==="number"&&Number.isFinite(v))
+   .map(([k,v])=>k+" "+fmt(v)).join(" · ");
+  return '<div class="box-row"><span>'+escapeText(p.player)+" · "+escapeText(p.team)+'</span><strong>'+escapeText(fields||"No verified stat")+'</strong></div>';
+ }).join("");
+ const scoreboard=g.sport==="NFL"&&g.awayScore!==null&&g.homeScore!==null?
+  '<div class="box-row"><span>'+escapeText(g.away)+'</span><strong>'+fmt(g.awayScore)+'</strong></div><div class="box-row"><span>'+escapeText(g.home)+'</span><strong>'+fmt(g.homeScore)+'</strong></div>':
+  '<div class="note">Verified score not present in this published NBA feed.</div>';
+ $("detail-content").innerHTML='<section class="box"><h2>Scoreboard</h2>'+scoreboard+
+ '<div class="note">'+escapeText(g.fresh?"Current observed game snapshot":"Historical or stale snapshot — not live now")+
+ ' · '+escapeText(g.statusText)+'. Stats are observations, not verified settlement grades.</div></section>'+
+ '<section class="box"><h2>Frozen pregame props ('+related.length+')</h2>'+
+ (watched?'<div class="cards">'+watched+'</div>':'<p class="note">No frozen props saved for this game. Its scoreboard and box score remain visible.</p>')+'</section>'+
+ '<section class="box"><h2>Full published player box score ('+g.players.length+')</h2>'+
+ (playerRows||'<p class="note">No player statistics published for this game.</p>')+'</section>';
+ for(const b of $("detail-content").querySelectorAll("[data-prop]"))b.onclick=()=>{
+   const p=rows().find(x=>m.key(x)===b.dataset.prop);
+   if(p){state.gamePicked=null;state.picked=p;renderDetail()}
+ };
+}
+
 function open(id){
  const p=rows().find(x=>m.key(x)===id);if(!p)return;
  state.picked=p;$("board").classList.add("hidden");$("detail").classList.remove("hidden");renderDetail();scrollTo({top:0,behavior:"instant"});
@@ -117,7 +190,7 @@ function renderDetail(){
  '<section class="box"><h2>Season vs saved line</h2>'+(p.form?.over!==undefined?'<div class="box-row"><span>Over / Under / Push</span><strong>'+[p.form.over,p.form.under,p.form.push].map(x=>x??"—").join(" / ")+'</strong></div><div class="box-row"><span>Last 5 over / under</span><strong>'+[p.form.last5Over,p.form.last5Under].map(x=>x??"—").join(" / ")+'</strong></div><div class="note">Results are from the original NFL source’s recorded line and season games, not a recomputed current-market hit rate.</div>':'<div class="note">Original line-specific seasonal outcomes unavailable in this verified feed.</div>')+'</section>'+ '<section class="box"><h2>Original research dashboards</h2><div class="note">The original model, matchup, injury, minutes, and grading research remains accessible.</div><a href="'+(p.sport==="NBA"?"../index.html":"../nfl/index.html")+'" class="smallbtn" style="display:block;text-align:center;margin-top:12px;color:white;text-decoration:none">Open full '+escapeText(p.sport)+' dashboard</a></section>'+'<section class="take"><strong>Dame’s Take</strong><p>'+escapeText(window.DamesTake.forSlate([...state.nba,...state.nfl]).get([p.sport,p.start,p.gameId||p.game,p.playerId||p.player,p.stat,p.line,p.captured,p.source||p.provider||""].join("|"))||"No verified model lean for this line.")+'</p></section>'+
  '<section class="box"><h2>Automatic grading</h2><div class="box-row"><span>Status</span><strong>'+escapeText(p.grade)+'</strong></div><div class="box-row"><span>Actual</span><strong>'+fmt(p.actual)+'</strong></div><div class="box-row"><span>Verified source</span><strong>'+escapeText(p.gradeSource||"Pending")+'</strong></div><div class="note">Pending results do not count as losses. NFL settled market-level grading will appear after the bot publishes verified individual result records.</div></section>';
 }
-function back(){state.picked=null;$("detail").classList.add("hidden");$("board").classList.remove("hidden");render()}
+function back(){state.gamePicked=null;state.picked=null;$("detail").classList.add("hidden");$("board").classList.remove("hidden");render()}
 $("back").onclick=back;$("bookmark").onclick=()=>{const p=state.picked;if(!p)return;const k=m.key(p);state.selected.has(k)?state.selected.delete(k):state.selected.add(k);saveBookmarks();renderDetail()};
 $("refresh").onclick=refresh;$("query").oninput=render;
 for(const b of document.querySelectorAll("[data-league]"))b.onclick=()=>{state.league=b.dataset.league;document.querySelectorAll("[data-league]").forEach(x=>x.classList.toggle("active",x===b));back()};
