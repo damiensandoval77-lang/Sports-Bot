@@ -24,6 +24,19 @@ class ObservedPregameArchiveTests(unittest.TestCase):
         self.assertEqual(out["count"],1)
         self.assertEqual(out["quotes"][0]["line"],15.5)
         self.assertEqual(out["quotes"][0]["tier"],"standard")
+    def test_verified_day_ahead_standard_lines_are_not_dropped_before_tip(self):
+        # Six-hour cutoff silently lost the afternoon's genuine lines.
+        early=board(generated_at="2026-11-09T17:00:00Z",
+                    board_offers=[line(starts_at="2026-11-10T00:30:00Z",
+                                       observed_at="2026-11-09T16:55:00Z")])
+        result=build(early,now=dt.datetime(2026,11,9,17,1,tzinfo=dt.timezone.utc))
+        self.assertEqual(result["count"],1)
+        self.assertEqual(result["quotes"][0]["tier"],"standard")
+        too_early=board(generated_at="2026-11-08T17:00:00Z",
+                    board_offers=[line(starts_at="2026-11-10T00:30:00Z",
+                                       observed_at="2026-11-08T16:55:00Z")])
+        self.assertEqual(build(too_early,now=dt.datetime(2026,11,8,17,1,tzinfo=dt.timezone.utc))["count"],0)
+
     def test_later_post_tip_source_cannot_erase_old_capture(self):
         old=build(board(),now=NOW)
         newer=board(generated_at="2026-11-10T00:20:00Z",
