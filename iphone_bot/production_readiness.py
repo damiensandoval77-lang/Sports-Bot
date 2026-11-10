@@ -247,6 +247,13 @@ def check(now,files):
         browser_issues.append("NO_PUBLIC_AI_CHANCES")
     if browser.get("games_without_rendered_matches"):
         browser_issues.append("PUBLIC_GAMES_MISSING_RENDERED_PROPS")
+    # Verify every not-yet-started matchup independently. A total count of
+    # hundreds of cards is not evidence that all games render any cards.
+    rendered_by_game=browser.get("rendered_matches_by_game")
+    if upcoming and (not isinstance(rendered_by_game,dict) or
+                     any(not isinstance(rendered_by_game.get(g.get("game")),int)
+                         or rendered_by_game[g.get("game")]<1 for g in upcoming)):
+        browser_issues.append("UPCOMING_GAMES_MISSING_RENDERED_STANDARD_MATCHES")
     add("public_browser","READY" if not browser_issues else "DEGRADED",
         browser_issues,browser_age,required=bool(todays))
 
