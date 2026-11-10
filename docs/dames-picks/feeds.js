@@ -141,6 +141,66 @@ function attachNFLGrades(rows,graded){
  });
 }
 
+/* The NFL permanent frozen-price settlement archive is authoritative for
+   FINAL result cards. The newest pregame snapshot is not a history archive;
+   earlier saved line prices must stay visible after it rotates.
+   Only finalized scheduled games and unchanged pretip prices can be joined. */
+function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
+ const games=new Map((schedule?.games||[]).map(g=>[g.game_id,g]));
+ const byKey=p=>[p.gameId,p.playerId,p.stat,fmtQuote(p.line),p.captured].join("|");
+ const existing=new Map(latest.filter(p=>p.sport==="NFL").map(p=>[byKey(p),p]));
+ for(const [records,kind] of [[gradedRows,"graded"],[pendingRows,"pending"]]){
+  for(const r of records||[]){
+   const game=games.get(r.game_id);
+   const at=stamp(r.captured_at),kickoff=stamp(game?.kickoff_utc);
+   const valid=game?.status==="final"&&n(game.home_score)!==null&&
+      n(game.away_score)!==null&&Number.isFinite(at)&&Number.isFinite(kickoff)&&
+      at<kickoff&&r.odds_type==="standard"&&
+      !!r.player_id&&!!r.player&&!!r.stat&&n(r.line)!==null&&n(r.proj)!==null&&
+      ["More","Less"].includes(r.pick);
+   if(!valid)continue;
+   const settled=kind==="graded"&&String(r.grade_status||"").toLowerCase()==="graded"&&
+      n(r.actual)!==null&&(
+       ["0","1"].includes(String(r.won))||
+       (r.result==="Push"&&String(r.won)===""));
+   const waiting=kind==="pending"&&
+      !!String(r.grade_status||"").trim()&&
+      String(r.grade_status).toLowerCase()!=="graded"&&
+      n(r.actual)===null;
+   if(!settled&&!waiting)continue;
+   const key=[r.game_id,r.player_id,r.stat,fmtQuote(r.line),r.captured_at].join("|");
+   const present=existing.get(key);
+   if(present && (present.player!==r.player||present.team!==r.team||
+       present.direction!==(r.pick==="More"?"MORE":"LESS")||
+       Math.abs(present.projection-n(r.proj))>1e-5)){
+     // Never mix two distinct model forecasts just because they share a price.
+     continue;
+   }
+   const hit=settled?(r.result==="Push"?null:r.won==="1"):null;
+   const extra={grade:settled?"GRADED":"PENDING",actual:settled?n(r.actual):null,
+      hit,gradeSource:settled?"Verified NFL final player boxscore":null,
+      pendingReason:waiting?r.grade_status:null,
+      frozenSettlementArchive:true};
+   if(present){
+    existing.set(key,{...present,...extra});
+   }else{
+    const pct=n(r.model_pct);
+    const p={sport:"NFL",playerId:r.player_id,player:r.player,position:r.position||"",
+       team:r.team,opponent:r.opponent,game:r.team+" vs "+r.opponent,
+       gameId:r.game_id,start:game.kickoff_utc,stat:r.stat,target:r.target,
+       source:"PrizePicks",line:n(r.line),projection:n(r.proj),
+       direction:r.pick==="More"?"MORE":"LESS",
+       chance:pct!==null&&pct>=0&&pct<=100?pct/100:null,
+       chanceSource:"Original saved NFL model estimate, not a calibrated hit probability",
+       captured:r.captured_at,form:{season:null,l5:null,l10:null,games:null},
+       logs:[],depth:null,modelId:null,component:null,...extra};
+    existing.set(key,p);
+   }
+  }
+ }
+ return [...existing.values()];
+}
+function fmtQuote(v){return n(v)===null?"":String(n(v))}
 /* Official NBA injury labels are context only; do not retroactively alter picks. */
 function attachInjuries(rows,report){
  if(report?.status!=="OFFICIAL_NBA_REPORT_VERIFIED"||
@@ -285,5 +345,5 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
