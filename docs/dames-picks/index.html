@@ -41,12 +41,12 @@ async function getJSON(p){const r=await fetch("../"+p+"?v="+Date.now(),{cache:"n
 async function getCSV(p){const r=await fetch("../nfl/data/"+p+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("NFL "+p+" HTTP "+r.status);return m.csv(await r.text())}
 async function refresh(){
  if(state.loading)return;state.loading=true;$("status").textContent="Loading actual NBA and NFL bot outputs…";
- const [ledger,form,manifest,schedule,health,nbaLive,nflLive,gradedNFL,capture,forecastHealth,injury,quoteArchive]=await Promise.allSettled([
+ const [ledger,form,manifest,schedule,health,nbaLive,nflLive,gradedNFL,capture,forecastHealth,injury,quoteArchive,nbaSchedule]=await Promise.allSettled([
  getJSON("lagged_matchup_all_market_ledger.json"),getJSON("current_form.json"),
  getJSON("nfl/data/latest_2026.json"),getJSON("nfl/data/schedule_2026.json"),
  getJSON("nfl/data/grading_health_2026.json"),getJSON("live_player_tracking.json"),
  getJSON("nfl/data/live_2026.json"),getCSV("pp_graded_2026.csv"),
- getJSON("tonight_capture_gradeability.json"),getJSON("ai_forecast_today_grade_status.json"),getJSON("injury_context.json"),getJSON("prizepicks_pregame_line_archive.json")]);
+ getJSON("tonight_capture_gradeability.json"),getJSON("ai_forecast_today_grade_status.json"),getJSON("injury_context.json"),getJSON("prizepicks_pregame_line_archive.json"),getJSON("nba_schedule.json")]);
  const errors=[];
  if(ledger.status==="fulfilled")state.nba=m.nba(ledger.value,form.status==="fulfilled"?form.value:null);
  else errors.push("NBA frozen ledger unavailable");
@@ -58,7 +58,7 @@ async function refresh(){
  state.nflHealth=health.status==="fulfilled"?health.value:null;
  if(gradedNFL.status==="fulfilled")state.nfl=m.attachNFLGrades(state.nfl,gradedNFL.value);
  const nb=nbaLive.status==="fulfilled"?nbaLive.value:null,nf=nflLive.status==="fulfilled"?nflLive.value:null;
- state.liveGames=m.liveGames(nb,nf);
+ state.liveGames=m.gameCatalog(nb,nf,nbaSchedule.status==="fulfilled"?nbaSchedule.value:null,schedule.status==="fulfilled"?schedule.value:null);
  state.nba=m.attachLive(state.nba,nb,nf);
  if(injury.status==="fulfilled")state.nba=m.attachInjuries(state.nba,injury.value);
  if(quoteArchive.status==="fulfilled")state.nba=m.includeArchivedStandard(state.nba,quoteArchive.value);
@@ -105,8 +105,8 @@ function renderLiveGames(){
  games.sort((a,b)=>(order[a.state]??4)-(order[b.state]??4)||a.game.localeCompare(b.game));
  $("cards").innerHTML=games.length?games.map(g=>{
    const count=rows().filter(p=>p.gameId===g.gameId||p.game===g.game).length;
-   const title=g.state==="in"?"LIVE":g.state==="stale"?"STALE":g.state==="final"?"FINAL":"GAME";
-   const score=g.sport==="NFL"&&g.awayScore!==null&&g.homeScore!==null?
+   const title=g.state==="in"?"LIVE":g.state==="stale"?"STALE":g.state==="final"?"FINAL":g.state==="scheduled"?"UPCOMING":"STATUS N/A";
+   const score=g.awayScore!==null&&g.awayScore!==undefined&&g.homeScore!==null&&g.homeScore!==undefined?
     g.away+" "+fmt(g.awayScore)+" · "+g.home+" "+fmt(g.homeScore):g.game;
    return '<button class="pick" data-game="'+escapeText(g.sport+"|"+g.gameId)+'"><div class="pick-top"><span class="name">'+escapeText(score)+'</span><span class="grade">'+title+'</span></div><div class="context">'+escapeText(g.statusText)+' · Last snapshot '+escapeText(when(g.observedAt))+'</div><div class="stampband"><span>'+g.players.length+' observed players · '+count+' saved prop records</span><span>Open game</span></div></button>'
  }).join(""):'<div class="empty">No '+escapeText(state.league)+' game snapshots published for this view. This is a feed coverage issue, not proof there are no games.</div>';
@@ -150,9 +150,9 @@ function renderGameDetail(){
    .map(([k,v])=>k+" "+fmt(v)).join(" · ");
   return '<div class="box-row"><span>'+escapeText(p.player)+" · "+escapeText(p.team)+'</span><strong>'+escapeText(fields||"No verified stat")+'</strong></div>';
  }).join("");
- const scoreboard=g.sport==="NFL"&&g.awayScore!==null&&g.homeScore!==null?
+ const scoreboard=g.awayScore!==null&&g.awayScore!==undefined&&g.homeScore!==null&&g.homeScore!==undefined?
   '<div class="box-row"><span>'+escapeText(g.away)+'</span><strong>'+fmt(g.awayScore)+'</strong></div><div class="box-row"><span>'+escapeText(g.home)+'</span><strong>'+fmt(g.homeScore)+'</strong></div>':
-  '<div class="note">Verified score not present in this published NBA feed.</div>';
+  '<div class="note">Verified score unavailable in this published game feed.</div>';
  $("detail-content").innerHTML='<section class="box"><h2>Scoreboard</h2>'+scoreboard+
  '<div class="note">'+escapeText(g.fresh?"Current observed game snapshot":"Historical or stale snapshot — not live now")+
  ' · '+escapeText(g.statusText)+'. Stats are observations, not verified settlement grades.</div></section>'+
