@@ -203,8 +203,9 @@ async function verify(browser, name, viewport) {
   // The local source test is authoritative until the new Pages build deploys.
   if(!isLive||standardFilterPublished){
     await page.evaluate(()=>{state.live=null;render()});
-    await page.locator('details[data-livegame="'+tracker.game+'"] summary').click();
-    detail=await page.locator('details[data-livegame="'+tracker.game+'"]').innerText();
+    const expanded=page.locator('details[data-livegame="'+tracker.game+'"]');
+    if(!(await expanded.evaluate(el=>el.open)))await expanded.locator('summary').click();
+    detail=await expanded.innerText();
     assert(detail.includes(tracker.line)&&detail.includes('Live feed unavailable'),
       name+' unavailable feed incorrectly hides previously frozen props');
   }
