@@ -258,7 +258,7 @@ test("Real published scoreboard game count is independent of model records",()=>
  const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(page.includes("renderLiveGames()"));
  assert.ok(page.includes("function openGame(game)"));
- assert.ok(page.includes("No saved props found. The game remains visible independently."));
+ assert.ok(page.includes("No frozen props saved for this game. Its scoreboard and box score remain visible."));
 });
 
 test("Every game detail exposes original locked model, observed actual, ungraded state and full box score",()=>{
