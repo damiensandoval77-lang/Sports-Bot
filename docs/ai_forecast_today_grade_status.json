@@ -1,42 +1,42 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-10T03:51:04.157796+00:00",
+  "generated_at": "2026-11-10T04:10:02.389293+00:00",
   "game_date_eastern": "2026-11-09",
   "recorded_pregame_forecasts": 756,
-  "graded": 372,
+  "graded": 456,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 372,
-  "ungraded": 384,
-  "new_grades": 0,
+  "accounted_for": 456,
+  "ungraded": 300,
+  "new_grades": 84,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 93,
-      "mae": 5.132,
-      "mean_signed_error": -0.324
+      "graded": 114,
+      "mae": 5.079,
+      "mean_signed_error": 0.154
     },
     "REB": {
-      "graded": 93,
-      "mae": 2.103,
-      "mean_signed_error": 0.576
+      "graded": 114,
+      "mae": 2.187,
+      "mean_signed_error": 0.559
     },
     "AST": {
-      "graded": 93,
-      "mae": 1.461,
-      "mean_signed_error": -0.109
+      "graded": 114,
+      "mae": 1.478,
+      "mean_signed_error": 0.017
     },
     "PRA": {
-      "graded": 93,
-      "mae": 6.753,
-      "mean_signed_error": 0.146
+      "graded": 114,
+      "mae": 6.846,
+      "mean_signed_error": 0.737
     }
   },
   "ungraded_by_game": {
     "Cleveland Cavaliers @ Charlotte Hornets": 16,
-    "Denver Nuggets @ Houston Rockets": 96,
+    "Denver Nuggets @ Houston Rockets": 12,
     "Indiana Pacers @ Dallas Mavericks": 32,
     "Los Angeles Lakers @ Atlanta Hawks": 24,
     "Memphis Grizzlies @ Toronto Raptors": 16,
@@ -53,30 +53,9 @@
       "Sam Merrill"
     ],
     "Denver Nuggets @ Houston Rockets": [
-      "Aaron Gordon",
-      "Alperen Sengun",
-      "Amen Thompson",
-      "Bogdan Bogdanovi\u0107",
-      "Bruce Thornton",
-      "Bryce Hopkins",
-      "Cameron Johnson",
-      "Christian Braun",
       "Clint Capela",
-      "DeMar DeRozan",
-      "Fred VanVleet",
-      "Isaiah Crawford",
-      "Jabari Smith Jr.",
       "Jae'Sean Tate",
-      "Jamal Murray",
-      "Kevin Durant",
-      "Marcus Smart",
-      "Marvin Bagley III",
-      "Nikola Joki\u0107",
-      "Oscar Tshiebwe",
-      "Reed Sheppard",
-      "Tari Eason",
-      "Trevon Brazile",
-      "Tyus Jones"
+      "Oscar Tshiebwe"
     ],
     "Indiana Pacers @ Dallas Mavericks": [
       "Jalen Slawson",
@@ -159,15 +138,14 @@
       "Tolu Smith"
     ]
   },
-  "ungraded_distinct_player_markets": 384,
+  "ungraded_distinct_player_markets": 300,
   "final_feed": {
     "pending_matchups": 12,
-    "final_nba_games": 6,
+    "final_nba_games": 7,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 131,
+    "retrieved_player_lines": 155,
     "errors": [
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "NBA schedule unavailable: All independent official NBA endpoints failed: TimeoutError",
       "NBA schedule unavailable: All independent official NBA endpoints failed: TimeoutError",
@@ -175,17 +153,17 @@
       "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 3,
+    "cached_official_id_candidates": 2,
     "final_cached_id_nba_games": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 129,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 153,
+    "newly_retrieved_verified_rows": 24,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 96,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 288
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 108,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 192
     },
     "players": [
       {
@@ -301,676 +279,88 @@
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Johnson",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Johnson",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Johnson",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cameron Johnson",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Clint Capela",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Clint Capela",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Clint Capela",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Clint Capela",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jae'Sean Tate",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jae'Sean Tate",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jae'Sean Tate",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jae'Sean Tate",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Oscar Tshiebwe",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Oscar Tshiebwe",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Oscar Tshiebwe",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Oscar Tshiebwe",
         "team": "HOU",
         "game": "Denver Nuggets @ Houston Rockets",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Houston Rockets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jalen Slawson",
