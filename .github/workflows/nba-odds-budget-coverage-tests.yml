@@ -53,7 +53,7 @@ jobs:
           trained=Path('.github/workflows/nba-trained-ai-board.yml').read_text()
           assert "cron: '12 18,21 * * *'" in market
           assert "cron: '17 18,21 * * *'" in compare
-          assert "cron: '41 18,21 * * *'" in trained
+          assert "cron: '41 0,18,21,23 * * *'" in trained
           assert 'python -u iphone_bot/fetch_props.py' in market
           assert 'python -u iphone_bot/fetch_props.py' not in compare
           assert 'python -u iphone_bot/fetch_props.py' not in trained
