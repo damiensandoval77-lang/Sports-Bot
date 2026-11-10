@@ -56,7 +56,7 @@ def freeze(prior,quotes,models,schedule,now=None,seed=None):
     for r in models.get("predictions",[]):
         game=games.get(r.get("game"))
         start=moment(r.get("start"));captured=moment(r.get("captured_at"))
-        if not game or r.get("is_pregame_prediction") is not True or
+        if (not game or r.get("is_pregame_prediction") is not True or
            r.get("line") is not None or not r.get("player_id") or
            r.get("stat") not in ("PTS","REB","AST","PRA") or
            r.get("team") not in {game.get("home_abbreviation"),game.get("away_abbreviation")} or
@@ -71,7 +71,7 @@ def freeze(prior,quotes,models,schedule,now=None,seed=None):
     for q in quotes.get("quotes",[]):
         game=games.get(q.get("game"))
         start=moment(q.get("starts_at"));observed=moment(q.get("observed_at"));generated=moment(q.get("source_generated_at"))
-        if not game or q.get("source")!="independent_prizepicksapi_com" or q.get("is_demo") is not False or
+        if (not game or q.get("source")!="independent_prizepicksapi_com" or q.get("is_demo") is not False or
            q.get("tier")!="standard" or q.get("more_tier")!="standard" or q.get("less_tier")!="standard" or
            q.get("team") not in {game.get("home_abbreviation"),game.get("away_abbreviation")} or
            not start or not observed or not generated or not (observed<=generated<=now<start) or
