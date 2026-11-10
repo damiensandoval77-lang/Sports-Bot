@@ -1,6 +1,6 @@
 import datetime as dt
 import unittest
-from iphone_bot.fetch_prizepicks import clean,match,publish,quota_guard
+from iphone_bot.fetch_prizepicks import clean,match,publish,quota_guard,standard_query
 
 NOW=dt.datetime(2026,11,6,19,0,tzinfo=dt.timezone.utc)
 START="2026-11-07T00:30:00Z"
@@ -18,6 +18,21 @@ COMP={"player":"Sample Player","team":"BOS","game":"Boston Celtics @ Miami Heat"
       "start":START,"stat":"PTS","projection":22.8,"combined_projection":24.0}
 
 class PrizePicksTests(unittest.TestCase):
+    def test_standard_provider_server_filter_limits_all_paid_page_scopes(self):
+        page=standard_query()
+        self.assertEqual(page["tier"],"standard")
+        self.assertEqual(page["league"],"NBA")
+        self.assertEqual(page["status"],"active")
+        self.assertEqual(page["view"],"compact")
+        self.assertEqual(page["limit"],1000)
+        cursor=standard_query(cursor="pp_next")
+        self.assertEqual(cursor["tier"],"standard")
+        self.assertEqual(cursor["cursor"],"pp_next")
+        targeted=standard_query(search="OKC",limit=200)
+        self.assertEqual(targeted["tier"],"standard")
+        self.assertEqual(targeted["search"],"OKC")
+        with self.assertRaises(ValueError):standard_query(limit=1001)
+
     def test_zero_balance_blocks_scheduled_paid_call(self):
         old={"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
              "generated_at":"2026-11-08T01:37:00Z",
