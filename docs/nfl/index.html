@@ -47,10 +47,10 @@
 <div id="healthstrip" class="health-strip" aria-live="polite"></div>
 <div id="notice" class="notice">Loading the latest captured NFL predictions. Confidence is an uncalibrated model estimate, not an actual hit rate.</div>
 <section id="board"><div class="games" id="games"></div><div class="filters"><input id="search" placeholder="Search player or team"><select id="statfilter"><option value="">All markets</option></select><select id="kind"><option value="standard">Standard</option><option value="">All lines</option><option value="goblin">Goblin</option><option value="demon">Demon</option></select></div><div class="bar"><h2>Pregame NFL props</h2><small id="freshness">Latest snapshot</small></div><div class="board" id="cards"></div></section>
-<section id="live" class="hidden"><h2>Matchups & Final Box Scores</h2><p class="muted">Open any completed matchup to view final player stats. Box scores load independently of PrizePicks lines. In-progress games do not display estimated final stats.</p><div id="livegames" class="board"></div></section>
+<section id="live" class="hidden"><h2>Matchups & Final Box Scores</h2><p class="muted">Open any completed matchup to view final player stats. Box scores load independently of PrizePicks lines. Live in-game box scores refresh automatically; final grading remains separately verified.</p><div id="livegames" class="board"></div></section>
 <section id="graded" class="hidden"><h2>Graded NFL lines</h2><p class="muted">Results use archived prices captured before kickoff, not backfilled projections. Only standard lines contribute to the published standard hit rate.</p><p id="gradehealth" class="notice">Checking frozen prediction history and grading coverage…</p><div id="grades" class="board"></div></section>
 </main><script>
-const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board",boxManifest:null,boxWeeks:{},boxHealth:null,gradeHealth:null};
+const state={lines:[],grades:[],schedule:[],week:"",game:"",tab:"board",boxManifest:null,boxWeeks:{},boxHealth:null,gradeHealth:null,frozen:[],frozenReady:false,live:null,liveError:""};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function parseCSV(text){const rows=[];let r=[],v="",quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){r.push(v);v=""}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;r.push(v);if(r.some(x=>x!==""))rows.push(r);r=[];v=""}else v+=c}if(v||r.length){r.push(v);rows.push(r)}if(!rows.length)return[];const cols=rows.shift();return rows.map(row=>Object.fromEntries(cols.map((c,i)=>[c,row[i]??""])));}
 async function getCSV(url){const response=await fetch(url+"?t="+Math.floor(Date.now()/60000),{cache:"no-store"});if(!response.ok)throw Error(response.status+" "+url);return parseCSV(await response.text());}
@@ -116,10 +116,87 @@ async function revealBoxscore(el){
   console.error("NFL boxscore:",error);
  }
 }
+// In-game stats are provisional; only archived pre-kickoff lines are immutable.
+const cleanName=s=>String(s||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+function gameFrozenLines(id){
+ const game=state.schedule.find(g=>g.game_id===id);
+ if(!game)return[];
+ const cutoff=Date.parse(game.kickoff_utc);
+ const eligible=state.frozen.filter(r=>r.game_id===id&&Date.parse(r.captured_at)<cutoff);
+ const latest=new Map();
+ for(const r of eligible){
+   // Keep distinct alternative payouts; closing standard lines replace older standard quotes.
+   const key=[r.player_id,r.target,r.odds_type==="standard"?"standard":r.odds_type+"|"+r.line].join("|");
+   if(!latest.has(key)||r.captured_at>latest.get(key).captured_at)latest.set(key,r);
+ }
+ return [...latest.values()].sort((a,b)=>a.player.localeCompare(b.player)||a.target.localeCompare(b.target));
+}
+function liveGame(id){return (state.live?.games||[]).find(g=>g.game_id===id);}
+function liveActual(row,player){
+ const stats=player?.stats||{};
+ // Exact missing components MUST remain unavailable, never estimated as 0.
+ const target=row.target;
+ return Object.prototype.hasOwnProperty.call(stats,target)&&Number.isFinite(Number(stats[target]))?Number(stats[target]):null;
+}
+function livePace(actual,game){
+ const period=Number(game?.period),clock=String(game?.clock||"");
+ const m=clock.match(/^([0-9]{1,2}):([0-9]{2})$/);
+ if(!m||!Number.isFinite(period)||period<1||period>4)return null;
+ const secondsRemaining=Number(m[1])*60+Number(m[2]);
+ const elapsed=(period-1)*900+(900-secondsRemaining);
+ if(elapsed<180||elapsed>3600)return null;
+ return actual*3600/elapsed;
+}
+function livePlayerFor(row,players){
+ const matches=players.filter(p=>p.team===row.team&&cleanName(p.player)===cleanName(row.player));
+ return matches.length===1?matches[0]:null; // Never resolve a name collision by guessing.
+}
+function liveComparisonRows(game,rows){
+ const source=liveGame(game.game_id);
+ if(!rows.length)return '<div class="scorewait">No verified pre-kickoff PrizePicks quotes available for this game.</div>';
+ const players=source?.players||[];
+ const MAX=180;
+ const notice=!source?'Live feed unavailable; saved lines remain visible.':
+  !players.length?'Player stats awaiting publication; saved lines remain visible.':'Live ESPN box-score statistics are provisional.';
+ return '<div class="scorewrap"><strong>Frozen line vs live stats · '+esc(source?.status_text||"Feed pending")+'</strong>'+
+  '<small>'+esc(notice)+' Final grades use independently verified nflverse stats. Feed updated '+esc(state.live?.checked_at||"unavailable")+'.</small>'+
+  '<div class="boxscore-scroll"><table class="scoretable"><thead><tr><th>Player / stat</th><th>Frozen</th><th>AI</th><th>Live</th><th>Pace</th><th>Pick</th></tr></thead><tbody>'+
+  rows.slice(0,MAX).map(r=>{
+    const p=livePlayerFor(r,players),actual=liveActual(r,p);
+    const pace=actual===null?null:livePace(actual,source);
+    return '<tr><td>'+esc(r.player)+'<small> '+esc(r.stat)+' · '+esc(r.odds_type)+'</small></td>'+
+     '<td>'+esc(r.line)+'</td><td>'+esc(Number.isFinite(Number(r.proj))?Number(r.proj).toFixed(1):"—")+'</td>'+
+     '<td>'+esc(actual===null?"—":actual)+'</td><td>'+esc(pace===null?"—":pace.toFixed(1))+'</td>'+
+     '<td>'+esc(r.pick)+'</td></tr>';
+  }).join("")+'</tbody></table></div>'+
+  (rows.length>MAX?'<small>First '+MAX+' frozen markets shown; all original records remain archived.</small>':"")+
+  '<small>Estimated pace extrapolates current production, not a prediction or settlement. — means missing or unmatched live data.</small></div>';
+}
+async function loadFrozenAndLive(){
+ if(!state.frozenReady){
+   try{
+     state.frozen=await getCSV("./data/frozen_pick_history_2026.csv");
+     state.frozenReady=true;
+   }catch(err){state.liveError="Frozen archive unavailable";console.warn(state.liveError,err);}
+ }
+ try{
+   const response=await fetch("./data/live_2026.json?t="+Date.now(),{cache:"no-store"});
+   if(!response.ok)throw Error("Live snapshot HTTP "+response.status);
+   const live=await response.json();
+   if(live.season!==2026||!Array.isArray(live.games))throw Error("Invalid live snapshot");
+   const age=Date.now()-Date.parse(live.checked_at);
+   if(!Number.isFinite(age)||age< -60000||age>20*60000)throw Error("Live stats older than 20 minutes");
+   state.live=live;state.liveError=live.status!=="ok"?"Live feed partially available":"";
+ }catch(error){state.live=null;state.liveError="Live player stats unavailable · "+error.message;}
+ render();
+}
 function matchupCard(g,lines){
- const count=lines.filter(x=>x.game_id===g.game_id).length;
+ const count=gameFrozenLines(g.game_id).length||lines.filter(x=>x.game_id===g.game_id).length;
  const finished=g.status==="final";
- const status=finished?"Final "+g.away_score+"–"+g.home_score:g.status==="started_unconfirmed"?"Started · score unverified":"Scheduled";
+ const onAir=liveGame(g.game_id);
+ const status=onAir?.status==="in"?"LIVE "+(onAir.status_text||"In progress"):
+  onAir?.status==="post"?"Final "+(onAir.away_score??"—")+"–"+(onAir.home_score??"—"):
+  finished?"Final "+g.away_score+"–"+g.home_score:g.status==="started_unconfirmed"?"Started · score unverified":"Scheduled";
  const date=new Date(g.kickoff_utc);
  const retry=state.boxHealth?.games_to_retry?.find(x=>x.game_id===g.game_id);
  const verified=state.boxHealth?.status&&finished&&!retry&&state.boxManifest?.game_ids?.includes(g.game_id);
@@ -131,8 +208,8 @@ function matchupCard(g,lines){
  return '<div class="prop mainline"><div class="head"><strong>'+esc(g.away+' @ '+g.home)+'</strong><span class="tag">'+esc(status)+'</span></div>'+
  '<small>Week '+esc(g.week)+' · '+esc(Number.isFinite(date.getTime())?date.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):g.kickoff_utc)+'</small>'+
  '<p class="muted">'+(count?count+' frozen PrizePicks prop lines':'No PrizePicks props captured — matchup still available')+'</p>'+boxStatus+
- (finished?'<details class="matchdetail" data-boxgame="'+esc(g.game_id)+'" data-week="'+esc(g.week)+'"><summary>View final box score & player stats</summary><div class="box-content"><div class="scorewait">Loading verified final stats…</div></div></details>':
-  '<small>Final player stats will appear after the game is completed and the feed updates.</small>')+'</div>';
+ '<details class="matchdetail" data-livegame="'+esc(g.game_id)+'"><summary>'+esc(finished?"Frozen props & live/final comparison":"Live tracker · frozen line vs player stats")+'</summary><div class="box-content">'+liveComparisonRows(g,gameFrozenLines(g.game_id))+'</div></details>'+
+ (finished?'<details class="matchdetail" data-boxgame="'+esc(g.game_id)+'" data-week="'+esc(g.week)+'"><summary>View independently verified final box score</summary><div class="box-content"><div class="scorewait">Loading verified final stats…</div></div></details>':"")+'</div>';
 }
 
 function seasonRecord(r){
@@ -198,7 +275,7 @@ function render(){
  document.querySelectorAll("details[data-boxgame]").forEach(el=>el.addEventListener("toggle",()=>{if(el.open)revealBoxscore(el)}));
  document.getElementById("grades").innerHTML=state.grades.length?state.grades.slice(0,200).map(r=>'<article class="prop mainline"><div class="head"><strong>'+esc(r.player)+'</strong><span class="tag '+(Number(r.won)===1?"over":"under")+'">'+esc(r.result||"PENDING")+'</span></div><small>'+esc(r.stat)+' · '+esc(r.team)+' vs '+esc(r.opponent)+'</small><div class="vals"><div class="val"><b>'+esc(r.line)+'</b><small>Frozen line</small></div><div class="val"><b>'+esc(r.actual)+'</b><small>Actual</small></div><div class="val"><b>'+esc(r.pick)+'</b><small>Pick</small></div></div></article>').join(""):'<div class="empty">No real completed-game grading published yet. This does not mean all predictions hit or missed.</div>';
 }
-document.querySelectorAll(".tab").forEach(button=>button.onclick=()=>{state.tab=button.dataset.tab;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===button));for(const id of ["board","live","graded"])document.getElementById(id).classList.toggle("hidden",id!==state.tab)});
+document.querySelectorAll(".tab").forEach(button=>button.onclick=()=>{state.tab=button.dataset.tab;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===button));for(const id of ["board","live","graded"])document.getElementById(id).classList.toggle("hidden",id!==state.tab);if(state.tab==="live")loadFrozenAndLive()});
 document.getElementById("weekfilter").addEventListener("change",e=>{state.week=e.target.value;state.game="";render()});
 for(const id of ["search","statfilter","kind"])document.getElementById(id).addEventListener(id==="search"?"input":"change",render);
 async function loadSeasonSchedule(){
@@ -350,4 +427,7 @@ async function init(){
  render();
 }
 init();
+// Poll snapshot metadata and player statistics while the Matchups tab is open.
+// Hosting refreshes independently, typically each five minutes on game nights.
+setInterval(()=>{if(state.tab==="live")loadFrozenAndLive()},30000);
 </script></body></html>

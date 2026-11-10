@@ -108,6 +108,33 @@ async function verify(browser, name, viewport) {
     name+' horizontal overflow detected: '+JSON.stringify(metrics));
   await page.locator('button[data-tab="live"]').click();
   assert(await page.locator('#live').isVisible(),name+' matchups tab broken');
+  await page.waitForFunction(()=>state.frozenReady,{timeout:15000}).catch(()=>{});
+  // Direct UI fixture: a saved pregame quote stays visible beside live stats
+  // even if the public network live feed is unavailable.
+  const tracker=await page.evaluate(()=>{
+    const chosen=state.lines.find(r=>r.game_id===state.game && Number.isFinite(Number(r.line)));
+    if(!chosen)return null;
+    state.frozen=[chosen];state.frozenReady=true;
+    state.live={season:2026,checked_at:new Date().toISOString(),games:[{
+      game_id:chosen.game_id,status:'in',status_text:'Q1 10:00',period:1,clock:'10:00',
+      away:chosen.opponent,home:chosen.team,
+      players:[{player:chosen.player,team:chosen.team,stats:{[chosen.target]:3}}]
+    }]};
+    render();
+    return {game:chosen.game_id,line:chosen.line,player:chosen.player};
+  });
+  assert(tracker,name+' missing fixture-compatible saved line');
+  const liveDetail=page.locator('details[data-livegame="'+tracker.game+'"]');
+  assert(await liveDetail.count()===1,name+' missing live comparison panel');
+  await liveDetail.locator('summary').click();
+  let detail=await liveDetail.innerText();
+  assert(detail.includes('Frozen line vs live stats')&&detail.includes(tracker.player)&&
+    detail.includes(tracker.line),name+' frozen line / live actual not rendered');
+  await page.evaluate(()=>{state.live=null;render()});
+  await page.locator('details[data-livegame="'+tracker.game+'"] summary').click();
+  detail=await page.locator('details[data-livegame="'+tracker.game+'"]').innerText();
+  assert(detail.includes(tracker.line)&&detail.includes('Live feed unavailable'),
+    name+' unavailable feed incorrectly hides previously frozen props');
   await page.locator('button[data-tab="graded"]').click();
   assert(await page.locator('#graded').isVisible(),name+' graded tab broken');
   assert.equal(failures.length,0,name+' browser script errors: '+failures.join(' / '));
