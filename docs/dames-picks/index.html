@@ -84,7 +84,7 @@ async function refresh(){
 function rows(){return state.league==="NBA"?state.nba:state.nfl}
 function shown(){
  const now=Date.now(),term=$("query").value.toLowerCase().trim();let data=rows();
- if(state.mode==="board")data=data.filter(x=>timestamp(x.start)>now);
+ if(state.mode==="board")data=data.filter(x=>timestamp(x.start)>now&&!x.quoteOnly&&x.projection!==null&&x.direction!==null);
  // Game cards on the Live tab are sourced from the scoreboard independently of props.
  if(state.mode==="saved")data=data.filter(x=>state.selected.has(m.key(x)));
  if(term)data=data.filter(x=>(x.player+" "+x.team+" "+x.opponent+" "+x.stat).toLowerCase().includes(term));

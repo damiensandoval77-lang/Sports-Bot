@@ -375,3 +375,10 @@ test("Dame's Take immediately follows Dame's projection in expanded player detai
  assert.ok(!between.includes("<h2>Last games</h2>")&&!between.includes("<h2>Matchup</h2>"));
  assert.equal(html.split("<strong>Dame’s Take</strong>").length-1,1);
 });
+
+test("Unified top-picks board excludes quote-only records without a frozen model",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('timestamp(x.start)>now&&!x.quoteOnly&&x.projection!==null&&x.direction!==null'));
+ assert.ok(html.includes('state.mode==="tracker"'));
+ assert.ok(html.includes('No sample data is substituted'));
+});
