@@ -8,6 +8,7 @@ import json
 import os
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 from urllib.request import Request, urlopen
 
 ROOT=Path(__file__).resolve().parents[1]
