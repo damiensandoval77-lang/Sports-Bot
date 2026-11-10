@@ -7,6 +7,7 @@ import gzip
 import json
 import re
 import urllib.request
+import time
 from datetime import datetime,timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -17,11 +18,33 @@ ET=ZoneInfo("America/New_York")
 BASE="https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
 
 def get(path):
+    """Require actual ESPN JSON; retry transient HTML/empty responses.
+
+    On continued failure callers must preserve saved observations. Never
+    reinterpret an HTML interstitial as an empty active scoreboard.
+    """
     req=urllib.request.Request(BASE+path,headers={
         "User-Agent":"Mozilla/5.0",
         "Accept":"application/json"})
-    with urllib.request.urlopen(req,timeout=18) as response:
-        return json.load(response)
+    last_error=None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req,timeout=18) as response:
+                raw=response.read(4_000_001)
+                content_type=response.headers.get("Content-Type","").lower()
+            if len(raw)>4_000_000:
+                raise ValueError("ESPN_JSON_RESPONSE_TOO_LARGE")
+            if not raw or "html" in content_type or raw.lstrip().startswith(b"<"):
+                raise ValueError("ESPN_RETURNED_NON_JSON")
+            parsed=json.loads(raw)
+            if not isinstance(parsed,dict):
+                raise ValueError("ESPN_RESPONSE_NOT_OBJECT")
+            return parsed
+        except (OSError,ValueError,json.JSONDecodeError) as exc:
+            last_error=exc
+            if attempt<2:time.sleep(0.5*(attempt+1))
+    raise RuntimeError("ESPN_JSON_FETCH_FAILED after 3 attempts: "+
+                       type(last_error).__name__+"; prior observations preserved") from last_error
 
 def matchup(competitors):
     if not isinstance(competitors,list):return None
