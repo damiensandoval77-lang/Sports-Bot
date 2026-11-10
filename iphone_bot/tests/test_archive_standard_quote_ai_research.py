@@ -36,7 +36,7 @@ class ResearchReceiptTests(unittest.TestCase):
     def test_replay_and_outage_do_not_delete_history(self):
         initial=merge(incoming(sample()),now=NOW)
         replay=merge(incoming(sample()),initial,now=NOW)
-        self.assertEqual(replay["new_records"],0)
+        self.assertEqual(replay,initial)  # Unchanged archive must be byte-stable
         lost=merge({"status":"STALE_OR_UNVERIFIED_SOURCE","comparisons":[]},replay,now=NOW)
         self.assertEqual(lost["count"],1)
         self.assertEqual(lost["records"][0]["frozen_at"],initial["records"][0]["frozen_at"])
@@ -71,7 +71,7 @@ class ResearchReceiptTests(unittest.TestCase):
                        observed_at="2026-11-10T17:30:00+00:00")
         updated=merge(incoming(changed),original,now=NOW)
         self.assertEqual(updated["count"],1)
-        self.assertEqual(updated["new_records"],0)
+        self.assertEqual(updated,original)  # No new commit on an unchanged price
         self.assertEqual(updated["records"][0]["projection"],26.2)
         self.assertEqual(updated["records"][0]["provider_projection_id"],"pp-1")
 
