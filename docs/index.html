@@ -364,6 +364,7 @@ let gameMoneylines=null;
 let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastUpdated=null;
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
+let verifiedHistoricalProviderSnapshot=null;
 let newMultimarketFeed=null,newMarketIndex=new Map(),standardLineCards=[];
 let underdogNews=null,officialInjuryFeed=null,freeOfficialWatch=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
@@ -2260,6 +2261,12 @@ async function refreshSelectedLiveTracker(){
    const identity=diagnostic.matched;
    const actual=identity?.stats?.[p.stat]??null;
    const hasLine=p.line!=null&&Number.isFinite(Number(p.line));
+   // Show a separately verified pretip provider quote without rewriting
+   // the frozen AI-only forecast into a supposed line-backed wager.
+   const historicalQuote=hasLine?null:
+     helper.observedPregameLine(p,verifiedHistoricalProviderSnapshot);
+   const observedLine=historicalQuote?
+     fmt(historicalQuote.line)+" ("+historicalQuote.tier.toUpperCase()+")":null;
    const outcome=hasLine?helper.evaluate(p,actual,event):null;
    const fraction=helper.gameFraction(event);
    const pace=hasLine?outcome.pace:
@@ -2274,12 +2281,15 @@ async function refreshSelectedLiveTracker(){
    const card=node("article","live-prop-card");
    card.append(node("div","live-name",p.player),
      node("div","live-stat",p.team+" · "+p.stat+
-       (hasLine?" · Model lean "+outcome.side:" · AI estimate only · no saved line")));
+       (hasLine?" · Model lean "+outcome.side:
+        historicalQuote?" · AI estimate · separately observed pretip line":
+        " · AI estimate only · no saved line")));
    const values=node("div","live-prop-values");
    for(const [caption,value] of [
      ["ACTUAL",actual===null?"—":String(actual)],
      ["AI PROJECTION",fmt(Number(p.combined_projection??p.projection))],
-     ["PREGAME LINE",hasLine?fmt(Number(p.line)):"Not available"]]){
+     ["PREGAME LINE",hasLine?fmt(Number(p.line)):
+       observedLine||"Not captured"]]){
     const item=node("div","");item.append(node("span","",caption),node("b","",value));
     values.append(item);
    }
@@ -2291,7 +2301,12 @@ async function refreshSelectedLiveTracker(){
      " · compared with pregame AI "+fmt(Number(p.combined_projection??p.projection))+
      " · not a model refresh"));
    if(!hasLine)card.append(node("div","live-prop-foot",
-     "No verified pregame PrizePicks line; this is a projection-pace comparison, not a graded betting pick."));
+     historicalQuote?
+       "PrizePicks "+historicalQuote.tier.toUpperCase()+" line independently observed at "+
+       new Date(historicalQuote.observed_at).toLocaleTimeString([],{
+         hour:"numeric",minute:"2-digit"})+
+       " before tipoff. Not frozen with this AI forecast; no saved betting pick, wager grade, or probability.":
+       "No verified pregame PrizePicks line captured for this market; this is a projection-pace comparison, not a graded betting pick."));
    if(actual===null){
     const reason=diagnostic.reason==="TEAM_MISMATCH"?
      "Player found in ESPN boxscore under another team; saved matchup/team needs review.":
@@ -3134,6 +3149,9 @@ injuryMinutesValidation=im.status==="fulfilled"&&im.value.status==="PREGAME_LOCK
 minutesV2Published=mv.status==="fulfilled"&&mv.value?.is_research_only===true?mv.value:null;
 historicalMinutes=hist.status==="fulfilled"&&hist.value?.source==="ARCHIVED_REGULAR_SEASON_PLAYER_GAME_LOGS"?hist.value:null;
 shotValidation=shot.status==="fulfilled"&&shot.value?.shot_location_detail==="TWO_POINT_VERSUS_THREE_POINT_ONLY"?shot.value:null;
+verifiedHistoricalProviderSnapshot=pp.status==="fulfilled"&&
+ pp.value?.status==="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"&&
+ pp.value?.source==="independent_prizepicksapi_com"?pp.value:null;
 ppState=pp.status==="fulfilled"?pp.value.status:"UNAVAILABLE";
 ppStamp=pp.status==="fulfilled"?pp.value.generated_at:null;
 ppErrorCode=pp.status==="fulfilled"?pp.value.provider_error_code:null;
