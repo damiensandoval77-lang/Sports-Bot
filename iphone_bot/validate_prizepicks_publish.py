@@ -45,6 +45,15 @@ def validate(raw,site,model,now=None,max_source_age_minutes=360):
     exported_ids=[str(x.get("id")) for x in board if isinstance(x,dict)]
     if sorted(source_ids)!=sorted(exported_ids) or len(exported_ids)!=len(board):
         issues.append("OFFER_IDENTITIES_CHANGED_OR_MISSING")
+    source_by_id={str(x.get("id")):x for x in valid}
+    for row in board:
+        if not isinstance(row,dict):
+            continue
+        original_row=source_by_id.get(str(row.get("id")))
+        if original_row is None or any(row.get(key)!=original_row.get(key) for key in
+                ("player","team","game","stat","line","starts_at","observed_at","more_tier","less_tier","source","is_demo")):
+            issues.append("EXPORTED_OFFER_DIFFERS_FROM_VERIFIED_SOURCE")
+            break
     for row in board:
         if not isinstance(row,dict) or row.get("is_demo") is not False or row.get("source")!="independent_prizepicksapi_com":
             issues.append("UNVERIFIED_EXPORTED_OFFER")
