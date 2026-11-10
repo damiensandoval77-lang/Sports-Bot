@@ -48,9 +48,9 @@ def assess(schedule,archive,ledger,now=None):
         scoped[g["game"]]=g
     forecast={}
     for p in archive.get("predictions",[]):
-        if not isinstance(p,dict) or p.get("game") not in scoped or
-           p.get("is_pregame_prediction") is not True or p.get("line") is not None or
-           p.get("stat") not in ("PTS","REB","AST","PRA")):
+        if (not isinstance(p,dict) or p.get("game") not in scoped or
+            p.get("is_pregame_prediction") is not True or p.get("line") is not None or
+            p.get("stat") not in ("PTS","REB","AST","PRA")):
             continue
         captured=timestamp(p.get("captured_at"));tip=timestamp(p.get("start"))
         g=scoped[p["game"]]
