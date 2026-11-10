@@ -361,3 +361,15 @@ test("Source-mismatched final prop is never attached as a real grade",()=>{
  assert.equal(result[0].grade,"PENDING");
  assert.equal(result.length,1);
 });
+
+test("Dame's Take immediately follows Dame's projection in expanded player details",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const projection=html.indexOf("<h2>Dame’s projection</h2>");
+ const take=html.indexOf("<strong>Dame’s Take</strong>");
+ const games=html.indexOf("<h2>Last games</h2>",projection);
+ assert.ok(projection>=0&&take>projection&&games>take,"Take must follow projection before last games");
+ const between=html.slice(projection,take);
+ assert.ok(between.includes("</section>"),"Projection panel must be closed before take bubble");
+ assert.ok(!between.includes("<h2>Last games</h2>")&&!between.includes("<h2>Matchup</h2>"));
+ assert.equal((html.match(/<strong>Dame’s Take<\\/strong>/g)||[]).length,1);
+});
