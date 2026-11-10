@@ -185,5 +185,41 @@ function includeArchivedStandard(rows,archive){
  }));
  return rows.concat(additions);
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard};
+/* A game is independently visible even if the model failed to lock any props.
+   Raw provider status is recorded, but old snapshots NEVER imply "live now". */
+function liveGames(nbaFeed,nflFeed,now=Date.now()){
+ const result=[];
+ const observed=(value)=>Number.isFinite(stamp(value))?stamp(value):null;
+ const fresh=(value)=>value!==null&&now-value>=-120000&&now-value<20*60000;
+ if(Array.isArray(nbaFeed?.games)){
+  for(const g of nbaFeed.games){
+   if(!g?.game)continue;
+   const at=observed(g.observed_at||nbaFeed.captured_at);
+   const isCurrent=fresh(at)&&g.stale!==true;
+   const state=g.state==="in"?"in":g.state==="post"?"final":g.state==="pre"?"scheduled":"unknown";
+   const players=Array.isArray(g.player_rows)?g.player_rows:[];
+   result.push({sport:"NBA",gameId:g.event_id||g.game,game:g.game,observedAt:g.observed_at||nbaFeed.captured_at,
+    state:!isCurrent&&state==="in"?"stale":state,sourceState:state,fresh:isCurrent,
+    statusText:isCurrent?(g.shortDetail||g.displayClock||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
+    players:players.map(p=>({player:p.player,team:p.team,stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
+    away:g.game.split(" @ ")[0]||"",home:g.game.split(" @ ")[1]||""});
+  }
+ }
+ if(Array.isArray(nflFeed?.games)){
+  for(const g of nflFeed.games){
+   if(!g?.game_id)continue;
+   const at=observed(g.observed_at||nflFeed.checked_at);
+   const isCurrent=fresh(at);
+   const state=g.status==="in"?"in":g.status==="post"||g.status==="final"?"final":g.status==="pre"?"scheduled":"unknown";
+   result.push({sport:"NFL",gameId:g.game_id,game:(g.away||"Away")+" @ "+(g.home||"Home"),
+    observedAt:g.observed_at||nflFeed.checked_at,state:!isCurrent&&state==="in"?"stale":state,
+    sourceState:state,fresh:isCurrent,
+    statusText:isCurrent?(g.status_text||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
+    away:g.away||"",home:g.home||"",awayScore:n(g.away_score),homeScore:n(g.home_score),
+    players:(Array.isArray(g.players)?g.players:[]).map(p=>({player:p.player,team:p.team,stats:p.stats||{}}))});
+  }
+ }
+ return result;
+}
+root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard,liveGames};
 })(typeof window!=="undefined"?window:globalThis);
