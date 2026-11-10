@@ -366,7 +366,7 @@ let frozenMatchupForecasts=[],trackerRequestId=0,trackerLastGame="",trackerLastU
 let selectedGame="",oddsHealth=null,slateHealth=null,nbaSchedule=null,slateCoverage=null,ai=[],odds=[],form=[],paper=null,injuryMinutesValidation=null,aiMetadata=null,minutesV2Published=null,historicalMinutes=null,shotValidation=null,prizepicks=[],ppBoardOffers=[],ppAIResearch=new Map(),ppFresh=false,ppState="NOT_CONFIGURED",ppErrorCode=null,ppStamp=null,aiFresh=false,aiArchiveMode=false,oddsFresh=false,formFresh=false;
 let noLineForecast=null,noLineArchive=null,liveTrackerServiceUrl=null,ppProviderPartial=false;
 let verifiedHistoricalProviderSnapshot=null,verifiedPregameLineArchive=null;
-let newMultimarketFeed=null,newMarketIndex=new Map(),standardLineCards=[];
+let newMultimarketFeed=null,newMarketIndex=new Map(),frozenMarketIndex=new Map(),standardLineCards=[];
 let underdogNews=null,officialInjuryFeed=null,freeOfficialWatch=null;
 const S={PTS:"PTS",REB:"REB",AST:"AST",PRA:"PRA",Points:"PTS",Rebounds:"REB",Assists:"AST","Points Rebounds Assists":"PRA"};
 const norm=x=>String(x||"").normalize("NFKD").toLowerCase().replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]/g,"");
@@ -617,10 +617,37 @@ function verifiedBoardStandardLineCoverage(provider,fixtures,now=Date.now()){
 function newModelKey(p){
  return [norm(p.player),p.team,p.game,p.stat,Date.parse(p.start)].join("|");
 }
+function frozenModelForCard(p){
+ const item=frozenMarketIndex.get(newModelKey(p));
+ return item&&item.grade!=="INVALID_LATE_CAPTURE"?item:null;
+}
 function newModelForCard(p){
- const item=newMarketIndex.get(newModelKey(p));
- if(!item||item.line!==Number(p.line))return null;
- return item;
+ const live=newMarketIndex.get(newModelKey(p));
+ if(live&&live.line===Number(p.line))return live;
+ const frozen=frozenModelForCard(p);
+ // Original locked model can restore an exact quote without inventing a
+ // post-tip or repriced simulation. Never carry probability across lines.
+ return frozen&&frozen.line===Number(p.line)?frozen:null;
+}
+function refreshFrozenMarketIndex(payload){
+ const index=new Map(),now=Date.now();
+ if(payload?.status!=="FROZEN_NEW_AI_ALL_MARKET"||!Array.isArray(payload.records))return index;
+ for(const p of payload.records){
+  const tip=Date.parse(p.start),quote=Date.parse(p.market_updated),captured=Date.parse(p.captured_at);
+  const c=p.estimated_hit_chance;
+  if(!p.player||!p.team||!p.game||!["PTS","REB","AST","PRA"].includes(p.stat)||
+    p.pickem_tier!=="standard"||p.standard_line_two_sided_verified!==true||
+    p.research_only!==true||p.production_replaced!==false||
+    !Number.isFinite(p.line)||!Number.isFinite(p.projection)||
+    !Number.isFinite(tip)||tip<=now||!Number.isFinite(captured)||!Number.isFinite(quote)||
+    !(quote<=captured&&captured<tip)||
+    c?.method!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||
+    c.draws!==20000||c.calibrated!==false)continue;
+  const key=newModelKey(p);
+  if(index.has(key))index.set(key,null);
+  else index.set(key,p);
+ }
+ return index;
 }
 function chance(p){
  if(p.line_only)return "—";
@@ -1115,7 +1142,7 @@ function renderAI(){
  // Once verified standards are available, it must not replace the new AI
  // with older projections or alternate (Goblin/Demon) player lines.
  const baseBoard=originalBoard.filter(p=>{
-   const n=newMarketIndex.get(newModelKey(p));
+   const n=newModelForCard(p);
    if(liveStandardMode){
      const quote=currentStandard.get(newModelKey(p));
      return Boolean(n&&quote&&Number(p.line)===quote.line&&n.line===quote.line);
@@ -1206,6 +1233,8 @@ function renderAI(){
   // new-model projection. Do not pass that line-only card into the legacy
   // sportsbook detail renderer (which assumes books, odds and model fields).
   if(p.line_only){
+    const frozen=frozenModelForCard(p);
+    const prior=Number.isFinite(frozen?.projection)?frozen:null;
     const card=node("article","prop compact-prop"),
           main=node("div","mainline"),
           heading=node("div","compact-head"),
@@ -1216,7 +1245,7 @@ function renderAI(){
     const tiles=node("div","ai-metrics");
     for(const [label,value,kind] of [
       ["PRIZEPICKS STD",fmt(Number(p.line)),"line"],
-      ["NEW AI PROJECTION","—","projection"],
+      ["FROZEN AI PROJECTION",prior?fmt(prior.projection):"—","projection"],
       ["NEW AI CHANCE","—","chance"]]){
       const tile=node("div","ai-metric "+kind);
       tile.append(node("span","ai-metric-label",label),
@@ -1229,6 +1258,11 @@ function renderAI(){
     main.append(node("div","research-note",
       p.injury_display_reason==="INJURY_REMODEL_PENDING"?
       "Verified standard line · injury-aware new AI pending. No current over/under lean or probability.":
+      prior?
+      "Original pretip frozen AI projection "+fmt(prior.projection)+
+      " and frozen "+(prior.estimated_hit_chance?.modeled_direction||"unavailable")+" lean were for the ORIGINAL "+fmt(prior.line)+
+      " line. Current posted line is "+fmt(Number(p.line))+
+      ". No re-priced hit chance or new pick is being claimed.":
       "Verified standard PrizePicks line · new AI prediction pending. No over/under lean or probability."));
     const recent=formFresh?currentPerson(p.player,p.team):null;
     if(recent)main.append(node("div","mini",
@@ -2913,6 +2947,8 @@ async function refresh(){
  const [a,o,f,p,pp,inj,im,mv,hist,shot,sch,oh,compact,mlFeed,archive,health,ppAI,quota,prizepicksAI,prizepicksGrades,publishedQuick,newMarketResponse]=await Promise.allSettled([fetchJSON("ai_comparisons.json"),fetchJSON("data.json"),fetchJSON("current_form.json"),fetchJSON("paper_results.json"),fetchJSON("prizepicks_site.json"),fetchJSON("injury_context.json"),fetchJSON("injury_minutes_results.json"),fetchJSON("minutes_v2_validation.json"),fetchJSON("historical_minutes_validation.json"),fetchJSON("shot_profile_validation.json"),fetchJSON("nba_schedule.json"),fetchJSON("odds_fetch_status.json"),fetchJSON("odds_compact.json"),fetchJSON("game_moneylines.json"),fetchJSON("ai_pregame_archive.json"),fetchJSON("odds_slate_health.json"),fetchJSON("prizepicks_ai_research.json"),fetchJSON("odds_account_balance.json"),fetchJSON("ai_prizepicks_comparisons.json"),fetchJSON("prizepicks_research_results.json"),fetchJSON("ai_prizepicks_quick_join.json"),fetchJSON("lagged_matchup_live_all_markets.json")]);
 newMultimarketFeed=newMarketResponse.status==="fulfilled"?newMarketResponse.value:null;
 newMarketIndex=refreshNewMarketIndex(newMultimarketFeed);
+const frozenMarketPayload=await fetchJSON("lagged_matchup_all_market_ledger.json").catch(()=>null);
+frozenMarketIndex=refreshFrozenMarketIndex(frozenMarketPayload);
 const providerStandards=await fetchJSON("prizepicks_model_input.json").catch(()=>null);
 verifiedPregameLineArchive=await fetchJSON("prizepicks_pregame_line_archive.json").catch(()=>null);
 standardLineCards=verifiedStandardLineCoverage(providerStandards,

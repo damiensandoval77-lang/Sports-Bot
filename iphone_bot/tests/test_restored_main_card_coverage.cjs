@@ -96,9 +96,29 @@ test("Verified line-only card returns safely before bookmaker-only details",()=>
  assert.ok(start>0&&safe>start&&books>safe);
  const fast=html.slice(safe,books);
  assert.ok(fast.includes("return card;"));
- assert.ok(fast.includes('["NEW AI PROJECTION","—"'));
+ assert.ok(fast.includes('["FROZEN AI PROJECTION",prior?fmt(prior.projection):"—"'));
  assert.ok(fast.includes('["NEW AI CHANCE","—"'));
  assert.ok(fast.includes("injury-aware new AI pending"));
+});
+test("Frozen pretip Warriors market survives live model feed rotation without repricing",()=>{
+ class FixedDate extends Date{static now(){return now}}
+ const ctx=setup({Date:FixedDate,newMarketIndex:new Map(),frozenMarketIndex:new Map()});
+ for(const name of ["newModelKey","frozenModelForCard","newModelForCard","refreshFrozenMarketIndex"])
+  vm.runInContext(sourceFunction(name),ctx);
+ const p={player:"Stephen Curry",player_id:"201939",team:"GSW",
+  game:"New Orleans Pelicans @ Golden State Warriors",stat:"PTS",
+  start:"2026-11-10T03:00:00Z",line:28.5,projection:31.391,
+  captured_at:"2026-11-09T22:18:06Z",market_updated:"2026-11-09T21:06:16Z",
+  pickem_tier:"standard",standard_line_two_sided_verified:true,
+  research_only:true,production_replaced:false,grade:"PENDING",
+  estimated_hit_chance:{method:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
+   draws:20000,calibrated:false,modeled_direction:"More",modeled_selected_probability:.6658}};
+ ctx.frozenMarketIndex=ctx.refreshFrozenMarketIndex({status:"FROZEN_NEW_AI_ALL_MARKET",records:[p]});
+ assert.equal(ctx.newModelForCard({...p,line:28.5}).projection,31.391);
+ assert.equal(ctx.newModelForCard({...p,line:27.5}),null);
+ assert.equal(ctx.frozenModelForCard({...p,line:27.5}).line,28.5);
+ assert.ok(html.includes("No re-priced hit chance or new pick is being claimed."));
+ assert.ok(html.includes('fetchJSON("lagged_matchup_all_market_ledger.json")'));
 });
 test("Opening missing-AI games does not force sportsbook when verified standard exists",()=>{
  assert.ok(html.includes('!standardLineCards.some(x=>x.game===game)'));
