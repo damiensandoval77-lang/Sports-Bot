@@ -9,6 +9,9 @@ on:
     paths:
       - 'iphone_bot/grade_frozen_ai_forecasts.py'
       - 'iphone_bot/verified_final_cache.py'
+      - 'iphone_bot/verified_boxscore_dnps.py'
+      - 'iphone_bot/tests/test_verified_boxscore_dnps.py'
+      - 'docs/verified_boxscore_dnps_2026-11-08.json'
       - 'iphone_bot/tests/test_verified_final_cache.py'
       - '.github/workflows/grade_frozen_ai_forecasts.yml'
   pull_request:
@@ -45,6 +48,7 @@ jobs:
           python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py iphone_bot/verified_final_cache.py
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_final_cache.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_boxscore_dnps.py' -v
       - name: Grade frozen actual AI forecasts independently of PrizePicks
         if: github.event_name != 'pull_request'
         id: grade
