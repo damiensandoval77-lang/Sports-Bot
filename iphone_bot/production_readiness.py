@@ -128,6 +128,8 @@ def check(now,files):
         offers=[]
     if pp.get("complete_provider_board") is not True or pp.get("partial_board") is True:
         issues.append("PARTIAL_PRIZEPICKS_PROVIDER_COVERAGE")
+    if pp.get("complete_provider_board") is True and pp.get("board_coverage_scope")!="NBA_ACTIVE_STANDARD_TIER_ONLY":
+        issues.append("STANDARD_ONLY_PROVIDER_SCOPE_UNVERIFIED")
     live_offers=[p for p in offers if isinstance(p,dict) and not p.get("is_demo") and
                  (t:=parse_time(p.get("starts_at"))) and t>now]
     if upcoming and not live_offers:issues.append("NO_UPCOMING_REAL_PROVIDER_LINES")
