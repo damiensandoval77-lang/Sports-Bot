@@ -22,6 +22,7 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: write
 
 concurrency:
   group: nba-production-readiness
@@ -42,6 +43,7 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_scoreboard_snapshot.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_readiness_recovery.py' -v
       - name: Recover independent scoreboard before readiness evaluation
         id: scoreboard_repair
         if: github.event_name != 'pull_request'
@@ -78,6 +80,35 @@ jobs:
             if git push origin HEAD:main; then exit 0; fi
           done
           exit 1
+      - name: Route degraded components to bounded automatic recovery
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Schedule checks remain red until a later real browser/feed audit
+          # passes. Recovery dispatch must not modify or fabricate predictions.
+          python -m iphone_bot.readiness_recovery docs/production_readiness.json > "$RUNNER_TEMP/recovery_targets"
+          while IFS= read -r workflow; do
+            [ -n "$workflow" ] || continue
+            case "$workflow" in
+              nba-prizepicks-full-slate.yml) cooldown_minutes=90 ;;
+              *) cooldown_minutes=35 ;;
+            esac
+            # Compare with actual started runs, including in-progress.
+            # Prevent every 20-minute audit from buying another board.
+            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status |
+              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" '
+                [.[] | select((.createdAt | fromdateiso8601) >= $cutoff)] | length')
+            if [ "$recent" -gt 0 ]; then
+              echo "Skipping $workflow: an execution started within $cooldown_minutes minutes"
+              continue
+            fi
+            echo "Dispatching bounded recovery: $workflow"
+            gh workflow run "$workflow" --ref main
+          done < "$RUNNER_TEMP/recovery_targets"
       - name: Open or resolve recurring production incident automatically
         if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
         continue-on-error: true
