@@ -144,3 +144,14 @@ test("Main NBA board merges independent verified provider standard-line fallback
  assert.ok(html.includes("standardLineCards=[...canonical.values()]"));
  assert.ok(html.includes("const quoteOnly=standardLineCards.filter("));
 });
+
+test("Dashboard distinguishes historical independently settled PrizePicks markets from today's pending AI and New AI",()=>{
+ assert.ok(html.includes('id="verified-grade-reconciliation"'));
+ assert.ok(html.includes('function refreshGradeReconciliation('));
+ assert.ok(html.includes('history.independent_settled_center_lines'));
+ assert.ok(html.includes('ai_forecast_today_grade_status.json'));
+ assert.ok(html.includes('lagged_matchup_all_market_ledger.json'));
+ assert.ok(html.includes('frozen_baseline_pregame_line_grades.json'));
+ assert.ok(html.includes('Pending is NOT a loss.'));
+ assert.ok(html.includes('research only, not placed bets'));
+});
