@@ -6,12 +6,14 @@ on:
       - 'docs/live-prop-tracker.js'
       - 'iphone_bot/tests/test_live_prop_tracker.cjs'
       - 'iphone_bot/tests/test_restored_main_card_coverage.cjs'
+      - 'iphone_bot/tests/test_quick_prizepicks_join.cjs'
       - '.github/workflows/nba-main-card-coverage.yml'
   push:
     branches: [main]
     paths:
       - 'docs/index.html'
       - 'iphone_bot/tests/test_restored_main_card_coverage.cjs'
+      - 'iphone_bot/tests/test_quick_prizepicks_join.cjs'
       - '.github/workflows/nba-main-card-coverage.yml'
   workflow_dispatch:
 permissions:
@@ -28,6 +30,7 @@ jobs:
       - name: Test live standard PrizePicks card coverage and isolated injury updates
         run: |
           node --test iphone_bot/tests/test_restored_main_card_coverage.cjs
+          node --test iphone_bot/tests/test_quick_prizepicks_join.cjs
           node --test iphone_bot/tests/test_live_prop_tracker.cjs
       - name: Verify dashboard JavaScript parsing
         run: |
