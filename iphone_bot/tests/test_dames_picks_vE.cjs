@@ -371,5 +371,5 @@ test("Dame's Take immediately follows Dame's projection in expanded player detai
  const between=html.slice(projection,take);
  assert.ok(between.includes("</section>"),"Projection panel must be closed before take bubble");
  assert.ok(!between.includes("<h2>Last games</h2>")&&!between.includes("<h2>Matchup</h2>"));
- assert.equal((html.match(/<strong>Dame’s Take<\\/strong>/g)||[]).length,1);
+ assert.equal(html.split("<strong>Dame’s Take</strong>").length-1,1);
 });
