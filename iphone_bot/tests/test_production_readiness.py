@@ -36,6 +36,13 @@ def fixtures(now=NOW):
          "checked_at":STAMP,"status":"READY","browser_render_verified":True,
          "rendered_verified_standard_lines":3,"rendered_new_ai_chances":2,
          "games_without_rendered_matches":[]},
+     "nba_schedule_horizon_audit.json":{
+         "status":"READY","checked_at":STAMP,"season_fixed_games":1200,
+         "next_14_days":[{"date_eastern":(NOW.date()+dt.timedelta(days=n)).isoformat(),
+                          "known_games":1,"games":[]} for n in range(14)],
+         "next_two_days_reconciliation":{
+             "2026-11-09":{"season_fixed_games":1,"daily_games":1,"missing":[]},
+             "2026-11-10":{"season_fixed_games":1,"daily_games":1,"missing":[]}}},
      "nba_player_tracking_independent.json":{},
      "data.json":{"updated_at":STAMP,"slate_events_checked":1,
                   "market_coverage_limited":False,
@@ -49,6 +56,30 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertEqual(r["status"],"READY",r["components"])
         self.assertTrue(r["ready_for_trustworthy_picks"])
         self.assertFalse(r["readiness_is_not_model_accuracy"] is False)
+
+    def test_released_season_calendar_required_even_if_today_props_exist(self):
+        data=fixtures()
+        data["nba_schedule_horizon_audit.json"]={}
+        result=check(NOW,data)
+        self.assertIn("season_calendar",result["blocking_components"])
+        self.assertIn("FULL_SEASON_CALENDAR_NOT_VERIFIED",
+                      result["components"]["season_calendar"]["reasons"])
+
+    def test_known_missing_future_games_fail_schedule_readiness(self):
+        data=fixtures()
+        data["nba_schedule_horizon_audit.json"]["next_two_days_reconciliation"]["2026-11-09"]["missing"]=[
+            {"game":"Away @ Home","id":"123"}]
+        result=check(NOW,data)
+        self.assertIn("KNOWN_TODAY_GAMES_MISSING",
+                      result["components"]["season_calendar"]["reasons"])
+        self.assertFalse(result["ready_for_trustworthy_picks"])
+
+    def test_stale_horizon_report_cannot_claim_full_calendar(self):
+        data=fixtures()
+        data["nba_schedule_horizon_audit.json"]["checked_at"]="2026-11-08T10:00:00Z"
+        result=check(NOW,data)
+        self.assertIn("SEASON_HORIZON_AUDIT_STALE",
+                      result["components"]["season_calendar"]["reasons"])
 
     def test_missing_projections_block(self):
         data=fixtures()
