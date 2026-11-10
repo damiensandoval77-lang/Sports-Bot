@@ -47,6 +47,7 @@ jobs:
       - name: Run deterministic public NFL grading unit tests
         run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
       - name: Attempt independent snap-count zero-target recovery
+        continue-on-error: true
         # A source outage must not discard already published grades.
         run: |
           pip install --disable-pip-version-check pandas pyarrow
@@ -76,6 +77,7 @@ jobs:
           git config user.name nfl-grading-publisher
           git config user.email actions@users.noreply.github.com
           for attempt in 1 2 3; do
+            git add docs/nfl/data/verified_zero_snap_stats_2026.json 2>/dev/null || true
             git add docs/nfl/data/frozen_pick_history_2026.csv \
                     docs/nfl/data/pp_graded_2026.csv \
                     docs/nfl/data/pp_grading_pending_2026.csv \
