@@ -38,7 +38,25 @@ def check_artifacts(now=None):
             record("NFL grading", "warning", "PENDING_FINAL_GRADES",
                    f"{grading['pending_picks']} pending frozen picks")
 
+    def freshness(domain, report, field, max_age_minutes):
+        raw = report.get(field)
+        if not raw:
+            record(domain, "warning", "MISSING_HEALTH_TIMESTAMP", f"Missing {field}; health report freshness unverified")
+            return
+        try:
+            stamped = dt.datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+            if stamped.tzinfo is None:
+                raise ValueError("timezone missing")
+            age = (now - stamped).total_seconds() / 60
+        except (ValueError, TypeError):
+            record(domain, "warning", "BAD_HEALTH_TIMESTAMP", f"Invalid {field}={raw}")
+            return
+        if age > max_age_minutes or age < -5:
+            record(domain, "warning", "STALE_HEALTH_REPORT",
+                   f"{field} aged {age:.0f} minutes; maximum {max_age_minutes}")
+
     readiness = load("production_readiness.json")
+    freshness("NBA readiness", readiness, "checked_at", 120)
     if readiness.get("_read_error"):
         record("NBA readiness", "critical", "READINESS_REPORT_UNAVAILABLE", readiness["_read_error"])
     elif readiness.get("status") != "READY":
@@ -48,6 +66,7 @@ def check_artifacts(now=None):
         record("NBA readiness", "ok", "READY", "Published readiness gate passed")
 
     join = load("ai_prizepicks_quick_join.json")
+    freshness("NBA lines and AI join", join, "generated_at", 120)
     if join.get("_read_error"):
         record("NBA lines and AI join", "critical", "JOIN_UNAVAILABLE", join["_read_error"])
     elif join.get("status") in ("STALE_OR_UNVERIFIED_SOURCE", "STALE_PROVIDER_BOARD", "ERROR"):
@@ -61,6 +80,7 @@ def check_artifacts(now=None):
                f"{join.get('matched_games')} verified matched games")
 
     capture = load("tonight_capture_gradeability.json")
+    freshness("Pregame capture", capture, "checked_at", 180)
     if capture.get("_read_error"):
         record("Pregame capture", "critical", "CAPTURE_REPORT_UNAVAILABLE", capture["_read_error"])
     elif capture.get("status") == "CAPTURE_INCOMPLETE":
@@ -71,6 +91,7 @@ def check_artifacts(now=None):
                str(capture.get("status", "UNVERIFIED")))
 
     audit = load("ai_forecast_coverage_audit.json")
+    freshness("NBA grading", audit, "checked_at", 240)
     if audit.get("_read_error"):
         record("NBA grading", "critical", "GRADE_AUDIT_UNAVAILABLE", audit["_read_error"])
     elif audit.get("status") == "VERIFIED_FINAL_ROWS_OUTSTANDING":
@@ -80,6 +101,7 @@ def check_artifacts(now=None):
         record("NBA grading", "ok", "GRADE_AUDIT_STATUS", str(audit.get("status", "UNVERIFIED")))
 
     tracker = load("live_player_tracking.json")
+    freshness("NBA live tracking", tracker, "captured_at", 120)
     if tracker.get("_read_error"):
         record("NBA live tracking", "critical", "TRACKER_UNAVAILABLE", tracker["_read_error"])
     else:
