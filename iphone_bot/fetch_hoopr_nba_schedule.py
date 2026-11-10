@@ -26,7 +26,7 @@ TEAM={
  "GSW","HOU","IND","LAC","LAL","MEM","MIA","MIL","MIN",
  "NOP","NYK","OKC","ORL","PHI","PHX","POR","SAC","SAS",
  "TOR","UTA","WAS"}
-ALIASES={"NO":"NOP","NY":"NYK","GS":"GSW","SA":"SAS","UTAH":"UTA","PHO":"PHX","BRK":"BKN"}
+ALIASES={"NO":"NOP","NY":"NYK","GS":"GSW","SA":"SAS","UTAH":"UTA","PHO":"PHX","BRK":"BKN","WSH":"WAS"}
 def value(v):
  if v is None or pd.isna(v):return ""
  return str(v).strip()
