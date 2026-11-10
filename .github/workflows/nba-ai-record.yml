@@ -6,6 +6,8 @@ on:
     paths:
       - 'iphone_bot/capture_ai_board.py'
       - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/verify_paper_settlement_voids.py'
+      - 'iphone_bot/tests/test_verify_paper_settlement_voids.py'
       - 'iphone_bot/selective_challenger.py'
       - 'iphone_bot/tests/test_selective_challenger.py'
       - 'iphone_bot/model_performance.py'
@@ -42,6 +44,7 @@ jobs:
         run: |
           python -m py_compile iphone_bot/selective_challenger.py iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py iphone_bot/fetch_final_boxscores.py
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verify_paper_settlement_voids.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selective_challenger.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_model_performance.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_accuracy_feedback.py' -v
@@ -76,13 +79,9 @@ jobs:
               repeated=[str(k) for k,count in Counter(keys).items() if count>1]
               raise AssertionError('NBA_DUPLICATE_FROZEN_RECORD_IDENTITIES count='+
                                    str(len(repeated))+' sample='+str(repeated[:5]))
-          allowed={'SETTLED','PENDING','INVALID_LATE_CAPTURE'}
-          statuses=Counter(r.get('status','MISSING') for r in rows)
-          unexpected={k:v for k,v in statuses.items() if k not in allowed}
-          print('NBA FROZEN LEDGER STATUSES:',dict(statuses),flush=True)
-          if unexpected:
-              raise AssertionError('NBA_UNEXPECTED_FROZEN_LEDGER_STATUSES: '+
-                                   json.dumps(unexpected,sort_keys=True))
+          from iphone_bot.verify_paper_settlement_voids import verify
+          statuses=verify(rows,result)
+          print('NBA VERIFIED FROZEN LEDGER STATUSES:',statuses,flush=True)
           # Do not weaken immutable record checks. Print each mismatch in the
           # failed Actions step so a passing workflow never hides lost grades.
           observed={'captured':len(rows),
