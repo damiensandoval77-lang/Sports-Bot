@@ -55,6 +55,28 @@ test("Conflicting standard thresholds, one-sided, and stale source fail closed",
  assert.equal(ctx.verifiedStandardLineCoverage({...base,updated_at:"2026-11-09T10:00:00Z",
    picks:[offer(g,0,"More"),offer(g,0,"Less")]},{games:eight},now).length,0);
 });
+test("Consecutive-night identical matchups retain today's exact standard quotes",()=>{
+ const ctx=setup(),g=eight[0];
+ const tomorrow={...g,start:"2026-11-11T00:00:00Z",date_eastern:"2026-11-10"};
+ const fixtures={games:[g,tomorrow]};
+ const feed={status:"FRESH_AUTHENTIC_PRIZEPICKS_LINES",
+  source:"AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS",is_live:true,
+  updated_at:"2026-11-09T23:03:00Z",
+  picks:[offer(g,0,"More"),offer(g,0,"Less")]};
+ const result=ctx.verifiedStandardLineCoverage(feed,fixtures,now);
+ assert.equal(result.length,1,"Tomorrow's same matchup must not erase tonight's verified line");
+ assert.equal(result[0].start,g.start);
+ const item={id:"pp_123",player:"Test Player",team:g.away_abbreviation,
+  game:g.game,stat:"PTS",line:20.5,starts_at:g.start,
+  observed_at:"2026-11-09T23:05:00Z",more_tier:"standard",less_tier:"standard",
+  source:"independent_prizepicksapi_com",is_demo:false};
+ const provider={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
+  source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:08:00Z",
+  board_offers:[item]};
+ const fallback=ctx.verifiedBoardStandardLineCoverage(provider,fixtures,now);
+ assert.equal(fallback.length,1,"Independent provider fallback must match same day");
+ assert.equal(fallback[0].start,g.start);
+});
 test("One official OUT affects only the correct game, not entire slate",()=>{
  const status={player:"Austin Reaves",team:"LAL",player_id:"1630559",
     game_date:"2026-11-09",status:"OUT",official:true,
