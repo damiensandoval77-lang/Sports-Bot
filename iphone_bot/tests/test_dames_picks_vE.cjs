@@ -57,3 +57,20 @@ test("Version E design primitives and sport navigation exist",()=>{
  'data-league="NBA"','data-league="NFL"','data-view="live"','data-view="tracker"','id="markets"'])
   assert.ok(html.includes(p),p);
 });
+
+
+test("Real published NBA and NFL artifacts both produce nonempty integrated player props",()=>{
+ const root="docs/";
+ const ledger=JSON.parse(fs.readFileSync(root+"lagged_matchup_all_market_ledger.json","utf8"));
+ const form=JSON.parse(fs.readFileSync(root+"current_form.json","utf8"));
+ const a=m.nba(ledger,form);
+ assert.ok(a.length>0,"Published NBA ledger yields zero eligible player props");
+ assert.ok(a.every(x=>x.player&&Number.isFinite(x.line)&&Number.isFinite(x.projection)));
+ const manifest=JSON.parse(fs.readFileSync(root+"nfl/data/latest_2026.json","utf8"));
+ const schedule=JSON.parse(fs.readFileSync(root+"nfl/data/schedule_2026.json","utf8"));
+ const parts=manifest.files.map(name=>m.csv(fs.readFileSync(root+"nfl/data/"+name,"utf8")));
+ const b=m.nfl(parts,schedule);
+ assert.ok(b.length>0,"Published NFL model yielded zero eligible standard player props");
+ assert.ok(b.every(x=>x.player&&Number.isFinite(x.line)&&Number.isFinite(x.projection)));
+ console.log("Live contract counts: NBA",a.length,"NFL",b.length);
+});
