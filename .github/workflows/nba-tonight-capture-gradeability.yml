@@ -1,0 +1,70 @@
+name: Verify tonight NBA frozen lines predictions and grades
+on:
+  workflow_dispatch:
+  schedule:
+    # Throughout NBA game windows and overnight final settlement (UTC).
+    - cron: '17,47 0-6,22-23 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks_pregame_line_archive.json'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - 'docs/lagged_matchup_all_market_ledger.json'
+      - 'docs/ai_forecast_actual_ledger.json'
+      - 'iphone_bot/tonight_capture_gradeability.py'
+      - '.github/workflows/nba-tonight-capture-gradeability.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/tonight_capture_gradeability.py'
+      - 'iphone_bot/tests/test_tonight_capture_gradeability.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
+      - '.github/workflows/nba-tonight-capture-gradeability.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-tonight-capture-gradeability
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate capture and no-destructive-merge regression tests
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_tonight_capture_gradeability.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
+      - name: Reconcile every scheduled game against saved quote and prediction artifacts
+        if: github.event_name != 'pull_request'
+        id: capture
+        continue-on-error: true
+        run: python -m iphone_bot.tonight_capture_gradeability
+      - name: Publish audit even if missing frozen games
+        if: always() && github.event_name != 'pull_request' && steps.capture.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          cp docs/tonight_capture_gradeability.json "$RUNNER_TEMP/tonight_capture_gradeability.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/tonight_capture_gradeability.json" docs/tonight_capture_gradeability.json
+            git add docs/tonight_capture_gradeability.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Record honest per-game NBA capture and grading health'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Could not publish per-game capture health after retries"
+          exit 1
+      - name: Fail visibly if genuine source lines lack frozen models
+        if: always() && github.event_name != 'pull_request' && steps.capture.outcome == 'failure'
+        run: |
+          echo "::error::CAPTURE INCOMPLETE: some games are missing saved lines, saved AI, or frozen line-backed models. Review docs/tonight_capture_gradeability.json"
+          exit 1
