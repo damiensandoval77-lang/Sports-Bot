@@ -12,6 +12,8 @@ on:
       - 'docs/lagged_matchup_all_market_ledger.json'
       - 'docs/ai_forecast_actual_ledger.json'
       - 'iphone_bot/tonight_capture_gradeability.py'
+      - 'iphone_bot/audit_primary_model_missing.py'
+      - 'iphone_bot/tests/test_audit_primary_model_missing.py'
       - '.github/workflows/nba-tonight-capture-gradeability.yml'
   pull_request:
     paths:
@@ -39,24 +41,29 @@ jobs:
       - name: Validate capture and no-destructive-merge regression tests
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_tonight_capture_gradeability.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_audit_primary_model_missing.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
       - name: Reconcile every scheduled game against saved quote and prediction artifacts
         if: github.event_name != 'pull_request'
         id: capture
         continue-on-error: true
-        run: python -m iphone_bot.tonight_capture_gradeability
+        run: |
+          python -m iphone_bot.audit_primary_model_missing
+          python -m iphone_bot.tonight_capture_gradeability
       - name: Publish audit even if missing frozen games
         if: always() && github.event_name != 'pull_request' && steps.capture.outcome != 'skipped'
         run: |
           set -euo pipefail
           cp docs/tonight_capture_gradeability.json "$RUNNER_TEMP/tonight_capture_gradeability.json"
+          cp docs/primary_model_missing_diagnostics.json "$RUNNER_TEMP/primary_model_missing_diagnostics.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
             cp "$RUNNER_TEMP/tonight_capture_gradeability.json" docs/tonight_capture_gradeability.json
-            git add docs/tonight_capture_gradeability.json
+            cp "$RUNNER_TEMP/primary_model_missing_diagnostics.json" docs/primary_model_missing_diagnostics.json
+            git add docs/tonight_capture_gradeability.json docs/primary_model_missing_diagnostics.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Record honest per-game NBA capture and grading health'
             if git push origin HEAD:main; then exit 0; fi
