@@ -9,10 +9,10 @@ from pathlib import Path
 
 RECOVERABLE = {
     "prizepicks_lines": "nba-prizepicks-full-slate.yml",
-    "pregame_capture": "nba-tonight-capture-gradeability.yml",
+    "pregame_capture": "nba-new-ai-all-markets.yml",
     "public_browser": "nba-prizepicks-site-publish.yml",
 }
-NO_COST = ("nba-prizepicks-site-publish.yml", "nba-tonight-capture-gradeability.yml")
+NO_COST = ("nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml")
 
 def recovery_targets(report):
     if report.get("status") == "READY":
@@ -28,8 +28,7 @@ def recovery_targets(report):
         out.append(RECOVERABLE["prizepicks_lines"])
     if "public_browser" in failed:
         out.append(RECOVERABLE["public_browser"])
-    if "pregame_capture" in failed:
-        out.append(RECOVERABLE["pregame_capture"])
+    # Rerunning a capture AUDIT cannot repair absent frozen projections. Route\n    # pretip gaps to guarded generation/merge, then allow the next independent\n    # scheduled capture audit to confirm whether the gap really closed.\n    if "pregame_capture" in failed and report.get("upcoming_games", 0) > 0:\n        out.append(RECOVERABLE["pregame_capture"])
     return out
 
 def main():
