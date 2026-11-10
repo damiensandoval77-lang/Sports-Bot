@@ -16,8 +16,17 @@ on:
       - 'docs/nfl/data/boxscores/week_*.json'
       - 'docs/nfl/data/boxscores/manifest.json'
   workflow_dispatch:
+  # GitHub Actions commits made with GITHUB_TOKEN do not fire downstream
+  # push workflows. Listen for the completed upstream publishers directly.
+  workflow_run:
+    workflows:
+      - 'Publish verified NFL final boxscores'
+      - 'Sync private NFL lines for public grading'
+    types: [completed]
   schedule:
     - cron: '45 5,11,17,23 * 1,2,9-12 *'
+    # Game and postgame fallback checks if upstream workflow_run is delayed.
+    - cron: '15,45 0-5 * 1,2,9-12 1,2'
 permissions:
   contents: write
 concurrency:
@@ -44,7 +53,9 @@ jobs:
           p=Path("docs/nfl/data/grading_health_2026.json")
           r=json.loads(p.read_text())
           assert r["expected_final_picks"] == r["graded_picks"]+r["pending_picks"]
+          assert r["frozen_final_pick_candidates"] == r["expected_final_picks"]
           assert r["standard_wins"] <= r["standard_settled"]
+          assert r["final_games_with_frozen_picks"] == 0 or r["expected_final_picks"] > 0, "Completed NFL games with frozen props cannot publish zero eligible records"
           print("2026 frozen grading:",r["graded_picks"],"graded,",
                 r["pending_picks"],"pending,",
                 r["archived_pregame_lines"],"frozen pregame lines")
