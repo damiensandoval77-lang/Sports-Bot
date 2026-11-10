@@ -52,6 +52,19 @@ class QuickJoinTests(unittest.TestCase):
         pp,ai,form=data()
         form["players"].append({"player_id":"999","player":"Luka Doncic","team":"LAL"})
         self.assertEqual(build(pp,ai,form,now=NOW)["offers_matched"],0)
+    def test_only_two_sided_standard_quotes_enter_any_comparison(self):
+        for more,less in (("demon","demon"),("goblin","goblin"),
+                          ("standard",None),("demon","standard"),(None,"standard")):
+            with self.subTest(more=more,less=less):
+                pp,ai,form=data()
+                pp["board_offers"][0]["more_tier"]=more
+                pp["board_offers"][0]["less_tier"]=less
+                report=build(pp,ai,form,now=NOW)
+                self.assertEqual(report["offers_matched"],0)
+                self.assertEqual(report["skipped_reasons"].get("not_two_sided_standard_line"),1)
+        pp,ai,form=data()
+        self.assertEqual(build(pp,ai,form,now=NOW)["offers_matched"],1)
+
     def test_unmatched_forecast_does_not_invent_pick(self):
         pp,ai,form=data()
         ai["predictions"]=[]
