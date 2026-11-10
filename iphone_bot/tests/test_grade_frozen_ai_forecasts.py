@@ -54,6 +54,26 @@ class FrozenAiGradingTests(unittest.TestCase):
         self.assertEqual(second["new_grades"],0)
         self.assertEqual(second["records"][0]["actual"],19)
 
+    def test_verified_final_can_grade_immediately_after_tip_without_four_hour_delay(self):
+        p=forecast()
+        five_minutes_after_tip=dt.datetime(2026,11,9,0,5,tzinfo=dt.timezone.utc)
+        chosen=eligible_predictions([p],five_minutes_after_tip)
+        self.assertEqual(len(chosen),1)
+        # No verified final: still explicitly pending, never a guessed result.
+        self.assertEqual(settle_predictions(chosen,[])["new_grades"],0)
+        self.assertEqual(settle_predictions(chosen,[final()])["new_grades"],1)
+
+    def test_same_day_status_keeps_pending_distinct_from_verified_final(self):
+        p=forecast()
+        selected=eligible_predictions([p],dt.datetime(2026,11,9,0,5,tzinfo=dt.timezone.utc))
+        empty=report("2026-11-08",selected,settle_predictions(selected,[]),
+                     now=dt.datetime(2026,11,9,0,5,tzinfo=dt.timezone.utc),final_rows=[])
+        completed=report("2026-11-08",selected,settle_predictions(selected,[final()]),
+                         now=dt.datetime(2026,11,9,0,5,tzinfo=dt.timezone.utc),final_rows=[final()])
+        self.assertEqual(empty["ungraded"],1)
+        self.assertEqual(completed["graded"],1)
+        self.assertEqual(completed["ungraded"],0)
+
     def test_late_capture_is_not_graded(self):
         row={**forecast(),"captured_at":"2026-11-09T00:05:00Z"}
         self.assertEqual(eligible_predictions([row],NOW),[])
