@@ -85,20 +85,21 @@ jobs:
           assert season['total_games']>=900
           print('Validated published full NBA season fixture master:',season['total_games'],'games')
           PY
-      - name: Preserve original NBA fixture snapshot for future missing-game audits
-        run: python -u iphone_bot/preserve_research_inputs.py schedule
-      - name: Publish schedule feed
+      - name: Publish daily and full-season fixtures with safe concurrent reconciliation
         run: |
-          git fetch origin main
-          git add docs/nba_schedule.json docs/nba_schedule_status.json docs/nba_season_schedule_2026_27.json
-          if [ -d docs/research_inputs/schedule ]; then git add docs/research_inputs/schedule/; fi
-          if git diff --cached --quiet; then exit 0; fi
+          set -euo pipefail
+          cp docs/nba_schedule.json "$RUNNER_TEMP/new-day.json"
+          cp docs/nba_season_schedule_2026_27.json "$RUNNER_TEMP/new-season.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Publish complete Eastern-date NBA slate'
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then exit 0; fi
+          for attempt in 1 2 3 4 5; do
             git fetch origin main
-            git rebase origin/main || { git rebase --abort || true; exit 1; }
+            git reset --hard origin/main
+            python -m iphone_bot.publish_nba_schedule_atomic
+            git add docs/nba_schedule.json docs/nba_schedule_status.json docs/nba_season_schedule_2026_27.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Refresh complete NBA season and safe daily fixture slate'
+            if git push origin HEAD:main; then exit 0; fi
           done
+          echo "::error::Cannot atomically publish verified NBA schedule after safe retries"
           exit 1
