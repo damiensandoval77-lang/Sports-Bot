@@ -15,7 +15,7 @@ def new_finals(current,previous):
                 current.get("date_eastern") and g.get("state")=="post" and
                 g.get("stale") is False and str(g.get("event_id","")).isdigit() and
                 bool(g.get("game")) and bool(g.get("player_rows")) and
-                g.get("observed_at")==current.get("captured_at"))
+                g.get("observed_at")==source.get("captured_at"))
     before={str(g["event_id"]) for g in previous.get("games",[])
             if valid(g,previous)} if previous.get("status")==current.get("status") else set()
     return sorted({str(g["event_id"]) for g in current.get("games",[])
