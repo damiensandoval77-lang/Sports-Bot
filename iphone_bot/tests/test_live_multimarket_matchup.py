@@ -3,10 +3,10 @@ import unittest
 import numpy as np
 try:
     from iphone_bot.multimarket_probability import simulate
-    from iphone_bot.live_multimarket_matchup import select_standard
+    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity
 except ImportError:
     from multimarket_probability import simulate
-    from live_multimarket_matchup import select_standard
+    from live_multimarket_matchup import select_standard,resolve_current_roster_identity
 
 class MultimarketTests(unittest.TestCase):
     def test_pra_is_same_three_component_projections(self):
@@ -41,6 +41,36 @@ class MultimarketTests(unittest.TestCase):
                          {"Points","Rebounds","Assists","Points Rebounds Assists"})
         self.assertTrue(all(r["line"]==20.5 for r in selected))
         self.assertEqual(excluded["NON_STANDARD_POINTS_TIER"],16)
+
+    def test_traded_history_resolves_only_latest_verified_team_in_matchup(self):
+        roster={"example":{("123","BOS"),("123","NYK")}}
+        latest={"123":"NYK"}
+        identity,reason=resolve_current_roster_identity(
+            "Example","Boston Celtics @ New York Knicks",roster,latest)
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("123","NYK","BOS"))
+
+    def test_older_team_cannot_resurrect_stale_roster_identity(self):
+        roster={"example":{("123","BOS"),("123","NYK")}}
+        identity,reason=resolve_current_roster_identity(
+            "Example","Boston Celtics @ Philadelphia 76ers",roster,{"123":"NYK"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+
+    def test_same_name_two_players_ambiguous_in_matchup_is_rejected(self):
+        roster={"example":{("123","BOS"),("789","NYK")}}
+        identity,reason=resolve_current_roster_identity(
+            "Example","Boston Celtics @ New York Knicks",roster,
+            {"123":"BOS","789":"NYK"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"PLAYER_IDENTITY_NOT_UNIQUE")
+
+    def test_invalid_fixture_fails_closed(self):
+        identity,reason=resolve_current_roster_identity(
+            "Example","Boston Celtics @ Boston Celtics",
+            {"example":{("123","BOS")}},{"123":"BOS"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"GAME_TEAM_IDENTITY_MISMATCH")
 
     def test_absent_validated_triplets_fails(self):
         with self.assertRaises(ValueError):
