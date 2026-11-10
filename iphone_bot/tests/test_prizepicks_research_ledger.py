@@ -124,7 +124,7 @@ class ResearchLedgerTests(unittest.TestCase):
     sources=[]
     for i,(captured,line) in enumerate([
           ("2026-11-08T20:01:00Z",4.5),
-          ("2026-11-08T20:03:00Z",9.5)]):
+          ("2026-11-08T20:03:00Z",7.5)]):
         sources.append({**SOURCE["comparisons"][0],
                         "provider_projection_id":"std"+str(i),
                         "captured_at":captured,"line":line,
@@ -132,7 +132,7 @@ class ResearchLedgerTests(unittest.TestCase):
                         "more_tier":"standard","less_tier":"standard"})
     frozen=freeze({"records":[]},{**SOURCE,"comparisons":sources})
     report=summarize(settle(frozen,[GAME],NOW),NOW)
-    # Actual=8. Last frozen line 9.5 produces a losing MORE lean.
+    # Actual=8. Last frozen line 7.5 produces a losing LESS lean.
     self.assertEqual(report["independent_by_market"]["AST"]["graded"],1)
     self.assertEqual(report["independent_by_market"]["AST"]["wins"],0)
     self.assertEqual(report["independent_by_market"]["AST"]["losses"],1)
