@@ -10,6 +10,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 
 ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/"docs/nfl/data"
@@ -23,8 +24,11 @@ STAT_KEYS={
  "receiving":{"YDS":"REC_YDS","REC":"REC","TGTS":"TGT","TAR":"TGT","TD":"REC_TD"}
 }
 def load(url):
-    req=Request(url,headers={"User-Agent":"NFLResearchBot/1.0 (public scoreboard data)","Accept":"application/json"})
-    with urlopen(req,timeout=15) as rsp:return json.load(rsp)
+    req=Request(url,headers={"User-Agent":"Mozilla/5.0 (compatible; NFLScoreboard/1.0; +https://github.com/)","Accept":"application/json, text/plain, */*","Referer":"https://www.espn.com/","Origin":"https://www.espn.com"})
+    try:
+        with urlopen(req,timeout=15) as rsp:return json.load(rsp)
+    except HTTPError as exc:
+        raise RuntimeError(f"ESPN_HTTP_{exc.code}") from exc
 
 def num(value):
     try:
@@ -129,7 +133,7 @@ def snapshot(now=None,fetch=load,data_dir=DATA):
             returned=parse_scoreboard(fetch(SCOREBOARD.format(date=date)),games)
             found.update(returned)
         except Exception as exc:
-            errors.append(f"scoreboard {date}: {type(exc).__name__}")
+            errors.append(f"scoreboard {date}: {str(exc)[:70]}")
     # ESPN's NFL date query may return zero events even while the unfiltered
     # current-week endpoint reports a real active game. Fallbacks use the same
     # strict matchup + kickoff timestamp verifier (parse_scoreboard).
@@ -143,7 +147,7 @@ def snapshot(now=None,fetch=load,data_dir=DATA):
                 found.update(matches)
                 if found:break
             except Exception as exc:
-                errors.append(f"scoreboard fallback: {type(exc).__name__}")
+                errors.append(f"scoreboard fallback: {str(exc)[:70]}")
     if not found:
         errors.append(f"no_matching_scheduled_game: {len(games)} nearby scheduled games")
     for game in found.values():
@@ -154,7 +158,7 @@ def snapshot(now=None,fetch=load,data_dir=DATA):
             game["player_stats_status"]="available" if game["players"] else "not_published"
         except Exception as exc:
             game["player_stats_status"]="source_unavailable"
-            errors.append("summary "+game["game_id"]+": "+type(exc).__name__)
+            errors.append("summary "+game["game_id"]+": "+str(exc)[:70])
     return {"season":2026,"checked_at":now.isoformat(),"source":"espn_public_scoreboard",
             "status":"ok" if found and not errors else "partial_or_unavailable",
             "errors":errors,"games":list(found.values())}
