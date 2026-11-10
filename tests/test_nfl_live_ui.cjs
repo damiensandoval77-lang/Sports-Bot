@@ -111,7 +111,11 @@ async function verify(browser, name, viewport) {
     name+' horizontal overflow detected: '+JSON.stringify(metrics));
   await page.locator('button[data-tab="live"]').click();
   assert(await page.locator('#live').isVisible(),name+' matchups tab broken');
-  const newTrackerDeployed=await page.evaluate(()=>typeof liveComparisonRows==='function');
+  const newTrackerDeployed=await page.evaluate(()=>
+    typeof liveComparisonRows==='function' &&
+    liveComparisonRows.toString().includes('standard-team-position-v2'));
+  if(requireDeployed)assert(newTrackerDeployed,
+    name+' Pages must serve standard-only v2 before this test can pass');
   if(!isLive || newTrackerDeployed){
   await page.waitForFunction(()=>state.frozenReady,{timeout:15000}).catch(()=>{});
   // Direct UI fixture: a saved pregame quote stays visible beside live stats
