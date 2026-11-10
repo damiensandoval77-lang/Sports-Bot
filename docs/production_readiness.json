@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-10T06:39:05.406250+00:00",
+  "checked_at": "2026-11-10T07:55:21.165475+00:00",
   "game_date_eastern": "2026-11-10",
   "status": "BLOCKED",
   "ready_for_trustworthy_picks": false,
@@ -10,10 +10,12 @@
   "next_tip_at": "2026-11-11T00:30:00+00:00",
   "components": {
     "schedule": {
-      "state": "READY",
+      "state": "BLOCKED",
       "required": true,
-      "reasons": [],
-      "age_minutes": 107.6
+      "reasons": [
+        "STALE_SOURCE"
+      ],
+      "age_minutes": 183.8
     },
     "ai_forecasts": {
       "state": "BLOCKED",
@@ -21,7 +23,7 @@
       "reasons": [
         "STALE_SOURCE"
       ],
-      "age_minutes": 267.1
+      "age_minutes": 343.3
     },
     "prizepicks_lines": {
       "state": "DEGRADED",
@@ -29,7 +31,7 @@
       "reasons": [
         "STALE_SOURCE"
       ],
-      "age_minutes": 307.2
+      "age_minutes": 383.4
     },
     "published_pick_cards": {
       "state": "DEGRADED",
@@ -40,7 +42,7 @@
         "NO_PROVIDER_EVENTS_CHECKED",
         "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
       ],
-      "age_minutes": 3286.9
+      "age_minutes": 3363.1
     },
     "prizepicks_research_cards": {
       "state": "DEGRADED",
@@ -52,7 +54,7 @@
         "UPCOMING_GAMES_WITHOUT_PP_RESEARCH_MATCHES",
         "PP_RESEARCH_SOURCE_PARTIAL"
       ],
-      "age_minutes": 62.5
+      "age_minutes": 76.4
     },
     "scoreboard": {
       "state": "READY",
@@ -72,10 +74,11 @@
       "reasons": [
         "PREVIOUS_DAY_AI_GRADING_INCOMPLETE"
       ],
-      "age_minutes": 61.8
+      "age_minutes": 75.8
     }
   },
   "blocking_components": [
+    "schedule",
     "ai_forecasts"
   ],
   "degraded_components": [
@@ -84,6 +87,6 @@
     "nightly_grades"
   ],
   "required_checks": 6,
-  "passing_required_checks": 2,
+  "passing_required_checks": 1,
   "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
 }
