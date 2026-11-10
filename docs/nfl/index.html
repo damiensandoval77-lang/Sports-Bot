@@ -154,14 +154,15 @@ function livePlayerFor(row,players){
 function liveComparisonRows(game,rows){
  const source=liveGame(game.game_id);
  if(!rows.length)return '<div class="scorewait">No verified pre-kickoff PrizePicks quotes available for this game.</div>';
- if(!source)return '<div class="scorewait">Live feed unavailable for this matchup. Frozen lines are still preserved.</div>';
- if(!source.players?.length)return '<div class="scorewait">Awaiting published player stats · '+esc(source.status_text||"Source pending")+'. Original frozen lines are retained.</div>';
+ const players=source?.players||[];
  const MAX=180;
- return '<div class="scorewrap"><strong>Frozen line vs live stats · '+esc(source.status_text||source.status)+'</strong>'+
-  '<small>Live ESPN box-score stats are provisional; final grades use separately verified nflverse box scores. Updated '+esc(state.live.checked_at||"unknown")+'.</small>'+
+ const notice=!source?'Live feed unavailable; saved lines remain visible.':
+  !players.length?'Player stats awaiting publication; saved lines remain visible.':'Live ESPN box-score statistics are provisional.';
+ return '<div class="scorewrap"><strong>Frozen line vs live stats · '+esc(source?.status_text||"Feed pending")+'</strong>'+
+  '<small>'+esc(notice)+' Final grades use independently verified nflverse stats. Feed updated '+esc(state.live?.checked_at||"unavailable")+'.</small>'+
   '<div class="boxscore-scroll"><table class="scoretable"><thead><tr><th>Player / stat</th><th>Frozen</th><th>AI</th><th>Live</th><th>Pace</th><th>Pick</th></tr></thead><tbody>'+
   rows.slice(0,MAX).map(r=>{
-    const p=livePlayerFor(r,source.players),actual=liveActual(r,p);
+    const p=livePlayerFor(r,players),actual=liveActual(r,p);
     const pace=actual===null?null:livePace(actual,source);
     return '<tr><td>'+esc(r.player)+'<small> '+esc(r.stat)+' · '+esc(r.odds_type)+'</small></td>'+
      '<td>'+esc(r.line)+'</td><td>'+esc(Number.isFinite(Number(r.proj))?Number(r.proj).toFixed(1):"—")+'</td>'+
@@ -192,7 +193,10 @@ async function loadFrozenAndLive(){
 function matchupCard(g,lines){
  const count=lines.filter(x=>x.game_id===g.game_id).length;
  const finished=g.status==="final";
- const status=finished?"Final "+g.away_score+"–"+g.home_score:g.status==="started_unconfirmed"?"Started · score unverified":"Scheduled";
+ const onAir=liveGame(g.game_id);
+ const status=onAir?.status==="in"?"LIVE "+(onAir.status_text||"In progress"):
+  onAir?.status==="post"?"Final "+(onAir.away_score??"—")+"–"+(onAir.home_score??"—"):
+  finished?"Final "+g.away_score+"–"+g.home_score:g.status==="started_unconfirmed"?"Started · score unverified":"Scheduled";
  const date=new Date(g.kickoff_utc);
  const retry=state.boxHealth?.games_to_retry?.find(x=>x.game_id===g.game_id);
  const verified=state.boxHealth?.status&&finished&&!retry&&state.boxManifest?.game_ids?.includes(g.game_id);
