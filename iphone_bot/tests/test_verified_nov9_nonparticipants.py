@@ -20,7 +20,7 @@ def finals():
 class NonparticipantTests(unittest.TestCase):
     def test_verified_matchups_produce_sourced_nonparticipants(self):
         rows=load_nonparticipants(finals())
-        self.assertEqual(len(rows),20)
+        self.assertEqual(len(rows),24)
         self.assertTrue(all(r["dnp_final_verified"] is True for r in rows))
         self.assertTrue(all(r["source"] in ("NBA_OFFICIAL_INACTIVE_CROSSCHECKED",SOURCE) for r in rows))
     def test_no_verified_final_never_produces_exclusions(self):

@@ -17,8 +17,10 @@ VALID={"NBA_CDN_FINAL","ESPN_FINAL"}
 OFFICIAL_KINDS={"OFFICIAL_BOX_INACTIVE","OFFICIAL_POSTGAME_RECAP_CONFIRMED_ABSENCE",
                 "OFFICIAL_GAME_DAY_OUT","OFFICIAL_PLAYER_REPORT_OUT"}
 OTHER_KINDS={"FINAL_BOXSCORE_INACTIVE","FINAL_GAME_AP_RECAP_CONFIRMED_ABSENCE",
-             "FINAL_BOXSCORE_INACTIVE_OR_DNP"}
-HOSTS={"www.nba.com","www.basketball-reference.com","www.cbssports.com"}
+             "FINAL_BOXSCORE_INACTIVE_OR_DNP","FINAL_GAME_REPORT_CONFIRMED_ABSENCE",
+             "FINAL_GAME_INJURY_OUT"}
+HOSTS={"www.nba.com","www.basketball-reference.com","www.cbssports.com",
+       "www.silverscreenandroll.com","www.si.com","arizonasports.com"}
 IDS={"0022600203","0022600204","0022600205","0022600206","0022600207",
      "0022600208","0022600209","0022600210"}
 
