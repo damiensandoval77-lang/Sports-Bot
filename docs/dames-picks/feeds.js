@@ -101,7 +101,12 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
   Math.abs(now-stamp(nbaFeed.captured_at))<20*60000;
  const nflFresh=nflFeed?.status==="ok"&&Number.isFinite(stamp(nflFeed.checked_at))&&
   Math.abs(now-stamp(nflFeed.checked_at))<20*60000;
- const nbaGames=new Map((nbaFresh?nbaFeed.games:[]).filter(g=>g.state==="in").map(g=>[g.game,g]));
+ const nbaGames=new Map((nbaFresh?nbaFeed.games:[]).filter(g=>
+  g.state==="in"&&g.stale!==true&&
+  Number.isFinite(stamp(g.observed_at||nbaFeed.captured_at))&&
+  now-stamp(g.observed_at||nbaFeed.captured_at)>=-120000&&
+  now-stamp(g.observed_at||nbaFeed.captured_at)<20*60000
+ ).map(g=>[g.game,g]));
  const nflGames=new Map((nflFresh?nflFeed.games:[]).filter(g=>g.status==="in").map(g=>[g.game_id,g]));
  return rows.map(p=>{
   if(p.sport==="NBA"){
