@@ -114,16 +114,18 @@ async function verify(browser, name, viewport) {
   // Direct UI fixture: a saved pregame quote stays visible beside live stats
   // even if the public network live feed is unavailable.
   const tracker=await page.evaluate(()=>{
-    const chosen=state.lines.find(r=>r.game_id===state.game && Number.isFinite(Number(r.line)));
+    const chosen=state.lines.find(r=>r.game_id===state.game && r.odds_type==="standard" && Number.isFinite(Number(r.line)));
     if(!chosen)return null;
-    state.frozen=[chosen];state.frozenReady=true;
+    const demon={...chosen,odds_type:"demon",line:String(Number(chosen.line)+113.5)};
+    const goblin={...chosen,odds_type:"goblin",line:String(Number(chosen.line)+227.5)};
+    state.frozen=[chosen,demon,goblin];state.frozenReady=true;
     state.live={season:2026,checked_at:new Date().toISOString(),games:[{
       game_id:chosen.game_id,status:'in',status_text:'Q1 10:00',period:1,clock:'10:00',
       away:chosen.opponent,home:chosen.team,
       players:[{player:chosen.player,team:chosen.team,stats:{[chosen.target]:3}}]
     }]};
     render();
-    return {game:chosen.game_id,line:chosen.line,player:chosen.player};
+    return {game:chosen.game_id,line:chosen.line,player:chosen.player,demon:String(Number(chosen.line)+113.5),goblin:String(Number(chosen.line)+227.5)};
   });
   assert(tracker,name+' missing fixture-compatible saved line');
   const liveDetail=page.locator('details[data-livegame="'+tracker.game+'"]');
@@ -131,7 +133,11 @@ async function verify(browser, name, viewport) {
   await liveDetail.locator('summary').click();
   let detail=await liveDetail.innerText();
   assert(detail.includes('Frozen line vs live stats')&&detail.includes(tracker.player)&&
-    detail.includes(tracker.line),name+' frozen line / live actual not rendered');
+    detail.includes(tracker.line),name+' frozen standard line / live actual not rendered');
+  assert(!detail.includes(tracker.demon)&&!detail.includes(tracker.goblin),
+    name+' goblin or demon quote leaked into live tracker');
+  assert.equal(await liveDetail.locator('tbody tr').count(),1,
+    name+' live tracker must display one standard quote per player and market');
   await page.evaluate(()=>{state.live=null;render()});
   await page.locator('details[data-livegame="'+tracker.game+'"] summary').click();
   detail=await page.locator('details[data-livegame="'+tracker.game+'"]').innerText();
