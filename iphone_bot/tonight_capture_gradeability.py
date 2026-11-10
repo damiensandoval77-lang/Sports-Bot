@@ -20,7 +20,7 @@ def eastern_day(value):
         return x.astimezone(ET).date().isoformat() if x.tzinfo else None
     except (TypeError,ValueError,OverflowError):return None
 
-def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
+def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     today=now.astimezone(ET).date().isoformat()
     days=sorted({g.get("date_eastern") for g in schedule.get("games",[])
@@ -71,6 +71,18 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
         frozen_markets={market_key(x) for x in l}
         standard_markets={market_key(x) for x in standard}
         missing_markets=standard_markets-frozen_markets
+        # Research receipts are a separate fallback, never validated model picks.
+        archived_research=(research or {}).get("records",[]) if (research or {}).get("status")=="IMMUTABLE_PRETIP_STANDARD_QUOTE_AI_RESEARCH" else []
+        eligible_research={
+            market_key(x) for x in archived_research
+            if x.get("game")==name and x.get("research_only") is True
+            and x.get("calibrated") is False
+            and x.get("grade")=="UNSETTLED_RESEARCH"
+            and x.get("more_tier")=="standard" and x.get("less_tier")=="standard"
+            and x.get("source")=="independent_prizepicksapi_com"
+        }
+        research_backed=missing_markets & eligible_research
+        no_ai_receipt=missing_markets - eligible_research
         g=[x for x in grade_rows if x.get("game")==name]
         issue=[]
         if not q:issue.append("NO_CAPTURED_PROVIDER_LINES")
@@ -91,6 +103,8 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
              "standard_source_quotes":len(standard),
              "standard_unique_markets":len(standard_markets),
              "standard_markets_without_frozen_model":len(missing_markets),
+             "missing_primary_with_separate_research_receipt":len(research_backed),
+             "missing_primary_without_any_ai_receipt":len(no_ai_receipt),
              "unique_provider_player_stat_markets":len({(x.get("player"),x.get("team"),x.get("stat")) for x in q}),
              "frozen_ai_only":len(a),
              "frozen_line_backed":len(l),
@@ -107,6 +121,8 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
        "total_quotes":sum(g["source_quotes"] for g in result["games"]),
        "total_standard_source_quotes":sum(g["standard_source_quotes"] for g in result["games"]),
        "total_standard_markets_without_frozen_model":sum(g["standard_markets_without_frozen_model"] for g in result["games"]),
+       "total_missing_primary_with_separate_research_receipt":sum(g["missing_primary_with_separate_research_receipt"] for g in result["games"]),
+       "total_missing_primary_without_any_ai_receipt":sum(g["missing_primary_without_any_ai_receipt"] for g in result["games"]),
        "total_ai_only":sum(g["frozen_ai_only"] for g in result["games"]),
        "total_line_backed":sum(g["frozen_line_backed"] for g in result["games"]),
        "total_line_backed_graded":sum(g["line_backed_graded"] for g in result["games"]),
@@ -117,10 +133,11 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None):
 def main():
     paths=["docs/nba_schedule.json","docs/prizepicks_pregame_line_archive.json",
            "docs/ai_no_line_pregame_archive.json","docs/lagged_matchup_all_market_ledger.json",
-           "docs/ai_forecast_actual_ledger.json"]
+           "docs/ai_forecast_actual_ledger.json",
+           "docs/standard_quote_ai_research_archive.json"]
     try:
         records=[json.loads((ROOT/p).read_text()) for p in paths]
-        report=reconcile(*records)
+        report=reconcile(*records[:5],research=records[5])
     except (OSError,ValueError,TypeError) as exc:
         report={"checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
                 "status":"CAPTURE_INCOMPLETE","issues":["INPUT_ERROR:"+type(exc).__name__]}
