@@ -43,6 +43,8 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_pub_handoff.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_pp_unchanged_snapshot_recovery.py' -v
           python -m py_compile iphone_bot/publish_live_pp_ai_join.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_standard_quote_ai_research.py' -v
+          python -m py_compile iphone_bot/archive_standard_quote_ai_research.py
       - name: Build honest snapshot from already published observed inputs
         if: github.event_name != 'pull_request'
         id: build
@@ -61,7 +63,11 @@ jobs:
             git reset --hard origin/main
             cp "$RUNNER_TEMP/ai_prizepicks_quick_join.json" docs/ai_prizepicks_quick_join.json
             cp "$RUNNER_TEMP/ai_prizepicks_quick_join_health.json" docs/ai_prizepicks_quick_join_health.json
-            git add docs/ai_prizepicks_quick_join.json docs/ai_prizepicks_quick_join_health.json
+            # Reconcile against the *latest* immutable archive after each fetch/reset.
+            # Save verified pretip standard line + existing AI research receipts even
+            # when a later provider refresh is unavailable. No paid APIs are called.
+            python -m iphone_bot.archive_standard_quote_ai_research
+            git add docs/ai_prizepicks_quick_join.json docs/ai_prizepicks_quick_join_health.json docs/standard_quote_ai_research_archive.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish observed NBA PrizePicks and frozen AI matching diagnostic'
             if git push origin HEAD:main; then exit 0; fi
