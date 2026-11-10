@@ -78,10 +78,13 @@ def evaluate(inputs, now=None, previous=None):
             if not isinstance(row,dict) or row.get("pending")!=0 or row.get("accounted_for")!=row.get("captured"):
                 errors.append("GRADING_INCOMPLETE:"+str(day))
 
-    nfl,errors=check("nfl_grading",inputs.get("nfl_grading"),None)
-    # NFL grade health has no timestamp contract; require credible settled
-    # frozen standard-only grades rather than pretending to verify freshness.
-    reasons["nfl_grading"].remove("MISSING_OR_STALE_REPORT")
+    # NFL historical health artifact currently has no generated_at stamp.
+    # Verify its explicit frozen standard-only contract without pretending
+    # to know when its data last refreshed.
+    nfl=inputs.get("nfl_grading")
+    nfl=nfl if isinstance(nfl,dict) else {}
+    errors=[]
+    reasons["nfl_grading"]=errors
     if nfl.get("official_grading_scope")!="FROZEN_STANDARD_LINE_ONLY":
         errors.append("NFL_STANDARD_GRADE_SCOPE_INVALID")
     if not isinstance(nfl.get("standard_settled"),int) or nfl["standard_settled"]<1:
