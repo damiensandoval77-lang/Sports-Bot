@@ -70,6 +70,8 @@ class FinalResearchTests(unittest.TestCase):
         self.assertEqual(replay["records"][0]["grade"],"HIT")
         self.assertEqual(replay["research_directional_sample"],1)
         self.assertEqual(replay["records"][0]["source_snapshot"],original["records"][0]["source_snapshot"])
+        self.assertEqual(replay["research_grading_checked_at"],graded["research_grading_checked_at"])
+        self.assertEqual(replay,graded)
 
     def test_alternate_tier_cannot_become_grading_receipt(self):
         original=archive(receipt())
