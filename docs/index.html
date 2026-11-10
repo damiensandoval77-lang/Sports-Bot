@@ -568,6 +568,50 @@ function verifiedStandardLineCoverage(feed,fixtures,now=Date.now()){
  }
  return result;
 }
+// Independent verified provider-board recovery when the derived pick'em model
+// input is missing or delayed. This is a REAL source line, not an AI estimate.
+// Never make an old or alternate tier appear as a current standard quote.
+function verifiedBoardStandardLineCoverage(provider,fixtures,now=Date.now()){
+ const rows=[];
+ if(provider?.status!=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"||
+    provider?.source!=="independent_prizepicksapi_com"||
+    !Array.isArray(provider.board_offers))return rows;
+ const updated=Date.parse(provider.generated_at);
+ if(!Number.isFinite(updated)||updated>now+600000||now-updated>5400000)return rows;
+ const scheduled=new Map((fixtures?.games||[]).map(g=>[g.game,g]));
+ const groups=new Map();
+ for(const p of provider.board_offers){
+  if(!p||p.is_demo!==false||p.source!=="independent_prizepicksapi_com"||
+     p.more_tier!=="standard"||p.less_tier!=="standard"||
+     !["PTS","REB","AST","PRA"].includes(p.stat)||
+     !p.player||!p.team||!p.game||!p.starts_at||
+     typeof p.line!=="number"||!Number.isFinite(p.line)||p.line<0||p.line>200)continue;
+  const tip=Date.parse(p.starts_at),observed=Date.parse(p.observed_at);
+  if(!Number.isFinite(tip)||tip<=now||!Number.isFinite(observed)||
+     observed>now+600000||now-observed>5400000||observed>=tip)continue;
+  const game=scheduled.get(p.game);
+  if(!game||![null,undefined,"pre"].includes(game.game_state)||
+     ![game.home_abbreviation,game.away_abbreviation].includes(p.team)||
+     Math.abs(Date.parse(game.start)-tip)>30*60000)continue;
+  const key=[norm(p.player),p.team,p.game,p.stat,tip].join("|");
+  if(!groups.has(key))groups.set(key,[]);
+  groups.get(key).push(p);
+ }
+ for(const group of groups.values()){
+  // Multiple distinct published thresholds for the same standard market
+  // cannot be disambiguated safely without a fresh independent quote.
+  if(new Set(group.map(p=>p.line)).size!==1)continue;
+  const p=group[0];
+  rows.push({player:p.player,team:p.team,game:p.game,start:p.starts_at,
+    stat:p.stat,line:p.line,market_updated:p.observed_at,
+    source:"independent_prizepicksapi_com",sportsbook:"PrizePicks",
+    pickem_tier:"standard",standard_line_two_sided_verified:true,
+    line_only:true,projection:null,combined_projection:null,
+    estimated_hit_chance:null,injury_reprojection_status:"PENDING",
+    research_only:true});
+ }
+ return rows;
+}
 function newModelKey(p){
  return [norm(p.player),p.team,p.game,p.stat,Date.parse(p.start)].join("|");
 }
@@ -3114,6 +3158,22 @@ ppProviderPartial=ppFresh&&(pp.value.partial_board===true||pp.value.complete_pro
 ppBoardOffers=ppFresh&&Array.isArray(pp.value.board_offers)?
   pp.value.board_offers.filter(x=>x.is_demo===false&&x.source==="independent_prizepicksapi_com"&&
     x.game&&Date.parse(x.starts_at)>Date.now()):[];
+// Backstop the derived model-input JSON with the independent verified
+// provider board. Missing derived data must not mislabel a known real line
+// as "Unavailable" on an upcoming game's main card.
+const recoveredStandards=ppFresh?
+  verifiedBoardStandardLineCoverage(pp.value,sch.status==="fulfilled"?sch.value:null):[];
+if(recoveredStandards.length){
+ const canonical=new Map(standardLineCards.map(p=>[newModelKey(p),p]));
+ for(const quote of recoveredStandards){
+  const key=newModelKey(quote),prior=canonical.get(key);
+  if(!prior)canonical.set(key,quote);
+  // If two authenticated snapshots disagree, discard rather than pick
+  // the more favorable quote or pretend either line remains current.
+  else if(prior.line!==quote.line)canonical.delete(key);
+ }
+ standardLineCards=[...canonical.values()];
+}
 if(ppFresh&&ppBoardOffers.length){
  prizepicks=[...prizepicks,...ppBoardOffers];
 }
