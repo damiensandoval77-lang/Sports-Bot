@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090e1a">
+<title>Dame's Picks · Sports-Bot</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f6fc;background:#080d19;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;min-height:100vh}button{font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #c4fa29;outline-offset:2px}
+.shell{max-width:590px;margin:auto;padding:28px 18px 100px}.muted{color:#9ba5bf}.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-weight:850;font-size:32px;letter-spacing:-1.4px;margin:10px 0 25px}.lime{color:#c7fa32}.round{border:1px solid #27324d;background:#141c2e;color:#f4f6fc;padding:10px 14px;border-radius:30px}
+.segment{display:flex;background:#141b2d;border:1px solid #25314c;border-radius:16px;padding:5px;margin-bottom:20px;gap:5px}.segment button{flex:1;border:0;background:transparent;color:#a1acc3;border-radius:11px;padding:15px;font-weight:760}.segment button.active{background:#c7fa32;color:#111728}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:22px 0 28px}.metric,.prop,.panel{background:#141b2d;border:1px solid #27324b;border-radius:20px}.metric{padding:15px 11px}.metric .label{font-size:11px;letter-spacing:1px;color:#9aa7c0}.metric .val{font-size:21px;font-weight:800;margin-top:10px}
+.section{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:16px 0}.section h2{font-size:22px;margin:0}.small{font-size:12px;color:#a6b1c9}.pills{font-size:11px;background:#222d46;border-radius:9px;padding:5px 8px;color:#d4dcef}.prop{width:100%;text-align:left;color:inherit;display:block;padding:18px;margin:11px 0}.prop:active{border-color:#c7fa32}.prop h3{margin:0;font-size:20px;letter-spacing:-.35px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.sub{font-size:12px;color:#9ca7bf;margin-top:5px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end;margin-top:17px}.stats span{font-size:11px;color:#9ba7bc;display:block;margin-bottom:6px}.stats strong{font-size:19px}.pick{border-radius:14px;padding:10px 11px;font-size:12px;font-weight:850;white-space:nowrap}.more{background:#c7fa32;color:#111728}.less{background:#4262e5;color:white}.none{background:#303c55;color:#c4cbda}.notice{font-size:12px;color:#9ba7c0;line-height:1.5;margin-top:12px}.footer{position:fixed;bottom:0;left:0;right:0;background:#0c1324;border-top:1px solid #27314c;display:flex;justify-content:space-around;padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:5}.footer button{border:0;background:transparent;color:#9aa7bd;padding:9px}.footer button.active{color:#c7fa32;font-weight:800}
+.detail-head{margin:28px 0 15px}.detail-head h1{font-size:34px;letter-spacing:-1px;margin:10px 0 6px}.tabs{display:flex;gap:7px;overflow:auto;margin:20px 0}.tabs button{flex:1;border:1px solid #27334d;color:#9ba7bf;background:#141b2d;padding:13px;border-radius:11px;white-space:nowrap;font-weight:750}.tabs button.active{background:#c7fa32;color:#0d1624;border-color:#c7fa32}
+.panel{padding:19px;margin:15px 0}.panel h2{font-size:18px;margin:0 0 15px}.triple{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.triple span{display:block;font-size:12px;color:#a2acc2}.triple strong{display:block;font-size:29px;margin-top:10px}.meter{height:10px;background:#28324c;border-radius:99px;overflow:hidden;margin:19px 0 9px}.meter>div{background:#c7fa32;height:100%}.cta{padding:16px;text-align:center;border-radius:13px;font-weight:850;margin-top:16px}.chart{display:flex;align-items:flex-end;gap:8px;height:125px;margin:15px 0}.bar{flex:1;min-width:0;text-align:center}.bar div{border-radius:7px 7px 2px 2px;background:#51607e;min-height:3px}.bar b{font-size:10px;color:#cbd4e7}.bar small{display:block;font-size:9px;color:#8592aa;white-space:nowrap;overflow:hidden;margin-top:6px}.inline-button{border:1px solid #2b3c60;background:#161e32;color:#dae5ff;border-radius:12px;padding:12px 15px}
+.empty{text-align:center;background:#131c2e;border:1px solid #27334d;padding:25px;border-radius:18px;color:#aeb9ce;line-height:1.5}
+.hidden{display:none!important}
+</style></head><body>
+<main class="shell">
+<header class="top"><div class="small" id="date"></div><button class="round" id="refresh" aria-label="Refresh data">↻ Refresh</button></header>
+<div class="brand">Dame’s <span class="lime">Picks</span></div>
+<div id="dashboard"><div class="segment"><button data-sport="NBA" class="active">NBA</button><button data-sport="NFL">NFL</button></div>
+<div class="metrics"><div class="metric"><div class="label">GRADED W–L</div><div class="val" id="wl">—</div></div><div class="metric"><div class="label">HIT RATE</div><div class="val" id="hit-rate">—</div></div><div class="metric"><div class="label">UPCOMING GAMES</div><div class="val" id="games">—</div></div></div>
+<div class="section"><h2>Player props</h2><span class="pills">LIVE BOT DATA</span></div><div class="small" id="updated"></div><div id="cards" aria-live="polite"></div></div>
+<div id="detail" class="hidden"><button class="inline-button" id="back">‹ Back to picks</button><div class="detail-head"><div class="small" id="detail-source"></div><h1 id="player-name"></h1><div class="muted" id="matchup"></div></div><div class="tabs" id="stat-tabs"></div><div id="detail-body"></div></div>
+</main><nav class="footer" aria-label="Main navigation"><button class="active" id="slate">▦<div>Slate</div></button><button id="live">◷<div>Live</div></button><button id="tracker">▤<div>Tracker</div></button><button id="profile">♙<div>Profile</div></button></nav>
+<script src="adapter.js"></script><script>
+"use strict";
+const $=id=>document.getElementById(id), state={sport:"NBA",rows:{NBA:[],NFL:[]},selected:null,errors:[],stamp:null};
+const format=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—",percent=x=>typeof x==="number"?Math.round(x*100)+"%":"—";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dateFmt=s=>{const d=new Date(s);return isNaN(d)?"—":d.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})};
+async function json(path){const r=await fetch("../"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return r.json()}
+async function csv(path){const r=await fetch("../nfl/data/"+path+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(path+" HTTP "+r.status);return DamesAdapter.parseCSV(await r.text())}
+async function load(){
+ $("updated").textContent="Refreshing published Sports-Bot feeds…";
+ const [nba,form,nfl,schedule]=await Promise.allSettled([json("lagged_matchup_all_market_ledger.json"),json("current_form.json"),json("nfl/data/latest_2026.json"),json("nfl/data/schedule_2026.json")]);
+ state.errors=[];if(nba.status==="fulfilled")state.rows.NBA=DamesAdapter.nbaRows(nba.value,form.status==="fulfilled"?form.value:null);else state.errors.push("NBA ledger unavailable");
+ if(nfl.status==="fulfilled"&&schedule.status==="fulfilled"&&Array.isArray(nfl.value.files)){
+  const parts=await Promise.allSettled(nfl.value.files.map(csv));
+  state.rows.NFL=DamesAdapter.nflRows(parts.filter(p=>p.status==="fulfilled").map(p=>p.value),schedule.value);
+  if(parts.some(p=>p.status==="rejected"))state.errors.push("Some NFL prediction files unavailable");
+ }else state.errors.push("NFL prediction export unavailable");
+ state.stamp=new Date();render();
+}
+function visible(){
+ const rows=state.rows[state.sport],now=Date.now();
+ // Pre-game slate first. Historical frozen picks remain selectable under Tracker.
+ if(state.mode==="tracker")return [...rows].sort((a,b)=>Date.parse(b.start)-Date.parse(a.start)).slice(0,150);
+ const active=rows.filter(r=>Date.parse(r.start)>now);
+ return active.sort((a,b)=>(b.chance??0)-(a.chance??0)).slice(0,150);
+}
+function render(){
+ const rows=state.rows[state.sport],sum=DamesAdapter.summary(rows),cards=visible();
+ $("wl").textContent=sum.graded?sum.wins+"–"+sum.losses:"—";
+ $("hit-rate").textContent=percent(sum.hitRate);
+ $("games").textContent=sum.games;
+ $("updated").textContent=(state.mode==="tracker"?"Archived snapshots and grades · ":"Upcoming immutable pregame picks · ")+(state.stamp?"Checked "+state.stamp.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"")+
+ (state.errors.length?" · "+state.errors.join("; "):"");
+ $("cards").innerHTML=cards.length?cards.map(r=>'<button class="prop" data-id="'+esc(r.id)+'"><div class="row"><h3>'+esc(r.player)+'</h3><span class="pills">'+esc(r.status==="GRADED"?(r.hit===true?"WIN":r.hit===false?"LOSS":"PUSH"):"FROZEN")+'</span></div><div class="sub">'+esc(r.team)+" · "+esc(r.stat)+" · "+esc(r.game)+" · "+esc(dateFmt(r.start))+'</div><div class="stats"><div><span>LINE</span><strong>'+format(r.line)+'</strong></div><div><span>PROJ</span><strong>'+format(r.projection)+'</strong></div><div><span>SIM EST.</span><strong>'+percent(r.chance)+'</strong></div><div class="pick '+(r.side==="MORE"?"more":r.side==="LESS"?"less":"none")+'">'+esc(r.side||"PASS")+'</div></div></button>').join(""):'<div class="empty">No eligible '+esc(state.sport)+(state.mode==="tracker"?" saved predictions found.":" upcoming frozen picks. Historical predictions are in Tracker.")+'</div>';
+ $("cards").querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>open(b.dataset.id)));
+}
+function open(id){
+ const picked=state.rows[state.sport].find(r=>r.id===id);if(!picked)return;
+ state.selected=picked;$("dashboard").classList.add("hidden");$("detail").classList.remove("hidden");renderDetail();scrollTo(0,0);
+}
+function renderDetail(){
+ const p=state.selected;if(!p)return;const peers=state.rows[p.sport].filter(r=>r.player===p.player&&r.game===p.game&&r.start===p.start);
+ $("player-name").textContent=p.player;$("matchup").textContent=p.team+" · "+p.game+" · "+dateFmt(p.start);
+ $("detail-source").textContent=p.sport+" · "+p.source+" · Original snapshot "+dateFmt(p.snapshot);
+ $("stat-tabs").innerHTML=peers.map(r=>'<button data-stat="'+esc(r.stat)+'" class="'+(r.id===p.id?"active":"")+'">'+esc(r.stat)+'</button>').join("");
+ $("stat-tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.selected=peers.find(r=>r.stat===b.dataset.stat);renderDetail()});
+ const valid=p.chance!==null&&p.side!==null,sz=valid?Math.round(p.chance*100):0;
+ let bars="";
+ if(p.lastGames?.length){const games=[...p.lastGames].reverse();const mx=Math.max(p.line,1,...games.map(g=>Number(g.actual)||0));
+  bars='<div class="chart">'+games.map(g=>{const v=Number(g.actual)||0;return '<div class="bar"><b>'+format(v)+'</b><div style="height:'+Math.max(4,Math.round(v/mx*92))+'px;background:'+(v>p.line?"#c7fa32":"#4d5c79")+'"></div><small>W'+esc(g.week)+'</small></div>'}).join("")+'</div>';
+ }
+ $("detail-body").innerHTML='<section class="panel"><div class="section"><h2>Frozen AI projection</h2><span class="pills">'+esc(p.status==="GRADED"?"SETTLED":"PREGAME SAVED")+'</span></div><div class="triple"><div><span>LINE</span><strong>'+format(p.line)+'</strong></div><div><span>PROJ</span><strong class="lime">'+format(p.projection)+'</strong></div><div><span>SIM EST.</span><strong>'+percent(p.chance)+'</strong></div></div>'+(valid?'<div class="meter"><div style="width:'+sz+'%"></div></div>':'')+'<div class="notice">'+esc(p.chanceLabel)+(p.draws?" · "+p.draws.toLocaleString()+" simulation draws":"")+'. Not a calibrated win probability.</div><div class="cta '+(p.side==="MORE"?"more":p.side==="LESS"?"less":"none")+'">'+esc(p.side?p.side+" "+format(p.line)+" "+p.stat:"NO VERIFIED LEAN")+'</div></section>'+
+ '<section class="panel"><h2>Recent performance</h2>'+(bars||'<div class="notice">Per-game chart unavailable from this verified feed.</div>')+
+ '<div class="triple"><div><span>SEASON AVG</span><strong>'+format(p.seasonAverage)+'</strong></div><div><span>LAST 5 AVG</span><strong>'+format(p.last5Average)+'</strong></div><div><span>GAMES</span><strong>'+(p.seasonGames??"—")+'</strong></div></div></section>'+
+ '<section class="panel"><h2>Opponent matchup</h2><div class="muted">'+esc(p.game)+'</div><p class="notice">Opponent defensive rank is not shown until a verified position-specific defensive feed is connected.</p></section>'+
+ '<section class="panel"><h2>Grading</h2><div class="row"><strong>'+esc(p.status==="GRADED"?(p.hit===true?"WIN":p.hit===false?"LOSS":p.hit===null?"SETTLED":"PUSH"):"PENDING")+'</strong><span>Actual: '+format(p.actual)+'</span></div><p class="notice">'+esc(p.gradeSource?"Verified source: "+p.gradeSource:"Awaiting a verified final box score and settlement")+'</p></section>';
+}
+function back(){state.selected=null;$("detail").classList.add("hidden");$("dashboard").classList.remove("hidden");render()}
+$("back").onclick=back;$("refresh").onclick=load;$("slate").onclick=()=>{state.mode="slate";back()};$("tracker").onclick=()=>{state.mode="tracker";back()};
+$("live").onclick=()=>location.assign("../index.html");$("profile").onclick=()=>alert("Account features are not connected. Predictions remain read-only.");
+document.querySelectorAll("[data-sport]").forEach(b=>b.onclick=()=>{state.sport=b.dataset.sport;document.querySelectorAll("[data-sport]").forEach(x=>x.classList.toggle("active",x===b));back()});
+$("date").textContent=new Date().toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"});load().catch(e=>{$("updated").textContent="Feed loading failed: "+e.message});
+</script></body></html>
