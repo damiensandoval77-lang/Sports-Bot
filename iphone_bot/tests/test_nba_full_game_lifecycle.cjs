@@ -39,7 +39,7 @@ const archive={status:"VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE",
  ])};
 test("all eight synthetic games: pretip source survives provider outage and tipoff",()=>{
  const seen=new Set();
- for(const [game,team,i] of games.map((g,i)=>[...g,i])){
+ for(const [game,team,,i] of games.map((g,i)=>[...g,i])){
   // One real frozen market, one archived AI-only market and two verified
   // line-only markets must ALL survive the same live-game transition.
   const priced=forecast(game,team,i,"PTS",20,15.5+i);
