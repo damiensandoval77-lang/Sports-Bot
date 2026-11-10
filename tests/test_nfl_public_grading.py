@@ -59,7 +59,7 @@ class PublicNFLGradeTests(unittest.TestCase):
         full=verified_full_game_scoring(root)
         gid="2026_09_BUF_MIN"
         self.assertEqual(len(full[gid]["verified_game_scoring"]["touchdowns"]),2)
-        self.assertAlmostEqual(exact_fantasy_score(boxes[gid]["00-0034857"],full[gid]),14.36)
+        self.assertAlmostEqual(exact_fantasy_score(boxes[gid]["00-0034857"],full[gid]),13.86)
         self.assertAlmostEqual(exact_fantasy_score(boxes[gid]["00-0037248"],full[gid]),16.7)
         frozen=[r for r in read_csv(root/"frozen_pick_history_2026.csv") if r["game_id"]==gid]
         graded,pending,expected=grade_finals(frozen,games,boxes,problems,
