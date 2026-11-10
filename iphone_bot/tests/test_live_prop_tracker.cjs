@@ -207,3 +207,55 @@ test("Observed pretip line never guessed from post-tip, stale, one-sided or conf
  assert.equal(read({},[quote,{...quote,line:16.5}]),null);
  assert.equal(read({},[{...quote,source:"unverified"}]),null);
 });
+
+test("all eight matchups retain both frozen and AI-only markets per player/stat",()=>{
+ const games=["Cleveland Cavaliers @ Charlotte Hornets",
+ "Los Angeles Lakers @ Atlanta Hawks","Washington Wizards @ Detroit Pistons",
+ "Memphis Grizzlies @ Toronto Raptors","Indiana Pacers @ Dallas Mavericks",
+ "Denver Nuggets @ Houston Rockets","San Antonio Spurs @ Phoenix Suns",
+ "New Orleans Pelicans @ Golden State Warriors"];
+ for(const [i,game] of games.entries()){
+  const start="2026-11-10T00:00:00Z",captured="2026-11-09T23:40:00Z";
+  const priced={player:"Frozen Player",player_id:String(i+1),team:"WAS",
+   game,start,stat:"PTS",projection:20,line:19.5,combined_projection:20,
+   board_generated_at:captured};
+  const standalone={player:"No Line Player",player_id:String(i+101),team:"WAS",
+   game,start,stat:"AST",projection:5.2,line:null,
+   is_pregame_prediction:true,captured_at:captured};
+  const result=L.mergeLiveForecasts([priced],[standalone],game);
+  assert.equal(result.length,2);
+  assert.ok(result.some(p=>p.player==="Frozen Player"&&p.line===19.5));
+  assert.ok(result.some(p=>p.player==="No Line Player"&&p.line===null));
+ }
+});
+test("a line-backed market suppresses only matching AI-only stat, not the rest",()=>{
+ const start="2026-11-10T00:00:00Z",captured="2026-11-09T23:40:00Z",
+       game="Washington Wizards @ Detroit Pistons";
+ const a={player:"AJ Dybantsa",player_id:"1643407",team:"WAS",game,start,
+   stat:"PTS",line:15.5,combined_projection:16.6,board_generated_at:captured};
+ const p={player:"AJ Dybantsa",player_id:"1643407",team:"WAS",game,start,
+   is_pregame_prediction:true,line:null,captured_at:captured};
+ const x=L.mergeLiveForecasts([a],[{...p,stat:"PTS",projection:16.6},
+     {...p,stat:"REB",projection:5}],game);
+ assert.equal(x.length,2);
+ assert.equal(x.filter(q=>q.stat==="PTS").length,1);
+ assert.equal(x.find(q=>q.stat==="PTS").line,15.5);
+ assert.equal(x.find(q=>q.stat==="REB").line,null);
+});
+test("full-slate historical archive displays exact pretip quote after provider snapshot rolls over",()=>{
+ const game="Washington Wizards @ Detroit Pistons",start="2026-11-10T00:00:00Z";
+ const forecast={player:"AJ Dybantsa",team:"WAS",game,stat:"PRA",start,projection:24.5,line:null};
+ const q={id:"pp_test",player:"AJ Dybantsa",team:"WAS",game,stat:"PRA",
+   starts_at:start,observed_at:"2026-11-09T23:54:00Z",
+   source_generated_at:"2026-11-09T23:58:00Z",line:23.5,tier:"standard",
+   more_tier:"standard",less_tier:"standard",is_demo:false,
+   source:"independent_prizepicksapi_com"};
+ const archive={status:"VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE",quotes:[q]};
+ assert.deepEqual(L.archivedPregameLine(forecast,archive),{
+   line:23.5,tier:"standard",observed_at:q.observed_at,
+   provider_projection_id:"pp_test",source:"independent_prizepicksapi_com",
+   status:"OBSERVED_PRETIP_QUOTE_NOT_FROZEN_PICK"});
+ assert.equal(L.archivedPregameLine({...forecast,team:"DET"},archive),null);
+ assert.equal(L.archivedPregameLine(forecast,{...archive,quotes:[{...q,
+   source_generated_at:"2026-11-10T00:01:00Z"}]}),null);
+});
