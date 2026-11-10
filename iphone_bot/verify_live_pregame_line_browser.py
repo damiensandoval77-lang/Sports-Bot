@@ -51,11 +51,15 @@ def run():
                 if not tile:
                     out["checks"].append({"game":game,"status":"GAME_TILE_MISSING"})
                     continue
+                # Old game's already-rendered cards can otherwise satisfy
+                # the wait immediately after a different tab is clicked.
                 tile.click(timeout=6000)
                 try:
                     page.wait_for_function(
-                        "() => document.querySelectorAll('#live-prop-cards .live-prop-card').length > 0",
-                        timeout=25000)
+                        """game => document.querySelector('#live-prop-title')?.textContent === game &&
+                        !document.querySelector('#live-prop-context')?.textContent?.includes('Checking for updated player totals') &&
+                        document.querySelectorAll('#live-prop-cards .live-prop-card').length > 0""",
+                        arg=game,timeout=35000)
                 except Exception:
                     out["checks"].append({"game":game,"status":"NO_LIVE_TRACKER_CARDS",
                                           "context":page.locator("#live-prop-context").inner_text()[:220]})
