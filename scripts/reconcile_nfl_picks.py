@@ -401,7 +401,14 @@ def run(root=ROOT):
     graded,pending,expected=grade_finals(history,schedule,boxscores,invalid,verified_inactives(root),verified_zero_snaps(root),verified_full_game_scoring(root))
     if expected!=expected_independent or expected!=len(graded)+len(pending):
         raise ValueError("NFL_FINAL_GRADE_COVERAGE_MISMATCH: no records written")
+    # Only original frozen standard quotes enter official model hit rates.
+    # Goblin/demon lines remain gradeable historical research, never votes
+    # in the main hit-rate denominator or independent-pick count.
     standard=[g for g in graded if g["odds_type"]=="standard" and g["won"] in ("0","1")]
+    official_standard=[g for g in graded if g["odds_type"]=="standard"
+                       and g["grade_status"]=="graded"]
+    alternative_graded=[g for g in graded if g["odds_type"] in ("goblin","demon")
+                        and g["grade_status"]=="graded"]
     genuine_grades=sum(g["grade_status"]=="graded" for g in graded)
     voids=sum(g["grade_status"]=="void_verified_inactive" for g in graded)
     metrics={"season":2026,"archived_pregame_lines":len(history),
@@ -412,6 +419,9 @@ def run(root=ROOT):
              "void_picks":voids,
              "pending_picks":len(pending),
              "pushes":sum(x["result"]=="Push" for x in graded),
+             "official_grading_scope":"FROZEN_STANDARD_LINE_ONLY",
+             "standard_graded_picks_including_pushes":len(official_standard),
+             "alternative_tier_historical_grades_excluded":len(alternative_graded),
              "standard_settled":len(standard),
              "standard_wins":sum(g["won"]=="1" for g in standard),
              "standard_hit_rate":round(100*sum(g["won"]=="1" for g in standard)/len(standard),2) if standard else None,
