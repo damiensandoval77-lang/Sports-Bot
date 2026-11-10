@@ -1,6 +1,12 @@
 name: Grade frozen new AI PTS REB AST PRA (no provider credits)
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'iphone_bot/multimarket_forecast_ledger.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
+      - '.github/workflows/nba-new-ai-multimarket-grade.yml'
   push:
     branches: [main]
     paths:
@@ -32,8 +38,10 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
       - name: Grade only frozen new-model forecasts against verified final NBA boxes
+        if: github.event_name != 'pull_request'
         run: python -m iphone_bot.multimarket_forecast_ledger
       - name: Publish independent grade record without touching old AI
+        if: github.event_name != 'pull_request'
         run: |
           set -euo pipefail
           cp docs/lagged_matchup_all_market_ledger.json "$RUNNER_TEMP/new-ai-ledger.json"
