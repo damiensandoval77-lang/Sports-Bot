@@ -65,8 +65,9 @@ function support(p){
  // and only when 5 or 10 game-level actuals really exist.
  const logs=Array.isArray(p.recentGames)?p.recentGames:p.logs;
  if(Array.isArray(logs)){
-  const vals=logs.map(g=>number(g?.actual)).filter(v=>v!==null&&v>=0);
-  if(vals.length>=5){
+  const vals=logs.map(g=>number(g?.actual));
+  // Incomplete games must not shrink the sample and inflate a hit rate.
+  if(vals.length>=5 && vals.every(v=>v!==null&&v>=0)){
    const last=vals.slice(-Math.min(vals.length,10));
    const hits=last.filter(v=>good(v,line,side)).length;
    if(hits>=Math.ceil(.7*last.length)){
@@ -117,7 +118,14 @@ function openingFor(p,tier,used=new Set()){
  }
  // When a slate has more picks than the finite pool, disambiguate by player
  // and stat without claiming any new metric.
- const text=(pool[start]+" for "+String(p.player||"this player").split(" ").slice(-1)[0]+" "+String(p.stat||"this stat")).replace(/\s+/g," ");
+ const who=String(p.player||"this player").split(" ").slice(-1)[0];
+ const stat=String(p.stat||"this stat");
+ const base=pool[start]+" for "+who+" "+stat;
+ let text=base;
+ if(used.has(text))text=base+" at "+fmt(number(p.line)??0);
+ if(used.has(text))text=base+" on "+String(p.source||p.provider||"the board");
+ let index=2;
+ while(used.has(text)){text=base+" look "+index;index++}
  used.add(text);return text;
 }
 function damesTake(p,options={}){
@@ -137,7 +145,9 @@ function forSlate(rows){
   return k(a).localeCompare(k(b));
  });
  for(const p of sorted){
-  const slate=[p.sport,String(p.start||"").slice(0,10)].join("|");
+  const time=Date.parse(p.start);
+  const day=Number.isFinite(time)?new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(time)):String(p.start||"").slice(0,10);
+  const slate=[p.sport,day].join("|");
   if(!bySlate.has(slate))bySlate.set(slate,new Set());
   const ident=[p.sport,p.start,p.gameId||p.game,p.playerId||p.player,p.stat,p.line,p.captured,p.source||p.provider||""].join("|");
   out.set(ident,damesTake(p,{usedOpeners:bySlate.get(slate)}));
