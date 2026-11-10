@@ -208,7 +208,10 @@ def espn_boxscore_rows(event,summary):
                 # Explicit finalized ESPN DNP only: never treat missing numeric
                 # stats, empty arrays, or a roster omission as proof of absence.
                 reason=entry.get("reason") or entry.get("notPlayingReason")
-                if entry.get("didNotPlay") is True and isinstance(reason,str) and reason.strip():
+                played_minutes=(minutes(values[keys["MIN"]])
+                                if isinstance(values,list) and keys["MIN"]<len(values) else None)
+                if (entry.get("didNotPlay") is True and isinstance(reason,str) and
+                    reason.strip() and not (played_minutes is not None and played_minutes>0)):
                     row=verified_dnp_player(player.get("displayName"),code,opp,day,
                                             reason,"ESPN_FINAL",event_id)
                     if row:rows.append(row)
