@@ -153,5 +153,32 @@ function attachInjuries(rows,report){
   return {...row,injury:found.length===1?{status:found[0].status,asOf:report.report_issued_at,source:"Official NBA report"}:null};
  });
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries};
+/* Preserve every independently observed STANDARD pregame quote even if no model was frozen.
+   A quote-only card is explicitly ungraded and NEVER claims a projection or AI side. */
+function includeArchivedStandard(rows,archive){
+ if(!Array.isArray(archive?.quotes))return rows;
+ const valid=q=>q&&q.tier==="standard"&&q.more_tier==="standard"&&q.less_tier==="standard"&&
+  q.is_demo===false&&["PTS","REB","AST","PRA"].includes(q.stat)&&n(q.line)!==null&&
+  !!q.player&&!!q.team&&!!q.game&&Number.isFinite(stamp(q.observed_at))&&
+  Number.isFinite(stamp(q.starts_at))&&stamp(q.observed_at)<stamp(q.starts_at);
+ const k=p=>[norm(p.player),p.team,p.game,p.stat,n(p.line)].join("|");
+ const known=new Set(rows.filter(x=>x.sport==="NBA").map(k));
+ const missing=new Map();
+ for(const q of archive.quotes.filter(valid)){
+  const ident=k(q);
+  if(known.has(ident))continue;
+  const old=missing.get(ident);
+  if(!old||stamp(q.observed_at)>stamp(old.observed_at))missing.set(ident,q);
+ }
+ const additions=[...missing.values()].map(q=>({
+  sport:"NBA",playerId:"",player:q.player,team:q.team,opponent:q.game.split(" @ ")[0]||"",
+  position:"",game:q.game,gameId:q.game,start:q.starts_at,stat:q.stat,source:"PrizePicks archived standard",
+  line:n(q.line),projection:null,direction:null,chance:null,chanceSource:"No frozen model forecast was captured for this standard line",
+  captured:q.observed_at,grade:"UNMODELED",actual:null,hit:null,gradeSource:null,
+  form:{season:null,l5:null,l10:null,games:null},modelId:null,component:null,
+  quoteOnly:true,quoteId:q.id
+ }));
+ return rows.concat(additions);
+}
+root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,attachInjuries,includeArchivedStandard};
 })(typeof window!=="undefined"?window:globalThis);
