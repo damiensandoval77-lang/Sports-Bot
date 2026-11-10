@@ -8,6 +8,8 @@ on:
       - 'iphone_bot/fetch_hoopr_nba_schedule.py'
       - 'iphone_bot/season_schedule_baseline.py'
       - 'iphone_bot/tests/test_season_schedule_baseline.py'
+      - 'iphone_bot/publish_nba_schedule_atomic.py'
+      - 'iphone_bot/tests/test_publish_nba_schedule_atomic.py'
       - 'iphone_bot/tests/test_fetch_nba_schedule.py'
       - '.github/workflows/nba-schedule.yml'
   schedule:
@@ -31,6 +33,7 @@ jobs:
           python -m py_compile iphone_bot/fetch_nba_schedule.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_nba_schedule.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_season_schedule_baseline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_nba_schedule_atomic.py' -v
       - name: Refresh verified full season fixture schedule before private NBA/ESPN fallbacks
         run: |
           pip install pandas pyarrow
