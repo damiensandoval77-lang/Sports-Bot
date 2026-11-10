@@ -15,6 +15,7 @@ on:
       - 'docs/nfl/data/latest_2026.json'
       - 'docs/nfl/data/boxscores/week_*.json'
       - 'docs/nfl/data/boxscores/manifest.json'
+      - 'docs/nfl/data/verified_inactives_2026.json'
   workflow_dispatch:
   # GitHub Actions commits made with GITHUB_TOKEN do not fire downstream
   # push workflows. Listen for the completed upstream publishers directly.
@@ -52,12 +53,12 @@ jobs:
           from pathlib import Path
           p=Path("docs/nfl/data/grading_health_2026.json")
           r=json.loads(p.read_text())
-          assert r["expected_final_picks"] == r["graded_picks"]+r["pending_picks"]
+          assert r["expected_final_picks"] == r["graded_picks"]+r["pending_picks"]+r.get("void_picks",0)
           assert r["frozen_final_pick_candidates"] == r["expected_final_picks"]
           assert r["standard_wins"] <= r["standard_settled"]
           assert r["final_games_with_frozen_picks"] == 0 or r["expected_final_picks"] > 0, "Completed NFL games with frozen props cannot publish zero eligible records"
           print("2026 frozen grading:",r["graded_picks"],"graded,",
-                r["pending_picks"],"pending,",
+                r["pending_picks"],"pending,",r.get("void_picks",0),"verified voids,",
                 r["archived_pregame_lines"],"frozen pregame lines")
           PY
       - name: Commit only changed grading and frozen history files
