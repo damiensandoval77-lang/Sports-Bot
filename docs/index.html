@@ -535,7 +535,14 @@ function verifiedStandardLineCoverage(feed,fixtures,now=Date.now()){
     now-freshness>6*3600000)return result;
  const statNames={Points:"PTS",Rebounds:"REB",Assists:"AST",
                   "Points Rebounds Assists":"PRA"};
- const scheduled=new Map((fixtures?.games||[]).map(g=>[g.game,g]));
+ // A matchup can occur on consecutive nights. Never let tomorrow's
+ // fixture overwrite today's identical matchup name.
+ const scheduled=new Map();
+ for(const g of fixtures?.games||[]){
+  if(!g?.game||!Number.isFinite(Date.parse(g.start)))continue;
+  if(!scheduled.has(g.game))scheduled.set(g.game,[]);
+  scheduled.get(g.game).push(g);
+ }
  const groups=new Map();
  for(const p of feed.picks){
    const stat=statNames[p.stat],tip=Date.parse(p.start),
@@ -547,7 +554,7 @@ function verifiedStandardLineCoverage(feed,fixtures,now=Date.now()){
       !Number.isFinite(tip)||tip<=now||
       !Number.isFinite(quoted)||quoted>now+600000||
       now-quoted>6*3600000||quoted>=tip)continue;
-   const game=scheduled.get(p.game);
+   const game=(scheduled.get(p.game)||[]).find(g=>Math.abs(Date.parse(g.start)-tip)<=30*60000);
    if(!game||!["pre",null,undefined].includes(game.game_state)||
       ![game.home_abbreviation,game.away_abbreviation].includes(p.team)||
       Math.abs(Date.parse(game.start)-tip)>30*60000)continue;
@@ -580,7 +587,14 @@ function verifiedBoardStandardLineCoverage(provider,fixtures,now=Date.now()){
     !Array.isArray(provider.board_offers))return rows;
  const updated=Date.parse(provider.generated_at);
  if(!Number.isFinite(updated)||updated>now+600000||now-updated>5400000)return rows;
- const scheduled=new Map((fixtures?.games||[]).map(g=>[g.game,g]));
+ // A matchup can occur on consecutive nights. Never let tomorrow's
+ // fixture overwrite today's identical matchup name.
+ const scheduled=new Map();
+ for(const g of fixtures?.games||[]){
+  if(!g?.game||!Number.isFinite(Date.parse(g.start)))continue;
+  if(!scheduled.has(g.game))scheduled.set(g.game,[]);
+  scheduled.get(g.game).push(g);
+ }
  const groups=new Map();
  for(const p of provider.board_offers){
   if(!p||p.is_demo!==false||p.source!=="independent_prizepicksapi_com"||
@@ -591,7 +605,7 @@ function verifiedBoardStandardLineCoverage(provider,fixtures,now=Date.now()){
   const tip=Date.parse(p.starts_at),observed=Date.parse(p.observed_at);
   if(!Number.isFinite(tip)||tip<=now||!Number.isFinite(observed)||
      observed>now+600000||now-observed>5400000||observed>=tip)continue;
-  const game=scheduled.get(p.game);
+  const game=(scheduled.get(p.game)||[]).find(g=>Math.abs(Date.parse(g.start)-tip)<=30*60000);
   if(!game||![null,undefined,"pre"].includes(game.game_state)||
      ![game.home_abbreviation,game.away_abbreviation].includes(p.team)||
      Math.abs(Date.parse(game.start)-tip)>30*60000)continue;
