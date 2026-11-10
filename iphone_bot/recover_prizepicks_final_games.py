@@ -14,6 +14,8 @@ from iphone_bot.archived_espn_game_ids import archived_espn_hints
 from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
 from iphone_bot.verified_prizepicks_inactives import load_verified_inactive_rows
+from iphone_bot.verified_nov9_nonparticipants import load_nonparticipants
+from iphone_bot.verified_final_cache import read_cache
 
 OUT=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 STATUS=ROOT/"docs/prizepicks_final_recovery_status.json"
@@ -112,6 +114,16 @@ def main():
         checked_inactives=[]
         report.setdefault("errors",[]).append("OFFICIAL_INACTIVE_CROSSCHECK_"+type(error).__name__)
     rows.extend(checked_inactives)
+    # An independently verified FINAL player cache can establish exact game
+    # completion for historical source-confirmed nonparticipants. A cache
+    # never supplies an absent player's made-up points or a betting win/loss.
+    historical=read_cache(ROOT/"docs/verified_final_player_cache.json")
+    checked_historical=load_nonparticipants(historical+rows)
+    existing={(x.get("source_game_id"),x.get("team"),x.get("player")) for x in rows}
+    checked_historical=[r for r in checked_historical
+                        if (r.get("source_game_id"),r.get("team"),r.get("player")) not in existing]
+    rows.extend(checked_historical)
+    report["historical_source_confirmed_dnp_rows"]=len(checked_historical)
     report["manual_crosschecked_official_inactive_rows"]=len(checked_inactives)
     report["verified_rows"]=len(rows)
     report["verified_dnp_rows"]=sum(r.get("dnp_final_verified") is True for r in rows)
