@@ -33,12 +33,16 @@ class ResearchLedgerTests(unittest.TestCase):
     self.assertEqual(result["records"][0]["result"],"WIN")
     again=settle(result,[{**GAME,"AST":0}],NOW)
     self.assertEqual(again["records"][0]["actual"],8)
-    self.assertEqual(summarize(result,NOW)["by_market"]["AST"]["wins"],1)
+    self.assertEqual(summarize(result,NOW)["all_tiers_research_by_market"]["AST"]["wins"],1)
+    self.assertEqual(summarize(result,NOW)["by_market"]["AST"]["graded_lines"],0)
  def test_alternate_thresholds_not_counted_as_independent_hits(self):
     rows=[]
     for i,line in enumerate((3.5,5.5,7.5)):
         v={**SOURCE["comparisons"][0],
-           "provider_projection_id":"different"+str(i),"line":line}
+           "provider_projection_id":"different"+str(i),"line":line,
+           "source":"independent_prizepicksapi_com",
+           "more_tier":("goblin","standard","demon")[i],
+           "less_tier":("goblin","standard","demon")[i]}
         rows.append(v)
     frozen=freeze({"records":[]},{**SOURCE,"comparisons":rows})
     graded=settle(frozen,[GAME],NOW)
@@ -48,6 +52,9 @@ class ResearchLedgerTests(unittest.TestCase):
     self.assertEqual(summary["independent_settled_center_lines"],1)
     self.assertEqual(summary["independent_by_market"]["AST"]["graded"],1)
     self.assertEqual(summary["independent_by_market"]["AST"]["wins"],1)
+    self.assertEqual(summary["verified_quote_tier_counts"],
+                     {"standard":1,"goblin":1,"demon":1,"unverified":0})
+    self.assertEqual(summary["all_tiers_research_by_market"]["AST"]["graded_lines"],3)
  def test_joint_v3_v2_shadows_are_frozen_and_graded(self):
     src={**SOURCE,"comparisons":[{
       **SOURCE["comparisons"][0],
@@ -55,6 +62,8 @@ class ResearchLedgerTests(unittest.TestCase):
          "status":"PREGAME_MINUTES_V3_RESEARCH",
          "expected_minutes":31.5,"last_prior_date":"2026-11-07"},
       "minutes_v2_research_baseline":30,
+      "source":"independent_prizepicksapi_com",
+      "more_tier":"standard","less_tier":"standard",
       "opportunity_v2_research":{"markets":{"AST":{
         "status":"PREGAME_OPPORTUNITY_V2_RESEARCH","projection":7.5,
         "last_prior_game":"2026-11-07",
@@ -76,6 +85,58 @@ class ResearchLedgerTests(unittest.TestCase):
     saved=freeze({"records":[]},SOURCE)
     result=settle(saved,[],NOW)
     self.assertEqual(result["records"][0]["status"],"PENDING")
+ def test_median_of_alternatives_never_counts_as_standard(self):
+    rows=[]
+    for i,line in enumerate((2.5,5.5,8.5)):
+        rows.append({**SOURCE["comparisons"][0],
+            "provider_projection_id":"alt"+str(i),"line":line})
+    settled=settle(freeze({"records":[]},{**SOURCE,"comparisons":rows}),[GAME],NOW)
+    report=summarize(settled,NOW)
+    self.assertEqual(report["independent_by_market"]["AST"]["graded"],0)
+    self.assertIsNone(report["independent_by_market"]["AST"]["hit_rate"])
+    self.assertEqual(report["verified_quote_tier_counts"]["unverified"],3)
+    self.assertEqual(report["all_tiers_research_by_market"]["AST"]["graded_lines"],3)
+
+ def test_historical_legacy_tier_requires_exact_provider_archive(self):
+    base=settle(freeze({"records":[]},SOURCE),[GAME],NOW)
+    original=base["records"][0]
+    quote={"id":"offer42","player":"Test Player","team":"BOS",
+       "game":"Boston Celtics @ Charlotte Hornets","stat":"AST",
+       "line":5.5,"starts_at":"2026-11-08T21:00:00Z",
+       "observed_at":"2026-11-08T20:00:00Z",
+       "source_generated_at":"2026-11-08T20:00:10Z",
+       "source":"independent_prizepicksapi_com","is_demo":False,
+       "tier":"standard","more_tier":"standard","less_tier":"standard"}
+    archive={"status":"VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE",
+             "quotes":[quote]}
+    report=summarize(base,NOW,archive)
+    self.assertEqual(report["independent_by_market"]["AST"]["graded"],1)
+    self.assertEqual(report["verified_quote_tier_counts"]["standard"],1)
+    bad={**archive,"quotes":[{**quote,"tier":"demon","more_tier":"demon",
+                              "less_tier":"demon"}]}
+    self.assertEqual(summarize(base,NOW,bad)["independent_by_market"]["AST"]["graded"],0)
+    conflicting={**archive,"quotes":[quote,{**quote,"line":6.5}]}
+    self.assertEqual(summarize(base,NOW,conflicting)["independent_by_market"]["AST"]["graded"],0)
+    after_tip={**archive,"quotes":[{**quote,"observed_at":"2026-11-08T21:01:00Z"}]}
+    self.assertEqual(summarize(base,NOW,after_tip)["independent_by_market"]["AST"]["graded"],0)
+
+ def test_latest_standard_only_not_most_favorable_winner(self):
+    sources=[]
+    for i,(captured,line) in enumerate([
+          ("2026-11-08T20:01:00Z",4.5),
+          ("2026-11-08T20:03:00Z",9.5)]):
+        sources.append({**SOURCE["comparisons"][0],
+                        "provider_projection_id":"std"+str(i),
+                        "captured_at":captured,"line":line,
+                        "source":"independent_prizepicksapi_com",
+                        "more_tier":"standard","less_tier":"standard"})
+    frozen=freeze({"records":[]},{**SOURCE,"comparisons":sources})
+    report=summarize(settle(frozen,[GAME],NOW),NOW)
+    # Actual=8. Last frozen line 9.5 produces a losing MORE lean.
+    self.assertEqual(report["independent_by_market"]["AST"]["graded"],1)
+    self.assertEqual(report["independent_by_market"]["AST"]["wins"],0)
+    self.assertEqual(report["independent_by_market"]["AST"]["losses"],1)
+
  def test_no_fake_prices(self):
     saved=freeze({"records":[]},SOURCE)
     self.assertTrue(saved["records"][0]["not_sportsbook_odds"])
