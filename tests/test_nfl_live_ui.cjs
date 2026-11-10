@@ -136,7 +136,7 @@ async function verify(browser, name, viewport) {
     detail.includes(tracker.line),name+' frozen standard line / live actual not rendered');
   const standardFilterPublished=await page.evaluate(()=>
     typeof gameFrozenLines==='function'&&
-    gameFrozenLines.toString().includes('r.odds_type==="standard"'));
+    gameFrozenLines.toString().includes('&&r.odds_type==="standard"&&Date.parse'));
   // GitHub Pages can lag the PR source. Always enforce the new behavior
   // locally; require it in production as soon as the deployment includes it.
   if(!isLive||standardFilterPublished){
