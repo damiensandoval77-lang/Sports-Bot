@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-10T13:00:01.438700+00:00",
+  "checked_at": "2026-11-10T14:11:49.191788+00:00",
   "game_date_eastern": "2026-11-10",
   "status": "BLOCKED",
   "ready_for_trustworthy_picks": false,
@@ -10,12 +10,10 @@
   "next_tip_at": "2026-11-11T00:30:00+00:00",
   "components": {
     "schedule": {
-      "state": "BLOCKED",
+      "state": "READY",
       "required": true,
-      "reasons": [
-        "STALE_SOURCE"
-      ],
-      "age_minutes": 488.5
+      "reasons": [],
+      "age_minutes": 2.4
     },
     "ai_forecasts": {
       "state": "BLOCKED",
@@ -23,7 +21,7 @@
       "reasons": [
         "STALE_SOURCE"
       ],
-      "age_minutes": 648.0
+      "age_minutes": 719.8
     },
     "prizepicks_lines": {
       "state": "DEGRADED",
@@ -31,7 +29,7 @@
       "reasons": [
         "STALE_SOURCE"
       ],
-      "age_minutes": 688.1
+      "age_minutes": 759.9
     },
     "published_pick_cards": {
       "state": "DEGRADED",
@@ -42,7 +40,7 @@
         "NO_PROVIDER_EVENTS_CHECKED",
         "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
       ],
-      "age_minutes": 3667.8
+      "age_minutes": 3739.6
     },
     "prizepicks_research_cards": {
       "state": "DEGRADED",
@@ -54,7 +52,7 @@
         "UPCOMING_GAMES_WITHOUT_PP_RESEARCH_MATCHES",
         "PP_RESEARCH_SOURCE_PARTIAL"
       ],
-      "age_minutes": 68.5
+      "age_minutes": 72.4
     },
     "scoreboard": {
       "state": "READY",
@@ -75,11 +73,10 @@
         "OVERDUE_GRADING",
         "PREVIOUS_DAY_AI_GRADING_INCOMPLETE"
       ],
-      "age_minutes": 22.1
+      "age_minutes": 18.4
     }
   },
   "blocking_components": [
-    "schedule",
     "ai_forecasts"
   ],
   "degraded_components": [
@@ -88,6 +85,6 @@
     "nightly_grades"
   ],
   "required_checks": 6,
-  "passing_required_checks": 1,
+  "passing_required_checks": 2,
   "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
 }
