@@ -17,6 +17,9 @@ on:
       - 'iphone_bot/tests/test_direct_espn_final_recovery.py'
       - 'iphone_bot/verified_final_cache.py'
       - 'iphone_bot/verified_boxscore_dnps.py'
+      - 'iphone_bot/verified_nba_official_dnps.py'
+      - 'iphone_bot/tests/test_verified_nba_official_dnps.py'
+      - 'docs/verified_nba_dnp_2026-11-09.json'
       - 'iphone_bot/verified_pretip_trade.py'
       - 'iphone_bot/tests/test_verified_pretip_trade.py'
       - 'docs/verified_pretip_trade_2026-11-08.json'
@@ -70,6 +73,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_final_cache.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_boxscore_dnps.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_nba_official_dnps.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_pretip_trade.py' -v
       - name: Grade frozen actual AI forecasts independently of PrizePicks
         if: github.event_name != 'pull_request'
