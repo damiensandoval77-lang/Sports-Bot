@@ -106,6 +106,14 @@ def fetch(now=None):
   season_days.add(cursor.isoformat())
   cursor+=timedelta(days=1)
  season_rows=parse(frame,now,days=season_days)["games"]
+ from collections import Counter
+ found={g[k] for g in season_rows for k in ("home_abbreviation","away_abbreviation")}
+ if found!=TEAM:
+  print("FULL_SEASON_TEAM_COVERAGE_DIAGNOSTIC:",
+        json.dumps({"count":len(season_rows),"present":sorted(found),
+        "missing":sorted(TEAM-found),
+        "home_frequencies":dict(Counter(g["home_abbreviation"] for g in season_rows))}),
+        flush=True)
  baseline=build_season_baseline(season_rows,now=now,
    source="sportsdataverse hoopR 2026-27 ESPN-sourced regular-season schedule",
    source_url=URL)
