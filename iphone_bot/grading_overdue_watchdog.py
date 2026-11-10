@@ -1,0 +1,101 @@
+"""Independent source-verified NBA grading overdue watchdog.
+
+Never asserts a game finished solely due to elapsed time; it flags overdue
+final verification and settlement for investigation. Never grades forecasts.
+"""
+import datetime as dt
+import json
+import sys
+from collections import Counter
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+ROOT=Path(__file__).resolve().parents[1]
+OUT=ROOT/"docs/grading_overdue_health.json"
+ET=ZoneInfo("America/New_York")
+MAX_DELAY=dt.timedelta(hours=4)
+
+def timestamp(value):
+    try:
+        t=dt.datetime.fromisoformat(str(value).replace("Z","+00:00"))
+        return t.astimezone(dt.timezone.utc) if t.tzinfo else None
+    except (TypeError,ValueError,OverflowError):
+        return None
+
+def identity(row):
+    return tuple(str(row.get(k) or "") for k in ("player_id","team","game","start","stat"))
+
+def assess(schedule,archive,ledger,now=None):
+    now=now or dt.datetime.now(dt.timezone.utc)
+    if schedule.get("status")!="THIRD_PARTY_NBA_SCHEDULE_ONLY" or schedule.get("coverage_complete") is not True:
+        return {"status":"OVERDUE_MONITOR_SOURCE_ERROR","checked_at":now.isoformat(),
+                "errors":["OFFICIAL_SCHEDULE_NOT_VERIFIED_COMPLETE"],"games":[]}
+    if archive.get("status")!="IMMUTABLE_OBSERVED_PRETIP_NOLINE_AI_ARCHIVE":
+        return {"status":"OVERDUE_MONITOR_SOURCE_ERROR","checked_at":now.isoformat(),
+                "errors":["PREGAME_AI_ARCHIVE_UNAVAILABLE"],"games":[]}
+    finals={identity(x):x for x in ledger.get("records",[])
+            if x.get("status") in {"GRADED","EXCLUDED_VERIFIED_DNP","EXCLUDED_VERIFIED_NONPARTICIPANT"}
+            and x.get("source_game_id") and x.get("final_source")}
+    scoped={}
+    for g in schedule.get("games",[]):
+        if not isinstance(g,dict) or not g.get("game") or not g.get("date_eastern"):
+            continue
+        start=timestamp(g.get("start"))
+        if not start or start>now-MAX_DELAY or (now-start).total_seconds()>2*86400:
+            continue
+        if start.astimezone(ET).date().isoformat()!=g["date_eastern"]:
+            continue
+        scoped[g["game"]]=g
+    forecast={}
+    for p in archive.get("predictions",[]):
+        if (not isinstance(p,dict) or p.get("game") not in scoped or
+            p.get("is_pregame_prediction") is not True or p.get("line") is not None or
+            p.get("stat") not in ("PTS","REB","AST","PRA")):
+            continue
+        captured=timestamp(p.get("captured_at"));tip=timestamp(p.get("start"))
+        g=scoped[p["game"]]
+        if not captured or not tip or not captured<tip or abs((tip-timestamp(g["start"])).total_seconds())>1800:
+            continue
+        k=identity(p)
+        if k in forecast and forecast[k]!=p:
+            forecast[k]=None
+        else:
+            forecast.setdefault(k,p)
+    report={"status":"NO_OVERDUE_PENDING","checked_at":now.isoformat(),
+            "threshold_minutes":int(MAX_DELAY.total_seconds()/60),"games":[],"issues":[],
+            "note":"Overdue age is a diagnostic, not proof a game finished. Grading requires separately verified final player rows."}
+    for game,g in sorted(scoped.items()):
+        selected=[p for p in forecast.values() if p is not None and p["game"]==game]
+        if not selected:
+            report["issues"].append(game+": NO_SAVED_PREGAME_AI_FORECASTS")
+        unresolved=[p for p in selected if identity(p) not in finals]
+        row={"game":game,"start":g["start"],
+             "eligible_saved_forecasts":len(selected),
+             "settled_verified":len(selected)-len(unresolved),
+             "overdue_unresolved":len(unresolved),
+             "status":"OVERDUE_UNGRADED" if unresolved else "SETTLED"}
+        report["games"].append(row)
+        if unresolved:
+            report["issues"].append(game+": "+str(len(unresolved))+" FORECASTS_OVERDUE_FINAL_VERIFICATION")
+    report["totals"]={"overdue_game_count":len(report["games"]),
+        "overdue_forecasts":sum(x["overdue_unresolved"] for x in report["games"]),
+        "settled_forecasts":sum(x["settled_verified"] for x in report["games"])}
+    if report["issues"]:
+        report["status"]="OVERDUE_UNGRADED"
+    return report
+
+def main():
+    try:
+        data=[json.loads((ROOT/name).read_text()) for name in
+            ("docs/nba_schedule.json","docs/ai_no_line_pregame_archive.json",
+             "docs/ai_forecast_actual_ledger.json")]
+        result=assess(*data)
+    except (OSError,ValueError,TypeError) as exc:
+        result={"status":"OVERDUE_MONITOR_SOURCE_ERROR",
+                "checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+                "errors":[type(exc).__name__],"games":[]}
+    OUT.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
+    print("NBA GRADING FINAL-VERIFICATION SLA",json.dumps(result))
+    return 0 if result["status"]=="NO_OVERDUE_PENDING" else 1
+
+if __name__=="__main__":sys.exit(main())
