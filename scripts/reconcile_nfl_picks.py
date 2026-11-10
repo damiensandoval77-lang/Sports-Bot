@@ -234,13 +234,33 @@ def run(root=ROOT):
     if len(schedule)!=272:raise ValueError("Duplicated scheduled games")
     snapshot,source_issue=read_published_snapshot(root)
     archive_path=Path(root)/ARCHIVE.name
-    history,rejected=collect_history(read_csv(archive_path),snapshot,schedule)
+    prior_history=read_csv(archive_path)
+    prior_health_path=Path(root)/HEALTH.name
+    prior_health=json.loads(prior_health_path.read_text(encoding="utf-8")) if prior_health_path.exists() else {}
+    history,rejected=collect_history(prior_history,snapshot,schedule)
+    # An API outage, corrupted archive or invalid snapshot may not silently
+    # reduce the number of durable valid frozen pregame observations.
+    prior_reported=prior_health.get("archived_pregame_lines",0)
+    if not isinstance(prior_reported,int) or prior_reported<0:
+        raise ValueError("Invalid previous NFL grading coverage")
+    if len(history)<max(len(prior_history),prior_reported):
+        raise ValueError(
+            "NFL_FROZEN_ARCHIVE_REGRESSION: prior history or published "
+            "coverage exceeds recoverable source records; no grades overwritten")
     boxscores,invalid=verified_boxscores(schedule,Path(root)/"boxscores")
+    final_ids={gid for gid,game in schedule.items()
+               if game.get("status")=="final" and game.get("home_score") is not None
+               and game.get("away_score") is not None}
+    frozen_final_ids={r["game_id"] for r in history if r["game_id"] in final_ids}
+    expected_independent=len(closing(history,final_ids))
     graded,pending,expected=grade_finals(history,schedule,boxscores,invalid)
+    if expected!=expected_independent or expected!=len(graded)+len(pending):
+        raise ValueError("NFL_FINAL_GRADE_COVERAGE_MISMATCH: no records written")
     standard=[g for g in graded if g["odds_type"]=="standard" and g["won"] in ("0","1")]
     metrics={"season":2026,"archived_pregame_lines":len(history),
              "rejected_non_pregame_or_invalid_lines":rejected,
-             "final_games_with_frozen_picks":len({r["game_id"] for r in graded+pending}),
+             "final_games_with_frozen_picks":len(frozen_final_ids),
+             "frozen_final_pick_candidates":expected_independent,
              "expected_final_picks":expected,"graded_picks":len(graded),
              "pending_picks":len(pending),
              "pushes":sum(x["result"]=="Push" for x in graded),
@@ -251,6 +271,8 @@ def run(root=ROOT):
                                    for reason in {p["grade_status"] for p in pending}}.items())),
              "invalid_boxscore_games":sorted(str(x) for x in invalid),
              "source_snapshot_status":source_issue or "verified"}
+    if metrics["final_games_with_frozen_picks"] and not metrics["expected_final_picks"]:
+        raise ValueError("NFL_FINAL_GAME_WITH_FROZEN_PICKS_NOT_RECONCILED")
     # Fail closed on a bad new snapshot while still grading already archived
     # predictions; never destroy previous frozen history.
     write_csv_if_changed(archive_path,history,FIELDS)

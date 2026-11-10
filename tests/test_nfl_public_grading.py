@@ -151,6 +151,38 @@ class PublicNFLGradeTests(unittest.TestCase):
             self.assertEqual((root/"pp_graded_2026.csv").read_bytes(),grade_bytes)
             self.assertEqual((root/"frozen_pick_history_2026.csv").read_bytes(),
                              archive_bytes)
+    def test_previous_published_archive_count_cannot_silently_disappear(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            games=[dict(game_id=f"dummy{i}",week=10,status="scheduled",
+                        kickoff_utc="2026-11-22T18:00:00+00:00",
+                        home="BUF",away="MIA",home_score=None,away_score=None)
+                   for i in range(272)]
+            (root/"schedule_2026.json").write_text(json.dumps(
+                {"season":2026,"game_count":272,"games":games}))
+            (root/"grading_health_2026.json").write_text(json.dumps(
+                {"archived_pregame_lines":15}))
+            # A broken CSV or missing export cannot replace 15 archived
+            # captures with an empty, falsely healthy zero-grade report.
+            with self.assertRaisesRegex(ValueError,"NFL_FROZEN_ARCHIVE_REGRESSION"):
+                run(root)
+            self.assertEqual(json.loads((root/"grading_health_2026.json").read_text())
+                             ["archived_pregame_lines"],15)
+            self.assertFalse((root/"pp_graded_2026.csv").exists())
+    def test_prior_archived_history_cannot_be_dropped_after_schedule_change(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            games=[dict(game_id=f"dummy{i}",week=10,status="scheduled",
+                        kickoff_utc="2026-11-22T18:00:00+00:00",
+                        home="BUF",away="MIA",home_score=None,away_score=None)
+                   for i in range(272)]
+            (root/"schedule_2026.json").write_text(json.dumps(
+                {"season":2026,"game_count":272,"games":games}))
+            with (root/"frozen_pick_history_2026.csv").open("w",newline="") as fh:
+                writer=csv.DictWriter(fh,fieldnames=list(bet()))
+                writer.writeheader();writer.writerow(bet())
+            with self.assertRaisesRegex(ValueError,"NFL_FROZEN_ARCHIVE_REGRESSION"):
+                run(root)
     def test_invalid_public_snapshot_does_not_wipe_history(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
