@@ -32,6 +32,9 @@ jobs:
           python-version: '3.11'
       - name: Verify live-stat normalization and non-destructive updates
         run: python -m unittest discover -s tests -p 'test_nfl_live.py' -v
+      - name: Smoke-test actual ESPN live provider during PR
+        if: github.event_name == 'pull_request'
+        run: python scripts/fetch_nfl_live.py
       - name: Fetch current ESPN NFL live summary and player stats
         if: github.event_name != 'pull_request'
         run: python scripts/fetch_nfl_live.py
