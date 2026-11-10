@@ -287,12 +287,14 @@ def summarize(ledger,now=None,quote_archive=None):
     rows=ledger.get("records",[])
     settled=[r for r in rows if r.get("status")=="SETTLED"]
     eligible=[r for r in settled if r.get("result") in ("WIN","LOSS")]
-    by={}
+    all_tier_research_by_market={}
     for stat in SUPPORTED:
         group=[r for r in eligible if r.get("stat")==stat]
-        by[stat]={"graded_lines":len(group),"wins":sum(r["result"]=="WIN" for r in group),
-                  "line_hit_rate":round(sum(r["result"]=="WIN" for r in group)/len(group),4) if group else None,
-                  "distinct_game_dates":len({r.get("settled_game_date") for r in group})}
+        all_tier_research_by_market[stat]={
+            "graded_lines":len(group),"wins":sum(r["result"]=="WIN" for r in group),
+            "line_hit_rate":round(sum(r["result"]=="WIN" for r in group)/len(group),4) if group else None,
+            "distinct_game_dates":len({r.get("settled_game_date") for r in group}),
+            "scope":"ALL_TIERS_EXPLORATORY_NOT_OFFICIAL_HIT_RATE"}
     # OFFICIAL STANDARD ONLY: one original, source-verified standard quote per
     # player/game/market. A median of goblin/demon thresholds is never a
     # standard line. Conflicting standard quotes fail closed as ambiguous.
@@ -309,15 +311,16 @@ def summarize(ledger,now=None,quote_archive=None):
     representatives=[]
     ambiguous_groups=0
     for group in groups.values():
-        # A captured line is immutable. Multiple historical quote versions
-        # cannot be retrospectively selected for a more favorable outcome.
-        thresholds={float(r["line"]) for r in group}
-        if len(thresholds)!=1:
+        # Follow the predetermined last pretip standard quote rule, not the
+        # most favorable settled result. The quote is chosen independently
+        # of actual values and is consistent with NFL frozen standard lines.
+        # Simultaneous conflicting standard thresholds are untrustworthy.
+        latest=max(str(r.get("captured_at") or "") for r in group)
+        chosen=[r for r in group if str(r.get("captured_at") or "")==latest]
+        if len({float(r["line"]) for r in chosen})!=1:
             ambiguous_groups+=1
             continue
-        # Use the earliest valid frozen line to avoid winner selection.
-        representatives.append(min(group,key=lambda r:(str(r.get("captured_at") or ""),
-                                              str(r.get("provider_projection_id") or ""))))
+        representatives.append(min(chosen,key=lambda r:str(r.get("provider_projection_id") or "")))
     independent={}
     for stat in SUPPORTED:
         sample=[r for r in representatives
@@ -339,7 +342,12 @@ def summarize(ledger,now=None,quote_archive=None):
             "independent_settled_center_lines":sum(v["graded"] for v in independent.values()),
             "independent_by_market":independent,
             "minutes_v3_opportunity_v2_paired":paired_joint_metrics(representatives),
-            "by_market":by,"wager_roi":None,"verified_ev":False,
+            "by_market":{stat:{"graded_lines":item["graded"],
+                "wins":item["wins"],"line_hit_rate":item["hit_rate"],
+                "distinct_game_dates":item["distinct_game_dates"]}
+                for stat,item in independent.items()},
+            "all_tiers_research_by_market":all_tier_research_by_market,
+            "wager_roi":None,"verified_ev":False,
             "selection_method":"EXPLICIT_VERIFIED_STANDARD_TIER_ONLY_NO_MEDIAN_FALLBACK",
             "notice":"Only explicit source-verified standard PrizePicks tiers count toward official independent hit rates. Demon, goblin, unknown-tier, and ambiguous records are excluded from hit-rate denominators. All frozen quote outcomes remain in a separate archival research ledger."}
 
@@ -352,17 +360,18 @@ def main():
     graded=settle(frozen,games,final_games=official)
     archive_path=ROOT/"docs/prizepicks_pregame_line_archive.json"
     archive=json.loads(archive_path.read_text()) if archive_path.exists() else {}
+    report=summarize(graded,quote_archive=archive)
+    previous=json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
+    def unchanged_except_timestamp(entry):
+        return {k:v for k,v in entry.items() if k!="updated_at"}
     if (graded["records"]==old.get("records",[]) and LEDGER.exists() and
-        RESULTS.exists() and
-        json.loads(RESULTS.read_text()).get("selection_method")==
-        "EXPLICIT_VERIFIED_STANDARD_TIER_ONLY_NO_MEDIAN_FALLBACK" and
-        "minutes_v3_opportunity_v2_paired" in json.loads(RESULTS.read_text())):
-        print("PrizePicks research ledger unchanged; no redundant publication")
+        unchanged_except_timestamp(previous)==unchanged_except_timestamp(report)):
+        print("PrizePicks research ledger and explicit standard-only metrics unchanged")
         return
     graded["updated_at"]=datetime.now(timezone.utc).isoformat()
     LEDGER.parent.mkdir(parents=True,exist_ok=True)
-    LEDGER.write_text(json.dumps(graded,indent=2)+"\n")
-    RESULTS.write_text(json.dumps(summarize(graded,quote_archive=archive),indent=2)+"\n")
+    LEDGER.write_text(json.dumps(graded,indent=2)+"\\n")
+    RESULTS.write_text(json.dumps(report,indent=2)+"\\n")
     print("PrizePicks research ledger:",len(graded["records"]),
           "new:",frozen["new"],"settled:",
           sum(r.get("status")=="SETTLED" for r in graded["records"]))
