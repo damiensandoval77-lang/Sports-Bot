@@ -217,7 +217,11 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertEqual(result["components"]["prizepicks_research_cards"]["state"],"READY")
         self.assertFalse(result["components"]["prizepicks_research_cards"]["required"])
         self.assertEqual(result["components"]["published_pick_cards"]["state"],"DEGRADED")
-        self.assertFalse(result["ready_for_trustworthy_picks"])
+        self.assertFalse(result["components"]["published_pick_cards"]["required"])
+        # Passing comes from the separately verified full primary fixture and
+        # public browser, not the research quick-join or legacy sportsbook.
+        self.assertEqual(result["components"]["public_browser"]["state"],"READY")
+        self.assertTrue(result["ready_for_trustworthy_picks"])
 
     def test_quick_join_does_not_masquerade_as_live_if_feed_partial_or_ui_missing(self):
         data=fixtures()
