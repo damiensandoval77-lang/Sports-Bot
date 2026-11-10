@@ -191,7 +191,7 @@ async function loadFrozenAndLive(){
  render();
 }
 function matchupCard(g,lines){
- const count=lines.filter(x=>x.game_id===g.game_id).length;
+ const count=gameFrozenLines(g.game_id).length||lines.filter(x=>x.game_id===g.game_id).length;
  const finished=g.status==="final";
  const onAir=liveGame(g.game_id);
  const status=onAir?.status==="in"?"LIVE "+(onAir.status_text||"In progress"):
