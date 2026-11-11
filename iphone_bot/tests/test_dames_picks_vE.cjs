@@ -752,3 +752,8 @@ test("Public board hides internal diagnostics; opt-in page retains full release 
  assert.ok(html.indexOf('id="cards"')>diagnosticClose);
  assert.ok(!html.includes('style="display:block" id="diagnostics"'));
 });
+
+test("Closed developer diagnostic disclosure hides all child controls on mobile",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes("#diagnostics:not([open]) > :not(summary){display:none!important}"));
+});
