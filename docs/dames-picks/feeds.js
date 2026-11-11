@@ -536,5 +536,5 @@ root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,displayCurrentPicks,csv,nb
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
-window.__damesRunningAssets=window.__damesRunningAssets||Object.create(null);
-window.__damesRunningAssets["feeds.js"]="dp-runtime-20261111-r2";
+globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
+globalThis.__damesRunningAssets["feeds.js"]="dp-runtime-20261111-r2";
