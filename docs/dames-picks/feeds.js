@@ -93,7 +93,10 @@ function nba(ledger,form){
    sport:"NBA",playerId:p.player_id,player:p.player,team:p.team,opponent:p.opponent,
    position:"",game:p.game,gameId:p.game,start:p.start,stat:p.stat,source:"PrizePicks",
    line:n(p.line),projection:n(p.projection),direction:c.modeled_direction==="More"?"MORE":"LESS",
-   chance:prob>=0&&prob<=1?prob:null,chanceSource:"20,000 historical-residual simulations; uncalibrated",
+   chance:prob>=0&&prob<=1?prob:null,
+   chanceSource:"Frozen new-AI model vs original standard line; residual uncertainty; uncalibrated",
+   chanceMethod:c.method,chanceDraws:c.draws,chanceCalibrated:c.calibrated,
+   opponentAwareVerified:false,
    captured:p.captured_at,grade,actual:grade==="GRADED"?n(p.actual):null,
    hit:grade==="GRADED"&&typeof p.direction_hit==="boolean"?p.direction_hit:null,
    gradeSource:grade!=="PENDING"?p.final_source:null,
@@ -118,6 +121,8 @@ function nfl(chunks,schedule){
    game:p.team+" vs "+p.opponent,gameId:p.game_id,start:game.kickoff_utc,stat:p.stat,target:p.target,
    source:"PrizePicks",line:n(p.line),projection:n(p.proj),direction,chance,
    chanceSource:"NFL model estimate; not a calibrated hit probability",
+   chanceMethod:"NFL_FROZEN_MODEL",chanceCalibrated:false,
+   opponentAwareVerified:false,
    captured:p.captured_at,grade:"PENDING",actual:null,hit:null,gradeSource:null,
    form:{season:n(p.season_avg),l5:null,l10:null,games:n(p.season_games),
     over:n(p.season_over),under:n(p.season_under),push:n(p.season_push),
@@ -261,27 +266,26 @@ function attachGameLogs(rows,form,limit=10){
  });
 }
 root.DamesPicksLineHistory={attachGameLogs,etDay};
-/* Empirical hit frequency for the ORIGINAL saved standard line.
-   Only pregame observed NBA rows explicitly reconciled to this line qualify.
-   Pushes are excluded from the denominator. Never infer from simulations,
-   model confidence, or season averages. A historical rate is NOT a
-   calibrated forward-looking win probability. */
+/* Hit Estimate is MODEL-ESTIMATED probability of the chosen direction
+   beating the ORIGINAL verified standard sportsbook line, not the
+   player's raw hit frequency in previous games. Historical line-over rates
+   remain separate validation and calibration evidence. Until prospective
+   calibration succeeds this is uncalibrated, NOT verified win probability.
+   Never reconstruct a missing frozen probability after tipoff. */
 function hitEstimate(p){
- if(!p||p.sport!=="NBA"||p.quoteOnly||
-    !["MORE","LESS"].includes(p.direction)||n(p.line)===null||
-    p.form?.historySource!=="Observed completed games before this pick's game date")
-   return null;
- const over=n(p.form.over),under=n(p.form.under),push=n(p.form.push),
-  total=n(p.form.historyGames);
- if([over,under,push,total].some(v=>v===null||v<0||!Number.isInteger(v))||
-    over+under+push!==total)return null;
- const eligible=over+under;
- // With fewer than five observed non-push games, display unavailable rather
- // than extrapolating a noisy one-game streak into a percentage.
- if(eligible<5)return null;
- const hits=p.direction==="MORE"?over:under;
- return {rate:hits/eligible,hits,eligible,push,total,
-  source:"Observed completed pregame player games vs original saved standard line; historical hit frequency, not calibrated probability"};
+ if(!p||p.quoteOnly||!["MORE","LESS"].includes(p.direction)||
+   n(p.line)===null||n(p.projection)===null)return null;
+ const chance=n(p.chance);
+ if(chance===null||chance<0||chance>1)return null;
+ if(p.sport==="NBA"){
+  if(p.chanceMethod!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||
+     p.chanceDraws!==20000||p.chanceCalibrated!==false)return null;
+ }else if(p.sport!=="NFL")return null;
+ return {rate:chance,source:"Frozen AI model probability for selected "+
+  p.direction+" at original standard "+p.line+" line; uncalibrated",
+  calibrated:false,method:p.chanceMethod||"NFL_FROZEN_MODEL",
+  opponentAwareVerified:p.opponentAwareVerified===true,
+  historicalRateNotUsed:true};
 }
 /* NFL settlement is joined ONLY with full immutable quote identity. */
 function attachNFLGrades(rows,graded){
