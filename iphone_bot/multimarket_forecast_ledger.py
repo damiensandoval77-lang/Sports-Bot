@@ -12,6 +12,13 @@ ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"docs/lagged_matchup_live_all_markets.json"
 LEDGER=ROOT/"docs/lagged_matchup_all_market_ledger.json"
 FINAL=ROOT/"docs/ai_forecast_actual_ledger.json"
+VOID=ROOT/"docs/espn_injury_void_ledger.json"
+
+def with_voids(finals,void_path=None):
+    path=Path(void_path) if void_path else VOID
+    if not path.exists():return finals
+    additional=json.loads(path.read_text()).get("records",[])
+    return {**(finals or {}),"records":list((finals or {}).get("records",[]))+additional}
 STATS={"PTS","REB","AST","PRA"}
 
 def utc(value):
@@ -67,7 +74,8 @@ def merge(previous,feed,finals):
     # a win/loss, a synthetic zero, or a fake model error.
     allowed_finals={"NBA_CDN_FINAL","ESPN_FINAL"}
     allowed_dnp={"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
-                 "VERIFIED_FINAL_BOXSCORE_DNP_CROSSCHECKED"}
+                 "VERIFIED_FINAL_BOXSCORE_DNP_CROSSCHECKED",
+                 "ESPN_FINAL_BOX_ABSENT_INJURY_LISTED"}
     for x in finals.get("records",[]):
         if not isinstance(x,dict) or x.get("stat") not in STATS or not x.get("source_game_id"):
             continue
@@ -138,7 +146,7 @@ def merge(previous,feed,finals):
 def main():
     older=json.loads(LEDGER.read_text()) if LEDGER.exists() else {}
     fresh=json.loads(SOURCE.read_text()) if SOURCE.exists() else {}
-    final=json.loads(FINAL.read_text()) if FINAL.exists() else {}
+    final=with_voids(json.loads(FINAL.read_text()) if FINAL.exists() else {})
     out=merge(older,fresh,final)
     LEDGER.write_text(json.dumps(out,indent=2)+"\n")
     print("FROZEN_NEW_AI_ALL_MARKET",json.dumps({
