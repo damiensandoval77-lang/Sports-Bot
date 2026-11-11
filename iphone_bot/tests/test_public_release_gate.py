@@ -78,7 +78,7 @@ class PhoneRuntimeBundleTests(unittest.TestCase):
         for filename in ("feeds.js", "live_direct.js", "dames_take.js"):
             self.assertIn('src="' + filename + '?bundle=' + version + '"', html)
             source = (root / filename).read_text()
-            self.assertIn('window.__damesRunningAssets[' + json.dumps(filename) + ']=' + json.dumps(version), source)
+            self.assertIn('globalThis.__damesRunningAssets[' + json.dumps(filename) + ']=' + json.dumps(version), source)
 
     def test_phone_verifier_fails_closed_when_runtime_bundle_missing_or_stale(self):
         from pathlib import Path
