@@ -4,6 +4,14 @@
 const n=v=>v===null||v===undefined||v===""?null:Number.isFinite(Number(v))?Number(v):null;
 const norm=v=>String(v||"").normalize("NFKD").toLowerCase().replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const stamp=v=>{const d=Date.parse(v);return Number.isFinite(d)?d:NaN};
+// ESPN and the immutable wager ledger use different team abbreviations.
+// Alias only known, unambiguous franchises; never fuzzy-match a player/team.
+const NBA_TEAM_ALIASES=Object.freeze({NY:"NYK",GS:"GSW",NO:"NOP",SA:"SAS",UTAH:"UTA",WSH:"WAS"});
+const nbaTeamCode=v=>{
+ const code=String(v||"").trim().toUpperCase();
+ return NBA_TEAM_ALIASES[code]||code;
+};
+
 const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat,p.line,p.captured].join("|");
 function csv(text){
  let cells=[],row=[],field="",quoted=false;
@@ -113,7 +121,7 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
  return rows.map(p=>{
   if(p.sport==="NBA"){
    const game=nbaGames.get(p.game);
-   const hits=(game?.player_rows||[]).filter(x=>x.team===p.team&&norm(x.player)===norm(p.player));
+   const hits=(game?.player_rows||[]).filter(x=>nbaTeamCode(x.team)===nbaTeamCode(p.team)&&norm(x.player)===norm(p.player));
    if(hits.length!==1)return {...p,live:null};
    const actual=n(hits[0][p.stat]);
    return {...p,live:actual===null?null:{actual,gameStatus:game.shortDetail||game.displayClock||"In progress",
