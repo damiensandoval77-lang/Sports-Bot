@@ -155,4 +155,30 @@ class ESPNBackfillTests(unittest.TestCase):
             return espn_summary(game_id="9999")
         self.assertEqual(collect(season(),{"version":1,"rows":[]},now=NOW,request=request)["verified_new_games"],0)
 
+
+class ProviderCircuitBreakerTests(unittest.TestCase):
+    def test_fails_closed_after_three_provider_http_errors(self):
+        from urllib.error import HTTPError
+        s=season()
+        games=[]
+        for i in range(9):
+            g=dict(s["games"][0])
+            g["id"]=str(401901234+i)
+            g["start"]=(datetime(2026,11,1+i,0,0,tzinfo=timezone.utc)).isoformat()
+            g["date_eastern"]=(datetime(2026,10,31+i,tzinfo=timezone.utc)).date().isoformat()
+            games.append(g)
+        s["games"]=games
+        now=datetime(2026,11,11,4,0,tzinfo=timezone.utc)
+        attempts=[]
+        def request(url):
+            attempts.append(url)
+            if "scheduleLeague" in url:raise OSError("NBA schedule unavailable")
+            raise HTTPError(url,403,"blocked",None,None)
+        result=collect(s,{"version":1,"rows":[]},now=now,request=request)
+        self.assertTrue(result["espn_http_circuit_open"])
+        self.assertEqual(result["failures"]["espn_box_HTTPError"],3)
+        self.assertGreater(result["failures"]["espn_skipped_circuit_open"],0)
+        self.assertEqual(result["verified_new_games"],0)
+        self.assertFalse(result["production_approved"])
+
 if __name__=="__main__":unittest.main()
