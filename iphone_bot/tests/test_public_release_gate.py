@@ -62,5 +62,45 @@ class PublicReleaseGateTest(unittest.TestCase):
         self.assertIn("feeds.js: PUBLIC_FILE_UNAVAILABLE",inspect(local,remote))
 
 
+class PhoneRuntimeBundleTests(unittest.TestCase):
+    """Static release contract; a real mobile browser deployment gate is still required."""
+
+    def test_executing_asset_identity_and_cache_key_for_every_bundle(self):
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2] / "docs" / "dames-picks"
+        manifest = json.loads((root / "release.json").read_text())
+        version = manifest["release_id"]
+        self.assertEqual(version, manifest["runtime_bundle_id"])
+        html = (root / "index.html").read_text()
+        self.assertIn("activeScriptsCorrect", html)
+        self.assertIn("runtime[name]===RELEASE_ID", html)
+        self.assertIn("latest?.runtime_bundle_id===RELEASE_ID", html)
+        for filename in ("feeds.js", "live_direct.js", "dames_take.js"):
+            self.assertIn('src="' + filename + '?bundle=' + version + '"', html)
+            source = (root / filename).read_text()
+            self.assertIn('window.__damesRunningAssets[' + json.dumps(filename) + ']=' + json.dumps(version), source)
+
+    def test_phone_verifier_fails_closed_when_runtime_bundle_missing_or_stale(self):
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2] / "docs" / "dames-picks"
+        version = json.loads((root / "release.json").read_text())["release_id"]
+        required = ("feeds.js", "live_direct.js", "dames_take.js")
+        def matches(runtime, script_urls):
+            return all(runtime.get(name) == version and
+                       name + "?bundle=" + version in script_urls
+                       for name in required)
+        urls = {name + "?bundle=" + version for name in required}
+        runtime = dict.fromkeys(required, version)
+        self.assertTrue(matches(runtime, urls))
+        for name in required:
+            stale = dict(runtime)
+            stale[name] = "old-release"
+            self.assertFalse(matches(stale, urls))
+            missing = dict(runtime)
+            missing.pop(name)
+            self.assertFalse(matches(missing, urls))
+            self.assertFalse(matches(runtime, urls - {name + "?bundle=" + version}))
+
+
 if __name__=="__main__":
     unittest.main()
