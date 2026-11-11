@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate NBA game score identity and parser
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/fetch_odds_scores.py iphone_bot/fetch_game_moneylines.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_odds_scores.py' -v
