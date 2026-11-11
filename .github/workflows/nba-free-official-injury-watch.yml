@@ -38,6 +38,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: python -m pip install --disable-pip-version-check 'pypdf>=5,<7'
       - name: Validate official transitions and no paid provider requirement
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
