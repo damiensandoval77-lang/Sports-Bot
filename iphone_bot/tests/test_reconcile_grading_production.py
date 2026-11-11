@@ -42,7 +42,7 @@ class ReconciliationTests(unittest.TestCase):
         out=audit(v)
         self.assertEqual(out["status"],"BLOCKED")
         self.assertEqual(out["ai_only"]["overdue"],1)
-        self.assertEqual(out["unresolved_ai_only"][0]["reason"],"NO_UNAMBIGUOUS_VERIFIED_FINAL_OR_EXCLUSION")
+        self.assertEqual(out["unresolved_ai_only"][0]["reason"],"VERIFIED_COMPLETED_GAME_PLAYER_COVERAGE_NOT_ESTABLISHED")
     def test_pending_standard_has_distinct_final_grading_gate(self):
         v=list(dataset());p=v[2]["records"][0]
         p.update(grade="PENDING",actual=None,absolute_error=None,direction_hit=None,final_source=None)
