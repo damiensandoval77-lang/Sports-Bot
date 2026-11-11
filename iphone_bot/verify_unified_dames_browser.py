@@ -64,6 +64,20 @@ def probe():
             if response is None or response.status != 200:
                 raise RuntimeError("Unified app HTTP status not 200")
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
+            # Initial page load may complete before the app's asynchronous
+            # browser-direct scoreboard/boxscore refresh. Test live state
+            # AFTER one completed forced refresh, not a transient race.
+            page.wait_for_function("() => !state.liveBusy",timeout=45000)
+            direct=page.evaluate("""async () => {
+              if(typeof liveTick!=="function")return {attempted:false,reason:"NO_LIVE_REFRESH_FUNCTION"};
+              await liveTick(true);
+              return {attempted:true,received:!!state.direct,
+                directGames:state.direct?.feed?.games?.length||0,
+                directScores:state.direct?.board?.games?.length||0,
+                directErrors:state.direct?.feed?.errors?.slice?.(0,8)||[],
+                at:state.directAt||null};
+            }""")
+            page.wait_for_function("() => !state.liveBusy",timeout=45000)
             title=page.title()
             result={}
             for sport in ("NBA","NFL"):
@@ -102,7 +116,13 @@ def probe():
                   status:document.querySelector('#status')?.textContent?.slice(0,250)
                 })""",sport)
                 result[sport]=observation
-            return assess(result["NBA"],result["NFL"],errors,app_title=title)
+            report=assess(result["NBA"],result["NFL"],errors,app_title=title)
+            report["browser_direct_probe"]=direct
+            if not direct.get("attempted"):
+                report["reasons"].append("BROWSER_DIRECT_REFRESH_NOT_TESTED")
+                report["status"]="DEGRADED"
+                report["browser_render_verified"]=False
+            return report
         finally:
             browser.close()
 
