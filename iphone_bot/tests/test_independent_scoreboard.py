@@ -1,6 +1,6 @@
 import datetime as dt
 import unittest
-from iphone_bot.refresh_independent_scoreboard import snapshot, nba_live_scoreboard, NBA_LIVE_URLS
+from iphone_bot.refresh_independent_scoreboard import snapshot, nba_live_scoreboard, NBA_LIVE_URLS, started_games_missing_scores
 
 UTC=dt.timezone.utc
 NOW=dt.datetime(2026,11,9,12,tzinfo=UTC)
@@ -125,6 +125,50 @@ class IndependentScoreboardTests(unittest.TestCase):
         self.assertEqual(result["events"][0]["away_score"],53)
         self.assertEqual(result["events"][0]["home_score"],58)
         self.assertEqual(result["events"][0]["game_state"],"in")
+
+    def test_stale_espn_schedule_after_tipoff_tries_real_live_fallback(self):
+        now=dt.datetime(2026,11,10,0,30,tzinfo=UTC)
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat(),
+                            "start":"2026-11-10T00:00:00Z"}]}
+        calls=[]
+        def fallback(_):
+            calls.append(True)
+            return {"events":[{"id":"nba-verified","game":"Away @ Home",
+                "date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z",
+                "game_state":"in","home_score":43,"away_score":41}],
+                "source":"NBA official liveData scoreboard via NBA CDN"}
+        r=snapshot([DAY],reader=lambda _: [event()],schedule=schedule,now=now,fallback=fallback)
+        self.assertEqual(len(calls),1)
+        self.assertEqual(r["status"],"OBSERVED_NBA_LIVE_SCOREBOARD")
+        self.assertEqual(r["games"][0]["home_score"],43)
+
+    def test_stale_espn_and_stale_live_fallback_fail_closed(self):
+        now=dt.datetime(2026,11,10,0,30,tzinfo=UTC)
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat(),
+                            "start":"2026-11-10T00:00:00Z"}]}
+        def stale(_):
+            return {"events":[{"id":"nba-verified","game":"Away @ Home",
+                "date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z",
+                "game_state":"pre","home_score":None,"away_score":None}],
+                "source":"NBA official liveData scoreboard via NBA CDN"}
+        r=snapshot([DAY],reader=lambda _: [event()],schedule=schedule,now=now,
+                   fallback=stale,previous={"generated_at":"2026-11-09T17:00:00Z",
+                      "games":[{"id":"old"}]})
+        self.assertEqual(r["status"],"STALE_UPSTREAM_ERROR")
+        self.assertEqual(r["generated_at"],"2026-11-09T17:00:00Z")
+
+    def test_post_tip_grace_does_not_require_immediate_live_scores(self):
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"game":"Away @ Home","date_eastern":DAY.isoformat(),
+                            "start":"2026-11-10T00:00:00Z"}]}
+        rows=[{"game":"Away @ Home","date_eastern":DAY.isoformat(),
+               "game_state":"pre","home_score":None,"away_score":None}]
+        now=dt.datetime(2026,11,10,0,5,tzinfo=UTC)
+        self.assertFalse(started_games_missing_scores(rows,schedule,[DAY],now))
+        self.assertTrue(started_games_missing_scores(
+            rows,schedule,[DAY],now+dt.timedelta(minutes=10)))
 
     def test_s3_fallback_after_nba_cdn_http_error(self):
         visited=[]
