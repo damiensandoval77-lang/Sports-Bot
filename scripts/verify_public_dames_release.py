@@ -21,6 +21,31 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def git_blob_digest(data):
+    header=("blob "+str(len(data))+"\\0").encode("utf-8")
+    return hashlib.sha1(header+data).hexdigest()
+
+
+def validate_manifest(expected):
+    reasons=[]
+    try:
+        manifest=json.loads(expected["release.json"])
+        pins=manifest["asset_blob_sha1"]
+        for name in FILES:
+            if name=="release.json":
+                continue
+            if pins.get(name)!=git_blob_digest(expected[name]):
+                reasons.append(name+": LOCAL_MANIFEST_FILE_HASH_MISMATCH")
+        release=manifest.get("release_id")
+        if not isinstance(release,str) or not release:
+            reasons.append("LOCAL_RELEASE_ID_MISSING")
+        elif release.encode() not in expected["index.html"]:
+            reasons.append("LOCAL_HTML_VERSION_MISMATCH")
+    except (KeyError,ValueError,TypeError):
+        reasons.append("LOCAL_RELEASE_MANIFEST_INVALID")
+    return reasons
+
+
 def inspect(expected, observed):
     reasons=[]
     for name in FILES:
@@ -75,6 +100,10 @@ def evaluate(expected,remote):
 
 def run(local,base,timeout_seconds=600,interval_seconds=30):
     expected={p:(local/p).read_bytes() for p in FILES}
+    invalid=validate_manifest(expected)
+    if invalid:
+        print(json.dumps({"state":"BLOCKED","reasons":invalid},indent=2),flush=True)
+        return 2
     start=time.monotonic()
     report={"public_url":base,"expected_release":json.loads(expected["release.json"])["release_id"],
             "mode":"PUBLIC_HTTP_BYTE_FOR_BYTE_CHECK","state":"BLOCKED","reasons":[]}
@@ -106,7 +135,15 @@ def main():
     parser.add_argument("--local",default="docs/dames-picks")
     parser.add_argument("--base",default=BASE)
     parser.add_argument("--timeout-seconds",type=int,default=600)
+    parser.add_argument("--validate-local",action="store_true")
     args=parser.parse_args()
+    if args.validate_local:
+        root=Path(args.local)
+        expected={name:(root/name).read_bytes() for name in FILES}
+        errors=validate_manifest(expected)
+        print(json.dumps({"state":"VALID" if not errors else "BLOCKED",
+                          "reasons":errors},indent=2))
+        raise SystemExit(2 if errors else 0)
     raise SystemExit(run(Path(args.local),args.base,args.timeout_seconds))
 
 
