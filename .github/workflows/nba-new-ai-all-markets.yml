@@ -7,6 +7,9 @@ on:
       - 'iphone_bot/live_multimarket_matchup.py'
       - 'research/pretip_matchup_shadow.py'
       - 'research/publish_matchup_shadow_guard.py'
+      - 'research/archive_matchup_forecasts.py'
+      - 'research/audit_prospective_matchup_calibration.py'
+      - 'research/tests/test_prospective_matchup_calibration.py'
       - 'research/tests/test_publish_matchup_shadow_guard.py'
       - 'research/freeze_position_rating_quote_join.py'
       - 'iphone_bot/tests/test_pretip_matchup_shadow.py'
@@ -227,6 +230,8 @@ jobs:
           done
           exit 1
 
+      - name: Test immutable prospective forecast archive and true standard-line final audit
+        run: python -m unittest discover -s research/tests -p 'test_prospective_matchup_calibration.py' -v
       - name: Publish separately guarded uncalibrated matchup research feed
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         continue-on-error: true
@@ -245,7 +250,15 @@ jobs:
               --incoming "$RUNNER_TEMP/matchup-shadow-source.json" \
               --current docs/matchup_shadow_estimates.json \
               --output docs/matchup_shadow_estimates.json
-            git add docs/matchup_shadow_estimates.json
+            python -m research.archive_matchup_forecasts \
+              --incoming "$RUNNER_TEMP/matchup-shadow-source.json" \
+              --current docs/matchup_shadow_archive.json \
+              --output docs/matchup_shadow_archive.json
+            python -m research.audit_prospective_matchup_calibration \
+              --archive docs/matchup_shadow_archive.json \
+              --ledger docs/lagged_matchup_all_market_ledger.json \
+              --output docs/matchup_calibration_report.json
+            git add docs/matchup_shadow_estimates.json docs/matchup_shadow_archive.json docs/matchup_calibration_report.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish independently sourced research-only position hit estimates'
             if git push origin HEAD:main; then exit 0; fi
