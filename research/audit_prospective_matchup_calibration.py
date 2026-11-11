@@ -75,9 +75,11 @@ def report(archive,ledger,*,checked_at):
         if len(matches)!=1:
             exclusions["original_line_or_side_not_unique"]+=1;continue
         g=matches[0]
-        if not all(stamp(provenance[k])<=stamp(g["captured_at"]) for k in
-           ("position_observed_at","rating_observed_at","player_observed_at","minutes_snapshot_at")):
-            exclusions["features_not_frozen_before_original_quote"]+=1;continue
+        # Matchup shadow is its OWN prospective capture: the original quote
+        # can predate new position/rating observations. Never overwrite the
+        # earlier forecast or pretend the new inputs were known at that time.
+        if not stamp(g["captured_at"])<=modeled:
+            exclusions["model_precedes_verified_original_quote"]+=1;continue
         if tip>now:
             exclusions["future_game_not_played"]+=1;continue
         if g.get("grade")=="EXCLUDED_VERIFIED_DNP":
