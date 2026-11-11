@@ -30,6 +30,9 @@ jobs:
           node-version: '22'
       - name: Test published browser coverage notification
         run: node --test iphone_bot/tests/test_coverage_banner.cjs
+      - name: Identify retired dashboard navigation workflow for remediation
+        run: |
+          grep -rl "Validate Sports-Bot dashboard navigation" .github/workflows || true
       - name: Compile changed production modules
         run: |
           python -m py_compile iphone_bot/espn_injury_void.py iphone_bot/pipeline_heartbeat.py iphone_bot/multimarket_forecast_ledger.py iphone_bot/merge_new_ai_publishing.py
