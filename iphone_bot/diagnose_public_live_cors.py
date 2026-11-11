@@ -12,6 +12,9 @@ ENDPOINTS={
  "NBA_CDN":"https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
  "NBA_S3":"https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/scoreboard/todaysScoreboard_00.json",
  "ESPN":"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261110&limit=100",
+ "GITHUB_RAW":"https://raw.githubusercontent.com/damiensandoval77-lang/Sports-Bot/main/docs/live_player_tracking.json",
+ "GITHUB_API":"https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/contents/docs/live_player_tracking.json?ref=main",
+ "GITHUB_PAGES":"https://damiensandoval77-lang.github.io/Sports-Bot/live_player_tracking.json",
 }
 
 def main():
@@ -30,9 +33,13 @@ def main():
                   const status=res.status;
                   if(!res.ok){out[name]={ok:false,status};return}
                   const data=await res.json();
-                  const raw=data?.scoreboard?.games||data?.events;
-                  out[name]={ok:Array.isArray(raw),status,game_count:Array.isArray(raw)?raw.length:null,
-                             has_game_ids:Array.isArray(raw)&&raw.some(x=>x?.gameId||x?.id)};
+                  const raw=data?.scoreboard?.games||data?.events||data?.games;
+                  const githubEncoded=data?.encoding==="base64"&&typeof data?.content==="string";
+                  out[name]={ok:Array.isArray(raw)||githubEncoded,status,
+                      game_count:Array.isArray(raw)?raw.length:null,
+                      has_game_ids:Array.isArray(raw)&&raw.some(x=>x?.gameId||x?.id),
+                      data_timestamp:data?.captured_at||data?.generated_at||null,
+                      github_api_blob:githubEncoded};
                 }catch(e){out[name]={ok:false,error_name:e?.name||"FETCH_ERROR",
                                      error:String(e?.message||e).slice(0,120)}}
                 finally{clearTimeout(timer)}
