@@ -26,8 +26,17 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
   return {date:get("year")+"-"+get("month")+"-"+get("day"),hour:Number(get("hour"))};
  };
  const today=et(now),yesterday=et(now-24*3600000);
+ const validStart=p=>p&&["NBA","NFL"].includes(p.sport)&&
+   Number.isFinite(stamp(p.start))&&Number.isFinite(stamp(p.captured))&&
+   stamp(p.captured)<stamp(p.start);
+ const source=(rows||[]).filter(validStart);
+ const dates=[...new Set(source.map(p=>et(stamp(p.start)).date))].sort();
+ // On a league off-day the tracker shows the last slate with saved lines,
+ // never a mixture of that slate and the next one.
+ const selectedDate=dates.includes(today.date)?today.date:
+   dates.filter(d=>d<today.date).at(-1)||dates.find(d=>d>today.date)||null;
  const latest=new Map();
- for(const p of rows||[]){
+ for(const p of source){
   if(!p||!["NBA","NFL"].includes(p.sport))continue;
   const start=stamp(p.start),captured=stamp(p.captured);
   if(!Number.isFinite(start)||!Number.isFinite(captured)||captured>=start)continue;
@@ -35,7 +44,7 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
    const when=et(start);
    const recentLateGame=today.hour<6&&when.date===yesterday.date&&
       start>=now-10*3600000&&start<=now;
-   if(when.date!==today.date&&!recentLateGame)continue;
+   if(when.date!==selectedDate&&!recentLateGame)continue;
   }
   const match=[p.sport,p.gameId||p.game,start,norm(p.player)||p.playerId,
                nbaTeamCode(p.team),p.stat].join("|");
