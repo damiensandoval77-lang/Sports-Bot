@@ -1,0 +1,43 @@
+name: Verify PUBLIC Dame's Picks release matches main
+# Code green means tested. Only this read-only gate can prove the public
+# GitHub Pages HTTP endpoint has actually deployed the latest HTML/JS.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/verify_public_dames_release.py'
+      - 'iphone_bot/tests/test_public_release_gate.py'
+      - '.github/workflows/verify-public-dames-release.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/dames-picks/index.html'
+      - 'docs/dames-picks/feeds.js'
+      - 'docs/dames-picks/live_direct.js'
+      - 'docs/dames-picks/dames_take.js'
+      - 'docs/dames-picks/release.json'
+      - 'scripts/verify_public_dames_release.py'
+      - '.github/workflows/verify-public-dames-release.yml'
+permissions:
+  contents: read
+concurrency:
+  group: proof-public-dames-release
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prove stale public HTML and assets fail closed (offline)
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_public_release_gate.py' -v
+      - name: Reject unpinned release assets and incorrect local revision
+        run: python scripts/verify_public_dames_release.py --validate-local
+      - name: Compare actual hosted HTTP files against main (fail if outdated)
+        if: github.event_name != 'pull_request'
+        run: python scripts/verify_public_dames_release.py --timeout-seconds 660
