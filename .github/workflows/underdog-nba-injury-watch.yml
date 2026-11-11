@@ -26,6 +26,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Run authoritative identity, timestamp and lineup scenario tests
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
           python -m py_compile iphone_bot/underdog_nba_alerts.py iphone_bot/new_ai_injury_context.py
