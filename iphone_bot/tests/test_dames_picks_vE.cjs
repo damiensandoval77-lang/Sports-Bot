@@ -623,6 +623,7 @@ test("Current scheduled NBA matchups cannot disappear when no pick was modeled",
  assert.ok(html.includes('g.date_eastern===date'));
  assert.ok(html.includes('timestamp(g.start)>now'));
  assert.ok(html.includes('No verified modeled picks available'));
+ assert.ok(html.includes('Official schedule unavailable or incomplete — upcoming game coverage cannot be verified.'));
  assert.ok(html.includes('renderUpcomingSlate();'));
  assert.ok(html.includes('const schedule=state.raw?.nbaSchedule'));
  // Four known remaining late games on the November 10 ET slate
