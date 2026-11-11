@@ -278,7 +278,7 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
         "ai_only":{"frozen":ai_total,**{k:ai_counts[k] for k in
                     ("graded","verified_exclusion","unresolved","overdue")}},
         "standard_line":{"frozen":std_total,**{k:std_counts[k] for k in
-                    ("graded","verified_exclusion","unresolved","overdue")}},
+                    ("graded","verified_exclusion","unresolved","overdue","push")}},
         "published_report_reconciliation":reports,
         "blockers":blockers,
         "unresolved_ai_only":unresolved_ai,
