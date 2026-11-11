@@ -71,6 +71,8 @@ jobs:
           PY
           node --check /tmp/sports-bot-live-results.js
       - name: Refresh completed real NBA player game logs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       - name: Publish minutes V2 research from completed games
         run: python -u iphone_bot/publish_minutes_v2.py
