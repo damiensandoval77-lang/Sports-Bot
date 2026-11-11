@@ -4,17 +4,23 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
-HTML=(ROOT/"docs/index.html").read_text()
+HTML=(ROOT/"docs/dames-picks/index.html").read_text()
+FEEDS=(ROOT/"docs/dames-picks/feeds.js").read_text()
+LANDING=(ROOT/"docs/index.html").read_text()
 
 class ProjectionDeliverySmoke(unittest.TestCase):
-    def test_main_board_does_not_depend_on_betting_lines(self):
-        self.assertIn('const independent=(!entries.length&&noLineForecast?',HTML)
-        self.assertIn('independent.length+" independent AI estimates',HTML)
-        self.assertIn('if(!list.length&&independent.length)',HTML)
-        self.assertIn('independent?"AI PROJECTIONS READY"',HTML)
-        self.assertIn('const displayed=independent?model:priced',HTML)
-        self.assertIn('"PrizePicks line","Unavailable"',HTML)
-        self.assertIn('noLineArchive=await fetchJSON("ai_no_line_pregame_archive.json")',HTML)
+    def test_current_unified_board_does_not_fabricate_lines_from_no_line_research(self):
+        self.assertIn('url=./dames-picks/', LANDING)
+        self.assertIn('lagged_matchup_all_market_ledger.json', HTML)
+        self.assertIn('function includeArchivedStandard(rows,archive)', FEEDS)
+        self.assertIn('projection:null,direction:null,chance:null', FEEDS)
+        self.assertIn('quoteOnly:true', FEEDS)
+        self.assertIn('!x.quoteOnly&&x.projection!==null&&x.direction!==null', HTML)
+        self.assertIn('No sample data is substituted', HTML)
+        self.assertIn('p.quoteOnly?"NO AI"', HTML)
+        # Price-free forecasts stay separately archived, never fabricated as
+        # an observed PrizePicks price or a false calibrated hit chance.
+        self.assertTrue((ROOT/"docs/ai_no_line_pregame_archive.json").exists())
 
     def test_frozen_archive_has_verified_pretip_captures(self):
         archive=json.loads((ROOT/"docs/ai_no_line_pregame_archive.json").read_text())
