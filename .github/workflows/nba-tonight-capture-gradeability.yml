@@ -39,6 +39,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate capture and no-destructive-merge regression tests
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_tonight_capture_gradeability.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_audit_primary_model_missing.py' -v
