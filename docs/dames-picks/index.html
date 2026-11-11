@@ -15,7 +15,7 @@
  <div class="selector"><button data-league="NBA" class="active">NBA</button><button data-league="NFL">NFL</button></div>
  <div class="metrics"><div class="metric"><div class="metric-label">GRADED W–L</div><div class="metric-value" id="wl">—</div></div><div class="metric"><div class="metric-label">HIT RATE</div><div class="metric-value" id="rate">—</div></div><div class="metric"><div class="metric-label">GAMES</div><div class="metric-value" id="games">—</div></div></div>
  <div class="section"><h2 id="section-title">Top picks</h2><span class="flag">REAL BOT DATA</span></div><input class="search" id="query" placeholder="Search players or teams" aria-label="Search players">
- <div id="status" class="stamp" aria-live="polite"></div><div class="cards" id="cards"></div>
+ <div id="status" class="stamp" aria-live="polite"></div><div id="upcoming-slate"></div><div class="cards" id="cards"></div>
 </div>
 <div id="detail" class="hidden"><div class="detail-tools"><button class="back" id="back" aria-label="Back">‹</button><span class="flag">SAVED BOT DATA</span><button class="corner" id="bookmark" aria-label="Save pick">♧</button></div>
  <h1 id="player" class="detail-title"></h1><div id="matchup" class="muted"></div><div id="markets" class="tabstrip"></div><div id="detail-content"></div>
@@ -106,8 +106,45 @@ function shown(){
  data=m.displayCurrentPicks(data,now,state.mode==="tracker");
  return [...data].sort((a,b)=>state.mode==="tracker"?timestamp(b.start)-timestamp(a.start):timestamp(a.start)-timestamp(b.start)||(b.chance??0)-(a.chance??0));
 }
+/* A model/provider outage may suppress Top Picks, but NEVER erase a known
+   fixture from the upcoming schedule. This is verified schedule metadata,
+   not an inferred prediction or a synthetic standard line. */
+function renderUpcomingSlate(){
+ const holder=$("upcoming-slate");
+ if(state.league!=="NBA"||state.mode!=="board"){holder.innerHTML="";return;}
+ const schedule=state.raw?.nbaSchedule;
+ const now=Date.now();
+ const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",
+  year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(now));
+ const part=k=>parts.find(x=>x.type===k)?.value||"";
+ const date=part("year")+"-"+part("month")+"-"+part("day");
+ const games=(schedule?.games||[]).filter(g=>g?.id&&g?.game&&
+  g.date_eastern===date&&Number.isFinite(timestamp(g.start))&&timestamp(g.start)>now);
+ const term=$("query").value.toLowerCase().trim();
+ const shown=games.filter(g=>!term||(g.game+" "+g.away+" "+g.home).toLowerCase().includes(term));
+ const uniq=[...new Map(shown.map(g=>[String(g.id),g])).values()];
+ const selected=m.displayCurrentPicks(state.nba,now);
+ holder.innerHTML='<div class="section"><h2>Upcoming NBA games ('+uniq.length+
+  ')</h2><span class="flag">VERIFIED SCHEDULE</span></div>'+
+ (uniq.length?'<div class="cards">'+uniq.map(g=>{
+  const count=selected.filter(p=>p.game===g.game&&timestamp(p.start)===timestamp(g.start)&&
+   !p.quoteOnly&&p.projection!==null).length;
+  return '<button class="pick" data-slate="'+escapeText(g.id)+'"><div class="pick-top"><span class="name">'+
+   escapeText(g.game)+'</span><span class="grade">UPCOMING</span></div><div class="context">'+
+   escapeText(when(g.start))+'</div><div class="stampband"><span>'+
+   escapeText(count?count+" frozen modeled picks":"No verified modeled picks available")+
+   '</span><span>Open game</span></div></button>';
+ }).join("")+'</div>':'<div class="note">No remaining scheduled NBA games today.</div>');
+ for(const b of holder.querySelectorAll("[data-slate]"))b.onclick=()=>{
+  const game=state.liveGames.find(g=>g.sport==="NBA"&&
+    (String(g.gameId)===b.dataset.slate||
+      schedule.games.some(x=>String(x.id)===b.dataset.slate&&x.game===g.game)));
+  if(game)openGame(game);
+ };
+}
 function render(){
  const a=rows(),sum=m.summarize(a,state.nflHealth,Date.now(),state.league),items=shown();
+ renderUpcomingSlate();
  $("wl").textContent=sum.wins===null?"—":sum.wins+"–"+sum.losses;
  $("rate").textContent=pct(sum.hitRate);$("games").textContent=sum.games;
  $("section-title").textContent=state.mode==="board"?"Top picks":state.mode==="live"?"Started games":state.mode==="tracker"?"Today’s frozen picks":"Saved props";
