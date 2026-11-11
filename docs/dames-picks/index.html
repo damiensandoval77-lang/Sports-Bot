@@ -15,7 +15,7 @@
  <div class="selector"><button data-league="NBA" class="active">NBA</button><button data-league="NFL">NFL</button></div>
  <div class="metrics"><div class="metric"><div class="metric-label">GRADED W–L</div><div class="metric-value" id="wl">—</div></div><div class="metric"><div class="metric-label">HIT RATE</div><div class="metric-value" id="rate">—</div></div><div class="metric"><div class="metric-label">GAMES</div><div class="metric-value" id="games">—</div></div></div>
  <div class="section"><h2 id="section-title">Top picks</h2><span class="flag">REAL BOT DATA</span></div><input class="search" id="query" placeholder="Search players or teams" aria-label="Search players">
- <div id="status" class="stamp" aria-live="polite"></div><div class="stamp" style="margin:10px 0"><span id="app-build">App build: dp-matchup-calibration-20261111-r7</span> · <button id="verify-app" type="button" style="background:transparent;border:1px solid #aaa;border-radius:8px;padding:5px 9px;color:#fafafa;font-size:12px">Check this phone</button><span id="verify-result" role="status" aria-live="polite"></span></div><div class="cards" id="cards"></div>
+ <details id="diagnostics" class="stamp" style="display:none;margin:10px 0 16px" aria-label="Developer diagnostics"><summary>Diagnostics</summary><div id="status" class="stamp" aria-live="polite"></div><div class="stamp" style="margin:10px 0"><span id="app-build">App build: dp-matchup-calibration-20261111-r7</span> · <button id="verify-app" type="button" style="background:transparent;border:1px solid #aaa;border-radius:8px;padding:5px 9px;color:#fafafa;font-size:12px">Check this phone</button><span id="verify-result" role="status" aria-live="polite"></span></div></details><div class="cards" id="cards"></div>
 </div>
 <div id="detail" class="hidden"><div class="detail-tools"><button class="back" id="back" aria-label="Back">‹</button><span class="flag">SAVED BOT DATA</span><button class="corner" id="bookmark" aria-label="Save pick">♧</button></div>
  <h1 id="player" class="detail-title"></h1><div id="matchup" class="muted"></div><div id="markets" class="tabstrip"></div><div id="detail-content"></div>
@@ -29,6 +29,11 @@
 <script src="feeds.js?bundle=dp-matchup-calibration-20261111-r7"></script><script src="live_direct.js?bundle=dp-matchup-calibration-20261111-r7"></script><script src="dames_take.js?bundle=dp-matchup-calibration-20261111-r7"></script><script>
 "use strict";
 const $=id=>document.getElementById(id),m=window.DamesPicksModel,L=window.DamesPicksLive;
+// Diagnostic view is deliberately opt-in and not advertised on public board.
+// A query parameter hides UI only; it is NOT authentication or access control.
+// Do not put private data, tokens, or credentials in page assets.
+const DIAGNOSTICS_ENABLED=new URLSearchParams(window.location.search).get("diagnostics")==="1";
+if(DIAGNOSTICS_ENABLED)$("diagnostics").style.display="block";
 const state={league:"NBA",mode:"board",nba:[],nfl:[],nflHealth:null,picked:null,gamePicked:null,liveGames:[],loading:false,errors:[],selected:new Set(),updated:null,health:null};
 try{state.selected=new Set(JSON.parse(localStorage.getItem("dames-picks-bookmarks-v1")||"[]"))}catch(_){state.selected=new Set()}
 function saveBookmarks(){try{localStorage.setItem("dames-picks-bookmarks-v1",JSON.stringify([...state.selected]))}catch(_){}}
