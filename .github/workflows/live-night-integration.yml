@@ -7,6 +7,8 @@ on:
     paths:
       - 'scripts/integration_live_night.cjs'
       - 'iphone_bot/tests/test_live_direct.cjs'
+      - 'scripts/audit_workflow_topology.py'
+      - 'iphone_bot/tests/test_workflow_topology_audit.py'
       - '.github/workflows/live-night-integration.yml'
 permissions:
   contents: read
@@ -24,6 +26,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Report actual workflow writer and scheduler topology (read-only)
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_workflow_topology_audit.py' -v
+          python scripts/audit_workflow_topology.py
       - name: Validate live source without paid provider access
         run: node --test iphone_bot/tests/test_live_direct.cjs
       - name: Run public deployed app against real ESPN
