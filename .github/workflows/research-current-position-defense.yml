@@ -32,6 +32,8 @@ jobs:
         run: python -m unittest discover -s research/tests -p 'test_position_defense_current_season.py' -v
       - name: Download actual dated current-season game logs including source position labels
         if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -m iphone_bot.fetch_current_form
       - name: Build future opponent listed-position context without modifying predictions
         if: github.event_name != 'pull_request'
