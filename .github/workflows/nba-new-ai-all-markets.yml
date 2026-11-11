@@ -5,6 +5,9 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'research/pretip_matchup_shadow.py'
+      - 'research/freeze_position_rating_quote_join.py'
+      - 'iphone_bot/tests/test_pretip_matchup_shadow.py'
       - 'iphone_bot/new_ai_injury_context.py'
       - 'iphone_bot/injury_refresh_integrity.py'
       - 'iphone_bot/tests/test_injury_refresh_integrity.py'
@@ -103,6 +106,16 @@ jobs:
         run: |
           python -u iphone_bot/fetch_current_form.py
           python -m iphone_bot.build_prizepicks_model_input
+      - name: Capture opponent position, source-rated defense and pregame minutes before model picks freeze
+        id: matchup_source
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python -m research.source_def_rating_2026
+          python -m research.position_defense_current_season --output positional-defense-research.json
+          python -m research.capture_pregame_evidence --output pregame-evidence-research.json
+          python -m research.minutes_forecast_research --evidence pregame-evidence-research.json --output minutes-forecast-research.json
+          python -m research.join_matchup_features --evidence pregame-evidence-research.json --minutes minutes-forecast-research.json --position positional-defense-research.json --output joined-matchup-features-research.json
       - name: Generate distinct points rebounds assists PRA model estimates
         run: python -u iphone_bot/live_multimarket_matchup.py
       - name: Validate each posted offer and exact PRA component sum
@@ -126,6 +139,15 @@ jobs:
               assert chance['PRA_joint_distribution'] is True
           print('Verified new AI market counts:',d['market_counts'])
           PY
+      - name: Test analytical matchup probability with exact original standard lines
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_pretip_matchup_shadow.py' -v
+      - name: Calculate separate research-only opponent-based analytic probabilities
+        if: steps.matchup_source.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python -m research.freeze_position_rating_quote_join --joined joined-matchup-features-research.json --ratings defensive-rating-research.json --output position-rating-quote-research.json
+          python -m research.pretip_matchup_shadow --joined position-rating-quote-research.json --output matchup-shadow-estimates-research.json
       - name: Test and freeze pretip offers for independent multi-stat grading
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
@@ -150,6 +172,12 @@ jobs:
             docs/lagged_matchup_all_market_validation.json
             docs/lagged_matchup_live_all_markets.json
             docs/lagged_matchup_all_market_ledger.json
+            defensive-rating-research.json
+            positional-defense-research.json
+            minutes-forecast-research.json
+            joined-matchup-features-research.json
+            position-rating-quote-research.json
+            matchup-shadow-estimates-research.json
           retention-days: 21
       - name: Publish ONLY separate new AI feed without rewriting existing cards/grades
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
