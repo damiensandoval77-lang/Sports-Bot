@@ -77,6 +77,8 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
     retrieved=[]
     errors=Counter()
     provider_games=Counter()
+    espn_consecutive_http_errors=0
+    circuit_open=False
     for key in targets:
         gid=official.get(key)
         rows=None
@@ -93,9 +95,10 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
                 errors["nba_box_"+type(err).__name__]+=1
         if rows is None:
             espn_id=hints.get(key)
-            if espn_id:
+            if espn_id and not circuit_open:
                 try:
                     payload=request(ESPN_BOX+"?"+urlencode({"event":espn_id}))
+                    espn_consecutive_http_errors=0
                     candidate=verified_direct_espn_summary(espn_id,key,payload)
                     if candidate:
                         competition=payload["header"]["competitions"][0]
@@ -104,6 +107,14 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
                         rows=candidate
                 except (ValueError,TypeError,KeyError,OSError) as err:
                     errors["espn_box_"+type(err).__name__]+=1
+                    if type(err).__name__=="HTTPError":
+                        espn_consecutive_http_errors+=1
+                        if espn_consecutive_http_errors>=3:
+                            circuit_open=True
+                    else:
+                        espn_consecutive_http_errors=0
+            elif circuit_open:
+                errors["espn_skipped_circuit_open"]+=1
             else:
                 errors["no_verified_id_hints"]+=1
         if not rows or not scores:
@@ -147,6 +158,8 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
             "requested_games":len(targets),
             "official_ids_found":len(official),
             "verified_espn_id_hints":sum(bool(v) for v in hints.values()),
+            "espn_http_circuit_open":circuit_open,
+            "provider_outage_detected":circuit_open,
             "schedule_lookup_error":schedule_error,
             "verified_games_by_provider":dict(sorted(provider_games.items())),
             "verified_new_games":len(valid_new),

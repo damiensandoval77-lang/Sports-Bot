@@ -33,6 +33,14 @@ jobs:
       - name: Collect independently verified NBA CDN completed boxes without odds API
         if: github.event_name != 'pull_request'
         run: python -m research.official_defense_backfill --limit 90 --output official-defense-history-research.json
+      - name: Upload provider health evidence even if external source is unavailable
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-final-provider-health
+          path: official-defense-history-research.json
+          retention-days: 7
+          if-no-files-found: error
       - name: Fail closed when official source produces no verified games
         if: github.event_name != 'pull_request'
         run: |
@@ -40,8 +48,10 @@ jobs:
           import json
           x=json.load(open('official-defense-history-research.json'))
           assert x.get('production_approved') is False
-          assert x.get('verified_new_games',0)>0, 'NO_INDEPENDENT_OFFICIAL_FINALS'
-          print('Verified official final games:',x['verified_new_games'])
+          if x.get('verified_new_games',0)==0:
+              raise SystemExit('NO_VERIFIED_NEW_FINALS; provider_outage='+str(x.get('provider_outage_detected'))+
+                '; see official-final-provider-health artifact')
+          print('Verified final games:',x['verified_new_games'])
           PY
       - name: Build separate team defense research context from verified history
         if: github.event_name != 'pull_request'
