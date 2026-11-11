@@ -285,7 +285,7 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
 }
 /* Game catalog is schedule-first, then updated with genuine scoreboard observations.
    Schedule-only data is never promoted to a live score or fabricated final. */
-function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now()){
+function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaScoreFeed=null){
  const observed=liveGames(nbaFeed,nflFeed,now);
  const result=new Map();
  const identity=g=>g.sport+"|"+g.gameId;
@@ -304,6 +304,29 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now()){
     sourceState:"schedule",fresh:false,source:"Independent NBA schedule",
     statusText:start<=now?"Started or finished · live status unavailable":"Scheduled · no live player data",
     players:[],awayScore:null,homeScore:null});
+  }
+ }
+ // Scoreboard is independent from player-boxscore capture. Exact NBA game
+ // identity plus source freshness is required before a verified score can
+ // appear on live matchup cards. Never infer scores from schedules.
+ if(nbaScoreFeed?.is_live_score_source===true &&
+    Array.isArray(nbaScoreFeed.games)){
+  const seenAt=stamp(nbaScoreFeed.generated_at);
+  const current=Number.isFinite(seenAt) && now-seenAt>=-120000 &&
+                now-seenAt<20*60000;
+  if(current)for(const score of nbaScoreFeed.games){
+   if(!score?.id||!score?.game||!["in","post"].includes(score.game_state))continue;
+   const away=numberOrNull(score.away_score),home=numberOrNull(score.home_score);
+   if(away===null||home===null)continue;
+   const match=[...result.values()].find(g=>g.sport==="NBA"&&
+       (g.gameId===score.id||g.game===score.game));
+   if(!match||match.game!==score.game)continue;
+   match.awayScore=away;match.homeScore=home;
+   match.observedAt=nbaScoreFeed.generated_at;
+   match.statusText=score.game_state==="post"?"Final · verified scoreboard":
+                     "Live · verified scoreboard";
+   match.state=score.game_state==="post"?"final":"in";
+   match.fresh=true;
   }
  }
  if(Array.isArray(nflSchedule?.games)){
