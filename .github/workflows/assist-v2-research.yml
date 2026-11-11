@@ -21,6 +21,8 @@ jobs:
           python -m py_compile iphone_bot/assist_v2_research.py iphone_bot/assist_v2_backtest.py iphone_bot/assist_v2_shadow_capture.py
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_v2_*.py' -v
       - name: Download historical player-game logs for expected minutes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       # Refresh the paired research comparison after the latest successful main-branch settlement.
       - name: Paired retrospective comparison
