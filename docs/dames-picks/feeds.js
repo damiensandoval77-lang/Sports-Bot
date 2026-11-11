@@ -37,7 +37,7 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
       start>=now-10*3600000&&start<=now;
    if(when.date!==today.date&&!recentLateGame)continue;
   }
-  const match=[p.sport,p.gameId||p.game,start,p.playerId||norm(p.player),
+  const match=[p.sport,p.gameId||p.game,start,norm(p.player)||p.playerId,
                nbaTeamCode(p.team),p.stat].join("|");
   const prior=latest.get(match);
   if(!prior){latest.set(match,p);continue;}
