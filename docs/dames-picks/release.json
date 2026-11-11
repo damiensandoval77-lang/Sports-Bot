@@ -1,16 +1,16 @@
 {
-  "release_id": "dp-matchup-20261111-r3",
+  "release_id": "dp-live-raw-20261111-r4",
   "ui": "hit-estimate",
   "expected_labels": [
     "HIT EST.",
     "Hit est."
   ],
-  "note": "Only provenance-verified frozen opponent-conditioned probabilities qualify for HIT EST; unverified legacy residual odds are withheld. HTTP and phone runtime checks remain required. No current prediction has been validated as matchup-qualified.",
+  "note": "Browser reads authenticated-by-public-repository raw live snapshots first, falls back to Pages only if raw invalid/unreachable. Source timestamps protect against stale overwrites. App HIT EST remains matchup-only and fail-closed; phone runtime verification and real live canary required.",
   "asset_blob_sha1": {
-    "index.html": "bb89b77bea60da3672593fdd4207e2be010df5a8",
-    "feeds.js": "339a71ad25cd8358113eb4d91b6605f87c1d9694",
-    "live_direct.js": "9d8aec8f199a1e39d51e6cabb7b681cdea105426",
-    "dames_take.js": "970945344632fd23e233e64d3cd832d6addde678"
+    "index.html": "63a55c266da8b5f9053bc65696794b08019af733",
+    "feeds.js": "be391b42199f794ea525e07e83274aa4ad398a48",
+    "live_direct.js": "74ae9adac3611f1d27422eb69a28afc8e4f6d53e",
+    "dames_take.js": "a3bc81de3cfa75beed05003d1ccd78d529bb5be6"
   },
-  "runtime_bundle_id": "dp-matchup-20261111-r3"
+  "runtime_bundle_id": "dp-live-raw-20261111-r4"
 }
