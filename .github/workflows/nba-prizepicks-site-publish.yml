@@ -41,6 +41,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test genuine NBA PrizePicks site snapshot and date-safe coverage
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/publish_prizepicks_site.py
           python -m unittest discover -s iphone_bot/tests -p 'test_publish_prizepicks_site.py' -v
