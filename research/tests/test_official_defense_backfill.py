@@ -1,6 +1,6 @@
 import copy
 import unittest
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 from research.official_defense_backfill import collect,planned_games,MAX_GAMES
 
 NOW=datetime(2026,11,11,4,0,tzinfo=timezone.utc)
@@ -165,7 +165,7 @@ class ProviderCircuitBreakerTests(unittest.TestCase):
             g=dict(s["games"][0])
             g["id"]=str(401901234+i)
             g["start"]=(datetime(2026,11,1+i,0,0,tzinfo=timezone.utc)).isoformat()
-            g["date_eastern"]=(datetime(2026,10,31+i,tzinfo=timezone.utc)).date().isoformat()
+            g["date_eastern"]=(datetime(2026,10,31,tzinfo=timezone.utc)+timedelta(days=i)).date().isoformat()
             games.append(g)
         s["games"]=games
         now=datetime(2026,11,11,4,0,tzinfo=timezone.utc)
