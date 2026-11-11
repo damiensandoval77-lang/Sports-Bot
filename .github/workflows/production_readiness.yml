@@ -52,6 +52,14 @@ jobs:
           # Independent no-odds-credit retry when the separate cron is late.
           # This is best effort; readiness still fails if fresh LIVE scores are missing.
           python -m iphone_bot.refresh_independent_scoreboard
+      - name: Recover authentic live NBA player totals before verifying readiness
+        id: player_repair
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: |
+          # Free official NBA liveData only. Partial authentic observations
+          # can be saved, but never claim every matchup has player rows.
+          python -m iphone_bot.refresh_nba_player_boxscores
       - name: Evaluate actual published NBA input freshness and coverage
         id: check
         if: github.event_name != 'pull_request'
@@ -67,6 +75,18 @@ jobs:
           if [ -f docs/nba_scoreboard_independent.json ]; then
             cp docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
           fi
+          if [ -f docs/nba_player_tracking_independent.json ]; then
+            # Do not publish an empty or unverified live response as fresh.
+            if python - <<'PY'
+          import json
+          from iphone_bot.refresh_nba_player_boxscores import publishable_observations
+          d=json.load(open("docs/nba_player_tracking_independent.json"))
+          assert publishable_observations(d)
+          PY
+            then
+              cp docs/nba_player_tracking_independent.json "$RUNNER_TEMP/nba_player_tracking_independent.json"
+            fi
+          fi
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
@@ -74,7 +94,12 @@ jobs:
             if [ -f "$RUNNER_TEMP/nba_scoreboard_independent.json" ]; then
               python -m iphone_bot.merge_scoreboard_snapshot docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
             fi
-            git add docs/production_readiness.json docs/nba_scoreboard_independent.json
+            if [ -f "$RUNNER_TEMP/nba_player_tracking_independent.json" ]; then
+              python -m iphone_bot.merge_nba_player_boxscore_publish \\
+                --current docs/nba_player_tracking_independent.json \\
+                --incoming "$RUNNER_TEMP/nba_player_tracking_independent.json"
+            fi
+            git add docs/production_readiness.json docs/nba_scoreboard_independent.json docs/nba_player_tracking_independent.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Record honest NBA production feed readiness'
             if git push origin HEAD:main; then exit 0; fi
