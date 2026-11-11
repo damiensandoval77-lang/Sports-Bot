@@ -22,7 +22,7 @@ def digest(data):
 
 
 def git_blob_digest(data):
-    header=("blob "+str(len(data))+"\\0").encode("utf-8")
+    header=("blob "+str(len(data))+"\0").encode("utf-8")
     return hashlib.sha1(header+data).hexdigest()
 
 
