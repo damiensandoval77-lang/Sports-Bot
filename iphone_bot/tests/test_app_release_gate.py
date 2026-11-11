@@ -43,6 +43,27 @@ class AppReleaseGateTests(unittest.TestCase):
         r=evaluate(inp,NOW)
         self.assertFalse(r["checks_passing"])
         self.assertIn("nba_capture",r["blocking_checks"])
+    def test_unmodeled_raw_quotes_do_not_reclassify_saved_graded_picks(self):
+        inp=fixture()
+        inp["nba_capture"]={
+            "checked_at":STAMP,"status":"CAPTURE_INCOMPLETE",
+            "issues":["Example @ Fixture: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"],
+            "summary":{"schedule_games":1,"games_with_line_backed_models":1,
+                       "total_standard_markets_without_frozen_model":139}}
+        r=evaluate(inp,NOW)
+        self.assertTrue(r["checks_passing"],r["checks"])
+        self.assertEqual(r["status"],"MONITORING")
+    def test_uncaptured_game_blocks_app_even_with_good_other_picks(self):
+        inp=fixture()
+        inp["nba_capture"]={
+            "checked_at":STAMP,"status":"CAPTURE_INCOMPLETE",
+            "issues":["Example @ Fixture: PROVIDER_QUOTES_WITH_NO_FROZEN_LINE_BACKED_MODEL"],
+            "summary":{"schedule_games":1,"games_with_line_backed_models":0,
+                       "total_standard_markets_without_frozen_model":1}}
+        r=evaluate(inp,NOW)
+        self.assertIn("nba_capture",r["blocking_checks"])
+        self.assertIn("REQUIRED_PREGAME_PICK_ARTIFACT_MISSING",
+                      r["checks"]["nba_capture"]["issues"])
     def test_both_sports_must_render(self):
         inp=fixture()
         inp["public_unified_browser"]["NFL"]["rendered"]=0

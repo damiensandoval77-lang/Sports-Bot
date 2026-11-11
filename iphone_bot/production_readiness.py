@@ -145,36 +145,75 @@ def check(now,files):
     add("prizepicks_lines","READY" if not issues else "DEGRADED",issues,age,
         required=bool(upcoming))
 
-    # Independent exact pretip capture gate. A research-only price/model
-    # receipt is valuable history, but NOT a validated primary frozen pick.
+    # Gradeability is defined by what the unified app ACTUALLY publishes:
+    # authentic, immutable pretip standard-line picks. Raw sportsbook quotes
+    # without safe models remain diagnostic only and never become picks.
     capture=load("tonight_capture_gradeability.json")
     capture_age=age_of(capture,"checked_at")
     capture_issues=[]
+    coverage_issues=[]
     summary=capture.get("summary") if isinstance(capture.get("summary"),dict) else {}
     if capture.get("game_date_eastern")!=day:
         capture_issues.append("CAPTURE_REPORT_WRONG_SLATE_DATE")
     if capture_age is None or capture_age< -5 or capture_age>90:
         capture_issues.append("CAPTURE_REPORT_STALE")
     if upcoming:
-        if capture.get("status")!="CAPTURE_VERIFIED":
-            capture_issues.append("PRETIP_CAPTURE_NOT_VERIFIED")
+        if capture.get("status") not in ("CAPTURE_VERIFIED","CAPTURE_INCOMPLETE"):
+            capture_issues.append("CAPTURE_INPUTS_NOT_VERIFIED")
+        # Incomplete source-to-model coverage is different from invalid or
+        # missing grades for already published model picks.
+        allowed_raw_gap="STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        rows=capture.get("games")
+        if not isinstance(rows,list) or len(rows)!=len(todays):
+            capture_issues.append("CAPTURE_PER_GAME_RECONCILIATION_UNAVAILABLE")
+        else:
+            expected_games={g.get("game") for g in todays}
+            reported_games=[r.get("game") for r in rows if isinstance(r,dict)]
+            if set(reported_games)!=expected_games or len(reported_games)!=len(rows):
+                capture_issues.append("CAPTURE_GAME_IDENTITY_MISMATCH")
+            for row in rows:
+                if not isinstance(row,dict) or not isinstance(row.get("issues"),list):
+                    capture_issues.append("CAPTURE_GAME_RECORD_INVALID")
+                    continue
+                if any(issue!=allowed_raw_gap for issue in row["issues"]):
+                    capture_issues.append("REQUIRED_PREGAME_PICK_ARTIFACT_MISSING")
         if summary.get("schedule_games")!=len(todays):
             capture_issues.append("CAPTURE_SCHEDULE_COUNT_MISMATCH")
         if summary.get("games_with_saved_source_quotes",0)<len(upcoming):
             capture_issues.append("UPCOMING_GAMES_WITHOUT_FROZEN_QUOTES")
         if summary.get("games_with_frozen_ai",0)<len(upcoming):
             capture_issues.append("UPCOMING_GAMES_WITHOUT_FROZEN_AI")
+        if summary.get("games_with_line_backed_models",0)<len(upcoming):
+            capture_issues.append("UPCOMING_GAMES_WITHOUT_GRADEABLE_SAVED_PICKS")
         missing=summary.get("total_standard_markets_without_frozen_model")
         fallback=summary.get("total_missing_primary_with_separate_research_receipt")
         no_ai=summary.get("total_missing_primary_without_any_ai_receipt")
         if any(type(x) is not int or x<0 for x in (missing,fallback,no_ai)) or missing!=fallback+no_ai:
             capture_issues.append("CAPTURE_RECONCILIATION_INCONSISTENT")
         elif missing>0:
-            capture_issues.append("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL")
+            coverage_issues.append("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL")
         if summary.get("total_standard_source_quotes",0)==0:
             capture_issues.append("NO_ARCHIVED_STANDARD_QUOTES")
+        if summary.get("total_line_backed",0)<len(upcoming):
+            capture_issues.append("NO_GRADEABLE_FROZEN_PICKS_FOR_EVERY_UPCOMING_GAME")
     add("pregame_capture","READY" if not capture_issues else "DEGRADED",
         list(dict.fromkeys(capture_issues)),capture_age,required=bool(upcoming))
+    add("unmodeled_provider_market_coverage",
+        "READY" if not coverage_issues else "DEGRADED",
+        coverage_issues,capture_age,required=False)
+    # This is the actual grade/void pipeline health of EVERY advertised pick.
+    settled=load("dames-picks/published_pick_settlement.json")
+    settlement_age=age_of(settled,"checked_at")
+    settlement_issues=[]
+    if settlement_age is None or settlement_age< -5 or settlement_age>65:
+        settlement_issues.append("PUBLISHED_GRADEABILITY_AUDIT_STALE")
+    if settled.get("status")!="READY":
+        settlement_issues.append("PUBLISHED_FROZEN_PICKS_NOT_GRADEABLE")
+    counts=settled.get("counts") if isinstance(settled.get("counts"),dict) else {}
+    if not isinstance(counts.get("frozen_picks"),int) or counts["frozen_picks"]<1:
+        settlement_issues.append("NO_VERIFIED_PUBLISHED_FROZEN_PICKS")
+    add("published_pick_settlement","READY" if not settlement_issues else "DEGRADED",
+        settlement_issues,settlement_age,required=True)
 
     # A fresh raw provider board and AI-only projections do NOT mean that
     # actual live prop cards were published. No recommendations may be inferred.
@@ -339,6 +378,7 @@ def main():
            "data.json","ai_comparisons.json","verified_official_nba_fixtures.json",
            "ai_prizepicks_quick_join_health.json",
            "tonight_capture_gradeability.json","dames-picks/browser_readiness.json",
+           "dames-picks/published_pick_settlement.json",
            "nba_schedule_horizon_audit.json"]
     inputs={}
     for name in names:
