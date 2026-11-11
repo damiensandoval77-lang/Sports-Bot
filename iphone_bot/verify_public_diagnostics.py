@@ -5,6 +5,7 @@ capture/grade/source/build/debug text. An explicit ?diagnostics=1 query reveals
 a collapsed developer disclosure. This opt-in is UI-only, not access control.
 """
 import json
+import time
 from datetime import datetime,timezone
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -19,7 +20,19 @@ def audit():
                       device_scale_factor=3,is_mobile=True,has_touch=True)
             errors=[]
             page.on("pageerror",lambda e:errors.append(str(e)[:300]))
-            page.goto(BASE,wait_until="domcontentloaded",timeout=45000)
+            # GitHub Pages may serve an older release briefly after the
+            # push-triggered canary starts. Poll for the exact new r8 HTML
+            # instead of misclassifying deployment latency as UI regression.
+            live_release=None
+            for attempt in range(16):
+                page.goto(BASE+"?verify-public="+str(time.time_ns()),
+                          wait_until="domcontentloaded",timeout=45000)
+                live_release=page.locator('meta[name="dames-release"]').get_attribute("content")
+                if live_release==EXPECTED and page.locator("#diagnostics").count()==1:
+                    break
+                if attempt<15:time.sleep(5)
+            if live_release!=EXPECTED:
+                raise SystemExit("DEPLOYMENT_NOT_YET_R8: hosted release="+str(live_release))
             page.wait_for_function("() => typeof state!=='undefined' && !state.loading && !!state.updated",timeout=60000)
             public=page.evaluate("""() => ({
               release:document.querySelector('meta[name="dames-release"]')?.content,
