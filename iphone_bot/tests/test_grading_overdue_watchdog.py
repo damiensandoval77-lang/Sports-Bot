@@ -33,6 +33,39 @@ class OverdueGradeChecks(unittest.TestCase):
         bogus={**P,"status":"GRADED","actual":19,"final_source":"LIVE_ESPN"}
         r=assess(S,A,{"version":1,"records":[bogus]},now=NOW)
         self.assertEqual(r["status"],"OVERDUE_UNGRADED")
+    def test_rolling_schedule_can_advance_but_season_preserves_nov10_overdue(self):
+        now=dt.datetime.fromisoformat("2026-11-11T09:28:00+00:00")
+        game={"game":"Milwaukee Bucks @ New York Knicks",
+              "date_eastern":"2026-11-10","start":"2026-11-11T00:30:00+00:00"}
+        upcoming={"game":"Brooklyn Nets @ New Orleans Pelicans",
+                 "date_eastern":"2026-11-11","start":"2026-11-12T01:00:00+00:00"}
+        rolled={**S,"games":[upcoming]}
+        self.assertEqual(assess(rolled,A,F,now)["status"],"NO_OVERDUE_PENDING")
+        season={"status":"VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
+                "season":"2026-27",
+                "coverage":"PUBLISHED_FIXED_REGULAR_SEASON_GAMES_ONLY",
+                "total_games":1200,"games":[game]+[upcoming]*1199}
+        frozen={**P,"game":game["game"],"team":"MIL",
+                "start":game["start"],
+                "captured_at":"2026-11-10T23:00:00+00:00"}
+        source={**A,"predictions":[frozen]}
+        r=assess(season,source,F,now)
+        self.assertEqual(r["status"],"OVERDUE_UNGRADED")
+        self.assertEqual(r["totals"]["overdue_forecasts"],1)
+        self.assertEqual(r["schedule_source"],"VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE")
+        settled={**frozen,"status":"GRADED","actual":10,
+                 "final_source":"NBA_CDN_FINAL","source_game_id":"0022600211"}
+        clean=assess(season,source,{"version":1,"records":[settled]},now)
+        self.assertEqual(clean["status"],"NO_OVERDUE_PENDING")
+        self.assertEqual(clean["totals"]["settled_forecasts"],1)
+
+    def test_unverified_partial_season_schedule_fails_closed(self):
+        season={"status":"VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
+                "season":"2026-27","coverage":"PUBLISHED_FIXED_REGULAR_SEASON_GAMES_ONLY",
+                "total_games":1200,"games":[S["games"][0]]}
+        self.assertEqual(assess(season,A,F,now=NOW)["status"],
+                         "OVERDUE_MONITOR_SOURCE_ERROR")
+
     def test_missing_schedule_or_missing_archive_causes_visible_failure(self):
         self.assertEqual(assess({**S,"coverage_complete":False},A,F,NOW)["status"],
                          "OVERDUE_MONITOR_SOURCE_ERROR")
