@@ -1,0 +1,28 @@
+name: Audit matchup pretip feature provenance (research only)
+on:
+  pull_request:
+    paths:
+      - 'research/matchup_asof_audit.py'
+      - 'research/tests/test_matchup_asof_audit.py'
+      - '.github/workflows/research-matchup-asof-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify leakage and missing-data guards
+        run: python -m unittest discover -s research/tests -p 'test_matchup_asof_audit.py' -v
+      - name: Audit actual frozen records without recalculating picks
+        run: python -m research.matchup_asof_audit --output matchup-evidence.json
+      - name: Publish read-only research evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: matchup-evidence-report
+          path: matchup-evidence.json
+          retention-days: 7
