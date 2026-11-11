@@ -113,7 +113,9 @@ function preferredNBALiveFeed(primary,independent,now=Date.now()){
  const valid=feed=>feed&&[
   "OK","OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
   "PARTIAL_NBA_PLAYER_BOXSCORES",
-  "OBSERVED_ESPN_PLAYER_TOTALS"
+  "OBSERVED_ESPN_PLAYER_TOTALS",
+  "OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
+  "OBSERVED_ESPN_LIVE_BOX_SCORES_BROWSER_DIRECT"
  ].includes(feed.status)&&Array.isArray(feed.games)&&
  Number.isFinite(stamp(feed.captured_at))&&
  now-stamp(feed.captured_at)>=-120000&&now-stamp(feed.captured_at)<20*60000;
@@ -160,7 +162,7 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
    if(hits.length!==1)return {...p,live:null};
    const actual=n(hits[0][p.stat]);
    return {...p,live:actual===null?null:{actual,gameStatus:game.shortDetail||game.displayClock||"In progress",
-    period:game.period,observedAt:game.observed_at||nbaFeed.captured_at,source:"ESPN player snapshot"}};
+    period:game.period,observedAt:game.observed_at||nbaFeed.captured_at,source:game.source_label||"ESPN player snapshot"}};
   }
   const game=nflGames.get(p.gameId);
   const hits=(game?.players||[]).filter(x=>x.team===p.team&&norm(x.player)===norm(p.player));
@@ -415,5 +417,5 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={nbaTeam:nbaTeamCode,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
