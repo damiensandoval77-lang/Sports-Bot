@@ -1,15 +1,16 @@
 {
-  "release_id": "dp-hit-est-20261111-r1",
+  "release_id": "dp-runtime-20261111-r2",
   "ui": "hit-estimate",
   "expected_labels": [
     "HIT EST.",
     "Hit est."
   ],
-  "note": "Provenance metadata only. GitHub deployed-code gate verifies full bytes against main; phone control checks current public site and cannot certify the server by itself.",
+  "note": "Public byte gate checks deployed server files; phone control additionally verifies each executing JS bundle identity and matching script cache key. Not proof of data freshness or model calibration.",
   "asset_blob_sha1": {
-    "index.html": "07a44ddee62728bed8970dfdb260593ad91af1ad",
-    "feeds.js": "653d5a86d92360f7b462a5fbfbef3098ed78baa9",
-    "live_direct.js": "5a745c9d36bc608506aa70b1330b5b1733d0a22a",
-    "dames_take.js": "c5c4deecaa7079bf10aef09ce68695350342f54e"
-  }
+    "index.html": "224642fff5dc978fe84de23d407b847ffba883d3",
+    "feeds.js": "4ae2fc31d2b2fcf0f30bd96b018e1e74d45e7363",
+    "live_direct.js": "fa75a532a09819c13b38af625328b0948023fe2b",
+    "dames_take.js": "079d16edf2bfa6ffac2fbc4861f4c90d41bf5fb8"
+  },
+  "runtime_bundle_id": "dp-runtime-20261111-r2"
 }
