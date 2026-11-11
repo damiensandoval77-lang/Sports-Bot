@@ -27,5 +27,4 @@ jobs:
       - name: Validate live source without paid provider access
         run: node --test iphone_bot/tests/test_live_direct.cjs
       - name: Run public deployed app against real ESPN
-        if: github.event_name != 'pull_request'
         run: node scripts/integration_live_night.cjs
