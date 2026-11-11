@@ -4,6 +4,8 @@ on:
     paths:
       - 'research/position_defense_current_season.py'
       - 'research/join_matchup_features.py'
+      - 'research/opportunity_tempo_proxies.py'
+      - 'research/tests/test_opportunity_tempo_proxies.py'
       - 'research/tests/test_join_matchup_features.py'
       - 'research/tests/test_position_defense_current_season.py'
       - '.github/workflows/research-current-position-defense.yml'
@@ -36,6 +38,8 @@ jobs:
         run: python -m unittest discover -s research/tests -p 'test_position_defense_current_season.py' -v
       - name: Verify exact game, source-date, injury and minutes research joins
         run: python -m unittest discover -s research/tests -p 'test_join_matchup_features.py' -v
+      - name: Test observed opportunity and activity proxies fail closed
+        run: python -m unittest discover -s research/tests -p 'test_opportunity_tempo_proxies.py' -v
       - name: Download actual dated current-season game logs including source position labels
         if: github.event_name != 'pull_request'
         env:
@@ -53,6 +57,9 @@ jobs:
       - name: Join exact opponent-position and projected-minutes research evidence
         if: github.event_name != 'pull_request'
         run: python -m research.join_matchup_features --evidence pregame-evidence-research.json --minutes minutes-forecast-research.json --position positional-defense-research.json --output joined-matchup-features-research.json
+      - name: Summarize research shot involvement and FGA plus TOV team activity
+        if: github.event_name != 'pull_request'
+        run: python -m research.opportunity_tempo_proxies --joined joined-matchup-features-research.json --output opportunity-tempo-research.json
       - name: Enforce truthful provenance and read-only production status
         if: github.event_name != 'pull_request'
         run: |
@@ -77,5 +84,6 @@ jobs:
             pregame-evidence-research.json
             minutes-forecast-research.json
             joined-matchup-features-research.json
+            opportunity-tempo-research.json
           retention-days: 21
           if-no-files-found: error
