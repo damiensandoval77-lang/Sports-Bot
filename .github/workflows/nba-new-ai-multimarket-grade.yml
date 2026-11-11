@@ -6,6 +6,7 @@ on:
       - 'iphone_bot/multimarket_forecast_ledger.py'
       - 'iphone_bot/merge_new_ai_publishing.py'
       - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_multimarket_forecast_ledger.py'
       - '.github/workflows/nba-new-ai-multimarket-grade.yml'
   push:
     branches: [main]
@@ -24,7 +25,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: nba-new-ai-all-markets
+  group: nba-new-ai-final-settlement
   cancel-in-progress: false
 jobs:
   grade:
@@ -33,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.head_ref || 'main' }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
