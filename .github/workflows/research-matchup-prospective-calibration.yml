@@ -33,7 +33,6 @@ jobs:
       - name: Run source, immutable forecast, final-score and calibration unit tests
         run: python -m unittest discover -s research/tests -p 'test_prospective_matchup_calibration.py' -v
       - name: Compute truthful prospective results or report absence of history
-        if: github.event_name != 'pull_request'
         run: |
           if [ ! -f docs/matchup_shadow_archive.json ]; then
             echo "No archived prospective model samples yet. Not reporting calibration success."
