@@ -538,3 +538,49 @@ test("Merged page includes independent source not just old empty NBA tracker",()
  assert.ok(html.includes('getJSON("nba_player_tracking_independent.json")'));
  assert.ok(html.includes('m.preferredNBALiveFeed('));
 });
+
+
+test("One current display line per player stat game; yesterday's changed version retained in archive",()=>{
+ const original={sport:"NBA",player:"Sample Player",playerId:"100",gameId:"A @ B",
+  game:"A @ B",start:"2026-11-11T02:00:00Z",team:"AAA",stat:"PTS",
+  source:"PrizePicks",line:19.5,projection:22.1,direction:"MORE",
+  captured:"2026-11-09T22:18:00Z",grade:"PENDING"};
+ const next={...original,line:20.5,projection:22.3,captured:"2026-11-10T23:23:00Z"};
+ const otherStat={...original,stat:"REB",line:7.5,captured:"2026-11-10T22:00:00Z"};
+ const nextGame={...original,gameId:"A @ C",game:"A @ C",start:"2026-11-12T02:00:00Z"};
+ const source=[original,next,otherStat,nextGame];
+ const visible=m.primaryDisplayLines(source);
+ assert.equal(source.length,4,"immutable history remains untouched");
+ assert.equal(visible.length,3);
+ assert.ok(visible.includes(next),"newest pretip modeled line shown");
+ assert.ok(!visible.includes(original),"yesterday's version hidden from active cards");
+ assert.ok(visible.includes(otherStat));
+ assert.ok(visible.includes(nextGame));
+});
+test("Quote-only archived versions never displace real frozen standard model",()=>{
+ const modeled={sport:"NBA",player:"Sample Player",playerId:"",gameId:"A @ B",game:"A @ B",
+  team:"AAA",stat:"PRA",start:"2026-11-11T02:00:00Z",
+  source:"PrizePicks",line:29.5,projection:31,direction:"MORE",
+  captured:"2026-11-09T22:00:00Z"};
+ const quote={...modeled,source:"PrizePicks archived standard",quoteOnly:true,
+  projection:null,direction:null,line:30.5,captured:"2026-11-10T23:55:00Z"};
+ assert.deepEqual(Array.from(m.primaryDisplayLines([modeled,quote])),[modeled]);
+});
+test("Public main board shows upcoming scheduled NBA games even with no models",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('id="upcoming-slate"'));
+ assert.ok(html.includes('g?.date_eastern===date'));
+ assert.ok(html.includes('Number.isFinite(timestamp(g.start))&&timestamp(g.start)>now'));
+ assert.ok(html.includes("No verified modeled picks yet"));
+ assert.ok(html.includes("m.primaryDisplayLines(rows())"));
+ assert.ok(html.includes("const related=m.primaryDisplayLines(rows())"));
+});
+test("Real frozen ledgers have no duplicate primary display market identities",()=>{
+ const records=JSON.parse(fs.readFileSync("docs/lagged_matchup_all_market_ledger.json","utf8"));
+ const form=JSON.parse(fs.readFileSync("docs/current_form.json","utf8"));
+ const all=m.nba(records,form),unique=m.primaryDisplayLines(all);
+ const identity=p=>[p.sport,p.gameId,p.start,p.playerId||p.player,p.team,p.stat].join("|");
+ assert.equal(new Set(unique.map(identity)).size,unique.length);
+ assert.ok(unique.length<all.length,"real ledger contains historical repriced duplicates");
+ assert.ok(all.length-unique.length>=30,"multiple past offer versions remain archived");
+});
