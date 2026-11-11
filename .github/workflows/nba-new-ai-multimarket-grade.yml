@@ -43,6 +43,9 @@ jobs:
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
+      - name: Test ESPN final DNP rules
+        if: github.event_name == 'pull_request'
+        run: python -m unittest iphone_bot.tests.test_espn_injury_void -v
       - name: Void only confirmed ESPN final nonparticipants on official injury list
         if: github.event_name != 'pull_request'
         run: |
