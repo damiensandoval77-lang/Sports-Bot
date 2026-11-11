@@ -15,7 +15,7 @@
  <div class="selector"><button data-league="NBA" class="active">NBA</button><button data-league="NFL">NFL</button></div>
  <div class="metrics"><div class="metric"><div class="metric-label">GRADED W–L</div><div class="metric-value" id="wl">—</div></div><div class="metric"><div class="metric-label">HIT RATE</div><div class="metric-value" id="rate">—</div></div><div class="metric"><div class="metric-label">GAMES</div><div class="metric-value" id="games">—</div></div></div>
  <div class="section"><h2 id="section-title">Top picks</h2><span class="flag">REAL BOT DATA</span></div><input class="search" id="query" placeholder="Search players or teams" aria-label="Search players">
- <div id="status" class="stamp" aria-live="polite"></div><div class="cards" id="cards"></div>
+ <div id="status" class="stamp" aria-live="polite"></div><div id="upcoming-slate"></div><div class="cards" id="cards"></div>
 </div>
 <div id="detail" class="hidden"><div class="detail-tools"><button class="back" id="back" aria-label="Back">‹</button><span class="flag">SAVED BOT DATA</span><button class="corner" id="bookmark" aria-label="Save pick">♧</button></div>
  <h1 id="player" class="detail-title"></h1><div id="matchup" class="muted"></div><div id="markets" class="tabstrip"></div><div id="detail-content"></div>
@@ -98,15 +98,53 @@ async function refresh(){
 }
 function rows(){return state.league==="NBA"?state.nba:state.nfl}
 function shown(){
- const now=Date.now(),term=$("query").value.toLowerCase().trim();let data=rows();
+ const now=Date.now(),term=$("query").value.toLowerCase().trim();let data=m.primaryDisplayLines(rows());
  if(state.mode==="board")data=data.filter(x=>timestamp(x.start)>now&&!x.quoteOnly&&x.projection!==null&&x.direction!==null);
  // Game cards on the Live tab are sourced from the scoreboard independently of props.
  if(state.mode==="saved")data=data.filter(x=>state.selected.has(m.key(x)));
  if(term)data=data.filter(x=>(x.player+" "+x.team+" "+x.opponent+" "+x.stat).toLowerCase().includes(term));
  return [...data].sort((a,b)=>state.mode==="tracker"?timestamp(b.start)-timestamp(a.start):timestamp(a.start)-timestamp(b.start)||(b.chance??0)-(a.chance??0));
 }
+/* The schedule, not the presence of an AI pick, owns matchup visibility.
+   Show every remaining NBA game on the CURRENT Eastern slate, including
+   games without offered standard lines or a frozen model. */
+function renderUpcomingSlate(){
+ const host=$("upcoming-slate");
+ if(!host)return;
+ if(state.mode!=="board"||state.league!=="NBA"){host.innerHTML="";return;}
+ const schedule=state.raw?.nbaSchedule;
+ const today=new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"})
+  .formatToParts(new Date());
+ const part=k=>today.find(x=>x.type===k)?.value||"";
+ const date=part("year")+"-"+part("month")+"-"+part("day");
+ const now=Date.now();
+ const games=(schedule?.games||[]).filter(g=>g?.date_eastern===date&&
+   Number.isFinite(timestamp(g.start))&&timestamp(g.start)>now);
+ const picks=m.primaryDisplayLines(state.nba);
+ const term=$("query").value.toLowerCase().trim();
+ const matches=games.filter(g=>!term||(g.game+" "+g.away+" "+g.home).toLowerCase().includes(term));
+ const unique=[...new Map(matches.map(g=>[g.id||g.game,g])).values()];
+ host.innerHTML='<div class="section"><h2>Upcoming NBA games ('+unique.length+
+  ')</h2><span class="flag">OFFICIAL SCHEDULE</span></div>'+
+  (unique.length?'<div class="cards">'+unique.map(g=>{
+   const saved=picks.filter(p=>p.game===g.game&&p.start===g.start&&
+     !p.quoteOnly&&p.projection!==null);
+   const label=saved.length?saved.length+" saved modeled props":
+     "No verified modeled picks yet";
+   return '<button class="pick" data-slate-game="'+escapeText(g.game)+
+    '"><div class="pick-top"><span class="name">'+escapeText(g.game)+
+    '</span><span class="grade">UPCOMING</span></div><div class="context">'+
+    escapeText(when(g.start))+'</div><div class="stampband"><span>'+
+    escapeText(label)+'</span><span>Open game</span></div></button>';
+  }).join("")+'</div>':'<div class="note">No remaining scheduled NBA games today.</div>');
+ for(const b of host.querySelectorAll("[data-slate-game]"))b.onclick=()=>{
+  const game=state.liveGames.find(g=>g.sport==="NBA"&&g.game===b.dataset.slateGame);
+  if(game)openGame(game);
+ };
+}
 function render(){
  const a=rows(),sum=m.summarize(a,state.nflHealth,Date.now(),state.league),items=shown();
+ renderUpcomingSlate();
  $("wl").textContent=sum.wins===null?"—":sum.wins+"–"+sum.losses;
  $("rate").textContent=pct(sum.hitRate);$("games").textContent=sum.games;
  $("section-title").textContent=state.mode==="board"?"Top picks":state.mode==="live"?"Started games":state.mode==="tracker"?"Frozen forecast archive":"Saved props";
@@ -130,7 +168,7 @@ function renderLiveGames(){
  const order={in:0,stale:1,final:2,scheduled:3,unknown:4};
  games.sort((a,b)=>(order[a.state]??4)-(order[b.state]??4)||a.game.localeCompare(b.game));
  $("cards").innerHTML=games.length?games.map(g=>{
-   const count=rows().filter(p=>p.gameId===g.gameId||p.game===g.game).length;
+   const count=m.primaryDisplayLines(rows()).filter(p=>p.gameId===g.gameId||p.game===g.game).length;
    const title=g.state==="in"?"LIVE":g.state==="stale"?"STALE":g.state==="final"?"FINAL":g.state==="scheduled"?"UPCOMING":"STATUS N/A";
    const score=g.awayScore!==null&&g.awayScore!==undefined&&g.homeScore!==null&&g.homeScore!==undefined?
     g.away+" "+scoreText(g.awayScore)+" · "+g.home+" "+scoreText(g.homeScore):g.game;
@@ -152,10 +190,10 @@ function renderGameDetail(){
  $("matchup").textContent=g.sport+" · "+g.statusText+" · Last snapshot "+when(g.observedAt);
  $("markets").innerHTML="";
  $("bookmark").textContent="—";
- const related=rows().filter(p=>p.gameId===g.gameId||p.game===g.game);
+ const related=m.primaryDisplayLines(rows()).filter(p=>p.gameId===g.gameId||p.game===g.game);
  const normalize=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
  const actualFor=p=>{
-  const matches=g.players.filter(x=>x.team===p.team&&normalize(x.player)===normalize(p.player));
+  const matches=g.players.filter(x=>(g.sport==="NBA"?m.nbaTeam(x.team)===m.nbaTeam(p.team):x.team===p.team)&&normalize(x.player)===normalize(p.player));
   if(matches.length!==1)return null;
   const statKey=g.sport==="NFL"?p.target:p.stat;
   const value=matches[0].stats?.[statKey];
@@ -199,7 +237,7 @@ function open(id){
 function renderDetail(){
  const p=state.picked;if(!p)return;
  $("player").textContent=p.player;$("matchup").textContent=p.team+" · "+(p.position?p.position+" · ":"")+p.opponent+" · "+when(p.start)+" · "+p.source;
- const sib=rows().filter(x=>x.playerId===p.playerId&&x.gameId===p.gameId&&x.start===p.start);
+ const sib=m.primaryDisplayLines(rows()).filter(x=>x.playerId===p.playerId&&x.gameId===p.gameId&&x.start===p.start);
  $("markets").innerHTML=sib.map(x=>'<button data-k="'+escapeText(m.key(x))+'" class="'+(x===p?"active":"")+'">'+escapeText(x.stat)+'</button>').join("");
  for(const b of $("markets").querySelectorAll("button"))b.onclick=()=>{state.picked=sib.find(x=>m.key(x)===b.dataset.k);renderDetail()};
  $("bookmark").textContent=state.selected.has(m.key(p))?"♥":"♧";
