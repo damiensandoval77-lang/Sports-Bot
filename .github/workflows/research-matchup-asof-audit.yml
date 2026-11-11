@@ -4,6 +4,8 @@ on:
     paths:
       - 'research/matchup_asof_audit.py'
       - 'research/capture_pregame_evidence.py'
+      - 'research/minutes_forecast_research.py'
+      - 'research/tests/test_minutes_forecast_research.py'
       - 'research/tests/test_capture_pregame_evidence.py'
       - 'research/tests/test_matchup_asof_audit.py'
       - '.github/workflows/research-matchup-asof-audit.yml'
@@ -24,6 +26,10 @@ jobs:
         run: python -m unittest discover -s research/tests -p 'test_capture_pregame_evidence.py' -v
       - name: Capture actual upcoming player context without modifying live picks
         run: python -m research.capture_pregame_evidence --output pregame-evidence-research.json
+      - name: Test chronological minutes research before promotion
+        run: python -m unittest discover -s research/tests -p 'test_minutes_forecast_research.py' -v
+      - name: Run real-source research minutes backtest and prospective paper forecast
+        run: python -m research.minutes_forecast_research --output minutes-forecast-research.json
       - name: Audit actual frozen records without recalculating picks
         run: python -m research.matchup_asof_audit --output matchup-evidence.json
       - name: Publish read-only research evidence
@@ -33,4 +39,5 @@ jobs:
           path: |
             matchup-evidence.json
             pregame-evidence-research.json
+            minutes-forecast-research.json
           retention-days: 7
