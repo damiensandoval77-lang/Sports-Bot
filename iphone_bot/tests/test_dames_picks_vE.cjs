@@ -542,7 +542,7 @@ test("Merged page includes independent source not just old empty NBA tracker",()
 
 test("Current live cards show one latest pretip standard line, not yesterday and today versions",()=>{
  const start="2026-11-11T01:00:00Z";
- const older={...pt,game:"Boston Celtics @ Philadelphia 76ers",start,
+ const older={...pt,sport:"NBA",game:"Boston Celtics @ Philadelphia 76ers",start,
   player:"Jayson Tatum",player_id:"1628369",playerId:"1628369",team:"BOS",
   stat:"PTS",line:21.5,captured:"2026-11-09T22:18:06Z",
   projection:24.2,quoteOnly:false,grade:"PENDING"};
