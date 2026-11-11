@@ -40,6 +40,7 @@ def build(logs,form,schedule,*,captured_at):
     if form.get("season")!="2026-27" or not isinstance(logs,list):
         raise ValueError("source season/schema mismatch")
     rows={}
+    unsafe_team_games=set()
     by_player=defaultdict(list)
     rejected=Counter()
     for g in logs:
@@ -48,14 +49,19 @@ def build(logs,form,schedule,*,captured_at):
         if not d or not pid or not team or not opp or team==opp:
             rejected["missing_identity"]+=1;continue
         if not all(sane(g.get(stat)) for stat in (*MARKETS,"MIN")) or not 0<g["MIN"]<=60:
-            rejected["invalid_box_stat"]+=1;continue
+            rejected["invalid_box_stat"]+=1
+            unsafe_team_games.add((d,team,opp))
+            continue
         if abs(g["PTS"]+g["REB"]+g["AST"]-g["PRA"])>.01:
-            rejected["invalid_pra"]+=1;continue
+            rejected["invalid_pra"]+=1
+            unsafe_team_games.add((d,team,opp))
+            continue
         if d>clock.astimezone(ZoneInfo("America/New_York")).date().isoformat():
             rejected["future_observation"]+=1;continue
         key=(d,team,pid)
         if key in rows:
             rejected["duplicate_observation"]+=1
+            unsafe_team_games.add((d,team,opp))
             rows[key]=None
             continue
         rows[key]=g
@@ -73,6 +79,8 @@ def build(logs,form,schedule,*,captured_at):
         identity=(day,tuple(sorted((team,opp))))
         if identity in seen:continue
         seen.add(identity)
+        if (day,team,opp) in unsafe_team_games or (day,opp,team) in unsafe_team_games:
+            rejected["corrupt_or_duplicate_team_game"]+=1;continue
         if min(len(offense),len(opposing))<MIN_TEAM_PLAYERS:
             rejected["partial_team_game"]+=1;continue
         if any(len({str(x["id"]) for x in part})!=len(part) for part in (offense,opposing)):
