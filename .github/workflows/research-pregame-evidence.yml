@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'research/capture_pregame_evidence.py'
+      - 'research/minutes_forecast_research.py'
+      - 'research/tests/test_minutes_forecast_research.py'
       - 'research/tests/test_capture_pregame_evidence.py'
       - '.github/workflows/research-pregame-evidence.yml'
   schedule:
@@ -27,10 +29,16 @@ jobs:
         run: python -m unittest discover -s research/tests -p 'test_capture_pregame_evidence.py' -v
       - name: Capture real pretip source-linked research evidence
         run: python -m research.capture_pregame_evidence --output pregame-evidence-research.json
+      - name: Test pregame minutes forecasts and chronological validation
+        run: python -m unittest discover -s research/tests -p 'test_minutes_forecast_research.py' -v
+      - name: Build time-ordered minutes backtest and linked future research predictions
+        run: python -m research.minutes_forecast_research --output minutes-forecast-research.json
       - name: Save immutable workflow run artifact, not live bets
         uses: actions/upload-artifact@v4
         with:
           name: pregame-evidence-research
-          path: pregame-evidence-research.json
+          path: |
+            pregame-evidence-research.json
+            minutes-forecast-research.json
           retention-days: 30
           if-no-files-found: error
