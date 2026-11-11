@@ -1,21 +1,53 @@
 {
-  "status": "NO_ELIGIBLE_RECENT_PRIZEPICKS_PENDING_GAMES",
-  "requested_matchups": 0,
-  "verified_rows": 24,
+  "pending_matchups": 2,
+  "final_nba_games": 2,
+  "final_schedule_discovered_nba_games": 0,
+  "final_espn_games": 0,
+  "retrieved_player_lines": 51,
   "errors": [
     "OFFICIAL_INACTIVE_CROSSCHECK_ValueError"
   ],
+  "source": "NBA live CDN; ESPN completed boxscore fallback",
+  "cached_official_id_candidates": 0,
+  "status": "FINAL_BOXSCORES_FOUND",
+  "archived_espn_game_id_hints": 6,
+  "requested_matchups": 2,
+  "verified_rows": 75,
+  "verified_dnp_rows": 24,
+  "verified_played_rows": 51,
+  "recovery_source": "VERIFIED_FINAL_BOXSCORES_ONLY",
   "historical_source_confirmed_dnp_rows": 24,
   "manual_crosschecked_official_inactive_rows": 0,
-  "verified_dnp_rows": 24,
-  "recent_research_pending_before_recovery": 0,
-  "recent_research_settlement_matches": 0,
+  "recent_research_pending_before_recovery": 729,
+  "recent_research_settlement_matches": 676,
   "recent_research_verified_dnp_voids": 0,
-  "recent_research_unmatched_after_recovery": 0,
-  "unmatched_player_stat_markets": 0,
-  "unmatched_games": {},
-  "unmatched_distinct_players_by_game": {},
-  "unmatched_reason_counts": {},
-  "unmatched_reason_examples": {},
-  "checked_at": "2026-11-11T04:25:39.485533+00:00"
+  "recent_research_unmatched_after_recovery": 53,
+  "unmatched_player_stat_markets": 8,
+  "unmatched_games": {
+    "Milwaukee Bucks @ New York Knicks": 53
+  },
+  "unmatched_distinct_players_by_game": {
+    "Milwaukee Bucks @ New York Knicks": [
+      "Josh Hart",
+      "Tyler Herro"
+    ]
+  },
+  "unmatched_reason_counts": {
+    "PLAYER_NAME_MISMATCH": 53
+  },
+  "unmatched_reason_examples": {
+    "PLAYER_NAME_MISMATCH": {
+      "sample_research_name": "Josh Hart",
+      "game": "Milwaukee Bucks @ New York Knicks",
+      "sample_official_names": [
+        "OG Anunoby",
+        "Mikal Bridges",
+        "Karl-Anthony Towns",
+        "Jalen Brunson"
+      ],
+      "research_team": "NYK",
+      "date": "2026-11-10"
+    }
+  },
+  "checked_at": "2026-11-11T05:28:06.714522+00:00"
 }
