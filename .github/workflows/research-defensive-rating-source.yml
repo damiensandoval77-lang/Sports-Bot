@@ -1,0 +1,38 @@
+name: Verify current NBA team defensive rating source
+on:
+  pull_request:
+    paths:
+      - 'research/source_def_rating_2026.py'
+      - 'research/tests/test_source_def_rating_2026.py'
+      - '.github/workflows/research-defensive-rating-source.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/source_def_rating_2026.py'
+      - 'research/tests/test_source_def_rating_2026.py'
+      - '.github/workflows/research-defensive-rating-source.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '16 15 * * *'
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate 30-team source, dates, defensive rating and no promotion
+        run: python -m unittest discover -s research/tests -p 'test_source_def_rating_2026.py' -v
+      - name: Download external current-season source and verify all 30 team ratings
+        run: python -m research.source_def_rating_2026
+      - name: Preserve only source-linked research artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-verified-team-defensive-ratings
+          path: defensive-rating-research.json
+          retention-days: 21
+          if-no-files-found: error
