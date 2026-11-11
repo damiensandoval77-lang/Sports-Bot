@@ -104,6 +104,32 @@ class SafeBoxscorePublicationTests(unittest.TestCase):
         result=merge(old,new)
         self.assertEqual([g["id"] for g in result["games"]],["102"])
 
+    def test_real_published_multigame_snapshot_survives_single_game_refresh(self):
+        from pathlib import Path
+        from datetime import datetime,timedelta,timezone
+        file=Path(__file__).resolve().parents[2]/"docs/nba_player_tracking_independent.json"
+        old=json.loads(file.read_text())
+        games=[g for g in old.get("games",[]) if g.get("id") and g.get("game") and g.get("player_rows")]
+        if len(games)<2:
+            self.skipTest("Current published fixture has fewer than two verified games")
+        old["games"]=games[:2]
+        old["status"]="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"
+        old["coverage"]={"observed_game_count":2,"active_or_final_count":2,"complete":True}
+        now=datetime.fromisoformat(old["captured_at"].replace("Z","+00:00"))
+        candidate=json.loads(json.dumps(old))
+        candidate["status"]="PARTIAL_NBA_PLAYER_BOXSCORES"
+        candidate["captured_at"]=(now+timedelta(minutes=5)).isoformat()
+        candidate["games"]=candidate["games"][:1]
+        candidate["games"][0]["observed_at"]=candidate["captured_at"]
+        candidate["coverage"]={"observed_game_count":1,"active_or_final_count":2,"complete":False}
+        joined=merge(json.dumps(old),json.dumps(candidate))
+        self.assertEqual(len(joined["games"]),2)
+        missing_from_new=games[1]
+        preserved=next(g for g in joined["games"] if g["id"]==missing_from_new["id"])
+        self.assertEqual(preserved["player_rows"],missing_from_new["player_rows"])
+        self.assertEqual(preserved["observed_at"],missing_from_new["observed_at"])
+        self.assertEqual(joined["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
+
     def test_legacy_committed_file_only_has_known_repairable_suffix(self):
         from pathlib import Path
         src=Path(__file__).resolve().parents[2]/"docs/nba_player_tracking_independent.json"
