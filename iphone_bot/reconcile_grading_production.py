@@ -176,6 +176,16 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
                 or not p.get("source_game_id") or not is_number(p.get("actual"))):
                 defects["UNVERIFIED_STANDARD_GRADE"] += 1
                 continue
+            # Independently corroborate the published standard grade when the
+            # separate AI final player ledger has the same player/game/stat.
+            corroborated=final_index.get(identity(p))
+            if corroborated is not None:
+                if (corroborated.get("status")=="GRADED" and
+                    (corroborated["actual"] != p["actual"] or
+                     corroborated.get("source_game_id")!=p.get("source_game_id"))):
+                    defects["STANDARD_GRADE_CONFLICTS_WITH_FINAL_LEDGER"] += 1
+                elif corroborated.get("status")!="GRADED":
+                    defects["STANDARD_GRADE_CONFLICTS_WITH_VERIFIED_EXCLUSION"] += 1
             expected_error = abs(p["projection"] - p["actual"])
             if not is_number(p.get("absolute_error")) or abs(
                 expected_error - p["absolute_error"]) > .001:
