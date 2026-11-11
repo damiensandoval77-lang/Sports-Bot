@@ -32,7 +32,9 @@ function nba(ledger,form){
    ["More","Less"].includes(c.modeled_direction)&&n(c.modeled_selected_probability)!==null;
  }).map(p=>{
   const c=p.estimated_hit_chance,person=people.get(p.player_id+"|"+p.team),metrics=person?.metrics?.[p.stat];
-  const prob=n(c.modeled_selected_probability),grade=p.grade==="GRADED"?"GRADED":"PENDING";
+  const prob=n(c.modeled_selected_probability),
+        grade=p.grade==="GRADED"?"GRADED":
+              p.grade==="EXCLUDED_VERIFIED_DNP"?"EXCLUDED_VERIFIED_DNP":"PENDING";
   return {
    sport:"NBA",playerId:p.player_id,player:p.player,team:p.team,opponent:p.opponent,
    position:"",game:p.game,gameId:p.game,start:p.start,stat:p.stat,source:"PrizePicks",
@@ -40,7 +42,7 @@ function nba(ledger,form){
    chance:prob>=0&&prob<=1?prob:null,chanceSource:"20,000 historical-residual simulations; uncalibrated",
    captured:p.captured_at,grade,actual:grade==="GRADED"?n(p.actual):null,
    hit:grade==="GRADED"&&typeof p.direction_hit==="boolean"?p.direction_hit:null,
-   gradeSource:grade==="GRADED"?p.final_source:null,
+   gradeSource:grade!=="PENDING"?p.final_source:null,
    form:{season:n(metrics?.season),l5:n(metrics?.l5),l10:n(metrics?.l10),games:person?.games||null},
    modelId:"FROZEN_NEW_AI_ALL_MARKET",component:p.components||null
   };
