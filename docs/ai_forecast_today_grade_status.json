@@ -1,43 +1,43 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-11T04:31:10.512784+00:00",
+  "generated_at": "2026-11-11T04:57:51.149548+00:00",
   "game_date_eastern": "2026-11-10",
   "recorded_pregame_forecasts": 568,
-  "graded": 256,
+  "graded": 332,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 256,
-  "ungraded": 312,
-  "new_grades": 0,
+  "accounted_for": 332,
+  "ungraded": 236,
+  "new_grades": 76,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 64,
-      "mae": 4.402,
-      "mean_signed_error": 1.108
+      "graded": 83,
+      "mae": 4.213,
+      "mean_signed_error": 0.659
     },
     "REB": {
-      "graded": 64,
-      "mae": 1.784,
-      "mean_signed_error": 0.562
+      "graded": 83,
+      "mae": 1.757,
+      "mean_signed_error": 0.361
     },
     "AST": {
-      "graded": 64,
-      "mae": 1.389,
-      "mean_signed_error": 0.252
+      "graded": 83,
+      "mae": 1.324,
+      "mean_signed_error": 0.16
     },
     "PRA": {
-      "graded": 64,
-      "mae": 5.641,
-      "mean_signed_error": 1.925
+      "graded": 83,
+      "mae": 5.44,
+      "mean_signed_error": 1.237
     }
   },
   "ungraded_by_game": {
     "Boston Celtics @ Philadelphia 76ers": 4,
     "LA Clippers @ Phoenix Suns": 12,
-    "Miami Heat @ Utah Jazz": 100,
+    "Miami Heat @ Utah Jazz": 24,
     "Milwaukee Bucks @ New York Knicks": 8,
     "Oklahoma City Thunder @ Portland Trail Blazers": 96,
     "Orlando Magic @ Sacramento Kings": 92
@@ -53,30 +53,11 @@
       "Nick Martinelli"
     ],
     "Miami Heat @ Utah Jazz": [
-      "Ace Bailey",
-      "Andrew Wiggins",
-      "Bam Adebayo",
-      "Bobby Portis Jr.",
-      "Brice Sensabaugh",
-      "Darryn Peterson",
-      "Davion Mitchell",
       "Dru Smith",
-      "Giannis Antetokounmpo",
-      "Isaiah Collier",
-      "Jaxson Hayes",
-      "Josh Green",
-      "Josh Okogie",
       "Keyonte George",
-      "Klay Thompson",
-      "Kyle Filipowski",
       "Lauri Markkanen",
-      "Mo Bamba",
-      "Myron Gardner",
       "Nick Richards",
       "Nikola Jovi\u0107",
-      "Pelle Larsson",
-      "Ryan Conwell",
-      "Svi Mykhailiuk",
       "Tim Hardaway Jr."
     ],
     "Milwaukee Bucks @ New York Knicks": [
@@ -135,30 +116,29 @@
       "Zach LaVine"
     ]
   },
-  "ungraded_distinct_player_markets": 312,
+  "ungraded_distinct_player_markets": 236,
   "final_feed": {
     "pending_matchups": 13,
-    "final_nba_games": 11,
+    "final_nba_games": 12,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 261,
+    "retrieved_player_lines": 282,
     "errors": [
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 10,
+    "cached_official_id_candidates": 9,
     "final_cached_id_nba_games": 8,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 279,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 299,
+    "newly_retrieved_verified_rows": 21,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 24,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 288
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 48,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 188
     },
     "players": [
       {
@@ -274,704 +254,172 @@
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Ace Bailey",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ace Bailey",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ace Bailey",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ace Bailey",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brice Sensabaugh",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brice Sensabaugh",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brice Sensabaugh",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brice Sensabaugh",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darryn Peterson",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darryn Peterson",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darryn Peterson",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darryn Peterson",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Dru Smith",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Dru Smith",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Dru Smith",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Dru Smith",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Collier",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Collier",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Collier",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Collier",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaxson Hayes",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaxson Hayes",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaxson Hayes",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaxson Hayes",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Green",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Green",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Green",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Green",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Okogie",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Okogie",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Okogie",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Okogie",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Keyonte George",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Keyonte George",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Keyonte George",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Keyonte George",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Lauri Markkanen",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Lauri Markkanen",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Lauri Markkanen",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Lauri Markkanen",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mo Bamba",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mo Bamba",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mo Bamba",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mo Bamba",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nick Richards",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nick Richards",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nick Richards",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nick Richards",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nikola Jovi\u0107",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nikola Jovi\u0107",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nikola Jovi\u0107",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nikola Jovi\u0107",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Svi Mykhailiuk",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Svi Mykhailiuk",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Svi Mykhailiuk",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Svi Mykhailiuk",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tim Hardaway Jr.",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tim Hardaway Jr.",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tim Hardaway Jr.",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tim Hardaway Jr.",
         "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Josh Hart",
