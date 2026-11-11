@@ -39,6 +39,7 @@ jobs:
       - name: Install trained AI and source dependencies
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2" "joblib>=1.3,<2"
       - name: Verify trained projection fallback never invents props or market confidence
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/daily_projection_fallback.py
           python -m unittest discover -s iphone_bot/tests -p 'test_daily_projection_fallback.py' -v
