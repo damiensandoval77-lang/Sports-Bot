@@ -87,7 +87,7 @@ class OfficialBackfillTests(unittest.TestCase):
             return x
         result=collect(season(),{"version":1,"rows":[]},now=NOW,request=f)
         self.assertEqual(result["verified_new_games"],0)
-        self.assertEqual(result["failures"].get("partial_official_final_box"),1)
+        self.assertEqual(result["failures"].get("partial_or_inconsistent_final_box"),1)
 
     def test_corrupt_player_pra_or_invalid_minutes_never_create_valid_game(self):
         def f(url):
@@ -99,5 +99,60 @@ class OfficialBackfillTests(unittest.TestCase):
         # Missing malformed player row makes the official team totals disagree.
         self.assertEqual(result["verified_new_games"],0)
         self.assertEqual(len(result["rows"]),0)
+
+
+def espn_summary(completed=True,home="NYK",game_id="401901234",score_adjust=0):
+    teams=[("away","BOS"),("home",home)]
+    comp={"date":EVENT,"status":{"type":{"completed":completed,"state":"post" if completed else "in"}},
+          "competitors":[{"homeAway":side,"team":{"abbreviation":abbr},
+                          "score":str(sum(10+k for k in range(8))+(score_adjust if side=="away" else 0))}
+                         for side,abbr in teams]}
+    return {"header":{"id":game_id,"competitions":[comp]},
+            "boxscore":{"players":[{"team":{"abbreviation":abbr},
+              "statistics":[{"names":["MIN","PTS","REB","AST"],
+                             "athletes":[{"athlete":{"displayName":abbr+str(k)},
+                                          "stats":["25:00",str(10+k),"4","2"]}
+                                         for k in range(8)]}]}
+             for _,abbr in teams]}}
+
+def no_official_schedule_espn(url):
+    if "scheduleLeague" in url:raise OSError("official endpoint unavailable")
+    if "espn.com" in url:return espn_summary()
+    raise ValueError("unexpected URL")
+
+
+class ESPNBackfillTests(unittest.TestCase):
+    def test_espn_final_fallback_when_official_schedule_down(self):
+        result=collect(season(),{"version":1,"rows":[]},now=NOW,request=no_official_schedule_espn)
+        self.assertEqual(result["verified_new_games"],1)
+        self.assertEqual(result["verified_games_by_provider"],{"ESPN_FINAL":1})
+        self.assertEqual(result["verified_combined_games"],1)
+        self.assertEqual(len(result["rows"]),16)
+
+    def test_espn_inprogress_fallback_rejected(self):
+        def request(url):
+            if "scheduleLeague" in url:raise OSError("blocked")
+            return espn_summary(completed=False)
+        self.assertEqual(collect(season(),{"version":1,"rows":[]},now=NOW,request=request)["verified_new_games"],0)
+
+    def test_espn_identity_mismatch_rejected(self):
+        def request(url):
+            if "scheduleLeague" in url:raise OSError("blocked")
+            return espn_summary(home="LAL")
+        self.assertEqual(collect(season(),{"version":1,"rows":[]},now=NOW,request=request)["verified_new_games"],0)
+
+    def test_espn_scoreboard_must_equal_player_totals(self):
+        def request(url):
+            if "scheduleLeague" in url:raise OSError("blocked")
+            return espn_summary(score_adjust=3)
+        result=collect(season(),{"version":1,"rows":[]},now=NOW,request=request)
+        self.assertEqual(result["verified_new_games"],0)
+        self.assertEqual(result["failures"]["partial_or_inconsistent_final_box"],1)
+
+    def test_espn_wrong_game_id_rejected(self):
+        def request(url):
+            if "scheduleLeague" in url:raise OSError("blocked")
+            return espn_summary(game_id="9999")
+        self.assertEqual(collect(season(),{"version":1,"rows":[]},now=NOW,request=request)["verified_new_games"],0)
 
 if __name__=="__main__":unittest.main()
