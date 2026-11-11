@@ -480,7 +480,9 @@ test("Old or mismatched NBA score source cannot pose as live matchup",()=>{
 test("Merged app loads separate official score and player feeds",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(html.includes('getJSON("nba_scoreboard_independent.json")'));
- assert.ok(html.includes('Date.now(),nbaScores.status==="fulfilled"?nbaScores.value:null'));
+ assert.ok(html.includes('nbaScores:nbaScores.status==="fulfilled"?nbaScores.value:null'));
+ assert.ok(html.includes('L.mergeScores(state.raw.nbaScores,state.direct?.board)'));
+ assert.ok(html.includes('<script src="live_direct.js"></script>'));
 });
 
 

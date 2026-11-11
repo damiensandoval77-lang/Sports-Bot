@@ -26,14 +26,14 @@
 <button data-view="tracker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M5 17V9m7 8V4m7 13v-6"/></svg>Tracker</button>
 <button data-view="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18l-7-4-7 4z"/></svg>Saved</button>
 </nav>
-<script src="feeds.js"></script><script src="dames_take.js"></script><script>
+<script src="feeds.js"></script><script src="live_direct.js"></script><script src="dames_take.js"></script><script>
 "use strict";
-const $=id=>document.getElementById(id),m=window.DamesPicksModel;
+const $=id=>document.getElementById(id),m=window.DamesPicksModel,L=window.DamesPicksLive;
 const state={league:"NBA",mode:"board",nba:[],nfl:[],nflHealth:null,picked:null,gamePicked:null,liveGames:[],loading:false,errors:[],selected:new Set(),updated:null,health:null};
 try{state.selected=new Set(JSON.parse(localStorage.getItem("dames-picks-bookmarks-v1")||"[]"))}catch(_){state.selected=new Set()}
 function saveBookmarks(){try{localStorage.setItem("dames-picks-bookmarks-v1",JSON.stringify([...state.selected]))}catch(_){}}
 
-const fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—",pct=x=>typeof x==="number"&&Number.isFinite(x)?Math.round(x*100)+"%":"—";
+const scoreText=x=>typeof x==="number"&&Number.isFinite(x)?String(Math.round(x)):"—",fmt=x=>typeof x==="number"&&Number.isFinite(x)?x.toFixed(1):"—",pct=x=>typeof x==="number"&&Number.isFinite(x)?Math.round(x*100)+"%":"—";
 const escapeText=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const when=t=>{const d=new Date(t);return isNaN(d)? "Time unavailable":d.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})};
 const timestamp=t=>{const n=Date.parse(t);return Number.isFinite(n)?n:0};
@@ -59,8 +59,15 @@ async function refresh(){
  if(gradedNFL.status==="fulfilled"&&pendingNFL.status==="fulfilled"&&schedule.status==="fulfilled")
   state.nfl=m.reconcileNFLSettlementCards(state.nfl,gradedNFL.value,pendingNFL.value,schedule.value);
  else errors.push("NFL permanent grading ledgers unavailable");
- const nb=m.preferredNBALiveFeed(nbaLive.status==="fulfilled"?nbaLive.value:null,independentPlayers.status==="fulfilled"?independentPlayers.value:null),nf=nflLive.status==="fulfilled"?nflLive.value:null;
- state.liveGames=m.gameCatalog(nb,nf,nbaSchedule.status==="fulfilled"?nbaSchedule.value:null,schedule.status==="fulfilled"?schedule.value:null,Date.now(),nbaScores.status==="fulfilled"?nbaScores.value:null);
+ state.raw={nbaLive:nbaLive.status==="fulfilled"?nbaLive.value:null,
+  independentPlayers:independentPlayers.status==="fulfilled"?independentPlayers.value:null,
+  nflLive:nflLive.status==="fulfilled"?nflLive.value:null,
+  nbaSchedule:nbaSchedule.status==="fulfilled"?nbaSchedule.value:null,
+  nflSchedule:schedule.status==="fulfilled"?schedule.value:null,
+  nbaScores:nbaScores.status==="fulfilled"?nbaScores.value:null};
+ const nb=L.mergeFeeds(m.preferredNBALiveFeed(state.raw.nbaLive,state.raw.independentPlayers),state.direct?.feed);
+ const nf=state.raw.nflLive;
+ state.liveGames=m.gameCatalog(nb,nf,state.raw.nbaSchedule,state.raw.nflSchedule,Date.now(),L.mergeScores(state.raw.nbaScores,state.direct?.board));
  state.nba=m.attachLive(state.nba,nb,nf);
  if(injury.status==="fulfilled")state.nba=m.attachInjuries(state.nba,injury.value);
  if(quoteArchive.status==="fulfilled")state.nba=m.includeArchivedStandard(state.nba,quoteArchive.value);
@@ -87,7 +94,7 @@ async function refresh(){
  state.errors=errors;state.updated=new Date();state.loading=false;render();
  if(state.picked){const current=rows().find(x=>m.key(x)===m.key(state.picked));if(current){state.picked=current;renderDetail()}}
  if(state.gamePicked){const current=state.liveGames.find(x=>x.sport===state.gamePicked.sport&&x.gameId===state.gamePicked.gameId);if(current){state.gamePicked=current;renderGameDetail()}}
-
+ if(!state.directAt||Date.now()-state.directAt>25000)liveTick().catch(()=>{});
 }
 function rows(){return state.league==="NBA"?state.nba:state.nfl}
 function shown(){
@@ -126,8 +133,8 @@ function renderLiveGames(){
    const count=rows().filter(p=>p.gameId===g.gameId||p.game===g.game).length;
    const title=g.state==="in"?"LIVE":g.state==="stale"?"STALE":g.state==="final"?"FINAL":g.state==="scheduled"?"UPCOMING":"STATUS N/A";
    const score=g.awayScore!==null&&g.awayScore!==undefined&&g.homeScore!==null&&g.homeScore!==undefined?
-    g.away+" "+fmt(g.awayScore)+" · "+g.home+" "+fmt(g.homeScore):g.game;
-   return '<button class="pick" data-game="'+escapeText(g.sport+"|"+g.gameId)+'"><div class="pick-top"><span class="name">'+escapeText(score)+'</span><span class="grade">'+title+'</span></div><div class="context">'+escapeText(g.statusText)+' · Last snapshot '+escapeText(when(g.observedAt))+'</div><div class="stampband"><span>'+g.players.length+' observed players · '+count+' saved prop records</span><span>Open game</span></div></button>'
+    g.away+" "+scoreText(g.awayScore)+" · "+g.home+" "+scoreText(g.homeScore):g.game;
+   return '<button class="pick" data-game="'+escapeText(g.sport+"|"+g.gameId)+'"><div class="pick-top"><span class="name">'+escapeText(score)+'</span><span class="grade">'+title+'</span></div><div class="context">'+escapeText(g.statusText)+(g.observedAt?' · Last snapshot '+escapeText(when(g.observedAt)):'')+'</div><div class="stampband"><span>'+g.players.length+' observed players · '+count+' saved prop records</span><span>Open game</span></div></button>'
  }).join(""):'<div class="empty">No '+escapeText(state.league)+' game snapshots published for this view. This is a feed coverage issue, not proof there are no games.</div>';
  for(const b of $("cards").querySelectorAll("[data-game]"))b.onclick=()=>{
    const game=state.liveGames.find(g=>g.sport+"|"+g.gameId===b.dataset.game);
@@ -170,7 +177,7 @@ function renderGameDetail(){
   return '<div class="box-row"><span>'+escapeText(p.player)+" · "+escapeText(p.team)+'</span><strong>'+escapeText(fields||"No verified stat")+'</strong></div>';
  }).join("");
  const scoreboard=g.awayScore!==null&&g.awayScore!==undefined&&g.homeScore!==null&&g.homeScore!==undefined?
-  '<div class="box-row"><span>'+escapeText(g.away)+'</span><strong>'+fmt(g.awayScore)+'</strong></div><div class="box-row"><span>'+escapeText(g.home)+'</span><strong>'+fmt(g.homeScore)+'</strong></div>':
+  '<div class="box-row"><span>'+escapeText(g.away)+'</span><strong>'+scoreText(g.awayScore)+'</strong></div><div class="box-row"><span>'+escapeText(g.home)+'</span><strong>'+scoreText(g.homeScore)+'</strong></div>':
   '<div class="note">Verified score unavailable in this published game feed.</div>';
  $("detail-content").innerHTML='<section class="box"><h2>Scoreboard</h2>'+scoreboard+
  '<div class="note">'+escapeText(g.fresh?"Current observed game snapshot":"Historical or stale snapshot — not live now")+
@@ -216,5 +223,44 @@ for(const b of document.querySelectorAll("[data-league]"))b.onclick=()=>{state.l
 for(const b of document.querySelectorAll("[data-view]"))b.onclick=()=>{state.mode=b.dataset.view;document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x===b));back()};
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh().catch(()=>{})});
 setInterval(()=>{if(!document.hidden)refresh().catch(()=>{})},120000);
+/* 30-second free browser-direct ESPN fallback. Never changes stored model
+   predictions or finals. Avoid polling when backgrounded or no live slate. */
+function liveWindowOpen(now=Date.now()){
+ return (state.liveGames||[]).some(g=>g.sport==="NBA"&&(
+   g.state==="in"||g.state==="stale"||
+   (g.state!=="final"&&Number.isFinite(timestamp(g.start))&&
+    timestamp(g.start)<=now&&now-timestamp(g.start)<5*3600000)))||
+  (state.nba||[]).some(p=>p.grade==="PENDING"&&timestamp(p.start)<=now&&
+    now-timestamp(p.start)<5*3600000);
+}
+function applyLive(){
+ if(!state.raw)return;
+ const now=Date.now();
+ const nb=L.mergeFeeds(m.preferredNBALiveFeed(state.raw.nbaLive,state.raw.independentPlayers,now),state.direct?.feed,now);
+ const nf=state.raw.nflLive;
+ state.liveGames=m.gameCatalog(nb,nf,state.raw.nbaSchedule,state.raw.nflSchedule,now,
+   L.mergeScores(state.raw.nbaScores,state.direct?.board,now));
+ state.nba=m.attachLive(state.nba,nb,nf,now);
+ // Preserve historical NFL settlement, do not replace it with live tracking.
+ state.nfl=m.attachLive(state.nfl,nb,nf,now);
+ state.health={...state.health,nbaLive:nb,nflLive:nf};
+ render();
+ if(state.picked){const current=rows().find(x=>m.key(x)===m.key(state.picked));if(current){state.picked=current;renderDetail()}}
+ if(state.gamePicked){const current=state.liveGames.find(x=>x.sport===state.gamePicked.sport&&x.gameId===state.gamePicked.gameId);if(current){state.gamePicked=current;renderGameDetail()}}
+}
+async function liveTick(force=false){
+ if(document.hidden||state.liveBusy||(!force&&!liveWindowOpen()))return;
+ state.liveBusy=true;
+ try{
+  const data=await L.fetchNBA();
+  if(data){
+   state.direct=data;
+   state.directAt=Date.now();
+   applyLive();
+  }
+ }catch(_){/* Keep last verified observation or published snapshot */ }
+ finally{state.liveBusy=false}
+}
+setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000);
 $("date").textContent=new Date().toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"});refresh().catch(e=>{$("status").textContent="Cannot load published bot outputs: "+e.message;state.loading=false});
 </script></body></html>
