@@ -140,6 +140,30 @@ def waiting_for_tipoff(schedule, day, now=None):
         "not_ai_projections": True,
     }
 
+def publishable_observations(report):
+    """Publish real partial player totals, not an empty or unverified 'live' feed."""
+    status=report.get("status")
+    return (status=="WAITING_FOR_SCHEDULED_TIPOFF" or
+            status in ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+                       "PARTIAL_NBA_PLAYER_BOXSCORES") and bool(report.get("games")))
+
+def verified_started(schedule,day,now,grace_minutes=5):
+    """A late-running official feed may lag tipoff; do not label it live."""
+    if not isinstance(schedule,dict) or schedule.get("coverage_complete") is not True:
+        return False
+    if day.isoformat() not in (schedule.get("dates_eastern") or []):
+        return False
+    for g in schedule.get("games",[]):
+        if not isinstance(g,dict) or g.get("date_eastern")!=day.isoformat():
+            continue
+        try:
+            kickoff=dt.datetime.fromisoformat(str(g["start"]).replace("Z","+00:00"))
+            if kickoff.tzinfo and kickoff<=now-dt.timedelta(minutes=grace_minutes):
+                return True
+        except (TypeError,ValueError,KeyError):
+            continue
+    return False
+
 def main():
     day = dt.datetime.now(EASTERN).date()
     schedule = None
@@ -157,10 +181,18 @@ def main():
         report = {"status":"NBA_PLAYER_BOXSCORES_UNAVAILABLE",
                   "captured_at":None, "last_attempt_at":dt.datetime.now(dt.timezone.utc).isoformat(),
                   "date_eastern":day.isoformat(), "games":[], "errors":[type(err).__name__]}
+    if (report.get("status")=="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES" and
+        not report.get("games") and
+        verified_started(schedule,day,dt.datetime.now(dt.timezone.utc))):
+        report["status"]="PARTIAL_NBA_PLAYER_BOXSCORES"
+        report.setdefault("errors",[]).append("SCHEDULE_STARTED_BUT_OFFICIAL_PLAYER_TOTALS_MISSING")
+        report["coverage"]["complete"]=False
     OUTPUT.write_text(json.dumps(report, indent=2)+"\n")
     print(json.dumps({"status":report["status"],"date":day.isoformat(),
                       "observed_games":len(report["games"]),"errors":report["errors"]}))
-    if report["status"] not in ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES", "WAITING_FOR_SCHEDULED_TIPOFF"):
+    # A real partial slate is worth publishing. The next audit still marks
+    # uncovered started games degraded until genuine rows arrive.
+    if not publishable_observations(report):
         raise SystemExit(1)
 
 if __name__ == "__main__":
