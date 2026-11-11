@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Regression checks: no posttip, future injury, invented minutes or missing provenance
+      - name: 'Regression checks: no posttip, future injury, invented minutes or missing provenance'
         run: python -m unittest discover -s research/tests -p 'test_capture_pregame_evidence.py' -v
       - name: Capture real pretip source-linked research evidence
         run: python -m research.capture_pregame_evidence --output pregame-evidence-research.json
