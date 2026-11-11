@@ -87,6 +87,32 @@ test("Live NBA snapshot overlays only matched named player, same team and matchu
  assert.equal(m.attachLive(saved,{...live,captured_at:"2026-11-10T02:00:00Z"},null,at)[0].live,null);
  assert.equal(m.attachLive(saved,{...live,games:[{...live.games[0],state:"post"}]},null,at)[0].live,null);
 });
+test("ESPN NBA team aliases match only the correct player's canonical franchise",()=>{
+ const now=Date.parse("2026-11-11T01:05:00Z");
+ const aliases=[["NYK","NY"],["GSW","GS"],["NOP","NO"],["SAS","SA"],["UTA","UTAH"],["WAS","WSH"]];
+ for(const [ledgerTeam,espnTeam] of aliases){
+  const player={sport:"NBA",player:"Test Player",team:ledgerTeam,
+   game:"Test Away @ Test Home",stat:"PTS",line:20.5,projection:24.3};
+  const live={status:"OK",captured_at:"2026-11-11T01:04:00Z",games:[{
+   game:player.game,state:"in",observed_at:"2026-11-11T01:04:00Z",
+   player_rows:[{player:"Test Player",team:espnTeam,PTS:13},
+                {player:"Test Player",team:"BOS",PTS:47}]}]};
+  const joined=m.attachLive([player],live,null,now)[0];
+  assert.equal(joined.live?.actual,13,ledgerTeam+" should match "+espnTeam);
+  const rival=m.attachLive([{...player,team:"BOS"}],live,null,now)[0];
+  assert.equal(rival.live?.actual,47,ledgerTeam+" should not inherit opponent stat");
+ }
+});
+test("Ambiguous normalized NBA player identities cannot inherit live stats",()=>{
+ const now=Date.parse("2026-11-11T01:05:00Z");
+ const player={sport:"NBA",player:"Test Player",team:"NYK",
+               game:"Test Away @ Test Home",stat:"PTS"};
+ const feed={status:"OK",captured_at:"2026-11-11T01:04:00Z",games:[{
+  game:player.game,state:"in",observed_at:"2026-11-11T01:04:00Z",
+  player_rows:[{player:"Test Player",team:"NY",PTS:13},
+               {player:"Test Player",team:"NYK",PTS:15}]}]};
+ assert.equal(m.attachLive([player],feed,null,now)[0].live,null);
+});
 test("NFL live join uses original stat target and matches exact game/player",()=>{
  const row={sport:"NFL",player:"Josh Allen",team:"BUF",gameId:"2026_09_BUF_MIN",target:"PASS_YDS",line:240.5,projection:265,stat:"Pass Yards"};
  const now=Date.parse("2026-11-10T03:15:00Z");

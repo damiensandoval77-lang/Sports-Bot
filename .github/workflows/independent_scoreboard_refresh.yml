@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "iphone_bot/refresh_independent_scoreboard.py"
+      - "iphone_bot/merge_scoreboard_snapshot.py"
       - "iphone_bot/official_game_id_index.py"
       - "docs/nba_schedule.json"
       - "docs/verified_official_nba_fixtures.json"
@@ -15,7 +16,9 @@ on:
   pull_request:
     paths:
       - "iphone_bot/refresh_independent_scoreboard.py"
+      - "iphone_bot/merge_scoreboard_snapshot.py"
       - "iphone_bot/tests/test_independent_scoreboard.py"
+      - "iphone_bot/tests/test_merge_scoreboard_snapshot.py"
       - "iphone_bot/tests/test_official_game_id_index.py"
       - "iphone_bot/tests/test_scoreboard_failure_workflow.py"
       - ".github/workflows/independent_scoreboard_refresh.yml"
@@ -40,6 +43,8 @@ jobs:
           python-version: "3.11"
       - name: Test scoreboard refresh logic
         run: python -m unittest discover -s iphone_bot/tests -p 'test_independent_scoreboard.py' -v
+      - name: Prove newer live scores replace stale snapshots without erasing verified scores
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_merge_scoreboard_snapshot.py' -v
       - name: Verify official game ID index and immutable source checks
         run: python -m unittest discover -s iphone_bot/tests -p "test_official_game_id_index.py" -v
       - name: Test scoreboard workflow failure handling
