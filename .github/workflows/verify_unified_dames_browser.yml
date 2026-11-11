@@ -34,6 +34,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify merged-only NBA and NFL browser contract offline
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/verify_unified_dames_browser.py
           python -m unittest discover -s iphone_bot/tests -p 'test_verify_unified_dames_browser.py' -v
