@@ -47,7 +47,14 @@ def report(archive,ledger,*,checked_at):
     paired=[]
     exclusions=Counter()
     seen=set()
-    for x in archive["forecasts"]:
+    scored_outcomes=set()
+    # Archive intentionally retains every immutable pregame refresh; a single
+    # actual player stat/standard line can only resolve once. Select the
+    # earliest *eligible* independently frozen model forecast for that
+    # outcome, not the one nearest tipoff or whichever wins after the fact.
+    chronological=sorted(archive["forecasts"],
+        key=lambda x:str(x.get("captured_at") or ""))
+    for x in chronological:
         model=x.get("estimated_hit_chance") or {}
         if model.get("method")!=MODEL or model.get("calibrated") is not False or model.get("research_only") is not True:
             exclusions["unsupported_model"]+=1;continue
@@ -98,6 +105,16 @@ def report(archive,ledger,*,checked_at):
         baseline=orig.get("modeled_selected_probability")
         if type(baseline) not in (int,float) or not math.isfinite(baseline) or not 0<=baseline<=1:
             exclusions["baseline_probability_invalid"]+=1;continue
+        # A player-game/market/line/side has ONE resolved betting outcome.
+        # Keep later snapshots in the archive for research transparency, but
+        # never count them as independent hit-rate/calibration observations.
+        outcome_identity=(str(x["player_id"]),str(x["team"]),str(x["opponent"]),
+                          str(x["start"]),str(x["stat"]),float(x["line"]),
+                          str(x["original_side"]))
+        if outcome_identity in scored_outcomes:
+            exclusions["repeated_model_snapshot_same_outcome"]+=1
+            continue
+        scored_outcomes.add(outcome_identity)
         paired.append({"market":x["stat"],"date":day(x["start"]),"prob":float(prob),
                        "baseline":float(baseline),"hit":y,"player_id":x["player_id"],
                        "start":x["start"],"source_game_id":g.get("source_game_id")})
@@ -134,7 +151,9 @@ def report(archive,ledger,*,checked_at):
         reason.append("CALIBRATION_THRESHOLDS_NOT_MET")
     return {"status":"PROSPECTIVE_MATCHUP_CALIBRATION_AUDIT",
        "checked_at":checked_at,"forecast_archive_count":len(archive["forecasts"]),
-       "paired_final_grades":len(paired),"completed_distinct_dates":len(dates),
+       "paired_final_grades":len(paired),
+       "unique_outcome_policy":"ONE_EARLIEST_ELIGIBLE_PREGAME_SNAPSHOT_PER_PLAYER_GAME_MARKET_LINE_SIDE",
+       "completed_distinct_dates":len(dates),
        "first_graded_date":dates[0] if dates else None,
        "last_graded_date":dates[-1] if dates else None,
        "total":total,"per_market":market,"exclusions":dict(sorted(exclusions.items())),
