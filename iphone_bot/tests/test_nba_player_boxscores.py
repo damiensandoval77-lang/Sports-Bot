@@ -68,7 +68,7 @@ class LiveBoxscoreTests(unittest.TestCase):
     def test_empty_official_pregame_feed_after_verified_tip_is_not_live_success(self):
         schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
                   "games":[{"date_eastern":DAY.isoformat(),
-                            "start":"2026-11-09T23:00:00Z"}]}
+                            "start":"2026-11-09T23:30:00Z"}]}
         self.assertTrue(verified_started(schedule,DAY,NOW+dt.timedelta(minutes=6)))
         self.assertFalse(verified_started(schedule,DAY,NOW+dt.timedelta(minutes=3)))
         self.assertFalse(verified_started({**schedule,"coverage_complete":False},DAY,NOW+dt.timedelta(minutes=6)))
