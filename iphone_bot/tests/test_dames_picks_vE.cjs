@@ -482,3 +482,57 @@ test("Merged app loads separate official score and player feeds",()=>{
  assert.ok(html.includes('getJSON("nba_scoreboard_independent.json")'));
  assert.ok(html.includes('Date.now(),nbaScores.status==="fulfilled"?nbaScores.value:null'));
 });
+
+
+test("Fresh independent NBA player rows rescue missing stale legacy live tracker",()=>{
+ const now=Date.parse("2026-11-11T01:33:00Z");
+ const game="Milwaukee Bucks @ New York Knicks";
+ const legacy={status:"OK",captured_at:"2026-11-11T00:39:00Z",games:[]};
+ const independent={status:"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+   captured_at:"2026-11-11T01:27:00Z",games:[{
+     game,state:"in",observed_at:"2026-11-11T01:27:00Z",
+     player_rows:[{player:"Test Player",team:"NY",PTS:17,REB:4,AST:2,PRA:23}]}]};
+ const selected=m.preferredNBALiveFeed(legacy,independent,now);
+ assert.equal(selected.games.length,1);
+ assert.equal(selected.games[0].player_rows.length,1);
+ const saved=[{sport:"NBA",player:"Test Player",team:"NYK",game,
+  stat:"PRA",line:20.5,projection:24.5}];
+ const joined=m.attachLive(saved,selected,null,now);
+ assert.equal(joined[0].live.actual,23);
+ const catalog=m.gameCatalog(selected,null,null,null,now);
+ assert.equal(catalog[0].players.length,1);
+});
+test("Newer verified per-game NBA player rows replace older, empty snapshots never erase",()=>{
+ const now=Date.parse("2026-11-11T01:33:00Z");
+ const game="Milwaukee Bucks @ New York Knicks";
+ const old={status:"OK",captured_at:"2026-11-11T01:22:00Z",
+   games:[{game,state:"in",observed_at:"2026-11-11T01:22:00Z",
+     player_rows:[{player:"Test Player",team:"NY",PTS:5}]}]};
+ const newOne={status:"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+   captured_at:"2026-11-11T01:27:00Z",
+   games:[{game,state:"in",observed_at:"2026-11-11T01:27:00Z",
+     player_rows:[{player:"Test Player",team:"NY",PTS:14}]}]};
+ assert.equal(m.preferredNBALiveFeed(old,newOne,now).games[0].player_rows[0].PTS,14);
+ newOne.games[0].player_rows=[];
+ assert.equal(m.preferredNBALiveFeed(old,newOne,now).games[0].player_rows[0].PTS,5);
+});
+test("Stale independent NBA player feed never looks live and never changes frozen pick",()=>{
+ const now=Date.parse("2026-11-11T01:33:00Z");
+ const stale={status:"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+   captured_at:"2026-11-11T00:39:00Z",
+   games:[{game:"Milwaukee Bucks @ New York Knicks",state:"in",
+     player_rows:[{player:"Test Player",team:"NY",PTS:80}]}]};
+ const selected=m.preferredNBALiveFeed(null,stale,now);
+ assert.equal(selected.games.length,0);
+ const saved={sport:"NBA",player:"Test Player",team:"NYK",
+  game:"Milwaukee Bucks @ New York Knicks",stat:"PTS",line:25.5,projection:26.0};
+ const joined=m.attachLive([saved],selected,null,now)[0];
+ assert.equal(joined.live,null);
+ assert.equal(joined.line,25.5);
+ assert.equal(joined.projection,26);
+});
+test("Merged page includes independent source not just old empty NBA tracker",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('getJSON("nba_player_tracking_independent.json")'));
+ assert.ok(html.includes('m.preferredNBALiveFeed('));
+});
