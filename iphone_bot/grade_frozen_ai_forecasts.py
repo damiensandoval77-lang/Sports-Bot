@@ -286,6 +286,21 @@ def main():
     selected=eligible_predictions(archive,now)
     old=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
     requested=final_requests(selected)
+    # Each original archived player belongs to one exact scheduled game.
+    # Cross-provider lookup is permitted ONLY for missing players, and only
+    # explicit independently verified ESPN final DNPs can be accepted.
+    secondary_dnp_requests={}
+    for p in selected:
+        teams=str(p.get("game") or "").split(" @ ")
+        if len(teams)!=2:
+            continue
+        away=TEAM_ABBREVIATIONS.get(teams[0].strip())
+        home=TEAM_ABBREVIATIONS.get(teams[1].strip())
+        if not away or not home or away==home or p.get("team") not in (away,home):
+            continue
+        group=(eastern_day(p["start"]),away,home)
+        secondary_dnp_requests.setdefault(group,set()).add(
+            (strict_player_name(p.get("player")),p["team"]))
     if len(requested)>25:
         raise SystemExit("More than 25 final matchups; refusing incomplete grade fetch")
     if requested:
@@ -305,7 +320,8 @@ def main():
             actuals,fetch_report=gather(requested,now=now,request=multi_origin_request,
                                       known_game_ids=recovery_game_ids(ROOT/"docs/official_nba_game_ids.json",
                                           ROOT/"docs/verified_official_final_game_ids.json"),
-                                      known_espn_games=espn_hints)
+                                      known_espn_games=espn_hints,
+                                      supplemental_espn_dnp_names=secondary_dnp_requests)
         except (OSError,ValueError,TypeError,KeyError) as e:
             actuals=[];fetch_report={"status":"FINAL_FETCH_FAILED","errors":[type(e).__name__]}
     else:
