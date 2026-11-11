@@ -88,6 +88,8 @@ jobs:
           python -u iphone_bot/train_provisional.py
           python -u iphone_bot/train_defense_shadow.py
       - name: Refresh real current-season history and official availability
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python -u iphone_bot/fetch_current_form.py
           pip install "pypdf>=5,<7"
