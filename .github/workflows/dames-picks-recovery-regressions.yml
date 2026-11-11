@@ -1,0 +1,38 @@
+name: Dame's Picks recovery regressions
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/espn_injury_void.py'
+      - 'iphone_bot/pipeline_heartbeat.py'
+      - 'iphone_bot/multimarket_forecast_ledger.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_espn_injury_void.py'
+      - 'iphone_bot/tests/test_pipeline_heartbeat.py'
+      - '.github/workflows/nba-new-ai-all-markets.yml'
+      - '.github/workflows/nba-prizepicks-site-publish.yml'
+      - '.github/workflows/nba-new-ai-multimarket-grade.yml'
+      - '.github/workflows/pipeline-heartbeat.yml'
+      - '.github/workflows/dames-picks-recovery-regressions.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recovery-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile changed production modules
+        run: |
+          python -m py_compile iphone_bot/espn_injury_void.py iphone_bot/pipeline_heartbeat.py iphone_bot/multimarket_forecast_ledger.py iphone_bot/merge_new_ai_publishing.py
+      - name: Test evidence-based DNP exclusions
+        run: python -m unittest iphone_bot.tests.test_espn_injury_void -v
+      - name: Test heartbeat freshness and missing capture
+        run: python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v
+      - name: Test frozen model ledger and grade preservation
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
