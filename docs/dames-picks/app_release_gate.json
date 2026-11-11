@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-11T00:27:45.566306+00:00",
+  "checked_at": "2026-11-11T00:31:33.409107+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -8,8 +8,7 @@
   "required_consecutive_hours": 72,
   "blocking_checks": [
     "unified_artifacts",
-    "nba_production",
-    "nba_capture"
+    "nba_production"
   ],
   "checks": {
     "unified_artifacts": {
@@ -31,11 +30,8 @@
       ]
     },
     "nba_capture": {
-      "state": "DEGRADED",
-      "issues": [
-        "PRETIP_CAPTURES_NOT_VERIFIED",
-        "UNMATCHED_STANDARD_LINE_THRESHOLDS"
-      ]
+      "state": "READY",
+      "issues": []
     },
     "nba_grading": {
       "state": "READY",
