@@ -37,7 +37,36 @@ const scoreText=x=>typeof x==="number"&&Number.isFinite(x)?String(Math.round(x))
 const escapeText=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const when=t=>{const d=new Date(t);return isNaN(d)? "Time unavailable":d.toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})};
 const timestamp=t=>{const n=Date.parse(t);return Number.isFinite(n)?n:0};
-async function getJSON(p){const r=await fetch("../"+p+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error(p+" HTTP "+r.status);return r.json()}
+/* Live JSON must not depend on Github Pages rebuild latency after frequent
+   background data commits. GitHub raw source is the same public repo content,
+   fetched read-only, never an odds API or guessed game observation. */
+const RAW_LIVE_BASE="https://raw.githubusercontent.com/damiensandoval77-lang/Sports-Bot/main/docs/";
+const RAW_LIVE_FILES=new Set(["live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json"]);
+const liveStamp=o=>Date.parse(o?.captured_at||o?.generated_at||"");
+const validLiveJSON=(p,o)=>{
+ if(!o||!Array.isArray(o.games))return false;
+ if(p==="nba_scoreboard_independent.json")
+  return o.is_live_score_source===true&&o.status==="OBSERVED_NBA_LIVE_SCOREBOARD"&&Number.isFinite(liveStamp(o));
+ if(p==="nba_player_tracking_independent.json")
+  return ["OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES","PARTIAL_NBA_PLAYER_BOXSCORES"].includes(o.status)&&Number.isFinite(liveStamp(o));
+ if(p==="live_player_tracking.json")
+  return String(o.status||"").startsWith("OBSERVED_ESPN_LIVE_BOX_SCORES")&&Number.isFinite(liveStamp(o));
+ return false;
+};
+async function getJSON(p){
+ if(RAW_LIVE_FILES.has(p)){
+  try{
+   const r=await fetch(RAW_LIVE_BASE+p+"?v="+Date.now(),{cache:"no-store"});
+   if(r.ok){
+    const data=await r.json();
+    if(validLiveJSON(p,data))return data;
+   }
+  }catch(_){/* Exact Pages path remains a read-only fallback */ }
+ }
+ const r=await fetch("../"+p+"?v="+Date.now(),{cache:"no-store"});
+ if(!r.ok)throw Error(p+" HTTP "+r.status);
+ return r.json();
+}
 async function getCSV(p){const r=await fetch("../nfl/data/"+p+"?v="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("NFL "+p+" HTTP "+r.status);return m.csv(await r.text())}
 async function refresh(){
  if(state.loading)return;state.loading=true;$("status").textContent="Loading actual NBA and NFL bot outputs…";
@@ -260,13 +289,37 @@ async function liveTick(force=false){
  if(document.hidden||state.liveBusy||(!force&&!liveWindowOpen()))return;
  state.liveBusy=true;
  try{
-  const data=await L.fetchNBA();
-  if(data){
-   state.direct=data;
+  const [direct,raw]=await Promise.all([
+   L.fetchNBA().catch(()=>null),
+   Promise.allSettled([
+     getJSON("live_player_tracking.json"),
+     getJSON("nba_scoreboard_independent.json"),
+     getJSON("nba_player_tracking_independent.json")
+   ])
+  ]);
+  let changed=false;
+  if(direct){
+   state.direct=direct;
    state.directAt=Date.now();
-   applyLive();
+   changed=true;
   }
- }catch(_){/* Keep last verified observation or published snapshot */ }
+  if(state.raw){
+   const fields=["nbaLive","nbaScores","independentPlayers"];
+   const names=["live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json"];
+   for(let i=0;i<raw.length;i++){
+    if(raw[i].status!=="fulfilled")continue;
+    const candidate=raw[i].value;
+    if(!validLiveJSON(names[i],candidate))continue;
+    const next=liveStamp(candidate),before=liveStamp(state.raw[fields[i]]);
+    if(Number.isFinite(next)&&next<=Date.now()+120000&&
+       (!Number.isFinite(before)||next>before)){
+     state.raw[fields[i]]=candidate;
+     changed=true;
+    }
+   }
+  }
+  if(changed)applyLive();
+ }catch(_){/* Never replace an actual observation with invented stats */ }
  finally{state.liveBusy=false}
 }
 setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000);
