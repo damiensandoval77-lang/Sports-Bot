@@ -74,13 +74,20 @@ class PositionalResearchTests(unittest.TestCase):
         s=schedule();s["games"][0]["start"]="2026-11-11T19:00:00Z"
         self.assertEqual(build(logs(),form(),s,captured_at=FREEZE)["future_game_count"],0)
 
-    def test_latest_game_defense_not_available_before_it_was_played(self):
+    def test_same_day_games_not_used_for_future_defense_at_same_date(self):
         games=logs(7,10)
-        for row in games:
-            if row["date"]=="2026-11-11":
-                row["PTS"]=999
-        r=build(games,form(),schedule(),captured_at=FREEZE)
-        self.assertEqual(r["reciprocal_completed_games"],17)
+        baseline=build(games,form(),schedule(),captured_at=FREEZE)
+        additions=logs(1)
+        for x in additions:
+            x["date"]="2026-11-11"
+        games+=additions
+        changed=build(games,form(),schedule(),captured_at=FREEZE)
+        self.assertEqual(changed["reciprocal_completed_games"],baseline["reciprocal_completed_games"]+1)
+        base_players=baseline["future_games"][0]["player_positional_context"]
+        new_players=changed["future_games"][0]["player_positional_context"]
+        a={x["player_id"]:x.get("defense_last5_per_listed_player") for x in base_players}
+        b={x["player_id"]:x.get("defense_last5_per_listed_player") for x in new_players}
+        self.assertEqual(a,b)
 
     def test_duplicate_player_row_not_double_counted(self):
         games=logs(7,10);games.append(copy.deepcopy(games[0]))
