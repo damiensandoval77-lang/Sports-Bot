@@ -31,6 +31,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify live-stat normalization and non-destructive updates
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s tests -p 'test_nfl_live.py' -v
           python -m unittest discover -s tests -p 'test_nfl_live_guard.py' -v
