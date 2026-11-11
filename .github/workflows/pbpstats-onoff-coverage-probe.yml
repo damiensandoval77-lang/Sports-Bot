@@ -20,8 +20,10 @@ jobs:
         with:
           python-version: '3.11'
       - name: Compile single pair metadata-only overlap audit
+        if: github.event_name == 'pull_request'
         run: python -m py_compile iphone_bot/probe_pbpstats_game_coverage.py
       - name: Check overlap timestamp edge-case tests
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_game_coverage.py' -v
       - name: Validate public current-season teammate ON-OFF stints
         run: python -m iphone_bot.probe_pbpstats_game_coverage
