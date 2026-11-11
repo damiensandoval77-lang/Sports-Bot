@@ -251,7 +251,9 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
     if std_counts["overdue"]:
         blockers["STANDARD_OVERDUE_WITHOUT_VERIFIED_FINAL"] = std_counts["overdue"]
     return {
-        "status":"READY" if not blockers else "BLOCKED",
+        "status":("BLOCKED" if blockers else
+                  "AWAITING_VERIFIED_FINALS" if ai_counts["unresolved"] or std_counts["unresolved"]
+                  else "READY"),
         "scope":"ONE_EASTERN_GAME_DATE_TWO_INDEPENDENT_FORECAST_LEDGERS",
         "game_date_eastern":game_date,"checked_at":now.isoformat(),
         "ai_only":{"frozen":ai_total,**{k:ai_counts[k] for k in
