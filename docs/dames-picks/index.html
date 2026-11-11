@@ -150,13 +150,13 @@ function openGame(game){
 function renderGameDetail(){
  const g=state.gamePicked;if(!g)return;
  $("player").textContent=g.game;
- $("matchup").textContent=g.sport+" · "+g.statusText+" · Last snapshot "+when(g.observedAt);
+ $("matchup").textContent=g.sport+" · "+g.statusText+(g.observedAt?" · Last snapshot "+when(g.observedAt):"");
  $("markets").innerHTML="";
  $("bookmark").textContent="—";
  const related=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)&&!p.quoteOnly));
  const normalize=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
  const actualFor=p=>{
-  const matches=g.players.filter(x=>x.team===p.team&&normalize(x.player)===normalize(p.player));
+  const matches=g.players.filter(x=>(g.sport==="NBA"?m.nbaTeam(x.team)===m.nbaTeam(p.team):x.team===p.team)&&normalize(x.player)===normalize(p.player));
   if(matches.length!==1)return null;
   const statKey=g.sport==="NFL"?p.target:p.stat;
   const value=matches[0].stats?.[statKey];
