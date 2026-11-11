@@ -1,71 +1,50 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-11T02:50:21.577969+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-11T03:26:02.403477+00:00",
   "game_date_eastern": "2026-11-10",
-  "recorded_pregame_forecasts": 380,
-  "graded": 0,
+  "recorded_pregame_forecasts": 472,
+  "graded": 168,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 380,
-  "new_grades": 0,
+  "accounted_for": 168,
+  "ungraded": 304,
+  "new_grades": 168,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 42,
+      "mae": 4.474,
+      "mean_signed_error": 1.355
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 42,
+      "mae": 1.848,
+      "mean_signed_error": 0.562
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 42,
+      "mae": 1.388,
+      "mean_signed_error": 0.407
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 42,
+      "mae": 5.555,
+      "mean_signed_error": 2.312
     }
   },
   "ungraded_by_game": {
-    "Boston Celtics @ Philadelphia 76ers": 92,
+    "Boston Celtics @ Philadelphia 76ers": 4,
     "LA Clippers @ Phoenix Suns": 100,
     "Miami Heat @ Utah Jazz": 100,
-    "Milwaukee Bucks @ New York Knicks": 88
+    "Milwaukee Bucks @ New York Knicks": 8,
+    "Orlando Magic @ Sacramento Kings": 92
   },
   "excluded_verified_dnp_players": [],
   "ungraded_distinct_player_names_by_game": {
     "Boston Celtics @ Philadelphia 76ers": [
-      "Adem Bona",
-      "Anfernee Simons",
-      "Baylor Scheierman",
-      "Dean Wade",
-      "Derrick White",
-      "Hugo Gonz\u00e1lez",
-      "Jabari Walker",
-      "Jaylen Brown",
-      "Jayson Tatum",
-      "Joel Embiid",
-      "Jordan Walsh",
-      "Kentavious Caldwell-Pope",
-      "Labaron Philon Jr.",
-      "LeBron James",
-      "Luka Garza",
-      "Mitchell Robinson",
-      "Neemias Queta",
-      "Paul George",
-      "Payton Pritchard",
-      "Ron Harper Jr.",
-      "Sam Hauser",
-      "Tyrese Maxey",
-      "VJ Edgecombe"
+      "Adem Bona"
     ],
     "LA Clippers @ Phoenix Suns": [
       "Baba Miller",
@@ -122,53 +101,59 @@
       "Tim Hardaway Jr."
     ],
     "Milwaukee Bucks @ New York Knicks": [
-      "AJ Green",
-      "Andre Drummond",
-      "Brayden Burries",
-      "Jaime Jaquez Jr.",
-      "Jalen Brunson",
-      "Jericho Sims",
-      "Jordan Clarkson",
       "Josh Hart",
-      "Karl-Anthony Towns",
-      "Kasparas Jaku\u010dionis",
-      "Kel'el Ware",
-      "Kyle Kuzma",
-      "Landry Shamet",
-      "Mikal Bridges",
-      "Miles McBride",
-      "Myles Turner",
-      "Nate Ament",
-      "OG Anunoby",
-      "Ousmane Dieng",
-      "Ryan Rollins",
-      "Tyler Herro",
-      "Tyler Kolek"
+      "Tyler Herro"
+    ],
+    "Orlando Magic @ Sacramento Kings": [
+      "Alex Karaban",
+      "Alex Morales",
+      "Anthony Black",
+      "Daeqwon Plowden",
+      "Darius Acuff Jr.",
+      "De'Andre Hunter",
+      "Desmond Bane",
+      "Domantas Sabonis",
+      "Emanuel Sharp",
+      "Franz Wagner",
+      "Goga Bitadze",
+      "Jamal Cain",
+      "Jase Richardson",
+      "Jevon Carter",
+      "Jonathan Mogbo",
+      "Leaky Black",
+      "Malik Monk",
+      "Nikola Vu\u010devi\u0107",
+      "Nique Clifford",
+      "Precious Achiuwa",
+      "Tristan da Silva",
+      "Wendell Carter Jr.",
+      "Zach LaVine"
     ]
   },
-  "ungraded_distinct_player_markets": 380,
+  "ungraded_distinct_player_markets": 304,
   "final_feed": {
-    "pending_matchups": 10,
-    "final_nba_games": 8,
+    "pending_matchups": 12,
+    "final_nba_games": 10,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 185,
+    "retrieved_player_lines": 236,
     "errors": [
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 10,
-    "final_cached_id_nba_games": 8,
+    "cached_official_id_candidates": 11,
+    "final_cached_id_nba_games": 9,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 203,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 254,
+    "newly_retrieved_verified_rows": 51,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 380
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 12,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 292
     },
     "players": [
       {
@@ -176,644 +161,28 @@
         "team": "PHI",
         "game": "Boston Celtics @ Philadelphia 76ers",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Adem Bona",
         "team": "PHI",
         "game": "Boston Celtics @ Philadelphia 76ers",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Adem Bona",
         "team": "PHI",
         "game": "Boston Celtics @ Philadelphia 76ers",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Adem Bona",
         "team": "PHI",
         "game": "Boston Celtics @ Philadelphia 76ers",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anfernee Simons",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anfernee Simons",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anfernee Simons",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anfernee Simons",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dean Wade",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dean Wade",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dean Wade",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dean Wade",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Walker",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Walker",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Walker",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Walker",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Brown",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Brown",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Brown",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Brown",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joel Embiid",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joel Embiid",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joel Embiid",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joel Embiid",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kentavious Caldwell-Pope",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kentavious Caldwell-Pope",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kentavious Caldwell-Pope",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kentavious Caldwell-Pope",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Labaron Philon Jr.",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Labaron Philon Jr.",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Labaron Philon Jr.",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Labaron Philon Jr.",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LeBron James",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LeBron James",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LeBron James",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LeBron James",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mitchell Robinson",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mitchell Robinson",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mitchell Robinson",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mitchell Robinson",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Maxey",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Maxey",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Maxey",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyrese Maxey",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "VJ Edgecombe",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "VJ Edgecombe",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "VJ Edgecombe",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "VJ Edgecombe",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Baba Miller",
@@ -2216,618 +1585,702 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "AJ Green",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Green",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Green",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Green",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brayden Burries",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brayden Burries",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brayden Burries",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brayden Burries",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaime Jaquez Jr.",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaime Jaquez Jr.",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaime Jaquez Jr.",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaime Jaquez Jr.",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jericho Sims",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jericho Sims",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jericho Sims",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jericho Sims",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Josh Hart",
         "team": "NYK",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Josh Hart",
         "team": "NYK",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Josh Hart",
         "team": "NYK",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Josh Hart",
         "team": "NYK",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kasparas Jaku\u010dionis",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kasparas Jaku\u010dionis",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kasparas Jaku\u010dionis",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kasparas Jaku\u010dionis",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kel'el Ware",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kel'el Ware",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kel'el Ware",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kel'el Ware",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Kuzma",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Kuzma",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Kuzma",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Kuzma",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myles Turner",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myles Turner",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myles Turner",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myles Turner",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nate Ament",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nate Ament",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nate Ament",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nate Ament",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ousmane Dieng",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ousmane Dieng",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ousmane Dieng",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ousmane Dieng",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Rollins",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Rollins",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Rollins",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Rollins",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tyler Herro",
         "team": "MIL",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tyler Herro",
         "team": "MIL",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tyler Herro",
         "team": "MIL",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Tyler Herro",
         "team": "MIL",
         "game": "Milwaukee Bucks @ New York Knicks",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alex Morales",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alex Morales",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alex Morales",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alex Morales",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Anthony Black",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Anthony Black",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Anthony Black",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Anthony Black",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Desmond Bane",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Desmond Bane",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Desmond Bane",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Desmond Bane",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Franz Wagner",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Franz Wagner",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Franz Wagner",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Franz Wagner",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Goga Bitadze",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Goga Bitadze",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Goga Bitadze",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Goga Bitadze",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Cain",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Cain",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Cain",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Cain",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jase Richardson",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jase Richardson",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jase Richardson",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jase Richardson",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jevon Carter",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jevon Carter",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jevon Carter",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jevon Carter",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Vu\u010devi\u0107",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Vu\u010devi\u0107",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Vu\u010devi\u0107",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Vu\u010devi\u0107",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nique Clifford",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nique Clifford",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nique Clifford",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nique Clifford",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tristan da Silva",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tristan da Silva",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tristan da Silva",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tristan da Silva",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Wendell Carter Jr.",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Wendell Carter Jr.",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Wendell Carter Jr.",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Wendell Carter Jr.",
+        "team": "ORL",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Orlando Magic @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       }
