@@ -1,4 +1,4 @@
-"""Real public iPhone-width acceptance test for opponent matchup TEST estimates.
+"""Real public iPhone-width acceptance test for opponent matchup estimates.
 
 A merged PR or local JS test cannot prove deployed Pages or phone cache. This
 checks visible DOM at the actual public URL, not GitHub source-only content.
@@ -9,7 +9,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 URL="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
-RELEASE="dp-matchup-preview-20261111-r5"
+RELEASE="dp-matchup-calibration-20261111-r6"
 
 def verify():
     with sync_playwright() as p:
@@ -29,7 +29,7 @@ def verify():
               return {release:document.querySelector('meta[name="dames-release"]')?.content,
                 nbaRows:state.nba.length,matchupPreviewRows:previewRows.length,
                 visiblePreviewCards:upcoming.length,
-                visibleResearchLabel:document.getElementById('cards')?.innerText?.includes('TEST · uncalibrated')||false,
+                visibleResearchLabel:document.getElementById('cards')?.innerText?.includes('Matchup model')||false,
                 firstPlayer:upcoming[0]?.player||null,firstMarket:upcoming[0]?.stat||null,
                 firstRate:upcoming[0]?.matchupPreview?.rate||null,
                 intactOriginalLine:upcoming[0]?.line??null,
@@ -37,9 +37,9 @@ def verify():
                 noCertifiedHitChance:upcoming.length?m.hitEstimate(upcoming[0])===null:null};
             }""")
             if result["visiblePreviewCards"]>0:
-                page.locator("#cards [data-id]").filter(has_text="TEST · uncalibrated").first.click()
-                result["detailResearchLabel"]=page.locator("#detail-content").inner_text().find("RESEARCH · NOT CALIBRATED")>=0
-                result["detailExplainsUncertainty"]="uncalibrated research" in page.locator("#detail-content").inner_text().lower()
+                page.locator("#cards [data-id]").filter(has_text="Matchup model").first.click()
+                result["detailResearchLabel"]=page.locator("#detail-content").inner_text().find("Matchup model")>=0
+                result["detailExplainsUncertainty"]="accuracy and probability calibration are being tracked prospectively" in page.locator("#detail-content").inner_text().lower()
                 page.screenshot(path="public-matchup-preview-iphone-width.png")
             result["checked_at"]=datetime.now(timezone.utc).isoformat()
             result["browser_errors"]=errs
