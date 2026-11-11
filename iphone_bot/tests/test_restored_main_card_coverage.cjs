@@ -26,7 +26,7 @@ const modelBase={player:"Stephen Curry",player_id:"201939",team:"GSW",
  market_updated:"2026-11-09T21:00:00Z",captured_at:"2026-11-09T22:00:00Z",
  pickem_tier:"standard",standard_line_two_sided_verified:true,
  research_only:true,production_replaced:false,grade:"PENDING",
- estimated_hit_chance:{draws:20000,calibrated:false,modeled_direction:"More",modeled_selected_probability:.65}};
+ estimated_hit_chance:{method:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",draws:20000,calibrated:false,modeled_direction:"More",modeled_selected_probability:.65}};
 test("combined app is the only linked dashboard",()=>{
  assert.ok(redirect.includes("url=./dames-picks/"));
  assert.ok(html.includes('Dame\'s Picks'));
