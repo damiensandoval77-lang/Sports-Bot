@@ -27,9 +27,19 @@ def identity(row):
 
 def assess(schedule,archive,ledger,now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
-    if schedule.get("status")!="THIRD_PARTY_NBA_SCHEDULE_ONLY" or schedule.get("coverage_complete") is not True:
+    # The short rolling schedule advances at midnight and MUST NOT erase
+    # unfinished prior-day games from grading monitoring. Use the retained
+    # verified 1,200-game 2026-27 season baseline for the rolling 48h window.
+    rolling=(schedule.get("status")=="THIRD_PARTY_NBA_SCHEDULE_ONLY"
+             and schedule.get("coverage_complete") is True)
+    season=(schedule.get("status")=="VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE"
+            and schedule.get("season")=="2026-27"
+            and schedule.get("coverage")=="PUBLISHED_FIXED_REGULAR_SEASON_GAMES_ONLY"
+            and schedule.get("total_games")==1200
+            and len(schedule.get("games") or [])==1200)
+    if not (rolling or season):
         return {"status":"OVERDUE_MONITOR_SOURCE_ERROR","checked_at":now.isoformat(),
-                "errors":["OFFICIAL_SCHEDULE_NOT_VERIFIED_COMPLETE"],"games":[]}
+                "errors":["VERIFIED_ROLLING_OR_SEASON_SCHEDULE_REQUIRED"],"games":[]}
     if archive.get("status")!="IMMUTABLE_OBSERVED_PRETIP_NOLINE_AI_ARCHIVE":
         return {"status":"OVERDUE_MONITOR_SOURCE_ERROR","checked_at":now.isoformat(),
                 "errors":["PREGAME_AI_ARCHIVE_UNAVAILABLE"],"games":[]}
@@ -63,7 +73,7 @@ def assess(schedule,archive,ledger,now=None):
             forecast.setdefault(k,p)
     report={"status":"NO_OVERDUE_PENDING","checked_at":now.isoformat(),
             "threshold_minutes":int(MAX_DELAY.total_seconds()/60),"games":[],"issues":[],
-            "note":"Overdue age is a diagnostic, not proof a game finished. Grading requires separately verified final player rows."}
+            "schedule_source":schedule["status"],"note":"Persistent season schedule preserves games after rolling schedule resets. Overdue age is not proof of completion; only verified final player rows settle grades."}
     for game,g in sorted(scoped.items()):
         selected=[p for p in forecast.values() if p is not None and p["game"]==game]
         if not selected:
@@ -87,7 +97,8 @@ def assess(schedule,archive,ledger,now=None):
 def main():
     try:
         data=[json.loads((ROOT/name).read_text()) for name in
-            ("docs/nba_schedule.json","docs/ai_no_line_pregame_archive.json",
+            ("docs/nba_season_schedule_2026_27.json",
+             "docs/ai_no_line_pregame_archive.json",
              "docs/ai_forecast_actual_ledger.json")]
         result=assess(*data)
     except (OSError,ValueError,TypeError) as exc:
