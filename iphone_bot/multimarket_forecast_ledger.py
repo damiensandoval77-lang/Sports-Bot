@@ -62,20 +62,47 @@ def merge(previous,feed,finals):
                            "final_source":None}
                 new+=1
     outcomes={}
+    # Exact final identity is shared across line versions. A verified DNP
+    # excludes ALL of that player's frozen thresholds, without recording
+    # a win/loss, a synthetic zero, or a fake model error.
+    allowed_finals={"NBA_CDN_FINAL","ESPN_FINAL"}
+    allowed_dnp={"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
+                 "VERIFIED_FINAL_BOXSCORE_DNP_CROSSCHECKED"}
     for x in finals.get("records",[]):
-        if (x.get("status")!="GRADED" or x.get("stat") not in STATS or
-            x.get("final_source") not in {"NBA_CDN_FINAL","ESPN_FINAL"} or
-            not x.get("source_game_id")):continue
+        if not isinstance(x,dict) or x.get("stat") not in STATS or not x.get("source_game_id"):
+            continue
+        status=x.get("status")
+        if status=="GRADED" and x.get("final_source") in allowed_finals:
+            pass
+        elif (status=="EXCLUDED_VERIFIED_DNP" and
+              x.get("final_source") in allowed_dnp and
+              x.get("actual") is None and x.get("verified_dnp_reason")):
+            pass
+        else:
+            continue
         k=outcome_key(x)
+        # Contradictory official finals must fail closed rather than silently
+        # choose an arbitrary result from the published ledger.
         if k in outcomes and outcomes[k]!=x:outcomes[k]=None
         elif k not in outcomes:outcomes[k]=x
     new_grades=0
+    new_verified_exclusions=0
     for k,x in frozen.items():
         if x.get("grade")!="PENDING":continue
-        actual=outcomes.get(outcome_key(x))
-        if not actual:continue
+        outcome=outcomes.get(outcome_key(x))
+        if not outcome:continue
+        if outcome["status"]=="EXCLUDED_VERIFIED_DNP":
+            x["grade"]="EXCLUDED_VERIFIED_DNP"
+            x["actual"]=None
+            x["absolute_error"]=None
+            x["direction_hit"]=None
+            x["final_source"]=outcome["final_source"]
+            x["source_game_id"]=outcome["source_game_id"]
+            x["verified_dnp_reason"]=outcome["verified_dnp_reason"]
+            new_verified_exclusions+=1
+            continue
         try:
-            a=float(actual["actual"]);p=float(x["projection"]);q=float(x["line"])
+            a=float(outcome["actual"]);p=float(x["projection"]);q=float(x["line"])
         except (ValueError,TypeError,KeyError):continue
         if not math.isfinite(a) or not 0<=a<=200:continue
         side=x.get("estimated_hit_chance",{}).get("modeled_direction")
@@ -84,22 +111,25 @@ def merge(previous,feed,finals):
         x["grade"]="GRADED";x["actual"]=a
         x["absolute_error"]=round(abs(a-p),4)
         x["direction_hit"]=hit
-        x["final_source"]=actual["final_source"]
-        x["source_game_id"]=actual["source_game_id"]
+        x["final_source"]=outcome["final_source"]
+        x["source_game_id"]=outcome["source_game_id"]
         new_grades+=1
     values=sorted(frozen.values(),key=lambda x:(x["start"],x["player_id"],x["stat"],float(x["line"])))
     by_stat={}
     for stat in sorted(STATS):
         arr=[x for x in values if x["stat"]==stat]
         graded=[x for x in arr if x.get("grade")=="GRADED"]
+        excluded=[x for x in arr if x.get("grade")=="EXCLUDED_VERIFIED_DNP"]
         eligible=[x for x in graded if isinstance(x.get("direction_hit"),bool)]
         by_stat[stat]={"recorded":len(arr),"graded":len(graded),
-          "pending":len(arr)-len(graded),
+          "verified_dnp_excluded":len(excluded),
+          "pending":len(arr)-len(graded)-len(excluded),
           "mae":round(sum(x["absolute_error"] for x in graded)/len(graded),4) if graded else None,
           "modeled_side_hit_rate":round(sum(x["direction_hit"] for x in eligible)/len(eligible),4) if eligible else None,
           "direction_eligible":len(eligible)}
     return {"status":"FROZEN_NEW_AI_ALL_MARKET","records":values,
             "new_pregame_frozen":new,"new_verified_grades":new_grades,
+            "new_verified_dnp_exclusions":new_verified_exclusions,
             "market_metrics":by_stat,
             "existing_grades_modified":False,
             "probabilities_calibrated":False,
@@ -113,6 +143,7 @@ def main():
     LEDGER.write_text(json.dumps(out,indent=2)+"\n")
     print("FROZEN_NEW_AI_ALL_MARKET",json.dumps({
       "new":out["new_pregame_frozen"],"graded":out["new_verified_grades"],
+      "dnp_excluded":out["new_verified_dnp_exclusions"],
       "by_stat":out["market_metrics"]}),flush=True)
 
 if __name__=="__main__":main()
