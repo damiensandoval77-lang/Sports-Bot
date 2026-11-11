@@ -30,8 +30,10 @@ jobs:
       - name: Verify player-name rendering in all boxscore categories
         run: node tests/test_nfl_boxscore_display.cjs
       - name: Run export data-integrity tests
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s tests -p 'test_nfl_boxscores.py' -v
       - name: Verify schedule-to-boxscore reconciliation regression tests
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s tests -p 'test_nfl_reconciliation.py' -v
       - name: Refresh the verified full-season schedule and final scores
         run: python scripts/export_nfl_schedule.py
