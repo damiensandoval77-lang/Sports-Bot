@@ -23,6 +23,20 @@ class RecoveryRoutingTests(unittest.TestCase):
             "pregame_capture":{"required":True,"state":"DEGRADED"}}}
         self.assertEqual(recovery_targets(report),[])
 
+    def test_live_scoreboard_and_player_stats_route_to_free_recovery(self):
+        report={"status":"BLOCKED","upcoming_games":5,"started_not_marked_final":1,
+                "components":{
+                   "scoreboard":{"required":True,"state":"BLOCKED"},
+                   "live_player_stats":{"required":True,"state":"BLOCKED"}}}
+        self.assertEqual(recovery_targets(report),[
+          "independent_scoreboard_refresh.yml",
+          "independent_nba_player_boxscores.yml"])
+
+    def test_only_raw_provider_coverage_gap_does_not_trigger_paid_refresh(self):
+        report={"status":"READY","components":{
+            "unmodeled_provider_market_coverage":{"required":False,"state":"DEGRADED"}}}
+        self.assertEqual(recovery_targets(report),[])
+
     def test_no_paid_refresh_after_tipoff_without_upcoming_games(self):
         report={"status":"DEGRADED","upcoming_games":0,"components":{
             "prizepicks_lines":{"required":True,"state":"DEGRADED"}}}
