@@ -11,8 +11,11 @@ RECOVERABLE = {
     "prizepicks_lines": "nba-prizepicks-full-slate.yml",
     "pregame_capture": "nba-new-ai-all-markets.yml",
     "public_browser": "nba-prizepicks-site-publish.yml",
+    "scoreboard": "independent_scoreboard_refresh.yml",
+    "live_player_stats": "independent_nba_player_boxscores.yml",
 }
-NO_COST = ("nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml")
+NO_COST = ("nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml",
+           "independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml")
 
 def recovery_targets(report):
     if report.get("status") == "READY":
@@ -28,6 +31,12 @@ def recovery_targets(report):
         out.append(RECOVERABLE["prizepicks_lines"])
     if "public_browser" in failed:
         out.append(RECOVERABLE["public_browser"])
+    # Never leave an in-progress game waiting for a user to refresh the live
+    # feeds. These free source collectors preserve only verified observations.
+    if "scoreboard" in failed:
+        out.append(RECOVERABLE["scoreboard"])
+    if "live_player_stats" in failed:
+        out.append(RECOVERABLE["live_player_stats"])
     # Rerunning a capture audit cannot repair absent frozen projections.
     # Route pretip gaps to model generation and verify in the next audit.
     if "pregame_capture" in failed and report.get("upcoming_games", 0) > 0:
