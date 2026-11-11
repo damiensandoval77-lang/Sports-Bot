@@ -105,6 +105,41 @@ function summarize(rows,nflHealth,now=Date.now(),league=null){
   pending:rows.filter(x=>x.grade==="PENDING").length};
 }
 
+/* Select a fresh real player feed instead of blindly preferring an empty
+   legacy snapshot. A later verified game observation wins PER matchup;
+   unavailable/empty sources never erase genuine previously observed rows.
+   This does not infer a single player statistic. */
+function preferredNBALiveFeed(primary,independent,now=Date.now()){
+ const valid=feed=>feed&&[
+  "OK","OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+  "PARTIAL_NBA_PLAYER_BOXSCORES",
+  "OBSERVED_ESPN_PLAYER_TOTALS"
+ ].includes(feed.status)&&Array.isArray(feed.games)&&
+ Number.isFinite(stamp(feed.captured_at))&&
+ now-stamp(feed.captured_at)>=-120000&&now-stamp(feed.captured_at)<20*60000;
+ const saved=new Map();
+ for(const feed of [primary,independent]){
+  if(!valid(feed))continue;
+  for(const g of feed.games){
+   if(!g?.game||!["in","post","pre"].includes(g.state))continue;
+   const at=stamp(g.observed_at||feed.captured_at);
+   if(!Number.isFinite(at)||now-at< -120000||now-at>=20*60000)continue;
+   const previous=saved.get(g.game);
+   const rows=Array.isArray(g.player_rows)?g.player_rows:[];
+   const priorAt=previous?stamp(previous.observed_at):NaN;
+   // A newer verified player observation wins. Never replace populated live
+   // rows with an empty pending/pregame response.
+   if(!previous || (rows.length>0 &&
+       (!Array.isArray(previous.player_rows)||!previous.player_rows.length||at>priorAt)))
+     saved.set(g.game,{...g,observed_at:g.observed_at||feed.captured_at});
+  }
+ }
+ const games=[...saved.values()];
+ return {status:games.length?"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES":"UNAVAILABLE",
+  captured_at:new Date(now).toISOString(),games,
+  source:"Selected verified recent player observations by matchup"};
+}
+
 /* Merge observation feeds by exact game/player/team. No observations alter frozen projections. */
 function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
  const nbaFresh=nbaFeed?.status&&Number.isFinite(stamp(nbaFeed.captured_at))&&
@@ -380,5 +415,5 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={csv,nba,nfl,summarize,key,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
