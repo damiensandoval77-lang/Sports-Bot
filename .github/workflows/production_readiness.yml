@@ -95,8 +95,8 @@ jobs:
               python -m iphone_bot.merge_scoreboard_snapshot docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
             fi
             if [ -f "$RUNNER_TEMP/nba_player_tracking_independent.json" ]; then
-              python -m iphone_bot.merge_nba_player_boxscore_publish \\
-                --current docs/nba_player_tracking_independent.json \\
+              python -m iphone_bot.merge_nba_player_boxscore_publish \
+                --current docs/nba_player_tracking_independent.json \
                 --incoming "$RUNNER_TEMP/nba_player_tracking_independent.json"
             fi
             git add docs/production_readiness.json docs/nba_scoreboard_independent.json docs/nba_player_tracking_independent.json
