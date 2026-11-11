@@ -261,6 +261,28 @@ function attachGameLogs(rows,form,limit=10){
  });
 }
 root.DamesPicksLineHistory={attachGameLogs,etDay};
+/* Empirical hit frequency for the ORIGINAL saved standard line.
+   Only pregame observed NBA rows explicitly reconciled to this line qualify.
+   Pushes are excluded from the denominator. Never infer from simulations,
+   model confidence, or season averages. A historical rate is NOT a
+   calibrated forward-looking win probability. */
+function hitEstimate(p){
+ if(!p||p.sport!=="NBA"||p.quoteOnly||
+    !["MORE","LESS"].includes(p.direction)||n(p.line)===null||
+    p.form?.historySource!=="Observed completed games before this pick's game date")
+   return null;
+ const over=n(p.form.over),under=n(p.form.under),push=n(p.form.push),
+  total=n(p.form.historyGames);
+ if([over,under,push,total].some(v=>v===null||v<0||!Number.isInteger(v))||
+    over+under+push!==total)return null;
+ const eligible=over+under;
+ // With fewer than five observed non-push games, display unavailable rather
+ // than extrapolating a noisy one-game streak into a percentage.
+ if(eligible<5)return null;
+ const hits=p.direction==="MORE"?over:under;
+ return {rate:hits/eligible,hits,eligible,push,total,
+  source:"Observed completed pregame player games vs original saved standard line; historical hit frequency, not calibrated probability"};
+}
 /* NFL settlement is joined ONLY with full immutable quote identity. */
 function attachNFLGrades(rows,graded){
  const entries=new Map();
@@ -506,5 +528,5 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
