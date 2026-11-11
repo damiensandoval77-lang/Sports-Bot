@@ -538,3 +538,74 @@ test("Merged page includes independent source not just old empty NBA tracker",()
  assert.ok(html.includes('getJSON("nba_player_tracking_independent.json")'));
  assert.ok(html.includes('m.preferredNBALiveFeed('));
 });
+
+
+test("Current live cards show one latest pretip standard line, not yesterday and today versions",()=>{
+ const start="2026-11-11T01:00:00Z";
+ const older={...pt,sport:"NBA",game:"Boston Celtics @ Philadelphia 76ers",start,
+  player:"Jayson Tatum",player_id:"1628369",playerId:"1628369",team:"BOS",
+  stat:"PTS",line:21.5,captured:"2026-11-09T22:18:06Z",
+  projection:24.2,quoteOnly:false,grade:"PENDING"};
+ const newer={...older,line:22.5,captured:"2026-11-10T23:23:53Z",projection:24.6};
+ const anotherStat={...older,stat:"REB",line:7.5};
+ const nextGame={...older,game:"Boston Celtics @ Miami Heat",
+  gameId:"Boston Celtics @ Miami Heat",start:"2026-11-12T01:00:00Z",
+  captured:"2026-11-10T23:40:00Z"};
+ const display=m.displayCurrentPicks([older,newer,anotherStat,nextGame],
+  Date.parse("2026-11-11T02:00:00Z"));
+ assert.equal(display.length,3);
+ assert.equal(display.find(x=>x.game===older.game&&x.stat==="PTS").line,22.5);
+ assert.equal(display.filter(x=>x.stat==="REB").length,1);
+ assert.equal(display.filter(x=>x.game===nextGame.game).length,1);
+});
+test("Current tracker excludes previous slate without deleting historical grade entries",()=>{
+ const now=Date.parse("2026-11-11T02:00:00Z"); // 9 PM eastern Nov 10
+ const today={sport:"NBA",player:"Test Player",playerId:"10",team:"BOS",
+  game:"Boston Celtics @ Philadelphia 76ers",gameId:"BOS @ PHI",
+  stat:"AST",line:6.5,projection:7.2,start:"2026-11-11T01:00:00Z",
+  captured:"2026-11-10T20:00:00Z",grade:"PENDING"};
+ const yesterday={...today,game:"Boston Celtics @ Brooklyn Nets",
+  gameId:"BOS @ BKN",start:"2026-11-10T01:00:00Z",
+  captured:"2026-11-09T20:00:00Z",grade:"GRADED",actual:7};
+ const raw=[today,yesterday];
+ const visible=m.displayCurrentPicks(raw,now,true);
+ assert.equal(visible.length,1);
+ assert.equal(visible[0].game,today.game);
+ assert.equal(raw.length,2);
+ assert.equal(raw[1].grade,"GRADED");
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('m.displayCurrentPicks(data,now,state.mode==="tracker")'));
+ assert.ok(html.includes('m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)&&!p.quoteOnly))'));
+});
+test("NFL tracker on a Tuesday shows only the most recent NFL slate, never mixed dates",()=>{
+ const now=Date.parse("2026-11-11T02:08:00Z");
+ const monday={sport:"NFL",player:"Receiver A",playerId:"nfl-1",team:"BUF",
+  game:"BUF @ MIN",gameId:"2026_10_BUF_MIN",stat:"Rec Yards",
+  line:55.5,projection:60,captured:"2026-11-09T17:00:00Z",
+  start:"2026-11-10T01:15:00Z",grade:"GRADED"};
+ const sunday={...monday,game:"BUF @ MIA",gameId:"2026_09_BUF_MIA",
+  start:"2026-11-08T18:00:00Z",captured:"2026-11-08T15:00:00Z"};
+ const shown=m.displayCurrentPicks([monday,sunday],now,true);
+ assert.equal(shown.length,1);
+ assert.equal(shown[0].gameId,monday.gameId);
+});
+test("Unmodeled quote-only research never duplicates the model's published saved card",()=>{
+ const p={sport:"NBA",player:"Test Player",playerId:"90",team:"NYK",
+  game:"Milwaukee Bucks @ New York Knicks",gameId:"Milwaukee Bucks @ New York Knicks",
+  start:"2026-11-11T01:00:00Z",stat:"PRA",line:37.5,
+  captured:"2026-11-10T20:00:00Z",projection:38.5,quoteOnly:false};
+ const research={...p,playerId:"",line:38.5,
+  captured:"2026-11-10T23:00:00Z",projection:null,quoteOnly:true};
+ const display=m.displayCurrentPicks([p,research],Date.parse("2026-11-11T02:00:00Z"));
+ assert.equal(display.length,1);
+ assert.equal(display[0].line,37.5);
+ assert.equal(display[0].quoteOnly,false);
+});
+test("Latest saved line is keyed by player, game and stat, never merged with other players",()=>{
+ const now=Date.parse("2026-11-11T02:00:00Z");
+ const p={sport:"NBA",player:"One",playerId:"1",team:"BOS",game:"BOS @ PHI",
+  gameId:"BOS @ PHI",start:"2026-11-11T01:00:00Z",stat:"PTS",
+  line:21.5,captured:"2026-11-10T20:00:00Z",projection:24.0};
+ const other={...p,player:"Two",playerId:"2",line:18.5};
+ assert.equal(m.displayCurrentPicks([p,other],now).length,2);
+});

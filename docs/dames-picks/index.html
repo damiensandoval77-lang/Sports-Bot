@@ -103,13 +103,14 @@ function shown(){
  // Game cards on the Live tab are sourced from the scoreboard independently of props.
  if(state.mode==="saved")data=data.filter(x=>state.selected.has(m.key(x)));
  if(term)data=data.filter(x=>(x.player+" "+x.team+" "+x.opponent+" "+x.stat).toLowerCase().includes(term));
+ data=m.displayCurrentPicks(data,now,state.mode==="tracker");
  return [...data].sort((a,b)=>state.mode==="tracker"?timestamp(b.start)-timestamp(a.start):timestamp(a.start)-timestamp(b.start)||(b.chance??0)-(a.chance??0));
 }
 function render(){
  const a=rows(),sum=m.summarize(a,state.nflHealth,Date.now(),state.league),items=shown();
  $("wl").textContent=sum.wins===null?"—":sum.wins+"–"+sum.losses;
  $("rate").textContent=pct(sum.hitRate);$("games").textContent=sum.games;
- $("section-title").textContent=state.mode==="board"?"Top picks":state.mode==="live"?"Started games":state.mode==="tracker"?"Frozen forecast archive":"Saved props";
+ $("section-title").textContent=state.mode==="board"?"Top picks":state.mode==="live"?"Started games":state.mode==="tracker"?"Today’s frozen picks":"Saved props";
  $("status").textContent=(state.updated?"Checked "+state.updated.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"")+
  (state.errors.length?" · ISSUES: "+state.errors.join(" · "):"")+
  " · "+(state.health?.capture?.summary?.total_standard_markets_without_frozen_model??"—")+" provider standard markets withheld from AI picks"+
@@ -130,7 +131,7 @@ function renderLiveGames(){
  const order={in:0,stale:1,final:2,scheduled:3,unknown:4};
  games.sort((a,b)=>(order[a.state]??4)-(order[b.state]??4)||a.game.localeCompare(b.game));
  $("cards").innerHTML=games.length?games.map(g=>{
-   const count=rows().filter(p=>p.gameId===g.gameId||p.game===g.game).length;
+   const count=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)&&!p.quoteOnly)).length;
    const title=g.state==="in"?"LIVE":g.state==="stale"?"STALE":g.state==="final"?"FINAL":g.state==="scheduled"?"UPCOMING":"STATUS N/A";
    const score=g.awayScore!==null&&g.awayScore!==undefined&&g.homeScore!==null&&g.homeScore!==undefined?
     g.away+" "+scoreText(g.awayScore)+" · "+g.home+" "+scoreText(g.homeScore):g.game;
@@ -152,7 +153,7 @@ function renderGameDetail(){
  $("matchup").textContent=g.sport+" · "+g.statusText+" · Last snapshot "+when(g.observedAt);
  $("markets").innerHTML="";
  $("bookmark").textContent="—";
- const related=rows().filter(p=>p.gameId===g.gameId||p.game===g.game);
+ const related=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)&&!p.quoteOnly));
  const normalize=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
  const actualFor=p=>{
   const matches=g.players.filter(x=>x.team===p.team&&normalize(x.player)===normalize(p.player));
@@ -199,7 +200,7 @@ function open(id){
 function renderDetail(){
  const p=state.picked;if(!p)return;
  $("player").textContent=p.player;$("matchup").textContent=p.team+" · "+(p.position?p.position+" · ":"")+p.opponent+" · "+when(p.start)+" · "+p.source;
- const sib=rows().filter(x=>x.playerId===p.playerId&&x.gameId===p.gameId&&x.start===p.start);
+ const sib=m.displayCurrentPicks(rows().filter(x=>x.playerId===p.playerId&&x.gameId===p.gameId&&x.start===p.start));
  $("markets").innerHTML=sib.map(x=>'<button data-k="'+escapeText(m.key(x))+'" class="'+(x===p?"active":"")+'">'+escapeText(x.stat)+'</button>').join("");
  for(const b of $("markets").querySelectorAll("button"))b.onclick=()=>{state.picked=sib.find(x=>m.key(x)===b.dataset.k);renderDetail()};
  $("bookmark").textContent=state.selected.has(m.key(p))?"♥":"♧";

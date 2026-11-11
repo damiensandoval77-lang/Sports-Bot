@@ -13,6 +13,52 @@ const nbaTeamCode=v=>{
 };
 
 const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat,p.line,p.captured].join("|");
+/* Card display only: one current captured standard line per player/stat/
+   scheduled game. Never rewrite the immutable frozen-price/grade ledger.
+   A real pretip model outranks an unmodeled quote-only research receipt;
+   among equivalent records, the latest verified pretip capture wins. */
+function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
+ const et=ms=>{
+  if(!Number.isFinite(ms))return null;
+  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",
+   year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",hourCycle:"h23"}).formatToParts(new Date(ms));
+  const get=k=>parts.find(p=>p.type===k)?.value||"";
+  return {date:get("year")+"-"+get("month")+"-"+get("day"),hour:Number(get("hour"))};
+ };
+ const today=et(now),yesterday=et(now-24*3600000);
+ const validStart=p=>p&&["NBA","NFL"].includes(p.sport)&&
+   Number.isFinite(stamp(p.start))&&Number.isFinite(stamp(p.captured))&&
+   stamp(p.captured)<stamp(p.start);
+ const source=(rows||[]).filter(validStart);
+ const dates=[...new Set(source.map(p=>et(stamp(p.start)).date))].sort();
+ // On a league off-day the tracker shows the last slate with saved lines,
+ // never a mixture of that slate and the next one.
+ const selectedDate=dates.includes(today.date)?today.date:
+   dates.filter(d=>d<today.date).at(-1)||dates.find(d=>d>today.date)||null;
+ const latest=new Map();
+ for(const p of source){
+  if(!p||!["NBA","NFL"].includes(p.sport))continue;
+  const start=stamp(p.start),captured=stamp(p.captured);
+  if(!Number.isFinite(start)||!Number.isFinite(captured)||captured>=start)continue;
+  if(currentSlateOnly){
+   const when=et(start);
+   const recentLateGame=today.hour<6&&when.date===yesterday.date&&
+      start>=now-10*3600000&&start<=now;
+   if(when.date!==selectedDate&&!recentLateGame)continue;
+  }
+  const match=[p.sport,p.gameId||p.game,start,norm(p.player)||p.playerId,
+               nbaTeamCode(p.team),p.stat].join("|");
+  const prior=latest.get(match);
+  if(!prior){latest.set(match,p);continue;}
+  const modeled=p.quoteOnly!==true&&Number.isFinite(n(p.projection));
+  const priorModeled=prior.quoteOnly!==true&&Number.isFinite(n(prior.projection));
+  if(modeled!==priorModeled){if(modeled)latest.set(match,p);continue;}
+  const priorAt=stamp(prior.captured);
+  if(captured>priorAt||(captured===priorAt&&Number(p.line)<Number(prior.line)))
+   latest.set(match,p);
+ }
+ return [...latest.values()];
+}
 function csv(text){
  let cells=[],row=[],field="",quoted=false;
  for(let i=0;i<text.length;i++){
@@ -417,5 +463,5 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={nbaTeam:nbaTeamCode,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
