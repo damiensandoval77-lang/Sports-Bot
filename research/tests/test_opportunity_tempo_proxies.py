@@ -59,7 +59,7 @@ class OpportunityTempoTests(unittest.TestCase):
         with self.assertRaises(ValueError):build(fixtures(),f,j,captured_at=NOW)
 
     def test_corrupt_game_does_not_inflate_opportunities(self):
-        f,j=sources();x=fixtures()
+        f,j=sources();x=fixtures(5)
         x[0]["FGA"]=-1
         r=build(x,f,j,captured_at=NOW)
         self.assertGreater(r["blockers"]["insufficient_player_shot_involvement_games"],0)
