@@ -22,7 +22,7 @@ def official():
 
 def final_box(status=3, away="BOS"):
     def t(team):
-        return {"teamTricode":team,
+        return {"teamTricode":team, "score":sum(10+k for k in range(8)),
           "players":[{"name":team+str(k),"statistics":{
               "points":10+k,"reboundsTotal":4,"assists":2,"minutes":"25:00"}}
           for k in range(8)]}
@@ -96,9 +96,8 @@ class OfficialBackfillTests(unittest.TestCase):
             x["game"]["homeTeam"]["players"][0]["statistics"]["minutes"]="bad"
             return x
         result=collect(season(),{"version":1,"rows":[]},now=NOW,request=f)
-        # Corrupt rows invalidate a whole game only if the trusted final source
-        # has sufficient direct evidence of corruption.
-        self.assertEqual(result["verified_new_games"],1)
-        self.assertEqual(len(result["rows"]),15)
+        # Missing malformed player row makes the official team totals disagree.
+        self.assertEqual(result["verified_new_games"],0)
+        self.assertEqual(len(result["rows"]),0)
 
 if __name__=="__main__":unittest.main()
