@@ -610,40 +610,45 @@ test("Latest saved line is keyed by player, game and stat, never merged with oth
  assert.equal(m.displayCurrentPicks([p,other],now).length,2);
 });
 
-test("Hit Estimate uses observed pregame actuals against immutable standard threshold, never simulation chance",()=>{
- const p={sport:"NBA",player:"Test Player",team:"NYK",gameId:"A @ B",stat:"PTS",line:20.5,
-  direction:"MORE",quoteOnly:false,chance:.97,
-  form:{over:7,under:3,push:1,historyGames:11,
-    historySource:"Observed completed games before this pick's game date"}};
+test("Hit Estimate uses ORIGINAL FROZEN MODEL pick-side probability, not raw historical game hit rate",()=>{
+ const p={sport:"NBA",player:"Test Player",team:"NYK",gameId:"A @ B",stat:"PTS",
+  line:20.5,projection:24.3,direction:"MORE",quoteOnly:false,chance:.73,
+  chanceMethod:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
+  chanceDraws:20000,chanceCalibrated:false,
+  form:{over:1,under:9,push:0,historyGames:10,
+   historySource:"Observed completed games before this pick's game date"}};
  const h=m.hitEstimate(p);
- assert.equal(h.rate,.7);
- assert.equal(h.hits,7);
- assert.equal(h.eligible,10);
- assert.equal(h.push,1);
- assert.equal(m.hitEstimate({...p,direction:"LESS"}).rate,.3);
- assert.equal(m.hitEstimate({...p,chance:.03}).rate,.7,"simulation chance must not affect historical rate");
+ assert.equal(h.rate,.73);
+ assert.equal(h.calibrated,false);
+ assert.equal(h.historicalRateNotUsed,true);
+ assert.equal(m.hitEstimate({...p,form:{...p.form,over:10,under:0}}).rate,.73,
+  "observed hit counts must NOT replace forecast probability");
+ assert.equal(m.hitEstimate({...p,chance:.61}).rate,.61,
+  "original model probability from frozen record controls the estimate");
 });
-test("Hit Estimate fails closed on missing, insufficient, contradictory or unverified history",()=>{
- const base={sport:"NBA",line:25.5,direction:"MORE",
-  form:{over:2,under:2,push:0,historyGames:4,
-    historySource:"Observed completed games before this pick's game date"}};
- assert.equal(m.hitEstimate(base),null);
- assert.equal(m.hitEstimate({...base,form:{...base.form,over:3}}),null);
- assert.equal(m.hitEstimate({...base,form:{...base.form,historyGames:8,
-  historySource:"Simulated residual draws"}}),null);
- assert.equal(m.hitEstimate({...base,quoteOnly:true}),null);
- assert.equal(m.hitEstimate({...base,direction:null}),null);
- assert.equal(m.hitEstimate({...base,sport:"NFL",form:{over:14,under:6,historyGames:20}}),null);
- assert.equal(m.hitEstimate({...base,form:{over:4,under:2,push:1,historyGames:7,
-    historySource:"Observed completed games before this pick's game date"}}).rate,4/6);
+test("Hit estimate rejects invalid, missing, alternate or undocumented probabilistic source",()=>{
+ const p={sport:"NBA",line:21.5,projection:25,direction:"MORE",chance:.71,
+  chanceMethod:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
+  chanceDraws:20000,chanceCalibrated:false};
+ assert.equal(m.hitEstimate({...p,chance:null}),null);
+ assert.equal(m.hitEstimate({...p,chance:1.1}),null);
+ assert.equal(m.hitEstimate({...p,projection:null}),null);
+ assert.equal(m.hitEstimate({...p,quoteOnly:true}),null);
+ assert.equal(m.hitEstimate({...p,chanceMethod:"RAW_HISTORICAL_FREQUENCY"}),null);
+ assert.equal(m.hitEstimate({...p,chanceDraws:10000}),null);
+ assert.equal(m.hitEstimate({...p,chanceCalibrated:true}),null);
+ assert.equal(m.hitEstimate({...p,direction:null}),null);
+ assert.equal(m.hitEstimate({...p,sport:"NFL",chanceMethod:"NFL_FROZEN_MODEL"}).rate,.71);
 });
-test("App shows only observed HIT EST not uncalibrated simulated probabilities",()=>{
+test("App shows model HIT EST, separates past games and does not misrepresent calibration",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(html.includes("<small>Hit est.</small>"));
  assert.ok(html.includes("<label>HIT EST.</label>"));
  assert.ok(html.includes("m.hitEstimate(p)"));
+ assert.ok(html.includes("Frozen model estimate for "));
+ assert.ok(html.includes("not a calibrated future probability.")||html.includes("Not yet calibrated"));
  assert.ok(!html.includes("SIM EST."));
  assert.ok(!html.includes("Sim est."));
  assert.ok(!html.includes("pct(p.chance)"));
- assert.ok(!html.includes("escapeText(p.chanceSource)"));
+ assert.ok(!html.includes("history.hits+' hits across '"));
 });
