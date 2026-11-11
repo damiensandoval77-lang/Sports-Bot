@@ -13,6 +13,28 @@ class ScoreboardMergeTests(unittest.TestCase):
         old=row("2026-11-09T14:00:00Z")
         new=row("2026-11-09T13:00:00Z","NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
         self.assertIs(select(old,new),old)
+    def test_newer_same_day_live_scores_replace_older_live(self):
+        old=row("2026-11-09T17:00:00Z")
+        new=row("2026-11-10T01:05:00Z")
+        new["games"][0].update(home_score=79,away_score=83)
+        self.assertIs(select(old,new),new)
+
+    def test_older_same_day_live_scores_never_replace_newer(self):
+        old=row("2026-11-10T01:05:00Z")
+        new=row("2026-11-09T17:00:00Z")
+        self.assertIs(select(old,new),old)
+
+    def test_newer_provider_error_with_stale_games_cannot_erase_scores(self):
+        old=row("2026-11-10T01:05:00Z")
+        new=row("2026-11-10T01:10:00Z","STALE_UPSTREAM_ERROR")
+        new["games"][0].update(home_score=None,away_score=None)
+        self.assertIs(select(old,new),old)
+
+    def test_newer_schedule_fallback_cannot_revert_live_scores(self):
+        old=row("2026-11-10T01:05:00Z")
+        new=row("2026-11-10T01:10:00Z","NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
+        self.assertIs(select(old,new),old)
+
     def test_same_timestamp_preserves_real_scores(self):
         old=row("2026-11-09T14:00:00Z")
         new=row("2026-11-09T14:00:00Z","NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
