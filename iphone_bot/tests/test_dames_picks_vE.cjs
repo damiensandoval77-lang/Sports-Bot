@@ -609,3 +609,10 @@ test("Latest saved line is keyed by player, game and stat, never merged with oth
  const other={...p,player:"Two",playerId:"2",line:18.5};
  assert.equal(m.displayCurrentPicks([p,other],now).length,2);
 });
+
+test("Expanded game detail uses the SAME ESPN team aliases as live forecast cards",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('g.sport==="NBA"?m.nbaTeam(x.team)===m.nbaTeam(p.team):x.team===p.team'));
+ assert.ok(html.includes('g.observedAt?" · Last snapshot "+when(g.observedAt):""'));
+ assert.ok(!html.includes('g.sport+" · "+g.statusText+" · Last snapshot "+when(g.observedAt)'));
+});
