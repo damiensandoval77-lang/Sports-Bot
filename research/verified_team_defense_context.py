@@ -36,7 +36,7 @@ def final_games(cache):
     games = defaultdict(list)
     invalid_game_keys = set()
     for x in cache["rows"]:
-        if not isinstance(x, dict) or x.get("source") != "NBA_CDN_FINAL" or x.get("final_confirmed") is not True:
+        if not isinstance(x, dict) or x.get("source") not in ("NBA_CDN_FINAL","ESPN_FINAL") or x.get("final_confirmed") is not True:
             continue
         if not x.get("source_game_id") or not x.get("team") or not x.get("opponent") or not x.get("player") or not x.get("date"):
             continue
@@ -79,7 +79,7 @@ def final_games(cache):
         values = {t:{stat:sum(float(x[stat]) for x in by_team[t]) for stat in STATS} for t in teams}
         accepted.append({"id":gid,"date":day,"teams":teams,
                          "totals":values,"players_by_team":{t:len(by_team[t]) for t in teams},
-                         "source":"NBA_CDN_FINAL"})
+                         "source":"NBA_CDN_FINAL_OR_ESPN_FINAL"})
     return accepted, dict(sorted(rejected.items()))
 
 def build(cache, schedule, *, frozen_at):
@@ -120,14 +120,14 @@ def build(cache, schedule, *, frozen_at):
                 "last5_team_totals_allowed":{k:round(v,3) for k,v in allowed.items()},
                 "prior_game_ids":[g["id"] for g in last5],
                 "prior_dates":[g["date"] for g in last5],
-                "source":"NBA_CDN_FINAL",
+                "source":"NBA_CDN_FINAL_OR_ESPN_FINAL",
                 "source_observed_in_research_at":frozen_at,
                 "position_adjustment_verified":False,
                 "individual_defender_verified":False,
                 "not_a_modeled_hit_estimate":True}
         future.append(report)
     return {"status":"RESEARCH_TEAM_DEFENSE_NO_POSITION", "captured_at":frozen_at,
-            "source":"NBA_CDN_FINAL", "source_cache_published_at":None,
+            "source":"NBA_CDN_FINAL_OR_ESPN_FINAL", "source_cache_published_at":None,
             "cache_publication_time_verified":False,
             "retroactive_feature_backfill_allowed":False,
             "production_hit_estimate_eligible":False,
