@@ -730,3 +730,25 @@ test("Hit estimate displays only the percentage without a redundant label undern
  assert.ok(!html.includes("TEST · uncalibrated"));
  assert.ok(!html.includes("RESEARCH · NOT CALIBRATED"));
 });
+
+
+test("Public board hides internal diagnostics; opt-in page retains full release verifier",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('<details id="diagnostics" class="stamp" style="display:none;'));
+ assert.ok(html.includes('<summary>Diagnostics</summary>'));
+ assert.ok(html.includes('new URLSearchParams(window.location.search).get("diagnostics")==="1"'));
+ assert.ok(html.includes('if(DIAGNOSTICS_ENABLED)$("diagnostics").style.display="block"'));
+ assert.ok(html.includes('id="verify-app"'));
+ assert.ok(html.includes('id="verify-result"'));
+ assert.ok(html.includes('id="status"'));
+ assert.ok(html.includes('$("verify-app").onclick=async()=>'));
+ // All health warnings and app identities are inside the hidden disclosure.
+ const diagnosticOpen=html.indexOf('<details id="diagnostics"');
+ const diagnosticClose=html.indexOf("</details>",diagnosticOpen);
+ for(const target of ['id="status"','id="app-build"','id="verify-app"','id="verify-result"']){
+   const offset=html.indexOf(target);
+   assert.ok(offset>diagnosticOpen&&offset<diagnosticClose,target+" leaked into public board");
+ }
+ assert.ok(html.indexOf('id="cards"')>diagnosticClose);
+ assert.ok(!html.includes('style="display:block" id="diagnostics"'));
+});
