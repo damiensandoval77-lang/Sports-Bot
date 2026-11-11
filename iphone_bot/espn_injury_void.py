@@ -15,7 +15,7 @@ BASE="https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
 
 def norm(name):
     s=unicodedata.normalize("NFKD",str(name or "")).encode("ascii","ignore").decode().lower()
-    return re.sub("[^a-z]","",re.sub(r"\b(jr|sr|ii|iii|iv)\b\\.?","",s))
+    return re.sub("[^a-z]","",re.sub(r"\b(jr|sr|ii|iii|iv)\b\.?","",s))
 
 def stamp(raw):
     try:
