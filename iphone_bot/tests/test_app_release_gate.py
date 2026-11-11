@@ -15,7 +15,9 @@ def fixture():
         "nba_capture":{"checked_at":STAMP,"status":"CAPTURE_VERIFIED","summary":{"total_standard_markets_without_frozen_model":0}},
         "nba_grading":{"checked_at":STAMP,"status":"ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR",
                        "days":{"2026-11-09":{"pending":0,"captured":756,"accounted_for":756}}},
-        "nfl_grading":{"official_grading_scope":"FROZEN_STANDARD_LINE_ONLY","standard_settled":60,"pending_picks":0}
+        "nfl_grading":{"official_grading_scope":"FROZEN_STANDARD_LINE_ONLY","standard_settled":60,"pending_picks":0},
+        "published_pick_settlement":{"checked_at":STAMP,"status":"READY",
+                                     "counts":{"frozen_picks":120,"graded":30,"pending":90}}
     }
 
 class AppReleaseGateTests(unittest.TestCase):
@@ -46,6 +48,14 @@ class AppReleaseGateTests(unittest.TestCase):
         inp["public_unified_browser"]["NFL"]["rendered"]=0
         r=evaluate(inp,NOW)
         self.assertIn("NFL_BROWSER_MISSING_CARDS",r["checks"]["public_unified_browser"]["issues"])
+    def test_published_pick_pending_final_blocks_app_release(self):
+        inp=fixture()
+        inp["published_pick_settlement"]["status"]="DEGRADED"
+        inp["published_pick_settlement"]["issues"]={"VERIFIED_FINAL_NOT_APPLIED":11}
+        result=evaluate(inp,NOW)
+        self.assertIn("published_pick_settlement",result["blocking_checks"])
+        self.assertFalse(result["release_certified"])
+
     def test_stale_reports_fail_even_if_flagged_ready(self):
         inp=fixture()
         inp["nba_production"]["checked_at"]=(NOW-dt.timedelta(hours=3)).isoformat()

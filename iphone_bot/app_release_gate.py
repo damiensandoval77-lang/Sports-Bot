@@ -78,6 +78,17 @@ def evaluate(inputs, now=None, previous=None):
             if not isinstance(row,dict) or row.get("pending")!=0 or row.get("accounted_for")!=row.get("captured"):
                 errors.append("GRADING_INCOMPLETE:"+str(day))
 
+    # Strictly validate the picks that reached the public app.
+    # Unsupported provider quotes remain separately visible in source
+    # diagnostics, but cannot masquerade as frozen, gradeable picks.
+    saved,errors=check("published_pick_settlement",
+                       inputs.get("published_pick_settlement"),65)
+    if saved.get("status")!="READY":
+        errors.append("PUBLISHED_PICKS_WITH_INVALID_OR_MISSING_SETTLEMENT")
+    counts=saved.get("counts") if isinstance(saved.get("counts"),dict) else {}
+    if not isinstance(counts.get("frozen_picks"),int) or counts["frozen_picks"]<1:
+        errors.append("NO_FROZEN_PICKS_VERIFIED")
+
     # NFL historical health artifact currently has no generated_at stamp.
     # Verify its explicit frozen standard-only contract without pretending
     # to know when its data last refreshed.
@@ -131,6 +142,7 @@ def main():
         "nba_capture":load("tonight_capture_gradeability.json"),
         "nba_grading":load("ai_forecast_coverage_audit.json"),
         "nfl_grading":load("nfl/data/grading_health_2026.json"),
+        "published_pick_settlement":load("dames-picks/published_pick_settlement.json"),
     }
     report=evaluate(inputs,previous=load("dames-picks/app_release_gate.json"))
     target=DOCS/"dames-picks/app_release_gate.json"
