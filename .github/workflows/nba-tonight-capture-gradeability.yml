@@ -43,6 +43,7 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_tonight_capture_gradeability.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_audit_primary_model_missing.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_latest_report_publication.py' -v
       - name: Reconcile every scheduled game against saved quote and prediction artifacts
         if: github.event_name != 'pull_request'
         id: capture
