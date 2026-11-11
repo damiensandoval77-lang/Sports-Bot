@@ -31,6 +31,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Run source, immutable forecast, final-score and calibration unit tests
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s research/tests -p 'test_prospective_matchup_calibration.py' -v
       - name: Compute truthful prospective results or report absence of history
         run: |
