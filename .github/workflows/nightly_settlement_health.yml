@@ -42,6 +42,7 @@ jobs:
           git fetch origin main
           git checkout -B main origin/main
       - name: Test nightly grade status and protected voids
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_nightly_settlement_health.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_nightly_grade_date_audit.py' -v
