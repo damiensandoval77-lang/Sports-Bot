@@ -662,3 +662,18 @@ test("App shows model HIT EST, separates past games and does not misrepresent ca
  assert.ok(!html.includes("pct(p.chance)"));
  assert.ok(!html.includes("history.hits+' hits across '"));
 });
+
+
+test("Live player and scoreboard observations bypass delayed Pages using verified raw Github snapshots",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ for(const name of ["live_player_tracking.json","nba_scoreboard_independent.json",
+                    "nba_player_tracking_independent.json"])
+   assert.ok(html.includes('"'+name+'"'));
+ assert.ok(html.includes("raw.githubusercontent.com/damiensandoval77-lang/Sports-Bot/main/docs/"));
+ assert.ok(html.includes("validLiveJSON"));
+ assert.ok(html.includes("liveStamp(candidate)"));
+ assert.ok(html.includes("next>before"));
+ assert.ok(html.includes("Promise.allSettled(["));
+ assert.ok(html.includes("if(changed)applyLive()"));
+ assert.ok(!html.includes("state.nba=predict("));
+});
