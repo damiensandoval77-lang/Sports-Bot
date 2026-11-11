@@ -97,6 +97,7 @@ function nba(ledger,form){
    chanceSource:"Frozen new-AI model vs original standard line; residual uncertainty; uncalibrated",
    chanceMethod:c.method,chanceDraws:c.draws,chanceCalibrated:c.calibrated,
    opponentAwareVerified:false,
+   matchupEstimate:p.matchup_hit_estimate||null,
    captured:p.captured_at,grade,actual:grade==="GRADED"?n(p.actual):null,
    hit:grade==="GRADED"&&typeof p.direction_hit==="boolean"?p.direction_hit:null,
    gradeSource:grade!=="PENDING"?p.final_source:null,
@@ -272,20 +273,38 @@ root.DamesPicksLineHistory={attachGameLogs,etDay};
    remain separate validation and calibration evidence. Until prospective
    calibration succeeds this is uncalibrated, NOT verified win probability.
    Never reconstruct a missing frozen probability after tipoff. */
+/* A HIT EST is a pregame opponent-conditioned model output, not an observed
+   line hit frequency or generic residual distribution. Missing evidence => —.
+   The browser verifies provenance shape; backtesting/calibration remain separate. */
+const MATCHUP_INPUTS=["opponent_position_defense","projected_minutes",
+ "usage_opportunities","teammate_availability","depth_role","pace_possessions"];
 function hitEstimate(p){
  if(!p||p.quoteOnly||!["MORE","LESS"].includes(p.direction)||
    n(p.line)===null||n(p.projection)===null)return null;
- const chance=n(p.chance);
- if(chance===null||chance<0||chance>1)return null;
- if(p.sport==="NBA"){
-  if(p.chanceMethod!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||
-     p.chanceDraws!==20000||p.chanceCalibrated!==false)return null;
- }else if(p.sport!=="NFL")return null;
- return {rate:chance,source:"Frozen AI model probability for selected "+
-  p.direction+" at original standard "+p.line+" line; uncalibrated",
-  calibrated:false,method:p.chanceMethod||"NFL_FROZEN_MODEL",
-  opponentAwareVerified:p.opponentAwareVerified===true,
-  historicalRateNotUsed:true};
+ const x=p.matchupEstimate;
+ if(!x||x.method!=="PREGAME_MATCHUP_CONDITIONED_V1"||
+    x.research_only!==false||x.opponent_aware_verified!==true||
+    typeof x.model_id!=="string"||!x.model_id||
+    !x.factors||typeof x.factors!=="object")return null;
+ const prob=n(x.modeled_selected_probability);
+ if(prob===null||prob<0||prob>1||
+    n(x.original_line)!==n(p.line)||
+    x.direction!==p.direction)return null;
+ const captured=Date.parse(p.captured),tip=Date.parse(p.start),
+       modelCaptured=Date.parse(x.captured_at);
+ if(!Number.isFinite(captured)||!Number.isFinite(tip)||
+    !Number.isFinite(modelCaptured)||captured>=tip||
+    modelCaptured!==captured)return null;
+ for(const name of MATCHUP_INPUTS){
+  const a=x.factors[name],observed=Date.parse(a?.observed_at);
+  if(!a||typeof a.source!=="string"||!a.source.trim()||
+     !Number.isFinite(observed)||observed>captured||
+     n(a.baseline)===null||n(a.baseline)<=0||
+     n(a.matchup)===null||n(a.matchup)<=0)return null;
+ }
+ return {rate:prob,source:"Verified pregame opponent-conditioned model estimate",
+  calibrated:x.calibrated===true,method:x.method,
+  opponentAwareVerified:true,historicalRateNotUsed:true};
 }
 /* NFL settlement is joined ONLY with full immutable quote identity. */
 function attachNFLGrades(rows,graded){
@@ -537,4 +556,4 @@ root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,displayCurrentPicks,csv,nb
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["feeds.js"]="dp-runtime-20261111-r2";
+globalThis.__damesRunningAssets["feeds.js"]="dp-matchup-20261111-r3";

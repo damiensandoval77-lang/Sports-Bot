@@ -610,42 +610,52 @@ test("Latest saved line is keyed by player, game and stat, never merged with oth
  assert.equal(m.displayCurrentPicks([p,other],now).length,2);
 });
 
-test("Hit Estimate uses ORIGINAL FROZEN MODEL pick-side probability, not raw historical game hit rate",()=>{
- const p={sport:"NBA",player:"Test Player",team:"NYK",gameId:"A @ B",stat:"PTS",
-  line:20.5,projection:24.3,direction:"MORE",quoteOnly:false,chance:.73,
-  chanceMethod:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
+function verifiedMatchupEstimate(p){
+ const factors=Object.fromEntries(["opponent_position_defense","projected_minutes",
+ "usage_opportunities","teammate_availability","depth_role","pace_possessions"]
+ .map(name=>[name,{source:"pregame verified data",observed_at:"2026-11-10T18:00:00Z",
+ baseline:10,matchup:11}]));
+ return {method:"PREGAME_MATCHUP_CONDITIONED_V1",research_only:false,
+  opponent_aware_verified:true,model_id:"research-validated-v1",
+  original_line:p.line,direction:p.direction,
+  modeled_selected_probability:.73,captured_at:p.captured,factors};
+}
+test("HIT EST rejects generic historical residual model even with high odds",()=>{
+ const p={sport:"NBA",line:20.5,projection:24.3,direction:"MORE",quoteOnly:false,
+  chance:.97,chanceMethod:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
   chanceDraws:20000,chanceCalibrated:false,
-  form:{over:1,under:9,push:0,historyGames:10,
-   historySource:"Observed completed games before this pick's game date"}};
- const h=m.hitEstimate(p);
- assert.equal(h.rate,.73);
- assert.equal(h.calibrated,false);
- assert.equal(h.historicalRateNotUsed,true);
- assert.equal(m.hitEstimate({...p,form:{...p.form,over:10,under:0}}).rate,.73,
-  "observed hit counts must NOT replace forecast probability");
- assert.equal(m.hitEstimate({...p,chance:.61}).rate,.61,
-  "original model probability from frozen record controls the estimate");
+  captured:"2026-11-10T20:00:00Z",start:"2026-11-11T01:00:00Z"};
+ assert.equal(m.hitEstimate(p),null);
+ const verified={...p,matchupEstimate:verifiedMatchupEstimate(p)};
+ assert.equal(m.hitEstimate(verified).rate,.73);
+ assert.equal(m.hitEstimate({...verified,form:{over:10,under:0}}).rate,.73);
+ assert.equal(m.hitEstimate({...verified,chance:.22}).rate,.73);
 });
-test("Hit estimate rejects invalid, missing, alternate or undocumented probabilistic source",()=>{
+test("HIT EST requires matching original standard line, pick side and six pretip factors",()=>{
  const p={sport:"NBA",line:21.5,projection:25,direction:"MORE",chance:.71,
-  chanceMethod:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-  chanceDraws:20000,chanceCalibrated:false};
- assert.equal(m.hitEstimate({...p,chance:null}),null);
- assert.equal(m.hitEstimate({...p,chance:1.1}),null);
- assert.equal(m.hitEstimate({...p,projection:null}),null);
- assert.equal(m.hitEstimate({...p,quoteOnly:true}),null);
- assert.equal(m.hitEstimate({...p,chanceMethod:"RAW_HISTORICAL_FREQUENCY"}),null);
- assert.equal(m.hitEstimate({...p,chanceDraws:10000}),null);
- assert.equal(m.hitEstimate({...p,chanceCalibrated:true}),null);
- assert.equal(m.hitEstimate({...p,direction:null}),null);
- assert.equal(m.hitEstimate({...p,sport:"NFL",chanceMethod:"NFL_FROZEN_MODEL"}).rate,.71);
+ captured:"2026-11-10T20:00:00Z",start:"2026-11-11T01:00:00Z"};
+ const x=verifiedMatchupEstimate(p);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:x}).rate,.73);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,original_line:25.5}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,direction:"LESS"}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,research_only:true}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,opponent_aware_verified:false}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,model_id:""}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,captured_at:"2026-11-10T21:00:00Z"}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,modeled_selected_probability:1.5}}),null);
+ for(const name of Object.keys(x.factors)){
+  const factors={...x.factors};delete factors[name];
+  assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,factors}}),null);
+  const future={...x.factors,[name]:{...x.factors[name],observed_at:"2026-11-10T21:00:00Z"}};
+  assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,factors:future}}),null);
+ }
 });
 test("App shows model HIT EST, separates past games and does not misrepresent calibration",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(html.includes("<small>Hit est.</small>"));
  assert.ok(html.includes("<label>HIT EST.</label>"));
  assert.ok(html.includes("m.hitEstimate(p)"));
- assert.ok(html.includes("Frozen model estimate for "));
+ assert.ok(html.includes("Matchup-conditioned estimate for "));
  assert.ok(html.includes("not a calibrated future probability.")||html.includes("Not yet calibrated"));
  assert.ok(!html.includes("SIM EST."));
  assert.ok(!html.includes("Sim est."));
