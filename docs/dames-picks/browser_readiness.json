@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-11-11T03:25:03.019922+00:00",
-  "status": "DEGRADED",
-  "browser_render_verified": false,
+  "checked_at": "2026-11-11T03:35:52.124753+00:00",
+  "status": "READY",
+  "browser_render_verified": true,
   "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
   "app_title": "Dame's Picks \u00b7 NBA + NFL",
   "NBA": {
@@ -9,12 +9,14 @@
     "loaded": true,
     "rows": 697,
     "rendered": 267,
-    "live_expected": 5,
-    "live_missing": 5,
-    "score_missing": 5,
-    "player_missing": 5,
-    "errors": [],
-    "status": "Checked 10:25 PM \u00b7 139 provider standard markets withheld from AI picks \u00b7 2026-11-09 NBA AI-only: 620 graded, 0 pending, 136 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    "live_expected": 4,
+    "live_missing": 0,
+    "score_missing": 0,
+    "player_missing": 0,
+    "errors": [
+      "NBA published picks awaiting verified settlement"
+    ],
+    "status": "Checked 10:35 PM \u00b7 ISSUES: NBA published picks awaiting verified settlement \u00b7 139 provider standard markets withheld from AI picks \u00b7 2026-11-09 NBA AI-only: 620 graded, 0 pending, 136 exclusions \u00b7 Live values show only fresh verified player snapshots"
   },
   "NFL": {
     "selected": "NFL",
@@ -25,14 +27,12 @@
     "live_missing": 0,
     "score_missing": 0,
     "player_missing": 0,
-    "errors": [],
-    "status": "Checked 10:25 PM \u00b7 139 provider standard markets withheld from AI picks \u00b7 2026-11-09 NBA AI-only: 620 graded, 0 pending, 136 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    "errors": [
+      "NBA published picks awaiting verified settlement"
+    ],
+    "status": "Checked 10:35 PM \u00b7 ISSUES: NBA published picks awaiting verified settlement \u00b7 139 provider standard markets withheld from AI picks \u00b7 2026-11-09 NBA AI-only: 620 graded, 0 pending, 136 exclusions \u00b7 Live values show only fresh verified player snapshots"
   },
-  "reasons": [
-    "NBA_STARTED_GAMES_MISSING_LIVE_DATA",
-    "NBA_STARTED_GAMES_MISSING_SCORES",
-    "NBA_STARTED_GAMES_MISSING_PLAYERS"
-  ],
+  "reasons": [],
   "browser_errors": [],
   "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete."
 }
