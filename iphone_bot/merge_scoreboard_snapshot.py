@@ -29,16 +29,19 @@ def select(current,candidate):
     if curdate!=newdate and curdate and newdate:
         if max(newdate)>max(curdate):return candidate
         if max(curdate)>max(newdate):return current
-    a=stamp(current);b=stamp(candidate)
-    if a and b:
-        if b<a:return current
-        if a>b:return candidate
-    elif a and not b:return current
-    elif b and not a:return candidate
+    # Never replace verified source observations with an error or a
+    # schedule-only fallback, even if the fallback has a later attempt time.
+    # A later fresh observation can supersede an earlier one on the same day.
     if current.get("status") in LIVE and candidate.get("status") not in LIVE:
         return current
     if candidate.get("status") in LIVE and current.get("status") not in LIVE:
         return candidate
+    a=stamp(current);b=stamp(candidate)
+    if a and b:
+        if b<a:return current
+        if b>a:return candidate
+    elif a and not b:return current
+    elif b and not a:return candidate
     return current
 
 def main():
