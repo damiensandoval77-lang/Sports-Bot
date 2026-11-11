@@ -20,25 +20,32 @@ jobs:
         run: |
           node --check docs/live-prop-tracker.js
           node --test iphone_bot/tests/test_live_prop_tracker.cjs
-      - name: Verify iPhone site syntax and on-demand game tracker
+      - name: Verify active combined iPhone game tracker and immutable projections
         run: |
           python - <<'PY'
           from pathlib import Path
-          s=Path('docs/index.html').read_text()
-          assert '<script src="./live-prop-tracker.js?v=' in s or '<script src="./live-prop-tracker.js"></script>' in s
-          assert 'id="live-prop-tracker"' in s
-          assert 'id="live-prop-cards"' in s
-          assert 'refreshSelectedLiveTracker().catch(()=>{})' in s
-          assert 'const filtered=board.filter' in s and 'upcomingAIProps(ai)' in s
+          import re
+          redirect=Path('docs/index.html').read_text()
+          app=Path('docs/dames-picks/index.html').read_text()
+          live=Path('docs/dames-picks/live_direct.js').read_text()
+          model=Path('docs/dames-picks/feeds.js').read_text()
+          assert 'url=./dames-picks/' in redirect
+          assert 'data-view="tracker"' in app
+          assert 'data-game=' in app and 'renderGameDetail()' in app
+          assert 'L.fetchNBA()' in app
+          assert 'getJSON("live_player_tracking.json")' in app
+          assert 'setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000)' in app
+          assert 'next>before' in app
+          assert 'summary?event=' in live
+          assert 'projection:null,direction:null,chance:null' in model
           assert 'isFrozenForecast' in Path('docs/live-prop-tracker.js').read_text()
-          assert 'summaryGameMatch' in Path('docs/live-prop-tracker.js').read_text()
-          assert 'LivePropTracker' in s
-          assert 'return {...p,board_generated_at:' not in s
-          print('Tracker shown only after game click; pregame-only AI Board preserved.')
-          script=s.split('<script>',1)[-1].split('</script>',1)[0]
-          Path('/tmp/nba-game-click-inline.js').write_text(script)
+          scripts=re.findall(r'<script>(.*?)</script>',app,re.S)
+          assert scripts
+          Path('/tmp/nba-game-click-inline.js').write_text(scripts[-1])
+          print('Current unified iPhone view has game drill-down, 30s ESPN live refresh, and quote-only without fake projections')
           PY
           node --check /tmp/nba-game-click-inline.js
+          node --check docs/dames-picks/live_direct.js
       - name: No sportsbook API calls or rewritten pregame projections
         run: |
           python - <<'PY'
@@ -46,6 +53,6 @@ jobs:
           js=Path('docs/live-prop-tracker.js').read_text()
           assert 'ODDS_API_KEY' not in js
           assert 'fetch(' not in js
-          assert 'summary?event=' in Path('docs/index.html').read_text()
+          assert 'summary?event=' in Path('docs/dames-picks/live_direct.js').read_text()
           print('ESPN read-only box score, existing immutable AI forecast.')
           PY
