@@ -410,3 +410,49 @@ test("Merged dashboard shows independently verified pick-settlement health, not 
  assert.ok(!html.includes('errors.push("NBA capture incomplete")'));
  assert.ok(html.includes('Official DNP verified · void'));
 });
+
+
+test("Fresh verified NBA scoreboard scores join live cards without inventing player totals",()=>{
+ const now=Date.parse("2026-11-11T00:55:00Z");
+ const game="Milwaukee Bucks @ New York Knicks";
+ const schedule={dates_eastern:["2026-11-10"],
+   games:[{id:"0022600211",game,date_eastern:"2026-11-10",
+           start:"2026-11-11T00:30:00Z",away:"Milwaukee Bucks",home:"New York Knicks"}]};
+ const scores={generated_at:"2026-11-11T00:50:00Z",is_live_score_source:true,
+   games:[{id:"0022600211",game,game_state:"in",away_score:42,home_score:47}]};
+ const games=m.gameCatalog({games:[]},{games:[]},schedule,null,now,scores);
+ const observed=games.find(g=>g.game===game);
+ assert.equal(observed.awayScore,42);
+ assert.equal(observed.homeScore,47);
+ assert.equal(observed.state,"in");
+ assert.equal(observed.scoreFresh,true);
+ assert.equal(observed.fresh,false);
+ assert.equal(observed.players.length,0);
+});
+test("Old or mismatched NBA score source cannot pose as live matchup",()=>{
+ const now=Date.parse("2026-11-11T00:55:00Z");
+ const game="Milwaukee Bucks @ New York Knicks";
+ const schedule={dates_eastern:["2026-11-10"],
+   games:[{id:"0022600211",game,date_eastern:"2026-11-10",
+           start:"2026-11-11T00:30:00Z"}]};
+ const stale={generated_at:"2026-11-10T17:00:00Z",is_live_score_source:true,
+   games:[{id:"0022600211",game,game_state:"in",away_score:42,home_score:47}]};
+ const old=m.gameCatalog({games:[]},{games:[]},schedule,null,now,stale)[0];
+ assert.equal(old.awayScore,null);
+ assert.equal(old.homeScore,null);
+ const wrong={...stale,generated_at:"2026-11-11T00:54:00Z",
+   games:[{id:"0022600211",game:"Other @ Other",game_state:"in",
+           away_score:60,home_score:60}]};
+ const mismatch=m.gameCatalog({games:[]},{games:[]},schedule,null,now,wrong)[0];
+ assert.equal(mismatch.awayScore,null);
+ const pre={...stale,generated_at:"2026-11-11T00:54:00Z",
+   games:[{id:"0022600211",game,game_state:"pre",away_score:0,home_score:0}]};
+ const pregame=m.gameCatalog({games:[]},{games:[]},schedule,null,now,pre)[0];
+ assert.equal(pregame.state,"unknown");
+ assert.equal(pregame.awayScore,null);
+});
+test("Merged app loads separate official score and player feeds",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('getJSON("nba_scoreboard_independent.json")'));
+ assert.ok(html.includes('Date.now(),nbaScores.status==="fulfilled"?nbaScores.value:null'));
+});
