@@ -719,9 +719,9 @@ test("Matchup probability preview attaches to exact original standard line witho
  const fakeCalibration={...feed,records:[{...row,estimated_hit_chance:{...row.estimated_hit_chance,calibrated:true}}]};
  assert.equal(m.attachMatchupPreview(cards,fakeCalibration,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
 });
-test("Research preview uses clean Matchup model label on card and detail and has exact source feed",()=>{
+test("Hit estimate displays only the percentage without a redundant label underneath",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
- assert.ok(html.includes("<small>Matchup model</small>"));
+ assert.ok(!html.includes("<small>Matchup model</small>"));
  assert.ok(html.includes("Accuracy and probability calibration are being tracked prospectively"));
  assert.ok(html.includes("getMatchupResearch()"));
  assert.ok(html.includes("attachMatchupPreview"));
