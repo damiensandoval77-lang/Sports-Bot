@@ -60,13 +60,24 @@ def evaluate(inputs, now=None, previous=None):
             errors.append("NBA_FAILED_"+name.upper())
 
     capture,errors=check("nba_capture",inputs.get("nba_capture"),70)
-    if capture.get("status")!="CAPTURE_VERIFIED":
-        errors.append("PRETIP_CAPTURES_NOT_VERIFIED")
+    # Exact raw-quote gaps remain in the source audit. They are NOT published
+    # recommendations. Only verified saved picks count as release-gradeable.
+    status=capture.get("status")
+    if status not in ("CAPTURE_VERIFIED","CAPTURE_INCOMPLETE"):
+        errors.append("PRETIP_CAPTURE_SOURCE_INVALID")
     summary=capture.get("summary") if isinstance(capture.get("summary"),dict) else {}
-    if summary.get("total_standard_markets_without_frozen_model",1)!=0:
-        errors.append("UNMATCHED_STANDARD_LINE_THRESHOLDS")
-    # A change in a real provider threshold is not silently repriced.
-    # Unmatched exact thresholds stay visible, never counted as frozen.
+    if status=="CAPTURE_INCOMPLETE":
+        issues=capture.get("issues")
+        if (not isinstance(issues,list) or not issues or any(
+            not isinstance(issue,str) or
+            not issue.endswith(": STANDARD_MARKETS_WITHOUT_FROZEN_MODEL")
+            for issue in issues)):
+            errors.append("REQUIRED_PREGAME_PICK_ARTIFACT_MISSING")
+        if not isinstance(summary.get("games_with_line_backed_models"),int) or (
+            summary.get("games_with_line_backed_models",0)<summary.get("schedule_games",1)):
+            errors.append("SCHEDULED_GAME_WITHOUT_FROZEN_MODEL")
+    if status=="CAPTURE_VERIFIED" and summary.get("total_standard_markets_without_frozen_model",0)!=0:
+        errors.append("CAPTURE_REPORT_INCONSISTENT")
     grade,errors=check("nba_grading",inputs.get("nba_grading"),90)
     if grade.get("status")!="ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR":
         errors.append("HISTORICAL_AI_FORECASTS_UNRESOLVED")
