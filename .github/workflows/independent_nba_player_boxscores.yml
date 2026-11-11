@@ -35,6 +35,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Validate player boxscore source and failure handling
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_nba_player_boxscores.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_nba_player_boxscore_publish.py' -v
