@@ -46,12 +46,20 @@ def assess(schedule,archive,ledger,now=None):
     finals={identity(x):x for x in ledger.get("records",[])
             if x.get("status") in {"GRADED","EXCLUDED_VERIFIED_DNP","EXCLUDED_VERIFIED_NONPARTICIPANT"}
             and x.get("source_game_id") and x.get("final_source")}
+    # Persist overdue checks for every game with an archived pretip AI
+    # forecast, even after it ages out of the ordinary 48h game window.
+    # Otherwise a missing final quietly becomes a false green two days later.
+    archived_games={p.get("game") for p in archive.get("predictions",[])
+                    if isinstance(p,dict) and p.get("is_pregame_prediction") is True
+                    and p.get("line") is None and p.get("game")}
     scoped={}
     for g in schedule.get("games",[]):
         if not isinstance(g,dict) or not g.get("game") or not g.get("date_eastern"):
             continue
         start=timestamp(g.get("start"))
-        if not start or start>now-MAX_DELAY or (now-start).total_seconds()>2*86400:
+        if not start or start>now-MAX_DELAY:
+            continue
+        if (now-start).total_seconds()>2*86400 and g["game"] not in archived_games:
             continue
         if start.astimezone(ET).date().isoformat()!=g["date_eastern"]:
             continue
@@ -87,7 +95,9 @@ def assess(schedule,archive,ledger,now=None):
         report["games"].append(row)
         if unresolved:
             report["issues"].append(game+": "+str(len(unresolved))+" FORECASTS_OVERDUE_FINAL_VERIFICATION")
-    report["totals"]={"overdue_game_count":len(report["games"]),
+    report["totals"]={
+        "scanned_game_count":len(report["games"]),
+        "overdue_game_count":sum(x["overdue_unresolved"]>0 for x in report["games"]),
         "overdue_forecasts":sum(x["overdue_unresolved"] for x in report["games"]),
         "settled_forecasts":sum(x["settled_verified"] for x in report["games"])}
     if report["issues"]:
