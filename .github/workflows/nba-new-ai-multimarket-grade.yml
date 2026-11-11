@@ -39,9 +39,15 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify first pretip snapshot stays immutable
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
+      - name: Void only confirmed ESPN final nonparticipants on official injury list
+        if: github.event_name != 'pull_request'
+        run: |
+          python -m iphone_bot.espn_injury_void
+          cp docs/espn_injury_void_ledger.json "$RUNNER_TEMP/espn-voids.json"
       - name: Grade only frozen new-model forecasts against verified final NBA boxes
         if: github.event_name != 'pull_request'
         run: python -m iphone_bot.multimarket_forecast_ledger
@@ -55,13 +61,15 @@ jobs:
           for i in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
+            # Single writer of ESPN injury void evidence; preserve concurrent grades.
+            cp "$RUNNER_TEMP/espn-voids.json" docs/espn_injury_void_ledger.json
             # Merge any original locks and verified grades published while this job ran.
             python -m iphone_bot.merge_new_ai_publishing \
               --current docs/lagged_matchup_all_market_ledger.json \
               --incoming "$RUNNER_TEMP/new-ai-ledger.json" \
               --finals docs/ai_forecast_actual_ledger.json \
               --output docs/lagged_matchup_all_market_ledger.json
-            git add docs/lagged_matchup_all_market_ledger.json
+            git add docs/lagged_matchup_all_market_ledger.json docs/espn_injury_void_ledger.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Grade frozen four-market New AI forecasts from actual NBA final stats'
             if git push origin HEAD:main; then exit 0; fi
