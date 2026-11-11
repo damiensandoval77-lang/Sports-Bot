@@ -22,6 +22,19 @@ def assess(nba,nfl,errors, *, app_title, url=URL, now=None):
         if not obs.get("loaded"):reasons.append(sport+"_DATA_NOT_LOADED")
         if obs.get("rows",0)<1:reasons.append(sport+"_NO_SAVED_RECORDS")
         if obs.get("rows",0)>0 and obs.get("rendered",0)<1:reasons.append(sport+"_NO_RENDERED_PICK_CARDS")
+        # A historical-card-only browser success is not a working LIVE app.
+        # The current schedule determines whether a game should have scores
+        # and players. A 15-minute tipoff grace permits provider delay.
+        expected=obs.get("live_expected")
+        if not isinstance(expected,int) or expected<0:
+            reasons.append(sport+"_LIVE_COVERAGE_NOT_TESTED")
+        elif expected>0:
+            if obs.get("live_missing",0)>0:
+                reasons.append(sport+"_STARTED_GAMES_MISSING_LIVE_DATA")
+            if obs.get("score_missing",0)>0:
+                reasons.append(sport+"_STARTED_GAMES_MISSING_SCORES")
+            if obs.get("player_missing",0)>0:
+                reasons.append(sport+"_STARTED_GAMES_MISSING_PLAYERS")
         # A partially loaded NFL export can still leave many visible cards.
         # The site's own warning must not be masked by a nonzero card count.
         observed_errors=obs.get("errors") or []
@@ -64,6 +77,27 @@ def probe():
                   loaded:!!state.updated && !state.loading,
                   rows:sport==="NBA"?state.nba.length:state.nfl.length,
                   rendered:document.querySelectorAll('#cards .pick').length,
+                  ...(() => {
+                    // Catch live feed failures the archived tracker used to
+                    // hide. Only require data for this league's matchups
+                    // 15 minutes–4 hours after scheduled tipoff; no guesses.
+                    const now=Date.now(), active=(sport==="NBA"?state.liveGames:state.liveGames)
+                      .filter(g=>g.sport===sport && (
+                        g.state==="in" || (
+                          Number.isFinite(Date.parse(g.start)) &&
+                          now-Date.parse(g.start)>=15*60000 &&
+                          now-Date.parse(g.start)<=4*3600000 &&
+                          g.state!=="final"
+                        )
+                      ));
+                    return {
+                      live_expected:active.length,
+                      live_missing:active.filter(g=>!g.fresh ||
+                        !g.observedAt || g.state==="unknown" || g.state==="stale").length,
+                      score_missing:active.filter(g=>g.awayScore==null || g.homeScore==null).length,
+                      player_missing:active.filter(g=>!Array.isArray(g.players)||g.players.length===0).length
+                    };
+                  })(),
                   errors:state.errors.slice(0,12),
                   status:document.querySelector('#status')?.textContent?.slice(0,250)
                 })""",sport)
