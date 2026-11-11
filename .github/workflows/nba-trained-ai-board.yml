@@ -110,6 +110,8 @@ jobs:
       - name: Train original opponent-aware model for same combined projection
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Download verified current-season NBA player games
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       - name: Refresh official NBA injury statuses before producing AI projections
         run: |
