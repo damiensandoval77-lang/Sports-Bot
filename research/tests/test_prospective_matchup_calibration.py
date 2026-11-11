@@ -71,6 +71,26 @@ class ProspectiveTests(unittest.TestCase):
         self.assertEqual(result["paired_final_grades"],0)
         self.assertEqual(result["exclusions"]["awaiting_independently_verified_final_grade"],1)
 
+    def test_multiple_pregame_refreshes_count_as_one_resolved_outcome(self):
+        s,l=source()
+        archive,_=add(None,s)
+        later=copy.deepcopy(s)
+        later["captured_at"]="2026-11-11T02:08:00Z"
+        later["records"][0]["captured_at"]="2026-11-11T02:05:00Z"
+        later["records"][0]["estimated_hit_chance"]["modeled_selected_probability"]=.91
+        archive,added=add(archive,later)
+        self.assertEqual(added,1)
+        self.assertEqual(len(archive["forecasts"]),2)
+        result=report(archive,l,checked_at=AFTER)
+        self.assertEqual(result["paired_final_grades"],1)
+        self.assertEqual(result["total"]["brier"],round((.62-1)**2,5))
+        self.assertEqual(result["exclusions"]["repeated_model_snapshot_same_outcome"],1)
+        self.assertTrue(result["unique_outcome_policy"].startswith("ONE_EARLIEST"))
+        # Archive insertion order cannot select a later, better probability.
+        archive["forecasts"].reverse()
+        reversed_result=report(archive,l,checked_at=AFTER)
+        self.assertEqual(reversed_result["total"]["brier"],result["total"]["brier"])
+
     def test_wrong_line_cannot_be_paired(self):
         s,l=source();l["records"][0]["line"]=22.5
         a,_=add(None,s)
