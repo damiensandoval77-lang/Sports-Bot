@@ -23,6 +23,11 @@ def verify():
             page.goto(URL,wait_until="domcontentloaded",timeout=45000)
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",
                                    timeout=60000)
+            # Explicitly switch to NBA Board through the same touch controls
+            # the phone user uses; another tab can persist across refreshes.
+            page.locator('[data-league="NBA"]').click()
+            page.locator('[data-view="board"]').click()
+            page.wait_for_function("() => !state.loading && !state.league.includes('NFL')",timeout=15000)
             result=page.evaluate("""() => {
               const previewRows=state.nba.filter(x=>x.matchupPreview);
               const upcoming=shown().filter(x=>x.matchupPreview);
@@ -37,7 +42,21 @@ def verify():
                 noCertifiedHitChance:upcoming.length?m.hitEstimate(upcoming[0])===null:null};
             }""")
             if result["visiblePreviewCards"]>0:
-                page.locator("#cards [data-id]").filter(has_text="Matchup model").first.click()
+                # Capture DOM state before touching a card so stale or
+                # non-rendered snapshots fail with useful evidence.
+                result["renderedCardCount"]=page.locator("#cards button[data-id]").count()
+                result["renderedCardExcerpt"]=page.locator("#cards").inner_text()[:400]
+                page.evaluate("""() => {
+                  const picked=shown().find(x=>x.matchupPreview);
+                  if(!picked)throw Error('NO_MATCHUP_PREVIEW_ROW');
+                  const id=m.key(picked);
+                  const card=[...document.querySelectorAll('#cards button[data-id]')]
+                    .find(button=>button.dataset.id===id);
+                  if(!card)throw Error('MODEL_PREVIEW_NOT_VISIBLE_ON_CARD');
+                  if(!card.innerText.includes('Matchup model'))
+                    throw Error('MATCHUP_LABEL_NOT_VISIBLE_ON_CARD');
+                  card.click();
+                }""")
                 result["detailResearchLabel"]=page.locator("#detail-content").inner_text().find("Matchup model")>=0
                 result["detailExplainsUncertainty"]="accuracy and probability calibration are being tracked prospectively" in page.locator("#detail-content").inner_text().lower()
                 page.screenshot(path="public-matchup-preview-iphone-width.png")
