@@ -158,5 +158,5 @@ root.DamesPicksLive={etDate,matchup,playerRows,build,fetchNBA,mergeFeeds,mergeSc
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
-window.__damesRunningAssets=window.__damesRunningAssets||Object.create(null);
-window.__damesRunningAssets["live_direct.js"]="dp-runtime-20261111-r2";
+globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
+globalThis.__damesRunningAssets["live_direct.js"]="dp-runtime-20261111-r2";
