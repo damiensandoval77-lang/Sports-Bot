@@ -98,7 +98,7 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
     valid_new=accepted & valid
     merged=[r for r in merged if r["source_game_id"] not in accepted or
             r["source_game_id"] in valid_new]
-    return {"status":"RESEARCH_OFFICIAL_NBA_FINAL_BOX_BACKFILL",
+    return {"version":1,"status":"RESEARCH_OFFICIAL_NBA_FINAL_BOX_BACKFILL",
             "captured_at":now.isoformat(),"source":"NBA_CDN_FINAL",
             "season_schedule_source":season["source_url"],
             "requested_games":len(targets),
