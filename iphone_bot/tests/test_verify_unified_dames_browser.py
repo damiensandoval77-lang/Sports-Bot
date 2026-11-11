@@ -60,4 +60,12 @@ class UnifiedBrowserAssessmentTests(unittest.TestCase):
                       {"selected":"NFL","loaded":True,"rows":1,"rendered":1,"live_expected":0},["Cannot read properties of null"],
                       app_title="Dame's Picks · NBA + NFL")
         self.assertIn("UNHANDLED_JS_ERRORS",result["reasons"])
+    def test_probe_waits_for_completed_browser_direct_refresh_before_assessment(self):
+        from pathlib import Path
+        source=(Path(__file__).resolve().parents[1] / "verify_unified_dames_browser.py").read_text()
+        self.assertIn("await liveTick(true)",source)
+        self.assertIn("page.wait_for_function(\"() => !state.liveBusy\"",source)
+        self.assertLess(source.index("await liveTick(true)"),source.index("for sport in (\"NBA\",\"NFL\")"))
+        self.assertIn('report["browser_direct_probe"]=direct',source)
+
 if __name__=="__main__":unittest.main()
