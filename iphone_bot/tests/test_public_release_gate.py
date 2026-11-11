@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from scripts.verify_public_dames_release import FILES,inspect,evaluate
+from scripts.verify_public_dames_release import FILES,inspect,evaluate,git_blob_digest,validate_manifest
 
 
 class PublicReleaseGateTest(unittest.TestCase):
@@ -9,8 +9,21 @@ class PublicReleaseGateTest(unittest.TestCase):
         html=b'<meta name="dames-release" content="dp-hit-est-20261111-r1"> Hit est. HIT EST.'
         data={name:b"verified asset" for name in FILES}
         data["index.html"]=html
-        data["release.json"]=json.dumps({"release_id":"dp-hit-est-20261111-r1"}).encode()
+        data["release.json"]=json.dumps({
+            "release_id":"dp-hit-est-20261111-r1",
+            "asset_blob_sha1":{p:git_blob_digest(data[p]) for p in FILES if p!="release.json"}
+        }).encode()
         return data
+
+    def test_current_local_manifest_pins_all_exact_source_files(self):
+        local=self.files()
+        self.assertEqual(validate_manifest(local),[])
+
+    def test_manifests_must_change_with_updated_ui(self):
+        local=self.files()
+        local["index.html"]=local["index.html"]+b" updated"
+        self.assertIn("index.html: LOCAL_MANIFEST_FILE_HASH_MISMATCH",
+                      validate_manifest(local))
 
     def test_current_public_bytes_are_verified(self):
         local=self.files()
