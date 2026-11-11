@@ -382,3 +382,21 @@ test("Unified top-picks board excludes quote-only records without a frozen model
  assert.ok(html.includes('state.mode==="tracker"'));
  assert.ok(html.includes('No sample data is substituted'));
 });
+
+
+test("Official verified DNP is a VOID, never an unresolved NBA pending or lost pick",()=>{
+ const final={...pt,grade:"EXCLUDED_VERIFIED_DNP",actual:null,direction_hit:null,
+    final_source:"VERIFIED_FINAL_BOXSCORE_DNP_CROSSCHECKED"};
+ const rows=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[final]},{players:[]});
+ assert.equal(rows.length,1);
+ assert.equal(rows[0].grade,"EXCLUDED_VERIFIED_DNP");
+ assert.equal(rows[0].hit,null);
+ assert.equal(rows[0].actual,null);
+ const summary=m.summarize(rows,null,Date.parse("2026-11-11T06:00:00Z"));
+ assert.equal(summary.pending,0);
+ assert.equal(summary.graded,0);
+ assert.equal(summary.hitRate,null);
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('"DNP · VOID"'));
+ assert.ok(html.includes('"VERIFIED DNP · VOID"'));
+});
