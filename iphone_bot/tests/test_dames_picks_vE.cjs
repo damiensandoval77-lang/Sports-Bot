@@ -400,3 +400,13 @@ test("Official verified DNP is a VOID, never an unresolved NBA pending or lost p
  assert.ok(html.includes('"DNP · VOID"'));
  assert.ok(html.includes('"VERIFIED DNP · VOID"'));
 });
+
+
+test("Merged dashboard shows independently verified pick-settlement health, not every quote as a failed pick",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('getJSON("dames-picks/published_pick_settlement.json")'));
+ assert.ok(html.includes('NBA published picks awaiting verified settlement'));
+ assert.ok(html.includes('provider standard markets withheld from AI picks'));
+ assert.ok(!html.includes('errors.push("NBA capture incomplete")'));
+ assert.ok(html.includes('Official DNP verified · void'));
+});
