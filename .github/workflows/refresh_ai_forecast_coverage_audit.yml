@@ -31,6 +31,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate frozen pretip audit never changes grades
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_audit_ai_forecast_coverage.py' -v
       - name: Reconcile permanent verified finals and exclusions for each saved date
         id: audit
