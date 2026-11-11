@@ -92,7 +92,7 @@ class ReconciliationTests(unittest.TestCase):
         v[3].update(graded=0,ungraded=1)
         result=audit(v,"2026-11-11T02:00:00Z")
         self.assertEqual(result["ai_only"]["overdue"],0)
-        self.assertEqual(result["status"],"READY")
+        self.assertEqual(result["status"],"AWAITING_VERIFIED_FINALS")
         self.assertEqual(result["ai_only"]["unresolved"],1)
         # This is a pending/awaiting state, never an all-graded claim.
 if __name__=="__main__":unittest.main()
