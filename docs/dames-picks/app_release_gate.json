@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-11T16:53:47.151427+00:00",
+  "checked_at": "2026-11-11T17:54:01.427791+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -8,7 +8,6 @@
   "required_consecutive_hours": 72,
   "blocking_checks": [
     "unified_artifacts",
-    "public_unified_browser",
     "nba_production",
     "nba_capture",
     "nba_grading",
@@ -23,10 +22,8 @@
       ]
     },
     "public_unified_browser": {
-      "state": "DEGRADED",
-      "issues": [
-        "MISSING_OR_STALE_REPORT"
-      ]
+      "state": "READY",
+      "issues": []
     },
     "nba_production": {
       "state": "DEGRADED",
@@ -42,7 +39,6 @@
     "nba_capture": {
       "state": "DEGRADED",
       "issues": [
-        "MISSING_OR_STALE_REPORT",
         "REQUIRED_PREGAME_PICK_ARTIFACT_MISSING",
         "SCHEDULED_GAME_WITHOUT_FROZEN_MODEL"
       ]
