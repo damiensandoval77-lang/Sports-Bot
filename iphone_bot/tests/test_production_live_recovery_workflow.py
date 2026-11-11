@@ -19,6 +19,15 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
         self.assertLess(b,c)
         self.assertIn("--incoming \"$RUNNER_TEMP/nba_player_tracking_independent.json\"",text)
         self.assertNotIn("merge_nba_player_boxscore_publish \\\\",text)
+    def test_paid_watchdog_never_exceeds_six_real_daily_runs(self):
+        text=(ROOT/".github/workflows/production_readiness.yml").read_text()
+        self.assertIn('if [ "$workflow" = "nba-prizepicks-full-slate.yml" ]; then',text)
+        self.assertIn('history=$(gh run list --workflow "$workflow" --limit 100',text)
+        self.assertIn('if [ "$used" -ge 6 ]; then',text)
+        self.assertIn('Cannot verify paid refresh budget; skipping paid recovery',text)
+        self.assertIn('independent_scoreboard_refresh.yml) cooldown_minutes=18',text)
+        self.assertIn('independent_nba_player_boxscores.yml) cooldown_minutes=12',text)
+
     def test_source_is_free_and_existing_safeguards_still_run(self):
         text=(ROOT/".github/workflows/production_readiness.yml").read_text()
         self.assertIn("python -m iphone_bot.merge_scoreboard_snapshot",text)
