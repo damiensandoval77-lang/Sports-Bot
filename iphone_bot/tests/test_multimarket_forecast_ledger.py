@@ -69,6 +69,54 @@ class ImmutableMarketsTests(unittest.TestCase):
         p=prediction(capture="2026-11-10T00:01:00Z")
         self.assertEqual(merge({},feed(p),{})["records"],[])
 
+    def test_verified_dnp_is_excluded_not_pending_or_loss(self):
+        first=prediction()
+        later=prediction(capture="2026-11-09T22:00:00Z")
+        later["line"]=35.5
+        later["market_updated"]="2026-11-09T21:00:00Z"
+        saved=merge({},feed(first,later),{})
+        dnp={"records":[{"status":"EXCLUDED_VERIFIED_DNP",
+            "player_id":"123","team":"BOS","game":first["game"],
+            "start":first["start"],"stat":"PRA","actual":None,
+            "final_source":"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
+            "verified_dnp_reason":"INACTIVE_CROSSCHECKED",
+            "source_game_id":"0022600999"}]}
+        settled=merge(saved,{},dnp)
+        self.assertEqual(settled["new_verified_dnp_exclusions"],2)
+        self.assertEqual(settled["market_metrics"]["PRA"]["pending"],0)
+        self.assertEqual(settled["market_metrics"]["PRA"]["graded"],0)
+        self.assertEqual(settled["market_metrics"]["PRA"]["verified_dnp_excluded"],2)
+        self.assertTrue(all(x["grade"]=="EXCLUDED_VERIFIED_DNP" and
+                            x["actual"] is None and x["direction_hit"] is None
+                            for x in settled["records"]))
+        self.assertEqual(merge(settled,{},dnp)["new_verified_dnp_exclusions"],0)
+
+    def test_unverified_dnp_cannot_change_a_pick(self):
+        p=prediction()
+        saved=merge({},feed(p),{})
+        fake={"records":[{"status":"EXCLUDED_VERIFIED_DNP",
+             "player_id":"123","team":"BOS","game":p["game"],
+             "start":p["start"],"stat":"PRA",
+             "final_source":"UNCONFIRMED","source_game_id":"1",
+             "verified_dnp_reason":"claim","actual":None}]}
+        out=merge(saved,{},fake)
+        self.assertEqual(out["records"][0]["grade"],"PENDING")
+        self.assertEqual(out["market_metrics"]["PRA"]["pending"],1)
+
+    def test_verified_dnp_and_scored_final_disagree_so_do_not_settle(self):
+        p=prediction()
+        saved=merge({},feed(p),{})
+        common={"player_id":"123","team":"BOS","game":p["game"],
+                "start":p["start"],"stat":"PRA","source_game_id":"0022600999"}
+        contradictory={"records":[
+             {**common,"status":"EXCLUDED_VERIFIED_DNP","actual":None,
+              "final_source":"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
+              "verified_dnp_reason":"INACTIVE"},
+             {**common,"status":"GRADED","actual":30,
+              "final_source":"NBA_CDN_FINAL"}]}
+        out=merge(saved,{},contradictory)
+        self.assertEqual(out["records"][0]["grade"],"PENDING")
+
     def test_unknown_box_source_cannot_grade(self):
         initial=merge({},feed(prediction()),{})
         final={"records":[{"status":"GRADED","player_id":"123","team":"BOS",
