@@ -26,7 +26,19 @@ def check():
                 assert response and response.status==200, "Version E HTTP 200 missing"
                 page.wait_for_function("() => document.querySelector('#status').textContent.includes('Checked')",timeout=30000)
                 page.locator('[data-view="tracker"]').click()
-                page.locator(".pick").first.wait_for(timeout=15000)
+                try:
+                    page.locator(".pick").first.wait_for(timeout=15000)
+                except Exception:
+                    details=page.evaluate("""() => ({
+                        status:document.querySelector('#status')?.textContent,
+                        view:state.mode,
+                        now:new Date().toISOString(),
+                        nowEastern:new Date().toLocaleString('en-US',{timeZone:'America/New_York'}),
+                        nbaCount:state.nba.length,
+                        sample:state.nba.slice(0,3).map(p=>({player:p.player,start:p.start,captured:p.captured,stat:p.stat})),
+                        currentCount:m.displayCurrentPicks(state.nba,Date.now(),true).length
+                    })""")
+                    raise AssertionError(f"NBA tracker rendered zero current slate cards: {details}; page errors={errors[:5]}")
                 nba_count=page.locator(".pick").count()
                 assert nba_count>0,"No NBA tracker cards from published frozen ledger"
                 page.locator(".pick").first.click()
