@@ -66,6 +66,31 @@ class OverdueGradeChecks(unittest.TestCase):
         self.assertEqual(assess(season,A,F,now=NOW)["status"],
                          "OVERDUE_MONITOR_SOURCE_ERROR")
 
+    def test_archived_unsettled_forecast_never_ages_out_at_48_hours(self):
+        five_days_later=NOW+dt.timedelta(days=5)
+        ungraded=assess(S,A,F,now=five_days_later)
+        self.assertEqual(ungraded["status"],"OVERDUE_UNGRADED")
+        self.assertEqual(ungraded["totals"]["scanned_game_count"],1)
+        self.assertEqual(ungraded["totals"]["overdue_game_count"],1)
+        self.assertEqual(ungraded["totals"]["overdue_forecasts"],1)
+        verified={**P,"status":"GRADED","actual":19,
+                  "final_source":"NBA_CDN_FINAL","source_game_id":"0022600204"}
+        completed=assess(S,A,{"records":[verified]},now=five_days_later)
+        self.assertEqual(completed["status"],"NO_OVERDUE_PENDING")
+        self.assertEqual(completed["totals"]["overdue_game_count"],0)
+
+    def test_scanned_games_are_not_mislabeled_all_overdue(self):
+        second={"game":"New York Knicks @ Boston Celtics",
+                "date_eastern":"2026-11-09","start":START}
+        schedule={**S,"games":[S["games"][0],second]}
+        archived={**A,"predictions":[P,{**P,"game":second["game"],"player_id":"456"}]}
+        verified={**P,"status":"GRADED","actual":19,
+                  "final_source":"NBA_CDN_FINAL","source_game_id":"0022600204"}
+        status=assess(schedule,archived,{"records":[verified]},now=NOW)
+        self.assertEqual(status["totals"]["scanned_game_count"],2)
+        self.assertEqual(status["totals"]["overdue_game_count"],1)
+        self.assertEqual(status["totals"]["overdue_forecasts"],1)
+
     def test_missing_schedule_or_missing_archive_causes_visible_failure(self):
         self.assertEqual(assess({**S,"coverage_complete":False},A,F,NOW)["status"],
                          "OVERDUE_MONITOR_SOURCE_ERROR")
