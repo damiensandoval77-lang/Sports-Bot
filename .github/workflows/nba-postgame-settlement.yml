@@ -96,6 +96,8 @@ jobs:
           print('Stored pregame predictions:',len(rows))
           PY
       - name: Fetch latest 2026-27 completed player logs when available
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python -u iphone_bot/fetch_current_form.py || echo 'Current player CSV unavailable: final NBA/ESPN boxscores remain required for eligible games'
       - name: Fetch final NBA or ESPN player box scores for pending matchups
