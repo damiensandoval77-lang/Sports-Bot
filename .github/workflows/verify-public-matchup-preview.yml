@@ -1,0 +1,41 @@
+name: Verify real public mobile matchup estimates are visible
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/verify_public_matchup_preview.py'
+      - '.github/workflows/verify-public-matchup-preview.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/verify_public_matchup_preview.py'
+      - '.github/workflows/verify-public-matchup-preview.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '52 16,21 * * *'
+permissions:
+  contents: read
+jobs:
+  mobile-public:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install mobile Chromium
+        run: |
+          python -m pip install --disable-pip-version-check 'playwright==1.56.0'
+          python -m playwright install --with-deps chromium
+      - name: Verify actual deployed r5 research probabilities and explicit uncertainty labels
+        run: python -m iphone_bot.verify_public_matchup_preview
+      - name: Preserve browser proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-matchup-preview-mobile-evidence
+          path: |
+            public-matchup-preview-browser.json
+            public-matchup-preview-iphone-width.png
+          if-no-files-found: warn
+          retention-days: 14
