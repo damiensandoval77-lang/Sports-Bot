@@ -6,6 +6,8 @@ on:
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
       - 'research/pretip_matchup_shadow.py'
+      - 'research/publish_matchup_shadow_guard.py'
+      - 'research/tests/test_publish_matchup_shadow_guard.py'
       - 'research/freeze_position_rating_quote_join.py'
       - 'iphone_bot/tests/test_pretip_matchup_shadow.py'
       - 'iphone_bot/new_ai_injury_context.py'
@@ -148,6 +150,8 @@ jobs:
           set -euo pipefail
           python -m research.freeze_position_rating_quote_join --joined joined-matchup-features-research.json --ratings defensive-rating-research.json --output position-rating-quote-research.json
           python -m research.pretip_matchup_shadow --joined position-rating-quote-research.json --output matchup-shadow-estimates-research.json
+      - name: Verify research feed never replaces grades or publishes stale probabilities
+        run: python -m unittest discover -s research/tests -p 'test_publish_matchup_shadow_guard.py' -v
       - name: Test and freeze pretip offers for independent multi-stat grading
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
@@ -179,6 +183,12 @@ jobs:
             position-rating-quote-research.json
             matchup-shadow-estimates-research.json
           retention-days: 21
+      - name: Preserve prospective shadow research separately from frozen market feeds
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          if [ -f matchup-shadow-estimates-research.json ]; then
+            cp matchup-shadow-estimates-research.json "$RUNNER_TEMP/matchup-shadow-source.json"
+          fi
       - name: Publish ONLY separate new AI feed without rewriting existing cards/grades
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
@@ -215,4 +225,30 @@ jobs:
               exit 0
             fi
           done
+          exit 1
+
+      - name: Publish separately guarded uncalibrated matchup research feed
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          if [ ! -f "$RUNNER_TEMP/matchup-shadow-source.json" ]; then
+            echo "::warning::No source-verified research estimates generated; keep existing research feed unchanged"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m research.publish_matchup_shadow_guard \
+              --incoming "$RUNNER_TEMP/matchup-shadow-source.json" \
+              --current docs/matchup_shadow_estimates.json \
+              --output docs/matchup_shadow_estimates.json
+            git add docs/matchup_shadow_estimates.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish independently sourced research-only position hit estimates'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Unable to publish guarded research feed without overwriting newer main"
           exit 1
