@@ -63,6 +63,16 @@ jobs:
           done
           echo "::error::Concurrent publishers prevented player tracking persistence after five attempts"
           exit 1
+      - name: Fail visibly on partial live data after preserving verified rows
+        if: github.event_name != 'pull_request' && steps.refresh.outcome == 'success'
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('docs/nba_player_tracking_independent.json'))
+          if d.get('status')=='PARTIAL_NBA_PLAYER_BOXSCORES':
+              print('::error::Saved authentic partial NBA player totals; other started games remain without verified stats')
+              sys.exit(1)
+          PY
       - name: Fail visibly when independent player data unavailable
         if: always() && github.event_name != 'pull_request' && steps.refresh.outcome == 'failure'
         run: |
