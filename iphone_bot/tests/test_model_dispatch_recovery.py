@@ -14,6 +14,16 @@ class RecoveryHandoffTests(unittest.TestCase):
         self.assertIn("60*60",part)
         self.assertIn("now+dt.timedelta(hours=24)",part)
         self.assertNotIn("fetch_prizepicks.py",part)
+    def test_pull_requests_only_run_offline_source_contracts(self):
+        text=(ROOT/".github/workflows/nba-prizepicks-site-publish.yml").read_text()
+        self.assertIn("pull_request:",text)
+        for step in (
+            "Build small read-only PrizePicks board and coverage",
+            "Publish no-cost website research status",
+            "Recover missing frozen models even when provider lines are unchanged"):
+            fragment=text.split("      - name: "+step,1)[1].split("      - name:",1)[0]
+            self.assertIn("if: github.event_name != 'pull_request'",fragment)
+
     def test_source_archive_and_existing_direct_handoffs_remain(self):
         text=(ROOT/".github/workflows/nba-prizepicks-site-publish.yml").read_text()
         self.assertIn("python -m iphone_bot.archive_prizepicks_pregame_lines",text)
