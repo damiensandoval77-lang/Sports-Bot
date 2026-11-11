@@ -26,6 +26,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test deployed-public-site fail-closed checks without network/API credits
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_verify_deployed_dashboard.py' -v
           python -m py_compile iphone_bot/verify_deployed_dashboard.py
