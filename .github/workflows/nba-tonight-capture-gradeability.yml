@@ -54,19 +54,20 @@ jobs:
         if: always() && github.event_name != 'pull_request' && steps.capture.outcome != 'skipped'
         run: |
           set -euo pipefail
-          cp docs/tonight_capture_gradeability.json "$RUNNER_TEMP/tonight_capture_gradeability.json"
-          cp docs/primary_model_missing_diagnostics.json "$RUNNER_TEMP/primary_model_missing_diagnostics.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp "$RUNNER_TEMP/tonight_capture_gradeability.json" docs/tonight_capture_gradeability.json
-            cp "$RUNNER_TEMP/primary_model_missing_diagnostics.json" docs/primary_model_missing_diagnostics.json
+            # Reconcile the actual latest saved lines and immutable models
+            # after fetch; never publish an old snapshot over a new freeze.
+            python -m iphone_bot.audit_primary_model_missing
+            rc=0
+            python -m iphone_bot.tonight_capture_gradeability || rc=$?
             git add docs/tonight_capture_gradeability.json docs/primary_model_missing_diagnostics.json
-            if git diff --cached --quiet; then exit 0; fi
+            if git diff --cached --quiet; then exit "$rc"; fi
             git commit -m 'Record honest per-game NBA capture and grading health'
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then exit "$rc"; fi
           done
           echo "::error::Could not publish per-game capture health after retries"
           exit 1
