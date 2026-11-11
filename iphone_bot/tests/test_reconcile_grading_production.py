@@ -102,6 +102,35 @@ class ReconciliationTests(unittest.TestCase):
     def test_naive_pretip_capture_rejected(self):
         v=list(dataset());v[0]["predictions"][0]["captured_at"]="2026-11-10T22:00:00"
         self.assertIn("INVALID_OR_LATE_PREGAME_AI",audit(v)["blockers"])
+    def test_complete_verified_game_missing_player_is_not_assumed_a_dnp(self):
+        from iphone_bot.reconcile_grading_production import independently_verified_team_games, missing_player_evidence
+        boxes=[]
+        for t,o in (("BOS","PHI"),("PHI","BOS")):
+            for i in range(8):
+                boxes.append({"player":t+str(i),"team":t,"opponent":o,
+                    "date":"2026-11-10","source_game_id":"0022600212",
+                    "source":"NBA_CDN_FINAL","final_confirmed":True,
+                    "PTS":10,"REB":2,"AST":1,"PRA":13,"MIN":20})
+        evidence=independently_verified_team_games({"version":1,"rows":boxes},DAY)
+        reason,gid=missing_player_evidence("Not In Final", "BOS",evidence)
+        self.assertEqual(reason,"VERIFIED_FINAL_GAME_PLAYER_ABSENT_FROM_PLAYED_ROWS_DNP_NOT_PROVEN")
+        self.assertEqual(gid,"0022600212")
+        self.assertEqual(missing_player_evidence("BOS0","BOS",evidence)[0],
+                         "VERIFIED_PLAYER_PLAYED_BUT_GRADE_IDENTITY_NOT_MATCHED")
+        self.assertEqual(missing_player_evidence("Unknown","TOR",evidence)[0],
+                         "VERIFIED_COMPLETED_GAME_PLAYER_COVERAGE_NOT_ESTABLISHED")
+
+    def test_incomplete_final_game_cannot_prove_absence(self):
+        from iphone_bot.reconcile_grading_production import independently_verified_team_games
+        boxes=[]
+        for t,o in (("BOS","PHI"),("PHI","BOS")):
+            for i in range(5):
+                boxes.append({"player":t+str(i),"team":t,"opponent":o,
+                    "date":"2026-11-10","source_game_id":"0022600212",
+                    "source":"NBA_CDN_FINAL","final_confirmed":True,
+                    "PTS":10,"REB":2,"AST":1,"PRA":13,"MIN":20})
+        self.assertEqual(independently_verified_team_games({"version":1,"rows":boxes},DAY),{})
+
     def test_non_overdue_pending_is_not_proclaimed_complete(self):
         v=list(dataset());v[1]["records"]=[]
         v[3].update(graded=0,ungraded=1)
