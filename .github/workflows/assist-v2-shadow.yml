@@ -38,6 +38,8 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_verified_research_no_play.py' -v
       # A current-form outage must not prevent settling historical snapshots.
       - name: Load current player form for strictly prior game logs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         id: refresh_form
         continue-on-error: true
         run: python -u iphone_bot/fetch_current_form.py
