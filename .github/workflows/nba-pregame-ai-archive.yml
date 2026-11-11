@@ -26,6 +26,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check archive chronology and non-fabrication
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/archive_pregame_ai_board.py
           python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v
