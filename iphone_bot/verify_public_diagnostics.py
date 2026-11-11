@@ -11,7 +11,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 BASE="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
-EXPECTED="dp-public-board-clean-20261111-r8"
+EXPECTED="dp-public-board-clean-20261111-r9"
 def audit():
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True,args=["--no-sandbox"])
@@ -32,7 +32,7 @@ def audit():
                     break
                 if attempt<15:time.sleep(5)
             if live_release!=EXPECTED:
-                raise SystemExit("DEPLOYMENT_NOT_YET_R8: hosted release="+str(live_release))
+                raise SystemExit("DEPLOYMENT_NOT_YET_R9: hosted release="+str(live_release))
             page.wait_for_function("() => typeof state!=='undefined' && !state.loading && !!state.updated",timeout=60000)
             public=page.evaluate("""() => ({
               release:document.querySelector('meta[name="dames-release"]')?.content,
