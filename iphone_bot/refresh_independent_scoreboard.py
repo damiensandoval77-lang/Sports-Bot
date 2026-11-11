@@ -59,6 +59,35 @@ def expected_matchups(schedule, days):
             for g in schedule.get("games", [])
             if g.get("date_eastern") in requested and g.get("game")}
 
+def started_games_missing_scores(rows, schedule, days, now, grace_minutes=10):
+    """Do not treat an all-pregame schedule as live after verified tipoff.
+
+    The fixture start is only a signal to re-query an independent source,
+    never permission to invent a score or assume play is underway.
+    """
+    if not isinstance(schedule,dict) or schedule.get("coverage_complete") is not True:
+        return False
+    requested={d.isoformat() for d in days}
+    if not requested.issubset(set(schedule.get("dates_eastern") or [])):
+        return False
+    observed={(g.get("date_eastern"),g.get("game")):g
+              for g in rows if isinstance(g,dict)}
+    for game in schedule.get("games",[]):
+        if not isinstance(game,dict) or game.get("date_eastern") not in requested:
+            continue
+        try:
+            tip=dt.datetime.fromisoformat(str(game["start"]).replace("Z","+00:00"))
+            if tip.tzinfo is None or now < tip.astimezone(dt.timezone.utc)+dt.timedelta(minutes=grace_minutes):
+                continue
+        except (KeyError,ValueError,TypeError):
+            continue
+        observed_game=observed.get((game.get("date_eastern"),game.get("game")),{})
+        if (observed_game.get("game_state")=="pre" or
+            observed_game.get("home_score") is None or
+            observed_game.get("away_score") is None):
+            return True
+    return False
+
 def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None, fallback=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     dates = [d.isoformat() for d in days]
@@ -73,6 +102,8 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
                 # ESPN returned HTTP 200, but dropped one or more verified
                 # NBA fixtures; do not let that masquerade as full coverage.
                 raise ValueError("Incomplete ESPN slate; invoke independent NBA fallback")
+            if started_games_missing_scores(rows,schedule,days,now):
+                raise ValueError("ESPN returned stale pretip schedule after official game start")
             source = "ESPN public scoreboard (not sportsbook or player prop data)"
             status = "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"
         except (OSError, TimeoutError, RuntimeError, ValueError, KeyError, TypeError) as primary_error:
@@ -88,6 +119,8 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
                       else "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
         if not isinstance(rows, list):
             raise ValueError("Scoreboard games must be a list")
+        if started_games_missing_scores(rows,schedule,days,now):
+            raise ValueError("No live scoreboard scores after scheduled tipoff on any validated source")
         expected = expected_matchups(schedule, days)
         observed = {(str(g.get("date_eastern")), str(g.get("game", "")).strip().casefold())
                     for g in rows if g.get("game")}
