@@ -25,6 +25,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test published browser coverage notification
+        run: node --test iphone_bot/tests/test_coverage_banner.cjs
       - name: Compile changed production modules
         run: |
           python -m py_compile iphone_bot/espn_injury_void.py iphone_bot/pipeline_heartbeat.py iphone_bot/multimarket_forecast_ledger.py iphone_bot/merge_new_ai_publishing.py
