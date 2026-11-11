@@ -156,3 +156,7 @@ function forSlate(rows){
 }
 root.DamesTake={POOL,tierFor,support,damesTake,forSlate};
 })(typeof window!=="undefined"?window:globalThis);
+
+/* Runtime execution identity: fail closed if any cached asset predates this release. */
+globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
+globalThis.__damesRunningAssets["dames_take.js"]="dp-runtime-20261111-r2";

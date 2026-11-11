@@ -534,3 +534,7 @@ function gradingAuditSummary(payload,now=Date.now()){
 }
 root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
+
+/* Runtime execution identity: fail closed if any cached asset predates this release. */
+globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
+globalThis.__damesRunningAssets["feeds.js"]="dp-runtime-20261111-r2";

@@ -482,7 +482,7 @@ test("Merged app loads separate official score and player feeds",()=>{
  assert.ok(html.includes('getJSON("nba_scoreboard_independent.json")'));
  assert.ok(html.includes('nbaScores:nbaScores.status==="fulfilled"?nbaScores.value:null'));
  assert.ok(html.includes('L.mergeScores(state.raw.nbaScores,state.direct?.board)'));
- assert.ok(html.includes('<script src="live_direct.js"></script>'));
+ assert.match(html, /<script src="live_direct[.]js[?]bundle=[^"]+"><[/]script>/);
 });
 
 

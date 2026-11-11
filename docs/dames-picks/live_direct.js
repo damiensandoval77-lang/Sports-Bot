@@ -156,3 +156,7 @@ function mergeScores(snapshot,direct,now=Date.now()){
 }
 root.DamesPicksLive={etDate,matchup,playerRows,build,fetchNBA,mergeFeeds,mergeScores,STATUS};
 })(typeof window!=="undefined"?window:globalThis);
+
+/* Runtime execution identity: fail closed if any cached asset predates this release. */
+globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
+globalThis.__damesRunningAssets["live_direct.js"]="dp-runtime-20261111-r2";
