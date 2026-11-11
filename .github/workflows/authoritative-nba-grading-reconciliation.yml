@@ -38,6 +38,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test quote identity, final provenance and report drift
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_grading_production.py' -v
       - name: Reconcile November 10 incident and most recent Eastern night
         if: github.event_name != 'pull_request'
