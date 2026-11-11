@@ -4,6 +4,8 @@ on:
     paths:
       - 'research/position_defense_current_season.py'
       - 'research/join_matchup_features.py'
+      - 'research/freeze_position_rating_quote_join.py'
+      - 'research/tests/test_freeze_position_rating_quote_join.py'
       - 'research/opportunity_tempo_proxies.py'
       - 'research/paired_positional_holdout.py'
       - 'research/tests/test_paired_positional_holdout.py'
@@ -44,6 +46,8 @@ jobs:
         run: python -m unittest discover -s research/tests -p 'test_opportunity_tempo_proxies.py' -v
       - name: Test strictly chronological paired same-game positional holdout
         run: python -m unittest discover -s research/tests -p 'test_paired_positional_holdout.py' -v
+      - name: Verify position, minutes and ratings were known before original standard quote
+        run: python -m unittest discover -s research/tests -p 'test_freeze_position_rating_quote_join.py' -v
       - name: Download actual dated current-season game logs including source position labels
         if: github.event_name != 'pull_request'
         env:
@@ -67,6 +71,12 @@ jobs:
       - name: Evaluate same-player-game opponent positional adjustment against L5 baseline
         if: github.event_name != 'pull_request'
         run: python -m research.paired_positional_holdout --output paired-positional-holdout-research.json
+      - name: Capture sourced estimated 30-team defensive rating and pace
+        if: github.event_name != 'pull_request'
+        run: python -m research.source_def_rating_2026
+      - name: Associate only source-before-quote original standard markets with matchup data
+        if: github.event_name != 'pull_request'
+        run: python -m research.freeze_position_rating_quote_join --output position-rating-quote-research.json
       - name: Enforce truthful provenance and read-only production status
         if: github.event_name != 'pull_request'
         run: |
@@ -93,5 +103,7 @@ jobs:
             joined-matchup-features-research.json
             opportunity-tempo-research.json
             paired-positional-holdout-research.json
+            defensive-rating-research.json
+            position-rating-quote-research.json
           retention-days: 21
           if-no-files-found: error
