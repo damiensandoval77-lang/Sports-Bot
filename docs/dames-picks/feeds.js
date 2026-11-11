@@ -457,7 +457,7 @@ function includeArchivedStandard(rows,archive){
   q.is_demo===false&&["PTS","REB","AST","PRA"].includes(q.stat)&&n(q.line)!==null&&
   !!q.player&&!!q.team&&!!q.game&&Number.isFinite(stamp(q.observed_at))&&
   Number.isFinite(stamp(q.starts_at))&&stamp(q.observed_at)<stamp(q.starts_at);
- const k=p=>[norm(p.player),p.team,p.game,p.stat,n(p.line)].join("|");
+ const k=p=>[norm(p.player),p.team,p.game,p.stat,n(p.line),stamp(p.start||p.starts_at)].join("|");
  const known=new Set(rows.filter(x=>x.sport==="NBA").map(k));
  const missing=new Map();
  for(const q of archive.quotes.filter(valid)){
