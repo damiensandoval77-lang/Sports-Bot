@@ -1,7 +1,7 @@
 import datetime as dt
 import unittest
 
-from iphone_bot.refresh_nba_player_boxscores import collect_boxscores, waiting_for_tipoff, NBA_LIVE_URLS, BOX_BASES
+from iphone_bot.refresh_nba_player_boxscores import collect_boxscores, waiting_for_tipoff, NBA_LIVE_URLS, BOX_BASES, publishable_observations, verified_started
 
 DAY=dt.date(2026,11,9)
 NOW=dt.datetime(2026,11,9,23,30,tzinfo=dt.timezone.utc)
@@ -58,6 +58,20 @@ class LiveBoxscoreTests(unittest.TestCase):
         self.assertEqual(result["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
         self.assertFalse(result["coverage"]["complete"])
         self.assertEqual(result["games"],[])
+
+    def test_real_partial_player_totals_are_publishable_but_empty_partial_is_not(self):
+        report={"status":"PARTIAL_NBA_PLAYER_BOXSCORES","games":[{"game":"BOS @ NYK","player_rows":[{"PTS":9}]}]}
+        self.assertTrue(publishable_observations(report))
+        self.assertFalse(publishable_observations({**report,"games":[]}))
+        self.assertFalse(publishable_observations({"status":"NBA_PLAYER_BOXSCORES_UNAVAILABLE","games":[]}))
+
+    def test_empty_official_pregame_feed_after_verified_tip_is_not_live_success(self):
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
+                  "games":[{"date_eastern":DAY.isoformat(),
+                            "start":"2026-11-09T23:00:00Z"}]}
+        self.assertTrue(verified_started(schedule,DAY,NOW+dt.timedelta(minutes=6)))
+        self.assertFalse(verified_started(schedule,DAY,NOW+dt.timedelta(minutes=3)))
+        self.assertFalse(verified_started({**schedule,"coverage_complete":False},DAY,NOW+dt.timedelta(minutes=6)))
 
     def test_previous_day_scoreboard_rejected(self):
         with self.assertRaises(ValueError):
