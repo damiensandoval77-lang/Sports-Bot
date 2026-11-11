@@ -64,6 +64,7 @@ jobs:
       - name: Install minimal CBS parsing dependency
         run: python -m pip install --disable-pip-version-check beautifulsoup4
       - name: Test pregame integrity and settlement merging
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_phase1_e2e_grading.py' -v
