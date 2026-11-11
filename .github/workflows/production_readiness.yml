@@ -130,6 +130,23 @@ jobs:
               independent_nba_player_boxscores.yml) cooldown_minutes=12 ;;
               *) cooldown_minutes=35 ;;
             esac
+            # Cost guard: scheduled PrizePicks jobs already consume paid top-up
+            # calls. Automatic repair is included in a hard six-run UTC-day
+            # maximum, counting scheduled, manual and failed attempts alike.
+            # If history cannot be read, fail closed on paid recovery only.
+            if [ "$workflow" = "nba-prizepicks-full-slate.yml" ]; then
+              history=$(gh run list --workflow "$workflow" --limit 100 --json createdAt,status,headBranch) || {
+                echo "::warning::Cannot verify paid refresh budget; skipping paid recovery"
+                continue
+              }
+              day=$(date -u +%F)
+              used=$(printf '%s' "$history" | jq --arg day "$day" '
+                [.[] | select(.headBranch=="main" and (.createdAt | startswith($day)))] | length')
+              if [ "$used" -ge 6 ]; then
+                echo "Skipping paid $workflow: $used executions already started today (six max)"
+                continue
+              fi
+            fi
             # Compare with actual started runs, including in-progress.
             # Prevent every 20-minute audit from buying another board.
             recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status,headBranch |
