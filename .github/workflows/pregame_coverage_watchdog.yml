@@ -34,6 +34,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test official slate, pretip immutability, and missing game detection
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_pregame_coverage_watchdog.py' -v
       - name: Audit all today's actual scheduled games without using paid APIs
         id: audit
