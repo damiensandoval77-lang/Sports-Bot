@@ -34,24 +34,33 @@ def final_games(cache):
     if cache.get("version") != 1 or not isinstance(cache.get("rows"), list):
         raise ValueError("invalid official final cache")
     games = defaultdict(list)
+    invalid_game_keys = set()
     for x in cache["rows"]:
         if not isinstance(x, dict) or x.get("source") != "NBA_CDN_FINAL" or x.get("final_confirmed") is not True:
             continue
         if not x.get("source_game_id") or not x.get("team") or not x.get("opponent") or not x.get("player") or not x.get("date"):
             continue
+        key = (str(x["source_game_id"]), x["date"])
         if x["team"] == x["opponent"]:
+            invalid_game_keys.add(key)
             continue
-        # Fully validated per-player stats required for accepted final box.
+        # A corrupt row invalidates the complete game: silently dropping it
+        # would undercount that team's final score despite >=7 other rows.
         try:
             totals = {k:number(x[k]) for k in ("PTS","REB","AST")}
             if abs(number(x["PRA"]) - sum(totals.values())) > 1e-6:
+                invalid_game_keys.add(key)
                 continue
         except (KeyError, ValueError):
+            invalid_game_keys.add(key)
             continue
-        games[(str(x["source_game_id"]), x["date"])].append(x)
+        games[key].append(x)
     accepted = []
     rejected = Counter()
     for (gid, day), rows in sorted(games.items()):
+        if (gid, day) in invalid_game_keys:
+            rejected["invalid_final_player_stat"] += 1
+            continue
         teams = sorted({x["team"] for x in rows})
         if len(teams) != 2:
             rejected["missing_reciprocal_team"] += 1
