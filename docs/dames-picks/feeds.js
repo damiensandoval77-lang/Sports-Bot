@@ -556,4 +556,4 @@ root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,displayCurrentPicks,csv,nb
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["feeds.js"]="dp-matchup-20261111-r3";
+globalThis.__damesRunningAssets["feeds.js"]="dp-live-raw-20261111-r4";
