@@ -112,4 +112,70 @@ class DirectEspnFinalFallback(unittest.TestCase):
         self.assertEqual(status["final_espn_games"],0)
         self.assertEqual(status["status"],"NO_FINAL_BOXSCORES_AVAILABLE")
 
+
+    def test_primary_nba_final_still_checks_espn_explicit_dnp_for_missing_player(self):
+        from iphone_bot.paper_pick_pipeline import strict_player_name
+        game_id="0022600204"
+        board_event={"gameId":game_id,"gameStatus":3,"gameTimeUTC":WHEN,
+                     "awayTeam":{"teamTricode":"CLE"},"homeTeam":{"teamTricode":"CHA"}}
+        nba_box={"game":{"gameId":game_id,"gameStatus":3,"gameTimeUTC":WHEN,
+             "awayTeam":{"teamTricode":"CLE","players":[{
+                 "name":"Sample Player","statistics":{"points":26,"reboundsTotal":5,
+                                                       "assists":4,"minutes":"31:00"}}]},
+             "homeTeam":{"teamTricode":"CHA","players":[{
+                 "name":"Home Player","statistics":{"points":22,"reboundsTotal":3,
+                                                     "assists":2,"minutes":"32:00"}}]}}}
+        def provider(url):
+            if url==NBA_SCOREBOARD:
+                return {"scoreboard":{"games":[board_event]}}
+            if url==NBA_BOX.format(game_id):
+                return nba_box
+            if url.startswith(ESPN_BOX):
+                record=summary()
+                record["boxscore"]["players"][0]["statistics"][0]["athletes"].append({
+                  "athlete":{"displayName":"Missing Guard"},"didNotPlay":True,
+                  "reason":"Coach's Decision","stats":[]})
+                return record
+            raise AssertionError("Not allowed to fetch another source "+url)
+        rows,health=gather(pending(),now=NOW,request=provider,
+            known_espn_games={IDENT:EVENT_ID},
+            supplemental_espn_dnp_names={IDENT:{
+                (strict_player_name("Missing Guard"),"CLE")}})
+        dnps=[x for x in rows if x.get("dnp_final_verified")]
+        self.assertEqual(len(dnps),1)
+        self.assertEqual(dnps[0]["player"],"Missing Guard")
+        self.assertEqual(dnps[0]["source"],"ESPN_FINAL")
+        self.assertTrue(dnps[0]["final_confirmed"])
+        self.assertEqual(health["secondary_verified_explicit_dnp_players"],1)
+        self.assertEqual(health["final_nba_games"],1)
+        self.assertEqual(len(rows),3)
+
+    def test_secondary_espn_cannot_infer_dnp_or_override_played_nba_source(self):
+        from iphone_bot.paper_pick_pipeline import strict_player_name
+        game_id="0022600204"
+        board_event={"gameId":game_id,"gameStatus":3,"gameTimeUTC":WHEN,
+                     "awayTeam":{"teamTricode":"CLE"},"homeTeam":{"teamTricode":"CHA"}}
+        box={"game":{"gameId":game_id,"gameStatus":3,"gameTimeUTC":WHEN,
+             "awayTeam":{"teamTricode":"CLE","players":[{
+                 "name":"Sample Player","statistics":{"points":26,"reboundsTotal":5,
+                                                       "assists":4,"minutes":"31:00"}}]},
+             "homeTeam":{"teamTricode":"CHA","players":[]}}}
+        def provider(url):
+            if url==NBA_SCOREBOARD:return {"scoreboard":{"games":[board_event]}}
+            if url==NBA_BOX.format(game_id):return box
+            if url.startswith(ESPN_BOX):
+                record=summary()
+                record["boxscore"]["players"][0]["statistics"][0]["athletes"].append({
+                  "athlete":{"displayName":"Missing Guard"},"didNotPlay":True,"stats":[]})
+                return record
+            raise AssertionError(url)
+        rows,health=gather(pending(),now=NOW,request=provider,
+            known_espn_games={IDENT:EVENT_ID},
+            supplemental_espn_dnp_names={IDENT:{
+                 (strict_player_name("Missing Guard"),"CLE"),
+                 (strict_player_name("Sample Player"),"CLE")}})
+        self.assertEqual([x for x in rows if x.get("dnp_final_verified")],[])
+        self.assertEqual(health["secondary_dnp_still_unverified"],1)
+        self.assertEqual(health.get("secondary_verified_explicit_dnp_players",0),0)
+
 if __name__=="__main__":unittest.main()
