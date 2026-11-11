@@ -1,0 +1,27 @@
+name: pipeline-contracts
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pipeline-contracts-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  pipeline-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib pyyaml
+      - name: Run contract tests shifted out of publishing jobs
+        run: python scripts/run_pipeline_contracts.py
