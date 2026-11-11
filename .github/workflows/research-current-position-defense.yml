@@ -1,0 +1,60 @@
+name: Prospective NBA listed-position defensive research
+on:
+  pull_request:
+    paths:
+      - 'research/position_defense_current_season.py'
+      - 'research/tests/test_position_defense_current_season.py'
+      - '.github/workflows/research-current-position-defense.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/position_defense_current_season.py'
+      - 'research/tests/test_position_defense_current_season.py'
+      - '.github/workflows/research-current-position-defense.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '39 18 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: current-season-position-research
+  cancel-in-progress: false
+jobs:
+  source-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test reciprocal games, exact listed positions and chronological leakage
+        run: python -m unittest discover -s research/tests -p 'test_position_defense_current_season.py' -v
+      - name: Download actual dated current-season game logs including source position labels
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.fetch_current_form
+      - name: Build future opponent listed-position context without modifying predictions
+        if: github.event_name != 'pull_request'
+        run: python -m research.position_defense_current_season --output positional-defense-research.json
+      - name: Enforce truthful provenance and read-only production status
+        if: github.event_name != 'pull_request'
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('positional-defense-research.json'))
+          assert x['source_kind']=='THIRD_PARTY_LISTED_POSITION_NOT_DEFENDER_ASSIGNMENT'
+          assert not x['actual_defender_assignments_available']
+          assert not x['production_hit_estimate_eligible']
+          assert x['reciprocal_completed_games']>0, 'NO_VERIFIED_RECIPROCAL_GAMES'
+          print('Current-season reciprocal completed games:',x['reciprocal_completed_games'])
+          print('Future listed-position records:',x['position_context_records'])
+          print('Source-linked role coverage:',x['position_context_with_samples'])
+          PY
+      - name: Upload source-linked snapshot without producing live changes
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prospective-positional-defense-context
+          path: positional-defense-research.json
+          retention-days: 21
+          if-no-files-found: error
