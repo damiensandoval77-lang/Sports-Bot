@@ -7,12 +7,13 @@ Research artifact only: no pushes, no original-ledger edits, no odds API calls.
 """
 import argparse
 import json
+from urllib.parse import urlencode
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from iphone_bot.fetch_final_boxscores import (
-    NBA_SCHEDULE, NBA_SCHEDULE_ALT, NBA_BOX, request_json, verified_schedule_ids,
-    final_schedule_boxscore, team, local_date
+    NBA_SCHEDULE, NBA_SCHEDULE_ALT, NBA_BOX, ESPN_BOX, request_json, verified_schedule_ids,
+    final_schedule_boxscore, verified_direct_espn_summary, team, local_date
 )
 from iphone_bot.verified_final_cache import merge_rows
 from research.verified_team_defense_context import final_games
@@ -54,6 +55,17 @@ def planned_games(schedule, now, limit=MAX_GAMES, lookback_days=MAX_LOOKBACK_DAY
 
 def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAMES):
     targets=planned_games(season,now,limit)
+    # Baseline schedule ESPN IDs are discovery hints ONLY. The summary must
+    # independently verify completed status and exact event, teams and date.
+    hints={}
+    for g in season.get("games",[]):
+        gid=str(g.get("id") or "")
+        key=(g.get("date_eastern"),team(g.get("away_abbreviation")),
+             team(g.get("home_abbreviation")))
+        if key not in targets or not gid.isdigit():continue
+        if key in hints and hints[key]!=gid:
+            hints[key]=None
+        elif key not in hints:hints[key]=gid
     official={}
     schedule_error=None
     for url in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):
@@ -62,49 +74,67 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
             if official:break
         except (OSError,ValueError,KeyError,TypeError) as err:
             schedule_error=type(err).__name__
-    if not official:
-        return {"status":"OFFICIAL_SCHEDULE_UNAVAILABLE","requested_games":len(targets),
-                "verified_new_games":0,"rows":[],
-                "production_approved":False,"schedule_error":schedule_error}
     retrieved=[]
     errors=Counter()
+    provider_games=Counter()
     for key in targets:
         gid=official.get(key)
-        if not gid:
-            errors["official_game_id_not_found"]+=1
+        rows=None
+        scores=None
+        if gid:
+            try:
+                payload=request(NBA_BOX.format(gid))
+                candidate=final_schedule_boxscore(gid,key,lambda _url:payload)
+                if candidate:
+                    scores={side["teamTricode"]:side.get("score")
+                            for side in (payload["game"]["awayTeam"],payload["game"]["homeTeam"])}
+                    rows=candidate
+            except (ValueError,TypeError,KeyError,OSError) as err:
+                errors["nba_box_"+type(err).__name__]+=1
+        if rows is None:
+            espn_id=hints.get(key)
+            if espn_id:
+                try:
+                    payload=request(ESPN_BOX+"?"+urlencode({"event":espn_id}))
+                    candidate=verified_direct_espn_summary(espn_id,key,payload)
+                    if candidate:
+                        competition=payload["header"]["competitions"][0]
+                        scores={team((item.get("team") or {}).get("abbreviation")):item.get("score")
+                                for item in competition.get("competitors",[])}
+                        rows=candidate
+                except (ValueError,TypeError,KeyError,OSError) as err:
+                    errors["espn_box_"+type(err).__name__]+=1
+            else:
+                errors["no_verified_id_hints"]+=1
+        if not rows or not scores:
+            errors["no_verified_completed_box"]+=1
             continue
+        # CDN or ESPN must have two independently attested final team totals.
+        teams={key[1],key[2]}
         try:
-            # One official HTTP response drives BOTH final identity and exact
-            # team-score reconciliation. Missing/malformed athlete rows cannot
-            # silently undercount player totals and bias defensive allowances.
-            payload=request(NBA_BOX.format(gid))
-            rows=final_schedule_boxscore(gid,key,lambda _url:payload)
-            if not rows:
-                errors["official_final_unavailable"]+=1
-                continue
-            teams={key[1],key[2]}
-            event=payload["game"]
-            actual_scores={}
-            for field in ("awayTeam","homeTeam"):
-                side=event[field]
-                score=side.get("score")
-                if type(score) not in (int,float) or not 0<=score<=250:
-                    raise ValueError("missing official team final score")
-                actual_scores[side["teamTricode"]]=float(score)
-            if {r["team"] for r in rows}!=teams or set(actual_scores)!=teams or any(
+            numeric_scores={t:float(v) for t,v in scores.items()
+                            if type(v) in (str,int,float) and str(v).strip()}
+        except (ValueError,TypeError):
+            errors["invalid_final_score"]+=1
+            continue
+        if (set(numeric_scores)!=teams or any(not 0<=v<=250 for v in numeric_scores.values()) or
+            {r["team"] for r in rows}!=teams or any(
                 sum(r["team"]==t and not r.get("dnp_final_verified") for r in rows)<7
                 or abs(sum(r["PTS"] for r in rows if r["team"]==t and
-                           not r.get("dnp_final_verified"))-actual_scores[t])>.01
-                for t in teams):
-                errors["partial_official_final_box"]+=1
-                continue
-            retrieved.extend(rows)
-        except (ValueError,TypeError,KeyError,OSError) as err:
-            errors["bad_verified_final_"+type(err).__name__]+=1
+                           not r.get("dnp_final_verified"))-numeric_scores[t])>.01
+                for t in teams)):
+            errors["partial_or_inconsistent_final_box"]+=1
+            continue
+        if len({r["source"] for r in rows})!=1 or rows[0]["source"] not in ("NBA_CDN_FINAL","ESPN_FINAL"):
+            errors["unverified_provider_type"]+=1
+            continue
+        provider_games[rows[0]["source"]]+=1
+        retrieved.extend(rows)
     prior=existing_cache.get("rows",[]) if existing_cache.get("version")==1 else []
     merged=merge_rows(prior,retrieved)
-    # Keep only matched official NBA CDN finals; no ESPN source assumed equal.
-    accepted={r["source_game_id"] for r in retrieved if r.get("source")=="NBA_CDN_FINAL"}
+    # Both NBA CDN and ESPN rows must satisfy the exact same final score gate.
+    accepted={r["source_game_id"] for r in retrieved
+              if r.get("source") in ("NBA_CDN_FINAL","ESPN_FINAL")}
     confirmed,_=final_games({"version":1,"rows":merged})
     valid={g["id"] for g in confirmed}
     # Whole-game consistency gate: drop any new event that failed final_games().
@@ -116,6 +146,9 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
             "season_schedule_source":season["source_url"],
             "requested_games":len(targets),
             "official_ids_found":len(official),
+            "verified_espn_id_hints":sum(bool(v) for v in hints.values()),
+            "schedule_lookup_error":schedule_error,
+            "verified_games_by_provider":dict(sorted(provider_games.items())),
             "verified_new_games":len(valid_new),
             "verified_combined_games":len(final_games({"version":1,"rows":merged})[0]),
             "failures":dict(sorted(errors.items())),
