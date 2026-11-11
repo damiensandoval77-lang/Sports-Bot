@@ -34,6 +34,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Test heartbeat state classification
+        if: github.event_name == 'pull_request'
+        run: python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v
       - name: Run deployed-site monitoring
         if: github.event_name != 'pull_request'
         id: health
