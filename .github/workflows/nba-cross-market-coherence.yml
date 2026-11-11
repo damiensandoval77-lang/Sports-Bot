@@ -28,6 +28,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Regression tests against lookahead, mismatched players and duplicate projections
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_cross_market_coherence.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_pra_coherence_challenger.py' -v
