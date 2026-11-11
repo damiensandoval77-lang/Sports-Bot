@@ -322,11 +322,13 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
        (g.gameId===score.id||g.game===score.game));
    if(!match||match.game!==score.game)continue;
    match.awayScore=away;match.homeScore=home;
-   match.observedAt=nbaScoreFeed.generated_at;
+   match.scoreObservedAt=nbaScoreFeed.generated_at;
+   match.scoreFresh=true;
    match.statusText=score.game_state==="post"?"Final · verified scoreboard":
                      "Live · verified scoreboard";
    match.state=score.game_state==="post"?"final":"in";
-   match.fresh=true;
+   // Player freshness is independent. A good scoreboard must not make
+   // stale/missing player totals appear current.
   }
  }
  if(Array.isArray(nflSchedule?.games)){
