@@ -97,7 +97,7 @@ function primaryDisplayLines(rows){
  const map=new Map();
  for(const p of rows||[]){
   if(!p||!p.sport||!p.stat||!p.gameId||!Number.isFinite(stamp(p.start)))continue;
-  const id=[p.sport,p.gameId,p.start,p.playerId||norm(p.player),p.team,p.stat,p.source?.includes("Underdog")?"Underdog":"PrizePicks"].join("|");
+  const id=[p.sport,p.gameId,p.start,p.sport==="NBA"?norm(p.player):(p.playerId||norm(p.player)),p.team,p.stat,p.source?.includes("Underdog")?"Underdog":"PrizePicks"].join("|");
   const prev=map.get(id);
   const weight=x=>x.quoteOnly?0:x.projection!==null&&x.direction?2:1;
   const newer=(a,b)=>Number.isFinite(stamp(a.captured))&&stamp(a.captured)>stamp(b.captured);
