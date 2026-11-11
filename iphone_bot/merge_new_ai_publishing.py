@@ -36,9 +36,9 @@ def durable_merge(current,incoming,finals):
         prev=old.get(ident)
         if prev is not None and any(prev.get(f)!=r.get(f) for f in IMMUTABLE):
             raise ValueError("Original frozen pretip market changed: "+str(ident))
-        if prev and prev.get("grade")=="GRADED" and r.get("grade")=="GRADED":
+        if prev and prev.get("grade") in ("GRADED","EXCLUDED_VERIFIED_DNP") and r.get("grade") in ("GRADED","EXCLUDED_VERIFIED_DNP"):
             if any(prev.get(k)!=r.get(k) for k in
-                   ("actual","final_source","source_game_id","absolute_error","direction_hit")):
+                   ("grade","actual","final_source","source_game_id","absolute_error","direction_hit","verified_dnp_reason")):
                 raise ValueError("Conflicting verified final grades: "+str(ident))
     # Feed form only adds previously absent, originally timestamped records.
     result=merge(current,{"status":"LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
@@ -47,8 +47,8 @@ def durable_merge(current,incoming,finals):
         after=next((x for x in result["records"] if key(x)==ident),None)
         if after is None or any(after.get(f)!=prev.get(f) for f in IMMUTABLE):
             raise ValueError("Frozen pregame record disappeared or changed")
-        if prev.get("grade")=="GRADED" and after.get("grade")!="GRADED":
-            raise ValueError("Previously graded record reverted to pending")
+        if prev.get("grade") in ("GRADED","EXCLUDED_VERIFIED_DNP") and after.get("grade")!=prev.get("grade"):
+            raise ValueError("Previously settled record reverted or changed status")
     return result
 
 def main():
