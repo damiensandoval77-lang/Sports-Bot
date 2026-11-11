@@ -36,6 +36,8 @@ jobs:
           python-version: '3.11'
       - name: Prove stale public HTML and assets fail closed (offline)
         run: python -m unittest discover -s iphone_bot/tests -p 'test_public_release_gate.py' -v
+      - name: Reject unpinned release assets and incorrect local revision
+        run: python scripts/verify_public_dames_release.py --validate-local
       - name: Compare actual hosted HTTP files against main (fail if outdated)
         if: github.event_name != 'pull_request'
         run: python scripts/verify_public_dames_release.py --timeout-seconds 660
