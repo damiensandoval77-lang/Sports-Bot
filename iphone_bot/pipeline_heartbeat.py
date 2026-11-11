@@ -51,9 +51,9 @@ def evaluate(now,site,espn=None):
     warnings=[f"{g} @ {s.isoformat()}" for g,s in missing if (s-now).total_seconds()>3*3600]
     model_at=ts(model.get("generated_at"))
     current=bool(model_at and s_at and model_at>=s_at)
-    if failures and not current:st="FAIL"
-    elif failures or warnings:st="WARN"
-    else:st="OK"
+    # A recent model timestamp is not proof of complete per-game capture.
+    # Near-tip missing picks must still page recovery even when model ran.
+    st="FAIL" if failures else "WARN" if warnings else "OK"
     out.append(check("picks_frozen",st,"Missing picks by game; model current does not prove every game was covered",
                      missing=failures+warnings,model_after_lines=current))
     live=[]
