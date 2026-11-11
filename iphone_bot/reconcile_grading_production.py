@@ -11,6 +11,8 @@ import math
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import unicodedata
+from iphone_bot.verified_final_cache import verified_row
 from zoneinfo import ZoneInfo
 
 ET = ZoneInfo("America/New_York")
@@ -70,7 +72,56 @@ def observed_final(row):
                          row.get("verified_nonparticipant_reason")))
     return False
 
-def reconcile(no_line_archive, actuals, standard, ai_report=None, published_report=None,
+def name_key(raw):
+    return "".join(c for c in unicodedata.normalize("NFKD",str(raw or "").casefold())
+                   if c.isalnum() and not unicodedata.combining(c))
+
+def independently_verified_team_games(cache, date):
+    """Report complete reciprocal NBA/ESPN finals; NEVER infer DNP from absence."""
+    rows=cache.get("rows",[]) if isinstance(cache,dict) and cache.get("version")==1 else []
+    if not isinstance(rows,list):
+        return {}
+    by_game={}
+    for r in rows:
+        if not isinstance(r,dict) or r.get("date")!=date or not verified_row(r):
+            continue
+        k=(str(r["source_game_id"]),r["team"],r["opponent"])
+        by_game.setdefault(k,[]).append(r)
+    found={}
+    for (game_id,team,opponent),entries in by_game.items():
+        reciprocal=by_game.get((game_id,opponent,team),[])
+        played=[x for x in entries if x.get("dnp_final_verified") is not True]
+        other=[x for x in reciprocal if x.get("dnp_final_verified") is not True]
+        if len(played)<7 or len(other)<7:
+            continue
+        if (len({name_key(x["player"]) for x in played})!=len(played) or
+            len({name_key(x["player"]) for x in other})!=len(other)):
+            continue
+        found.setdefault(team,[]).append({
+            "source_game_id":game_id,
+            "opponent":opponent,
+            "played_names":{name_key(x["player"]) for x in played},
+            "explicit_dnps":{name_key(x["player"]) for x in entries
+                             if x.get("dnp_final_verified") is True},
+            "observed_players":len(played)})
+    # A team playing twice in the same date, or conflicting ID sources, cannot
+    # be associated to a forecast without independent exact game evidence.
+    return {team:games[0] for team,games in found.items() if len(games)==1}
+
+def missing_player_evidence(player,team,verified_games):
+    game=verified_games.get(team)
+    if not game:
+        return ("VERIFIED_COMPLETED_GAME_PLAYER_COVERAGE_NOT_ESTABLISHED",None)
+    label=name_key(player)
+    if label in game["played_names"]:
+        reason="VERIFIED_PLAYER_PLAYED_BUT_GRADE_IDENTITY_NOT_MATCHED"
+    elif label in game["explicit_dnps"]:
+        reason="SOURCE_EXPLICIT_DNP_NOT_YET_APPLIED_TO_GRADE"
+    else:
+        reason="VERIFIED_FINAL_GAME_PLAYER_ABSENT_FROM_PLAYED_ROWS_DNP_NOT_PROVEN"
+    return (reason,game["source_game_id"])
+
+def reconcile(no_line_archive, actuals, standard, ai_report=None, published_report=None, final_cache=None,
               *, game_date, checked_at, overdue_hours=4):
     now = timestamp(checked_at)
     if now is None:
@@ -106,6 +157,8 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
         else:
             final_index[k] = result
 
+    team_game_evidence=independently_verified_team_games(final_cache,game_date)
+    missing_categories=Counter()
     ai_seen = set()
     ai_counts = Counter()
     unresolved_ai = []
@@ -134,9 +187,12 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
             ai_counts["unresolved"] += 1
             if overdue(p):
                 ai_counts["overdue"] += 1
+            reason,verified_id=missing_player_evidence(p.get("player"),key[1],team_game_evidence)
+            missing_categories[reason]+=1
             unresolved_ai.append({"player_id":key[0],"player":p.get("player"),
                                   "team":key[1],"game":key[2],"start":key[3],
-                                  "stat":key[4],"reason":"NO_UNAMBIGUOUS_VERIFIED_FINAL_OR_EXCLUSION",
+                                  "stat":key[4],"reason":reason,
+                                  "verified_game_id":verified_id,
                                   "overdue":overdue(p)})
             continue
         if grade.get("captured_at") != p.get("captured_at") or not is_number(grade.get("projection")) or abs(
@@ -216,10 +272,13 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
             std_counts["unresolved"] += 1
             if overdue(p):
                 std_counts["overdue"] += 1
+            reason,verified_id=missing_player_evidence(p.get("player"),k[1],team_game_evidence)
+            missing_categories[reason]+=1
             unresolved_standard.append({
                 "player_id":k[0],"player":p.get("player"),"team":k[1],
                 "game":k[2],"start":k[3],"stat":k[4],"line":k[5],
-                "reason":"NO_VERIFIED_FINAL_APPLIED","overdue":overdue(p)})
+                "reason":reason,"verified_game_id":verified_id,
+                "overdue":overdue(p)})
             if final_index.get(identity(p)) is not None:
                 defects["STANDARD_VERIFIED_FINAL_NOT_APPLIED"] += 1
         else:
@@ -283,6 +342,11 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
         "blockers":blockers,
         "unresolved_ai_only":unresolved_ai,
         "unresolved_standard":unresolved_standard,
+        "missing_final_evidence_categories":dict(sorted(missing_categories.items())),
+        "verified_team_final_games":{team:{
+            "game_id":x["source_game_id"],"opponent":x["opponent"],
+            "observed_players":x["observed_players"]}
+            for team,x in sorted(team_game_evidence.items())},
         "uses_real_verified_final_sources_only":True,
         "no_fabricated_dnp_or_final":True,
         "betting_hit_rate_reported":False,
@@ -302,6 +366,7 @@ def main():
         read("docs/lagged_matchup_all_market_ledger.json"),
         read("docs/ai_forecast_grade_status.json"),
         read("docs/dames-picks/published_pick_settlement.json"),
+        final_cache=read("docs/verified_final_player_cache.json"),
         game_date=args.date,checked_at=datetime.now(timezone.utc).isoformat())
     path=Path(args.output)
     path.parent.mkdir(parents=True,exist_ok=True)
