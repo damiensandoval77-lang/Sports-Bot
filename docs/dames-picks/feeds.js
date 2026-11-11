@@ -88,10 +88,29 @@ function nfl(chunks,schedule){
  }
  return [...found.values()];
 }
+/* A player/stat/game may have several immutable pretip quote versions.
+   One canonical CURRENT display card per market, preserving every original
+   record unchanged for research and exact version-specific settlement.
+   The most recent genuine captured STANDARD modeled offer before tip wins;
+   quote-only records cannot displace a valid frozen AI model. */
+function primaryDisplayLines(rows){
+ const map=new Map();
+ for(const p of rows||[]){
+  if(!p||!p.sport||!p.stat||!p.gameId||!Number.isFinite(stamp(p.start)))continue;
+  const id=[p.sport,p.gameId,p.start,p.playerId||norm(p.player),p.team,p.stat,p.source?.includes("Underdog")?"Underdog":"PrizePicks"].join("|");
+  const prev=map.get(id);
+  const weight=x=>x.quoteOnly?0:x.projection!==null&&x.direction?2:1;
+  const newer=(a,b)=>Number.isFinite(stamp(a.captured))&&stamp(a.captured)>stamp(b.captured);
+  if(!prev||weight(p)>weight(prev)||(weight(p)===weight(prev)&&
+    (newer(p,prev)||(stamp(p.captured)===stamp(prev.captured)&&Number(p.line)>Number(prev.line)))))
+    map.set(id,p);
+ }
+ return [...map.values()];
+}
 function summarize(rows,nflHealth,now=Date.now(),league=null){
  const pre=rows.filter(r=>stamp(r.start)>now),gameCount=new Set(pre.map(r=>r.gameId)).size;
  // Only the NBA market ledger has individually verified directional grading here.
- const graded=rows.filter(r=>r.grade==="GRADED"&&typeof r.hit==="boolean");
+ const graded=(league==="NFL"?rows:primaryDisplayLines(rows)).filter(r=>r.grade==="GRADED"&&typeof r.hit==="boolean");
  if((league||rows[0]?.sport)==="NFL"){
   const settled=n(nflHealth?.standard_settled),wins=n(nflHealth?.standard_wins);
   return {games:gameCount,wins:settled!==null&&wins!==null?wins:null,
@@ -102,7 +121,7 @@ function summarize(rows,nflHealth,now=Date.now(),league=null){
  const wins=graded.filter(x=>x.hit).length;
  return {games:gameCount,wins:graded.length?wins:null,losses:graded.length?graded.length-wins:null,
   hitRate:graded.length?wins/graded.length:null,graded:graded.length,
-  pending:rows.filter(x=>x.grade==="PENDING").length};
+  pending:primaryDisplayLines(rows).filter(x=>x.grade==="PENDING").length};
 }
 
 /* Select a fresh real player feed instead of blindly preferring an empty
@@ -417,5 +436,5 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={nbaTeam:nbaTeamCode,csv,nba,nfl,summarize,key,primaryDisplayLines,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
