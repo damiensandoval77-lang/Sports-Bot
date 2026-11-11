@@ -9,7 +9,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 URL="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
-RELEASE="dp-matchup-calibration-20261111-r6"
+RELEASE="dp-matchup-calibration-20261111-r7"
 
 def verify():
     with sync_playwright() as p:
@@ -34,7 +34,7 @@ def verify():
               return {release:document.querySelector('meta[name="dames-release"]')?.content,
                 nbaRows:state.nba.length,matchupPreviewRows:previewRows.length,
                 visiblePreviewCards:upcoming.length,
-                visibleResearchLabel:document.getElementById('cards')?.innerText?.includes('Matchup model')||false,
+                noRedundantCardLabel:!document.getElementById('cards')?.innerText?.includes('Matchup model'),
                 firstPlayer:upcoming[0]?.player||null,firstMarket:upcoming[0]?.stat||null,
                 firstRate:upcoming[0]?.matchupPreview?.rate||null,
                 intactOriginalLine:upcoming[0]?.line??null,
@@ -53,11 +53,13 @@ def verify():
                   const card=[...document.querySelectorAll('#cards button[data-id]')]
                     .find(button=>button.dataset.id===id);
                   if(!card)throw Error('MODEL_PREVIEW_NOT_VISIBLE_ON_CARD');
-                  if(!card.innerText.includes('Matchup model'))
-                    throw Error('MATCHUP_LABEL_NOT_VISIBLE_ON_CARD');
+                  if(card.innerText.includes('Matchup model'))
+                    throw Error('REDUNDANT_MATCHUP_LABEL_STILL_VISIBLE');
+                  if(!card.innerText.includes('Hit est.'))
+                    throw Error('HIT_ESTIMATE_MISSING');
                   card.click();
                 }""")
-                result["detailResearchLabel"]=page.locator("#detail-content").inner_text().find("Matchup model")>=0
+                result["noRedundantDetailLabel"]=page.locator("#detail-content").inner_text().find("Matchup model")<0
                 result["detailExplainsUncertainty"]="accuracy and probability calibration are being tracked prospectively" in page.locator("#detail-content").inner_text().lower()
                 page.screenshot(path="public-matchup-preview-iphone-width.png")
             result["checked_at"]=datetime.now(timezone.utc).isoformat()
@@ -66,7 +68,7 @@ def verify():
             result["status"]="READY" if (
                 result["release"]==RELEASE and not errs and
                 result["matchupPreviewRows"]>=1 and result["visiblePreviewCards"]>=1 and
-                result["visibleResearchLabel"] and result.get("detailResearchLabel") and
+                result["noRedundantCardLabel"] and result.get("noRedundantDetailLabel") and
                 result.get("detailExplainsUncertainty") and
                 result["noCertifiedHitChance"] is True
             ) else "BLOCKED"
