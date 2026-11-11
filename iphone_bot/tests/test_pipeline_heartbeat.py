@@ -26,9 +26,9 @@ class Heartbeat(unittest.TestCase):
         self.assertEqual(stage(evaluate(NOW,site(start=start,ledger=[{"game":GAME,"start":start}])),"picks_frozen")["status"],"OK")
     def test_older_matchup_does_not_count(self):
         self.assertEqual(stage(evaluate(NOW,site(ledger=[{"game":GAME,"start":time(days=-20)}])),"picks_frozen")["status"],"FAIL")
-    def test_model_current_downgrades_to_warning_but_discloses_missing(self):
+    def test_model_timestamp_cannot_hide_missing_games(self):
         report=evaluate(NOW,site(model={"generated_at":time(minutes=-2)}))
-        self.assertEqual(stage(report,"picks_frozen")["status"],"WARN")
+        self.assertEqual(stage(report,"picks_frozen")["status"],"FAIL")
         self.assertTrue(stage(report,"picks_frozen")["evidence"]["missing"])
     def test_overdue_pending_requires_settlement(self):
         r={"game":GAME,"start":time(hours=-10),"grade":"PENDING"}
