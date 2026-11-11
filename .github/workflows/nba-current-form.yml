@@ -1,6 +1,13 @@
 name: Update 2026-27 NBA player recent form
 on:
   workflow_dispatch:
+  # One code-change refresh ensures new log fields reach production right
+  # after merging the feature; normal refresh remains scheduled daily.
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/fetch_current_form.py'
+      - '.github/workflows/nba-current-form.yml'
   schedule:
     - cron: '17 14 * * *'
 permissions:
@@ -27,6 +34,10 @@ jobs:
           import json
           d=json.load(open('docs/current_form.json'))
           assert d["season"]=="2026-27"
+          assert d.get("log_fields")==["date","opponent","PTS","REB","AST","PRA","MIN"]
+          assert d.get("log_games")==20
+          assert all(isinstance(p.get("log"),list) and len(p["log"])<=20 for p in d["players"])
+          assert all(len(r)==7 for p in d["players"] for r in p["log"])
           assert d["is_ai"] is False and d["is_prizepicks"] is False
           assert d["observed_player_games"]>=1000 and len(d["players"])>=80
           print('Verified player form feed',len(d['players']),'players',d['observed_player_games'],'player-game records')

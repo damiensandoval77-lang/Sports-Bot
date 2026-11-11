@@ -218,6 +218,49 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
    period:game.period,observedAt:nflFeed.checked_at,source:"ESPN player snapshot"}};
  });
 }
+/* Observed NBA game logs strictly before the pick's Eastern game date.
+   Per-market line-specific over/under/push, no inferred or fabricated values. */
+function etDay(v){
+ const d=new Date(v);if(isNaN(d))return null;
+ const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);
+ const g=k=>parts.find(x=>x.type===k).value;
+ return g("year")+"-"+g("month")+"-"+g("day");
+}
+function attachGameLogs(rows,form,limit=10){
+ const fields=Array.isArray(form?.log_fields)?form.log_fields:null;
+ if(!fields||!Array.isArray(form?.players))return rows;
+ const at=k=>fields.indexOf(k),di=at("date"),oi=at("opponent");
+ if(di<0||oi<0)return rows;
+ const byId=new Map(),byName=new Map();
+ for(const person of form.players){
+  if(!Array.isArray(person?.log))continue;
+  if(person.player_id)byId.set(String(person.player_id),person);
+  const k=norm(person.player)+"|"+nbaTeamCode(person.team);
+  byName.set(k,byName.has(k)?null:person);
+ }
+ return rows.map(p=>{
+  if(p.sport!=="NBA"||n(p.line)===null||at(p.stat)<0)return p;
+  const byIdentifier=byId.get(String(p.playerId||""));
+  const person=byIdentifier&&nbaTeamCode(byIdentifier.team)===nbaTeamCode(p.team)?
+    byIdentifier:byName.get(norm(p.player)+"|"+nbaTeamCode(p.team));
+  const day=etDay(p.start);
+  if(!person||!day)return p;
+  const games=person.log.filter(r=>Array.isArray(r)&&String(r[di])<day&&n(r[at(p.stat)])!==null)
+   .map(r=>({date:String(r[di]),opponent:String(r[oi]),actual:n(r[at(p.stat)])}))
+   .sort((a,b)=>a.date.localeCompare(b.date));
+  if(!games.length)return p;
+  const cmp=g=>g.actual>p.line?"over":g.actual<p.line?"under":"push";
+  const count=list=>list.reduce((c,g)=>(c[cmp(g)]++,c),{over:0,under:0,push:0});
+  const all=count(games),last5=count(games.slice(-5));
+  const shown=games.slice(-Math.max(1,limit));
+  return {...p,
+   logs:shown.slice().reverse().map(g=>({actual:g.actual,label:g.opponent,date:g.date,result:cmp(g)})),
+   form:{...(p.form||{}),over:all.over,under:all.under,push:all.push,
+    last5Over:last5.over,last5Under:last5.under,historyGames:games.length,
+    historySource:"Observed completed games before this pick's game date"}};
+ });
+}
+root.DamesPicksLineHistory={attachGameLogs,etDay};
 /* NFL settlement is joined ONLY with full immutable quote identity. */
 function attachNFLGrades(rows,graded){
  const entries=new Map();
