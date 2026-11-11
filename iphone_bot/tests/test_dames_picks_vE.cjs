@@ -577,6 +577,18 @@ test("Current tracker excludes previous slate without deleting historical grade 
  assert.ok(html.includes('m.displayCurrentPicks(data,now,state.mode==="tracker")'));
  assert.ok(html.includes('m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)&&!p.quoteOnly))'));
 });
+test("NFL tracker on a Tuesday shows only the most recent NFL slate, never mixed dates",()=>{
+ const now=Date.parse("2026-11-11T02:08:00Z");
+ const monday={sport:"NFL",player:"Receiver A",playerId:"nfl-1",team:"BUF",
+  game:"BUF @ MIN",gameId:"2026_10_BUF_MIN",stat:"Rec Yards",
+  line:55.5,projection:60,captured:"2026-11-09T17:00:00Z",
+  start:"2026-11-10T01:15:00Z",grade:"GRADED"};
+ const sunday={...monday,game:"BUF @ MIA",gameId:"2026_09_BUF_MIA",
+  start:"2026-11-08T18:00:00Z",captured:"2026-11-08T15:00:00Z"};
+ const shown=m.displayCurrentPicks([monday,sunday],now,true);
+ assert.equal(shown.length,1);
+ assert.equal(shown[0].gameId,monday.gameId);
+});
 test("Unmodeled quote-only research never duplicates the model's published saved card",()=>{
  const p={sport:"NBA",player:"Test Player",playerId:"90",team:"NYK",
   game:"Milwaukee Bucks @ New York Knicks",gameId:"Milwaukee Bucks @ New York Knicks",
