@@ -11,7 +11,7 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from iphone_bot.fetch_final_boxscores import (
-    NBA_SCHEDULE, NBA_SCHEDULE_ALT, request_json, verified_schedule_ids,
+    NBA_SCHEDULE, NBA_SCHEDULE_ALT, NBA_BOX, request_json, verified_schedule_ids,
     final_schedule_boxscore, team, local_date
 )
 from iphone_bot.verified_final_cache import merge_rows
@@ -74,14 +74,27 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
             errors["official_game_id_not_found"]+=1
             continue
         try:
-            rows=final_schedule_boxscore(gid,key,request)
+            # One official HTTP response drives BOTH final identity and exact
+            # team-score reconciliation. Missing/malformed athlete rows cannot
+            # silently undercount player totals and bias defensive allowances.
+            payload=request(NBA_BOX.format(gid))
+            rows=final_schedule_boxscore(gid,key,lambda _url:payload)
             if not rows:
                 errors["official_final_unavailable"]+=1
                 continue
-            # Reject a partial box even if NBA status says final.
             teams={key[1],key[2]}
-            if {r["team"] for r in rows}!=teams or any(
+            event=payload["game"]
+            actual_scores={}
+            for field in ("awayTeam","homeTeam"):
+                side=event[field]
+                score=side.get("score")
+                if type(score) not in (int,float) or not 0<=score<=250:
+                    raise ValueError("missing official team final score")
+                actual_scores[side["teamTricode"]]=float(score)
+            if {r["team"] for r in rows}!=teams or set(actual_scores)!=teams or any(
                 sum(r["team"]==t and not r.get("dnp_final_verified") for r in rows)<7
+                or abs(sum(r["PTS"] for r in rows if r["team"]==t and
+                           not r.get("dnp_final_verified"))-actual_scores[t])>.01
                 for t in teams):
                 errors["partial_official_final_box"]+=1
                 continue
