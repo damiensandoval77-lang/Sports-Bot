@@ -616,3 +616,23 @@ test("Expanded game detail uses the SAME ESPN team aliases as live forecast card
  assert.ok(html.includes('g.observedAt?" · Last snapshot "+when(g.observedAt):""'));
  assert.ok(!html.includes('g.sport+" · "+g.statusText+" · Last snapshot "+when(g.observedAt)'));
 });
+
+test("Current scheduled NBA matchups cannot disappear when no pick was modeled",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('id="upcoming-slate"'));
+ assert.ok(html.includes('g.date_eastern===date'));
+ assert.ok(html.includes('timestamp(g.start)>now'));
+ assert.ok(html.includes('No verified modeled picks available'));
+ assert.ok(html.includes('renderUpcomingSlate();'));
+ assert.ok(html.includes('const schedule=state.raw?.nbaSchedule'));
+ // Four known remaining late games on the November 10 ET slate
+ // are present in the verified independent schedule.
+ const schedule=JSON.parse(fs.readFileSync("docs/nba_schedule.json","utf8"));
+ const at=Date.parse("2026-11-11T01:30:00Z");
+ const expected=schedule.games.filter(g=>g.date_eastern==="2026-11-10"&&Date.parse(g.start)>at);
+ assert.equal(expected.length,4);
+ assert.deepEqual(expected.map(g=>g.game).sort(),[
+  "LA Clippers @ Phoenix Suns","Miami Heat @ Utah Jazz",
+  "Oklahoma City Thunder @ Portland Trail Blazers",
+  "Orlando Magic @ Sacramento Kings"].sort());
+});
