@@ -58,7 +58,8 @@ def assemble(snapshot,joined,ratings,*,captured_at):
             reasons["matchup_game_time_mismatch"]+=1;continue
         # As-of means the source was ACTUALLY published before quote capture;
         # do not retrofit the quote with later research run information.
-        if time(c["captured_at"])>freeze or time(ratings["captured_at"])>freeze:
+        if (time(joined["captured_at"])>freeze or time(c["captured_at"])>freeze or
+            time(ratings["captured_at"])>freeze):
             reasons["source_not_available_when_pick_frozen"]+=1;continue
         pos=c.get("listed_position")
         if pos not in POSITIONS:
