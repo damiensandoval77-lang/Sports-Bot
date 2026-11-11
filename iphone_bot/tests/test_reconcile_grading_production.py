@@ -80,6 +80,21 @@ class ReconciliationTests(unittest.TestCase):
         out=audit(v)
         self.assertIn("DUPLICATE_OR_CONFLICTING_FINAL_IDENTITY",out["blockers"])
         self.assertEqual(out["ai_only"]["unresolved"],1)
+    def test_verified_integer_line_push_is_neither_win_nor_loss(self):
+        v=list(dataset());p=v[2]["records"][0]
+        p["line"]=24
+        p["direction_hit"]=None
+        out=audit(v)
+        self.assertEqual(out["standard_line"]["push"],1)
+        self.assertNotIn("STANDARD_DIRECTION_GRADE_MISMATCH",out["blockers"])
+        self.assertEqual(out["status"],"READY")
+    def test_integer_line_push_mislabeled_win_is_rejected(self):
+        v=list(dataset());p=v[2]["records"][0]
+        p["line"]=24
+        p["direction_hit"]=True
+        out=audit(v)
+        self.assertIn("STANDARD_DIRECTION_GRADE_MISMATCH",out["blockers"])
+
     def test_wrong_market_tier_cannot_be_called_graded(self):
         v=list(dataset());v[2]["records"][0]["pickem_tier"]="demon"
         out=audit(v)

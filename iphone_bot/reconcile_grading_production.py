@@ -191,10 +191,19 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
                 expected_error - p["absolute_error"]) > .001:
                 defects["STANDARD_ABSOLUTE_ERROR_MISMATCH"] += 1
             direction = (p.get("estimated_hit_chance") or {}).get("modeled_direction")
-            expected_hit = (p["actual"] > k[-1] if direction == "More"
-                            else p["actual"] < k[-1] if direction == "Less" else None)
-            if (expected_hit is None or type(p.get("direction_hit")) is not bool or
-                expected_hit != p["direction_hit"]):
+            # Integer original standard lines may push exactly. Published
+            # direction_hit=None represents a verified push (neither win nor
+            # loss), NOT a missing grade or incorrect binary prediction.
+            if p["actual"] == k[-1] and direction in ("More", "Less"):
+                expected_hit = None
+                std_counts["push"] += 1
+            elif direction == "More":
+                expected_hit = p["actual"] > k[-1]
+            elif direction == "Less":
+                expected_hit = p["actual"] < k[-1]
+            else:
+                expected_hit = "INVALID_DIRECTION"
+            if expected_hit == "INVALID_DIRECTION" or p.get("direction_hit") is not expected_hit:
                 defects["STANDARD_DIRECTION_GRADE_MISMATCH"] += 1
             std_counts["graded"] += 1
         elif status == "EXCLUDED_VERIFIED_DNP":
@@ -269,7 +278,7 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
         "ai_only":{"frozen":ai_total,**{k:ai_counts[k] for k in
                     ("graded","verified_exclusion","unresolved","overdue")}},
         "standard_line":{"frozen":std_total,**{k:std_counts[k] for k in
-                    ("graded","verified_exclusion","unresolved","overdue")}},
+                    ("graded","verified_exclusion","unresolved","overdue","push")}},
         "published_report_reconciliation":reports,
         "blockers":blockers,
         "unresolved_ai_only":unresolved_ai,
