@@ -658,6 +658,8 @@ test("App shows model HIT EST, separates past games and does not misrepresent ca
  assert.ok(html.includes("Matchup-conditioned estimate for "));
  assert.ok(html.includes("not a calibrated future probability.")||html.includes("Not yet calibrated"));
  assert.ok(!html.includes("SIM EST."));
+ assert.ok(!html.includes("TEST · uncalibrated"));
+ assert.ok(!html.includes("RESEARCH · NOT CALIBRATED"));
  assert.ok(!html.includes("Sim est."));
  assert.ok(!html.includes("pct(p.chance)"));
  assert.ok(!html.includes("history.hits+' hits across '"));
@@ -717,12 +719,14 @@ test("Matchup probability preview attaches to exact original standard line witho
  const fakeCalibration={...feed,records:[{...row,estimated_hit_chance:{...row.estimated_hit_chance,calibrated:true}}]};
  assert.equal(m.attachMatchupPreview(cards,fakeCalibration,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
 });
-test("Research preview is labeled TEST on both card and detail and has exact source feed",()=>{
+test("Research preview uses clean Matchup model label on card and detail and has exact source feed",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
- assert.ok(html.includes("TEST · uncalibrated"));
- assert.ok(html.includes("RESEARCH · NOT CALIBRATED"));
+ assert.ok(html.includes("<small>Matchup model</small>"));
+ assert.ok(html.includes("Accuracy and probability calibration are being tracked prospectively"));
  assert.ok(html.includes("getMatchupResearch()"));
  assert.ok(html.includes("attachMatchupPreview"));
  assert.ok(html.includes("RAW_LIVE_BASE+name"));
  assert.ok(!html.includes("SIM EST."));
+ assert.ok(!html.includes("TEST · uncalibrated"));
+ assert.ok(!html.includes("RESEARCH · NOT CALIBRATED"));
 });
