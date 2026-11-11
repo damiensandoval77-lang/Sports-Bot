@@ -609,3 +609,41 @@ test("Latest saved line is keyed by player, game and stat, never merged with oth
  const other={...p,player:"Two",playerId:"2",line:18.5};
  assert.equal(m.displayCurrentPicks([p,other],now).length,2);
 });
+
+test("Hit Estimate uses observed pregame actuals against immutable standard threshold, never simulation chance",()=>{
+ const p={sport:"NBA",player:"Test Player",team:"NYK",gameId:"A @ B",stat:"PTS",line:20.5,
+  direction:"MORE",quoteOnly:false,chance:.97,
+  form:{over:7,under:3,push:1,historyGames:11,
+    historySource:"Observed completed games before this pick's game date"}};
+ const h=m.hitEstimate(p);
+ assert.equal(h.rate,.7);
+ assert.equal(h.hits,7);
+ assert.equal(h.eligible,10);
+ assert.equal(h.push,1);
+ assert.equal(m.hitEstimate({...p,direction:"LESS"}).rate,.3);
+ assert.equal(m.hitEstimate({...p,chance:.03}).rate,.7,"simulation chance must not affect historical rate");
+});
+test("Hit Estimate fails closed on missing, insufficient, contradictory or unverified history",()=>{
+ const base={sport:"NBA",line:25.5,direction:"MORE",
+  form:{over:2,under:2,push:0,historyGames:4,
+    historySource:"Observed completed games before this pick's game date"}};
+ assert.equal(m.hitEstimate(base),null);
+ assert.equal(m.hitEstimate({...base,form:{...base.form,over:3}}),null);
+ assert.equal(m.hitEstimate({...base,form:{...base.form,historyGames:8,
+  historySource:"Simulated residual draws"}}),null);
+ assert.equal(m.hitEstimate({...base,quoteOnly:true}),null);
+ assert.equal(m.hitEstimate({...base,direction:null}),null);
+ assert.equal(m.hitEstimate({...base,sport:"NFL",form:{over:14,under:6,historyGames:20}}),null);
+ assert.equal(m.hitEstimate({...base,form:{over:4,under:2,push:1,historyGames:7,
+    historySource:"Observed completed games before this pick's game date"}}).rate,4/6);
+});
+test("App shows only observed HIT EST not uncalibrated simulated probabilities",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes("<small>Hit est.</small>"));
+ assert.ok(html.includes("<label>HIT EST.</label>"));
+ assert.ok(html.includes("m.hitEstimate(p)"));
+ assert.ok(!html.includes("SIM EST."));
+ assert.ok(!html.includes("Sim est."));
+ assert.ok(!html.includes("pct(p.chance)"));
+ assert.ok(!html.includes("escapeText(p.chanceSource)"));
+});
