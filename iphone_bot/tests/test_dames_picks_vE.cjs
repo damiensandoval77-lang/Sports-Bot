@@ -677,3 +677,52 @@ test("Live player and scoreboard observations bypass delayed Pages using verifie
  assert.ok(html.includes("if(changed)applyLive()"));
  assert.ok(!html.includes("state.nba=predict("));
 });
+
+
+test("Matchup probability preview attaches to exact original standard line without modifying grades",()=>{
+ const original={...pt,start:"2026-11-12T02:30:00+00:00",
+   market_updated:"2026-11-11T18:00:00Z",captured_at:"2026-11-11T19:00:00Z",
+   grade:"PENDING"};
+ const cards=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[original]},null);
+ const row={player_id:"201939",team:"GSW",opponent:"NOP",stat:"PTS",
+    start:original.start,line:28.5,original_side:"MORE",
+    captured_at:"2026-11-11T21:00:00Z",listed_position:"PG",
+    matchup_projection:32.1,original_projection:31.391,
+    estimated_hit_chance:{method:"POSITION_V_POSITION_DEF_RATING_RESEARCH_ANALYTIC_V1",
+       modeled_selected_probability:.64,calibrated:false,research_only:true,
+       verified_betting_edge:false,opponent_aware_inputs_sourced:true,
+       opponent_adjustment_validated:false,
+       source_provenance:{position_observed_at:"2026-11-11T20:30:00Z",
+       player_observed_at:"2026-11-11T20:30:00Z",
+       rating_observed_at:"2026-11-11T20:30:00Z",
+       minutes_snapshot_at:"2026-11-11T20:30:00Z"}}};
+ const feed={status:"POSITION_MATCHUP_RESEARCH_ONLY_PROBABILITY",production_approved:false,
+   calibrated:false,captured_at:"2026-11-11T21:01:00Z",
+   presentation_policy:"EXPERIMENTAL_MATCHUP_PREVIEW_NOT_CERTIFIED_HIT_EST",
+   records:[row]};
+ const added=m.attachMatchupPreview(cards,feed,Date.parse("2026-11-11T21:05:00Z"));
+ assert.equal(added[0].matchupPreview.rate,.64);
+ assert.equal(added[0].matchupPreview.projection,32.1);
+ assert.equal(added[0].line,cards[0].line);
+ assert.equal(added[0].projection,cards[0].projection);
+ assert.equal(added[0].grade,cards[0].grade);
+ assert.equal(m.hitEstimate(added[0]),null);
+ assert.equal(added[0].position,"PG");
+ const wrongLine={...feed,records:[{...row,line:29.5}]};
+ assert.equal(m.attachMatchupPreview(cards,wrongLine,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
+ const futureSource={...feed,records:[{...row,estimated_hit_chance:{
+    ...row.estimated_hit_chance,source_provenance:{
+    ...row.estimated_hit_chance.source_provenance,rating_observed_at:"2026-11-11T23:00:00Z"}}}]};
+ assert.equal(m.attachMatchupPreview(cards,futureSource,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
+ const fakeCalibration={...feed,records:[{...row,estimated_hit_chance:{...row.estimated_hit_chance,calibrated:true}}]};
+ assert.equal(m.attachMatchupPreview(cards,fakeCalibration,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
+});
+test("Research preview is labeled TEST on both card and detail and has exact source feed",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes("TEST · uncalibrated"));
+ assert.ok(html.includes("RESEARCH · NOT CALIBRATED"));
+ assert.ok(html.includes("getMatchupResearch()"));
+ assert.ok(html.includes("attachMatchupPreview"));
+ assert.ok(html.includes("RAW_LIVE_BASE+name"));
+ assert.ok(!html.includes("SIM EST."));
+});

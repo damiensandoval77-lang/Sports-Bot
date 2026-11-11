@@ -306,6 +306,56 @@ function hitEstimate(p){
   calibrated:x.calibrated===true,method:x.method,
   opponentAwareVerified:true,historicalRateNotUsed:true};
 }
+/* Separately captured research estimates are NOT certified HIT EST and NEVER
+   replace original pretip lines, directions, projections, grades or odds. */
+function attachMatchupPreview(rows,feed,now=Date.now()){
+ if(feed?.status!=="POSITION_MATCHUP_RESEARCH_ONLY_PROBABILITY"||
+    feed?.production_approved!==false||feed?.calibrated!==false||
+    feed?.presentation_policy!=="EXPERIMENTAL_MATCHUP_PREVIEW_NOT_CERTIFIED_HIT_EST"||
+    !Array.isArray(feed.records)||!Number.isFinite(stamp(feed.captured_at))||
+    stamp(feed.captured_at)>now+120000)return rows;
+ const grouped=new Map(),duplicates=new Set();
+ const identity=x=>[String(x.player_id),x.team,x.opponent,x.stat,
+                         x.start,String(x.line),x.original_side].join("|");
+ for(const item of feed.records){
+  if(!item||!item.player_id||!item.team||!item.opponent||
+     !["PTS","REB","AST","PRA"].includes(item.stat)||
+     !["MORE","LESS"].includes(item.original_side))continue;
+  const chance=item.estimated_hit_chance,rate=n(chance?.modeled_selected_probability);
+  const captured=stamp(item.captured_at),kickoff=stamp(item.start);
+  if(chance?.method!=="POSITION_V_POSITION_DEF_RATING_RESEARCH_ANALYTIC_V1"||
+     chance.calibrated!==false||chance.research_only!==true||
+     chance.verified_betting_edge!==false||
+     chance.opponent_aware_inputs_sourced!==true||
+     chance.opponent_adjustment_validated!==false||
+     !Number.isFinite(captured)||!Number.isFinite(kickoff)||
+     captured>=kickoff||captured>now+120000||
+     rate===null||rate<0||rate>1||
+     n(item.matchup_projection)===null||n(item.original_projection)===null||
+     n(item.line)===null)continue;
+  const provenance=chance.source_provenance||{};
+  if(!["position_observed_at","player_observed_at","rating_observed_at",
+        "minutes_snapshot_at"].every(k=>Number.isFinite(stamp(provenance[k]))&&
+                                             stamp(provenance[k])<=captured))continue;
+  const k=identity(item),old=grouped.get(k);
+  if(old&&stamp(old.captured_at)===captured){duplicates.add(k);continue}
+  if(!old||stamp(old.captured_at)<captured)grouped.set(k,item);
+ }
+ for(const k of duplicates)grouped.delete(k);
+ return rows.map(p=>{
+  if(p.sport!=="NBA"||p.quoteOnly||!["MORE","LESS"].includes(p.direction)||
+     !Number.isFinite(stamp(p.captured))||stamp(p.captured)>=stamp(p.start))return p;
+  const item=grouped.get([String(p.playerId),p.team,p.opponent,p.stat,
+           p.start,String(p.line),p.direction].join("|"));
+  if(!item||stamp(item.captured_at)<stamp(p.captured))return p;
+  return {...p,position:p.position||item.listed_position||"",
+   matchupPreview:{rate:n(item.estimated_hit_chance.modeled_selected_probability),
+      projection:n(item.matchup_projection),asOf:item.captured_at,
+      method:item.estimated_hit_chance.method,calibrated:false,
+      originalPickCaptured:p.captured,
+      researchOnly:true}};
+ });
+}
 /* NFL settlement is joined ONLY with full immutable quote identity. */
 function attachNFLGrades(rows,graded){
  const entries=new Map();
@@ -551,9 +601,9 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["feeds.js"]="dp-live-raw-20261111-r4";
+globalThis.__damesRunningAssets["feeds.js"]="dp-matchup-preview-20261111-r5";
