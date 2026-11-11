@@ -27,11 +27,16 @@ def fixtures(now=NOW):
      "tonight_capture_gradeability.json":{
          "status":"CAPTURE_VERIFIED","checked_at":STAMP,
          "game_date_eastern":"2026-11-09",
+         "games":[{"game":GAME["game"],"issues":[]}],
          "summary":{"schedule_games":1,"games_with_saved_source_quotes":1,
-                    "games_with_frozen_ai":1,"total_standard_source_quotes":3,
+                    "games_with_frozen_ai":1,"games_with_line_backed_models":1,
+                    "total_line_backed":3,"total_standard_source_quotes":3,
                     "total_standard_markets_without_frozen_model":0,
                     "total_missing_primary_with_separate_research_receipt":0,
                     "total_missing_primary_without_any_ai_receipt":0}},
+     "dames-picks/published_pick_settlement.json":{
+         "checked_at":STAMP,"status":"READY",
+         "counts":{"frozen_picks":3,"graded":0,"pending":3}},
      "dames-picks/browser_readiness.json":{
          "checked_at":STAMP,"status":"READY","browser_render_verified":True,
          "site_url":"https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
@@ -185,32 +190,52 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("PUBLISHED_PICK_BOARD_STALE",
                       r["components"]["published_pick_cards"]["reasons"])
 
-    def test_unfrozen_standard_quotes_block_full_production_readiness(self):
+    def test_raw_quote_not_modeled_is_visible_but_not_a_fabricated_pick(self):
         data=fixtures()
         capture=data["tonight_capture_gradeability.json"]
         capture["status"]="CAPTURE_INCOMPLETE"
+        capture["games"][0]["issues"]=["STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"]
         capture["summary"].update(
             total_standard_markets_without_frozen_model=3,
             total_missing_primary_with_separate_research_receipt=2,
             total_missing_primary_without_any_ai_receipt=1)
         result=check(NOW,data)
-        self.assertFalse(result["ready_for_trustworthy_picks"])
+        self.assertEqual(result["status"],"READY",result["components"])
+        self.assertTrue(result["ready_for_trustworthy_picks"])
+        self.assertFalse(result["components"]["unmodeled_provider_market_coverage"]["required"])
         self.assertIn("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL",
-                      result["components"]["pregame_capture"]["reasons"])
-        self.assertTrue(result["components"]["pregame_capture"]["required"])
+                      result["components"]["unmodeled_provider_market_coverage"]["reasons"])
+        self.assertEqual(result["components"]["pregame_capture"]["state"],"READY")
 
-    def test_research_receipt_cannot_erase_primary_model_gap(self):
+    def test_research_receipts_do_not_substitute_for_a_published_model(self):
         data=fixtures()
         capture=data["tonight_capture_gradeability.json"]
         capture["status"]="CAPTURE_INCOMPLETE"
+        capture["games"][0]["issues"]=["PROVIDER_QUOTES_WITH_NO_FROZEN_LINE_BACKED_MODEL"]
         capture["summary"].update(
+            games_with_line_backed_models=0,total_line_backed=0,
             total_standard_markets_without_frozen_model=3,
             total_missing_primary_with_separate_research_receipt=3,
             total_missing_primary_without_any_ai_receipt=0)
         result=check(NOW,data)
-        self.assertEqual(result["status"],"DEGRADED")
-        self.assertIn("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL",
+        self.assertNotEqual(result["status"],"READY")
+        self.assertIn("UPCOMING_GAMES_WITHOUT_GRADEABLE_SAVED_PICKS",
                       result["components"]["pregame_capture"]["reasons"])
+
+    def test_verified_final_missing_on_published_pick_blocks_ready(self):
+        data=fixtures()
+        data["dames-picks/published_pick_settlement.json"]["status"]="DEGRADED"
+        result=check(NOW,data)
+        self.assertIn("published_pick_settlement",result["degraded_components"])
+        self.assertIn("PUBLISHED_FROZEN_PICKS_NOT_GRADEABLE",
+                      result["components"]["published_pick_settlement"]["reasons"])
+
+    def test_stale_published_gradeability_audit_blocks_ready(self):
+        data=fixtures()
+        data["dames-picks/published_pick_settlement.json"]["checked_at"]="2026-11-08T10:00:00Z"
+        result=check(NOW,data)
+        self.assertIn("PUBLISHED_GRADEABILITY_AUDIT_STALE",
+                      result["components"]["published_pick_settlement"]["reasons"])
 
     def test_wrong_slate_and_stale_capture_cannot_claim_ready(self):
         data=fixtures()
