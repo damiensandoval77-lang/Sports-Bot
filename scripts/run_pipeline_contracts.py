@@ -6,10 +6,7 @@ import subprocess
 import sys
 import yaml
 
-QUARANTINE={
-    "iphone_bot/tests/test_live_prop_tracker.cjs":"Known failure on main; separate issue required",
-    "test_player_name_matching.py":"Known failure on main; separate issue required",
-}
+QUARANTINE={}
 EXTRA=[
     "node --test iphone_bot/tests/test_coverage_banner.cjs",
     "python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v",
