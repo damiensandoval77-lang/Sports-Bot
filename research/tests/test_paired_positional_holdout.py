@@ -52,7 +52,7 @@ class PairedHoldoutTests(unittest.TestCase):
     def test_incomplete_reciprocal_game_rejected(self):
         x=games()
         x=[r for r in x if not (r["date"]=="2026-10-22" and
-                                  r["team"]=="NYK" and r["id"]=="NYK0")]
+                                  r["team"]=="NYK" and r["id"] in ("NYK0","NYK1"))]
         clean,issues=prepare(x)
         self.assertFalse(any(r["date"]=="2026-10-22" and r["team"]=="BOS" for r in clean))
         self.assertGreater(issues["partial_reciprocal_box"],0)
