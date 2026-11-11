@@ -117,6 +117,15 @@ class ImmutableMarketsTests(unittest.TestCase):
         out=merge(saved,{},contradictory)
         self.assertEqual(out["records"][0]["grade"],"PENDING")
 
+    def test_grader_not_blocked_behind_model_training(self):
+        from pathlib import Path
+        path=Path(__file__).resolve().parents[2]/".github/workflows/nba-new-ai-multimarket-grade.yml"
+        workflow=path.read_text(encoding="utf-8")
+        self.assertIn("group: nba-new-ai-final-settlement",workflow)
+        self.assertIn("ref: ${{ github.head_ref || 'main' }}",workflow)
+        self.assertIn("python -m iphone_bot.multimarket_forecast_ledger",workflow)
+        self.assertIn("python -m iphone_bot.merge_new_ai_publishing",workflow)
+
     def test_unknown_box_source_cannot_grade(self):
         initial=merge({},feed(prediction()),{})
         final={"records":[{"status":"GRADED","player_id":"123","team":"BOS",
