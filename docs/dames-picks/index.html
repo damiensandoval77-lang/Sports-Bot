@@ -94,7 +94,7 @@ async function refresh(){
  state.errors=errors;state.updated=new Date();state.loading=false;render();
  if(state.picked){const current=rows().find(x=>m.key(x)===m.key(state.picked));if(current){state.picked=current;renderDetail()}}
  if(state.gamePicked){const current=state.liveGames.find(x=>x.sport===state.gamePicked.sport&&x.gameId===state.gamePicked.gameId);if(current){state.gamePicked=current;renderGameDetail()}}
-
+ if(!state.directAt||Date.now()-state.directAt>25000)liveTick().catch(()=>{});
 }
 function rows(){return state.league==="NBA"?state.nba:state.nfl}
 function shown(){
@@ -223,5 +223,44 @@ for(const b of document.querySelectorAll("[data-league]"))b.onclick=()=>{state.l
 for(const b of document.querySelectorAll("[data-view]"))b.onclick=()=>{state.mode=b.dataset.view;document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x===b));back()};
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh().catch(()=>{})});
 setInterval(()=>{if(!document.hidden)refresh().catch(()=>{})},120000);
+/* 30-second free browser-direct ESPN fallback. Never changes stored model
+   predictions or finals. Avoid polling when backgrounded or no live slate. */
+function liveWindowOpen(now=Date.now()){
+ return (state.liveGames||[]).some(g=>g.sport==="NBA"&&(
+   g.state==="in"||g.state==="stale"||
+   (g.state!=="final"&&Number.isFinite(timestamp(g.start))&&
+    timestamp(g.start)<=now&&now-timestamp(g.start)<5*3600000)))||
+  (state.nba||[]).some(p=>p.grade==="PENDING"&&timestamp(p.start)<=now&&
+    now-timestamp(p.start)<5*3600000);
+}
+function applyLive(){
+ if(!state.raw)return;
+ const now=Date.now();
+ const nb=L.mergeFeeds(m.preferredNBALiveFeed(state.raw.nbaLive,state.raw.independentPlayers,now),state.direct?.feed,now);
+ const nf=state.raw.nflLive;
+ state.liveGames=m.gameCatalog(nb,nf,state.raw.nbaSchedule,state.raw.nflSchedule,now,
+   L.mergeScores(state.raw.nbaScores,state.direct?.board,now));
+ state.nba=m.attachLive(state.nba,nb,nf,now);
+ // Preserve historical NFL settlement, do not replace it with live tracking.
+ state.nfl=m.attachLive(state.nfl,nb,nf,now);
+ state.health={...state.health,nbaLive:nb,nflLive:nf};
+ render();
+ if(state.picked){const current=rows().find(x=>m.key(x)===m.key(state.picked));if(current){state.picked=current;renderDetail()}}
+ if(state.gamePicked){const current=state.liveGames.find(x=>x.sport===state.gamePicked.sport&&x.gameId===state.gamePicked.gameId);if(current){state.gamePicked=current;renderGameDetail()}}
+}
+async function liveTick(force=false){
+ if(document.hidden||state.liveBusy||(!force&&!liveWindowOpen()))return;
+ state.liveBusy=true;
+ try{
+  const data=await L.fetchNBA();
+  if(data){
+   state.direct=data;
+   state.directAt=Date.now();
+   applyLive();
+  }
+ }catch(_){/* Keep last verified observation or published snapshot */ }
+ finally{state.liveBusy=false}
+}
+setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000);
 $("date").textContent=new Date().toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"});refresh().catch(e=>{$("status").textContent="Cannot load published bot outputs: "+e.message;state.loading=false});
 </script></body></html>
