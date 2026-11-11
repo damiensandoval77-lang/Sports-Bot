@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-11T03:53:02.836605+00:00",
+  "checked_at": "2026-11-11T04:56:51.055270+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -9,8 +9,7 @@
   "blocking_checks": [
     "unified_artifacts",
     "nba_production",
-    "nba_grading",
-    "published_pick_settlement"
+    "nba_grading"
   ],
   "checks": {
     "unified_artifacts": {
@@ -30,7 +29,7 @@
         "MISSING_OR_STALE_REPORT",
         "NBA_PRODUCTION_NOT_READY",
         "NBA_FAILED_PRIZEPICKS_LINES",
-        "NBA_FAILED_PUBLIC_BROWSER"
+        "NBA_FAILED_PUBLISHED_PICK_SETTLEMENT"
       ]
     },
     "nba_capture": {
@@ -45,10 +44,8 @@
       ]
     },
     "published_pick_settlement": {
-      "state": "DEGRADED",
-      "issues": [
-        "PUBLISHED_PICKS_WITH_INVALID_OR_MISSING_SETTLEMENT"
-      ]
+      "state": "READY",
+      "issues": []
     },
     "nfl_grading": {
       "state": "READY",
