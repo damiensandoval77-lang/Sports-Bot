@@ -113,6 +113,11 @@ function renderUpcomingSlate(){
  const holder=$("upcoming-slate");
  if(state.league!=="NBA"||state.mode!=="board"){holder.innerHTML="";return;}
  const schedule=state.raw?.nbaSchedule;
+ if(schedule?.coverage_complete!==true||!Array.isArray(schedule.games)){
+  holder.innerHTML='<div class="section"><h2>Upcoming NBA games</h2></div>'+
+   '<div class="note">Official schedule unavailable or incomplete — upcoming game coverage cannot be verified.</div>';
+  return;
+ }
  const now=Date.now();
  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",
   year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(now));
