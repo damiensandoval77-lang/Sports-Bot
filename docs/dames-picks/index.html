@@ -283,7 +283,7 @@ $("verify-app").onclick=async()=>{
   const meta=current.match(/<meta name="dames-release" content="([^"]+)"/);
   const match=latest?.release_id===RELEASE_ID&&meta?.[1]===RELEASE_ID&&
     current.includes("HIT EST.")&&current.includes("Hit est.")&&
-    !current.includes("SIM EST.")&&!current.includes("Sim est.");
+    !current.includes("SIM"+" EST.")&&!current.includes("Sim"+" est.");
   el.textContent=match?" · This phone matches the published release":
     " · OUTDATED APP: reopen using a new cache-busted link";
  }catch(error){el.textContent=" · Cannot verify this phone: "+String(error.message||error).slice(0,110);}
