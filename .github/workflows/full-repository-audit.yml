@@ -3,10 +3,12 @@ on:
   pull_request:
     paths:
       - 'scripts/full_repository_audit.py'
+      - 'scripts/audit_branch_inventory.py'
       - '.github/workflows/full-repository-audit.yml'
   workflow_dispatch:
 permissions:
   contents: read
+  pull-requests: read
 concurrency:
   group: full-repository-audit-${{ github.ref }}
   cancel-in-progress: true
@@ -40,4 +42,34 @@ jobs:
           retention-days: 90
       - name: Fail if any source or workflow structurally invalid
         if: steps.audit.outputs.code != '0'
+        run: exit 1
+
+  branch-inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify every remote branch's divergence from main
+        id: branches
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python scripts/audit_branch_inventory.py
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Retain complete per-branch evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-branch-inventory-${{ github.run_id }}
+          path: |
+            out/repo-audit/branch-inventory.json
+            out/repo-audit/branch-inventory.md
+          retention-days: 90
+      - name: Fail if any branch could not be verified
+        if: steps.branches.outputs.code != '0'
         run: exit 1
