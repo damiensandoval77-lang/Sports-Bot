@@ -97,7 +97,7 @@ def recover_espn(needed,checked,*,fetch,season_schedule=None,max_games=24):
         day=e.get("date_eastern")
         a,b=team(e.get("away_abbreviation")),team(e.get("home_abbreviation"))
         if day and a and b and str(e.get("id","")).isdigit():
-            events[(day,tuple(sorted((a,b))))].append(str(e["id"]))
+            events[(day,*sorted((a,b)))].append(str(e["id"]))
     candidates=[]
     for key,rows in needed.items():
         ids=list(set(events.get(key,[])))
