@@ -5,6 +5,9 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_multimarket_workflow_dependencies.py'
       - 'research/pretip_matchup_shadow.py'
       - 'research/publish_matchup_shadow_guard.py'
       - 'research/archive_matchup_forecasts.py'
@@ -34,6 +37,9 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_multimarket_workflow_dependencies.py'
       - 'iphone_bot/new_ai_injury_context.py'
       - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - '.github/workflows/nba-new-ai-all-markets.yml'
@@ -56,6 +62,11 @@ jobs:
           python-version: '3.11'
       - name: Install existing historical and ML requirements
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Test shared live-history dependency and automatic refresh wiring
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_live_lagged_matchup_sidecar.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_workflow_dependencies.py' -v
       - name: Validate complete player-game CSV opportunity recovery contracts
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_recover_csv_opportunities.py' -v
