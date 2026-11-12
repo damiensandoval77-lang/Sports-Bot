@@ -175,12 +175,21 @@ def evaluate(now,site,espn=None):
                      espn_available=espn is not None,
                      recovery_workflow=REPAIR["live_scores"] if bad else None))
     players=site.get("nba_player_tracking_independent.json") or {}
-    player_games={g.get("game") for g in players.get("games",[]) if g.get("player_rows")}
+    per_game={g.get("game"):g for g in players.get("games",[])
+              if isinstance(g,dict) and g.get("game")}
     player_age=age(now,players.get("captured_at"))
-    bad=bool(live and (player_age is None or player_age>30 or not set(live)<=player_games))
+    missing_players=[g for g in live if not (per_game.get(g) or {}).get("player_rows")]
+    stale_players=[g for g in live if g not in missing_players and
+                   (age(now,(per_game[g].get("observed_at") or players.get("captured_at"))) is None
+                    or age(now,(per_game[g].get("observed_at") or players.get("captured_at")))>30)]
+    # The wrapper timestamp can be fresh after a partial collector run while
+    # several retained older game boxes are stale. A valid per-game merge
+    # preserves real totals, but does not pretend the old rows are live.
+    bad=bool(live and (missing_players or stale_players or player_age is None or player_age>30))
     player_state="FAIL" if bad else "WARN" if unknown else "OK"
     out.append(check("live_players",player_state,"Live player-box coverage",
-                     age_minutes=player_age,missing=sorted(set(live)-player_games),
+                     age_minutes=player_age,missing=missing_players,
+                     stale_game_observations=stale_players,
                      espn_available=espn is not None,
                      recovery_workflow=REPAIR["live_players"] if bad else None))
     # Separate AI-only and standard PrizePicks research ledgers have their
