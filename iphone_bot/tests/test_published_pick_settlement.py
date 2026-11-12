@@ -17,6 +17,19 @@ def fin(status="GRADED"):
          "actual":23 if status=="GRADED" else None,
          "verified_dnp_reason":"INACTIVE" if status!="GRADED" else None}
 class PublishedCaptureSettlementTests(unittest.TestCase):
+ def test_cross_provider_dnp_ids_match_only_exact_verified_event(self):
+  p={**BASE,"grade":"EXCLUDED_VERIFIED_DNP","source_game_id":"401909960",
+     "final_source":"ESPN_FINAL_BOX_ABSENT_INJURY_LISTED",
+     "verified_dnp_reason":"Final box inactive","actual":None,"direction_hit":None}
+  final=fin("EXCLUDED_VERIFIED_DNP")
+  self.assertEqual(evaluate(ledger(p),finals(final),NOW)["status"],"READY")
+  from iphone_bot.published_pick_settlement import same_verified_event
+  self.assertFalse(same_verified_event(p,{**final,"start":"2026-11-12T01:00:00Z"}))
+  self.assertFalse(same_verified_event(p,{**final,"team":"NYK"}))
+  self.assertFalse(same_verified_event(p,{**final,"player_id":"456"}))
+  self.assertFalse(same_verified_event(p,{**final,"source_game_id":"401909961","final_source":"ESPN_FINAL"}))
+  self.assertFalse(same_verified_event(p,{**final,"source_game_id":"wrong"}))
+
  def test_verified_pregame_pending_is_allowed_before_official_final(self):
   r=evaluate(ledger(BASE),finals(),NOW.replace(hour=2))
   self.assertEqual(r["status"],"READY")

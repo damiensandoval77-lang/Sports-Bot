@@ -7,6 +7,7 @@ Never infer an outcome from live totals or missing finals.
 import datetime as dt
 import json
 import math
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -37,6 +38,24 @@ def version(x):
         return (*identity(x),float(x["line"]))
     except (KeyError,TypeError,ValueError):
         return None
+
+def same_verified_event(a,b):
+    """Compare source-scoped IDs only after exact frozen event identity matches.
+
+    NBA and ESPN assign different IDs to the same fixture. Both rows must
+    already pass the trusted-final checks in evaluate; no outcomes are changed.
+    """
+    if identity(a) is None or identity(a)!=identity(b):return False
+    def namespace(row):
+        source=row.get("final_source","")
+        ident=str(row.get("source_game_id") or "")
+        if source.startswith("NBA_") and re.fullmatch(r"00\d{8}",ident):return "NBA"
+        if source.startswith("ESPN_") and re.fullmatch(r"4\d{8}",ident):return "ESPN"
+        return None
+    na,nb=namespace(a),namespace(b)
+    if a.get("source_game_id")==b.get("source_game_id"):
+        return na==nb
+    return {na,nb}=={"NBA","ESPN"}
 
 def evaluate(ledger,finals,now=None):
     now=now or dt.datetime.now(UTC)
@@ -101,7 +120,7 @@ def evaluate(ledger,finals,now=None):
                 counts["graded"]+=1
                 if final is None or final.get("status")!="GRADED":
                     reasons["GRADED_WITHOUT_MATCHING_VERIFIED_FINAL"]+=1
-                elif final.get("actual")!=total or final.get("source_game_id")!=x.get("source_game_id"):
+                elif final.get("actual")!=total or not same_verified_event(final,x):
                     reasons["GRADED_FINAL_MISMATCH"]+=1
                 side=(x.get("estimated_hit_chance") or {}).get("modeled_direction")
                 if side in ("More","Less") and isinstance(x.get("line"),(int,float)):
@@ -120,7 +139,7 @@ def evaluate(ledger,finals,now=None):
                 if final is None:
                     counts["dnp_without_independent_forecast_record"]+=1
                 elif (final.get("status")!="EXCLUDED_VERIFIED_DNP" or
-                      final.get("source_game_id")!=x.get("source_game_id")):
+                      not same_verified_event(final,x)):
                     reasons["DNP_FINAL_MISMATCH"]+=1
         elif grade=="PENDING":
             counts["pending"]+=1
