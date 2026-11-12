@@ -106,10 +106,18 @@ def recover_espn(needed,checked,*,fetch,season_schedule=None,max_games=24):
     result=list(checked)
     seen={(str(r["id"]),r["team"],r["date"]) for r in result}
     failures=0
+    errors=defaultdict(int)
     for day,gid,rows in candidates[:max_games]:
         try:summary=fetch(ESPN_SUMMARY.format(gid))
-        except Exception:
-            failures+=1;continue
+        except Exception as exc:
+            failures+=1
+            code=getattr(exc,"code",None)
+            errors[f"{type(exc).__name__}:{code if code is not None else 'network'}"]+=1
+            # A provider-wide outage is not a reason to stall an entire
+            # pregame model run with 24 identical failures and timeouts.
+            if failures>=3 and len(errors)==1:
+                break
+            continue
         for local,tip_day in rows:
             row=completed_espn_row(local,gid,summary,tip_day)
             if row is None:continue
@@ -120,6 +128,7 @@ def recover_espn(needed,checked,*,fetch,season_schedule=None,max_games=24):
                    "recovered":len(result)-len(checked),
                    "requested_games":min(len(candidates),max_games),
                    "eligible_games":len(candidates),"fetch_failures":failures,
+                   "provider_errors":dict(errors),
                    "remaining_missing":max(0,sum(len(v) for v in needed.values())-(len(result)-len(checked)))}
 
 def completed_row(local,game_id,box,tip_day):
