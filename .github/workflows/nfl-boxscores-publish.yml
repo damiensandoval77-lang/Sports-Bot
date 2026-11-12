@@ -3,6 +3,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'tests/test_nfl_boxscore_display.cjs'
       - 'scripts/export_nfl_boxscores.py'
       - '.github/workflows/nfl-boxscores-publish.yml'
       - 'tests/test_nfl_boxscores.py'

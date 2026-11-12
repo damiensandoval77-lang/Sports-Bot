@@ -2,7 +2,7 @@ import datetime as dt
 import unittest
 from unittest.mock import patch
 
-from iphone_bot.recover_prizepicks_final_games import pending_matchup_requests, recover, multi_origin_request, S3_BASE
+from iphone_bot.recover_prizepicks_final_games import pending_matchup_requests, recover, multi_origin_request, S3_BASE, merge_cached_finals
 from iphone_bot.prizepicks_research_ledger import settle
 
 NOW=dt.datetime(2026,11,9,14,tzinfo=dt.timezone.utc)
@@ -19,6 +19,34 @@ def verified(name="Test Player",pts=24):
             "final_confirmed":True,"PTS":pts,"REB":4,"AST":2,"PRA":pts+6,"MIN":30}
 
 class RecoveryTests(unittest.TestCase):
+    def test_cached_explicit_dnp_survives_provider_omission(self):
+        final={**verified(),"PTS":None,"REB":None,"AST":None,"PRA":None,
+               "MIN":None,"dnp_final_verified":True,"dnp_reason":"DND - injury"}
+        rows=merge_cached_finals([research()],[],[final],now=NOW)
+        result=settle({"records":[research()]},[],now=NOW,final_games=rows)["records"][0]
+        self.assertEqual(result["status"],"VOID_DNP")
+        self.assertIsNone(result["actual"])
+        self.assertEqual(result["combined_projection"],21.5)
+
+    def test_cached_played_final_preserves_frozen_projection(self):
+        rows=merge_cached_finals([research()],[],[verified()],now=NOW)
+        result=settle({"records":[research()]},[],now=NOW,final_games=rows)["records"][0]
+        self.assertEqual(result["actual"],24)
+        self.assertEqual(result["combined_projection"],21.5)
+
+    def test_cache_filters_wrong_fixture_date_untrusted_and_conflicts(self):
+        for bad in [{**verified(),"opponent":"BOS"},
+                    {**verified(),"date":"2026-11-07"},
+                    {**verified(),"source":"UNVERIFIED_WEB"}]:
+            self.assertEqual(merge_cached_finals([research()],[],[bad],now=NOW),[])
+        self.assertEqual(merge_cached_finals([research()],[verified(pts=25)],
+                                            [verified()],now=NOW),[])
+
+    def test_cache_does_not_regrade_settled_records_or_future_games(self):
+        for row in [research(status="SETTLED"),
+                    {**research(),"start":"2026-11-10T00:00:00Z"}]:
+            self.assertEqual(merge_cached_finals([row],[],[verified()],now=NOW),[])
+
     def test_deduplicates_thresholds_for_final_fetch(self):
         rows=[research(),{**research(),"line":21.5}]
         result=pending_matchup_requests(rows,now=NOW)
@@ -91,6 +119,22 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(result["scoreboard"]["games"],[])
         self.assertEqual(seen[0],S3_BASE+"scoreboard/todaysScoreboard_00.json")
         self.assertEqual(seen[1],NBA_SCOREBOARD)
+
+    def test_espn_summary_failover_preserves_event_id(self):
+        from urllib.error import HTTPError
+        from iphone_bot.fetch_final_boxscores import ESPN_BOX
+        request = ESPN_BOX + "?event=401909960"
+        mirror = request.replace("site.api.espn.com", "site.web.api.espn.com")
+        seen = []
+
+        def provider(url, timeout=7):
+            seen.append(url)
+            if url == request:
+                raise HTTPError(url, 403, "Forbidden", {}, None)
+            return {"header": {"id": "401909960"}}
+
+        self.assertEqual(multi_origin_request(request, requester=provider)["header"]["id"], "401909960")
+        self.assertEqual(seen, [request, mirror])
 
     def test_mediaops_official_boxscore_path_and_safe_failure(self):
         from iphone_bot.fetch_final_boxscores import NBA_BOX

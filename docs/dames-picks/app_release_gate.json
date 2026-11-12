@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-12T00:02:50.150684+00:00",
+  "checked_at": "2026-11-12T16:33:31.002646+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -9,8 +9,6 @@
   "blocking_checks": [
     "unified_artifacts",
     "nba_production",
-    "nba_capture",
-    "nba_grading",
     "published_pick_settlement"
   ],
   "checks": {
@@ -29,24 +27,17 @@
       "state": "DEGRADED",
       "issues": [
         "NBA_PRODUCTION_NOT_READY",
-        "NBA_FAILED_PREGAME_CAPTURE",
         "NBA_FAILED_PUBLISHED_PICK_SETTLEMENT",
         "NBA_FAILED_NIGHTLY_GRADES"
       ]
     },
     "nba_capture": {
-      "state": "DEGRADED",
-      "issues": [
-        "REQUIRED_PREGAME_PICK_ARTIFACT_MISSING",
-        "SCHEDULED_GAME_WITHOUT_FROZEN_MODEL"
-      ]
+      "state": "READY",
+      "issues": []
     },
     "nba_grading": {
-      "state": "DEGRADED",
-      "issues": [
-        "HISTORICAL_AI_FORECASTS_UNRESOLVED",
-        "GRADING_INCOMPLETE:2026-11-10"
-      ]
+      "state": "READY",
+      "issues": []
     },
     "published_pick_settlement": {
       "state": "DEGRADED",

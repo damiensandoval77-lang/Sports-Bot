@@ -13,6 +13,8 @@ on:
     - cron: "6,21,36,51 * * * *"
   pull_request:
     paths:
+      - "iphone_bot/merge_nba_player_boxscore_publish.py"
+      - "iphone_bot/tests/test_merge_nba_player_boxscore_publish.py"
       - "iphone_bot/refresh_nba_player_boxscores.py"
       - "iphone_bot/tests/test_nba_player_boxscores.py"
       - "docs/index.html"

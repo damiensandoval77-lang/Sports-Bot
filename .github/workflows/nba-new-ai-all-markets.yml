@@ -56,6 +56,9 @@ jobs:
           python-version: '3.11'
       - name: Install existing historical and ML requirements
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Validate complete player-game CSV opportunity recovery contracts
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_recover_csv_opportunities.py' -v
       - name: Test standard-only quotes and correlated PRA math
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v

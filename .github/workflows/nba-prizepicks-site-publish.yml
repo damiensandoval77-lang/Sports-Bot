@@ -125,8 +125,27 @@ jobs:
           # Failed runs must not suppress unattended recovery. Only an active
           # run or a successful run within the last hour provides a cooldown.
           now=$(date -u +%s)
+          # A successful model completed BEFORE the latest authentic provider
+          # snapshot cannot prove the current offers were frozen. Re-run even
+          # within the normal hour cooldown if the quote source is newer.
+          latest_source_epoch=$(python - <<'PY'
+          import datetime,json
+          from pathlib import Path
+          d=json.loads(Path('docs/prizepicks_model_input.json').read_text())
+          value=d.get('source_generated_at') or ''
+          try:
+              t=datetime.datetime.fromisoformat(value.replace('Z','+00:00'))
+              print(int(t.timestamp()))
+          except (TypeError,ValueError,OverflowError):
+              print(0)
+          PY
+          )
           recent=$(gh run list --workflow nba-new-ai-all-markets.yml --limit 30 --json createdAt,headBranch,status,conclusion |
-            jq --argjson cutoff "$((now - 60*60))" '[.[] | select(.headBranch == "main" and (.status != "completed" or (.conclusion == "success" and (.createdAt | fromdateiso8601) >= $cutoff)))] | length')
+            jq --argjson cutoff "$((now - 60*60))" --argjson source "$latest_source_epoch" \
+              '[.[] | select(.headBranch == "main" and
+                (.status != "completed" or
+                  (.conclusion == "success" and (.createdAt | fromdateiso8601) >= $cutoff
+                    and (.createdAt | fromdateiso8601) >= $source)))] | length')
           if [ "$recent" -gt 0 ]; then
             echo 'Model run in progress or succeeded within 60 minutes'
             exit 0

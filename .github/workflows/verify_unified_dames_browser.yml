@@ -1,12 +1,20 @@
 name: Verify public unified Dame's Picks NBA + NFL browser
 on:
   workflow_dispatch:
+  # Bot-generated JSON commits do not start push workflows. Verify the
+  # real merged phone UI after each public comparison publish instead.
+  workflow_run:
+    workflows:
+      - Publish lightweight verified PrizePicks AI comparisons
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '26 * * * *'
   push:
     branches: [main]
     paths:
       - 'docs/dames-picks/index.html'
+      - '.github/workflows/verify_unified_dames_browser.yml'
       - 'docs/dames-picks/feeds.js'
       - 'docs/dames-picks/dames_take.js'
       - 'iphone_bot/verify_unified_dames_browser.py'

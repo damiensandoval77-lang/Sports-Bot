@@ -2,6 +2,14 @@ name: NBA production readiness and stability gate
 
 on:
   workflow_dispatch:
+  # GitHub Actions bot commits do not fire regular push workflows.
+  # Reevaluate the published readiness report after real source recovery.
+  workflow_run:
+    workflows:
+      - Publish daily NBA AI player projections without paid prop lines
+      - Publish lightweight verified PrizePicks AI comparisons
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '9,29,49 * * * *'
   push:
@@ -31,6 +39,7 @@ concurrency:
 
 jobs:
   verify-readiness:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -133,11 +142,19 @@ jobs:
             esac
             # Compare with actual started runs, including in-progress.
             # Prevent every 20-minute audit from buying another board.
-            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status,headBranch |
-              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" '
-                [.[] | select(.headBranch=="main" and (.createdAt | fromdateiso8601) >= $cutoff)] | length')
+            # Keep the paid collector on a hard cooldown even if its last
+            # request failed: avoid repeatedly spending top-up credits.
+            # Free recovery is different: a failed run must not suppress the
+            # next verified retry. Suppress only active or successful runs.
+            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status,conclusion,headBranch |
+              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" \
+                 --arg paid "$([ "$workflow" = nba-prizepicks-full-slate.yml ] && echo true || echo false)" '
+                [.[] | select(.headBranch=="main" and
+                  ((.status != "completed") or
+                   ((.createdAt | fromdateiso8601) >= $cutoff and
+                    ($paid == "true" or .conclusion == "success"))))] | length')
             if [ "$recent" -gt 0 ]; then
-              echo "Skipping $workflow: an execution started within $cooldown_minutes minutes"
+              echo "Skipping $workflow: active or successfully completed within cooldown (paid calls also hard-capped)"
               continue
             fi
             echo "Dispatching bounded recovery: $workflow"
@@ -154,6 +171,13 @@ jobs:
           report=docs/production_readiness.json
           test -f "$report"
           title="Automated incident: NBA production readiness degraded"
+          status=$(jq -r '.status // "UNKNOWN"' "$report")
+          if [[ "$(gh api "repos/$GH_REPO" --jq .has_issues 2>/dev/null || echo false)" != "true" ]]; then
+            echo "::warning::GitHub Issues disabled: production incident will be retained in committed readiness JSON and workflow summary."
+            echo "## Production incident: $status" >> "$GITHUB_STEP_SUMMARY"
+            echo "Issues are disabled; see [readiness evidence](https://github.com/$GH_REPO/blob/main/docs/production_readiness.json)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           existing=$(gh issue list --state all --limit 100 --json number,title,state |
             jq -r --arg title "$title" '[.[] | select(.title == $title)] | first | .number // empty')
           status=$(jq -r '.status // "UNKNOWN"' "$report")
@@ -186,6 +210,14 @@ jobs:
             gh issue reopen "$existing" 2>/dev/null || true
             gh issue edit "$existing" --body-file "$RUNNER_TEMP/incident.md"
           fi
+      - name: Save production incident report artifact
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-readiness-${{ github.run_id }}
+          path: docs/production_readiness.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Fail visibly when bot is not ready for reliable picks
         if: always() && github.event_name != 'pull_request' && steps.check.outcome == 'failure'
         run: |

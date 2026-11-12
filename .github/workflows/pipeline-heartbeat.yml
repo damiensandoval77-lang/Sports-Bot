@@ -1,6 +1,11 @@
 name: Pipeline heartbeat - deployed lines picks live and grades
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/pipeline_heartbeat.py'
+      - '.github/workflows/pipeline-heartbeat.yml'
   schedule:
     - cron: '*/10 * * * *'
   workflow_run:
@@ -16,6 +21,7 @@ on:
       - '.github/workflows/pipeline-heartbeat.yml'
       - 'iphone_bot/pipeline_heartbeat.py'
       - 'iphone_bot/tests/test_pipeline_heartbeat.py'
+      - 'tests/test_critical_production_repair_contracts.py'
 permissions:
   contents: read
   actions: write
@@ -36,7 +42,10 @@ jobs:
           python-version: '3.11'
       - name: Test heartbeat state classification
         if: github.event_name == 'pull_request'
-        run: python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v
+        run: |
+          python -m pip install --disable-pip-version-check "PyYAML>=6,<7"
+          python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v
+          python -m unittest discover -s tests -p 'test_critical_production_repair_contracts.py' -v
       - name: Run deployed-site monitoring
         if: github.event_name != 'pull_request'
         id: health
@@ -66,6 +75,16 @@ jobs:
             gh workflow run "$wf" --ref main
             echo "Dispatched free recovery for $wf"
           done
+      - name: Publish source-grounded status in the Actions run summary
+        if: github.event_name != 'pull_request' && always()
+        run: |
+          echo "## Dame's Picks deployed pipeline heartbeat" >> "$GITHUB_STEP_SUMMARY"
+          echo "This report checks deployed data; a green preceding workflow alone is not proof of a healthy app." >> "$GITHUB_STEP_SUMMARY"
+          if [ -s pipeline_heartbeat.json ]; then
+            jq -r '.stages[] | "- **\\(.status)** \\(.stage): \\(.detail) | evidence: \\(.evidence|tojson)"' pipeline_heartbeat.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- **FAIL** Heartbeat report missing; inspect failed workflow and artifact." >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Open or close one GitHub alert per failing stage
         if: github.event_name != 'pull_request'
         env:
@@ -73,6 +92,13 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
+          # This repository currently has GitHub Issues disabled (API 410).
+          # Keep artifacts, Actions summary and red workflow status as primary alerts.
+          enabled=$(gh api "repos/$GH_REPO" --jq '.has_issues' 2>/dev/null || echo false)
+          if [ "$enabled" != true ]; then
+            echo "::warning::GitHub Issues disabled or unavailable; alert evidence remains in the run summary and artifact."
+            exit 0
+          fi
           gh label create pipeline-alert --color B60205 --description "Dame's Picks pipeline failure" 2>/dev/null || true
           jq -c '.stages[]' pipeline_heartbeat.json | while read -r row; do
             stage=$(jq -r .stage <<< "$row")

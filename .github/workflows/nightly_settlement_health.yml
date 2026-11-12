@@ -2,6 +2,12 @@ name: Verify overnight NBA grading completeness
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Freeze and grade authentic pregame PrizePicks AI research
+      - Grade frozen pretip AI forecasts against verified NBA finals
+    types: [completed]
+    branches: [main]
   schedule:
     # Run after the hourly PrizePicks final-recovery job (minute 27).
     - cron: '46 * * * *'

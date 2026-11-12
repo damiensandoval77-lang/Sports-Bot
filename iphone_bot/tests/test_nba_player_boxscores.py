@@ -45,8 +45,39 @@ class LiveBoxscoreTests(unittest.TestCase):
             bad=box()
             bad["game"]["homeTeam"]["teamTricode"]="LAL"
             return {"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else bad
-        with self.assertRaises(ValueError):
-            collect_boxscores(DAY,fetch=fetch,now=NOW)
+        result = collect_boxscores(DAY, fetch=fetch, now=NOW)
+        self.assertEqual(result["games"], [])
+        self.assertFalse(result["coverage"]["complete"])
+
+    def test_wrong_id_cannot_escape_failover_and_other_game_survives(self):
+        other = game()
+        other["gameId"] = "0022600201"
+
+        def fetch(url):
+            if url in NBA_LIVE_URLS:
+                return {"scoreboard": {"games": [game(), other]}}
+            response = box()
+            if url.endswith("0022600200.json"):
+                response["game"]["gameId"] = "0022600999"
+            else:
+                response["game"]["gameId"] = other["gameId"]
+            return response
+
+        result = collect_boxscores(DAY, fetch=fetch, now=NOW)
+        self.assertEqual(result["coverage"]["active_or_final_count"], 2)
+        self.assertEqual(result["coverage"]["observed_game_count"], 1)
+        self.assertEqual(result["status"], "PARTIAL_NBA_PLAYER_BOXSCORES")
+
+    def test_malformed_primary_box_uses_valid_mirror(self):
+        def fetch(url):
+            if url in NBA_LIVE_URLS:
+                return {"scoreboard": {"games": [game()]}}
+            if url.startswith(BOX_BASES[0]):
+                return {"game": {"gameId": "0022600200"}}
+            return box()
+
+        result = collect_boxscores(DAY, fetch=fetch, now=NOW)
+        self.assertTrue(result["coverage"]["complete"])
 
     def test_failed_one_boxscore_does_not_claim_row(self):
         def fetch(url):

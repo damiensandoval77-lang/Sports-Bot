@@ -55,8 +55,10 @@ def local_date(value):
 
 
 def request_json(url,timeout=12):
+    host=urllib.parse.urlsplit(url).hostname or ""
+    referer="https://www.espn.com/" if host.endswith(".espn.com") else "https://www.nba.com/"
     headers={"User-Agent":"Mozilla/5.0 (compatible; SportsBotBoxscoreAudit/1.0)",
-             "Accept":"application/json","Referer":"https://www.nba.com/"}
+             "Accept":"application/json","Referer":referer}
     req=urllib.request.Request(url,headers=headers)
     with urllib.request.urlopen(req,timeout=timeout) as resp:
         data=json.load(resp)
@@ -369,7 +371,8 @@ def pending_games(records,now=None):
     return games
 
 
-def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_games=None):
+def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_games=None,
+           supplemental_espn_dnp_names=None):
     pending=pending_games(records,now)
     days={key[0] for key in pending}
     # By team abbreviation and event day, never by a similar player's name.
@@ -466,6 +469,61 @@ def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_
                 break
             except (OSError,ValueError,KeyError,TypeError) as exc:
                 report["errors"].append("NBA schedule unavailable: "+str(exc)[:130])
+    # SECONDARY DNP RECOVERY: An official NBA final often lists only played
+    # athletes. A "complete game" does not establish whether every requested
+    # forecasted player participated. For any genuinely unlisted original
+    # player, independently check an ESPN COMPLETED final summary for an
+    # explicit didNotPlay+reason. Never infer a DNP from absence or a blank
+    # stat field, and never substitute ESPN scores into an NBA played row.
+    if known_espn_games and supplemental_espn_dnp_names:
+        from iphone_bot.paper_pick_pipeline import strict_player_name
+        for key in sorted(nba_complete):
+            requests=supplemental_espn_dnp_names.get(key) or set()
+            if not requests:
+                continue
+            day,away,home=key
+            published={
+                (strict_player_name(r.get("player")),r.get("team"))
+                for r in from_nba
+                if r.get("date")==day and
+                (r.get("team"),r.get("opponent")) in ((away,home),(home,away))
+            }
+            absent=set(requests)-published
+            if not absent:
+                continue
+            espn_id=known_espn_games.get(key)
+            if not espn_id or not str(espn_id).isdigit():
+                report["secondary_espn_dnp_no_verified_game_hint"] = (
+                    report.get("secondary_espn_dnp_no_verified_game_hint",0)+len(absent))
+                continue
+            try:
+                summary=request(ESPN_BOX+"?"+urllib.parse.urlencode({"event":str(espn_id)}))
+                verified=verified_direct_espn_summary(espn_id,key,summary)
+                recovered=[r for r in verified
+                           if r.get("dnp_final_verified") is True
+                           and r.get("final_confirmed") is True
+                           and r.get("source")=="ESPN_FINAL"
+                           and r.get("dnp_reason")
+                           and (strict_player_name(r.get("player")),r.get("team")) in absent]
+                # DNP rows must not be contradicted by a final played row from
+                # the same ESPN response, even when NBA didn't list the name.
+                played={(strict_player_name(r.get("player")),r.get("team"))
+                        for r in verified if r.get("dnp_final_verified") is not True}
+                recovered=[r for r in recovered
+                           if (strict_player_name(r.get("player")),r.get("team")) not in played]
+                if recovered:
+                    from_espn.extend(recovered)
+                    report["secondary_verified_explicit_dnp_players"] = (
+                        report.get("secondary_verified_explicit_dnp_players",0)+len(recovered))
+                remaining=absent-{(strict_player_name(r.get("player")),r.get("team"))
+                                 for r in recovered}
+                report["secondary_dnp_still_unverified"] = (
+                    report.get("secondary_dnp_still_unverified",0)+len(remaining))
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                report["errors"].append("Secondary ESPN explicit DNP unverified: "+str(exc)[:140])
+                report["secondary_dnp_still_unverified"] = (
+                    report.get("secondary_dnp_still_unverified",0)+len(absent))
+
     # ESPN is a fallback for missed games (e.g. NBA daily scoreboard has rolled).
     for date in sorted(days):
         if all(key in nba_complete|espn_complete for key in pending if key[0]==date):continue

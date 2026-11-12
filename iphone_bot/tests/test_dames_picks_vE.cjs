@@ -284,14 +284,14 @@ test("Real published scoreboard game count is independent of model records",()=>
  const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(page.includes("renderLiveGames()"));
  assert.ok(page.includes("function openGame(game)"));
- assert.ok(page.includes("No frozen props saved for this game. Its scoreboard and box score remain visible."));
+ assert.ok(page.includes("No verified pregame standard quotes were archived for this game. Its scoreboard and box score remain visible."));
 });
 
 test("Every game detail exposes original locked model, observed actual, ungraded state and full box score",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  for(const text of ["FROZEN LINE","FROZEN PROJ","ACTUAL","LIVE · NOT GRADED",
  "Full published player box score","Scoreboard","data-prop","Actual unavailable",
- "No frozen props saved for this game"])assert.ok(html.includes(text),text);
+ "No verified pregame standard quotes were archived for this game"])assert.ok(html.includes(text),text);
  assert.ok(html.includes('g.sport==="NFL"?p.target:p.stat'),"NFL uses exact target stat");
  assert.ok(html.includes('normalize(x.player)===normalize(p.player)'),"Exact player-name guard");
  assert.ok(html.includes('matches.length!==1'),"Ambiguous matches not fabricated");
@@ -434,7 +434,7 @@ test("Merged dashboard shows independently verified pick-settlement health, not 
  assert.ok(html.includes('NBA published picks awaiting verified settlement'));
  assert.ok(html.includes('provider standard markets withheld from AI picks'));
  assert.ok(!html.includes('errors.push("NBA capture incomplete")'));
- assert.ok(html.includes('Official DNP verified · void'));
+ assert.ok(html.includes('DNP · VOID')); // verified exclusion remains in the card badge, not the OVER/UNDER footer
 });
 
 
@@ -756,4 +756,63 @@ test("Public board hides internal diagnostics; opt-in page retains full release 
 test("Closed developer diagnostic disclosure hides all child controls on mobile",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(html.includes("#diagnostics:not([open]) > :not(summary){display:none!important}"));
+});
+
+test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
+ assert.ok(html.includes("const related=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)));"));
+ assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
+ assert.ok(html.includes('SAVED PRETIP LINE'));
+ assert.ok(html.includes('NO AI FORECAST'));
+ assert.ok(html.includes('Quote-only lines are never graded as model picks.'));
+ const archive=JSON.parse(fs.readFileSync("docs/prizepicks_pregame_line_archive.json","utf8"));
+ for(const game of ["Brooklyn Nets @ New Orleans Pelicans","Los Angeles Lakers @ Milwaukee Bucks","San Antonio Spurs @ Chicago Bulls"]){
+  assert.ok(archive.quotes.some(q=>q.game===game&&q.tier==="standard"&&Date.parse(q.observed_at)<Date.parse(q.starts_at)),game);
+ }
+});
+
+test("Unresolved injury baseline shows AI projection but does not claim an actionable hit confidence",()=>{
+ const baseline={...pt,injury_uncertainty_unresolved:true,
+   injury_reprojection_status:"BASELINE_WITH_UNRESOLVED_INJURY"};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[baseline]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].line,28.5);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].injuryUncertainty,true);
+ assert.match(got[0].chanceSource,/injury impact unresolved/);
+});
+
+test("Missing opponent defense outputs a baseline with no unsupported hit percentage",()=>{
+ const baseline={...pt,opponent_context_unavailable:true,prediction_quality:"NEUTRAL_OPPONENT_CONTEXT_FALLBACK"};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[baseline]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].opponentContextUnavailable,true);
+ assert.match(got[0].chanceSource,/opponent defensive sample unavailable/);
+});
+
+test("CSV-only complete history forecasts show a projection with unsupported hit confidence hidden",()=>{
+ const row={...pt,single_source_history:true};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[row]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].singleSourceHistory,true);
+ assert.match(got[0].chanceSource,/not independently confirmed/);
+});
+
+test("Board footer contains only actual OVER UNDER historical split, no frozen status or dots",()=>{
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(page.includes("function cardOverUnder(p)"));
+ assert.ok(page.includes('p.logs.filter(x=>Number.isFinite(Number(x.actual)))'));
+ assert.ok(page.includes("Number(x.actual)>Number(p.line)"));
+ assert.ok(page.includes("Number(x.actual)<Number(p.line)"));
+ assert.ok(page.includes('<div class="stampband over-under-footer">\'+cardOverUnder(p)+\'</div>'));
+ assert.ok(!page.includes('<span class="dots">●●●●●</span>'));
+ assert.ok(!page.includes('Frozen pregame forecast · awaiting final'));
+ assert.ok(page.includes('.hs-over{color:var(--lime)}'));
+ assert.ok(page.includes('.hs-under{color:var(--pink)}'));
 });

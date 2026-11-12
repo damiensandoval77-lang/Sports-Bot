@@ -99,6 +99,17 @@ def evaluate(ledger,finals,now=None):
                 reasons["INVALID_VERIFIED_GRADE"]+=1
             else:
                 counts["graded"]+=1
+                if final is None or final.get("status")!="GRADED":
+                    reasons["GRADED_WITHOUT_MATCHING_VERIFIED_FINAL"]+=1
+                elif final.get("actual")!=total or final.get("source_game_id")!=x.get("source_game_id"):
+                    reasons["GRADED_FINAL_MISMATCH"]+=1
+                side=(x.get("estimated_hit_chance") or {}).get("modeled_direction")
+                if side in ("More","Less") and isinstance(x.get("line"),(int,float)):
+                    if total==x["line"]:
+                        if x.get("direction_hit") is not None:
+                            reasons["PUSH_RECORDED_AS_WIN_OR_LOSS"]+=1
+                    elif x.get("direction_hit") is not (total>x["line"] if side=="More" else total<x["line"]):
+                        reasons["INCORRECT_STANDARD_LINE_DIRECTION_GRADE"]+=1
         elif grade=="EXCLUDED_VERIFIED_DNP":
             if (source not in DNP_SOURCES or not x.get("source_game_id") or
                 not x.get("verified_dnp_reason") or total is not None or
@@ -106,6 +117,11 @@ def evaluate(ledger,finals,now=None):
                 reasons["INVALID_VERIFIED_DNP"]+=1
             else:
                 counts["verified_dnp_excluded"]+=1
+                if final is None:
+                    counts["dnp_without_independent_forecast_record"]+=1
+                elif (final.get("status")!="EXCLUDED_VERIFIED_DNP" or
+                      final.get("source_game_id")!=x.get("source_game_id")):
+                    reasons["DNP_FINAL_MISMATCH"]+=1
         elif grade=="PENDING":
             counts["pending"]+=1
             if final is not None:
@@ -120,6 +136,8 @@ def evaluate(ledger,finals,now=None):
     return {
         "checked_at":now.isoformat(),
         "status":"READY" if not reasons else "DEGRADED",
+        "complete":not reasons and counts["pending"]==0,
+        "reconciled":not reasons,
         "scope":"PUBLISHED_STANDARD_FROZEN_PICKS_ONLY",
         "counts":dict(counts),
         "actionable_verified_finals":actionable,
