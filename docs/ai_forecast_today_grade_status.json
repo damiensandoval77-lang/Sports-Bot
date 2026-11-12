@@ -1,37 +1,37 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-12T03:14:21.742112+00:00",
+  "generated_at": "2026-11-12T03:23:14.601342+00:00",
   "game_date_eastern": "2026-11-11",
   "recorded_pregame_forecasts": 984,
-  "graded": 232,
+  "graded": 320,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 232,
-  "ungraded": 752,
-  "new_grades": 0,
+  "accounted_for": 320,
+  "ungraded": 664,
+  "new_grades": 88,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 58,
-      "mae": 4.766,
-      "mean_signed_error": 0.997
+      "graded": 80,
+      "mae": 4.5,
+      "mean_signed_error": 0.838
     },
     "REB": {
-      "graded": 58,
-      "mae": 2.117,
-      "mean_signed_error": 0.321
+      "graded": 80,
+      "mae": 2.115,
+      "mean_signed_error": 0.738
     },
     "AST": {
-      "graded": 58,
-      "mae": 1.29,
-      "mean_signed_error": 0.331
+      "graded": 80,
+      "mae": 1.355,
+      "mean_signed_error": 0.128
     },
     "PRA": {
-      "graded": 58,
-      "mae": 6.559,
-      "mean_signed_error": 1.61
+      "graded": 80,
+      "mae": 6.258,
+      "mean_signed_error": 1.62
     }
   },
   "ungraded_by_game": {
@@ -43,7 +43,7 @@
     "Los Angeles Lakers @ Milwaukee Bucks": 96,
     "Oklahoma City Thunder @ Portland Trail Blazers": 100,
     "Orlando Magic @ Utah Jazz": 96,
-    "San Antonio Spurs @ Chicago Bulls": 100,
+    "San Antonio Spurs @ Chicago Bulls": 12,
     "Washington Wizards @ Indiana Pacers": 16
   },
   "excluded_verified_dnp_players": [],
@@ -225,30 +225,8 @@
     ],
     "San Antonio Spurs @ Chicago Bulls": [
       "Buddy Hield",
-      "Caleb Wilson",
-      "Carter Bryant",
-      "De'Aaron Fox",
       "Devin Vassell",
-      "Dylan Harper",
-      "Harrison Barnes",
-      "Isaac Okoro",
-      "Jalen Smith",
-      "Jaylin Sellers",
-      "Jordan Hawkins",
-      "Jordan McLaughlin",
-      "Josh Giddey",
-      "Julian Champagnie",
-      "Keldon Johnson",
-      "Leonard Miller",
-      "Luke Kornet",
-      "Matas Buzelis",
-      "Noa Essengue",
-      "Norman Powell",
-      "Stephon Castle",
-      "Tarris Reed Jr.",
-      "Tre Jones",
-      "Victor Wembanyama",
-      "Zach Collins"
+      "Norman Powell"
     ],
     "Washington Wizards @ Indiana Pacers": [
       "Braden Smith",
@@ -257,13 +235,13 @@
       "Will Riley"
     ]
   },
-  "ungraded_distinct_player_markets": 752,
+  "ungraded_distinct_player_markets": 664,
   "final_feed": {
-    "pending_matchups": 14,
-    "final_nba_games": 10,
+    "pending_matchups": 15,
+    "final_nba_games": 11,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 225,
+    "retrieved_player_lines": 250,
     "errors": [
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
@@ -275,14 +253,14 @@
     "cached_official_id_candidates": 11,
     "final_cached_id_nba_games": 7,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 404,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 429,
+    "newly_retrieved_verified_rows": 25,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 60,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 692
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 72,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 592
     },
     "players": [
       {
@@ -4742,700 +4720,84 @@
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Buddy Hield",
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Buddy Hield",
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Buddy Hield",
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Wilson",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Wilson",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Wilson",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Wilson",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Carter Bryant",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Carter Bryant",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Carter Bryant",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Carter Bryant",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Aaron Fox",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Aaron Fox",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Aaron Fox",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Aaron Fox",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Devin Vassell",
         "team": "SAS",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Devin Vassell",
         "team": "SAS",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Devin Vassell",
         "team": "SAS",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Devin Vassell",
         "team": "SAS",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dylan Harper",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dylan Harper",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dylan Harper",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dylan Harper",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Harrison Barnes",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Harrison Barnes",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Harrison Barnes",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Harrison Barnes",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan McLaughlin",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan McLaughlin",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan McLaughlin",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan McLaughlin",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Champagnie",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Champagnie",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Champagnie",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Champagnie",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keldon Johnson",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keldon Johnson",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keldon Johnson",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keldon Johnson",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luke Kornet",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luke Kornet",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luke Kornet",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luke Kornet",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Norman Powell",
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Norman Powell",
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Norman Powell",
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Norman Powell",
         "team": "CHI",
         "game": "San Antonio Spurs @ Chicago Bulls",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephon Castle",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephon Castle",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephon Castle",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephon Castle",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tarris Reed Jr.",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tarris Reed Jr.",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tarris Reed Jr.",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tarris Reed Jr.",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Victor Wembanyama",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Victor Wembanyama",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Victor Wembanyama",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Victor Wembanyama",
-        "team": "SAS",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Braden Smith",
