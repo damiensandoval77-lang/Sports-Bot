@@ -87,6 +87,21 @@ def feature_vector(history,team,opponent,day,team_context):
         return None,"NONFINITE_ALL_MARKET_FEATURES"
     return common,None
 
+def per_game_diagnostics(feed,selected,predictions,blocked):
+    """Give each game auditable coverage and exclusion counts, without inventing picks."""
+    games=defaultdict(lambda:{"observed_provider_quote_rows":0,"verified_standard_offers":0,
+                              "frozen_forecasts":0,"excluded":defaultdict(int)})
+    for x in feed.get("picks",[]):
+        if x.get("game"):games[x["game"]]["observed_provider_quote_rows"]+=1
+    for x in selected:
+        if x.get("game"):games[x["game"]]["verified_standard_offers"]+=1
+    for x in predictions:
+        if x.get("game"):games[x["game"]]["frozen_forecasts"]+=1
+    for game,causes in blocked.items():
+        for reason,count in causes.items():
+            games[game]["excluded"][reason]+=count
+    return {game:{**item,"excluded":dict(item["excluded"])} for game,item in sorted(games.items())}
+
 def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=None):
     now=now or datetime.now(timezone.utc)
     injuries=injuries or {}
@@ -107,6 +122,10 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
         raise ValueError("PrizePicks feed stale")
     selected,excluded=select_standard(feed.get("picks",[]))
     rejected=defaultdict(int,excluded)
+    blocked_by_game=defaultdict(lambda:defaultdict(int))
+    def block(item,reason):
+        rejected[reason]+=1
+        blocked_by_game[str(item.get("game") or "UNKNOWN")][reason]+=1
     by_id=defaultdict(list)
     roster=defaultdict(set)
     latest_by_id={}
@@ -129,11 +148,11 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
         identity,reason=resolve_current_roster_identity(
             item.get("player"),item.get("game"),roster,latest_team)
         if reason:
-            rejected[reason]+=1;continue
+            block(item,reason);continue
         pid,team,opponent=identity
         tip=stamp(item["start"]);observed=stamp(item["market_updated"])
         if not(now<tip and observed<=now and observed<tip):
-            rejected["LATE_OR_INVALID_MARKET"]+=1;continue
+            block(item,"LATE_OR_INVALID_MARKET");continue
         day=tip.astimezone(ET).date().isoformat()
         key=(pid,team,opponent,day)
         if key not in cache:
@@ -148,14 +167,14 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
                       "AST":max(0.,float(model["AST"].predict(x)[0]))}
                 cache[key]=(pred,None)
         p,reason=cache[key]
-        if reason:rejected[reason]+=1;continue
+        if reason:block(item,reason);continue
         injury=injury_adjustment(p,pid,team,opponent,day,item["start"],now,
                                  injuries,news,records,free_watch=free_watch)
         if injury["status"]=="PLAYER_REPORTED_OUT_SUPPRESS_ALL_MARKETS":
-            rejected["REPORTED_OUT_PLAYER_SUPPRESSED"]+=1
+            block(item,"REPORTED_OUT_PLAYER_SUPPRESSED")
             continue
         if injury["status"]=="INJURY_MATCHUP_DATA_INSUFFICIENT":
-            rejected["INJURY_AFFECTED_PROJECTION_WITHHELD"]+=1
+            block(item,"INJURY_AFFECTED_PROJECTION_WITHHELD")
             continue
         p={k:float(v)*injury["factor"] for k,v in p.items()}
         stat=STATS[item["stat"]]
@@ -186,7 +205,9 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
       "correlated_pra_scenarios":True,
       "market_counts":{s:sum(r["stat"]==s for r in predictions) for s in STATS.values()},
       "predictions":predictions,"published_projections":len(predictions),
-      "excluded":dict(rejected),"calibrated":False,
+      "excluded":dict(rejected),
+      "game_diagnostics":per_game_diagnostics(feed,selected,predictions,blocked_by_game),
+      "calibrated":False,
       "injury_news_processed":news.get("status")=="UNDERDOGNBA_X_AUTHENTICATED_POLL",
       "official_injury_processed":injuries.get("injury_data_verified") is True,
       "official_report_issued_at":injuries.get("report_issued_at") if

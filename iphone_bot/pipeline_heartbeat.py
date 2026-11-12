@@ -54,8 +54,10 @@ def evaluate(now,site,espn=None):
     # A recent model timestamp is not proof of complete per-game capture.
     # Near-tip missing picks must still page recovery even when model ran.
     st="FAIL" if failures else "WARN" if warnings else "OK"
+    missing_detail={g:(model.get("game_diagnostics") or {}).get(g) for g,_ in missing}
     out.append(check("picks_frozen",st,"Missing picks by game; model current does not prove every game was covered",
-                     missing=failures+warnings,model_after_lines=current))
+                     missing=failures+warnings,model_after_lines=current,
+                     excluded_by_game=missing_detail))
     live=[]
     for event in (espn or {}).get("events",[]):
         if event.get("status",{}).get("type",{}).get("state")!="in":continue

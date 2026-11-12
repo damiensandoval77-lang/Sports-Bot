@@ -3,12 +3,30 @@ import unittest
 import numpy as np
 try:
     from iphone_bot.multimarket_probability import simulate
-    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity
+    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
 except ImportError:
     from multimarket_probability import simulate
-    from live_multimarket_matchup import select_standard,resolve_current_roster_identity
+    from live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
 
 class MultimarketTests(unittest.TestCase):
+    def test_game_diagnostics_explain_withheld_quotes_without_inventing_picks(self):
+        game="Brooklyn Nets @ New Orleans Pelicans"
+        offer={"game":game,"player":"Observed Player","stat":"Points","direction":"More"}
+        report=per_game_diagnostics({"picks":[offer,offer]},[offer],[],{game:{"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED":1}})
+        self.assertEqual(report[game]["observed_provider_quote_rows"],2)
+        self.assertEqual(report[game]["verified_standard_offers"],1)
+        self.assertEqual(report[game]["frozen_forecasts"],0)
+        self.assertEqual(report[game]["excluded"],{"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED":1})
+
+    def test_game_diagnostics_keep_matchups_separate(self):
+        a="Los Angeles Lakers @ Milwaukee Bucks"
+        b="San Antonio Spurs @ Chicago Bulls"
+        offers=[{"game":a},{"game":b}]
+        report=per_game_diagnostics({"picks":offers},offers,[{"game":b}],{a:{"INJURY_AFFECTED_PROJECTION_WITHHELD":1}})
+        self.assertEqual(report[a]["frozen_forecasts"],0)
+        self.assertEqual(report[b]["frozen_forecasts"],1)
+        self.assertEqual(report[b]["excluded"],{})
+
     def test_pra_is_same_three_component_projections(self):
         samples=np.tile([[-5,-3,-2],[0,0,0],[5,3,2],[3,1,1]],(300,1))
         p={"PTS":20.,"REB":7.,"AST":6.}

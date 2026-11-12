@@ -30,6 +30,15 @@ class Heartbeat(unittest.TestCase):
         report=evaluate(NOW,site(model={"generated_at":time(minutes=-2)}))
         self.assertEqual(stage(report,"picks_frozen")["status"],"FAIL")
         self.assertTrue(stage(report,"picks_frozen")["evidence"]["missing"])
+    def test_missing_game_alert_includes_exact_model_withhold_reason(self):
+        diagnostic={"observed_provider_quote_rows":78,"verified_standard_offers":24,
+                    "frozen_forecasts":0,"excluded":{"INJURY_AFFECTED_PROJECTION_WITHHELD":24}}
+        model={"generated_at":time(minutes=-2),"game_diagnostics":{GAME:diagnostic}}
+        report=stage(evaluate(NOW,site(model=model)),"picks_frozen")
+        self.assertEqual(report["status"],"FAIL")
+        self.assertEqual(report["evidence"]["excluded_by_game"][GAME]["frozen_forecasts"],0)
+        self.assertEqual(report["evidence"]["excluded_by_game"][GAME]["excluded"],diagnostic["excluded"])
+
     def test_overdue_pending_requires_settlement(self):
         r={"game":GAME,"start":time(hours=-10),"grade":"PENDING"}
         self.assertEqual(stage(evaluate(NOW,site(ledger=[r])),"settlement")["status"],"FAIL")
