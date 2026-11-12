@@ -1,19 +1,51 @@
 {
-  "status": "NO_ELIGIBLE_RECENT_PRIZEPICKS_PENDING_GAMES",
-  "requested_matchups": 0,
-  "verified_rows": 37,
+  "pending_matchups": 4,
+  "final_nba_games": 4,
+  "final_schedule_discovered_nba_games": 0,
+  "final_espn_games": 0,
+  "retrieved_player_lines": 99,
   "errors": [],
+  "source": "NBA live CDN; ESPN completed boxscore fallback",
+  "cached_official_id_candidates": 0,
+  "status": "FINAL_BOXSCORES_FOUND",
+  "archived_espn_game_id_hints": 0,
+  "requested_matchups": 4,
+  "verified_rows": 136,
+  "verified_dnp_rows": 37,
+  "verified_played_rows": 99,
+  "recovery_source": "VERIFIED_FINAL_BOXSCORES_ONLY",
   "historical_source_confirmed_dnp_rows": 24,
   "manual_crosschecked_official_inactive_rows": 0,
-  "verified_dnp_rows": 37,
-  "recent_research_pending_before_recovery": 0,
-  "recent_research_settlement_matches": 0,
+  "recent_research_pending_before_recovery": 209,
+  "recent_research_settlement_matches": 202,
   "recent_research_verified_dnp_voids": 0,
-  "recent_research_unmatched_after_recovery": 0,
-  "unmatched_player_stat_markets": 0,
-  "unmatched_games": {},
-  "unmatched_distinct_players_by_game": {},
-  "unmatched_reason_counts": {},
-  "unmatched_reason_examples": {},
-  "checked_at": "2026-11-12T04:26:00.493733+00:00"
+  "recent_research_unmatched_after_recovery": 7,
+  "unmatched_player_stat_markets": 7,
+  "unmatched_games": {
+    "San Antonio Spurs @ Chicago Bulls": 7
+  },
+  "unmatched_distinct_players_by_game": {
+    "San Antonio Spurs @ Chicago Bulls": [
+      "Devin Vassell",
+      "Norman Powell"
+    ]
+  },
+  "unmatched_reason_counts": {
+    "PLAYER_NAME_MISMATCH": 7
+  },
+  "unmatched_reason_examples": {
+    "PLAYER_NAME_MISMATCH": {
+      "sample_research_name": "Devin Vassell",
+      "game": "San Antonio Spurs @ Chicago Bulls",
+      "sample_official_names": [
+        "Stephon Castle",
+        "Julian Champagnie",
+        "Victor Wembanyama",
+        "De'Aaron Fox"
+      ],
+      "research_team": "SAS",
+      "date": "2026-11-11"
+    }
+  },
+  "checked_at": "2026-11-12T05:30:32.957555+00:00"
 }
