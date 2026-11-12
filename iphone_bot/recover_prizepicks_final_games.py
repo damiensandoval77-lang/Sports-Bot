@@ -7,6 +7,7 @@ Never turns an AI forecast into a boxscore or makes a paid odds request.
 import datetime as dt
 import json
 from pathlib import Path
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 from iphone_bot.official_game_id_index import recovery_game_ids
@@ -23,23 +24,23 @@ ET=ZoneInfo("America/New_York")
 S3_BASE="https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/"
 
 def multi_origin_request(url, requester=request_json):
-    """Try the independent official mediaops mirror before fragile CDN hosts.
-
-    Never downgrade a failed boxscore to a score-only result.
-    """
+    """Retry NBA and ESPN JSON through their own provider mirrors."""
     candidates=[url]
     if url == NBA_SCOREBOARD:
         candidates=[S3_BASE+"scoreboard/todaysScoreboard_00.json",url]
     elif url.startswith(NBA_BOX.split("{}")[0]):
         filename=url.rsplit("/",1)[-1]
         candidates=[S3_BASE+"boxscore/"+filename,url]
+    elif url.startswith("https://site.api.espn.com/apis/site/v2/"):
+        candidates.append(url.replace("https://site.api.espn.com/", "https://site.web.api.espn.com/", 1))
     errors=[]
     for candidate in candidates:
         try:
             return requester(candidate,timeout=7)
         except (OSError,TimeoutError,ValueError,RuntimeError) as err:
-            errors.append(type(err).__name__)
-    raise OSError("All independent official NBA endpoints failed: "+",".join(errors))
+            reason=getattr(err,"code",type(err).__name__)
+            errors.append(f"{urlsplit(candidate).hostname}: {reason}")
+    raise OSError("Final data request failed: "+", ".join(errors)) from None
 
 def pending_matchup_requests(records,now=None,max_matchups=12,days_back=3):
     now=now or dt.datetime.now(dt.timezone.utc)

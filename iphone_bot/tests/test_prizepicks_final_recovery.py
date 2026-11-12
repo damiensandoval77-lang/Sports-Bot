@@ -92,6 +92,22 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(seen[0],S3_BASE+"scoreboard/todaysScoreboard_00.json")
         self.assertEqual(seen[1],NBA_SCOREBOARD)
 
+    def test_espn_summary_failover_preserves_event_id(self):
+        from urllib.error import HTTPError
+        from iphone_bot.fetch_final_boxscores import ESPN_BOX
+        request = ESPN_BOX + "?event=401909960"
+        mirror = request.replace("site.api.espn.com", "site.web.api.espn.com")
+        seen = []
+
+        def provider(url, timeout=7):
+            seen.append(url)
+            if url == request:
+                raise HTTPError(url, 403, "Forbidden", {}, None)
+            return {"header": {"id": "401909960"}}
+
+        self.assertEqual(multi_origin_request(request, requester=provider)["header"]["id"], "401909960")
+        self.assertEqual(seen, [request, mirror])
+
     def test_mediaops_official_boxscore_path_and_safe_failure(self):
         from iphone_bot.fetch_final_boxscores import NBA_BOX
         url=NBA_BOX.format("0022600009")
