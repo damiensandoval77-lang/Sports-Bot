@@ -77,8 +77,12 @@ jobs:
             exit 0
           fi
           cutoff=$(($(date -u +%s)-35*60))
-          recent=$(gh run list --workflow "$workflow" --limit 30 --json headBranch,createdAt |
-            jq --argjson cutoff "$cutoff" '[.[] | select(.headBranch=="main" and (.createdAt | fromdateiso8601)>=$cutoff)] | length')
+          # These graders are credit-free. A failed attempt is not evidence of
+          # settled picks and must not block the next genuine recovery.
+          recent=$(gh run list --workflow "$workflow" --limit 30 --json headBranch,createdAt,status,conclusion |
+            jq --argjson cutoff "$cutoff" '[.[] | select(.headBranch=="main" and
+              (.status != "completed" or
+               (.conclusion == "success" and (.createdAt | fromdateiso8601)>=$cutoff)))] | length')
           if [ "$recent" -gt 0 ]; then
             echo "Skipping duplicate $workflow: recently started"
             exit 0
