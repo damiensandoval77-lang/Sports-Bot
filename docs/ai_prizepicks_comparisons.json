@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-12T00:09:58.633959+00:00",
-  "last_form_update": "2026-11-12T00:09:55.065405+00:00",
+  "generated_at": "2026-11-12T00:35:34.665847+00:00",
+  "last_form_update": "2026-11-12T00:35:31.103413+00:00",
   "last_odds_update": "2026-11-12T00:07:35.302255+00:00",
   "status": "EXPERIMENTAL_NON_CALIBRATED",
   "verified_current_matchups": true,
@@ -9,7 +9,7 @@
   "games_with_ai_props": 4,
   "injury_data_verified": true,
   "injury_context_source": "OFFICIAL_NBA_REPORT_VERIFIED",
-  "official_injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+  "official_injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
   "opponent_defense_applied_to_model": false,
   "lineup_research_adjustments_applied": true,
   "injury_minutes_research_status": "BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS",
@@ -4619,7 +4619,7 @@
       "research_position": "C",
       "injury_status": "AVAILABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -12793,7 +12793,7 @@
       "research_position": "C",
       "injury_status": "AVAILABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -16893,7 +16893,7 @@
       "research_position": "PF",
       "injury_status": "PROBABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -21329,6 +21329,371 @@
         "probability": {
           "probability": 0.5963,
           "raw_probability": 0.6078,
+          "correction": -0.0115,
+          "sample_size": 89,
+          "distinct_event_dates": 2,
+          "source": "ORIGINAL_MODEL_GRADED_PICK_PROBABILITY_ERRORS",
+          "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
+          "validated": false
+        },
+        "net_ev_pct": null,
+        "quote": null,
+        "reason": "Cannot compute single-leg sportsbook EV from PrizePicks tiers"
+      }
+    },
+    {
+      "player": "Isaiah Stewart",
+      "player_id": "1630191",
+      "team": "MEM",
+      "stat": "PTS",
+      "line": 7.5,
+      "sportsbook": "PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
+      "game": "Denver Nuggets @ Memphis Grizzlies",
+      "start": "2026-11-12T01:00:00+00:00",
+      "market_updated": "2026-11-12T00:01:55.583000+00:00",
+      "over_odds": null,
+      "under_odds": null,
+      "sample_games": 7,
+      "last_game": "2026-11-04",
+      "line_book_count": 0,
+      "line_type": "PRIZEPICKS_PICKEM_LINE",
+      "book_quotes": [],
+      "line_range": [
+        7.5,
+        7.5
+      ],
+      "opponent": "DEN",
+      "opponent_defense": {
+        "opponent": "DEN",
+        "games": 5,
+        "allowed_l5": 111.8,
+        "league_avg": 113.3,
+        "vs_league_pct": -1.3,
+        "label": "Near average",
+        "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
+      },
+      "shadow_projection": 9.8,
+      "shadow_difference": 2.3,
+      "shadow_status": "RESEARCH_SHADOW_ONLY",
+      "tracking_opportunity_research": {
+        "status": "NOT_AVAILABLE",
+        "feature_version": "TRACKING_OPPORTUNITY_PREGAME_ROLLING_V1",
+        "historical_games": 0,
+        "features": {},
+        "no_current_game_data": true,
+        "production_applied": false
+      },
+      "minutes_context": {
+        "observed_l5": 18.0,
+        "observed_l3": 19.7,
+        "volatility_l5": 6.1,
+        "review_needed": false,
+        "projected_minutes": null,
+        "confirmed_injury_status": null
+      },
+      "minutes_research": {
+        "status": "RESEARCH_ESTIMATE_UNVERIFIED_LINEUP",
+        "expected_minutes": 19.1,
+        "observed_l5": 18.0,
+        "l5_volatility": 6.1,
+        "games": 7,
+        "is_confirmed": false,
+        "requires_review": true
+      },
+      "minutes_v2_research": {
+        "status": "INSUFFICIENT_PLAYER_HISTORY",
+        "expected_minutes": null,
+        "history_games": 7,
+        "confirmed_lineup": false,
+        "live_adjustment_applied": false,
+        "model": "ROBUST_MINUTES_V2_RESEARCH_ONLY",
+        "last_observed_date": "2026-11-04"
+      },
+      "minutes_early_season_research": {
+        "method": "EARLY_SEASON_ROBUST_MINUTES_V3_RESEARCH_ONLY",
+        "status": "RESEARCH_FORECAST_UNVALIDATED",
+        "expected_minutes": 18.77,
+        "history_games": 7,
+        "volatility_last5": 6.1,
+        "season_minutes_average": 18.29,
+        "history_confidence": "LIMITED_5_TO_7_GAMES",
+        "production_applied": false,
+        "last_observed_date": "2026-11-04",
+        "observed_last5": 18.0,
+        "observed_last3": 19.67,
+        "requires_lineup_review": true
+      },
+      "tracking_opportunity_shadow": {
+        "AST": {
+          "status": "INSUFFICIENT_TRACKED_GAMES",
+          "stat": "AST",
+          "chance_metric": "potential_assists",
+          "games": 0,
+          "projection": null,
+          "production_applied": false,
+          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
+        },
+        "REB": {
+          "status": "INSUFFICIENT_TRACKED_GAMES",
+          "stat": "REB",
+          "chance_metric": "rebound_chances",
+          "games": 0,
+          "projection": null,
+          "production_applied": false,
+          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
+        }
+      },
+      "shot_profile_research": {
+        "status": "INSUFFICIENT_SHOT_HISTORY",
+        "expected_minutes": null,
+        "expected_fga": null,
+        "expected_3pa": null,
+        "expected_2pa": null,
+        "three_point_attempt_share": null,
+        "history_games": 7,
+        "live_adjustment_applied": false,
+        "is_verified_shot_location": false,
+        "three_point_source": "BOX_SCORE_3PA_ONLY"
+      },
+      "position_group_context": {
+        "status": "DESCRIPTIVE_POSITION_GROUP_NOT_INDIVIDUAL_MATCHUP",
+        "position_group": "C",
+        "opponent": "DEN",
+        "market": "PTS",
+        "games": 5,
+        "allowed_l5": 15.4,
+        "league_group_avg": 19.5,
+        "vs_league_pct": -20.9,
+        "included_player_games_before": "2026-11-11"
+      },
+      "research_position": "C",
+      "injury_status": "AVAILABLE",
+      "injury_status_source": "OFFICIAL_NBA_REPORT",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
+      "requires_lineup_review": true,
+      "lineup_research_adjustment_applied": false,
+      "teammate_absence_splits": [],
+      "injury_minutes_research": {
+        "status": "NO_ELIGIBLE_VERIFIED_TEAMMATE_OUT",
+        "baseline_minutes": 19.1,
+        "scenario_minutes": null,
+        "teammate": null,
+        "delta_minutes": null,
+        "live_adjustment_applied": false,
+        "is_confirmed": false,
+        "limitation": "Non-causal historical research; not a verified rotation."
+      },
+      "official_out_teammates": [],
+      "official_out_opponents": [],
+      "injury_scenario_projection": null,
+      "injury_scenario_applied_to_combined": false,
+      "injury_context_requires_reprojection": false,
+      "defense_in_model": false,
+      "projection": 9.2,
+      "combined_projection": 9.5,
+      "preinjury_original_projection": 9.2,
+      "preinjury_shadow_projection": 9.8,
+      "preinjury_combined_projection": 9.5,
+      "injury_reprojection_status": "NO_OFFICIAL_OUT_IN_MATCHUP",
+      "shooting_efficiency_v1": {
+        "status": "INSUFFICIENT_SHOOTING_DATA",
+        "model": "SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
+        "projection": null,
+        "raw_points": null,
+        "blended_projection": null,
+        "season_shooting": null,
+        "expected_minutes": null,
+        "opponent_adjustment_applied": false,
+        "injury_usage_adjustment_applied": false,
+        "production_applied": false
+      },
+      "minutes_v3_research": {
+        "status": "INSUFFICIENT_PRIOR_MINUTES",
+        "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
+        "expected_minutes": null,
+        "baseline_v2": null,
+        "rotation_adjustment": 0,
+        "teammate_adjustment": 0,
+        "teammates_evaluated": 0,
+        "verified_out_context_applied": false,
+        "season_rest_days": null,
+        "production_applied": false,
+        "prospective_calibrated": false,
+        "last_prior_date": "2026-11-04"
+      },
+      "opportunity_v2_research": {
+        "model": "ASSIST_REBOUND_OPPORTUNITY_V2",
+        "expected_minutes": null,
+        "minutes_context": {
+          "status": "INSUFFICIENT_PRIOR_MINUTES",
+          "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
+          "expected_minutes": null,
+          "baseline_v2": null,
+          "rotation_adjustment": 0,
+          "teammate_adjustment": 0,
+          "teammates_evaluated": 0,
+          "verified_out_context_applied": false,
+          "season_rest_days": null,
+          "production_applied": false,
+          "prospective_calibrated": false,
+          "last_prior_date": "2026-11-04"
+        },
+        "production_applied": false,
+        "tracking_data_available": false,
+        "markets": {
+          "AST": {
+            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
+            "projection": null,
+            "raw_projection": null,
+            "market": "AST",
+            "source_kind": "BOX_SCORE_RATE_PROXY",
+            "is_potential_assists": false,
+            "is_rebound_chances": false,
+            "prior_games": 7,
+            "research_only": true
+          },
+          "REB": {
+            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
+            "projection": null,
+            "raw_projection": null,
+            "market": "REB",
+            "source_kind": "BOX_SCORE_RATE_PROXY",
+            "is_potential_assists": false,
+            "is_rebound_chances": false,
+            "prior_games": 7,
+            "research_only": true
+          }
+        }
+      },
+      "season_average_challenger": {
+        "method": "RESEARCH_80_PERCENT_COMBINED_20_PERCENT_TRUE_SEASON_AVG",
+        "status": "RESEARCH_CANDIDATE_NOT_VALIDATED",
+        "season_games": 7,
+        "season_average": 11.857,
+        "research_projection": 9.957,
+        "last_observed_date": "2026-11-04",
+        "production_applied": false
+      },
+      "season_feature_method": "RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI",
+      "combined_difference": 2.0,
+      "combined_method": "TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
+      "combined_model_count": 2,
+      "combined_validated": false,
+      "projection_explanation": {
+        "sentences": [
+          "Recent form: 13.2 points per game over the last 5, versus 11.9 over up to the last 10 games. Minutes averaged 18.0 over the last 5 games.",
+          "Opponent: DEN. Across their last 5 games, they allowed 1.3% fewer team points than league average (team-wide context, not a direct player matchup).",
+          "The opponent-aware model estimates 9.8 versus the original model's 9.2; their midpoint is 9.5."
+        ],
+        "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
+        "injury_verified": false,
+        "defender_assignment_verified": false
+      },
+      "combined_direction": "Over",
+      "difference": 1.7,
+      "lean": "Over",
+      "estimated_over_probability": 0.5841,
+      "estimated_under_probability": 0.4159,
+      "estimated_push_probability": 0.0,
+      "estimated_selected_probability": 0.5841,
+      "estimated_probability_side": "Over",
+      "probability_method": "CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED",
+      "combined_simulation": {
+        "method": "COMBINED_PROJECTION_20K_ORIGINAL_RESIDUAL_BOOTSTRAP_UNCALIBRATED",
+        "simulation_count": 20000,
+        "over_hit_rate": 0.6076,
+        "under_hit_rate": 0.3924,
+        "push_rate": 0.0,
+        "direction": "Over",
+        "selected_hit_rate": 0.6076,
+        "calibrated": false,
+        "residual_provenance": "ORIGINAL_MODEL_CHRONOLOGICAL_HOLDOUT",
+        "combined_residuals_validated": false,
+        "independent_game_outcomes": false,
+        "opponent_conditioning": {
+          "status": "APPLIED_OPPONENT_HISTORICAL_GAME_SCENARIOS",
+          "opponent": "DEN",
+          "scope": "TEAM_TOTALS_NOT_POSITIONAL",
+          "source_games": 9,
+          "opponent_vs_league_pct": -1.3,
+          "recent_allowed_avg": 112.78,
+          "league_allowed_avg": 113.3,
+          "adjustment_strength": 0.25,
+          "max_game_scenario_shift": 0.1,
+          "mean_shift_applied": false,
+          "center_opponent_aware_already": true,
+          "position_dvp_available": false
+        }
+      },
+      "ev_status": "UNAVAILABLE_NO_VALIDATED_PROBABILITY",
+      "experimental_ev_available": false,
+      "experimental_best_quote": null,
+      "model_feature_audit": {
+        "method": "EXACT_INPUT_TO_ORIGINAL_TRAINED_MODEL_PREGAME",
+        "features": {
+          "MIN_L5": 18.0,
+          "MIN_L10": 18.2857,
+          "MIN_Season": 16.8474,
+          "PTS_L5": 13.2,
+          "PTS_L10": 11.8571,
+          "PTS_Season": 7.0172,
+          "REB_L5": 3.4,
+          "REB_L10": 3.4286,
+          "REB_Season": 2.5198,
+          "AST_L5": 0.4,
+          "AST_L10": 0.5714,
+          "AST_Season": 0.2132,
+          "DAYS_REST": 7.0,
+          "IS_HOME": 1.0,
+          "IS_B2B": 0.0
+        },
+        "sample_games": 7,
+        "last_observed_game_date": "2026-11-04",
+        "minutes_research_not_applied_to_live": true
+      },
+      "missing_features": [],
+      "reliability_screen": {
+        "status": "MODEL_LEAN",
+        "side": "MORE",
+        "blockers": [],
+        "cautions": [
+          "EARLY_SEASON_SHORT_HISTORY",
+          "SIMULATION_NOT_MARKET_CALIBRATED"
+        ],
+        "reasons": [
+          "EARLY_SEASON_SHORT_HISTORY",
+          "SIMULATION_NOT_MARKET_CALIBRATED"
+        ],
+        "edge_units": 2.0,
+        "required_edge_units": 1.5,
+        "validated": false,
+        "wager_recommended": false,
+        "screen_method": "PREGAME_MODEL_LEAN_REVIEW_V2_UNVALIDATED"
+      },
+      "edge_assessment": {
+        "status": "NO_VERIFIED_EDGE",
+        "reasons": [
+          "PICKEM_PAYOUT_REQUIRES_SLIP_LEVEL_MODEL",
+          "COMBINED_PROBABILITY_NOT_VALIDATED",
+          "INSUFFICIENT_INDEPENDENT_OUT_OF_SAMPLE_VALIDATION",
+          "PROBABILITY_OR_CONSERVATIVE_BOUND_MISSING",
+          "FRESH_EXACT_BOOK_PRICE_MISSING"
+        ],
+        "break_even_probability": null,
+        "estimated_probability": null,
+        "conservative_lower_probability": null,
+        "conservative_ev_per_unit": null,
+        "verified_edge": false,
+        "method": "CHRONOLOGICAL_COMBINED_PROBABILITY_EXACT_PRICE_GUARD_V1",
+        "disclaimer": "EDGE_READY_FOR_REVIEW is not a profit guarantee. Calibration, liquidity, lineup, book limits and quote changes still matter."
+      },
+      "preliminary_edge": {
+        "status": "PRIZEPICKS_SLIP_PAYOUT_REQUIRED",
+        "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
+        "verified_edge": false,
+        "probability": {
+          "probability": 0.5961,
+          "raw_probability": 0.6076,
           "correction": -0.0115,
           "sample_size": 89,
           "distinct_event_dates": 2,
@@ -25929,6 +26294,365 @@
       }
     },
     {
+      "player": "Isaiah Stewart",
+      "player_id": "1630191",
+      "team": "MEM",
+      "stat": "PRA",
+      "line": 11.5,
+      "sportsbook": "PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
+      "game": "Denver Nuggets @ Memphis Grizzlies",
+      "start": "2026-11-12T01:00:00+00:00",
+      "market_updated": "2026-11-12T00:01:55.583000+00:00",
+      "over_odds": null,
+      "under_odds": null,
+      "sample_games": 7,
+      "last_game": "2026-11-04",
+      "line_book_count": 0,
+      "line_type": "PRIZEPICKS_PICKEM_LINE",
+      "book_quotes": [],
+      "line_range": [
+        11.5,
+        11.5
+      ],
+      "opponent": "DEN",
+      "opponent_defense": {
+        "opponent": "DEN",
+        "games": 5,
+        "allowed_l5": 186.0,
+        "league_avg": 183.5,
+        "vs_league_pct": 1.4,
+        "label": "Near average",
+        "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
+      },
+      "shadow_projection": 13.8,
+      "shadow_difference": 2.3,
+      "shadow_status": "RESEARCH_SHADOW_ONLY",
+      "tracking_opportunity_research": {
+        "status": "NOT_AVAILABLE",
+        "feature_version": "TRACKING_OPPORTUNITY_PREGAME_ROLLING_V1",
+        "historical_games": 0,
+        "features": {},
+        "no_current_game_data": true,
+        "production_applied": false
+      },
+      "minutes_context": {
+        "observed_l5": 18.0,
+        "observed_l3": 19.7,
+        "volatility_l5": 6.1,
+        "review_needed": false,
+        "projected_minutes": null,
+        "confirmed_injury_status": null
+      },
+      "minutes_research": {
+        "status": "RESEARCH_ESTIMATE_UNVERIFIED_LINEUP",
+        "expected_minutes": 19.1,
+        "observed_l5": 18.0,
+        "l5_volatility": 6.1,
+        "games": 7,
+        "is_confirmed": false,
+        "requires_review": true
+      },
+      "minutes_v2_research": {
+        "status": "INSUFFICIENT_PLAYER_HISTORY",
+        "expected_minutes": null,
+        "history_games": 7,
+        "confirmed_lineup": false,
+        "live_adjustment_applied": false,
+        "model": "ROBUST_MINUTES_V2_RESEARCH_ONLY",
+        "last_observed_date": "2026-11-04"
+      },
+      "minutes_early_season_research": {
+        "method": "EARLY_SEASON_ROBUST_MINUTES_V3_RESEARCH_ONLY",
+        "status": "RESEARCH_FORECAST_UNVALIDATED",
+        "expected_minutes": 18.77,
+        "history_games": 7,
+        "volatility_last5": 6.1,
+        "season_minutes_average": 18.29,
+        "history_confidence": "LIMITED_5_TO_7_GAMES",
+        "production_applied": false,
+        "last_observed_date": "2026-11-04",
+        "observed_last5": 18.0,
+        "observed_last3": 19.67,
+        "requires_lineup_review": true
+      },
+      "tracking_opportunity_shadow": {
+        "AST": {
+          "status": "INSUFFICIENT_TRACKED_GAMES",
+          "stat": "AST",
+          "chance_metric": "potential_assists",
+          "games": 0,
+          "projection": null,
+          "production_applied": false,
+          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
+        },
+        "REB": {
+          "status": "INSUFFICIENT_TRACKED_GAMES",
+          "stat": "REB",
+          "chance_metric": "rebound_chances",
+          "games": 0,
+          "projection": null,
+          "production_applied": false,
+          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
+        }
+      },
+      "shot_profile_research": {
+        "status": "INSUFFICIENT_SHOT_HISTORY",
+        "expected_minutes": null,
+        "expected_fga": null,
+        "expected_3pa": null,
+        "expected_2pa": null,
+        "three_point_attempt_share": null,
+        "history_games": 7,
+        "live_adjustment_applied": false,
+        "is_verified_shot_location": false,
+        "three_point_source": "BOX_SCORE_3PA_ONLY"
+      },
+      "position_group_context": {
+        "status": "DESCRIPTIVE_POSITION_GROUP_NOT_INDIVIDUAL_MATCHUP",
+        "position_group": "C",
+        "opponent": "DEN",
+        "market": "PRA",
+        "games": 5,
+        "allowed_l5": 34.4,
+        "league_group_avg": 37.6,
+        "vs_league_pct": -8.5,
+        "included_player_games_before": "2026-11-11"
+      },
+      "research_position": "C",
+      "injury_status": "AVAILABLE",
+      "injury_status_source": "OFFICIAL_NBA_REPORT",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
+      "requires_lineup_review": true,
+      "lineup_research_adjustment_applied": false,
+      "teammate_absence_splits": [],
+      "injury_minutes_research": {
+        "status": "NO_ELIGIBLE_VERIFIED_TEAMMATE_OUT",
+        "baseline_minutes": 19.1,
+        "scenario_minutes": null,
+        "teammate": null,
+        "delta_minutes": null,
+        "live_adjustment_applied": false,
+        "is_confirmed": false,
+        "limitation": "Non-causal historical research; not a verified rotation."
+      },
+      "official_out_teammates": [],
+      "official_out_opponents": [],
+      "injury_scenario_projection": null,
+      "injury_scenario_applied_to_combined": false,
+      "injury_context_requires_reprojection": false,
+      "defense_in_model": false,
+      "projection": 13.6,
+      "combined_projection": 13.7,
+      "preinjury_original_projection": 13.6,
+      "preinjury_shadow_projection": 13.8,
+      "preinjury_combined_projection": 13.7,
+      "injury_reprojection_status": "NO_OFFICIAL_OUT_IN_MATCHUP",
+      "shooting_efficiency_v1": {
+        "status": "POINTS_ONLY_RESEARCH_SHADOW",
+        "model": "SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
+        "projection": null,
+        "production_applied": false
+      },
+      "minutes_v3_research": {
+        "status": "INSUFFICIENT_PRIOR_MINUTES",
+        "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
+        "expected_minutes": null,
+        "baseline_v2": null,
+        "rotation_adjustment": 0,
+        "teammate_adjustment": 0,
+        "teammates_evaluated": 0,
+        "verified_out_context_applied": false,
+        "season_rest_days": null,
+        "production_applied": false,
+        "prospective_calibrated": false,
+        "last_prior_date": "2026-11-04"
+      },
+      "opportunity_v2_research": {
+        "model": "ASSIST_REBOUND_OPPORTUNITY_V2",
+        "expected_minutes": null,
+        "minutes_context": {
+          "status": "INSUFFICIENT_PRIOR_MINUTES",
+          "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
+          "expected_minutes": null,
+          "baseline_v2": null,
+          "rotation_adjustment": 0,
+          "teammate_adjustment": 0,
+          "teammates_evaluated": 0,
+          "verified_out_context_applied": false,
+          "season_rest_days": null,
+          "production_applied": false,
+          "prospective_calibrated": false,
+          "last_prior_date": "2026-11-04"
+        },
+        "production_applied": false,
+        "tracking_data_available": false,
+        "markets": {
+          "AST": {
+            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
+            "projection": null,
+            "raw_projection": null,
+            "market": "AST",
+            "source_kind": "BOX_SCORE_RATE_PROXY",
+            "is_potential_assists": false,
+            "is_rebound_chances": false,
+            "prior_games": 7,
+            "research_only": true
+          },
+          "REB": {
+            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
+            "projection": null,
+            "raw_projection": null,
+            "market": "REB",
+            "source_kind": "BOX_SCORE_RATE_PROXY",
+            "is_potential_assists": false,
+            "is_rebound_chances": false,
+            "prior_games": 7,
+            "research_only": true
+          }
+        }
+      },
+      "season_average_challenger": {
+        "method": "RESEARCH_80_PERCENT_COMBINED_20_PERCENT_TRUE_SEASON_AVG",
+        "status": "RESEARCH_CANDIDATE_NOT_VALIDATED",
+        "season_games": 7,
+        "season_average": 15.857,
+        "research_projection": 14.145,
+        "last_observed_date": "2026-11-04",
+        "production_applied": false
+      },
+      "season_feature_method": "RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI",
+      "combined_difference": 2.2,
+      "combined_method": "TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
+      "combined_model_count": 2,
+      "combined_validated": false,
+      "projection_explanation": {
+        "sentences": [
+          "Recent form: 17.0 points + rebounds + assists per game over the last 5, versus 15.9 over up to the last 10 games. Minutes averaged 18.0 over the last 5 games.",
+          "Opponent: DEN. Across their last 5 games, they allowed 1.4% more team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "The opponent-aware model estimates 13.8 versus the original model's 13.6; their midpoint is 13.7."
+        ],
+        "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
+        "injury_verified": false,
+        "defender_assignment_verified": false
+      },
+      "combined_direction": "Over",
+      "difference": 2.1,
+      "lean": "Over",
+      "estimated_over_probability": 0.5903,
+      "estimated_under_probability": 0.4097,
+      "estimated_push_probability": 0.0,
+      "estimated_selected_probability": 0.5903,
+      "estimated_probability_side": "Over",
+      "probability_method": "CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED",
+      "combined_simulation": {
+        "method": "COMBINED_PROJECTION_20K_ORIGINAL_RESIDUAL_BOOTSTRAP_UNCALIBRATED",
+        "simulation_count": 20000,
+        "over_hit_rate": 0.5917,
+        "under_hit_rate": 0.4083,
+        "push_rate": 0.0,
+        "direction": "Over",
+        "selected_hit_rate": 0.5917,
+        "calibrated": false,
+        "residual_provenance": "ORIGINAL_MODEL_CHRONOLOGICAL_HOLDOUT",
+        "combined_residuals_validated": false,
+        "independent_game_outcomes": false,
+        "opponent_conditioning": {
+          "status": "APPLIED_OPPONENT_HISTORICAL_GAME_SCENARIOS",
+          "opponent": "DEN",
+          "scope": "TEAM_TOTALS_NOT_POSITIONAL",
+          "source_games": 9,
+          "opponent_vs_league_pct": 1.4,
+          "recent_allowed_avg": 186.0,
+          "league_allowed_avg": 183.5,
+          "adjustment_strength": 0.25,
+          "max_game_scenario_shift": 0.1,
+          "mean_shift_applied": false,
+          "center_opponent_aware_already": true,
+          "position_dvp_available": false
+        }
+      },
+      "ev_status": "UNAVAILABLE_NO_VALIDATED_PROBABILITY",
+      "experimental_ev_available": false,
+      "experimental_best_quote": null,
+      "model_feature_audit": {
+        "method": "EXACT_INPUT_TO_ORIGINAL_TRAINED_MODEL_PREGAME",
+        "features": {
+          "MIN_L5": 18.0,
+          "MIN_L10": 18.2857,
+          "MIN_Season": 16.8474,
+          "PTS_L5": 13.2,
+          "PTS_L10": 11.8571,
+          "PTS_Season": 7.0172,
+          "REB_L5": 3.4,
+          "REB_L10": 3.4286,
+          "REB_Season": 2.5198,
+          "AST_L5": 0.4,
+          "AST_L10": 0.5714,
+          "AST_Season": 0.2132,
+          "DAYS_REST": 7.0,
+          "IS_HOME": 1.0,
+          "IS_B2B": 0.0
+        },
+        "sample_games": 7,
+        "last_observed_game_date": "2026-11-04",
+        "minutes_research_not_applied_to_live": true
+      },
+      "missing_features": [],
+      "reliability_screen": {
+        "status": "MODEL_LEAN",
+        "side": "MORE",
+        "blockers": [],
+        "cautions": [
+          "EARLY_SEASON_SHORT_HISTORY",
+          "SIMULATION_NOT_MARKET_CALIBRATED"
+        ],
+        "reasons": [
+          "EARLY_SEASON_SHORT_HISTORY",
+          "SIMULATION_NOT_MARKET_CALIBRATED"
+        ],
+        "edge_units": 2.2,
+        "required_edge_units": 2.0,
+        "validated": false,
+        "wager_recommended": false,
+        "screen_method": "PREGAME_MODEL_LEAN_REVIEW_V2_UNVALIDATED"
+      },
+      "edge_assessment": {
+        "status": "NO_VERIFIED_EDGE",
+        "reasons": [
+          "PICKEM_PAYOUT_REQUIRES_SLIP_LEVEL_MODEL",
+          "COMBINED_PROBABILITY_NOT_VALIDATED",
+          "INSUFFICIENT_INDEPENDENT_OUT_OF_SAMPLE_VALIDATION",
+          "PROBABILITY_OR_CONSERVATIVE_BOUND_MISSING",
+          "FRESH_EXACT_BOOK_PRICE_MISSING"
+        ],
+        "break_even_probability": null,
+        "estimated_probability": null,
+        "conservative_lower_probability": null,
+        "conservative_ev_per_unit": null,
+        "verified_edge": false,
+        "method": "CHRONOLOGICAL_COMBINED_PROBABILITY_EXACT_PRICE_GUARD_V1",
+        "disclaimer": "EDGE_READY_FOR_REVIEW is not a profit guarantee. Calibration, liquidity, lineup, book limits and quote changes still matter."
+      },
+      "preliminary_edge": {
+        "status": "PRIZEPICKS_SLIP_PAYOUT_REQUIRED",
+        "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
+        "verified_edge": false,
+        "probability": {
+          "probability": 0.5805,
+          "raw_probability": 0.5917,
+          "correction": -0.0112,
+          "sample_size": 72,
+          "distinct_event_dates": 2,
+          "source": "ORIGINAL_MODEL_GRADED_PICK_PROBABILITY_ERRORS",
+          "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
+          "validated": false
+        },
+        "net_ev_pct": null,
+        "quote": null,
+        "reason": "Cannot compute single-leg sportsbook EV from PrizePicks tiers"
+      }
+    },
+    {
       "player": "Ayo Dosunmu",
       "player_id": "1630245",
       "team": "MIN",
@@ -28149,7 +28873,7 @@
       "research_position": "SF",
       "injury_status": "QUESTIONABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -31708,374 +32432,6 @@
       }
     },
     {
-      "player": "Isaiah Stewart",
-      "player_id": "1630191",
-      "team": "MEM",
-      "stat": "PTS",
-      "line": 7.5,
-      "sportsbook": "PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
-      "game": "Denver Nuggets @ Memphis Grizzlies",
-      "start": "2026-11-12T01:00:00+00:00",
-      "market_updated": "2026-11-12T00:01:55.583000+00:00",
-      "over_odds": null,
-      "under_odds": null,
-      "sample_games": 7,
-      "last_game": "2026-11-04",
-      "line_book_count": 0,
-      "line_type": "PRIZEPICKS_PICKEM_LINE",
-      "book_quotes": [],
-      "line_range": [
-        7.5,
-        7.5
-      ],
-      "opponent": "DEN",
-      "opponent_defense": {
-        "opponent": "DEN",
-        "games": 5,
-        "allowed_l5": 111.8,
-        "league_avg": 113.3,
-        "vs_league_pct": -1.3,
-        "label": "Near average",
-        "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
-      },
-      "shadow_projection": 9.8,
-      "shadow_difference": 2.3,
-      "shadow_status": "RESEARCH_SHADOW_ONLY",
-      "tracking_opportunity_research": {
-        "status": "NOT_AVAILABLE",
-        "feature_version": "TRACKING_OPPORTUNITY_PREGAME_ROLLING_V1",
-        "historical_games": 0,
-        "features": {},
-        "no_current_game_data": true,
-        "production_applied": false
-      },
-      "minutes_context": {
-        "observed_l5": 18.0,
-        "observed_l3": 19.7,
-        "volatility_l5": 6.1,
-        "review_needed": false,
-        "projected_minutes": null,
-        "confirmed_injury_status": null
-      },
-      "minutes_research": {
-        "status": "RESEARCH_ESTIMATE_UNVERIFIED_LINEUP",
-        "expected_minutes": 19.1,
-        "observed_l5": 18.0,
-        "l5_volatility": 6.1,
-        "games": 7,
-        "is_confirmed": false,
-        "requires_review": true
-      },
-      "minutes_v2_research": {
-        "status": "INSUFFICIENT_PLAYER_HISTORY",
-        "expected_minutes": null,
-        "history_games": 7,
-        "confirmed_lineup": false,
-        "live_adjustment_applied": false,
-        "model": "ROBUST_MINUTES_V2_RESEARCH_ONLY",
-        "last_observed_date": "2026-11-04"
-      },
-      "minutes_early_season_research": {
-        "method": "EARLY_SEASON_ROBUST_MINUTES_V3_RESEARCH_ONLY",
-        "status": "RESEARCH_FORECAST_UNVALIDATED",
-        "expected_minutes": 18.77,
-        "history_games": 7,
-        "volatility_last5": 6.1,
-        "season_minutes_average": 18.29,
-        "history_confidence": "LIMITED_5_TO_7_GAMES",
-        "production_applied": false,
-        "last_observed_date": "2026-11-04",
-        "observed_last5": 18.0,
-        "observed_last3": 19.67,
-        "requires_lineup_review": true
-      },
-      "tracking_opportunity_shadow": {
-        "AST": {
-          "status": "INSUFFICIENT_TRACKED_GAMES",
-          "stat": "AST",
-          "chance_metric": "potential_assists",
-          "games": 0,
-          "projection": null,
-          "production_applied": false,
-          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
-        },
-        "REB": {
-          "status": "INSUFFICIENT_TRACKED_GAMES",
-          "stat": "REB",
-          "chance_metric": "rebound_chances",
-          "games": 0,
-          "projection": null,
-          "production_applied": false,
-          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
-        }
-      },
-      "shot_profile_research": {
-        "status": "INSUFFICIENT_SHOT_HISTORY",
-        "expected_minutes": null,
-        "expected_fga": null,
-        "expected_3pa": null,
-        "expected_2pa": null,
-        "three_point_attempt_share": null,
-        "history_games": 7,
-        "live_adjustment_applied": false,
-        "is_verified_shot_location": false,
-        "three_point_source": "BOX_SCORE_3PA_ONLY"
-      },
-      "position_group_context": {
-        "status": "DESCRIPTIVE_POSITION_GROUP_NOT_INDIVIDUAL_MATCHUP",
-        "position_group": "C",
-        "opponent": "DEN",
-        "market": "PTS",
-        "games": 5,
-        "allowed_l5": 15.4,
-        "league_group_avg": 19.5,
-        "vs_league_pct": -20.9,
-        "included_player_games_before": "2026-11-11"
-      },
-      "research_position": "C",
-      "injury_status": "QUESTIONABLE",
-      "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
-      "requires_lineup_review": true,
-      "lineup_research_adjustment_applied": false,
-      "teammate_absence_splits": [],
-      "injury_minutes_research": {
-        "status": "NO_ELIGIBLE_VERIFIED_TEAMMATE_OUT",
-        "baseline_minutes": 19.1,
-        "scenario_minutes": null,
-        "teammate": null,
-        "delta_minutes": null,
-        "live_adjustment_applied": false,
-        "is_confirmed": false,
-        "limitation": "Non-causal historical research; not a verified rotation."
-      },
-      "official_out_teammates": [],
-      "official_out_opponents": [],
-      "injury_scenario_projection": null,
-      "injury_scenario_applied_to_combined": false,
-      "injury_context_requires_reprojection": false,
-      "defense_in_model": false,
-      "projection": 9.2,
-      "combined_projection": 9.5,
-      "preinjury_original_projection": 9.2,
-      "preinjury_shadow_projection": 9.8,
-      "preinjury_combined_projection": 9.5,
-      "injury_reprojection_status": "NO_OFFICIAL_OUT_IN_MATCHUP",
-      "shooting_efficiency_v1": {
-        "status": "INSUFFICIENT_SHOOTING_DATA",
-        "model": "SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
-        "projection": null,
-        "raw_points": null,
-        "blended_projection": null,
-        "season_shooting": null,
-        "expected_minutes": null,
-        "opponent_adjustment_applied": false,
-        "injury_usage_adjustment_applied": false,
-        "production_applied": false
-      },
-      "minutes_v3_research": {
-        "status": "INSUFFICIENT_PRIOR_MINUTES",
-        "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
-        "expected_minutes": null,
-        "baseline_v2": null,
-        "rotation_adjustment": 0,
-        "teammate_adjustment": 0,
-        "teammates_evaluated": 0,
-        "verified_out_context_applied": false,
-        "season_rest_days": null,
-        "production_applied": false,
-        "prospective_calibrated": false,
-        "last_prior_date": "2026-11-04"
-      },
-      "opportunity_v2_research": {
-        "model": "ASSIST_REBOUND_OPPORTUNITY_V2",
-        "expected_minutes": null,
-        "minutes_context": {
-          "status": "INSUFFICIENT_PRIOR_MINUTES",
-          "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
-          "expected_minutes": null,
-          "baseline_v2": null,
-          "rotation_adjustment": 0,
-          "teammate_adjustment": 0,
-          "teammates_evaluated": 0,
-          "verified_out_context_applied": false,
-          "season_rest_days": null,
-          "production_applied": false,
-          "prospective_calibrated": false,
-          "last_prior_date": "2026-11-04"
-        },
-        "production_applied": false,
-        "tracking_data_available": false,
-        "markets": {
-          "AST": {
-            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
-            "projection": null,
-            "raw_projection": null,
-            "market": "AST",
-            "source_kind": "BOX_SCORE_RATE_PROXY",
-            "is_potential_assists": false,
-            "is_rebound_chances": false,
-            "prior_games": 7,
-            "research_only": true
-          },
-          "REB": {
-            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
-            "projection": null,
-            "raw_projection": null,
-            "market": "REB",
-            "source_kind": "BOX_SCORE_RATE_PROXY",
-            "is_potential_assists": false,
-            "is_rebound_chances": false,
-            "prior_games": 7,
-            "research_only": true
-          }
-        }
-      },
-      "season_average_challenger": {
-        "method": "RESEARCH_80_PERCENT_COMBINED_20_PERCENT_TRUE_SEASON_AVG",
-        "status": "RESEARCH_CANDIDATE_NOT_VALIDATED",
-        "season_games": 7,
-        "season_average": 11.857,
-        "research_projection": 9.957,
-        "last_observed_date": "2026-11-04",
-        "production_applied": false
-      },
-      "season_feature_method": "RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI",
-      "combined_difference": 2.0,
-      "combined_method": "TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
-      "combined_model_count": 2,
-      "combined_validated": false,
-      "projection_explanation": {
-        "sentences": [
-          "Recent form: 13.2 points per game over the last 5, versus 11.9 over up to the last 10 games. Minutes averaged 18.0 over the last 5 games.",
-          "Opponent: DEN. Across their last 5 games, they allowed 1.3% fewer team points than league average (team-wide context, not a direct player matchup).",
-          "The opponent-aware model estimates 9.8 versus the original model's 9.2; their midpoint is 9.5."
-        ],
-        "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
-        "injury_verified": false,
-        "defender_assignment_verified": false
-      },
-      "combined_direction": "Over",
-      "difference": 1.7,
-      "lean": "Over",
-      "estimated_over_probability": 0.5841,
-      "estimated_under_probability": 0.4159,
-      "estimated_push_probability": 0.0,
-      "estimated_selected_probability": 0.5841,
-      "estimated_probability_side": "Over",
-      "probability_method": "CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED",
-      "combined_simulation": {
-        "method": "COMBINED_PROJECTION_20K_ORIGINAL_RESIDUAL_BOOTSTRAP_UNCALIBRATED",
-        "simulation_count": 20000,
-        "over_hit_rate": 0.6076,
-        "under_hit_rate": 0.3924,
-        "push_rate": 0.0,
-        "direction": "Over",
-        "selected_hit_rate": 0.6076,
-        "calibrated": false,
-        "residual_provenance": "ORIGINAL_MODEL_CHRONOLOGICAL_HOLDOUT",
-        "combined_residuals_validated": false,
-        "independent_game_outcomes": false,
-        "opponent_conditioning": {
-          "status": "APPLIED_OPPONENT_HISTORICAL_GAME_SCENARIOS",
-          "opponent": "DEN",
-          "scope": "TEAM_TOTALS_NOT_POSITIONAL",
-          "source_games": 9,
-          "opponent_vs_league_pct": -1.3,
-          "recent_allowed_avg": 112.78,
-          "league_allowed_avg": 113.3,
-          "adjustment_strength": 0.25,
-          "max_game_scenario_shift": 0.1,
-          "mean_shift_applied": false,
-          "center_opponent_aware_already": true,
-          "position_dvp_available": false
-        }
-      },
-      "ev_status": "UNAVAILABLE_NO_VALIDATED_PROBABILITY",
-      "experimental_ev_available": false,
-      "experimental_best_quote": null,
-      "model_feature_audit": {
-        "method": "EXACT_INPUT_TO_ORIGINAL_TRAINED_MODEL_PREGAME",
-        "features": {
-          "MIN_L5": 18.0,
-          "MIN_L10": 18.2857,
-          "MIN_Season": 16.8474,
-          "PTS_L5": 13.2,
-          "PTS_L10": 11.8571,
-          "PTS_Season": 7.0172,
-          "REB_L5": 3.4,
-          "REB_L10": 3.4286,
-          "REB_Season": 2.5198,
-          "AST_L5": 0.4,
-          "AST_L10": 0.5714,
-          "AST_Season": 0.2132,
-          "DAYS_REST": 7.0,
-          "IS_HOME": 1.0,
-          "IS_B2B": 0.0
-        },
-        "sample_games": 7,
-        "last_observed_game_date": "2026-11-04",
-        "minutes_research_not_applied_to_live": true
-      },
-      "missing_features": [],
-      "reliability_screen": {
-        "status": "PASS",
-        "side": null,
-        "blockers": [
-          "PLAYER_AVAILABILITY_UNCERTAIN"
-        ],
-        "cautions": [
-          "EARLY_SEASON_SHORT_HISTORY",
-          "SIMULATION_NOT_MARKET_CALIBRATED"
-        ],
-        "reasons": [
-          "PLAYER_AVAILABILITY_UNCERTAIN",
-          "EARLY_SEASON_SHORT_HISTORY",
-          "SIMULATION_NOT_MARKET_CALIBRATED"
-        ],
-        "edge_units": 2.0,
-        "required_edge_units": 1.5,
-        "validated": false,
-        "wager_recommended": false,
-        "screen_method": "PREGAME_MODEL_LEAN_REVIEW_V2_UNVALIDATED"
-      },
-      "edge_assessment": {
-        "status": "NO_VERIFIED_EDGE",
-        "reasons": [
-          "PICKEM_PAYOUT_REQUIRES_SLIP_LEVEL_MODEL",
-          "COMBINED_PROBABILITY_NOT_VALIDATED",
-          "INSUFFICIENT_INDEPENDENT_OUT_OF_SAMPLE_VALIDATION",
-          "PROBABILITY_OR_CONSERVATIVE_BOUND_MISSING",
-          "FRESH_EXACT_BOOK_PRICE_MISSING"
-        ],
-        "break_even_probability": null,
-        "estimated_probability": null,
-        "conservative_lower_probability": null,
-        "conservative_ev_per_unit": null,
-        "verified_edge": false,
-        "method": "CHRONOLOGICAL_COMBINED_PROBABILITY_EXACT_PRICE_GUARD_V1",
-        "disclaimer": "EDGE_READY_FOR_REVIEW is not a profit guarantee. Calibration, liquidity, lineup, book limits and quote changes still matter."
-      },
-      "preliminary_edge": {
-        "status": "PRIZEPICKS_SLIP_PAYOUT_REQUIRED",
-        "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
-        "verified_edge": false,
-        "probability": {
-          "probability": 0.5961,
-          "raw_probability": 0.6076,
-          "correction": -0.0115,
-          "sample_size": 89,
-          "distinct_event_dates": 2,
-          "source": "ORIGINAL_MODEL_GRADED_PICK_PROBABILITY_ERRORS",
-          "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
-          "validated": false
-        },
-        "net_ev_pct": null,
-        "quote": null,
-        "reason": "Cannot compute single-leg sportsbook EV from PrizePicks tiers"
-      }
-    },
-    {
       "player": "Amen Thompson",
       "player_id": "1641708",
       "team": "HOU",
@@ -33639,368 +33995,6 @@
           "raw_probability": 0.5944,
           "correction": -0.0068,
           "sample_size": 71,
-          "distinct_event_dates": 2,
-          "source": "ORIGINAL_MODEL_GRADED_PICK_PROBABILITY_ERRORS",
-          "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
-          "validated": false
-        },
-        "net_ev_pct": null,
-        "quote": null,
-        "reason": "Cannot compute single-leg sportsbook EV from PrizePicks tiers"
-      }
-    },
-    {
-      "player": "Isaiah Stewart",
-      "player_id": "1630191",
-      "team": "MEM",
-      "stat": "PRA",
-      "line": 11.5,
-      "sportsbook": "PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
-      "game": "Denver Nuggets @ Memphis Grizzlies",
-      "start": "2026-11-12T01:00:00+00:00",
-      "market_updated": "2026-11-12T00:01:55.583000+00:00",
-      "over_odds": null,
-      "under_odds": null,
-      "sample_games": 7,
-      "last_game": "2026-11-04",
-      "line_book_count": 0,
-      "line_type": "PRIZEPICKS_PICKEM_LINE",
-      "book_quotes": [],
-      "line_range": [
-        11.5,
-        11.5
-      ],
-      "opponent": "DEN",
-      "opponent_defense": {
-        "opponent": "DEN",
-        "games": 5,
-        "allowed_l5": 186.0,
-        "league_avg": 183.5,
-        "vs_league_pct": 1.4,
-        "label": "Near average",
-        "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
-      },
-      "shadow_projection": 13.8,
-      "shadow_difference": 2.3,
-      "shadow_status": "RESEARCH_SHADOW_ONLY",
-      "tracking_opportunity_research": {
-        "status": "NOT_AVAILABLE",
-        "feature_version": "TRACKING_OPPORTUNITY_PREGAME_ROLLING_V1",
-        "historical_games": 0,
-        "features": {},
-        "no_current_game_data": true,
-        "production_applied": false
-      },
-      "minutes_context": {
-        "observed_l5": 18.0,
-        "observed_l3": 19.7,
-        "volatility_l5": 6.1,
-        "review_needed": false,
-        "projected_minutes": null,
-        "confirmed_injury_status": null
-      },
-      "minutes_research": {
-        "status": "RESEARCH_ESTIMATE_UNVERIFIED_LINEUP",
-        "expected_minutes": 19.1,
-        "observed_l5": 18.0,
-        "l5_volatility": 6.1,
-        "games": 7,
-        "is_confirmed": false,
-        "requires_review": true
-      },
-      "minutes_v2_research": {
-        "status": "INSUFFICIENT_PLAYER_HISTORY",
-        "expected_minutes": null,
-        "history_games": 7,
-        "confirmed_lineup": false,
-        "live_adjustment_applied": false,
-        "model": "ROBUST_MINUTES_V2_RESEARCH_ONLY",
-        "last_observed_date": "2026-11-04"
-      },
-      "minutes_early_season_research": {
-        "method": "EARLY_SEASON_ROBUST_MINUTES_V3_RESEARCH_ONLY",
-        "status": "RESEARCH_FORECAST_UNVALIDATED",
-        "expected_minutes": 18.77,
-        "history_games": 7,
-        "volatility_last5": 6.1,
-        "season_minutes_average": 18.29,
-        "history_confidence": "LIMITED_5_TO_7_GAMES",
-        "production_applied": false,
-        "last_observed_date": "2026-11-04",
-        "observed_last5": 18.0,
-        "observed_last3": 19.67,
-        "requires_lineup_review": true
-      },
-      "tracking_opportunity_shadow": {
-        "AST": {
-          "status": "INSUFFICIENT_TRACKED_GAMES",
-          "stat": "AST",
-          "chance_metric": "potential_assists",
-          "games": 0,
-          "projection": null,
-          "production_applied": false,
-          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
-        },
-        "REB": {
-          "status": "INSUFFICIENT_TRACKED_GAMES",
-          "stat": "REB",
-          "chance_metric": "rebound_chances",
-          "games": 0,
-          "projection": null,
-          "production_applied": false,
-          "method": "TRACKING_OPPORTUNITY_SHADOW_V1"
-        }
-      },
-      "shot_profile_research": {
-        "status": "INSUFFICIENT_SHOT_HISTORY",
-        "expected_minutes": null,
-        "expected_fga": null,
-        "expected_3pa": null,
-        "expected_2pa": null,
-        "three_point_attempt_share": null,
-        "history_games": 7,
-        "live_adjustment_applied": false,
-        "is_verified_shot_location": false,
-        "three_point_source": "BOX_SCORE_3PA_ONLY"
-      },
-      "position_group_context": {
-        "status": "DESCRIPTIVE_POSITION_GROUP_NOT_INDIVIDUAL_MATCHUP",
-        "position_group": "C",
-        "opponent": "DEN",
-        "market": "PRA",
-        "games": 5,
-        "allowed_l5": 34.4,
-        "league_group_avg": 37.6,
-        "vs_league_pct": -8.5,
-        "included_player_games_before": "2026-11-11"
-      },
-      "research_position": "C",
-      "injury_status": "QUESTIONABLE",
-      "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
-      "requires_lineup_review": true,
-      "lineup_research_adjustment_applied": false,
-      "teammate_absence_splits": [],
-      "injury_minutes_research": {
-        "status": "NO_ELIGIBLE_VERIFIED_TEAMMATE_OUT",
-        "baseline_minutes": 19.1,
-        "scenario_minutes": null,
-        "teammate": null,
-        "delta_minutes": null,
-        "live_adjustment_applied": false,
-        "is_confirmed": false,
-        "limitation": "Non-causal historical research; not a verified rotation."
-      },
-      "official_out_teammates": [],
-      "official_out_opponents": [],
-      "injury_scenario_projection": null,
-      "injury_scenario_applied_to_combined": false,
-      "injury_context_requires_reprojection": false,
-      "defense_in_model": false,
-      "projection": 13.6,
-      "combined_projection": 13.7,
-      "preinjury_original_projection": 13.6,
-      "preinjury_shadow_projection": 13.8,
-      "preinjury_combined_projection": 13.7,
-      "injury_reprojection_status": "NO_OFFICIAL_OUT_IN_MATCHUP",
-      "shooting_efficiency_v1": {
-        "status": "POINTS_ONLY_RESEARCH_SHADOW",
-        "model": "SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
-        "projection": null,
-        "production_applied": false
-      },
-      "minutes_v3_research": {
-        "status": "INSUFFICIENT_PRIOR_MINUTES",
-        "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
-        "expected_minutes": null,
-        "baseline_v2": null,
-        "rotation_adjustment": 0,
-        "teammate_adjustment": 0,
-        "teammates_evaluated": 0,
-        "verified_out_context_applied": false,
-        "season_rest_days": null,
-        "production_applied": false,
-        "prospective_calibrated": false,
-        "last_prior_date": "2026-11-04"
-      },
-      "opportunity_v2_research": {
-        "model": "ASSIST_REBOUND_OPPORTUNITY_V2",
-        "expected_minutes": null,
-        "minutes_context": {
-          "status": "INSUFFICIENT_PRIOR_MINUTES",
-          "model": "MINUTES_V3_ROTATION_WOWY_RESEARCH",
-          "expected_minutes": null,
-          "baseline_v2": null,
-          "rotation_adjustment": 0,
-          "teammate_adjustment": 0,
-          "teammates_evaluated": 0,
-          "verified_out_context_applied": false,
-          "season_rest_days": null,
-          "production_applied": false,
-          "prospective_calibrated": false,
-          "last_prior_date": "2026-11-04"
-        },
-        "production_applied": false,
-        "tracking_data_available": false,
-        "markets": {
-          "AST": {
-            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
-            "projection": null,
-            "raw_projection": null,
-            "market": "AST",
-            "source_kind": "BOX_SCORE_RATE_PROXY",
-            "is_potential_assists": false,
-            "is_rebound_chances": false,
-            "prior_games": 7,
-            "research_only": true
-          },
-          "REB": {
-            "status": "INSUFFICIENT_PRIOR_BOX_SCORE_OPPORTUNITY",
-            "projection": null,
-            "raw_projection": null,
-            "market": "REB",
-            "source_kind": "BOX_SCORE_RATE_PROXY",
-            "is_potential_assists": false,
-            "is_rebound_chances": false,
-            "prior_games": 7,
-            "research_only": true
-          }
-        }
-      },
-      "season_average_challenger": {
-        "method": "RESEARCH_80_PERCENT_COMBINED_20_PERCENT_TRUE_SEASON_AVG",
-        "status": "RESEARCH_CANDIDATE_NOT_VALIDATED",
-        "season_games": 7,
-        "season_average": 15.857,
-        "research_projection": 14.145,
-        "last_observed_date": "2026-11-04",
-        "production_applied": false
-      },
-      "season_feature_method": "RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI",
-      "combined_difference": 2.2,
-      "combined_method": "TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
-      "combined_model_count": 2,
-      "combined_validated": false,
-      "projection_explanation": {
-        "sentences": [
-          "Recent form: 17.0 points + rebounds + assists per game over the last 5, versus 15.9 over up to the last 10 games. Minutes averaged 18.0 over the last 5 games.",
-          "Opponent: DEN. Across their last 5 games, they allowed 1.4% more team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
-          "The opponent-aware model estimates 13.8 versus the original model's 13.6; their midpoint is 13.7."
-        ],
-        "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
-        "injury_verified": false,
-        "defender_assignment_verified": false
-      },
-      "combined_direction": "Over",
-      "difference": 2.1,
-      "lean": "Over",
-      "estimated_over_probability": 0.5903,
-      "estimated_under_probability": 0.4097,
-      "estimated_push_probability": 0.0,
-      "estimated_selected_probability": 0.5903,
-      "estimated_probability_side": "Over",
-      "probability_method": "CHRONOLOGICAL_VALIDATION_EMPIRICAL_RESIDUALS_UNCALIBRATED",
-      "combined_simulation": {
-        "method": "COMBINED_PROJECTION_20K_ORIGINAL_RESIDUAL_BOOTSTRAP_UNCALIBRATED",
-        "simulation_count": 20000,
-        "over_hit_rate": 0.5917,
-        "under_hit_rate": 0.4083,
-        "push_rate": 0.0,
-        "direction": "Over",
-        "selected_hit_rate": 0.5917,
-        "calibrated": false,
-        "residual_provenance": "ORIGINAL_MODEL_CHRONOLOGICAL_HOLDOUT",
-        "combined_residuals_validated": false,
-        "independent_game_outcomes": false,
-        "opponent_conditioning": {
-          "status": "APPLIED_OPPONENT_HISTORICAL_GAME_SCENARIOS",
-          "opponent": "DEN",
-          "scope": "TEAM_TOTALS_NOT_POSITIONAL",
-          "source_games": 9,
-          "opponent_vs_league_pct": 1.4,
-          "recent_allowed_avg": 186.0,
-          "league_allowed_avg": 183.5,
-          "adjustment_strength": 0.25,
-          "max_game_scenario_shift": 0.1,
-          "mean_shift_applied": false,
-          "center_opponent_aware_already": true,
-          "position_dvp_available": false
-        }
-      },
-      "ev_status": "UNAVAILABLE_NO_VALIDATED_PROBABILITY",
-      "experimental_ev_available": false,
-      "experimental_best_quote": null,
-      "model_feature_audit": {
-        "method": "EXACT_INPUT_TO_ORIGINAL_TRAINED_MODEL_PREGAME",
-        "features": {
-          "MIN_L5": 18.0,
-          "MIN_L10": 18.2857,
-          "MIN_Season": 16.8474,
-          "PTS_L5": 13.2,
-          "PTS_L10": 11.8571,
-          "PTS_Season": 7.0172,
-          "REB_L5": 3.4,
-          "REB_L10": 3.4286,
-          "REB_Season": 2.5198,
-          "AST_L5": 0.4,
-          "AST_L10": 0.5714,
-          "AST_Season": 0.2132,
-          "DAYS_REST": 7.0,
-          "IS_HOME": 1.0,
-          "IS_B2B": 0.0
-        },
-        "sample_games": 7,
-        "last_observed_game_date": "2026-11-04",
-        "minutes_research_not_applied_to_live": true
-      },
-      "missing_features": [],
-      "reliability_screen": {
-        "status": "PASS",
-        "side": null,
-        "blockers": [
-          "PLAYER_AVAILABILITY_UNCERTAIN"
-        ],
-        "cautions": [
-          "EARLY_SEASON_SHORT_HISTORY",
-          "SIMULATION_NOT_MARKET_CALIBRATED"
-        ],
-        "reasons": [
-          "PLAYER_AVAILABILITY_UNCERTAIN",
-          "EARLY_SEASON_SHORT_HISTORY",
-          "SIMULATION_NOT_MARKET_CALIBRATED"
-        ],
-        "edge_units": 2.2,
-        "required_edge_units": 2.0,
-        "validated": false,
-        "wager_recommended": false,
-        "screen_method": "PREGAME_MODEL_LEAN_REVIEW_V2_UNVALIDATED"
-      },
-      "edge_assessment": {
-        "status": "NO_VERIFIED_EDGE",
-        "reasons": [
-          "PICKEM_PAYOUT_REQUIRES_SLIP_LEVEL_MODEL",
-          "COMBINED_PROBABILITY_NOT_VALIDATED",
-          "INSUFFICIENT_INDEPENDENT_OUT_OF_SAMPLE_VALIDATION",
-          "PROBABILITY_OR_CONSERVATIVE_BOUND_MISSING",
-          "FRESH_EXACT_BOOK_PRICE_MISSING"
-        ],
-        "break_even_probability": null,
-        "estimated_probability": null,
-        "conservative_lower_probability": null,
-        "conservative_ev_per_unit": null,
-        "verified_edge": false,
-        "method": "CHRONOLOGICAL_COMBINED_PROBABILITY_EXACT_PRICE_GUARD_V1",
-        "disclaimer": "EDGE_READY_FOR_REVIEW is not a profit guarantee. Calibration, liquidity, lineup, book limits and quote changes still matter."
-      },
-      "preliminary_edge": {
-        "status": "PRIZEPICKS_SLIP_PAYOUT_REQUIRED",
-        "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
-        "verified_edge": false,
-        "probability": {
-          "probability": 0.5805,
-          "raw_probability": 0.5917,
-          "correction": -0.0112,
-          "sample_size": 72,
           "distinct_event_dates": 2,
           "source": "ORIGINAL_MODEL_GRADED_PICK_PROBABILITY_ERRORS",
           "method": "TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
@@ -41049,7 +41043,7 @@
       "research_position": "PF",
       "injury_status": "PROBABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -42682,7 +42676,7 @@
       "research_position": "SF",
       "injury_status": "QUESTIONABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -44334,7 +44328,7 @@
       "research_position": "PF",
       "injury_status": "PROBABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -58140,7 +58134,7 @@
       "research_position": "SF",
       "injury_status": "QUESTIONABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -59479,7 +59473,7 @@
       "research_position": "SF",
       "injury_status": "QUESTIONABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -60669,9 +60663,9 @@
         "included_player_games_before": "2026-11-11"
       },
       "research_position": "C",
-      "injury_status": "QUESTIONABLE",
+      "injury_status": "AVAILABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": false,
       "teammate_absence_splits": [],
@@ -60852,8 +60846,7 @@
         "status": "PASS",
         "side": null,
         "blockers": [
-          "SMALL_PROJECTION_EDGE",
-          "PLAYER_AVAILABILITY_UNCERTAIN"
+          "SMALL_PROJECTION_EDGE"
         ],
         "cautions": [
           "EARLY_SEASON_SHORT_HISTORY",
@@ -60861,7 +60854,6 @@
         ],
         "reasons": [
           "SMALL_PROJECTION_EDGE",
-          "PLAYER_AVAILABILITY_UNCERTAIN",
           "EARLY_SEASON_SHORT_HISTORY",
           "SIMULATION_NOT_MARKET_CALIBRATED"
         ],
@@ -61805,7 +61797,7 @@
       "research_position": "SG",
       "injury_status": "AVAILABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_07_30PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -63601,7 +63593,7 @@
     "stale_market_quote": 0,
     "officially_out": 0,
     "officially_doubtful": 0,
-    "injury_reprojection_unavailable": 204
+    "injury_reprojection_unavailable": 170
   },
   "no_sportsbook_prices": true,
   "no_validated_win_probability": true,
