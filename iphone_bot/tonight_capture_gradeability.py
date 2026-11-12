@@ -20,7 +20,7 @@ def eastern_day(value):
         return x.astimezone(ET).date().isoformat() if x.tzinfo else None
     except (TypeError,ValueError,OverflowError):return None
 
-def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None):
+def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None,current=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     today=now.astimezone(ET).date().isoformat()
     days=sorted({g.get("date_eastern") for g in schedule.get("games",[])
@@ -137,6 +137,8 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None):
        "total_line_backed":sum(g["frozen_line_backed"] for g in result["games"]),
        "total_line_backed_graded":sum(g["line_backed_graded"] for g in result["games"]),
        "total_ai_only_graded":sum(g["ai_only_graded"] for g in result["games"])}
+    from .current_primary_coverage import evaluate as current_coverage
+    result["current_upcoming_coverage"]=current_coverage(current or {},locked,games,now)
     result["status"]="CAPTURE_VERIFIED" if not result["issues"] else "CAPTURE_INCOMPLETE"
     return result
 
@@ -144,10 +146,10 @@ def main():
     paths=["docs/nba_schedule.json","docs/prizepicks_pregame_line_archive.json",
            "docs/ai_no_line_pregame_archive.json","docs/lagged_matchup_all_market_ledger.json",
            "docs/ai_forecast_actual_ledger.json",
-           "docs/standard_quote_ai_research_archive.json"]
+           "docs/standard_quote_ai_research_archive.json","docs/prizepicks_model_input.json"]
     try:
         records=[json.loads((ROOT/p).read_text()) for p in paths]
-        report=reconcile(*records[:5],research=records[5])
+        report=reconcile(*records[:5],research=records[5],current=records[6])
     except (OSError,ValueError,TypeError) as exc:
         report={"checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
                 "status":"CAPTURE_INCOMPLETE","issues":["INPUT_ERROR:"+type(exc).__name__]}

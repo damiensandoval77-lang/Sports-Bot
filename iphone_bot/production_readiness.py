@@ -201,6 +201,35 @@ def check(now,files):
     add("unmodeled_provider_market_coverage",
         "READY" if not coverage_issues else "DEGRADED",
         coverage_issues,capture_age,required=False)
+    current=capture.get("current_upcoming_coverage")
+    current_issues=[]
+    if upcoming:
+        if not isinstance(current,dict) or current.get("status") not in ("COMPLETE","INCOMPLETE"):
+            current_issues.append("CURRENT_STANDARD_MODEL_COVERAGE_UNVERIFIED")
+        else:
+            missing=current.get("missing_primary_offers")
+            rows=current.get("games")
+            # Report timestamps may use equivalent +00:00 versus Z syntax.
+            def identity(game):
+                return (game.get("game"),parse_time(game.get("start")))
+            expected={identity(g) for g in upcoming}
+            actual={identity(g) for g in rows if isinstance(g,dict)} if isinstance(rows,list) else set()
+            valid_counts=isinstance(rows,list) and all(isinstance(g,dict) and all(
+                type(g.get(k)) is int and g[k]>=0 for k in
+                ("verified_current_offers","matched_primary_offers","missing_primary_offers")) and
+                g["verified_current_offers"]==g["matched_primary_offers"]+g["missing_primary_offers"]
+                for g in rows)
+            if (type(missing) is not int or missing<0 or actual!=expected or not valid_counts or
+                missing!=sum(g["missing_primary_offers"] for g in rows)):
+                current_issues.append("CURRENT_STANDARD_MODEL_COVERAGE_INVALID")
+            elif missing>0:
+                current_issues.append("CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL")
+            if current.get("issues") or current.get("status")!="COMPLETE":
+                current_issues.append("CURRENT_STANDARD_MODEL_COVERAGE_INCOMPLETE")
+        if capture_age is None or capture_age< -5 or capture_age>90:
+            current_issues.append("CURRENT_STANDARD_MODEL_COVERAGE_STALE")
+    add("current_primary_model_coverage","DEGRADED" if current_issues else "READY",
+        current_issues,capture_age,required=bool(upcoming))
     # This is the actual grade/void pipeline health of EVERY advertised pick.
     settled=load("dames-picks/published_pick_settlement.json")
     settlement_age=age_of(settled,"checked_at")
