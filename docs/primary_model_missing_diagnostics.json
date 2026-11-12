@@ -1,12 +1,13 @@
 {
   "status": "PRIMARY_STANDARD_CAPTURE_INCOMPLETE",
-  "checked_at": "2026-11-12T13:59:48.117056+00:00",
+  "checked_at": "2026-11-12T14:14:37.578071+00:00",
   "game_date_eastern": "2026-11-12",
-  "verified_standard_quotes": 222,
+  "verified_standard_quotes": 232,
   "original_primary_frozen_quotes": 216,
-  "unmatched_exact_standard_thresholds": 17,
+  "unmatched_exact_standard_thresholds": 26,
   "missing_by_cause": {
-    "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 17
+    "MOVED_ORIGINAL_STANDARD_THRESHOLD": 4,
+    "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 22
   },
   "details": [
     {
@@ -107,6 +108,18 @@
     },
     {
       "game": "Charlotte Hornets @ Phoenix Suns",
+      "player": "Jalen Green",
+      "team": "PHX",
+      "stat": "REB",
+      "standard_line": 3.5,
+      "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": false,
+      "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Charlotte Hornets @ Phoenix Suns",
       "player": "Jordan Goodwin",
       "team": "PHX",
       "stat": "PTS",
@@ -128,6 +141,30 @@
       "separate_research_receipt": false,
       "original_primary_frozen_market": false,
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Charlotte Hornets @ Phoenix Suns",
+      "player": "Khaman Maluach",
+      "team": "PHX",
+      "stat": "REB",
+      "standard_line": 5.5,
+      "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": false,
+      "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Charlotte Hornets @ Phoenix Suns",
+      "player": "Naz Reid",
+      "team": "CHA",
+      "stat": "REB",
+      "standard_line": 8.0,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
     },
     {
       "game": "Dallas Mavericks @ Minnesota Timberwolves",
@@ -191,6 +228,18 @@
     },
     {
       "game": "Dallas Mavericks @ Minnesota Timberwolves",
+      "player": "Terrence Shannon Jr.",
+      "team": "MIN",
+      "stat": "AST",
+      "standard_line": 1.5,
+      "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": false,
+      "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Dallas Mavericks @ Minnesota Timberwolves",
       "player": "Walter Clayton Jr.",
       "team": "DAL",
       "stat": "AST",
@@ -212,6 +261,66 @@
       "separate_research_receipt": true,
       "original_primary_frozen_market": false,
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Detroit Pistons @ Washington Wizards",
+      "player": "Daniss Jenkins",
+      "team": "DET",
+      "stat": "REB",
+      "standard_line": 3.5,
+      "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": false,
+      "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Detroit Pistons @ Washington Wizards",
+      "player": "Duncan Robinson",
+      "team": "DET",
+      "stat": "REB",
+      "standard_line": 2.5,
+      "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": false,
+      "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Detroit Pistons @ Washington Wizards",
+      "player": "John Collins",
+      "team": "DET",
+      "stat": "PRA",
+      "standard_line": 21.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+    },
+    {
+      "game": "Detroit Pistons @ Washington Wizards",
+      "player": "Tre Johnson",
+      "team": "WAS",
+      "stat": "PTS",
+      "standard_line": 8.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+    },
+    {
+      "game": "Toronto Raptors @ Philadelphia 76ers",
+      "player": "Jakob Poeltl",
+      "team": "TOR",
+      "stat": "PRA",
+      "standard_line": 21.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
     }
   ],
   "note": "Only original pre-tip validated models count in the primary grade ledger. Line moves and research-only quotes are never promoted, repriced, or retrograded."
