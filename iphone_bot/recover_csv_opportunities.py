@@ -19,7 +19,7 @@ def _clean(r):
     date=str(r["date"])
     if not pid.isdigit() or len(team)!=3 or len(opp)!=3 or team==opp:
         return None
-    if len(date)!=10 or date[:4]!="2026" or not r.get("player"):
+    if len(date)!=10 or not ("2026-10-20"<=date<="2027-06-30") or not r.get("player"):
         return None
     try:
         vals={k:float(r[k]) for k in REQUIRED if k not in
