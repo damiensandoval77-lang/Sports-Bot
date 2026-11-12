@@ -30,6 +30,44 @@ FRONTEND=("dames-picks/index.html","dames-picks/feeds.js","dames-picks/dames_tak
 def _read_json(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
+def capture_issue_codes(report):
+    """Separate missing game capture from model/archived quote coverage.
+
+    Unknown or legacy incomplete reports remain fail-closed. Coverage reasons
+    never convert an incomplete capture report into a healthy one.
+    """
+    if report.get("status") == "CAPTURE_VERIFIED":
+        return []
+    summary = report.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    games = report.get("games", [])
+    total = summary.get("schedule_games")
+    game_capture_verified = (
+        isinstance(total, int) and total > 0
+        and isinstance(games, list) and len(games) == total
+        and all(summary.get(key) == total for key in (
+            "games_with_saved_source_quotes", "games_with_frozen_ai",
+            "games_with_line_backed_models"))
+        and all(isinstance(game, dict)
+                and all(isinstance(game.get(key), (int, float)) and game[key] > 0
+                        for key in ("source_quotes", "frozen_ai_only", "frozen_line_backed"))
+                and isinstance(game.get("issues"), list)
+                and set(game["issues"]) <= {"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"}
+                for game in games)
+    )
+    codes = []
+    if not game_capture_verified:
+        codes.append("PRETIP_CAPTURE_NOT_VERIFIED")
+    historical = summary.get("total_standard_markets_without_frozen_model")
+    if isinstance(historical, (int, float)) and historical > 0:
+        codes.append("ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL")
+    current = report.get("current_upcoming_coverage", {})
+    if isinstance(current, dict) and current.get("status") == "INCOMPLETE":
+        codes.append("CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL")
+    # An unexplained incomplete status must never silently pass.
+    return codes or ["PRETIP_CAPTURE_NOT_VERIFIED"]
+
 def evaluate(root=DOCS, now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     sections={"app":[],"NBA":[],"NFL":[]}
@@ -65,8 +103,9 @@ def evaluate(root=DOCS, now=None):
                 fail("NBA","FROZEN_MODEL_RECORDS_INVALID")
             if key=="schedule" and not isinstance(obj.get("games"),list):
                 fail("NBA","NBA_GAME_SCHEDULE_INVALID")
-            if key=="capture_audit" and obj.get("status")!="CAPTURE_VERIFIED":
-                fail("NBA","PRETIP_CAPTURE_NOT_VERIFIED")
+            if key=="capture_audit":
+                for code in capture_issue_codes(obj):
+                    fail("NBA",code)
         except (ValueError,UnicodeError,OSError):
             fail("NBA","CORRUPT_"+key.upper())
     for key,path in CORE_NFL.items():
