@@ -783,3 +783,13 @@ test("Unresolved injury baseline shows AI projection but does not claim an actio
  assert.equal(got[0].injuryUncertainty,true);
  assert.match(got[0].chanceSource,/injury impact unresolved/);
 });
+
+test("Missing opponent defense outputs a baseline with no unsupported hit percentage",()=>{
+ const baseline={...pt,opponent_context_unavailable:true,prediction_quality:"NEUTRAL_OPPONENT_CONTEXT_FALLBACK"};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[baseline]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].opponentContextUnavailable,true);
+ assert.match(got[0].chanceSource,/opponent defensive sample unavailable/);
+});
