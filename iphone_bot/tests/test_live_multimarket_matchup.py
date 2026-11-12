@@ -60,6 +60,35 @@ class MultimarketTests(unittest.TestCase):
         self.assertTrue(all(r["line"]==20.5 for r in selected))
         self.assertEqual(excluded["NON_STANDARD_POINTS_TIER"],16)
 
+    def test_accented_surname_matches_same_verified_player_id(self):
+        roster={"alperensengun":{("1630578","HOU")}}
+        identity,reason=resolve_current_roster_identity(
+            "Alperen Şengün","Golden State Warriors @ Houston Rockets",
+            roster,{"1630578":"HOU"})
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("1630578","HOU","GSW"))
+
+    def test_jr_suffix_punctuation_matches_same_verified_player_id(self):
+        roster={"terrenceshannonjr":{("1630545","MIN")}}
+        identity,reason=resolve_current_roster_identity(
+            "Terrence Shannon Jr.","Dallas Mavericks @ Minnesota Timberwolves",
+            roster,{"1630545":"MIN"})
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("1630545","MIN","DAL"))
+
+    def test_name_normalization_cannot_override_team_or_ambiguity(self):
+        roster={"alperensengun":{("1630578","HOU"),("42","GSW")}}
+        identity,reason=resolve_current_roster_identity(
+            "Alperen Şengün","Golden State Warriors @ Houston Rockets",
+            roster,{"1630578":"HOU","42":"GSW"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"PLAYER_IDENTITY_NOT_UNIQUE")
+        identity,reason=resolve_current_roster_identity(
+            "Alperen Şengün","Golden State Warriors @ Houston Rockets",
+            {"alperensengun":{("1630578","HOU")}},{"1630578":"SAS"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+
     def test_traded_history_resolves_only_latest_verified_team_in_matchup(self):
         roster={"example":{("123","BOS"),("123","NYK")}}
         latest={"123":"NYK"}
