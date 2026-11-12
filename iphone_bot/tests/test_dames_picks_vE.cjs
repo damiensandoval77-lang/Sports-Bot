@@ -284,14 +284,14 @@ test("Real published scoreboard game count is independent of model records",()=>
  const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(page.includes("renderLiveGames()"));
  assert.ok(page.includes("function openGame(game)"));
- assert.ok(page.includes("No frozen props saved for this game. Its scoreboard and box score remain visible."));
+ assert.ok(page.includes("No verified pregame standard quotes were archived for this game. Its scoreboard and box score remain visible."));
 });
 
 test("Every game detail exposes original locked model, observed actual, ungraded state and full box score",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  for(const text of ["FROZEN LINE","FROZEN PROJ","ACTUAL","LIVE · NOT GRADED",
  "Full published player box score","Scoreboard","data-prop","Actual unavailable",
- "No frozen props saved for this game"])assert.ok(html.includes(text),text);
+ "No verified pregame standard quotes were archived for this game"])assert.ok(html.includes(text),text);
  assert.ok(html.includes('g.sport==="NFL"?p.target:p.stat'),"NFL uses exact target stat");
  assert.ok(html.includes('normalize(x.player)===normalize(p.player)'),"Exact player-name guard");
  assert.ok(html.includes('matches.length!==1'),"Ambiguous matches not fabricated");
@@ -756,4 +756,18 @@ test("Public board hides internal diagnostics; opt-in page retains full release 
 test("Closed developer diagnostic disclosure hides all child controls on mobile",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(html.includes("#diagnostics:not([open]) > :not(summary){display:none!important}"));
+});
+
+test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
+ assert.ok(html.includes("const related=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)));"));
+ assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
+ assert.ok(html.includes('SAVED PRETIP LINE'));
+ assert.ok(html.includes('NO AI FORECAST'));
+ assert.ok(html.includes('Quote-only lines are never graded as model picks.'));
+ const archive=JSON.parse(fs.readFileSync("docs/prizepicks_pregame_line_archive.json","utf8"));
+ for(const game of ["Brooklyn Nets @ New Orleans Pelicans","Los Angeles Lakers @ Milwaukee Bucks","San Antonio Spurs @ Chicago Bulls"]){
+  assert.ok(archive.quotes.some(q=>q.game===game&&q.tier==="standard"&&Date.parse(q.observed_at)<Date.parse(q.starts_at)),game);
+ }
 });

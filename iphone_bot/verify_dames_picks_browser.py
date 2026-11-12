@@ -59,7 +59,7 @@ def check():
                 assert nba_live_games>0,"Published NBA scoreboard games are missing from Live"
                 page.locator("[data-game]").first.click()
                 assert page.locator("#detail-content").get_by_text("Full published player box score",exact=False).count()>0
-                assert page.locator("#detail-content").get_by_text("Frozen pregame props",exact=False).count()>0
+                assert page.locator("#detail-content").get_by_text("Saved pregame standard lines",exact=False).count()>0
                 page.locator("#back").click()
                 page.locator('[data-league="NFL"]').click()
                 nfl_live_games=page.locator("[data-game]").count()

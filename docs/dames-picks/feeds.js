@@ -628,4 +628,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-pipeline-coverage-20261111-r11";
+globalThis.__damesRunningAssets["feeds.js"]="dp-live-archive-20261111-r12";
