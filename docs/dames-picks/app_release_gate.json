@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-12T08:37:54.501039+00:00",
+  "checked_at": "2026-11-12T09:57:51.017851+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -9,6 +9,7 @@
   "blocking_checks": [
     "unified_artifacts",
     "nba_production",
+    "nba_capture",
     "nba_grading",
     "published_pick_settlement"
   ],
@@ -36,8 +37,10 @@
       ]
     },
     "nba_capture": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "MISSING_OR_STALE_REPORT"
+      ]
     },
     "nba_grading": {
       "state": "DEGRADED",
