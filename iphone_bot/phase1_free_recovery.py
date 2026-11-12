@@ -57,12 +57,13 @@ def plan(root=ROOT,now=None):
     # Full no-line forecast generation is independent of the PrizePicks
     # feed. Repair stale model estimates from real games without inventing
     # a market price, direction or hit probability.
-    upcoming=any(
-        (t:=dt.datetime.fromisoformat(str(g.get("start","")).replace("Z","+00:00")))
-        .tzinfo is not None and now<t.astimezone(UTC)<=now+dt.timedelta(hours=36)
-        for g in schedule.get("games",[]) if isinstance(g,dict)
-        and str(g.get("start","")).endswith(("+00:00","Z"))
-    )
+    def upcoming_game(game):
+        try:
+            t=dt.datetime.fromisoformat(str(game.get("start","")).replace("Z","+00:00"))
+            return bool(t.tzinfo) and now<t.astimezone(UTC)<=now+dt.timedelta(hours=36)
+        except (ValueError,TypeError,OverflowError):
+            return False
+    upcoming=any(upcoming_game(g) for g in schedule.get("games",[]) if isinstance(g,dict))
     if upcoming and (not fresh(ai.get("generated_at"),now,120)
                      or ai.get("status")!="PREGAME_PROJECTIONS_NO_LINES"
                      or not ai.get("predictions")):
