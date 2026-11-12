@@ -5,6 +5,11 @@ import yaml
 class IsolatedResearchWorkflowTests(unittest.TestCase):
     def setUp(self):
         self.job=yaml.safe_load(Path('.github/workflows/nba-new-ai-all-markets.yml').read_text())['jobs']['short-history-research']
+    def test_durable_merge_repairs_trigger_actual_publication(self):
+        text=Path('.github/workflows/nba-new-ai-all-markets.yml').read_text()
+        push=text.split('  push:',1)[1].split('  schedule:',1)[0]
+        self.assertIn("'iphone_bot/merge_new_ai_publishing.py'",push)
+        self.assertIn("'iphone_bot/multimarket_forecast_ledger.py'",push)
     def test_runs_after_primary_even_on_failure(self):
         self.assertEqual(self.job['needs'],['multi-market'])
         self.assertIn('always()',self.job['if'])
