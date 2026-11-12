@@ -63,8 +63,31 @@ def main():
         running=page.evaluate("globalThis.__damesRunningAssets || {}")
         coverage=page.evaluate("(()=>{const x=document.querySelector('#coverage');return {visible:!!x&&!x.hidden&&!!x.textContent,text:x?.textContent||''}})()")
         cards=page.locator("button.pick").count()
+        footer_evidence=page.evaluate("""() => Array.from(
+          document.querySelectorAll('button.pick')).map(card => {
+            const footer=card.querySelector('.over-under-footer');
+            const text=footer?.textContent?.replace(/\\s+/g,' ').trim() || null;
+            const spans=Array.from(footer?.querySelectorAll('span') || [])
+              .map(x => x.textContent.trim());
+            return {player:card.querySelector('.name')?.textContent?.trim() || '',
+                    footer:text, spans, has_dots:!!card.querySelector('.dots'),
+                    is_exact_split:spans.length===2 &&
+                      /^(?:\\d+|—) OVER$/.test(spans[0]) &&
+                      /^(?:\\d+|—) UNDER$/.test(spans[1])};
+          })""")
         page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=True)
         browser.close()
+    footer_details={"visible_board_cards":cards,"cards":footer_evidence[:12]}
+    if cards:
+        check("live_board_footer_over_under_only",
+              len(footer_evidence)==cards and
+              all(x["is_exact_split"] and not x["has_dots"] and
+                  x["footer"] in (" ".join(x["spans"]), "".join(x["spans"]))
+                  for x in footer_evidence),
+              footer_details)
+    else:
+        report["checks"].append({"name":"live_board_footer_over_under_only",
+                                 "status":"SKIP","details":footer_details})
     check("executing_assets_match_repository_release",bool(running) and all(running.get(name)==expected_release for name in ("feeds.js","live_direct.js","dames_take.js")),running)
     check("no_browser_javascript_exceptions",not errors,errors[:8])
     check("board_cards_or_honest_empty_state",cards>0 or not nearby or bool(missing),{"cards":cards,"nearby_games":len(nearby)})
