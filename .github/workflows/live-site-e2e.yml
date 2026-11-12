@@ -1,9 +1,7 @@
 name: Live deployed Dame's Picks iPhone browser E2E
 on:
-  pull_request:
-    paths:
-      - 'scripts/e2e_live_site.py'
-      - '.github/workflows/live-site-e2e.yml'
+  # PR branches are verified locally by Version E CI. Hosted verification
+  # must compare the deployed release with main, not an unpublished PR.
   push:
     branches: [main]
     paths:
@@ -20,7 +18,8 @@ permissions:
   contents: read
 concurrency:
   group: live-site-e2e
-  cancel-in-progress: true
+  # Complete the current browser run even when frequent publishes arrive.
+  cancel-in-progress: false
 jobs:
   deployed-iphone:
     runs-on: ubuntu-24.04
