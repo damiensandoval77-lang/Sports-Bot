@@ -1,6 +1,7 @@
 """No invented opportunity box stats, no lookahead, and exact NBA CDN identity."""
 import unittest
-from iphone_bot.recover_official_opportunities import recover,completed_row
+import json
+from iphone_bot.recover_official_opportunities import recover,completed_row,completed_espn_row
 
 LOCAL={"player":"Stephon Castle","id":"1642264","team":"SAS",
        "opponent":"CHI","date":"2026-11-08","PTS":20,"REB":5,"AST":6,
@@ -21,7 +22,45 @@ SCHEDULE={"leagueSchedule":{"seasonYear":"2026-27","gameDates":[
 FEED={"picks":[{"player":"Stephon Castle","team":"SAS",
                 "pickem_tier":"standard","start":"2026-11-12T01:00:00Z"}]}
 
+ESPN_ARCHIVE={"season":"2026-27","games":[
+    {"id":"401909789","date_eastern":"2026-11-08",
+     "away_abbreviation":"SAS","home_abbreviation":"CHI"}]}
+ESPN_SUMMARY={"header":{"id":"401909789","competitions":[{
+    "date":"2026-11-09T01:00:00Z",
+    "status":{"type":{"completed":True,"state":"post"}},
+    "competitors":[{"homeAway":"away","team":{"abbreviation":"SAS"}},
+                   {"homeAway":"home","team":{"abbreviation":"CHI"}}]}]},
+    "boxscore":{"players":[{"team":{"abbreviation":"SAS"},
+      "statistics":[{"names":["MIN","FG","FT","OREB","REB","AST","TO","PTS"],
+       "athletes":[{"athlete":{"id":"1642264","displayName":"Stephon Castle"},
+        "stats":["31","8-15","3-4","1","5","6","2","20"]}]}]},
+       {"team":{"abbreviation":"CHI"},"statistics":[{"athletes":[{"athlete":{"id":"x"}}]}]}]}}
+
 class OfficialOpportunityRecovery(unittest.TestCase):
+    def test_espn_final_fallback_when_nba_schedule_unavailable(self):
+        def fetch(url):
+            if "site.api.espn.com" in url:return ESPN_SUMMARY
+            raise OSError("Official CDN schedule temporarily unavailable")
+        rows,report=recover([LOCAL],[],FEED,fetch=fetch,
+                            season_schedule=ESPN_ARCHIVE)
+        self.assertEqual(report["status"],"ESPN_FINAL_CROSSCHECKED")
+        self.assertEqual(report["recovered"],1)
+        self.assertEqual(rows[0]["verified_source"],"ESPN_FINAL_OPPORTUNITY_HISTORY")
+        self.assertEqual(rows[0]["FGA"],15)
+        self.assertEqual(rows[0]["FTA"],4)
+        self.assertEqual(rows[0]["TOV"],2)
+
+    def test_espn_never_recovers_from_not_final_wrong_id_or_wrong_stats(self):
+        self.assertIsNone(completed_espn_row(LOCAL,"999",ESPN_SUMMARY,"2026-11-12"))
+        incomplete={**ESPN_SUMMARY,"header":{**ESPN_SUMMARY["header"],
+            "competitions":[{**ESPN_SUMMARY["header"]["competitions"][0],
+            "status":{"type":{"completed":False}}}]}}
+        self.assertIsNone(completed_espn_row(LOCAL,"401909789",incomplete,"2026-11-12"))
+        self.assertIsNone(completed_espn_row(LOCAL,"401909789",ESPN_SUMMARY,"2026-11-08"))
+        bad=json.loads(json.dumps(ESPN_SUMMARY))
+        bad["boxscore"]["players"][0]["statistics"][0]["athletes"][0]["stats"][-1]="25"
+        self.assertIsNone(completed_espn_row(LOCAL,"401909789",bad,"2026-11-12"))
+
     def test_exact_previously_completed_game_recovers_all_real_opportunity_fields(self):
         calls=[]
         def fetch(url):
