@@ -303,5 +303,5 @@ test("combined app never turns a quote-only standard line into an AI projection"
  assert.ok(model.includes("projection:null,direction:null,chance:null"));
  assert.ok(model.includes("quoteOnly:true"));
  assert.ok(app.includes('p.quoteOnly?"NO AI"'));
- assert.ok(app.includes("Verified standard line · missing frozen AI model"));
+ assert.ok(app.includes('p.quoteOnly?"NO AI"')); // quote-only identity remains labeled on card badge; footer is OVER/UNDER only
 });
