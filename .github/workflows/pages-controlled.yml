@@ -8,6 +8,7 @@ on:
     paths:
       - '.github/workflows/pages-controlled.yml'
       - 'scripts/verify_legacy_pages_release.py'
+      - 'tests/test_verify_legacy_pages_release.py'
   schedule:
     # Publish all NBA/NFL static data at a predictable cadence even while
     # ingestion jobs continue pushing snapshots to main.
@@ -23,6 +24,7 @@ on:
       - 'docs/dames-picks/live_direct.js'
       - '.github/workflows/pages-controlled.yml'
       - 'scripts/verify_legacy_pages_release.py'
+      - 'tests/test_verify_legacy_pages_release.py'
 permissions:
   contents: read
   pages: write
@@ -68,6 +70,8 @@ jobs:
           esac
       - name: Verify actual native Pages release if source is branch mode
         if: steps.mode.outputs.enabled == 'false'
+        # Six-minute convergence budget plus request/runner overhead; job is 15 minutes.
+        timeout-minutes: 8
         run: python scripts/verify_legacy_pages_release.py "$RUNNER_TEMP/legacy-pages-verification.json"
       - name: Report legacy Pages state truthfully
         if: steps.mode.outputs.enabled == 'false' && always()

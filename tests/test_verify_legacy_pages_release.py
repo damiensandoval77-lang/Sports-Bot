@@ -40,3 +40,83 @@ class PagesVerificationTests(unittest.TestCase):
         expected=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
         self.assertEqual(checker.git_blob_sha(data),expected)
         self.assertNotEqual(checker.git_blob_sha(data),hashlib.sha1(data).hexdigest())
+
+class RetryBudgetTests(unittest.TestCase):
+    def setUp(self):
+        self.now = 0.0
+        self.assets = {name: name.encode() for name in
+                       ('feeds.js', 'live_direct.js', 'dames_take.js',
+                        'provisional.js', 'short_history.js', 'index.html')}
+        self.manifest = {'release_id': 'test-exact', 'asset_blob_sha1':
+                         {name: checker.git_blob_sha(data)
+                          for name, data in self.assets.items()}}
+        self.attempt = 0
+        self.timeouts = []
+
+    def sleep(self, seconds):
+        self.now += seconds
+
+    def run_checker(self, fetcher):
+        return checker.verify_with_retry(self.manifest, fetcher=fetcher,
+                                         clock=lambda: self.now, sleep=self.sleep)
+
+    def fetch(self, name, timeout):
+        import json
+        self.timeouts.append(timeout)
+        if name == 'release.json':
+            self.attempt += 1
+            return json.dumps(self.manifest).encode()
+        return self.assets[name]
+
+    def test_transient_404_then_stale_assets_eventually_pass(self):
+        import urllib.error
+        def fetch(name, timeout):
+            data = self.fetch(name, timeout)
+            if self.attempt < 3:
+                raise urllib.error.HTTPError('https://example.invalid', 404, 'Not Found', {}, None)
+            # Persist past the original three-attempt budget.
+            if self.attempt < 8 and name == 'short_history.js':
+                return b'superseded asset'
+            return data
+        report = self.run_checker(fetch)
+        self.assertEqual(report['status'], 'PASS')
+        self.assertEqual(report['attempt'], 8)
+        self.assertEqual(report['elapsed_seconds'], 84)
+        self.assertTrue(all(check['pass'] for check in report['checks']))
+
+    def test_persistent_stale_bytes_never_pass(self):
+        def fetch(name, timeout):
+            data = self.fetch(name, timeout)
+            return b'stale' if name == 'index.html' else data
+        report = self.run_checker(fetch)
+        self.assertEqual(report['status'], 'FAIL')
+        self.assertEqual(report['elapsed_seconds'], 360)
+        self.assertEqual(report['attempt'], 30)
+        self.assertFalse(next(c for c in report['checks'] if c['name'] == 'served_asset_index.html')['pass'])
+
+    def test_persistent_404_never_pass(self):
+        import urllib.error
+        def fetch(name, timeout):
+            raise urllib.error.HTTPError('https://example.invalid', 404, 'Not Found', {}, None)
+        report = self.run_checker(fetch)
+        self.assertEqual(report['status'], 'FAIL')
+        self.assertEqual(report['elapsed_seconds'], 360)
+        self.assertIn('HTTPError', report['error'])
+
+    def test_slow_requests_share_budget_and_timeout_is_capped(self):
+        def fetch(name, timeout):
+            self.timeouts.append(timeout)
+            self.now += timeout
+            raise TimeoutError('slow remote')
+        report = self.run_checker(fetch)
+        self.assertEqual(report['status'], 'FAIL')
+        self.assertEqual(report['elapsed_seconds'], 360)
+        self.assertTrue(all(0 < t <= 25 for t in self.timeouts))
+        self.assertEqual(self.timeouts[-1], 25)
+        self.now = 0
+        self.timeouts = []
+        report = checker.verify_with_retry(self.manifest, fetcher=fetch,
+            clock=lambda: self.now, sleep=self.sleep, budget=45)
+        self.assertEqual(report['status'], 'FAIL')
+        self.assertEqual(report['elapsed_seconds'], 45)
+        self.assertEqual(self.timeouts, [25, 8])
