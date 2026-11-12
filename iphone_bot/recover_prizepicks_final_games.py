@@ -14,9 +14,10 @@ from iphone_bot.official_game_id_index import recovery_game_ids
 from iphone_bot.archived_espn_game_ids import archived_espn_hints
 from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
-from iphone_bot.verified_prizepicks_inactives import load_verified_inactive_rows
+from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset
 from iphone_bot.verified_nov9_nonparticipants import load_nonparticipants
 from iphone_bot.verified_final_cache import read_cache
+from iphone_bot.verified_gamebook_inactives import load_gamebook_inactives
 
 OUT=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 STATUS=ROOT/"docs/prizepicks_final_recovery_status.json"
@@ -110,7 +111,7 @@ def main():
     # NBA/club postgame source links and a matching independently final game ID.
     # A failed cross-check NEVER creates a DNP or changes a settled record.
     try:
-        checked_inactives=load_verified_inactive_rows(rows)
+        checked_inactives=verified_inactive_subset(rows)
     except (OSError,ValueError,TypeError,KeyError) as error:
         checked_inactives=[]
         report.setdefault("errors",[]).append("OFFICIAL_INACTIVE_CROSSCHECK_"+type(error).__name__)
@@ -124,6 +125,7 @@ def main():
     checked_historical=[r for r in checked_historical
                         if (r.get("source_game_id"),r.get("team"),r.get("player")) not in existing]
     rows.extend(checked_historical)
+    rows.extend(load_gamebook_inactives(historical + rows))
     report["historical_source_confirmed_dnp_rows"]=len(checked_historical)
     report["manual_crosschecked_official_inactive_rows"]=len(checked_inactives)
     report["verified_rows"]=len(rows)

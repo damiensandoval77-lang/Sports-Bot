@@ -13,6 +13,9 @@ on:
       - 'iphone_bot/merge_ai_actual_publishing.py'
       - 'iphone_bot/tests/test_merge_ai_actual_publishing.py'
       - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
       - 'iphone_bot/recover_prizepicks_final_games.py'
       - 'iphone_bot/tests/test_final_boxscores.py'
       - 'iphone_bot/tests/test_direct_espn_final_recovery.py'
@@ -34,6 +37,9 @@ on:
   pull_request:
     paths:
       - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
       - 'iphone_bot/recover_prizepicks_final_games.py'
       - 'iphone_bot/archived_espn_game_ids.py'
       - 'iphone_bot/tests/test_archived_espn_game_ids.py'
@@ -69,6 +75,7 @@ jobs:
       - name: Validate immutable pretip and final-player identity safeguards
         if: github.event_name == 'pull_request'
         run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_gamebook_inactives.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_ai_actual_publishing.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_final_boxscores.py' -v

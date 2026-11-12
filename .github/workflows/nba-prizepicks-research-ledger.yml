@@ -9,6 +9,9 @@ on:
       - 'iphone_bot/prizepicks_research_ledger.py'
       - 'docs/prizepicks_pregame_line_archive.json'
       - 'iphone_bot/recover_prizepicks_final_games.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
       - 'iphone_bot/verified_nov9_nonparticipants.py'
       - 'iphone_bot/tests/test_verified_nov9_nonparticipants.py'
       - 'docs/confirmed_nonparticipants_2026-11-09.json'
@@ -24,6 +27,9 @@ on:
     paths:
       - 'iphone_bot/prizepicks_research_ledger.py'
       - 'iphone_bot/recover_prizepicks_final_games.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
       - 'iphone_bot/verified_nov9_nonparticipants.py'
       - 'iphone_bot/tests/test_verified_nov9_nonparticipants.py'
       - 'docs/confirmed_nonparticipants_2026-11-09.json'
@@ -53,6 +59,7 @@ jobs:
         # actual validated source/ledger checks, not stale source-text tests.
         if: github.event_name == 'pull_request'
         run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_gamebook_inactives.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_research_ledger.py' -v
           python -m py_compile iphone_bot/prizepicks_research_ledger.py
           python - <<'PY'

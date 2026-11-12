@@ -23,6 +23,7 @@ from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset, a
 from iphone_bot.verified_boxscore_dnps import verified_boxscore_dnp_subset, SOURCE as BOXSCORE_DNP_SOURCE
 from iphone_bot.verified_nba_official_dnps import load_official_dnp
 from iphone_bot.verified_nov9_nonparticipants import load_nonparticipants
+from iphone_bot.verified_gamebook_inactives import load_gamebook_inactives
 from iphone_bot.verified_pretip_trade import verified_trade_subset, SOURCE as TRADE_SOURCE
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -354,6 +355,7 @@ def main():
                              load_nonparticipants(actuals))
     except (OSError,ValueError,TypeError,KeyError):
         confirmed_inactives=[]
+    confirmed_inactives.extend(load_gamebook_inactives(actuals + confirmed_inactives))
     try:
         confirmed_transfers=verified_trade_subset(actuals)
     except (OSError,ValueError,TypeError,KeyError):
