@@ -36,7 +36,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          # Test the PR's changes, but always use main for production data writes.
+          ref: ${{ github.head_ref || 'main' }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -121,13 +122,13 @@ jobs:
             echo 'No future NBA fixtures; skip guarded model recovery'
             exit 0
           fi
-          # A successful or failed recent model attempt gets a cooldown. Avoid
-          # queueing the 40-minute cold-start trainer on each site publish.
+          # Failed runs must not suppress unattended recovery. Only an active
+          # run or a successful run within the last hour provides a cooldown.
           now=$(date -u +%s)
-          recent=$(gh run list --workflow nba-new-ai-all-markets.yml --limit 30 --json createdAt,headBranch |
-            jq --argjson cutoff "$((now - 60*60))" '[.[] | select(.headBranch == "main" and (.createdAt | fromdateiso8601) >= $cutoff)] | length')
+          recent=$(gh run list --workflow nba-new-ai-all-markets.yml --limit 30 --json createdAt,headBranch,status,conclusion |
+            jq --argjson cutoff "$((now - 60*60))" '[.[] | select(.headBranch == "main" and (.status != "completed" or (.conclusion == "success" and (.createdAt | fromdateiso8601) >= $cutoff)))] | length')
           if [ "$recent" -gt 0 ]; then
-            echo 'Model attempt already started within 60 minutes'
+            echo 'Model run in progress or succeeded within 60 minutes'
             exit 0
           fi
           gh workflow run nba-new-ai-all-markets.yml --ref main

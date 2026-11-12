@@ -457,7 +457,7 @@ function includeArchivedStandard(rows,archive){
   q.is_demo===false&&["PTS","REB","AST","PRA"].includes(q.stat)&&n(q.line)!==null&&
   !!q.player&&!!q.team&&!!q.game&&Number.isFinite(stamp(q.observed_at))&&
   Number.isFinite(stamp(q.starts_at))&&stamp(q.observed_at)<stamp(q.starts_at);
- const k=p=>[norm(p.player),p.team,p.game,p.stat,n(p.line)].join("|");
+ const k=p=>[norm(p.player),p.team,p.game,p.stat,n(p.line),stamp(p.start||p.starts_at)].join("|");
  const known=new Set(rows.filter(x=>x.sport==="NBA").map(k));
  const missing=new Map();
  for(const q of archive.quotes.filter(valid)){
@@ -606,4 +606,26 @@ root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displ
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["feeds.js"]="dp-public-board-clean-20261111-r9";
+/* Published-schedule coverage: never fabricate missing predictions. */
+(function(root){
+"use strict";
+const parse=s=>{let x=Date.parse(s);return Number.isFinite(x)?x:NaN};
+function tonight(schedule,rows,now=Date.now()){
+ const games=(schedule?.games||[]).filter(g=>{
+  const start=parse(g.start);
+  return Number.isFinite(start)&&g.game&&g.game_state!=="post"&&g.game_state!=="final"&&start-now<=12*3600000&&now-start<=4*3600000;
+ });
+ const saved=new Set((rows||[]).filter(r=>r.sport==="NBA").map(r=>r.game+"|"+Math.round(parse(r.start)/60000)));
+ const missing=games.filter(g=>!saved.has(g.game+"|"+Math.round(parse(g.start)/60000)));
+ const first=missing.map(g=>parse(g.start)).sort((a,b)=>a-b)[0];
+ return {games:games.length,missing:missing.map(g=>g.game),covered:games.length-missing.length,
+         firstTip:Number.isFinite(first)?new Date(first).toISOString():null,
+         alert:missing.length>0&&Number.isFinite(first)&&first-now<=3*3600000};
+}
+function message(c,formatTime){
+ if(!c.alert)return "";
+ return "No saved picks yet for "+c.missing.length+" of "+c.games+" upcoming games (first tip "+formatTime(c.firstTip)+"). Picks may be processing or withheld for injuries; this page updates automatically.";
+}
+root.DamesPicksCoverage={tonight,message};
+})(typeof window!=="undefined"?window:globalThis);
+globalThis.__damesRunningAssets["feeds.js"]="dp-pipeline-coverage-20261111-r10";

@@ -32,6 +32,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test every saved pick can settle without retroactive inference
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/published_pick_settlement.py
           python -m unittest discover -s iphone_bot/tests -p 'test_published_pick_settlement.py' -v

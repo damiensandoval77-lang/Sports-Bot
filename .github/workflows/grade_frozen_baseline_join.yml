@@ -33,6 +33,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify immutable 2026-11-09 source snapshot and real-final-only grading
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_baseline_join.py' -v
       - name: Grade original frozen baseline markets without altering archived predictions
         if: github.event_name != 'pull_request'

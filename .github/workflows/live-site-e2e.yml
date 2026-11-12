@@ -1,0 +1,44 @@
+name: Live deployed Dame's Picks iPhone browser E2E
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5,35 * * * *'
+  workflow_run:
+    workflows: ["pages build and deployment","Controlled Sports-Bot GitHub Pages deployment"]
+    types: [completed]
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: live-site-e2e
+  cancel-in-progress: true
+jobs:
+  deployed-iphone:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install browser dependencies
+        run: |
+          pip install playwright==1.48.0
+          python -m playwright install --with-deps chromium
+      - name: Verify real deployed iPhone-size page and published ledger
+        id: verify
+        run: |
+          set +e
+          python scripts/e2e_live_site.py https://damiensandoval77-lang.github.io/Sports-Bot out
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve rendered phone screenshot and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iphone-live-e2e-${{ github.run_id }}
+          path: out/
+          retention-days: 90
+      - name: Fail visibly if phone-facing release is incomplete
+        if: steps.verify.outputs.code != '0'
+        run: exit 1

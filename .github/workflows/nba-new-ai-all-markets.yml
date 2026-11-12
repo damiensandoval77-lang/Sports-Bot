@@ -57,16 +57,21 @@ jobs:
       - name: Install existing historical and ML requirements
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
       - name: Test standard-only quotes and correlated PRA math
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
       - name: Test authenticated NBA news and no unvalidated injury uplift
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
       - name: Test free official NBA injury transitions
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v
       - name: Test report version and stale-publish guard
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_injury_refresh_integrity.py' -v
       # These trained older-season models do not change when a provider line
       # moves. Cache immutable training inputs, never provider quotes/grades.
       - name: Verify pretip model cache and schedule wiring
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_workflow_model_cache.py' -v
       - name: Restore validated historical model (fast pretip path)
         id: historical_cache
@@ -108,6 +113,8 @@ jobs:
             docs/lagged_matchup_all_market_validation.json
           key: nba-4market-validated-v2-${{ runner.os }}-py311-${{ hashFiles('iphone_bot/lagged_matchup_training.py', 'iphone_bot/multimarket_matchup_training.py', 'iphone_bot/offensive_involvement_holdout.py', 'iphone_bot/requirements-training.txt') }}
       - name: Fetch current season and verify actual standard PrizePicks lines
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python -u iphone_bot/fetch_current_form.py
           python -m iphone_bot.build_prizepicks_model_input
@@ -145,6 +152,7 @@ jobs:
           print('Verified new AI market counts:',d['market_counts'])
           PY
       - name: Test analytical matchup probability with exact original standard lines
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_pretip_matchup_shadow.py' -v
       - name: Calculate separate research-only opponent-based analytic probabilities
         if: steps.matchup_source.outcome == 'success'
@@ -154,10 +162,11 @@ jobs:
           python -m research.freeze_position_rating_quote_join --joined joined-matchup-features-research.json --ratings defensive-rating-research.json --output position-rating-quote-research.json
           python -m research.pretip_matchup_shadow --joined position-rating-quote-research.json --output matchup-shadow-estimates-research.json
       - name: Verify research feed never replaces grades or publishes stale probabilities
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s research/tests -p 'test_publish_matchup_shadow_guard.py' -v
       - name: Test and freeze pretip offers for independent multi-stat grading
         run: |
-          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
+          if [ "${GITHUB_EVENT_NAME:-}" = pull_request ]; then python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v; fi
           python -u iphone_bot/multimarket_forecast_ledger.py
           python - <<'PY'
           import json
@@ -170,6 +179,7 @@ jobs:
           print('Frozen new-model stats',d['market_metrics'])
           PY
       - name: Test durable merge preserves concurrent finalized grades
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
       - name: Retain original research artifact
         uses: actions/upload-artifact@v4
@@ -200,17 +210,27 @@ jobs:
           cp docs/lagged_matchup_all_market_ledger.json "$RUNNER_TEMP/new-ai-ledger.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          for i in 1 2 3 4 5; do
+          regen=0
+          for i in 1 2 3 4 5 6 7 8; do
             git fetch origin main
             git reset --hard origin/main
-            # The official report can change while historical retraining
-            # runs. Never overwrite the live board with a stale injury view.
-            python -m iphone_bot.injury_refresh_integrity \
-              --official docs/injury_context.json \
-              --model "$RUNNER_TEMP/new-ai.json" --check || {
-                echo "::error::New official NBA injury status arrived while training; refuse stale publish. Recovery watchdog will re-run."
+            # Rebuild against the latest official injury report if it changed
+            # during model execution. Never publish stale injury projections.
+            if ! python -m iphone_bot.injury_refresh_integrity \
+                 --official docs/injury_context.json \
+                 --model "$RUNNER_TEMP/new-ai.json" --check; then
+              regen=$((regen + 1))
+              if [ "$regen" -gt 3 ]; then
+                echo "::error::Injury report changed across three regenerations; refusing stale publish."
                 exit 1
-              }
+              fi
+              echo "::warning::Injury context changed; regenerate before publishing ($regen/3)"
+              python -u iphone_bot/live_multimarket_matchup.py
+              python -u iphone_bot/multimarket_forecast_ledger.py
+              cp docs/lagged_matchup_live_all_markets.json "$RUNNER_TEMP/new-ai.json"
+              cp docs/lagged_matchup_all_market_ledger.json "$RUNNER_TEMP/new-ai-ledger.json"
+              continue
+            fi
             cp "$RUNNER_TEMP/new-ai.json" docs/lagged_matchup_live_all_markets.json
             python -m iphone_bot.merge_new_ai_publishing \
               --current docs/lagged_matchup_all_market_ledger.json \
@@ -231,6 +251,7 @@ jobs:
           exit 1
 
       - name: Test immutable prospective forecast archive and true standard-line final audit
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s research/tests -p 'test_prospective_matchup_calibration.py' -v
       - name: Publish separately guarded uncalibrated matchup research feed
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

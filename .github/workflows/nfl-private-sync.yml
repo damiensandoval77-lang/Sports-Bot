@@ -38,6 +38,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify sync data-integrity safeguards
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s tests -p 'test_nfl_private_sync.py' -v
           python -m unittest discover -s tests -p 'test_nfl_reliability.py' -v

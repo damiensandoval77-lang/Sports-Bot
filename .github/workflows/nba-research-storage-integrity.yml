@@ -33,6 +33,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify paper capture, original pretip archives and real live data integrity
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/research_storage_integrity.py iphone_bot/research_archive_persistence.py iphone_bot/capture_live_research.py iphone_bot/preserve_research_inputs.py
           python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v

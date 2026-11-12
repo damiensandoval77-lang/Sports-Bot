@@ -27,6 +27,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test transparent coverage accounting
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_tracking_coverage_status.py' -v
       - name: Calculate research coverage from published board and grades
         run: python -m iphone_bot.tracking_coverage_status

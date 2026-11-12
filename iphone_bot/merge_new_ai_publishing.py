@@ -7,7 +7,7 @@ NBA/ESPN final-player ledger, never live totals or implied probabilities.
 import argparse
 import json
 from pathlib import Path
-from iphone_bot.multimarket_forecast_ledger import merge, key, valid
+from iphone_bot.multimarket_forecast_ledger import merge, key, valid, with_voids
 
 IMMUTABLE=("player_id","player","team","game","start","stat",
            "line","projection","market_updated","captured_at","pickem_tier",
@@ -61,7 +61,7 @@ def main():
     def load(path):
         f=Path(path)
         return json.loads(f.read_text()) if f.exists() else {}
-    result=durable_merge(load(args.current),load(args.incoming),load(args.finals))
+    result=durable_merge(load(args.current),load(args.incoming),with_voids(load(args.finals),Path(args.finals).with_name("espn_injury_void_ledger.json")))
     dest=Path(args.output)
     dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
     print("DURABLE NEW AI RECORDS",len(result["records"]),"NEW",result["new_pregame_frozen"],

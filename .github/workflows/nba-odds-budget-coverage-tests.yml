@@ -31,19 +31,26 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_odds_slate_health.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v
-      - name: Validate website JS syntax and clear missing-game flags
+      - name: Validate active unified board reports missing frozen NBA games
         run: |
           python - <<'PY'
           from pathlib import Path
-          source=Path('docs/index.html').read_text()
-          Path('/tmp/sports-odds-diagnostics.js').write_text(
-            source.split('<script>',1)[1].split('</script>',1)[0])
-          assert 'CREDITS_BELOW_RESERVE_PRESERVED' in source
-          assert 'odds_slate_health.json' in source
-          assert 'INDEPENDENT SLATE CHECK' in source
-          print('Verified status UI, independent slate game labels')
+          import re
+          landing=Path('docs/index.html').read_text()
+          source=Path('docs/dames-picks/index.html').read_text()
+          model=Path('docs/dames-picks/feeds.js').read_text()
+          assert 'url=./dames-picks/' in landing
+          assert 'id="coverage"' in source
+          assert 'No saved picks yet for ' in model
+          assert 'const missing=games.filter' in model
+          assert 'includeArchivedStandard' in model
+          scripts=re.findall(r'<script>(.*?)</script>',source,re.S)
+          assert scripts, 'No executable active app script found'
+          Path('/tmp/sports-odds-diagnostics.js').write_text(scripts[-1])
+          print('Active unified board exposes missing NBA game coverage without inventing props')
           PY
           node --check /tmp/sports-odds-diagnostics.js
+          node --check docs/dames-picks/feeds.js
       - name: Ensure only one scheduled workflow pays for odds
         run: |
           python - <<'PY'

@@ -32,6 +32,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify immutable forecast reconciliation contracts
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_audit_ai_forecast_coverage.py' -v
           python -m py_compile iphone_bot/audit_ai_forecast_coverage.py

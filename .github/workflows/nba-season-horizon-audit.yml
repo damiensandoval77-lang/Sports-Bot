@@ -33,6 +33,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test calendar, duplicate identities and resilience without betting APIs
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_season_schedule_baseline.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_audit_nba_schedule_horizon.py' -v

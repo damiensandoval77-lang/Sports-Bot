@@ -47,6 +47,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Run deterministic public NFL grading unit tests
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
       - name: Attempt independent snap-count zero-target recovery
         continue-on-error: true

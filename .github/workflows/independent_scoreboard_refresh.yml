@@ -42,12 +42,16 @@ jobs:
         with:
           python-version: "3.11"
       - name: Test scoreboard refresh logic
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_independent_scoreboard.py' -v
       - name: Prove newer live scores replace stale snapshots without erasing verified scores
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_merge_scoreboard_snapshot.py' -v
       - name: Verify official game ID index and immutable source checks
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p "test_official_game_id_index.py" -v
       - name: Test scoreboard workflow failure handling
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_scoreboard_failure_workflow.py' -v
       - name: Refresh third-party public NBA scores without odds credits
         id: refresh

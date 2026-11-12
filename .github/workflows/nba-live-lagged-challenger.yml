@@ -35,10 +35,13 @@ jobs:
       - name: Install existing data and model dependencies
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
       - name: Test strict live score and source matching
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_live_lagged_matchup_sidecar.py' -v
       - name: Verify 20,000-draw per-line hit chance simulation
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_points_hit_probability.py' -v
       - name: Test pretip immutable forecast ledger
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_lagged_matchup_points_ledger.py' -v
       - name: Build model using older seasons only
         run: |

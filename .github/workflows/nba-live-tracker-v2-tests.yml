@@ -51,31 +51,34 @@ jobs:
           assert r['ports'][0]['localPort']==8080
           print('Replit backend startup configured')
           PY
-      - name: Assert independent 45-second refresh and conservative ESPN backup
+      - name: Assert unified iPhone live tracker uses 30-second ESPN data and safe fallback
         run: |
           python - <<'PY'
           from pathlib import Path
-          html=Path('docs/index.html').read_text()
-          script=html.split('<script>',1)[1].split('</script>',1)[0]
-          Path('/tmp/live-tracker-v2.js').write_text(script)
-          assert 'frozenMatchupForecasts.push(...(window.LivePropTracker?.frozenPrizePicks' in html
-          assert 'for(const r of [...ai,...odds,...frozenMatchupForecasts,' in html
-          assert 'noLineArchive.predictions||[]' in html
-          assert 'Date.parse(x.captured_at)<Date.parse(x.start)' in html
-          assert 'if(trackerLastGame!==game)' in html
-          assert 'live_player_tracking.json' in html
-          assert 'isRecent(backup.captured_at,.5)' in html  # Maximum 30-min observed snapshot window
-          assert 'No unique matching verified player boxscore for ' in html
-          assert 'snapshot.observed_at||backup.captured_at' in html
-          assert 'snapshot.stale?' in html
-          assert 'liveTrackerServiceUrl' in html
-          assert 'Date.now()-ts>120000' in html
-          assert 'setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000);' in html
-          assert 'document.addEventListener("visibilitychange"' in html
-          assert 'trackerLastUpdated=verifiedAt' in html
-          print('Pregame frozen captures, game tabs, live pace, 45s refresh, conservative fallback verified')
+          import re
+          landing=Path('docs/index.html').read_text()
+          html=Path('docs/dames-picks/index.html').read_text()
+          live=Path('docs/dames-picks/live_direct.js').read_text()
+          model=Path('docs/dames-picks/feeds.js').read_text()
+          assert 'url=./dames-picks/' in landing
+          assert 'async function liveTick(force=false)' in html
+          assert 'setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000)' in html
+          assert 'L.fetchNBA().catch(()=>null)' in html
+          assert 'getJSON("nba_scoreboard_independent.json")' in html
+          assert 'getJSON("nba_player_tracking_independent.json")' in html
+          assert 'getJSON("live_player_tracking.json")' in html
+          assert 'next>before' in html, 'Older live observation must never replace newer data'
+          assert 'Never replace an actual observation with invented stats' in html
+          assert 'if(quoteArchive.status==="fulfilled")state.nba=m.includeArchivedStandard' in html
+          assert 'projection:null,direction:null,chance:null' in model
+          assert 'root.DamesPicksLive=' in live
+          scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
+          assert scripts, 'Active app script missing'
+          Path('/tmp/live-tracker-v2.js').write_text(scripts[-1])
+          print('Unified iPhone app refreshes ESPN live totals every 30s, preserves newer snapshots and separates quote-only records')
           PY
           node --check /tmp/live-tracker-v2.js
+          node --check docs/dames-picks/live_direct.js
       - name: Confirm no paid sportsbook requests and no post-tip capture changes
         run: |
           python - <<'PY'

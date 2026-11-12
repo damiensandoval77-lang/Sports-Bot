@@ -33,6 +33,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test no fabricated posttip capture or overwritten line
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/freeze_baseline_pregame_quotes.py
           python -m unittest discover -s iphone_bot/tests -p 'test_freeze_baseline_pregame_quotes.py' -v

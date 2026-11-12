@@ -60,6 +60,7 @@ jobs:
       - name: Train opponent-aware shadow (research only)
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/capture_ai_board.py iphone_bot/minutes_early_season_research.py iphone_bot/season_average_research.py iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/fetch_prizepicks.py iphone_bot/fetch_official_injuries.py iphone_bot/research_context.py iphone_bot/minutes_model_v2.py iphone_bot/shot_profile_research.py iphone_bot/weight_research.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v

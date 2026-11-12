@@ -42,6 +42,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Simulate eight-game capture, outage, tipoff, tracking and final settlement
+        if: github.event_name == 'pull_request'
         run: |
           node --test iphone_bot/tests/test_nba_full_game_lifecycle.cjs
           node --test iphone_bot/tests/test_live_prop_tracker.cjs

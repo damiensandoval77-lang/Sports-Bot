@@ -1,0 +1,92 @@
+name: Pipeline heartbeat - deployed lines picks live and grades
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_run:
+    workflows:
+      - "Publish lightweight PrizePicks site data and per-game coverage"
+      - "Guarded new NBA AI all markets PTS REB AST PRA"
+      - "Independent NBA scoreboard refresh"
+      - "Independent NBA player boxscores"
+      - "Grade frozen new AI PTS REB AST PRA (no provider credits)"
+    types: [completed]
+  pull_request:
+    paths:
+      - '.github/workflows/pipeline-heartbeat.yml'
+      - 'iphone_bot/pipeline_heartbeat.py'
+      - 'iphone_bot/tests/test_pipeline_heartbeat.py'
+permissions:
+  contents: read
+  actions: write
+  issues: write
+concurrency:
+  group: deployed-pipeline-heartbeat
+  cancel-in-progress: false
+jobs:
+  heartbeat:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test heartbeat state classification
+        if: github.event_name == 'pull_request'
+        run: python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v
+      - name: Run deployed-site monitoring
+        if: github.event_name != 'pull_request'
+        id: health
+        run: |
+          set +e
+          python -m iphone_bot.pipeline_heartbeat pipeline_heartbeat.json
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Save evidence
+        if: github.event_name != 'pull_request' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-heartbeat-${{ github.run_id }}
+          path: pipeline_heartbeat.json
+          retention-days: 90
+      - name: Retry failed free stages without suppressing recovery after failures
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for wf in $(jq -r '.stages[] | select(.status == "FAIL" and .recovery_workflow != null) | .recovery_workflow' pipeline_heartbeat.json | sort -u); do
+            busy=$(gh run list --workflow "$wf" --limit 30 --json createdAt,status,conclusion,headBranch |
+              jq --argjson cutoff "$(( $(date -u +%s) - 1800 ))"                 '[.[] | select(.headBranch == "main" and (.status != "completed" or (.conclusion == "success" and (.createdAt|fromdateiso8601) >= $cutoff)))] | length')
+            if [ "$busy" -gt 0 ]; then echo "$wf has an active or recently successful run"; continue; fi
+            gh workflow run "$wf" --ref main
+            echo "Dispatched free recovery for $wf"
+          done
+      - name: Open or close one GitHub alert per failing stage
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh label create pipeline-alert --color B60205 --description "Dame's Picks pipeline failure" 2>/dev/null || true
+          jq -c '.stages[]' pipeline_heartbeat.json | while read -r row; do
+            stage=$(jq -r .stage <<< "$row")
+            status=$(jq -r .status <<< "$row")
+            title="[pipeline] $stage failing"
+            issue=$(gh issue list --state open --label pipeline-alert --limit 100 --json number,title |
+              jq -r --arg name "$title" '[.[] | select(.title==$name)] | first | .number // empty')
+            if [ "$status" = FAIL ] && [ -z "$issue" ]; then
+              gh issue create --title "$title" --label pipeline-alert --body "$(jq . <<< "$row")"
+            elif [ "$status" = OK ] && [ -n "$issue" ]; then
+              gh issue comment "$issue" --body "Recovered in deployed-site heartbeat ${{ github.run_id }}"
+              gh issue close "$issue"
+            fi
+          done
+      - name: Surface unresolved failures
+        if: github.event_name != 'pull_request' && steps.health.outputs.code != '0'
+        run: exit 1

@@ -65,6 +65,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate immutable pretip and final-player identity safeguards
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_ai_actual_publishing.py' -v
