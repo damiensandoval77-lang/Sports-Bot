@@ -160,10 +160,22 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
         day=tip.astimezone(ET).date().isoformat()
         key=(pid,team,opponent,day)
         if key not in cache:
-            vec,reason=feature_vector(by_id[pid],team,opponent,day,defense)
+            # Prefer the original independently crosschecked player history.
+            # Use arithmetic-validated CSV rows only when otherwise there are
+            # fewer than eight genuine prior team games for the model.
+            verified_prior=[r for r in by_id[pid] if r.get("team")==team
+                            and r.get("date","")<day
+                            and not r.get("history_source_confidence")]
+            use_csv=len(verified_prior)<8
+            source_history=by_id[pid] if use_csv else verified_prior
+            vec,reason=feature_vector(source_history,team,opponent,day,defense)
             if reason:cache[key]=(None,reason)
             else:
-                feature_flags[key]={"opponent_context_unavailable":vec.get("opponent_context_unavailable",False)}
+                feature_flags[key]={
+                    "opponent_context_unavailable":vec.get("opponent_context_unavailable",False),
+                    "single_source_history":use_csv and any(
+                        r.get("history_source_confidence") and r.get("team")==team and r.get("date","")<day
+                        for r in source_history)}
                 x=np.array([[vec[k] for k in FEATURES]],dtype=float)
                 xp=np.array([[vec[k] for k in COLS]],dtype=float)
                 model=pack["models"]
@@ -199,8 +211,7 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
          "injury_reprojection_status":injury["status"],
          "injury_context":injury,
          "opponent_context_unavailable":bool((feature_flags.get(key) or {}).get("opponent_context_unavailable")),
-        "single_source_history":(
-             team in single_source_teams or opponent in single_source_teams),
+        "single_source_history":bool((feature_flags.get(key) or {}).get("single_source_history")),
         "injury_uncertainty_unresolved":injury["status"]=="BASELINE_WITH_UNRESOLVED_INJURY",
          "opponent_adjustment_verified":not bool((feature_flags.get(key) or {}).get("opponent_context_unavailable"))
            and opponent not in single_source_teams,
