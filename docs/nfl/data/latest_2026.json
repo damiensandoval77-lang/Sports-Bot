@@ -1,7 +1,7 @@
 {
   "season": 2026,
-  "captured_at": "2026-11-10T01:07:41.376261+00:00",
-  "rows": 2315,
+  "captured_at": "2026-11-12T15:52:31.962053+00:00",
+  "rows": 7911,
   "files": [
     "latest_2026_00.csv",
     "latest_2026_01.csv",
@@ -12,7 +12,29 @@
     "latest_2026_06.csv",
     "latest_2026_07.csv",
     "latest_2026_08.csv",
-    "latest_2026_09.csv"
+    "latest_2026_09.csv",
+    "latest_2026_10.csv",
+    "latest_2026_11.csv",
+    "latest_2026_12.csv",
+    "latest_2026_13.csv",
+    "latest_2026_14.csv",
+    "latest_2026_15.csv",
+    "latest_2026_16.csv",
+    "latest_2026_17.csv",
+    "latest_2026_18.csv",
+    "latest_2026_19.csv",
+    "latest_2026_20.csv",
+    "latest_2026_21.csv",
+    "latest_2026_22.csv",
+    "latest_2026_23.csv",
+    "latest_2026_24.csv",
+    "latest_2026_25.csv",
+    "latest_2026_26.csv",
+    "latest_2026_27.csv",
+    "latest_2026_28.csv",
+    "latest_2026_29.csv",
+    "latest_2026_30.csv",
+    "latest_2026_31.csv"
   ],
   "schema": [
     "captured_at",
@@ -59,37 +81,37 @@
     "ok": true,
     "issues": [],
     "warnings": [],
-    "rows": 2315,
-    "games": 15,
-    "players": 281,
-    "captured_at": "2026-11-10T01:07:41.376261+00:00",
+    "rows": 7911,
+    "games": 27,
+    "players": 283,
+    "captured_at": "2026-11-12T15:52:31.962053+00:00",
     "age_hours": 0.01
   },
   "pipeline_health": {
-    "checked_at": "2026-11-10T01:08:26.565890+00:00",
-    "latest_capture": "2026-11-10T01:07:41.376261+00:00",
-    "capture_rows": 53542,
-    "graded_rows": 0,
+    "checked_at": "2026-11-12T15:53:15.493162+00:00",
+    "latest_capture": "2026-11-12T15:52:31.962053+00:00",
+    "capture_rows": 72538,
+    "graded_rows": 484,
     "grading": {
-      "final_games": 0,
-      "expected_lines": 0,
-      "graded_lines": 0,
-      "missing_lines": 0,
-      "status": "no_eligible_finals",
+      "final_games": 1,
+      "expected_lines": 521,
+      "graded_lines": 484,
+      "missing_lines": 37,
+      "status": "needs_review",
       "reconciliation": {
-        "status": "not_run",
-        "expected": 0,
-        "graded": 0,
+        "status": "missing_stats",
+        "expected": 521,
+        "graded": 484,
         "preserved": 0,
-        "pending": 0,
-        "pushes": 0,
-        "settled": 0
+        "pending": 37,
+        "pushes": 1,
+        "settled": 483
       }
     },
     "schedule": {
       "season": 2026,
       "scheduled_games": 272,
-      "games_with_lines": 15,
+      "games_with_lines": 27,
       "games_with_projections": 0,
       "weeks": [
         {
@@ -417,10 +439,11 @@
         {
           "week": 9,
           "scheduled_games": 15,
-          "games_with_lines": 1,
+          "games_with_lines": 0,
           "games_with_projections": 0,
           "games_missing_lines": [
             "2026_09_ARI_SEA",
+            "2026_09_BUF_MIN",
             "2026_09_CIN_ATL",
             "2026_09_CLE_NO",
             "2026_09_DAL_IND",
@@ -479,23 +502,9 @@
         {
           "week": 11,
           "scheduled_games": 13,
-          "games_with_lines": 0,
+          "games_with_lines": 13,
           "games_with_projections": 0,
-          "games_missing_lines": [
-            "2026_11_ARI_KC",
-            "2026_11_BAL_CAR",
-            "2026_11_CIN_WAS",
-            "2026_11_IND_HOU",
-            "2026_11_JAX_NYG",
-            "2026_11_LV_DEN",
-            "2026_11_MIA_BUF",
-            "2026_11_MIN_SF",
-            "2026_11_NO_CHI",
-            "2026_11_NYJ_LAC",
-            "2026_11_PIT_PHI",
-            "2026_11_TB_DET",
-            "2026_11_TEN_DAL"
-          ],
+          "games_missing_lines": [],
           "games_missing_projections": [
             "2026_11_ARI_KC",
             "2026_11_BAL_CAR",
@@ -802,11 +811,11 @@
         }
       ],
       "unknown_line_games": [],
-      "next_week": 9,
-      "next_week_games": 1,
-      "next_week_games_with_props": 1,
+      "next_week": 10,
+      "next_week_games": 14,
+      "next_week_games_with_props": 14,
       "next_week_missing_props": []
     },
-    "status": "ok"
+    "status": "needs_review"
   }
 }
