@@ -1,0 +1,422 @@
+From d18c47ecff3e9f24830609fa6d3b2e9a5cedf7b1 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 12 Nov 2026 21:45:47 +0000
+Subject: [PATCH 2/3] Review CRExploration handoff and propose two patches
+
+0001 rolls back rejected dispatches instead of stranding the player in
+Recovery; 0002 recovers when the target vehicle ends play. Patches are
+applied only to a temporary export; Codex-owned files are unchanged.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01R1UJvB6oLvPNLuN23qBC6x
+---
+ claude_tools/native/test_handoff_cancel.cpp   | 96 +++++++++++++++++++
+ claude_tools/run_patch_checks.py              | 70 ++++++++++++++
+ docs/claude/PHASE2_VEHICLE_REVIEW.md          | 59 ++++++++++++
+ .../0001-roll-back-rejected-dispatch.patch    | 63 ++++++++++++
+ .../0002-recover-when-vehicle-ends-play.patch | 77 +++++++++++++++
+ 5 files changed, 365 insertions(+)
+ create mode 100644 claude_tools/native/test_handoff_cancel.cpp
+ create mode 100644 claude_tools/run_patch_checks.py
+ create mode 100644 docs/claude/PHASE2_VEHICLE_REVIEW.md
+ create mode 100644 docs/claude/patches/0001-roll-back-rejected-dispatch.patch
+ create mode 100644 docs/claude/patches/0002-recover-when-vehicle-ends-play.patch
+
+diff --git a/claude_tools/native/test_handoff_cancel.cpp b/claude_tools/native/test_handoff_cancel.cpp
+new file mode 100644
+index 0000000..a3c0438
+--- /dev/null
++++ b/claude_tools/native/test_handoff_cancel.cpp
+@@ -0,0 +1,96 @@
++// Engine-independent checks for docs/claude/patches/0001 (CancelUndispatched).
++// Compiled by claude_tools/run_patch_checks.py against the PATCHED policy header only.
++#include "Core/CRVehicleHandoff.h"
++
++#include <iostream>
++#include <stdexcept>
++
++namespace
++{
++int Checks = 0;
++
++void Check(bool Condition, const char* Message)
++{
++    ++Checks;
++    if (!Condition)
++    {
++        throw std::runtime_error(Message);
++    }
++}
++
++// Defect as shipped: a rejected exit dispatch calls Fail(), the only route back is
++// ConfirmOnFootRecovery, which needs an on-foot pawn the player does not have while seated.
++void ShippedBehaviourStrandsSeatedPlayer()
++{
++    CR::FVehicleHandoff Policy;
++    Check(Policy.CompleteEnter(Policy.BeginEnter()), "enter");
++    const auto Exit = Policy.BeginExit();
++    Check(Policy.Fail(Exit), "fail rejected exit");
++    Check(Policy.GetPhase() == CR::EHandoffPhase::Recovery, "stranded in recovery");
++    Check(Policy.BeginExit() == 0, "cannot retry exit");
++    Check(Policy.BeginEnter() == 0, "cannot re-enter");
++}
++
++void CancelRestoresPriorStablePhase()
++{
++    CR::FVehicleHandoff Policy;
++    const auto Enter = Policy.BeginEnter();
++    Check(Policy.CancelUndispatched(Enter), "cancel enter");
++    Check(Policy.GetPhase() == CR::EHandoffPhase::OnFoot, "back on foot");
++    const auto Retry = Policy.BeginEnter();
++    Check(Retry > Enter, "new id after cancel");
++    Check(!Policy.CompleteEnter(Enter), "cancelled id stays stale");
++    Check(Policy.CompleteEnter(Retry), "retry completes");
++    const auto Exit = Policy.BeginExit();
++    Check(Policy.CancelUndispatched(Exit), "cancel exit");
++    Check(Policy.GetPhase() == CR::EHandoffPhase::Driving, "still driving");
++    Check(Policy.BeginExit() > Exit, "exit can be retried");
++}
++
++void CancelRejectsInvalidCalls()
++{
++    CR::FVehicleHandoff Policy;
++    Check(!Policy.CancelUndispatched(0), "zero id");
++    Check(!Policy.CancelUndispatched(1), "nothing pending");
++    const auto Enter = Policy.BeginEnter();
++    Check(!Policy.CancelUndispatched(Enter + 1), "wrong id");
++    Check(Policy.CompleteEnter(Enter), "complete");
++    Check(!Policy.CancelUndispatched(Enter), "completed request");
++    Check(Policy.GetPhase() == CR::EHandoffPhase::Driving, "unchanged");
++    Check(Policy.RequireRecovery(), "recovery");
++    Check(!Policy.CancelUndispatched(Enter), "recovery is not cancellable");
++    Check(Policy.GetPhase() == CR::EHandoffPhase::Recovery, "still recovery");
++}
++
++void RepeatedCancelCycles()
++{
++    CR::FVehicleHandoff Policy;
++    std::int32_t Last = 0;
++    for (int Index = 0; Index < 1000; ++Index)
++    {
++        const auto Id = Policy.BeginEnter();
++        Check(Id > Last, "monotonic");
++        Last = Id;
++        Check(Policy.CancelUndispatched(Id), "cycle cancel");
++        Check(Policy.GetPhase() == CR::EHandoffPhase::OnFoot, "cycle phase");
++    }
++}
++}
++
++int main()
++{
++    try
++    {
++        ShippedBehaviourStrandsSeatedPlayer();
++        CancelRestoresPriorStablePhase();
++        CancelRejectsInvalidCalls();
++        RepeatedCancelCycles();
++    }
++    catch (const std::exception& Error)
++    {
++        std::cerr << "FAILED: " << Error.what() << " after " << Checks << " checks\n";
++        return 1;
++    }
++    std::cout << "Claude handoff patch checks: " << Checks << " passed\n";
++    return 0;
++}
+diff --git a/claude_tools/run_patch_checks.py b/claude_tools/run_patch_checks.py
+new file mode 100644
+index 0000000..247cdee
+--- /dev/null
++++ b/claude_tools/run_patch_checks.py
+@@ -0,0 +1,70 @@
++"""Apply docs/claude/patches/*.patch to a clean export of a commit and re-run checks.
++
++  python3 claude_tools/run_patch_checks.py            # base commit: 273b177 (Codex Phase 2)
++  python3 claude_tools/run_patch_checks.py --base HEAD
++
++Nothing in this working tree is modified: the export lives in a temporary folder.
++Checks: `git apply --check`, Codex's unittest suite, tools/validate.py, tools/run_native_tests.py,
++and claude_tools/native/test_handoff_cancel.cpp against the patched header. None of these is
++UHT, UBT or an Unreal build; the Unreal-facing parts of patch 0002 remain uncompiled.
++"""
++import argparse
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++import tarfile
++import tempfile
++
++ROOT = Path(__file__).resolve().parents[1]
++PATCHES = sorted((ROOT / "docs/claude/patches").glob("*.patch"))
++FLAGS = ["-std=c++17", "-Wall", "-Wextra", "-Werror", "-pedantic"]
++
++
++def run(command, cwd, label, env=None):
++    print("$", label)
++    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, timeout=300,
++                            env=dict(os.environ, **(env or {})))
++    output = (result.stdout + result.stderr).strip().splitlines()
++    print("  " + ("\n  ".join(output[-3:]) if output else "(no output)"))
++    if result.returncode:
++        raise SystemExit("FAILED: " + label)
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--base", default="273b177")
++    args = parser.parse_args(argv)
++    compilers = [c for c in (os.environ.get("CXX"), "g++", "clang++") if c and shutil.which(c)]
++    if not PATCHES:
++        raise SystemExit("No patches found")
++    with tempfile.TemporaryDirectory(prefix="cr-patch-") as folder:
++        archive = Path(folder) / "base.tar"
++        subprocess.run(["git", "archive", "--format=tar", "-o", str(archive), args.base], cwd=ROOT, check=True)
++        tree = Path(folder) / "tree"
++        tree.mkdir()
++        with tarfile.open(archive) as stream:
++            if hasattr(tarfile, "data_filter"):
++                stream.extractall(tree, filter="data")
++            else:
++                stream.extractall(tree)
++        for patch in PATCHES:
++            run(["git", "apply", "--check", str(patch)], tree, "apply --check " + patch.name)
++            run(["git", "apply", str(patch)], tree, "apply " + patch.name)
++        python = sys.executable
++        run([python, "-m", "unittest", "discover", "-s", "tests"], tree, "Codex unittest suite (patched tree)")
++        run([python, "tools/validate.py"], tree, "Codex repository validator (patched tree)")
++        for compiler in compilers:
++            run([python, "tools/run_native_tests.py"], tree, "Codex native policy tests with " + compiler,
++                {"CXX": compiler})
++            binary = Path(folder) / ("cancel-" + Path(compiler).name)
++            include = tree / "Plugins/CRExploration/Source/CRExploration/Public"
++            run([compiler] + FLAGS + ["-I", str(include), str(ROOT / "claude_tools/native/test_handoff_cancel.cpp"),
++                 "-o", str(binary)], tree, "compile Claude cancel test with " + compiler)
++            run([str(binary)], tree, "run Claude cancel test (" + compiler + ")")
++    print("All patch checks passed (offline policy only; Unreal build still required).")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/docs/claude/PHASE2_VEHICLE_REVIEW.md b/docs/claude/PHASE2_VEHICLE_REVIEW.md
+new file mode 100644
+index 0000000..a5feead
+--- /dev/null
++++ b/docs/claude/PHASE2_VEHICLE_REVIEW.md
+@@ -0,0 +1,59 @@
++# Phase 2 vehicle and input review (Claude)
++
++- Base commit: `273b177` (`codex/phase2-remote-implementation`), from `concrete-reign-phase2.bundle`
++  (verified with `git bundle verify`; 5 refs, complete history).
++- Review branch: `claude/city-sample-integration`. No Codex-owned file is modified on it.
++- Engine / City Sample: **not available**. No UHT, UBT, Editor or gameplay run happened. This is a
++  static review plus offline policy tests.
++- Commands run, all passing: `python3 -m unittest discover -s tests` (50), `python3 tools/validate.py`
++  (0 errors), `python3 tools/run_native_tests.py` (1,549 checks, g++ 13.3 and clang++ 18.1), and
++  `python3 claude_tools/run_patch_checks.py` (applies the patches below to a clean export of `273b177`
++  and re-runs everything plus 3,022 new checks).
++
++## Findings, highest first
++
++| # | Severity | Where | Trigger → impact | Fix |
++| --- | --- | --- | --- | --- |
++| 1 | High | `CRVehicleInteractionComponent.cpp` `RequestExit`, the `!bDispatched` branch calling `Handoff.Fail(Id)` | `QueryExit` allows the exit but `DispatchExit` returns false (exit spot blocked between query and dispatch, or the sample flow is busy). Phase becomes Recovery while the player is **still seated**. `CanExit` needs Driving and `ConfirmRecoveredOnFoot` needs an on-foot pawn, so no API call gets the player out. Soft-lock unless the bridge does a manual exit. | Patch 0001: a new `CancelUndispatched(Id)` returns Exiting→Driving. The player can try again. |
++| 2 | Medium | Same pattern in `RequestEnter` | A rejected enter (nothing happened) still forces Recovery. The bridge then has to call `ConfirmRecoveredOnFoot`, and the stale `Vehicle` stays recorded. | Patch 0001: Entering→OnFoot plus `ClearVehicle()`. A bridge that *partially* acted must call `FailRequest` before it returns false. That keeps the strict path. |
++| 3 | Medium-High | `RequestEnter` records `Vehicle` as a weak pointer only | The vehicle is destroyed or streamed out while Entering/Driving/Exiting. The bridge *is* that actor, so it can never call `FailRequest`. The coordinator stays pending forever and blocks all further requests. `PHASE2_IMPLEMENTATION.md` step 8 asks for `RequireRecovery()` on destruction, but nothing wires it up. Mass traffic actor representations are created and removed by LOD, which makes this a realistic case. | Patch 0002: bind `AActor::OnEndPlay` on the target. Any EndPlay reason (destroyed, removed from world, level transition) calls `RequireRecovery()`. The binding is removed on clear and on the component's EndPlay. **Uncompiled Unreal code.** |
++| 4 | Medium | `manifests/input_mapping_plan.json` (Codex-owned) | Epic's City Sample page lists *Enter/Exit Vehicle* as **gamepad A, keyboard C** (seen as a search-result excerpt, because the docs host is blocked here, so verify locally). The plan puts Handbrake on `Gamepad_FaceButton_Bottom` (A) and Interact/Exit on E and face-left. If the sample's handler is kept, as the plan itself recommends, A while driving would both exit and handbrake. There would also be two enter keys. | Keep the sample's C/A handler. Leave `Interact`/`ExitVehicle` slots null. Move a relay-owned handbrake off A. Codex should update the manifest after the local input audit. |
++| 5 | Medium | Integration assumption, `PHASE2_IMPLEMENTATION.md` steps 4–6 | Community reports, unverified: only vehicles from `BP_MassTrafficParkedVehicleSpawner` can be entered, not from `BP_MassTrafficVehicleSpawner`. A possession flag is set in `CitySampleVehicleBase.cpp` during traffic spawn. Entry logic is reported under `Content/Gameplay/Driving/BP_CarEntry_Interaction`. | The bridge's `GetVehicleOccupancy` must report driving traffic cars as non-Available unless the sample flag allows them. Hook the existing `BP_CarEntry_Interaction` flow. Do not replace it. Inspect those three items first (see `CITY_SAMPLE_INTEGRATION_REVIEW.md`). |
++| 6 | Low | `CRVehicleInteractionComponent` | Possession lost while Driving (sample respawn, a menu, a debug possess) is not detected. | When a local build exists, bind `AController::OnPossessedPawnChanged` and call `RequireRecovery()` if the new pawn ≠ `DrivingPawn` outside Entering/Exiting. First confirm the delegate exists in the installed engine version. Not patched. |
++| 7 | Low | `OnStateChanged` broadcast inside a synchronous `DispatchEnter` | A listener that calls `RequestExit` from the broadcast nests a dispatch inside an outer request. The policy stays consistent, but sample flows may not tolerate it. | Document "do not issue requests from `OnStateChanged`", or defer to the next tick. |
++| 8 | Low (build hygiene) | `CRVehicleHandoff.h` `std::numeric_limits<...>::max()` | A leaked `windows.h` `max` macro would break this line. UE defines `NOMINMAX`, so the risk is low. | Patch 0001 writes it as `(std::numeric_limits<std::int32_t>::max)()`. |
++
++Examined with no defect found: monotonic, non-wrapping request ids and stale-id rejection; possession
++and occupancy checks in `ConfirmEntered` and `IsRestored`; notification de-duplication; relay
++unbind-by-handle with neutral values on release; duplicate-action detection on the supplied component;
++`UPROPERTY` use of `TWeakObjectPtr`/`TObjectPtr`; const `BlueprintNativeEvent` interface functions;
++module and plugin dependencies (`EnhancedInput`).
++
++UHT/UBT items that still need the real compiler: deducing the member-pointer overload of
++`BindAction` through the generic lambda (MSVC); `UFUNCTION` with an `EEndPlayReason::Type` parameter
++(patch 0002, the same pattern engine code uses); forward-declared pointer types in interface
++parameters. None of these looks wrong, but none has been proven.
++
++Multiplayer: `GetPlayer()` requires a local controller and makes no RPCs. That is correct for the
++single-player milestone, and the code is labelled that way. Server-authoritative possession would
++need a separate design and must not be bolted onto this component.
++
++## Applying the patches (Codex)
++
++```sh
++git checkout codex/phase2-remote-implementation
++git apply --check docs/claude/patches/0001-roll-back-rejected-dispatch.patch
++git apply docs/claude/patches/0001-roll-back-rejected-dispatch.patch
++git apply docs/claude/patches/0002-recover-when-vehicle-ends-play.patch   # requires 0001
++python3 claude_tools/run_patch_checks.py   # optional, from the Claude branch
++```
++
++0001 also suits Codex's native test file: copy the cases from
++`claude_tools/native/test_handoff_cancel.cpp`. 0002 needs UHT/UBT on the home PC, followed by an Editor
++test: destroy the target car (Outliner delete during PIE) mid-entry, then confirm Recovery is broadcast.
++
++## Local verification still required
++
++1. Build the Development Editor Win64 target with both patches applied, then with neither, to rule out patch-only build failures.
++2. In untouched Small City: record the actual vehicle entry Blueprint, the key and gamepad bindings, and whether the walking pawn is hidden, kept or destroyed while driving.
++3. Run ten enter/exit cycles, plus a blocked-exit attempt (park against a wall), a target deletion mid-entry, and a held-button entry, to check that it does not trigger an immediate exit.
+diff --git a/docs/claude/patches/0001-roll-back-rejected-dispatch.patch b/docs/claude/patches/0001-roll-back-rejected-dispatch.patch
+new file mode 100644
+index 0000000..a92b36d
+--- /dev/null
++++ b/docs/claude/patches/0001-roll-back-rejected-dispatch.patch
+@@ -0,0 +1,63 @@
++diff --git a/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp b/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp
++index f093ba1..2a6aea4 100644
++--- a/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp
+++++ b/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp
++@@ -90,9 +90,12 @@ bool UCRVehicleInteractionComponent::RequestEnter(AActor* Target)
++     DrivingPawn.Reset();
++     // Dispatch before public notifications; Blueprint callbacks may complete synchronously.
++     const bool bDispatched = ICRVehicleInteraction::Execute_DispatchEnter(Target, Player, WalkingPawn.Get(), this, Id);
+++    // Rejected before anything changed: roll back instead of stranding the player in Recovery.
+++    // A bridge that partially acted must call FailRequest itself before returning false.
++     if (!bDispatched && Handoff.GetPhase() == CR::EHandoffPhase::Entering && Handoff.GetRequestId() == Id)
++     {
++-        Handoff.Fail(Id);
+++        Handoff.CancelUndispatched(Id);
+++        ClearVehicle();
++     }
++     NotifyState();
++     return bDispatched || Handoff.GetPhase() == CR::EHandoffPhase::Driving;
++@@ -116,9 +119,11 @@ bool UCRVehicleInteractionComponent::RequestExit()
++         return false;
++     }
++     const bool bDispatched = ICRVehicleInteraction::Execute_DispatchExit(Target, Player, WalkingPawn.Get(), this, Id);
+++    // Rejected before anything changed: roll back instead of stranding the player in Recovery.
+++    // A bridge that partially acted must call FailRequest itself before returning false.
++     if (!bDispatched && Handoff.GetPhase() == CR::EHandoffPhase::Exiting && Handoff.GetRequestId() == Id)
++     {
++-        Handoff.Fail(Id);
+++        Handoff.CancelUndispatched(Id);
++     }
++     NotifyState();
++     return bDispatched || Handoff.GetPhase() == CR::EHandoffPhase::OnFoot;
++diff --git a/Plugins/CRExploration/Source/CRExploration/Public/Core/CRVehicleHandoff.h b/Plugins/CRExploration/Source/CRExploration/Public/Core/CRVehicleHandoff.h
++index 97d36ec..6a244ff 100644
++--- a/Plugins/CRExploration/Source/CRExploration/Public/Core/CRVehicleHandoff.h
+++++ b/Plugins/CRExploration/Source/CRExploration/Public/Core/CRVehicleHandoff.h
++@@ -44,6 +44,18 @@ public:
++         return true;
++     }
++ 
+++    // A dispatch the bridge rejected changed nothing: return to the prior stable phase.
+++    // Entering -> OnFoot, Exiting -> Driving. Rejects stale ids and non-pending phases.
+++    bool CancelUndispatched(std::int32_t Id)
+++    {
+++        if (Id == 0 || Id != RequestId || !IsPending())
+++        {
+++            return false;
+++        }
+++        Phase = Phase == EHandoffPhase::Entering ? EHandoffPhase::OnFoot : EHandoffPhase::Driving;
+++        return true;
+++    }
+++
++     bool RequireRecovery()
++     {
++         if (Phase == EHandoffPhase::OnFoot || Phase == EHandoffPhase::Recovery)
++@@ -74,7 +86,7 @@ private:
++     std::int32_t Begin(EHandoffPhase Expected, EHandoffPhase Next)
++     {
++         // Never wrap: an ancient asynchronous callback must not match a new request.
++-        if (Phase != Expected || RequestId == std::numeric_limits<std::int32_t>::max())
+++        if (Phase != Expected || RequestId == (std::numeric_limits<std::int32_t>::max)())
++         {
++             return 0;
++         }
+diff --git a/docs/claude/patches/0002-recover-when-vehicle-ends-play.patch b/docs/claude/patches/0002-recover-when-vehicle-ends-play.patch
+new file mode 100644
+index 0000000..30032a0
+--- /dev/null
++++ b/docs/claude/patches/0002-recover-when-vehicle-ends-play.patch
+@@ -0,0 +1,77 @@
++diff --git a/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp b/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp
++index 2a6aea4..bdb7771 100644
++--- a/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp
+++++ b/Plugins/CRExploration/Source/CRExploration/Private/CRVehicleInteractionComponent.cpp
++@@ -85,6 +85,7 @@ bool UCRVehicleInteractionComponent::RequestEnter(AActor* Target)
++     {
++         return false;
++     }
+++    WatchVehicle(Target); // drops any previous binding while Vehicle still names it
++     Vehicle = Target;
++     WalkingPawn = Player->GetPawn();
++     DrivingPawn.Reset();
++@@ -228,8 +229,43 @@ APawn* UCRVehicleInteractionComponent::GetSavedWalkingPawn() const
++     return WalkingPawn.Get();
++ }
++ 
+++void UCRVehicleInteractionComponent::WatchVehicle(AActor* Target)
+++{
+++    UnwatchVehicle();
+++    if (IsValid(Target))
+++    {
+++        Target->OnEndPlay.AddUniqueDynamic(this, &UCRVehicleInteractionComponent::HandleVehicleEndPlay);
+++    }
+++}
+++
+++void UCRVehicleInteractionComponent::UnwatchVehicle()
+++{
+++    if (AActor* Target = Vehicle.Get())
+++    {
+++        Target->OnEndPlay.RemoveDynamic(this, &UCRVehicleInteractionComponent::HandleVehicleEndPlay);
+++    }
+++}
+++
+++void UCRVehicleInteractionComponent::HandleVehicleEndPlay(AActor* Actor, EEndPlayReason::Type EndPlayReason)
+++{
+++    if (Actor != Vehicle.Get())
+++    {
+++        return;
+++    }
+++    // Stop listening; Vehicle stays recorded so recovery checks know which target was lost.
+++    Actor->OnEndPlay.RemoveDynamic(this, &UCRVehicleInteractionComponent::HandleVehicleEndPlay);
+++    RequireRecovery();
+++}
+++
+++void UCRVehicleInteractionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+++{
+++    UnwatchVehicle();
+++    Super::EndPlay(EndPlayReason);
+++}
+++
++ void UCRVehicleInteractionComponent::ClearVehicle()
++ {
+++    UnwatchVehicle();
++     Vehicle.Reset();
++     WalkingPawn.Reset();
++     DrivingPawn.Reset();
++diff --git a/Plugins/CRExploration/Source/CRExploration/Public/CRVehicleInteractionComponent.h b/Plugins/CRExploration/Source/CRExploration/Public/CRVehicleInteractionComponent.h
++index c1959fe..05618b3 100644
++--- a/Plugins/CRExploration/Source/CRExploration/Public/CRVehicleInteractionComponent.h
+++++ b/Plugins/CRExploration/Source/CRExploration/Public/CRVehicleInteractionComponent.h
++@@ -59,7 +59,16 @@ public:
++     UFUNCTION(BlueprintPure, Category = "Concrete Reign|Vehicle")
++     APawn* GetSavedWalkingPawn() const;
++ 
+++protected:
+++    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+++
++ private:
+++    // Target destroyed or streamed out mid-handoff: the bridge can no longer complete it.
+++    UFUNCTION()
+++    void HandleVehicleEndPlay(AActor* Actor, EEndPlayReason::Type EndPlayReason);
+++
+++    void WatchVehicle(AActor* Target);
+++    void UnwatchVehicle();
++     APlayerController* GetPlayer() const;
++     bool IsBridge(AActor* Target) const;
++     bool IsRestored(APawn* RestoredPawn) const;
+-- 
+2.43.0
+

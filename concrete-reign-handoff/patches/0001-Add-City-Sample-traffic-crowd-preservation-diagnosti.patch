@@ -1,0 +1,1340 @@
+From f2fc50bba01bd9bd12c16f5f5374d41e598ed4ea Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 12 Nov 2026 21:45:46 +0000
+Subject: [PATCH 1/3] Add City Sample traffic/crowd preservation diagnostics
+
+Read-only Editor collector, offline project scan, baseline comparison
+and runtime perf presets. 18 offline tests against a fake unreal module;
+no Unreal Editor execution.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01R1UJvB6oLvPNLuN23qBC6x
+---
+ claude_tools/README.md                        |  26 ++
+ claude_tools/cr_perf_presets.py               |  79 ++++++
+ claude_tools/cs_diag_compare.py               |  62 +++++
+ claude_tools/cs_diag_core.py                  | 235 +++++++++++++++++
+ claude_tools/cs_diag_editor.py                | 238 +++++++++++++++++
+ claude_tools/cs_project_scan.py               | 116 +++++++++
+ .../manifests/city_sample_expectations.json   |  46 ++++
+ claude_tools/tests/fake_unreal.py             | 208 +++++++++++++++
+ claude_tools/tests/test_cs_diagnostics.py     | 241 ++++++++++++++++++
+ 9 files changed, 1251 insertions(+)
+ create mode 100644 claude_tools/README.md
+ create mode 100644 claude_tools/cr_perf_presets.py
+ create mode 100644 claude_tools/cs_diag_compare.py
+ create mode 100644 claude_tools/cs_diag_core.py
+ create mode 100644 claude_tools/cs_diag_editor.py
+ create mode 100644 claude_tools/cs_project_scan.py
+ create mode 100644 claude_tools/manifests/city_sample_expectations.json
+ create mode 100644 claude_tools/tests/fake_unreal.py
+ create mode 100644 claude_tools/tests/test_cs_diagnostics.py
+
+diff --git a/claude_tools/README.md b/claude_tools/README.md
+new file mode 100644
+index 0000000..c3c4b24
+--- /dev/null
++++ b/claude_tools/README.md
+@@ -0,0 +1,26 @@
++# Claude tools: City Sample preservation diagnostics
++
++Claude-owned and independent of Codex's `tools/` and `tests/`. Nothing here imports or changes
++Codex files, except that `run_patch_checks.py` *runs* Codex's suites on a temporary patched export.
++`AGENTS.md` limits Claude to `docs/claude/`. The owner's brief explicitly asked for runnable
++diagnostic tools, so code lives here in a new folder instead, and Codex can move or adopt it.
++
++| File | Runs where | Purpose |
++| --- | --- | --- |
++| `cs_project_scan.py` | Any Python 3.9+, no Unreal | Offline: required plugins, project-local plugins, maps, integration-relevant asset *file names*, World Partition external-actor counts, Content size |
++| `cs_diag_editor.py` | Unreal Editor Python (PIE for runtime checks) | Read-only traffic/crowd/ZoneGraph/Mass/streaming evidence report |
++| `cs_diag_compare.py` | Any Python | Evaluate one report or diff baseline → after-migration (exit 1 on FAIL/regression) |
++| `cs_diag_core.py` | Library | Classification and checks. Missing evidence is UNKNOWN, never PASS |
++| `cr_perf_presets.py` | Any Python / Editor Python | Runtime-only low/medium/high console-variable presets and profiling commands |
++| `run_patch_checks.py` | Linux/macOS/Windows with git and a C++ compiler | Applies `docs/claude/patches/*.patch` to a clean export and re-runs all offline checks |
++| `manifests/city_sample_expectations.json` | Data | Heuristic keywords, required plugins and thresholds. Refine locally |
++
++Offline tests:
++
++```sh
++python3 -m unittest discover -s claude_tools/tests -v
++python3 claude_tools/run_patch_checks.py
++```
++
++The tests drive the Editor script with `tests/fake_unreal.py`, which is a simulation and not Unreal.
++Usage, the migration gate and limits are in `docs/claude/CITY_SAMPLE_INTEGRATION_REVIEW.md`.
+diff --git a/claude_tools/cr_perf_presets.py b/claude_tools/cr_perf_presets.py
+new file mode 100644
+index 0000000..115c95a
+--- /dev/null
++++ b/claude_tools/cr_perf_presets.py
+@@ -0,0 +1,79 @@
++"""Development performance presets as *runtime* console variables. Nothing is written to config.
++
++  python cr_perf_presets.py --emit medium        # print commands to paste into the ~ console
++  (Editor Python, during PIE)  import cr_perf_presets; cr_perf_presets.apply("low")
++
++Presets are starting points for an unknown GPU, not FPS promises. Measure with the
++`profile` commands on the real PC and record results in docs/claude/PERFORMANCE_STRATEGY.md.
++Only stock engine console variables are used; City Sample crowd/traffic density controls are
++sample-specific and must be identified locally (see the strategy doc) before being added here.
++"""
++import argparse
++
++# Scalability groups: 0 low, 1 medium, 2 high, 3 epic. Explicit cvars follow the group values.
++PRESETS = {
++    "low": [
++        "sg.ResolutionQuality 50", "sg.ViewDistanceQuality 1", "sg.AntiAliasingQuality 1",
++        "sg.ShadowQuality 1", "sg.GlobalIlluminationQuality 1", "sg.ReflectionQuality 1",
++        "sg.PostProcessQuality 1", "sg.TextureQuality 1", "sg.EffectsQuality 1",
++        "sg.FoliageQuality 1", "sg.ShadingQuality 1",
++        "r.ScreenPercentage 50", "r.AntiAliasingMethod 4",
++        "r.Lumen.HardwareRayTracing 0", "r.Shadow.Virtual.Enable 1",
++        "r.Nanite.MaxPixelsPerEdge 2", "r.Streaming.PoolSize 2000",
++        "r.VSync 0", "t.MaxFPS 60",
++    ],
++    "medium": [
++        "sg.ResolutionQuality 67", "sg.ViewDistanceQuality 2", "sg.AntiAliasingQuality 2",
++        "sg.ShadowQuality 2", "sg.GlobalIlluminationQuality 2", "sg.ReflectionQuality 2",
++        "sg.PostProcessQuality 2", "sg.TextureQuality 2", "sg.EffectsQuality 2",
++        "sg.FoliageQuality 2", "sg.ShadingQuality 2",
++        "r.ScreenPercentage 67", "r.AntiAliasingMethod 4",
++        "r.Lumen.HardwareRayTracing 0", "r.Shadow.Virtual.Enable 1",
++        "r.Nanite.MaxPixelsPerEdge 1", "r.Streaming.PoolSize 3000",
++        "r.VSync 0", "t.MaxFPS 60",
++    ],
++    "high": [
++        "sg.ResolutionQuality 100", "sg.ViewDistanceQuality 3", "sg.AntiAliasingQuality 3",
++        "sg.ShadowQuality 3", "sg.GlobalIlluminationQuality 3", "sg.ReflectionQuality 3",
++        "sg.PostProcessQuality 3", "sg.TextureQuality 3", "sg.EffectsQuality 3",
++        "sg.FoliageQuality 3", "sg.ShadingQuality 3",
++        "r.ScreenPercentage 100", "r.AntiAliasingMethod 4",
++        "r.Shadow.Virtual.Enable 1", "r.Nanite.MaxPixelsPerEdge 1",
++        "r.Streaming.PoolSize 4000", "r.VSync 0", "t.MaxFPS 0",
++    ],
++}
++
++# Capture sequence for comparable measurements (run from the same spot, same preset).
++PROFILE = ["stat unit", "stat fps", "stat gpu", "stat streaming", "stat memory",
++           "stat namedevents", "memreport -full"]
++
++
++def commands(preset):
++    if preset == "profile":
++        return list(PROFILE)
++    if preset not in PRESETS:
++        raise ValueError("Unknown preset: %s (choose %s or profile)" % (preset, ", ".join(PRESETS)))
++    return list(PRESETS[preset])
++
++
++def apply(preset, ue=None):
++    """Execute in the PIE world when present, else the editor world. Runtime only."""
++    if ue is None:
++        import unreal as ue
++    subsystem = ue.get_editor_subsystem(ue.UnrealEditorSubsystem)
++    world = subsystem.get_game_world() or subsystem.get_editor_world()
++    for command in commands(preset):
++        ue.SystemLibrary.execute_console_command(world, command)
++    ue.log("Concrete Reign perf preset applied (runtime only): " + preset)
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("--emit", required=True, choices=sorted(PRESETS) + ["profile"])
++    args = parser.parse_args(argv)
++    print("\n".join(commands(args.emit)))
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/claude_tools/cs_diag_compare.py b/claude_tools/cs_diag_compare.py
+new file mode 100644
+index 0000000..cfe3ad7
+--- /dev/null
++++ b/claude_tools/cs_diag_compare.py
+@@ -0,0 +1,62 @@
++"""Evaluate one diagnostic report, or compare a modified project against a baseline.
++
++  python cs_diag_compare.py report.json
++  python cs_diag_compare.py baseline.json after-beach-batch-01.json --output delta.json
++
++Exit 0: no FAIL / no regression. 1: FAIL or regression found. 2: invalid input or output.
++Comparisons are only meaningful for the same map, PIE start location, sample count/interval.
++"""
++import argparse
++import json
++from pathlib import Path
++import sys
++
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++from cs_diag_core import FAIL, compare, evaluate, load_expectations  # noqa: E402
++
++
++def read(path):
++    data = json.loads(Path(path).read_text(encoding="utf-8-sig"))
++    if not isinstance(data, dict) or data.get("schema_version") != 1:
++        raise ValueError("Unsupported report: " + str(path))
++    return data
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("report")
++    parser.add_argument("current", nargs="?")
++    parser.add_argument("--expectations")
++    parser.add_argument("--output")
++    parser.add_argument("--drop-fraction", type=float, default=0.5)
++    args = parser.parse_args(argv)
++    try:
++        expectations = load_expectations(args.expectations)
++        first = read(args.report)
++        if args.current:
++            result = compare(first, read(args.current), expectations, args.drop_fraction)
++            for item in result["regressions"]:
++                print("REGRESSION %-28s %s -> %s  %s" % (item["id"], item["before"], item["after"], item["detail"]))
++            for item in result["improvements"]:
++                print("IMPROVED   %-28s %s -> %s" % (item["id"], item["before"], item["after"]))
++            if not result["comparable"]:
++                print("WARNING: reports were taken on different maps")
++            code = 1 if result["regressions"] else 0
++        else:
++            result = evaluate(first, expectations)
++            for check in result["checks"]:
++                print("%-7s %-28s %s" % (check["status"], check["id"], check["detail"]))
++            print("OVERALL", result["overall"], result["counts"])
++            code = 1 if result["overall"] == FAIL else 0
++        if args.output:
++            with Path(args.output).open("x", encoding="utf-8", newline="\n") as stream:
++                json.dump(result, stream, indent=2, sort_keys=True)
++                stream.write("\n")
++        return code
++    except (OSError, ValueError, KeyError, TypeError) as error:
++        print("error:", error, file=sys.stderr)
++        return 2
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/claude_tools/cs_diag_core.py b/claude_tools/cs_diag_core.py
+new file mode 100644
+index 0000000..e934440
+--- /dev/null
++++ b/claude_tools/cs_diag_core.py
+@@ -0,0 +1,235 @@
++"""Engine-independent City Sample preservation checks.
++
++The Editor collector (cs_diag_editor.py) produces a report; this module classifies the
++observed actors and turns the report into PASS/WARN/FAIL/UNKNOWN checks. Missing evidence
++is always UNKNOWN, never PASS. Nothing here imports `unreal`.
++"""
++import json
++import math
++from pathlib import Path
++
++PASS, WARN, FAIL, UNKNOWN = "PASS", "WARN", "FAIL", "UNKNOWN"
++SEVERITY = {PASS: 0, UNKNOWN: 1, WARN: 2, FAIL: 3}
++CATEGORIES = ("traffic_vehicle", "parked_vehicle", "drivable_vehicle", "pedestrian",
++              "mass_spawner", "zonegraph", "mass_visualizer")
++DEFAULT_EXPECTATIONS = Path(__file__).resolve().parent / "manifests" / "city_sample_expectations.json"
++
++
++def load_expectations(path=None):
++    data = json.loads(Path(path or DEFAULT_EXPECTATIONS).read_text(encoding="utf-8-sig"))
++    if not isinstance(data, dict) or data.get("schema_version") != 1:
++        raise ValueError("Unsupported expectations schema")
++    for name in CATEGORIES:
++        rule = data.get("categories", {}).get(name)
++        if not isinstance(rule, dict) or not isinstance(rule.get("keywords"), list):
++            raise ValueError("Expectations missing category rule: " + name)
++    if not isinstance(data.get("required_plugins"), list):
++        raise ValueError("required_plugins must be a list")
++    return data
++
++
++def classify(class_text, expectations):
++    """Return every category whose keywords match and whose exclusions do not."""
++    text = (class_text or "").lower()
++    found = []
++    for name in CATEGORIES:
++        rule = expectations["categories"][name]
++        if any(k.lower() in text for k in rule["keywords"]) and not any(
++                x.lower() in text for x in rule.get("exclude", [])):
++            found.append(name)
++    return found
++
++
++def _class_text(actor):
++    return (actor.get("class") or "") + " " + (actor.get("class_path") or "")
++
++
++def _version_tuple(text):
++    parts = []
++    for piece in str(text or "").split("-")[0].split(".")[:2]:
++        digits = "".join(c for c in piece if c.isdigit())
++        parts.append(int(digits) if digits else 0)
++    return tuple(parts + [0] * (2 - len(parts)))
++
++
++def _check(checks, check_id, status, detail, **evidence):
++    checks.append({"id": check_id, "status": status, "detail": detail, "evidence": evidence})
++
++
++def _distance(a, b):
++    return math.sqrt(sum((float(x) - float(y)) ** 2 for x, y in zip(a, b)))
++
++
++def motion_summary(samples, category, expectations):
++    """Track same-named actors of one category across samples; count those that moved."""
++    first, last = {}, {}
++    for sample in samples:
++        for actor in sample.get("actors", []):
++            if category in classify(_class_text(actor), expectations) and actor.get("loc"):
++                first.setdefault(actor["name"], actor["loc"])
++                last[actor["name"]] = actor["loc"]
++    tracked = [n for n in first if n in last and sum(
++        1 for s in samples for a in s.get("actors", []) if a.get("name") == n) >= 2]
++    min_move = expectations["thresholds"]["min_move_cm"]
++    moving = [n for n in tracked if _distance(first[n], last[n]) >= min_move]
++    peak = max((sum(1 for a in s.get("actors", []) if category in classify(_class_text(a), expectations))
++                for s in samples), default=0)
++    return {"peak": peak, "tracked": len(tracked), "moving": len(moving)}
++
++
++def plugin_checks(report, expectations, checks):
++    enabled = report.get("plugins", {}).get("enabled")
++    if not isinstance(enabled, list):
++        _check(checks, "plugins.required", UNKNOWN, "No enabled-plugin list was collected")
++        return
++    have = {p.lower() for p in enabled}
++    engine = _version_tuple(report.get("environment", {}).get("engine_version"))
++    for item in expectations["required_plugins"]:
++        names = item["names"]
++        check_id = "plugins." + names[0]
++        if any(n.lower() in have for n in names):
++            _check(checks, check_id, PASS, "Enabled", evidence_level=item.get("evidence"))
++        elif item.get("optional_from_engine") and engine >= _version_tuple(item["optional_from_engine"]):
++            _check(checks, check_id, PASS, "Not a plugin in this engine version",
++                   evidence_level=item.get("evidence"))
++        else:
++            _check(checks, check_id, FAIL, "Not enabled: " + "/".join(names),
++                   evidence_level=item.get("evidence"))
++
++
++def asset_checks(report, checks):
++    census = report.get("assets")
++    if not isinstance(census, dict):
++        _check(checks, "assets.census", UNKNOWN, "Asset registry census not collected")
++        return
++    for key, label in (("mass_entity_config", "Mass entity config assets"),
++                       ("input_mapping_context", "Input mapping contexts")):
++        entry = census.get(key)
++        if not isinstance(entry, dict) or "count" not in entry:
++            _check(checks, "assets." + key, UNKNOWN, label + " not queried")
++        else:
++            _check(checks, "assets." + key, PASS if entry["count"] > 0 else FAIL,
++                   "%s: %d" % (label, entry["count"]), sample=entry.get("names", [])[:10])
++
++
++def world_checks(report, checks):
++    env = report.get("environment", {})
++    partitioned = env.get("world_partition")
++    if partitioned is None:
++        _check(checks, "world.partition", UNKNOWN, "World Partition state not determined")
++    else:
++        _check(checks, "world.partition", PASS if partitioned else WARN,
++               "World Partition enabled" if partitioned else "Map is not partitioned; expected for City Sample maps",
++               map=env.get("map"))
++    editor = report.get("editor_world")
++    if not isinstance(editor, dict):
++        _check(checks, "world.zonegraph", UNKNOWN, "Editor world not scanned")
++        _check(checks, "world.mass_spawners", UNKNOWN, "Editor world not scanned")
++        return
++    counts = editor.get("category_counts", {})
++    _check(checks, "world.zonegraph", PASS if counts.get("zonegraph", 0) > 0 else FAIL,
++           "ZoneGraph actors/components in loaded editor world: %d" % counts.get("zonegraph", 0),
++           note="Unloaded World Partition cells are not counted")
++    _check(checks, "world.mass_spawners", PASS if counts.get("mass_spawner", 0) > 0 else WARN,
++           "Spawner-like actors in loaded editor world: %d" % counts.get("mass_spawner", 0))
++
++
++def runtime_checks(report, expectations, checks):
++    samples = report.get("pie_samples")
++    limits = expectations["thresholds"]
++    if not isinstance(samples, list) or not samples:
++        for check_id in ("pie.player", "traffic.present", "traffic.moving", "pedestrians.present",
++                         "pedestrians.moving", "mass.visualization", "streaming.stability"):
++            _check(checks, check_id, UNKNOWN, "No Play-In-Editor samples; start PIE and rerun with sampling")
++        return
++    players = [s.get("player") for s in samples]
++    if not all(isinstance(p, dict) and p.get("pawn") for p in players):
++        _check(checks, "pie.player", FAIL, "Player pawn missing in at least one sample")
++    else:
++        drops = [players[i]["loc"][2] - players[i + 1]["loc"][2] for i in range(len(players) - 1)
++                 if players[i].get("loc") and players[i + 1].get("loc")]
++        worst = max(drops, default=0.0)
++        if worst >= limits["player_fall_dz_cm"]:
++            _check(checks, "pie.player", FAIL, "Player dropped %.0f cm between samples (collision or streaming loss?)" % worst)
++        else:
++            _check(checks, "pie.player", PASS, "Player pawn present in all samples",
++                   pawn_classes=sorted({p.get("pawn_class") for p in players}))
++    enough = len(samples) >= limits["min_samples_for_motion"]
++    for prefix, categories in (("traffic", ("traffic_vehicle",)), ("pedestrians", ("pedestrian",))):
++        summaries = {c: motion_summary(samples, c, expectations) for c in categories}
++        peak = sum(s["peak"] for s in summaries.values())
++        tracked = sum(s["tracked"] for s in summaries.values())
++        moving = sum(s["moving"] for s in summaries.values())
++        _check(checks, prefix + ".present", PASS if peak > 0 else FAIL,
++               "Peak %s actors near player: %d" % (prefix, peak),
++               note="Low-LOD Mass agents render as instances, see mass.visualization")
++        if not enough or tracked == 0:
++            _check(checks, prefix + ".moving", UNKNOWN,
++                   "Need %d+ samples with the same actors tracked" % limits["min_samples_for_motion"],
++                   tracked=tracked)
++        else:
++            ok = moving >= limits["min_moving_count"] and moving / tracked >= limits["min_moving_fraction"]
++            _check(checks, prefix + ".moving", PASS if ok else FAIL,
++                   "%d of %d tracked actors moved >= %.0f cm" % (moving, tracked, limits["min_move_cm"]))
++    instances = [sum(i.get("instances", 0) for i in s.get("ism", [])) for s in samples]
++    if not any(s.get("ism") for s in samples):
++        _check(checks, "mass.visualization", WARN, "No visualizer instance components found; refine mass_visualizer keywords")
++    else:
++        _check(checks, "mass.visualization", PASS if max(instances) > 0 else FAIL,
++               "Peak instanced representations: %d" % max(instances), per_sample=instances)
++    counts = [s.get("actor_count", 0) for s in samples]
++    if len(counts) < 2 or max(counts) == 0:
++        _check(checks, "streaming.stability", UNKNOWN, "Need 2+ samples")
++    else:
++        swing = (max(counts) - min(counts)) / max(counts)
++        _check(checks, "streaming.stability", PASS if swing <= limits["streaming_count_swing_fraction"] else WARN,
++               "Actor count swing %.0f%% across samples" % (swing * 100), counts=counts,
++               note="A stationary player should see a stable count; large swings suggest streaming churn")
++
++
++def evaluate(report, expectations):
++    if not isinstance(report, dict) or report.get("schema_version") != 1:
++        raise ValueError("Unsupported diagnostic report")
++    checks = []
++    plugin_checks(report, expectations, checks)
++    asset_checks(report, checks)
++    world_checks(report, checks)
++    runtime_checks(report, expectations, checks)
++    for error in report.get("collector_errors", []):
++        _check(checks, "collector.error", WARN, str(error))
++    worst = max((SEVERITY[c["status"]] for c in checks), default=SEVERITY[UNKNOWN])
++    overall = [k for k, v in SEVERITY.items() if v == worst][0]
++    return {"overall": overall, "checks": checks,
++            "counts": {s: sum(1 for c in checks if c["status"] == s) for s in SEVERITY}}
++
++
++def compare(baseline, current, expectations, drop_fraction=0.5):
++    """Report regressions of a modified project (e.g. after a Beach City batch) vs a baseline."""
++    base = {c["id"]: c for c in evaluate(baseline, expectations)["checks"]}
++    curr = {c["id"]: c for c in evaluate(current, expectations)["checks"]}
++    regressions, improvements = [], []
++    for check_id in sorted(set(base) | set(curr)):
++        before = base.get(check_id, {}).get("status", UNKNOWN)
++        after = curr.get(check_id, {}).get("status", UNKNOWN)
++        if before == PASS and after != PASS:
++            regressions.append({"id": check_id, "before": before, "after": after,
++                                "detail": curr.get(check_id, {}).get("detail", "check absent")})
++        elif after == PASS and before != PASS:
++            improvements.append({"id": check_id, "before": before, "after": after})
++    for key in sorted(set(baseline.get("assets") or {}) | set(current.get("assets") or {})):
++        b = (baseline.get("assets") or {}).get(key, {}).get("count")
++        c = (current.get("assets") or {}).get(key, {}).get("count")
++        if isinstance(b, int) and b > 0 and (not isinstance(c, int) or c < b * (1 - drop_fraction)):
++            regressions.append({"id": "assets.%s.count" % key, "before": b, "after": c,
++                                "detail": "Asset count dropped more than %d%%" % (drop_fraction * 100)})
++    for prefix, category in (("traffic", "traffic_vehicle"), ("pedestrians", "pedestrian")):
++        b = motion_summary(baseline.get("pie_samples") or [], category, expectations)["peak"]
++        c = motion_summary(current.get("pie_samples") or [], category, expectations)["peak"]
++        if b > 0 and c < b * (1 - drop_fraction):
++            regressions.append({"id": prefix + ".peak", "before": b, "after": c,
++                                "detail": "Peak count dropped more than %d%%; compare at the same location" % (drop_fraction * 100)})
++    base_classes = set((baseline.get("class_histogram") or {}))
++    lost = sorted(base_classes - set(current.get("class_histogram") or {}))
++    return {"schema_version": 1, "regressions": regressions, "improvements": improvements,
++            "classes_no_longer_observed": lost[:200],
++            "comparable": baseline.get("environment", {}).get("map") == current.get("environment", {}).get("map")}
+diff --git a/claude_tools/cs_diag_editor.py b/claude_tools/cs_diag_editor.py
+new file mode 100644
+index 0000000..fa78e34
+--- /dev/null
++++ b/claude_tools/cs_diag_editor.py
+@@ -0,0 +1,238 @@
++"""Read-only City Sample preservation diagnostic. Run inside Unreal Editor's Python console.
++
++Environment variables:
++  CR_DIAG_OUTPUT        absolute path of a NEW JSON report (existing files are refused)
++  CR_DIAG_SAMPLES       Play-In-Editor samples to take (default 6; 0 = editor world only)
++  CR_DIAG_INTERVAL      seconds between samples (default 5)
++  CR_DIAG_EXPECTATIONS  optional absolute path to a refined expectations JSON
++
++Start PIE first (stand still in the street) for runtime traffic/crowd checks. Without PIE the
++script records plugins, asset census and the loaded editor world only. It never loads, saves,
++spawns, destroys, possesses or edits anything; it reads registry metadata and actor state.
++"""
++import json
++import os
++from pathlib import Path
++import sys
++
++HERE = Path(__file__).resolve().parent
++MAX_LISTED = 50
++
++
++class Collector:
++    def __init__(self, ue, expectations):
++        self.ue = ue
++        self.expectations = expectations
++        self.errors = []
++        sys.path.insert(0, str(HERE))
++        from cs_diag_core import classify
++        self.classify = classify
++
++    def guard(self, label, function, default=None):
++        try:
++            return function()
++        except Exception as error:  # Editor APIs differ by version: record, never hide.
++            self.errors.append("%s: %s: %s" % (label, type(error).__name__, error))
++            return default
++
++    # --- environment --------------------------------------------------------------
++    def worlds(self):
++        subsystem = self.guard("UnrealEditorSubsystem", lambda: self.ue.get_editor_subsystem(self.ue.UnrealEditorSubsystem))
++        if subsystem is None:
++            return None, None
++        return (self.guard("get_editor_world", subsystem.get_editor_world),
++                self.guard("get_game_world", subsystem.get_game_world))
++
++    def environment(self, world):
++        env = {"engine_version": self.guard("engine_version", self.ue.SystemLibrary.get_engine_version),
++               "map": self.guard("map", lambda: world.get_path_name()) if world else None,
++               "world_partition": None}
++        library = getattr(self.ue, "WorldPartitionBlueprintLibrary", None)
++        if library is not None and hasattr(library, "get_actor_descs"):
++            descs = self.guard("WorldPartitionBlueprintLibrary.get_actor_descs", library.get_actor_descs)
++            if descs is not None:
++                env["world_partition"] = len(descs) > 0
++        return env
++
++    def plugins(self):
++        library = getattr(self.ue, "PluginBlueprintLibrary", None)
++        if library is None or not hasattr(library, "get_enabled_plugin_names"):
++            self.errors.append("PluginBlueprintLibrary unavailable; use cs_project_scan.py for plugin evidence")
++            return {"enabled": None}
++        names = self.guard("get_enabled_plugin_names", library.get_enabled_plugin_names)
++        return {"enabled": sorted(str(n) for n in names) if names is not None else None}
++
++    # --- asset registry -----------------------------------------------------------
++    def _filter(self, package, name):
++        ue = self.ue
++        if hasattr(ue, "TopLevelAssetPath"):
++            return ue.ARFilter(class_paths=[ue.TopLevelAssetPath(package, name)], recursive_classes=True)
++        return ue.ARFilter(class_names=[name], recursive_classes=True)  # UE 5.0
++
++    def assets(self):
++        registry = self.guard("asset registry", self.ue.AssetRegistryHelpers.get_asset_registry)
++        if registry is None:
++            return None, None
++        self.guard("search_all_assets", lambda: registry.search_all_assets(True))
++        census = {}
++        for key, (package, name) in self.expectations["asset_classes"].items():
++            found = self.guard("assets " + key, lambda: registry.get_assets(self._filter(package, name)))
++            if found is None:
++                continue
++            packages = sorted(str(a.package_name) for a in found)
++            census[key] = {"count": len(packages), "names": packages[:MAX_LISTED]}
++        blueprints = self.guard("assets Blueprint", lambda: registry.get_assets(self._filter("/Script/Engine", "Blueprint")))
++        parents = {}
++        keywords = [k.lower() for k in self.expectations["blueprint_parent_keywords"]]
++        for asset in blueprints or []:
++            package = str(asset.package_name)
++            if package.startswith(("/Engine/", "/Script/")):
++                continue
++            tags = [self.guard("tag", lambda: asset.get_tag_value(t)) for t in ("NativeParentClass", "ParentClass")]
++            text = " ".join(str(t) for t in tags if t)
++            if any(k in (text + " " + package).lower() for k in keywords):
++                key = _short_class(tags[0]) or "unknown-native-parent"
++                entry = parents.setdefault(key, {"count": 0, "packages": []})
++                entry["count"] += 1
++                if len(entry["packages"]) < MAX_LISTED:
++                    entry["packages"].append(package)
++        return census, parents
++
++    # --- world scans --------------------------------------------------------------
++    def actors(self, world):
++        found = self.guard("get_all_actors_of_class", lambda: self.ue.GameplayStatics.get_all_actors_of_class(world, self.ue.Actor))
++        return list(found or [])
++
++    def describe(self, actor):
++        cls = actor.get_class()
++        return {"name": str(actor.get_name()), "class": str(cls.get_name()), "class_path": str(cls.get_path_name())}
++
++    def scan_editor_world(self, world):
++        histogram, counts = {}, {}
++        for actor in self.actors(world):
++            info = self.guard("describe", lambda: self.describe(actor))
++            if not info:
++                continue
++            histogram[info["class_path"]] = histogram.get(info["class_path"], 0) + 1
++            for category in self.classify(info["class"] + " " + info["class_path"], self.expectations):
++                counts[category] = counts.get(category, 0) + 1
++        return {"category_counts": counts, "actor_count": sum(histogram.values())}, histogram
++
++    def sample(self, world, elapsed):
++        records, isms, histogram = [], [], {}
++        actors = self.actors(world)
++        for actor in actors:
++            info = self.guard("describe", lambda: self.describe(actor))
++            if not info:
++                continue
++            histogram[info["class_path"]] = histogram.get(info["class_path"], 0) + 1
++            categories = self.classify(info["class"] + " " + info["class_path"], self.expectations)
++            if not categories:
++                continue
++            loc = self.guard("location", actor.get_actor_location)
++            if loc is not None:
++                info["loc"] = [round(float(loc.x), 1), round(float(loc.y), 1), round(float(loc.z), 1)]
++            records.append(info)
++            if "mass_visualizer" in categories:
++                for component in self.guard("components", lambda: actor.get_components_by_class(self.ue.InstancedStaticMeshComponent), []) or []:
++                    count = self.guard("instance count", component.get_instance_count)
++                    if count is not None:
++                        isms.append({"owner": info["name"], "component": str(component.get_name()), "instances": int(count)})
++        pawn = self.guard("player pawn", lambda: self.ue.GameplayStatics.get_player_pawn(world, 0))
++        player = None
++        if pawn is not None:
++            loc = self.guard("player location", pawn.get_actor_location)
++            player = {"pawn": str(pawn.get_name()), "pawn_class": str(pawn.get_class().get_path_name()),
++                      "loc": [float(loc.x), float(loc.y), float(loc.z)] if loc is not None else None}
++        return {"t": round(elapsed, 2), "actor_count": len(actors), "player": player, "actors": records, "ism": isms}, histogram
++
++
++def _short_class(tag):
++    if not tag:
++        return None
++    text = str(tag).rstrip("'\"")
++    return text.split("'")[-1] if "'" in text else text
++
++
++def build_static_report(collector, editor_world, game_world):
++    env = collector.environment(game_world or editor_world)
++    census, parents = collector.assets()
++    editor_scan, histogram = (collector.scan_editor_world(editor_world) if editor_world else (None, {}))
++    return {"schema_version": 1, "tool": "claude_tools/cs_diag_editor.py", "environment": env,
++            "plugins": collector.plugins(), "assets": census, "blueprint_parents": parents,
++            "editor_world": editor_scan, "class_histogram": histogram, "pie_samples": [],
++            "limitations": ["Keyword classification is heuristic; refine expectations locally.",
++                            "Only loaded World Partition cells are visible to the editor scan.",
++                            "Actor tracking uses names; pooled actors that are recycled can look like movement.",
++                            "Low-LOD Mass agents are instances, not actors: see ism counts."]}
++
++
++def write_new_json(path, data):
++    with Path(path).open("x", encoding="utf-8", newline="\n") as stream:
++        json.dump(data, stream, indent=2, sort_keys=True)
++        stream.write("\n")
++
++
++def finish(report, collector, output):
++    from cs_diag_core import evaluate
++    report["collector_errors"] = collector.errors
++    report["evaluation"] = evaluate(report, collector.expectations)
++    write_new_json(output, report)
++    return report["evaluation"]["overall"]
++
++
++def main(ue=None, environ=None):
++    environ = os.environ if environ is None else environ
++    if ue is None:
++        import unreal as ue
++    sys.path.insert(0, str(HERE))
++    from cs_diag_core import load_expectations
++    output = Path(environ["CR_DIAG_OUTPUT"])
++    if not output.is_absolute() or output.exists() or not output.parent.is_dir():
++        raise ValueError("CR_DIAG_OUTPUT must be a new absolute file in an existing folder")
++    expectations = load_expectations(environ.get("CR_DIAG_EXPECTATIONS"))
++    samples = int(environ.get("CR_DIAG_SAMPLES", "6"))
++    interval = float(environ.get("CR_DIAG_INTERVAL", "5"))
++    if samples < 0 or samples > 120 or interval <= 0:
++        raise ValueError("CR_DIAG_SAMPLES must be 0..120 and CR_DIAG_INTERVAL positive")
++    collector = Collector(ue, expectations)
++    editor_world, game_world = collector.worlds()
++    report = build_static_report(collector, editor_world, game_world)
++    if samples == 0 or game_world is None:
++        if samples:
++            collector.errors.append("No PIE world: runtime traffic/crowd checks are UNKNOWN. Start PIE and rerun.")
++        overall = finish(report, collector, output)
++        ue.log("Concrete Reign diagnostic (%s) written: %s" % (overall, output))
++        return None
++    state = {"elapsed": 0.0, "next": 0.0, "handle": None}
++
++    def tick(delta):
++        state["elapsed"] += float(delta)
++        if state["elapsed"] < state["next"]:
++            return
++        state["next"] += interval
++        try:
++            world = collector.worlds()[1]
++            if world is None:
++                collector.errors.append("PIE ended before sampling finished")
++            else:
++                sample, histogram = collector.sample(world, state["elapsed"])
++                report["pie_samples"].append(sample)
++                for key, value in histogram.items():
++                    report["class_histogram"][key] = max(report["class_histogram"].get(key, 0), value)
++                if len(report["pie_samples"]) < samples:
++                    return
++            ue.unregister_slate_post_tick_callback(state["handle"])
++            overall = finish(report, collector, output)
++            ue.log("Concrete Reign diagnostic (%s) written: %s" % (overall, output))
++        except Exception:
++            ue.unregister_slate_post_tick_callback(state["handle"])
++            raise
++
++    state["handle"] = ue.register_slate_post_tick_callback(tick)
++    ue.log("Concrete Reign diagnostic sampling %d x %.1fs; keep PIE running" % (samples, interval))
++    return state
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/claude_tools/cs_project_scan.py b/claude_tools/cs_project_scan.py
+new file mode 100644
+index 0000000..641bb5f
+--- /dev/null
++++ b/claude_tools/cs_project_scan.py
+@@ -0,0 +1,116 @@
++"""Offline City Sample project scan: no Unreal, no asset loading. Plain Python 3.9+.
++
++  py -3 cs_project_scan.py D:\\Projects\\CitySample\\CitySample.uproject --output scan.json
++
++Reports, from files on disk only:
++  * required plugins (expectations file) declared/disabled in the .uproject or shipped in Plugins/
++  * project-local plugins and C++ modules
++  * Content *file names* matching integration keywords (assets to open first in Editor)
++  * World Partition external actor package counts per map folder (streaming footprint)
++  * Content size totals, to plan disk/RAM for a working copy
++A plugin absent from the .uproject may still be enabled by the engine default; confirm in Editor.
++"""
++import argparse
++import json
++from pathlib import Path
++import sys
++
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++from cs_diag_core import load_expectations  # noqa: E402
++
++FILE_KEYWORDS = ("Vehicle", "Car", "Drive", "Driving", "Traffic", "Parked", "Crowd", "Mass", "ZoneGraph",
++                 "Spawner", "Interact", "Entry", "PlayerController", "Character", "GameMode", "HUD",
++                 "IMC_", "IA_", "Input")
++MAX_HITS_PER_KEYWORD = 40
++
++
++def plugin_report(project, descriptor, expectations):
++    declared = {p.get("Name"): p.get("Enabled", True) for p in descriptor.get("Plugins", []) if isinstance(p, dict)}
++    local = {}
++    for path in sorted((project.parent / "Plugins").rglob("*.uplugin")) if (project.parent / "Plugins").is_dir() else []:
++        local[path.stem] = path.relative_to(project.parent).as_posix()
++    rows = []
++    for item in expectations["required_plugins"]:
++        names = item["names"]
++        name = next((n for n in names if n in declared or n in local), names[0])
++        if declared.get(name) is False:
++            state = "explicitly-disabled"
++        elif name in declared:
++            state = "declared-enabled"
++        elif name in local:
++            state = "project-local-not-declared"
++        else:
++            state = "not-declared (may be engine default; confirm in Editor)"
++        rows.append({"plugin": name, "state": state, "project_local": local.get(name),
++                     "evidence_level": item.get("evidence")})
++    return rows, local, declared
++
++
++def content_scan(project):
++    content = project.parent / "Content"
++    hits = {k: [] for k in FILE_KEYWORDS}
++    external = {}
++    total_bytes = files = 0
++    if not content.is_dir():
++        return {"present": False}
++    for path in content.rglob("*"):
++        if not path.is_file():
++            continue
++        files += 1
++        try:
++            total_bytes += path.stat().st_size
++        except OSError:
++            continue
++        parts = path.relative_to(content).parts
++        if parts and parts[0] in ("__ExternalActors__", "__ExternalObjects__"):
++            key = parts[0] + "/" + "/".join(parts[1:-3] or parts[1:2])
++            external[key] = external.get(key, 0) + 1
++            continue
++        if path.suffix not in (".uasset", ".umap"):
++            continue
++        for keyword in FILE_KEYWORDS:
++            if keyword.lower() in path.stem.lower() and len(hits[keyword]) < MAX_HITS_PER_KEYWORD:
++                hits[keyword].append("/Game/" + "/".join(parts[:-1] + (path.stem,)))
++    maps = sorted("/Game/" + p.relative_to(content).with_suffix("").as_posix() for p in content.rglob("*.umap"))
++    return {"present": True, "files": files, "gigabytes": round(total_bytes / 1e9, 2), "maps": maps[:200],
++            "external_actor_packages": dict(sorted(external.items(), key=lambda kv: -kv[1])[:50]),
++            "name_hits": {k: v for k, v in hits.items() if v}}
++
++
++def scan(project, expectations):
++    project = Path(project)
++    if project.suffix != ".uproject" or not project.is_file():
++        raise ValueError("Pass an existing .uproject file")
++    descriptor = json.loads(project.read_text(encoding="utf-8-sig"))
++    rows, local, declared = plugin_report(project, descriptor, expectations)
++    modules = [m.get("Name") for m in descriptor.get("Modules", []) if isinstance(m, dict)]
++    return {"schema_version": 1, "tool": "claude_tools/cs_project_scan.py", "project": project.name,
++            "engine_association": descriptor.get("EngineAssociation"), "modules": modules,
++            "required_plugins": rows, "project_local_plugins": local, "declared_plugins": declared,
++            "content": content_scan(project),
++            "limitations": ["File names are hints; open assets in Editor to confirm role and class.",
++                            "Engine-default plugin enablement is not resolved offline."]}
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("uproject")
++    parser.add_argument("--expectations")
++    parser.add_argument("--output", required=True)
++    args = parser.parse_args(argv)
++    try:
++        report = scan(args.uproject, load_expectations(args.expectations))
++        with Path(args.output).open("x", encoding="utf-8", newline="\n") as stream:
++            json.dump(report, stream, indent=2, sort_keys=True)
++            stream.write("\n")
++    except (OSError, ValueError) as error:
++        print("error:", error, file=sys.stderr)
++        return 2
++    bad = [r for r in report["required_plugins"] if r["state"] == "explicitly-disabled"]
++    for row in report["required_plugins"]:
++        print("%-22s %s" % (row["plugin"], row["state"]))
++    return 1 if bad else 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/claude_tools/manifests/city_sample_expectations.json b/claude_tools/manifests/city_sample_expectations.json
+new file mode 100644
+index 0000000..0160c43
+--- /dev/null
++++ b/claude_tools/manifests/city_sample_expectations.json
+@@ -0,0 +1,46 @@
++{
++  "schema_version": 1,
++  "status": "heuristic-defaults-refine-after-local-inspection",
++  "notes": [
++    "Keywords are case-insensitive substrings matched against runtime class names and class paths.",
++    "They are search heuristics, not observed City Sample identifiers. After the first baseline run,",
++    "copy this file privately and narrow each list using the report's class_histogram section."
++  ],
++  "required_plugins": [
++    {"names": ["EnhancedInput"], "evidence": "required-by-CRExploration-uplugin"},
++    {"names": ["ChaosVehiclesPlugin"], "evidence": "engine-plugin-for-Chaos-vehicles; confirm in sample uproject"},
++    {"names": ["MassGameplay"], "evidence": "public-sources: MassCrowd builds on Mass Gameplay"},
++    {"names": ["MassAI"], "evidence": "public-sources: MassCrowd builds on Mass AI"},
++    {"names": ["MassCrowd"], "evidence": "public-sources: pedestrian behaviours used in City Sample"},
++    {"names": ["MassTraffic"], "evidence": "public-sources: vehicle-only traffic plugin shipped with the sample"},
++    {"names": ["ZoneGraph"], "evidence": "public-sources: lanes for MassAI and traffic"},
++    {"names": ["ZoneGraphAnnotations"], "evidence": "public-sources: ZoneGraph annotation markup"},
++    {"names": ["StateTree"], "evidence": "public-sources: MassCrowd StateTree tasks"},
++    {"names": ["MassEntity"], "evidence": "plugin before UE 5.5; engine runtime module afterwards", "optional_from_engine": "5.5"}
++  ],
++  "categories": {
++    "traffic_vehicle": {"keywords": ["MassTraffic", "TrafficVehicle", "CitySampleMassVehicle"], "exclude": ["Spawner", "Subsystem", "Manager", "Parked"]},
++    "parked_vehicle": {"keywords": ["Parked"], "exclude": ["Spawner", "Subsystem", "Manager"]},
++    "drivable_vehicle": {"keywords": ["WheeledVehiclePawn", "CitySampleVehicle", "ChaosVehicle"], "exclude": ["Spawner", "Wheel"]},
++    "pedestrian": {"keywords": ["Crowd", "Pedestrian", "MassAgent"], "exclude": ["Spawner", "Subsystem", "Manager", "Visualizer"]},
++    "mass_spawner": {"keywords": ["MassSpawner", "Spawner"], "exclude": []},
++    "zonegraph": {"keywords": ["ZoneGraphData", "ZoneShape"], "exclude": []},
++    "mass_visualizer": {"keywords": ["MassVisualizer", "MassRepresentation", "Visualizer"], "exclude": []}
++  },
++  "asset_classes": {
++    "mass_entity_config": ["/Script/MassSpawner", "MassEntityConfigAsset"],
++    "state_tree": ["/Script/StateTreeModule", "StateTree"],
++    "input_mapping_context": ["/Script/EnhancedInput", "InputMappingContext"],
++    "input_action": ["/Script/EnhancedInput", "InputAction"],
++    "chaos_vehicle_wheel_class": ["/Script/ChaosVehicles", "ChaosVehicleWheel"]
++  },
++  "blueprint_parent_keywords": ["Vehicle", "Mass", "Crowd", "Traffic", "Character", "PlayerController", "GameMode", "HUD", "Interaction", "ZoneGraph", "Spawner"],
++  "thresholds": {
++    "min_samples_for_motion": 2,
++    "min_move_cm": 50.0,
++    "min_moving_fraction": 0.2,
++    "min_moving_count": 1,
++    "player_fall_dz_cm": 2000.0,
++    "streaming_count_swing_fraction": 0.5
++  }
++}
+diff --git a/claude_tools/tests/fake_unreal.py b/claude_tools/tests/fake_unreal.py
+new file mode 100644
+index 0000000..0d1d934
+--- /dev/null
++++ b/claude_tools/tests/fake_unreal.py
+@@ -0,0 +1,208 @@
++"""Minimal stand-in for the Editor `unreal` module. Simulates, never proves, Editor behaviour."""
++
++
++class Vector:
++    def __init__(self, x, y, z):
++        self.x, self.y, self.z = x, y, z
++
++
++class Named:
++    def __init__(self, name, path=None):
++        self._name, self._path = name, path or name
++
++    def get_name(self):
++        return self._name
++
++    def get_path_name(self):
++        return self._path
++
++
++class ISM(Named):
++    def __init__(self, name, count):
++        super().__init__(name)
++        self.count = count
++
++    def get_instance_count(self):
++        return self.count
++
++
++class Actor(Named):
++    def __init__(self, name, cls, loc=(0, 0, 0), velocity=(0, 0, 0), isms=()):
++        super().__init__(name)
++        self.cls = Named(cls.split(".")[-1], cls)
++        self.loc = list(loc)
++        self.velocity = velocity
++        self.isms = list(isms)
++
++    def get_class(self):
++        return self.cls
++
++    def get_actor_location(self):
++        return Vector(*self.loc)
++
++    def get_components_by_class(self, _cls):
++        return self.isms
++
++    def step(self):
++        self.loc = [a + b for a, b in zip(self.loc, self.velocity)]
++
++
++class World(Named):
++    def __init__(self, path, actors, player=None):
++        super().__init__(path.split(".")[-1], path)
++        self.actors = actors
++        self.player = player
++
++
++class Asset:
++    def __init__(self, package, tags=None):
++        self.package_name = package
++        self.tags = tags or {}
++
++    def get_tag_value(self, tag):
++        return self.tags.get(tag)
++
++
++class FakeUnreal:
++    """Instance mimics module attributes used by the collector."""
++
++    class Actor:
++        pass
++
++    class InstancedStaticMeshComponent:
++        pass
++
++    class UnrealEditorSubsystem:
++        pass
++
++    def __init__(self, editor_world=None, game_world=None, assets=None, plugins=("EnhancedInput",),
++                 engine="5.4.4-0+++UE5+Release-5.4", partitioned=True):
++        self.editor_world, self.game_world = editor_world, game_world
++        self.asset_map = assets or {}
++        self.logs, self.callbacks, self.unregistered = [], {}, []
++        outer = self
++
++        class SystemLibrary:
++            commands = []
++
++            @staticmethod
++            def get_engine_version():
++                return engine
++
++            @staticmethod
++            def execute_console_command(world, command):
++                SystemLibrary.commands.append((world, command))
++
++        class GameplayStatics:
++            @staticmethod
++            def get_all_actors_of_class(world, _cls):
++                return list(world.actors)
++
++            @staticmethod
++            def get_player_pawn(world, _index):
++                return world.player
++
++        class Registry:
++            def search_all_assets(self, _sync):
++                return None
++
++            def get_assets(self, flt):
++                return list(outer.asset_map.get(flt.key, []))
++
++        class AssetRegistryHelpers:
++            @staticmethod
++            def get_asset_registry():
++                return Registry()
++
++        class WorldPartitionBlueprintLibrary:
++            @staticmethod
++            def get_actor_descs():
++                return [object()] if partitioned else []
++
++        self.SystemLibrary = SystemLibrary
++        self.GameplayStatics = GameplayStatics
++        self.AssetRegistryHelpers = AssetRegistryHelpers
++        self.WorldPartitionBlueprintLibrary = WorldPartitionBlueprintLibrary
++        if plugins is not None:
++            class PluginBlueprintLibrary:
++                @staticmethod
++                def get_enabled_plugin_names():
++                    return list(plugins)
++            self.PluginBlueprintLibrary = PluginBlueprintLibrary
++
++    def TopLevelAssetPath(self, package, name):
++        return (package, name)
++
++    def ARFilter(self, class_paths=None, class_names=None, recursive_classes=False):
++        class Filter:
++            pass
++        flt = Filter()
++        flt.key = class_paths[0][1] if class_paths else class_names[0]
++        return flt
++
++    def get_editor_subsystem(self, _cls):
++        outer = self
++
++        class Subsystem:
++            def get_editor_world(self):
++                return outer.editor_world
++
++            def get_game_world(self):
++                return outer.game_world
++        return Subsystem()
++
++    def register_slate_post_tick_callback(self, function):
++        handle = len(self.callbacks) + 1
++        self.callbacks[handle] = function
++        return handle
++
++    def unregister_slate_post_tick_callback(self, handle):
++        self.unregistered.append(handle)
++        self.callbacks.pop(handle, None)
++
++    def log(self, text):
++        self.logs.append(text)
++
++    def pump(self, seconds, step=1.0):
++        """Advance the fake Slate tick; actors move one velocity step per tick."""
++        elapsed = 0.0
++        while elapsed < seconds and self.callbacks:
++            if self.game_world:
++                for actor in self.game_world.actors + [self.game_world.player]:
++                    if actor is not None:
++                        actor.step()
++            for function in list(self.callbacks.values()):
++                function(step)
++            elapsed += step
++
++
++def city_world(traffic_velocity=(100, 0, 0), crowd_velocity=(30, 0, 0), player_z=100.0):
++    actors = [
++        Actor("BP_MassTrafficCar_C_1", "/Game/Vehicles/BP_MassTrafficCar.BP_MassTrafficCar_C", (0, 0, 0), traffic_velocity),
++        Actor("BP_MassTrafficCar_C_2", "/Game/Vehicles/BP_MassTrafficCar.BP_MassTrafficCar_C", (500, 0, 0), traffic_velocity),
++        Actor("BP_ParkedCar_C_1", "/Game/Vehicles/BP_ParkedCar.BP_ParkedCar_C", (900, 0, 0)),
++        Actor("BP_CrowdCharacter_C_1", "/Game/Crowd/BP_CrowdCharacter.BP_CrowdCharacter_C", (0, 900, 0), crowd_velocity),
++        Actor("MassVisualizer_1", "/Script/MassRepresentation.MassVisualizer", isms=[ISM("ISM_0", 240)]),
++        Actor("ZoneGraphData_1", "/Script/ZoneGraph.ZoneGraphData"),
++        Actor("MassSpawner_1", "/Script/MassSpawner.MassSpawner"),
++        Actor("StaticMeshActor_1", "/Script/Engine.StaticMeshActor"),
++    ]
++    player = Actor("BP_Player_C_0", "/Game/Player/BP_Player.BP_Player_C", (0, 0, player_z))
++    return World("/Game/Map/Small_City_LVL.Small_City_LVL", actors, player)
++
++
++ALL_PLUGINS = ("EnhancedInput", "ChaosVehiclesPlugin", "MassGameplay", "MassAI", "MassCrowd", "MassTraffic",
++               "ZoneGraph", "ZoneGraphAnnotations", "StateTree", "MassEntity")
++
++
++def city_assets():
++    return {
++        "MassEntityConfigAsset": [Asset("/Game/Mass/MEC_Crowd"), Asset("/MassTraffic/MEC_Car")],
++        "InputMappingContext": [Asset("/Game/Input/IMC_Default")],
++        "InputAction": [Asset("/Game/Input/IA_Move")],
++        "Blueprint": [
++            Asset("/Game/Vehicles/BP_Sedan", {"NativeParentClass": "/Script/CoreUObject.Class'/Script/ChaosVehicles.WheeledVehiclePawn'"}),
++            Asset("/Game/UI/BP_Unrelated", {"NativeParentClass": "/Script/CoreUObject.Class'/Script/UMG.UserWidget'"}),
++            Asset("/Engine/BP_EngineThing", {"NativeParentClass": "Vehicle"}),
++        ],
++    }
+diff --git a/claude_tools/tests/test_cs_diagnostics.py b/claude_tools/tests/test_cs_diagnostics.py
+new file mode 100644
+index 0000000..d5eda14
+--- /dev/null
++++ b/claude_tools/tests/test_cs_diagnostics.py
+@@ -0,0 +1,241 @@
++import copy
++import json
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++
++HERE = Path(__file__).resolve().parent
++sys.path.insert(0, str(HERE.parent))
++sys.path.insert(0, str(HERE))
++
++import cs_diag_compare  # noqa: E402
++import cs_diag_core as core  # noqa: E402
++import cs_diag_editor as editor  # noqa: E402
++import cs_project_scan  # noqa: E402
++import cr_perf_presets  # noqa: E402
++from fake_unreal import ALL_PLUGINS, FakeUnreal, city_assets, city_world  # noqa: E402
++
++EXPECT = core.load_expectations()
++
++
++def status(result, check_id):
++    return [c["status"] for c in result["checks"] if c["id"] == check_id]
++
++
++def run_editor(folder, ue, samples=4, interval=2.0, pump=20.0, name="report.json"):
++    output = Path(folder) / name
++    env = {"CR_DIAG_OUTPUT": str(output), "CR_DIAG_SAMPLES": str(samples), "CR_DIAG_INTERVAL": str(interval)}
++    editor.main(ue, env)
++    ue.pump(pump)
++    return json.loads(output.read_text()) if output.exists() else None
++
++
++class ClassifyTests(unittest.TestCase):
++    def test_categories_and_exclusions(self):
++        self.assertEqual(core.classify("BP_MassTrafficCar_C", EXPECT), ["traffic_vehicle"])
++        self.assertIn("parked_vehicle", core.classify("BP_ParkedCar_C", EXPECT))
++        self.assertNotIn("traffic_vehicle", core.classify("MassTrafficParkedVehicleSpawner", EXPECT))
++        self.assertIn("mass_spawner", core.classify("MassTrafficParkedVehicleSpawner", EXPECT))
++        self.assertEqual(core.classify("StaticMeshActor", EXPECT), [])
++
++    def test_bad_expectations_rejected(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "e.json"
++            path.write_text(json.dumps({"schema_version": 1, "categories": {}, "required_plugins": []}))
++            with self.assertRaises(ValueError):
++                core.load_expectations(path)
++
++
++class EditorCollectorTests(unittest.TestCase):
++    def test_full_pie_run_passes(self):
++        ue = FakeUnreal(city_world(), city_world(), city_assets(), ALL_PLUGINS)
++        with tempfile.TemporaryDirectory() as folder:
++            report = run_editor(folder, ue)
++        self.assertIsNotNone(report)
++        self.assertEqual(len(report["pie_samples"]), 4)
++        self.assertEqual(ue.callbacks, {}, "tick callback must be unregistered")
++        result = report["evaluation"]
++        failing = [c for c in result["checks"] if c["status"] not in ("PASS",)]
++        self.assertEqual(failing, [])
++        self.assertEqual(report["assets"]["mass_entity_config"]["count"], 2)
++        self.assertIn("/Script/ChaosVehicles.WheeledVehiclePawn", report["blueprint_parents"])
++        self.assertNotIn("/Script/UMG.UserWidget", report["blueprint_parents"])
++
++    def test_stationary_traffic_fails(self):
++        ue = FakeUnreal(city_world(), city_world(traffic_velocity=(0, 0, 0)), city_assets(), ALL_PLUGINS)
++        with tempfile.TemporaryDirectory() as folder:
++            report = run_editor(folder, ue)
++        self.assertEqual(status(report["evaluation"], "traffic.moving"), ["FAIL"])
++        self.assertEqual(status(report["evaluation"], "pedestrians.moving"), ["PASS"])
++
++    def test_player_falling_through_world_fails(self):
++        game = city_world()
++        game.player.velocity = (0, 0, -3000)
++        ue = FakeUnreal(city_world(), game, city_assets(), ALL_PLUGINS)
++        with tempfile.TemporaryDirectory() as folder:
++            report = run_editor(folder, ue)
++        self.assertEqual(status(report["evaluation"], "pie.player"), ["FAIL"])
++
++    def test_no_pie_world_is_unknown_not_pass(self):
++        ue = FakeUnreal(city_world(), None, city_assets(), ALL_PLUGINS)
++        with tempfile.TemporaryDirectory() as folder:
++            report = run_editor(folder, ue, pump=0)
++        self.assertEqual(status(report["evaluation"], "traffic.moving"), ["UNKNOWN"])
++        self.assertEqual(status(report["evaluation"], "world.zonegraph"), ["PASS"])
++        self.assertTrue(any("No PIE world" in e for e in report["collector_errors"]))
++
++    def test_missing_plugin_and_api_reported(self):
++        plugins = tuple(p for p in ALL_PLUGINS if p != "MassTraffic")
++        ue = FakeUnreal(city_world(), city_world(), city_assets(), plugins)
++        with tempfile.TemporaryDirectory() as folder:
++            report = run_editor(folder, ue)
++        self.assertEqual(status(report["evaluation"], "plugins.MassTraffic"), ["FAIL"])
++        ue = FakeUnreal(city_world(), city_world(), city_assets(), plugins=None)
++        with tempfile.TemporaryDirectory() as folder:
++            report = run_editor(folder, ue)
++        self.assertEqual(status(report["evaluation"], "plugins.required"), ["UNKNOWN"])
++
++    def test_mass_entity_plugin_optional_on_5_5(self):
++        plugins = tuple(p for p in ALL_PLUGINS if p != "MassEntity")
++        for engine, expected in (("5.4.4-0+++UE5", "FAIL"), ("5.5.0-0+++UE5", "PASS"), ("5.8.2", "PASS")):
++            ue = FakeUnreal(city_world(), None, city_assets(), plugins, engine=engine)
++            with tempfile.TemporaryDirectory() as folder:
++                report = run_editor(folder, ue, samples=0, pump=0)
++            self.assertEqual(status(report["evaluation"], "plugins.MassEntity"), [expected], engine)
++
++    def test_refuses_existing_output_and_bad_settings(self):
++        ue = FakeUnreal(city_world(), None, city_assets(), ALL_PLUGINS)
++        with tempfile.TemporaryDirectory() as folder:
++            output = Path(folder) / "exists.json"
++            output.write_text("{}")
++            with self.assertRaises(ValueError):
++                editor.main(ue, {"CR_DIAG_OUTPUT": str(output)})
++            self.assertEqual(output.read_text(), "{}")
++            with self.assertRaises(ValueError):
++                editor.main(ue, {"CR_DIAG_OUTPUT": str(Path(folder) / "n.json"), "CR_DIAG_SAMPLES": "-1"})
++            with self.assertRaises(ValueError):
++                editor.main(ue, {"CR_DIAG_OUTPUT": "relative.json"})
++
++    def test_pie_ending_mid_run_still_writes(self):
++        ue = FakeUnreal(city_world(), city_world(), city_assets(), ALL_PLUGINS)
++        with tempfile.TemporaryDirectory() as folder:
++            output = Path(folder) / "r.json"
++            editor.main(ue, {"CR_DIAG_OUTPUT": str(output), "CR_DIAG_SAMPLES": "5", "CR_DIAG_INTERVAL": "2"})
++            ue.pump(3)
++            ue.game_world = None
++            ue.pump(5)
++            report = json.loads(output.read_text())
++        self.assertTrue(any("PIE ended" in e for e in report["collector_errors"]))
++        self.assertEqual(ue.callbacks, {})
++
++    def test_api_exceptions_are_recorded(self):
++        ue = FakeUnreal(city_world(), None, city_assets(), ALL_PLUGINS)
++
++        def broken():
++            raise RuntimeError("registry down")
++        ue.AssetRegistryHelpers.get_asset_registry = staticmethod(broken)
++        with tempfile.TemporaryDirectory() as folder:
++            report = run_editor(folder, ue, samples=0, pump=0)
++        self.assertTrue(any("registry down" in e for e in report["collector_errors"]))
++        self.assertEqual(status(report["evaluation"], "assets.census"), ["UNKNOWN"])
++
++
++class CompareTests(unittest.TestCase):
++    def reports(self):
++        ue = FakeUnreal(city_world(), city_world(), city_assets(), ALL_PLUGINS)
++        with tempfile.TemporaryDirectory() as folder:
++            baseline = run_editor(folder, ue, name="a.json")
++        return baseline
++
++    def test_identical_reports_have_no_regressions(self):
++        baseline = self.reports()
++        result = core.compare(baseline, copy.deepcopy(baseline), EXPECT)
++        self.assertEqual(result["regressions"], [])
++        self.assertTrue(result["comparable"])
++
++    def test_lost_traffic_and_assets_are_regressions(self):
++        baseline = self.reports()
++        broken = copy.deepcopy(baseline)
++        for sample in broken["pie_samples"]:
++            sample["actors"] = [a for a in sample["actors"] if "MassTraffic" not in a["class"]]
++        broken["assets"]["mass_entity_config"]["count"] = 0
++        result = core.compare(baseline, broken, EXPECT)
++        ids = {r["id"] for r in result["regressions"]}
++        self.assertTrue({"traffic.present", "traffic.peak", "assets.mass_entity_config.count"} <= ids, ids)
++
++    def test_cli_exit_codes(self):
++        baseline = self.reports()
++        broken = copy.deepcopy(baseline)
++        broken["plugins"]["enabled"] = ["EnhancedInput"]
++        with tempfile.TemporaryDirectory() as folder:
++            a, b = Path(folder) / "a.json", Path(folder) / "b.json"
++            a.write_text(json.dumps(baseline))
++            b.write_text(json.dumps(broken))
++            self.assertEqual(cs_diag_compare.main([str(a)]), 0)
++            self.assertEqual(cs_diag_compare.main([str(a), str(a)]), 0)
++            self.assertEqual(cs_diag_compare.main([str(a), str(b), "--output", str(Path(folder) / "d.json")]), 1)
++            self.assertEqual(cs_diag_compare.main([str(a), str(b), "--output", str(Path(folder) / "d.json")]), 2)
++            (Path(folder) / "bad.json").write_text("[]")
++            self.assertEqual(cs_diag_compare.main([str(Path(folder) / "bad.json")]), 2)
++
++
++class ProjectScanTests(unittest.TestCase):
++    def make_project(self, folder, disabled=()):
++        root = Path(folder) / "CitySample"
++        plugins = [{"Name": "MassAI", "Enabled": True}, {"Name": "ChaosVehiclesPlugin", "Enabled": True}]
++        plugins += [{"Name": n, "Enabled": False} for n in disabled]
++        (root / "Plugins/MassTraffic").mkdir(parents=True)
++        (root / "Plugins/MassTraffic/MassTraffic.uplugin").write_text("{}")
++        for rel in ("Content/Gameplay/Driving/BP_CarEntry_Interaction.uasset",
++                    "Content/Map/Small_City_LVL.umap",
++                    "Content/__ExternalActors__/Map/Small_City_LVL/A/BC/X1.uasset",
++                    "Content/__ExternalActors__/Map/Small_City_LVL/D/EF/X2.uasset"):
++            (root / rel).parent.mkdir(parents=True, exist_ok=True)
++            (root / rel).write_bytes(b"x" * 10)
++        project = root / "CitySample.uproject"
++        project.write_text(json.dumps({"EngineAssociation": "5.4", "Modules": [{"Name": "CitySample"}], "Plugins": plugins}))
++        return project
++
++    def test_scan_reports_plugins_and_hints(self):
++        with tempfile.TemporaryDirectory() as folder:
++            report = cs_project_scan.scan(self.make_project(folder), EXPECT)
++        states = {r["plugin"]: r["state"] for r in report["required_plugins"]}
++        self.assertEqual(states["MassAI"], "declared-enabled")
++        self.assertEqual(states["MassTraffic"], "project-local-not-declared")
++        self.assertTrue(states["MassCrowd"].startswith("not-declared"))
++        content = report["content"]
++        self.assertIn("/Game/Gameplay/Driving/BP_CarEntry_Interaction", content["name_hits"]["Interact"])
++        self.assertEqual(content["external_actor_packages"], {"__ExternalActors__/Map/Small_City_LVL": 2})
++        self.assertIn("/Game/Map/Small_City_LVL", content["maps"])
++
++    def test_cli_flags_disabled_plugin(self):
++        with tempfile.TemporaryDirectory() as folder:
++            project = self.make_project(folder, disabled=("MassCrowd",))
++            out = Path(folder) / "scan.json"
++            self.assertEqual(cs_project_scan.main([str(project), "--output", str(out)]), 1)
++            self.assertEqual(cs_project_scan.main([str(project), "--output", str(out)]), 2)
++            self.assertEqual(cs_project_scan.main([str(Path(folder) / "none.uproject"), "--output", str(Path(folder) / "x.json")]), 2)
++
++
++class PerfPresetTests(unittest.TestCase):
++    def test_presets_are_console_commands(self):
++        for name in ("low", "medium", "high", "profile"):
++            lines = cr_perf_presets.commands(name)
++            self.assertTrue(lines)
++            for line in lines:
++                self.assertRegex(line, r"^[A-Za-z][\w.]* ?[\w. -]*$")
++        with self.assertRaises(ValueError):
++            cr_perf_presets.commands("ultra")
++
++    def test_apply_targets_pie_world(self):
++        game = city_world()
++        ue = FakeUnreal(city_world(), game, city_assets(), ALL_PLUGINS)
++        cr_perf_presets.apply("low", ue)
++        sent = ue.SystemLibrary.commands
++        self.assertTrue(sent and all(world is game for world, _ in sent))
++        self.assertIn("r.ScreenPercentage 50", [c for _, c in sent])
++
++
++if __name__ == "__main__":
++    unittest.main()
+-- 
+2.43.0
+

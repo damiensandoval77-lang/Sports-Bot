@@ -1,0 +1,195 @@
+From c1256431afdb6a72da9e533cfcb0bb2f273f3743 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 12 Nov 2026 21:45:47 +0000
+Subject: [PATCH 3/3] Document City Sample investigation, migration gate and
+ perf strategy
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01R1UJvB6oLvPNLuN23qBC6x
+---
+ docs/claude/CITY_SAMPLE_INTEGRATION_REVIEW.md | 114 ++++++++++++++++++
+ docs/claude/PERFORMANCE_STRATEGY.md           |  51 ++++++++
+ 2 files changed, 165 insertions(+)
+ create mode 100644 docs/claude/CITY_SAMPLE_INTEGRATION_REVIEW.md
+ create mode 100644 docs/claude/PERFORMANCE_STRATEGY.md
+
+diff --git a/docs/claude/CITY_SAMPLE_INTEGRATION_REVIEW.md b/docs/claude/CITY_SAMPLE_INTEGRATION_REVIEW.md
+new file mode 100644
+index 0000000..61728b7
+--- /dev/null
++++ b/docs/claude/CITY_SAMPLE_INTEGRATION_REVIEW.md
+@@ -0,0 +1,114 @@
++# City Sample integration review (Claude): Tasks A, B and D
++
++The session network blocked `dev.epicgames.com` and `forums.unrealengine.com`. Public facts below
++come from web-search excerpts of those pages. Nothing was inspected in a real project. Evidence levels:
++
++- **E**: Epic page excerpt
++- **C**: community forum report
++- **R**: verified in this repository
++- **A**: engineering assumption. Each one is a question to answer locally, not a fact.
++
++## 0. Version risk (decide first)
++
++- **E** City Sample was rebuilt for **UE 5.8** with completely new levels, PCG-generated city
++  building and an Unreal MCP workflow (`CitySamplePCG_Demo` plugin). The original UE5.0–5.x release
++  had a "big city" and a "small city" map.
++- Every Codex document assumes the original layout (`Small_City_LVL`). A fresh Fab download in
++  November 2026 is probably the 5.8 project, and its map, Blueprint and plugin names may differ.
++- Recommendation: install whichever version Fab currently offers (likely the 5.8 project) and record
++  its exact version. Do not mix 5.x-era forum fixes into it. Run `cs_project_scan.py` before opening
++  the project. It lists the real maps and the candidate asset names offline.
++- **E** Epic's recommended spec is 64 GB RAM, a 12-core CPU and an SSD. The owner has 32 GB, which is
++  half of that. See `PERFORMANCE_STRATEGY.md`. Start on the smallest playable map.
++
++## A. Technical investigation
++
++| # | Question | What is known | Level | Exact local check |
++| --- | --- | --- | --- | --- |
++| 1 | Player character / possession | Not established. Class names circulating online (`CitySampleCharacter`, `CitySamplePlayerController`) are unconfirmed. | A | World Settings → GameMode override → Default Pawn and PlayerController classes. `cs_diag_editor.py` records `pie.player` `pawn_classes` and Blueprint native parents. |
++| 2 | Vehicle entry/exit | Enter/Exit Vehicle = gamepad A / keyboard C. Entry logic reportedly lives in `Content/Gameplay/Driving/BP_CarEntry_Interaction`. Possession flag set in `CitySampleVehicleBase.cpp` at traffic spawn. Only parked-spawner cars are enterable by default. | E (keys), C (rest) | Open `BP_CarEntry_Interaction` (`cs_project_scan` name hits "Interact", "Entry", "Driving"). Search Source for `CitySampleVehicleBase` and its possession flag. |
++| 3 | Input contexts | Unknown whether the project uses Enhanced Input, legacy input or both. | A | The diagnostic's `assets.input_mapping_context` lists every IMC. Compare with `Config/DefaultInput.ini` (Codex's `inspect_project.py`). |
++| 4 | Vehicle physics | Chaos Vehicles (`ChaosVehiclesPlugin`). Community reports describe unstable driving and missing wheels after the 5.2 upgrade. | E/C | The diagnostic's `blueprint_parents` lists Blueprints whose native parent is `WheeledVehiclePawn` or a sample subclass. Inspect the wheel classes in the `chaos_vehicle_wheel_class` census. |
++| 5 | Traffic spawning/control | MassTraffic is a vehicle-only plugin: lanes, merges, signals, parked cars. It was built for The Matrix Awakens demo. Spawners: `BP_MassTrafficVehicleSpawner` and `BP_MassTrafficParkedVehicleSpawner`. | C | Diagnostic `world.mass_spawners`, plus the spawner Details panels (entity config, count, ZoneGraph lane filter). |
++| 6 | Pedestrians | MassCrowd, an experimental engine plugin, built on MassGameplay and MassAI. Uses StateTree tasks such as ZoneGraph wander. | C/E | `assets.mass_entity_config` list → open crowd configs → traits and StateTree asset. |
++| 7 | Mass processors/fragments | Configured by traits on `MassEntityConfigAsset`s (MassSpawner module). Low-LOD agents render as instanced meshes through Mass representation, not as actors. | A (engine design) | Console `mass.debug` / Mass Debugger window (5.3+). The diagnostic counts visualizer instances (`mass.visualization`). |
++| 8 | ZoneGraph | Lanes for crowd and traffic. ZoneGraph cannot be generated or modified at runtime. Annotations add markup such as obstacles. | C | `world.zonegraph`. Use ZoneGraph debug draw (show flag "ZoneGraph") on the editor viewport. **Never** rebuild it as a fix. |
++| 9 | HUD vs character/vehicle | Unknown. Codex notes a speedometer may exist. | A | GameMode HUD class plus widgets under the `HUD` name hits. |
++| 10 | Plugins to keep | EnhancedInput (R). Likely ChaosVehiclesPlugin, MassGameplay, MassAI, MassCrowd, MassTraffic (project-local), ZoneGraph, ZoneGraphAnnotations, StateTree. MassEntity is a plugin before 5.5 and an engine module afterwards. | R/C/A | `cs_project_scan.py` (offline) and `plugins.*` diagnostic checks. Disabling any of these is a regression. |
++
++Mass traffic vehicles and drivable vehicles are different things. A Mass traffic car is an entity with
++an actor representation at high LOD. Adding `ICRVehicleInteraction` to a project-owned child
++Blueprint of the *drivable* vehicle class is safe. Adding it to the traffic representation class can
++alter the representation/LOD switch, which matters because it can destroy the actor mid-entry.
++Patch 0002 makes that failure recoverable, but it does not make it work.
++
++## B. Beach City migration approach
++
++Codex's `BEACH_CITY_INTEGRATION.md` order (staging project, Migrate, small batches, separate data
++layer) is sound and is kept. Claude adds a measurable gate for each batch:
++
++1. **Baseline.** Before any migration, in the untouched copy, stand at a fixed spot on the chosen
++   coastal edge and record PIE. Run the diagnostic with `CR_DIAG_SAMPLES=12` and `CR_DIAG_INTERVAL=5`.
++   Save the result as `baseline.json` and keep the bookmark/spot.
++2. **Staging.** In a Beach City staging project of the same engine version, run Codex's
++   `inventory_beach_city.py`. Pick ≤ 10 facade/building meshes that are Nanite-capable static meshes,
++   with no Blueprint construction scripts and no plugin dependency.
++3. **Migrate.** Use Asset Actions → Migrate into `/Game/ConcreteReign/BeachCity/` in the working copy.
++   Never overwrite City Sample assets. Place the meshes in a new data layer `DL_CR_BeachCity_Batch01`.
++   They replace or sit behind existing facades only. Keep them off roads, sidewalks, crossings and
++   parking lanes.
++4. **Settings per mesh.** Enable Nanite on opaque architecture. Keep foliage and masked palm leaves as
++   Nanite only on 5.3+ (or non-Nanite with LODs on older versions). Use simple collision for walls and
++   no collision for distant dressing. Do not use a World Partition "Is Spatially Loaded"=false override.
++   Set the HLOD layer to match neighbouring City Sample buildings.
++5. **Gate.** Re-run the diagnostic from the same spot to get `after-batchNN.json`. Then:
++   `python claude_tools/cs_diag_compare.py baseline.json after-batchNN.json --output delta-NN.json`.
++   Any REGRESSION means roll the batch back (it is one data layer and one folder). Then walk, drive
++   and exit there before the next batch.
++
++Do not regenerate ZoneGraph, change Mass traits or edit spawners for visual work. Do not copy
++`.uasset` files by hand. Marketplace content never goes into Git; the validator rejects assets.
++
++## D. Traffic/pedestrian preservation diagnostic
++
++`claude_tools/cs_diag_editor.py` is a read-only Editor Python script. It never loads, saves, spawns,
++possesses or edits anything. It records:
++
++- the plugin enablement, engine version, map and World Partition state;
++- a census of Mass entity configs, StateTrees, input contexts/actions and wheel classes;
++- the native parents of Blueprints relevant to vehicles, crowds and the player (the list of exact
++  assets to inspect);
++- ZoneGraph and spawner presence in the loaded editor world;
++- timed PIE samples: player pawn and fall detection, traffic and pedestrian actors and their movement,
++  Mass visualizer instance counts, and actor-count stability.
++
++Missing evidence is UNKNOWN, never PASS. Keyword classification is heuristic. After the first run,
++refine a private copy of `claude_tools/manifests/city_sample_expectations.json` using
++`class_histogram`, then pass it with `CR_DIAG_EXPECTATIONS`.
++
++Run it like this. Enable the Python Editor Script Plugin in the working copy, start PIE, stand still,
++then in the Output Log Python console:
++
++```python
++import os
++os.environ["CR_DIAG_OUTPUT"] = r"D:\Audits\cs-baseline-01.json"
++os.environ["CR_DIAG_SAMPLES"] = "12"; os.environ["CR_DIAG_INTERVAL"] = "5"
++script = r"D:\Tools\concrete-reign\claude_tools\cs_diag_editor.py"
++exec(compile(open(script, encoding="utf-8").read(), script, "exec"), {"__name__": "__main__", "__file__": script})
++```
++
++Keep PIE focused for about 60 s, until "diagnostic (...) written" appears in the log. Then run
++`py -3 claude_tools\cs_diag_compare.py D:\Audits\cs-baseline-01.json`. Exit code 1 means FAIL.
++
++Editor Python APIs used (each guarded; a failure is logged in `collector_errors`):
++
++- `UnrealEditorSubsystem.get_editor_world`/`get_game_world`
++- `GameplayStatics.get_all_actors_of_class`/`get_player_pawn`
++- `AssetRegistry.get_assets(ARFilter)`
++- `AssetData.get_tag_value`
++- `PluginBlueprintLibrary.get_enabled_plugin_names`
++- `WorldPartitionBlueprintLibrary.get_actor_descs`
++- `register_slate_post_tick_callback`
++
++Their availability in the installed version is unverified. The offline tests run against a fake
++`unreal` module only.
+diff --git a/docs/claude/PERFORMANCE_STRATEGY.md b/docs/claude/PERFORMANCE_STRATEGY.md
+new file mode 100644
+index 0000000..788447f
+--- /dev/null
++++ b/docs/claude/PERFORMANCE_STRATEGY.md
+@@ -0,0 +1,51 @@
++# Development performance strategy (Claude): Task E
++
++The GPU is unknown and nothing has been measured, so this document makes no FPS claims. Epic recommends
++64 GB RAM, a 12-core CPU and an SSD for City Sample. The owner has 32 GB, so **memory is the first
++constraint**, ahead of GPU.
++
++## Memory (32 GB)
++
++- Use the smallest playable map. Never "Load All" World Partition cells in the editor. Load a region
++  around the test district only.
++- Keep the project, Derived Data Cache and Windows page file on an SSD. A system-managed page file, or
++  a fixed one of about 32–64 GB, prevents editor OOM crashes during shader compilation and cooking.
++- Close browsers and other launchers while compiling shaders. If compiles exhaust RAM, lower shader
++  workers in the local `Saved/Config` (`[DevOptions.Shaders] NumUnusedShaderCompilingThreads`).
++- The first open compiles a very large number of shaders. Expect a long first session. That is not a
++  failure.
++
++## Runtime presets
++
++`claude_tools/cr_perf_presets.py` applies runtime-only console variables (nothing goes into config).
++Use `--emit low|medium|high` to print them, or `apply()` in Editor Python. All presets keep Lumen
++(software), Nanite, Virtual Shadow Maps and TSR, which City Sample is built around. Disabling them
++changes the look and may break content assumptions, so scale resolution and quality groups instead.
++
++| Lever | Low | Medium | High | Notes |
++| --- | --- | --- | --- | --- |
++| Internal resolution (`r.ScreenPercentage`, TSR) | 50 | 67 | 100 | Biggest GPU lever. TSR upscales. |
++| Lumen GI/reflections (`sg.GlobalIlluminationQuality`, `sg.ReflectionQuality`) | 1 | 2 | 3 | Hardware RT off below High. |
++| Virtual Shadow Maps (`sg.ShadowQuality`) | 1 | 2 | 3 | VSM stays on; quality scales cost. |
++| Nanite detail (`r.Nanite.MaxPixelsPerEdge`) | 2 | 1 | 1 | Higher value means coarser triangles. |
++| Texture pool (`r.Streaming.PoolSize`, MB) | 2000 | 3000 | 4000 | Match to GPU VRAM. Check `stat streaming` for over-budget. |
++| View distance / foliage | 1 | 2 | 3 | Also reduces World Partition streaming pressure. |
++| Frame cap (`t.MaxFPS`) | 60 | 60 | uncapped | Caps keep thermals and measurements stable. |
++
++Crowd and traffic density are **sample-specific** controls: spawner counts, entity configs, and any
++City Sample console variables or settings. Find them locally (spawner Details, `cs_project_scan`
++name hits, the sample's settings menu) before scripting them. For a first-playable build, reduce
++density through the spawners' own count fields in a separate data layer or config. Do not delete
++spawners. After any density change, re-run the preservation diagnostic.
++
++## Profiling procedure
++
++1. Use a fixed spot and fixed time of day, with the same preset and PIE in a standalone window (or a
++   Development build, which is more representative).
++2. `cr_perf_presets.py --emit profile` gives `stat unit`, `stat gpu`, `stat streaming`, `stat memory`
++   and `memreport -full`. Record Game/Draw/GPU ms, the GPU top passes (Lumen, VSM, Nanite, TSR) and
++   streaming over-budget.
++3. Drive the same 2-minute route and capture with Unreal Insights (`-trace=cpu,gpu,frame,memory`)
++   to find hitches: WP cell loads, shader compiles, Mass spawning.
++4. Write results to this file: GPU model, VRAM, driver, preset, ms per frame and the top three costs.
++   Only then choose the default preset.
+-- 
+2.43.0
+
