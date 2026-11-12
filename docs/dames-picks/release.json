@@ -1,16 +1,16 @@
 {
-  "release_id": "dp-injury-baseline-20261111-r13",
+  "release_id": "dp-opponent-fallback-20261111-r14",
   "ui": "hit-estimate",
   "expected_labels": [
     "HIT EST.",
     "Hit est."
   ],
-  "note": "Show opponent-aware baseline model estimates when teammate injury effects are unmeasurable; clearly withhold numeric hit confidence rather than invent injury adjustments. Confirmed OUT players stay suppressed. Live standard-line archive remains visible.",
+  "note": "Explicit neutral opponent-defense feature fallback when verified current-season opponent sample is unavailable. This is a baseline estimate, not validated defensive adjustment or calibrated hit probability. Locked pregame line and injury safeguards remain unchanged.",
   "asset_blob_sha1": {
-    "feeds.js": "1501ec29878c608cc0f880bc1ef8eaaab54b5f69",
-    "live_direct.js": "f7605ac218fcdaf8eb0f7bbb051b441f5ec281c5",
-    "dames_take.js": "8cd44ffad36f3bce79cff832213bf34d06aae64a",
-    "index.html": "0a64af1f62b02a95e5fc9b06e7d1d5a3af35c0be"
+    "feeds.js": "0a10963a47bc73917e1da87c67342b24f674d054",
+    "live_direct.js": "4fb75218a7c28191352f232429130189838fc730",
+    "dames_take.js": "b5468ddc3b6749b731048acfec0d3905d7a07ace",
+    "index.html": "b0a805ab37b81e78cba4d12107e7681babd61b17"
   },
-  "runtime_bundle_id": "dp-injury-baseline-20261111-r13"
+  "runtime_bundle_id": "dp-opponent-fallback-20261111-r14"
 }

@@ -72,7 +72,8 @@ def resolve_current_roster_identity(player, game, roster, latest_team):
     return (pid,team,sides[0] if sides[1]==team else sides[1]),None
 
 def feature_vector(history,team,opponent,day,team_context):
-    common,reason=build_features(history,team,opponent,day,team_context)
+    common,reason=build_features(history,team,opponent,day,team_context,
+                                 neutral_defense_on_missing=True)
     if reason:return None,reason
     recent=sorted((r for r in history if r.get("team")==team and r.get("date","")<day),
                   key=lambda x:x["date"])
@@ -143,6 +144,7 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
     latest_team={pid:team for pid,(_,team) in latest_by_id.items()}
     defense=build_team_games(records,season="2026-27")
     cache={}
+    feature_flags={}
     predictions=[]
     for item in selected:
         identity,reason=resolve_current_roster_identity(
@@ -159,6 +161,7 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
             vec,reason=feature_vector(by_id[pid],team,opponent,day,defense)
             if reason:cache[key]=(None,reason)
             else:
+                feature_flags[key]={"opponent_context_unavailable":vec.get("opponent_context_unavailable",False)}
                 x=np.array([[vec[k] for k in FEATURES]],dtype=float)
                 xp=np.array([[vec[k] for k in COLS]],dtype=float)
                 model=pack["models"]
@@ -193,7 +196,10 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
          "estimated_hit_chance":simulation,
          "injury_reprojection_status":injury["status"],
          "injury_context":injury,
-         "injury_uncertainty_unresolved":injury["status"]=="BASELINE_WITH_UNRESOLVED_INJURY",
+         "opponent_context_unavailable":bool((feature_flags.get(key) or {}).get("opponent_context_unavailable")),
+        "injury_uncertainty_unresolved":injury["status"]=="BASELINE_WITH_UNRESOLVED_INJURY",
+         "opponent_adjustment_verified":not bool((feature_flags.get(key) or {}).get("opponent_context_unavailable")),
+         "prediction_quality":"NEUTRAL_OPPONENT_CONTEXT_FALLBACK" if (feature_flags.get(key) or {}).get("opponent_context_unavailable") else "VERIFIED_PRIOR_OPPONENT_CONTEXT",
          "injury_adjustment_verified":injury["status"]!="BASELINE_WITH_UNRESOLVED_INJURY",
          "calibrated_probability":None,
          "source_prior_games":sum(r["date"]<day and r["team"]==team for r in by_id[pid]),

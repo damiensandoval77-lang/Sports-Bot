@@ -93,9 +93,10 @@ function nba(ledger,form){
    sport:"NBA",playerId:p.player_id,player:p.player,team:p.team,opponent:p.opponent,
    position:"",game:p.game,gameId:p.game,start:p.start,stat:p.stat,source:"PrizePicks",
    line:n(p.line),projection:n(p.projection),direction:c.modeled_direction==="More"?"MORE":"LESS",
-   chance:!p.injury_uncertainty_unresolved&&prob>=0&&prob<=1?prob:null,
-   chanceSource:p.injury_uncertainty_unresolved?"Baseline projection only; injury impact unresolved; hit confidence withheld":"Frozen new-AI model vs original standard line; residual uncertainty; uncalibrated",
+   chance:!p.injury_uncertainty_unresolved&&!p.opponent_context_unavailable&&prob>=0&&prob<=1?prob:null,
+   chanceSource:p.opponent_context_unavailable?"Baseline projection only; opponent defensive sample unavailable; hit confidence withheld":p.injury_uncertainty_unresolved?"Baseline projection only; injury impact unresolved; hit confidence withheld":"Frozen new-AI model vs original standard line; residual uncertainty; uncalibrated",
    injuryUncertainty:p.injury_uncertainty_unresolved===true,
+   opponentContextUnavailable:p.opponent_context_unavailable===true,
    chanceMethod:c.method,chanceDraws:c.draws,chanceCalibrated:c.calibrated,
    opponentAwareVerified:false,
    matchupEstimate:p.matchup_hit_estimate||null,
@@ -629,4 +630,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-injury-baseline-20261111-r13";
+globalThis.__damesRunningAssets["feeds.js"]="dp-opponent-fallback-20261111-r14";
