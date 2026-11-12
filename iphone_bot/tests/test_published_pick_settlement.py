@@ -65,6 +65,15 @@ class PublishedCaptureSettlementTests(unittest.TestCase):
      "direction_hit":True,"estimated_hit_chance":{"modeled_direction":"More"}}
   r=evaluate(ledger(p),finals(fin()),NOW)
   self.assertIn("INCORRECT_STANDARD_LINE_DIRECTION_GRADE",r["issues"])
+ def test_exact_line_push_requires_no_win_or_loss(self):
+  p={**BASE,"line":23,"grade":"GRADED","source_game_id":"0022600123",
+     "final_source":"NBA_CDN_FINAL","actual":23,"absolute_error":2.5,
+     "direction_hit":None,"estimated_hit_chance":{"modeled_direction":"More"}}
+  r=evaluate(ledger(p),finals(fin()),NOW)
+  self.assertTrue(r["reconciled"])
+  p["direction_hit"]=False
+  r=evaluate(ledger(p),finals(fin()),NOW)
+  self.assertIn("PUSH_RECORDED_AS_WIN_OR_LOSS",r["issues"])
  def test_reject_duplicate_saved_pick_versions(self):
   r=evaluate(ledger(BASE,BASE),finals(),NOW.replace(hour=2))
   self.assertIn("INVALID_OR_DUPLICATE_FROZEN_PICK",r["issues"])
