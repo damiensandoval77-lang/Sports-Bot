@@ -14,7 +14,7 @@ def get_bytes(path):
     with urllib.request.urlopen(req,timeout=30) as r:return r.read()
 def get(path):return json.loads(get_bytes(path))
 def git_blob_sha(data):
-    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 def stamp(raw):
     value=dt.datetime.fromisoformat(str(raw).replace("Z","+00:00"))
     return value if value.tzinfo else value.replace(tzinfo=dt.timezone.utc)
