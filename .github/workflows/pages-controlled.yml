@@ -31,7 +31,20 @@ concurrency:
   group: sports-bot-pages-stable
   cancel-in-progress: false
 jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify Pages source-mode release checker offline
+        run: |
+          python -m py_compile scripts/verify_legacy_pages_release.py
+          python -m unittest discover -s tests -p 'test_verify_legacy_pages_release.py' -v
   deploy:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment:
