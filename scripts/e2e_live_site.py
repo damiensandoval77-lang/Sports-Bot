@@ -82,7 +82,9 @@ def main():
                     detail_ok=page.locator("#detail").is_visible() and bool(page.locator("#player").inner_text().strip())
                     page.locator("#back").click()
                     detail_ok=detail_ok and page.locator("#board").is_visible()
-                page.screenshot(path=str(OUT/f"iphone-{engine}-deployed.png"),full_page=True)
+                # A long board can exceed WebKit's 32,767px screenshot limit.
+                # Capture the actual iPhone viewport, not the entire scroll height.
+                page.screenshot(path=str(OUT/f"iphone-{engine}-deployed.png"),full_page=False)
                 browser_evidence[engine]={"running":running,"coverage":coverage,
                   "cards":cards,"javascript_errors":errors[:8],
                   "horizontal_overflow":overflow,"card_detail_navigation":detail_ok}
@@ -102,14 +104,14 @@ def main():
               evidence.get("horizontal_overflow") is False,
               evidence.get("horizontal_overflow",evidence.get("error")))
         check(engine+"_player_card_opens_and_returns",
-              evidence.get("card_detail_navigation") is not False,
+              not evidence.get("error") and evidence.get("card_detail_navigation") is not False,
               {"cards":evidence.get("cards"),"detail_ok":evidence.get("card_detail_navigation")})
         check(engine+"_board_or_honest_empty_state",
               (evidence.get("cards",0)>0 or not nearby or bool(missing))
                 and not evidence.get("error"),
               {"cards":evidence.get("cards"),"nearby_games":len(nearby)})
         check(engine+"_missing_games_disclosed",
-              not missing or bool((evidence.get("coverage") or {}).get("visible")),
+              not evidence.get("error") and (not missing or bool((evidence.get("coverage") or {}).get("visible"))),
               evidence.get("coverage") or evidence.get("error"))
     check("near_tip_saved_picks",not [g for g in missing if g["minutes_to_tip"]<=60],missing)
     report["overall"]="FAIL" if any(c["status"]=="FAIL" for c in report["checks"]) else "PASS"
