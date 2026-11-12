@@ -816,3 +816,13 @@ test("Board footer contains only actual OVER UNDER historical split, no frozen s
  assert.ok(page.includes('.hs-over{color:var(--lime)}'));
  assert.ok(page.includes('.hs-under{color:var(--pink)}'));
 });
+
+test("Visible direction labels use Over/Under without mutating stored provider direction",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const fn=html.match(/function directionLabel\(value\)\{[^}]+\}/)[0];
+ const c={};vm.createContext(c);vm.runInContext(fn,c);
+ assert.equal(c.directionLabel("MORE"),"OVER");assert.equal(c.directionLabel("LESS"),"UNDER");
+ assert.equal(c.directionLabel(null),null);
+ assert(!html.includes('escapeText(p.direction||"PASS")'));
+ assert(!html.includes('escapeText(p.direction||"NO AI")'));
+});
