@@ -49,6 +49,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify immutable pretip forecast and final-matchup integrity
+        # Run pure contract tests only during PRs; scheduled grading needs the
+        # actual validated source/ledger checks, not stale source-text tests.
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_research_ledger.py' -v
           python -m py_compile iphone_bot/prizepicks_research_ledger.py
