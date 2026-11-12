@@ -30,6 +30,19 @@ def dataset():
 def audit(data=None,checked_at=NOW):
     return reconcile(*(data or dataset()),game_date=DAY,checked_at=checked_at)
 class ReconciliationTests(unittest.TestCase):
+    def test_historical_report_rebuild_does_not_create_forecasts_or_grades(self):
+        from datetime import datetime, timezone
+        from iphone_bot.reconcile_grading_production import historical_status
+        data=dataset(); before=copy.deepcopy(data)
+        summary=historical_status(DAY,data[0],data[1],datetime(2026,11,12,tzinfo=timezone.utc))
+        self.assertEqual(summary["recorded_pregame_forecasts"],1)
+        self.assertEqual(summary["graded"],1)
+        self.assertEqual(summary["new_grades"],0)
+        self.assertEqual(data,before)
+        missing=historical_status(DAY,data[0],{"records":[]},datetime(2026,11,12,tzinfo=timezone.utc))
+        self.assertEqual(missing["ungraded"],1)
+        self.assertEqual(missing["graded"],0)
+
     def test_grader_nonparticipation_reason_field_is_recognized(self):
         from iphone_bot.reconcile_grading_production import observed_final
         row={"status":"EXCLUDED_VERIFIED_NONPARTICIPANT",
