@@ -60,7 +60,9 @@ class FinalBoxscoreTests(unittest.TestCase):
             self.assertEqual(settle(locked,[{**row,**changed}],
                 "2026-11-13T07:00:00Z")[0]["status"],"PENDING")
         self.assertEqual(settle(locked,[row,row],
-            "2026-11-13T07:00:00Z")[0]["status"],"SETTLED")\n        self.assertEqual(settle(locked,[row,{**row,"AST":5}],\n            "2026-11-13T07:00:00Z")[0]["status"],"PENDING")
+            "2026-11-13T07:00:00Z")[0]["status"],"SETTLED")
+        self.assertEqual(settle(locked,[row,{**row,"AST":5}],
+            "2026-11-13T07:00:00Z")[0]["status"],"PENDING")
 
     def test_minutes_and_invalid_players_excluded(self):
         self.assertEqual(minutes("PT23M30S"),23.5)
