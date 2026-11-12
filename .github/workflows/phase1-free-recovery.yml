@@ -1,6 +1,12 @@
 name: Phase 1 credit-free source recovery coordinator
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "iphone_bot/phase1_free_recovery.py"
+      - "iphone_bot/tests/test_phase1_free_recovery.py"
+      - ".github/workflows/phase1-free-recovery.yml"
   schedule:
     - cron: '17,47 * * * *'
   pull_request:
