@@ -803,3 +803,15 @@ test("CSV-only complete history forecasts show a projection with unsupported hit
  assert.equal(got[0].singleSourceHistory,true);
  assert.match(got[0].chanceSource,/not independently confirmed/);
 });
+
+test("Short observed-history baseline shows a real projection, but no claimed hit probability",()=>{
+ const row={...pt,history_baseline_only:true,sparse_history_games:4,
+            prediction_quality:"SPARSE_OBSERVED_HISTORY_BASELINE_NO_VALIDATED_HIT_RATE"};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[row]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].sparseHistoryBaseline,true);
+ assert.equal(got[0].sparseHistoryGames,4);
+ assert.match(got[0].chanceSource,/provisional projection only/);
+});
