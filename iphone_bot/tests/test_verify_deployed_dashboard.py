@@ -4,7 +4,7 @@ import unittest
 from iphone_bot.verify_deployed_dashboard import evaluate, run
 
 NOW=dt.datetime(2026,11,9,18,0,tzinfo=dt.timezone.utc)
-HTML='<div id="ai-board"></div> fetchJSON("ai_prizepicks_quick_join.json") verifiedPublishedPrizePicksJoins('
+HTML='<div id="cards"></div><script src="feeds.js?bundle=r17"></script> m.nba('
 HEALTH={"status":"FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS",
         "generated_at":"2026-11-09T17:50:00+00:00",
         "provider_generated_at":"2026-11-09T17:45:00+00:00",
@@ -13,7 +13,7 @@ HEALTH={"status":"FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS",
 
 class PublicDeploymentCanaryTests(unittest.TestCase):
     def test_valid_public_page_and_fresh_complete_data(self):
-        responses={"https://example.github.io/Sports-Bot/":HTML,
+        responses={"https://example.github.io/Sports-Bot/dames-picks/":HTML,
                    "https://example.github.io/Sports-Bot/ai_prizepicks_quick_join_health.json":json.dumps(HEALTH)}
         result=run("https://example.github.io/Sports-Bot/",NOW,request=responses.__getitem__)
         self.assertEqual(result["status"],"READY")

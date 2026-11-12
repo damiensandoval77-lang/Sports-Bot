@@ -9,7 +9,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 URL="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
-RELEASE="dp-matchup-calibration-20261111-r7"
+RELEASE=json.loads((Path(__file__).resolve().parents[1]/"docs/dames-picks/release.json").read_text())["release_id"]
 
 def verify():
     with sync_playwright() as p:

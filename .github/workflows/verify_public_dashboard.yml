@@ -4,6 +4,12 @@ on:
   schedule:
     # Independent check even when site publisher misses a dispatch.
     - cron: '15,45 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/verify_deployed_dashboard.py'
+      - 'iphone_bot/tests/test_verify_deployed_dashboard.py'
+      - '.github/workflows/verify_public_dashboard.yml'
   pull_request:
     paths:
       - 'iphone_bot/verify_deployed_dashboard.py'
