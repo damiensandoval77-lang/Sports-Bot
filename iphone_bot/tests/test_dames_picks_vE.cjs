@@ -771,3 +771,15 @@ test("Live game detail includes real archived standard quotes even when no AI pi
   assert.ok(archive.quotes.some(q=>q.game===game&&q.tier==="standard"&&Date.parse(q.observed_at)<Date.parse(q.starts_at)),game);
  }
 });
+
+test("Unresolved injury baseline shows AI projection but does not claim an actionable hit confidence",()=>{
+ const baseline={...pt,injury_uncertainty_unresolved:true,
+   injury_reprojection_status:"BASELINE_WITH_UNRESOLVED_INJURY"};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[baseline]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].line,28.5);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].injuryUncertainty,true);
+ assert.match(got[0].chanceSource,/injury impact unresolved/);
+});

@@ -193,6 +193,8 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
          "estimated_hit_chance":simulation,
          "injury_reprojection_status":injury["status"],
          "injury_context":injury,
+         "injury_uncertainty_unresolved":injury["status"]=="BASELINE_WITH_UNRESOLVED_INJURY",
+         "injury_adjustment_verified":injury["status"]!="BASELINE_WITH_UNRESOLVED_INJURY",
          "calibrated_probability":None,
          "source_prior_games":sum(r["date"]<day and r["team"]==team for r in by_id[pid]),
          "research_only":True,"production_replaced":False})
