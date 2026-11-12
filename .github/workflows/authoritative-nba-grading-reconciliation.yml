@@ -91,7 +91,7 @@ jobs:
           Path("docs/production_grading_reconciliation.json").write_bytes(
               Path("docs/production_grading_reconciliation_"+yesterday+".json").read_bytes())
           PY
-            git add docs/production_grading_reconciliation*.json
+            git add docs/production_grading_reconciliation*.json docs/ai_forecast_grade_status_*.json
             if git diff --cached --quiet; then break; fi
             git commit -m 'Publish independent NBA grading reconciliations including blockers'
             if git push origin HEAD:main; then break; fi

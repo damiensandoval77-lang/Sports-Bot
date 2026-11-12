@@ -20,7 +20,7 @@ VALID_MARKETS = frozenset(("PTS", "REB", "AST", "PRA"))
 FINAL_SOURCES = frozenset(("NBA_CDN_FINAL", "ESPN_FINAL"))
 DNP_SOURCES = frozenset(("NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
                          "VERIFIED_FINAL_BOXSCORE_DNP_CROSSCHECKED",
-                         "ESPN_FINAL_BOX_ABSENT_INJURY_LISTED"))
+                         "ESPN_FINAL_BOX_ABSENT_INJURY_LISTED")) | FINAL_SOURCES
 EXCLUSION_SOURCES = DNP_SOURCES | frozenset(("NBA_OFFICIAL_PRETIP_TRADE_CROSSCHECKED",))
 NO_LINE_FINAL_STATES = frozenset(("GRADED", "EXCLUDED_VERIFIED_DNP",
                                   "EXCLUDED_VERIFIED_NONPARTICIPANT"))
@@ -70,7 +70,8 @@ def observed_final(row):
     if status == "EXCLUDED_VERIFIED_NONPARTICIPANT":
         return (source in EXCLUSION_SOURCES and bool(row.get("source_game_id"))
                 and bool(row.get("verified_dnp_reason") or row.get("verified_transfer_reason") or
-                         row.get("verified_nonparticipant_reason")))
+                         row.get("verified_nonparticipant_reason") or row.get("verified_nonparticipation_reason"))
+                and row.get("actual") is None)
     return False
 
 def name_key(raw):
@@ -354,6 +355,18 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
         "notice":"A clean job is not a complete grading night. Missing final player rows remain pending, never losses or inferred DNPs. Each original standard line is a separate quote."
     }
 
+def historical_status(day, archive, actuals, now):
+    """Rebuild a dated summary from original captures and retained final records.
+
+    This produces a report now, never a new pretip forecast or settlement.
+    The independent reconcile() checks its counts and every final's provenance.
+    """
+    from iphone_bot.grade_frozen_ai_forecasts import report
+    result=report(day,archive.get("predictions",[]),
+                  {"records":actuals.get("records",[]),"new_grades":0},now=now)
+    result["report_provenance"]="RECOMPUTED_FROM_ORIGINAL_CAPTURE_AND_FINAL_LEDGERS"
+    return result
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--date",required=True,help="Eastern game date YYYY-MM-DD")
@@ -362,10 +375,16 @@ def main():
     args=p.parse_args()
     def read(path):
         return json.loads((ROOT/path).read_text())
-    result=reconcile(read("docs/ai_no_line_pregame_archive.json"),
-        read("docs/ai_forecast_actual_ledger.json"),
+    archive=read("docs/ai_no_line_pregame_archive.json")
+    actuals=read("docs/ai_forecast_actual_ledger.json")
+    ai_status=read("docs/ai_forecast_grade_status.json")
+    now=datetime.now(timezone.utc)
+    if args.date < (now.astimezone(ET).date()-timedelta(days=1)).isoformat() and ai_status.get("game_date_eastern")!=args.date:
+        ai_status=historical_status(args.date,archive,actuals,now)
+        (ROOT/("docs/ai_forecast_grade_status_"+args.date+".json")).write_text(json.dumps(ai_status,indent=2)+"\n")
+    result=reconcile(archive, actuals,
         read("docs/lagged_matchup_all_market_ledger.json"),
-        read("docs/ai_forecast_grade_status.json"),
+        ai_status,
         read("docs/dames-picks/published_pick_settlement.json"),
         final_cache=read("docs/verified_final_player_cache.json"),
         game_date=args.date,checked_at=datetime.now(timezone.utc).isoformat())

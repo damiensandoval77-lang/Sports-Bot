@@ -30,6 +30,41 @@ def dataset():
 def audit(data=None,checked_at=NOW):
     return reconcile(*(data or dataset()),game_date=DAY,checked_at=checked_at)
 class ReconciliationTests(unittest.TestCase):
+    def test_historical_report_rebuild_does_not_create_forecasts_or_grades(self):
+        from datetime import datetime, timezone
+        from iphone_bot.reconcile_grading_production import historical_status
+        data=dataset(); before=copy.deepcopy(data)
+        summary=historical_status(DAY,data[0],data[1],datetime(2026,11,12,tzinfo=timezone.utc))
+        self.assertEqual(summary["recorded_pregame_forecasts"],1)
+        self.assertEqual(summary["graded"],1)
+        self.assertEqual(summary["new_grades"],0)
+        self.assertEqual(data,before)
+        missing=historical_status(DAY,data[0],{"records":[]},datetime(2026,11,12,tzinfo=timezone.utc))
+        self.assertEqual(missing["ungraded"],1)
+        self.assertEqual(missing["graded"],0)
+
+    def test_grader_nonparticipation_reason_field_is_recognized(self):
+        from iphone_bot.reconcile_grading_production import observed_final
+        row={"status":"EXCLUDED_VERIFIED_NONPARTICIPANT",
+             "final_source":"NBA_OFFICIAL_PRETIP_TRADE_CROSSCHECKED",
+             "source_game_id":"0022600215","actual":None,
+             "verified_nonparticipation_reason":"VERIFIED_PRETIP_TRADE_NOT_AVAILABLE_FOR_ORIGINAL_TEAM"}
+        self.assertTrue(observed_final(row))
+        self.assertFalse(observed_final({**row,"actual":0}))
+        self.assertFalse(observed_final({**row,"verified_nonparticipation_reason":None}))
+
+    def test_explicit_provider_final_dnp_is_valid_but_absence_or_zero_is_not(self):
+        from iphone_bot.reconcile_grading_production import observed_final
+        for source in ("ESPN_FINAL", "NBA_CDN_FINAL"):
+            row={"status":"EXCLUDED_VERIFIED_DNP","final_source":source,
+                 "source_game_id":"401909968","verified_dnp_reason":"COACH'S DECISION",
+                 "actual":None}
+            self.assertTrue(observed_final(row))
+            self.assertFalse(observed_final({**row,"actual":0}))
+            self.assertFalse(observed_final({**row,"verified_dnp_reason":None}))
+            self.assertFalse(observed_final({**row,"source_game_id":None}))
+            self.assertFalse(observed_final({**row,"final_source":"UNVERIFIED"}))
+
     def test_one_date_two_ledgers_are_independent_and_reconciled(self):
         out=audit()
         self.assertEqual(out["status"],"READY")
