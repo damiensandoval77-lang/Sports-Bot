@@ -231,7 +231,7 @@ class ProvisionalTests(unittest.TestCase):
         self.assertIn("primary=read('docs/lagged_matchup_all_market_ledger.json')",module)
         self.assertEqual(module.count('write_text('),1)
         workflow=(root/'.github/workflows/nba-new-ai-all-markets.yml').read_text()
-        job=workflow.split('  provisional-baseline:',1)[1]
+        job=workflow.split('  provisional-baseline:',1)[1].split('\n  short-history-research:',1)[0]
         self.assertIn('needs: [multi-market]',job)
         self.assertIn('if: always() && !cancelled()',job)
         self.assertIn('git add docs/provisional_short_history.json',job)

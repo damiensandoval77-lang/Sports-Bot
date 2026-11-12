@@ -435,7 +435,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install pinned isolated research model dependencies
-        run: pip install numpy==2.3.5 scikit-learn==1.8.0 pandas==2.2.3 pyarrow==26.0.1 joblib==1.5.3 requests
+        run: pip install numpy==2.3.5 scikit-learn==1.8.0 pandas==2.2.3 pyarrow==26.0.1 joblib==1.5.3 requests PyYAML==6.0.3
       - name: Test chronological cohort and fail-closed inference
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_short_history_workflow.py' -v
