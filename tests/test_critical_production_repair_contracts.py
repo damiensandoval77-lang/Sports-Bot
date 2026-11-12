@@ -46,8 +46,13 @@ class CriticalProductionRepairContracts(unittest.TestCase):
 
     def test_new_market_snapshot_invalidates_old_successful_model(self):
         text=(WORK/"nba-prizepicks-site-publish.yml").read_text()
-        self.assertIn("latest_source_epoch",text)
-        self.assertIn('(.createdAt | fromdateiso8601) >= $source',text)
+        self.assertIn("python -m iphone_bot.model_dispatch_recovery --source docs/prizepicks_model_input.json",text)
+        from iphone_bot.model_dispatch_recovery import covering_runs
+        import datetime as dt
+        now=dt.datetime(2026,11,12,23,0,tzinfo=dt.timezone.utc)
+        prior_success={"headBranch":"main","status":"completed","conclusion":"success",
+                       "createdAt":"2026-11-12T22:40:00Z"}
+        self.assertFalse(covering_runs([prior_success],"2026-11-12T22:50:00Z",now))
         self.assertNotIn("python -u iphone_bot/fetch_prizepicks.py",text)
 
     def test_legacy_pages_mode_is_verified_not_mutated(self):
