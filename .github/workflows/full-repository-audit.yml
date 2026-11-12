@@ -132,6 +132,11 @@ jobs:
           STATIC_RESULT: ${{ needs.static-audit.result }}
           BRANCH_RESULT: ${{ needs.branch-inventory.result }}
         run: |
+          if [[ "$(gh api "repos/$GH_REPO" --jq .has_issues 2>/dev/null || echo false)" != "true" ]]; then
+            echo "::warning::GitHub Issues are disabled. Audit failure remains red and is preserved in workflow summary/artifacts."
+            echo "- Incident ticket unavailable: GitHub Issues disabled. Use run URL $RUN_LINK and uploaded audit summary." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           title="Automated full repository audit failure"
           message="Audit run: $RUN_LINK
           Static source/workflow audit: $STATIC_RESULT
