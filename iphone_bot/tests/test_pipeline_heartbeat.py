@@ -114,6 +114,32 @@ class Heartbeat(unittest.TestCase):
         report=evaluate(NOW,s)
         self.assertEqual(stage(report,"live_players")["status"],"FAIL")
 
+    def test_fresh_feed_wrapper_does_not_hide_old_retained_live_game(self):
+        s=site(start=time(minutes=-75))
+        s["nba_scoreboard_independent.json"]={
+            "generated_at":time(minutes=-3),
+            "games":[{"game":GAME,"game_state":"in"}]}
+        s["nba_player_tracking_independent.json"]={
+            "captured_at":time(minutes=-3),
+            "status":"PARTIAL_NBA_PLAYER_BOXSCORES",
+            "games":[{"game":GAME,"observed_at":time(minutes=-48),
+                      "player_rows":[{"player":"A","PTS":12}]}]}
+        row=stage(evaluate(NOW,s),"live_players")
+        self.assertEqual(row["status"],"FAIL")
+        self.assertIn(GAME,row["evidence"]["stale_game_observations"])
+
+    def test_new_per_game_live_observation_can_satisfy_live_coverage(self):
+        s=site(start=time(minutes=-75))
+        s["nba_scoreboard_independent.json"]={
+            "generated_at":time(minutes=-3),
+            "games":[{"game":GAME,"game_state":"in"}]}
+        s["nba_player_tracking_independent.json"]={
+            "captured_at":time(minutes=-3),
+            "games":[{"game":GAME,"observed_at":time(minutes=-3),
+                      "player_rows":[{"player":"A","PTS":12}]}]}
+        row=stage(evaluate(NOW,s,espn={"events":[]}),"live_players")
+        self.assertEqual(row["status"],"OK")
+
     def test_missing_schedule_fails_even_when_no_markets_expected(self):
         self.assertEqual(stage(evaluate(NOW,{}),"schedule")["status"],"FAIL")
 
