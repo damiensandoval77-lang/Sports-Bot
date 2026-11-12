@@ -53,23 +53,65 @@ def main():
         except Exception as error:
             asset_evidence[name]={"expected":expected_sha,"error":str(error),"exact_match":False}
     check("every_deployed_asset_matches_exact_repository_blob",bool(asset_evidence) and all(v["exact_match"] for v in asset_evidence.values()),asset_evidence)
+    browser_evidence={}
     with sync_playwright() as browser_tool:
-        browser=browser_tool.chromium.launch(headless=True,args=["--no-sandbox"])
-        page=browser.new_page(viewport={"width":390,"height":844},device_scale_factor=3,is_mobile=True,has_touch=True)
-        errors=[]
-        page.on("pageerror",lambda error:errors.append(str(error)))
-        page.goto(f"{BASE}/dames-picks/?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
-        page.wait_for_timeout(5000)
-        running=page.evaluate("globalThis.__damesRunningAssets || {}")
-        coverage=page.evaluate("(()=>{const x=document.querySelector('#coverage');return {visible:!!x&&!x.hidden&&!!x.textContent,text:x?.textContent||''}})()")
-        cards=page.locator("button.pick").count()
-        page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=True)
-        browser.close()
-    check("executing_assets_match_repository_release",bool(running) and all(running.get(name)==expected_release for name in ("feeds.js","live_direct.js","dames_take.js")),running)
-    check("no_browser_javascript_exceptions",not errors,errors[:8])
-    check("board_cards_or_honest_empty_state",cards>0 or not nearby or bool(missing),{"cards":cards,"nearby_games":len(nearby)})
+        # Both mobile Chromium and mobile-size WebKit (Safari rendering engine)
+        # are checked. These are emulations, not a physical iPhone device.
+        for engine in ("chromium","webkit"):
+            browser=None
+            try:
+                browser=getattr(browser_tool,engine).launch(
+                    headless=True,args=["--no-sandbox"] if engine=="chromium" else [])
+                page=browser.new_page(viewport={"width":390,"height":844},
+                    device_scale_factor=3,is_mobile=True,has_touch=True)
+                errors=[]
+                page.on("pageerror",lambda error:errors.append(str(error)))
+                page.goto(f"{BASE}/dames-picks/?e2e={int(now.timestamp())}",
+                    wait_until="domcontentloaded",timeout=60000)
+                page.wait_for_timeout(5000)
+                running=page.evaluate("globalThis.__damesRunningAssets || {}")
+                coverage=page.evaluate("""(()=>{
+                  const x=document.querySelector('#coverage');
+                  return {visible:!!x&&!x.hidden&&!!x.textContent,
+                          text:x?.textContent||''}})()""")
+                cards=page.locator("button.pick").count()
+                overflow=page.evaluate("document.documentElement.scrollWidth > window.innerWidth+2")
+                detail_ok=None
+                if cards:
+                    page.locator("button.pick").first.click()
+                    detail_ok=page.locator("#detail").is_visible() and bool(page.locator("#player").inner_text().strip())
+                    page.locator("#back").click()
+                    detail_ok=detail_ok and page.locator("#board").is_visible()
+                page.screenshot(path=str(OUT/f"iphone-{engine}-deployed.png"),full_page=True)
+                browser_evidence[engine]={"running":running,"coverage":coverage,
+                  "cards":cards,"javascript_errors":errors[:8],
+                  "horizontal_overflow":overflow,"card_detail_navigation":detail_ok}
+            except Exception as error:
+                browser_evidence[engine]={"error":str(error)}
+            finally:
+                if browser:browser.close()
+    for engine,evidence in browser_evidence.items():
+        running=evidence.get("running") or {}
+        check(engine+"_executing_assets_match_release",
+            bool(running) and all(running.get(name)==expected_release
+            for name in ("feeds.js","live_direct.js","dames_take.js")),running)
+        check(engine+"_no_javascript_exceptions",not evidence.get("error")
+              and not evidence.get("javascript_errors"),
+              evidence.get("javascript_errors") or evidence.get("error"))
+        check(engine+"_iPhone_390px_no_horizontal_overflow",
+              evidence.get("horizontal_overflow") is False,
+              evidence.get("horizontal_overflow",evidence.get("error")))
+        check(engine+"_player_card_opens_and_returns",
+              evidence.get("card_detail_navigation") is not False,
+              {"cards":evidence.get("cards"),"detail_ok":evidence.get("card_detail_navigation")})
+        check(engine+"_board_or_honest_empty_state",
+              (evidence.get("cards",0)>0 or not nearby or bool(missing))
+                and not evidence.get("error"),
+              {"cards":evidence.get("cards"),"nearby_games":len(nearby)})
+        check(engine+"_missing_games_disclosed",
+              not missing or bool((evidence.get("coverage") or {}).get("visible")),
+              evidence.get("coverage") or evidence.get("error"))
     check("near_tip_saved_picks",not [g for g in missing if g["minutes_to_tip"]<=60],missing)
-    check("missing_games_disclosed",not missing or coverage["visible"],coverage)
     report["overall"]="FAIL" if any(c["status"]=="FAIL" for c in report["checks"]) else "PASS"
     (OUT/"iphone-deployed.json").write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report,indent=2))
