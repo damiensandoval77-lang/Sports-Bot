@@ -67,9 +67,13 @@ def main():
           document.querySelectorAll('button.pick')).map(card => {
             const footer=card.querySelector('.over-under-footer');
             const text=footer?.textContent?.replace(/\\s+/g,' ').trim() || null;
+            const spans=Array.from(footer?.querySelectorAll('span') || [])
+              .map(x => x.textContent.trim());
             return {player:card.querySelector('.name')?.textContent?.trim() || '',
-                    footer:text, has_dots:!!card.querySelector('.dots'),
-                    is_exact_split:/^(?:\\d+|—) OVER (?:\\d+|—) UNDER$/.test(text||'')};
+                    footer:text, spans, has_dots:!!card.querySelector('.dots'),
+                    is_exact_split:spans.length===2 &&
+                      /^(?:\\d+|—) OVER$/.test(spans[0]) &&
+                      /^(?:\\d+|—) UNDER$/.test(spans[1])};
           })""")
         page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=True)
         browser.close()
