@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-12T03:53:21.976600+00:00",
+  "checked_at": "2026-11-12T04:57:49.916979+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -29,9 +29,9 @@
     "nba_production": {
       "state": "DEGRADED",
       "issues": [
+        "MISSING_OR_STALE_REPORT",
         "NBA_PRODUCTION_NOT_READY",
-        "NBA_FAILED_SCOREBOARD",
-        "NBA_FAILED_LIVE_PLAYER_STATS",
+        "NBA_FAILED_PUBLIC_BROWSER",
         "NBA_FAILED_NIGHTLY_GRADES"
       ]
     },
@@ -43,7 +43,6 @@
       "state": "DEGRADED",
       "issues": [
         "HISTORICAL_AI_FORECASTS_UNRESOLVED",
-        "GRADING_INCOMPLETE:2026-11-10",
         "GRADING_INCOMPLETE:2026-11-11"
       ]
     },
