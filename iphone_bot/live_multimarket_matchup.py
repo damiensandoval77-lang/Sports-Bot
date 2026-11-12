@@ -259,6 +259,8 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
     if not predictions:raise RuntimeError("No verified multi-stat comparisons; preserve existing data")
     return {"status":"LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
       "generated_at":now.isoformat(),
+      "source_provider_generated_at":feed.get("source_generated_at"),
+      "source_model_input_generated_at":feed.get("updated_at"),
       "model":"LAGGED_MATCHUP_2022_24_THREE_MODELS_PRA_SUM",
       "market_line_policy":"STANDARD_ONLY_BOTH_SIDES_VERIFIED_NO_ALTERNATES",
       "probability_method":METHOD,"component_consistency":True,
