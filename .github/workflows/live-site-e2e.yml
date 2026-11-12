@@ -33,7 +33,7 @@ jobs:
       - name: Install browser dependencies
         run: |
           pip install playwright==1.48.0
-          python -m playwright install --with-deps chromium
+          python -m playwright install --with-deps chromium webkit
       - name: Verify real deployed iPhone-size page and published ledger
         id: verify
         run: |
