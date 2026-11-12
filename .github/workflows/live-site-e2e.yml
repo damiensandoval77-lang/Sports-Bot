@@ -4,6 +4,12 @@ on:
     paths:
       - 'scripts/e2e_live_site.py'
       - '.github/workflows/live-site-e2e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/dames-picks/**'
+      - 'scripts/e2e_live_site.py'
+      - '.github/workflows/live-site-e2e.yml'
   workflow_dispatch:
   schedule:
     - cron: '5,35 * * * *'
