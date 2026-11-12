@@ -37,10 +37,15 @@ def num(value):
         return v if v==v and abs(v)!=float("inf") else None
     except (ValueError,TypeError):return None
 
+def canonical_team(value):
+    value=str(value or "").upper()
+    return {"WSH":"WAS","JAC":"JAX","LA":"LAR"}.get(value,value)
+
 def parse_summary(payload,away,home):
+    away,home=canonical_team(away),canonical_team(home)
     players={}
     for side in (payload.get("boxscore") or {}).get("players",[]):
-        team=(side.get("team") or {}).get("abbreviation","").upper()
+        team=canonical_team((side.get("team") or {}).get("abbreviation"))
         if team not in (away,home):continue
         for statgroup in side.get("statistics",[]):
             group=str(statgroup.get("name","")).lower()
@@ -75,13 +80,13 @@ def parse_summary(payload,away,home):
 
 def parse_scoreboard(board,schedule):
     result={}
-    games={tuple(sorted((str(g["away"]).upper(),str(g["home"]).upper()))):g for g in schedule}
+    games={tuple(sorted((canonical_team(g["away"]),canonical_team(g["home"])))):g for g in schedule}
     for event in board.get("events",[]):
         contest=(event.get("competitions") or [{}])[0]
         sides=contest.get("competitors") or []
         teams={}
         for x in sides:
-            t=(x.get("team") or {}).get("abbreviation","").upper()
+            t=canonical_team((x.get("team") or {}).get("abbreviation"))
             if t:teams[x.get("homeAway")]=t
         away,home=teams.get("away"),teams.get("home")
         if not away or not home:continue
