@@ -434,7 +434,7 @@ test("Merged dashboard shows independently verified pick-settlement health, not 
  assert.ok(html.includes('NBA published picks awaiting verified settlement'));
  assert.ok(html.includes('provider standard markets withheld from AI picks'));
  assert.ok(!html.includes('errors.push("NBA capture incomplete")'));
- assert.ok(html.includes('Official DNP verified · void'));
+ assert.ok(html.includes('DNP · VOID')); // verified exclusion remains in the card badge, not the OVER/UNDER footer
 });
 
 
