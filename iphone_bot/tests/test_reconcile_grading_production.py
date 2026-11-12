@@ -30,6 +30,16 @@ def dataset():
 def audit(data=None,checked_at=NOW):
     return reconcile(*(data or dataset()),game_date=DAY,checked_at=checked_at)
 class ReconciliationTests(unittest.TestCase):
+    def test_grader_nonparticipation_reason_field_is_recognized(self):
+        from iphone_bot.reconcile_grading_production import observed_final
+        row={"status":"EXCLUDED_VERIFIED_NONPARTICIPANT",
+             "final_source":"NBA_OFFICIAL_PRETIP_TRADE_CROSSCHECKED",
+             "source_game_id":"0022600215","actual":None,
+             "verified_nonparticipation_reason":"VERIFIED_PRETIP_TRADE_NOT_AVAILABLE_FOR_ORIGINAL_TEAM"}
+        self.assertTrue(observed_final(row))
+        self.assertFalse(observed_final({**row,"actual":0}))
+        self.assertFalse(observed_final({**row,"verified_nonparticipation_reason":None}))
+
     def test_explicit_provider_final_dnp_is_valid_but_absence_or_zero_is_not(self):
         from iphone_bot.reconcile_grading_production import observed_final
         for source in ("ESPN_FINAL", "NBA_CDN_FINAL"):

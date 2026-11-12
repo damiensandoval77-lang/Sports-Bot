@@ -70,7 +70,8 @@ def observed_final(row):
     if status == "EXCLUDED_VERIFIED_NONPARTICIPANT":
         return (source in EXCLUSION_SOURCES and bool(row.get("source_game_id"))
                 and bool(row.get("verified_dnp_reason") or row.get("verified_transfer_reason") or
-                         row.get("verified_nonparticipant_reason")))
+                         row.get("verified_nonparticipant_reason") or row.get("verified_nonparticipation_reason"))
+                and row.get("actual") is None)
     return False
 
 def name_key(raw):
