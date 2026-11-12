@@ -1,6 +1,11 @@
 name: Pipeline heartbeat - deployed lines picks live and grades
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/pipeline_heartbeat.py'
+      - '.github/workflows/pipeline-heartbeat.yml'
   schedule:
     - cron: '*/10 * * * *'
   workflow_run:
