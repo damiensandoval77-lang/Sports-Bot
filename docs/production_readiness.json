@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-12T20:01:38.811735+00:00",
+  "checked_at": "2026-11-12T20:49:23.450458+00:00",
   "game_date_eastern": "2026-11-12",
   "status": "DEGRADED",
   "ready_for_trustworthy_picks": false,
@@ -13,31 +13,33 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 0.9
+      "age_minutes": 48.6
     },
     "season_calendar": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 164.1
+      "age_minutes": 211.9
     },
     "ai_forecasts": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 0.8
+      "age_minutes": 48.6
     },
     "prizepicks_lines": {
-      "state": "READY",
+      "state": "DEGRADED",
       "required": true,
-      "reasons": [],
-      "age_minutes": 38.2
+      "reasons": [
+        "STALE_SOURCE"
+      ],
+      "age_minutes": 86.0
     },
     "pregame_capture": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 6.0
+      "age_minutes": 21.7
     },
     "unmodeled_provider_market_coverage": {
       "state": "DEGRADED",
@@ -45,15 +47,13 @@
       "reasons": [
         "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
       ],
-      "age_minutes": 6.0
+      "age_minutes": 21.7
     },
     "published_pick_settlement": {
-      "state": "DEGRADED",
+      "state": "READY",
       "required": true,
-      "reasons": [
-        "PUBLISHED_FROZEN_PICKS_NOT_GRADEABLE"
-      ],
-      "age_minutes": 3.0
+      "reasons": [],
+      "age_minutes": 20.3
     },
     "published_pick_cards": {
       "state": "DEGRADED",
@@ -64,7 +64,7 @@
         "NO_PROVIDER_EVENTS_CHECKED",
         "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
       ],
-      "age_minutes": 6969.4
+      "age_minutes": 7017.2
     },
     "prizepicks_research_cards": {
       "state": "DEGRADED",
@@ -72,13 +72,13 @@
       "reasons": [
         "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT"
       ],
-      "age_minutes": 6.8
+      "age_minutes": 15.7
     },
     "public_browser": {
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 6.0
+      "age_minutes": 10.6
     },
     "scoreboard": {
       "state": "READY",
@@ -96,12 +96,12 @@
       "state": "READY",
       "required": true,
       "reasons": [],
-      "age_minutes": 22.5
+      "age_minutes": 16.8
     }
   },
   "blocking_components": [],
   "degraded_components": [
-    "published_pick_settlement"
+    "prizepicks_lines"
   ],
   "required_checks": 9,
   "passing_required_checks": 8,
