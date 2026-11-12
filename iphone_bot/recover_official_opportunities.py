@@ -7,9 +7,14 @@ the previous model history and explicitly report the coverage gap.
 """
 from collections import defaultdict
 from datetime import datetime,timezone
-from .fetch_final_boxscores import (NBA_SCHEDULE,NBA_SCHEDULE_ALT,NBA_BOX,
-    request_json,verified_schedule_ids,team,local_date,minutes,number)
-from .live_lagged_matchup_sidecar import stamp,ET
+try:
+    from .fetch_final_boxscores import (NBA_SCHEDULE,NBA_SCHEDULE_ALT,NBA_BOX,
+        request_json,verified_schedule_ids,team,local_date,minutes,number)
+    from .live_lagged_matchup_sidecar import stamp,ET
+except ImportError:
+    from fetch_final_boxscores import (NBA_SCHEDULE,NBA_SCHEDULE_ALT,NBA_BOX,
+        request_json,verified_schedule_ids,team,local_date,minutes,number)
+    from live_lagged_matchup_sidecar import stamp,ET
 
 FIELDS={"FGA":"fieldGoalsAttempted","FTA":"freeThrowsAttempted",
         "TOV":"turnovers","OREB":"reboundsOffensive",
