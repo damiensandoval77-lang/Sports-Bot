@@ -615,7 +615,7 @@ function tonight(schedule,rows,now=Date.now()){
   const start=parse(g.start);
   return Number.isFinite(start)&&g.game&&g.game_state!=="post"&&g.game_state!=="final"&&start-now<=12*3600000&&now-start<=4*3600000;
  });
- const saved=new Set((rows||[]).filter(r=>r.sport==="NBA").map(r=>r.game+"|"+Math.round(parse(r.start)/60000)));
+ const saved=new Set((rows||[]).filter(r=>r.sport==="NBA"&&r.quoteOnly!==true&&r.projection!==null&&r.projection!==undefined&&["MORE","LESS"].includes(r.direction)).map(r=>r.game+"|"+Math.round(parse(r.start)/60000)));
  const missing=games.filter(g=>!saved.has(g.game+"|"+Math.round(parse(g.start)/60000)));
  const first=missing.map(g=>parse(g.start)).sort((a,b)=>a-b)[0];
  return {games:games.length,missing:missing.map(g=>g.game),covered:games.length-missing.length,
