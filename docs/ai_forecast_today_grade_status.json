@@ -1,15 +1,15 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-12T04:32:02.824273+00:00",
+  "generated_at": "2026-11-12T04:36:16.007072+00:00",
   "game_date_eastern": "2026-11-11",
   "recorded_pregame_forecasts": 984,
   "graded": 636,
-  "verified_dnp_exclusions": 48,
+  "verified_dnp_exclusions": 64,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 684,
-  "ungraded": 300,
-  "new_grades": 76,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 700,
+  "ungraded": 284,
+  "new_grades": 0,
+  "new_verified_dnp_exclusions": 16,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
@@ -42,7 +42,7 @@
     "Golden State Warriors @ Houston Rockets": 112,
     "Los Angeles Lakers @ Milwaukee Bucks": 8,
     "Oklahoma City Thunder @ Portland Trail Blazers": 100,
-    "Orlando Magic @ Utah Jazz": 20,
+    "Orlando Magic @ Utah Jazz": 4,
     "San Antonio Spurs @ Chicago Bulls": 8,
     "Washington Wizards @ Indiana Pacers": 16
   },
@@ -51,14 +51,18 @@
     "Buddy Hield",
     "Craig Porter Jr.",
     "Jaden Bradley",
+    "Jamal Cain",
     "James Wiseman",
     "Jordan Clarkson",
     "Jose Alvarado",
     "Kris Murray",
+    "Kyle Filipowski",
     "Olivier-Maxence Prosper",
     "Ron Harper Jr.",
     "Thomas Bryant",
-    "Trayce Jackson-Davis"
+    "Tony Bradley",
+    "Trayce Jackson-Davis",
+    "Tristan da Silva"
   ],
   "ungraded_distinct_player_names_by_game": {
     "Boston Celtics @ Toronto Raptors": [
@@ -140,11 +144,7 @@
       "Yang Hansen"
     ],
     "Orlando Magic @ Utah Jazz": [
-      "Jamal Cain",
-      "Kyle Filipowski",
-      "Lauri Markkanen",
-      "Tony Bradley",
-      "Tristan da Silva"
+      "Lauri Markkanen"
     ],
     "San Antonio Spurs @ Chicago Bulls": [
       "Devin Vassell",
@@ -157,29 +157,29 @@
       "Will Riley"
     ]
   },
-  "ungraded_distinct_player_markets": 300,
+  "ungraded_distinct_player_markets": 284,
   "final_feed": {
     "pending_matchups": 17,
     "final_nba_games": 15,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 362,
+    "retrieved_player_lines": 366,
     "errors": [
       "Secondary ESPN explicit DNP unverified: Direct ESPN final matchup mismatch"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 10,
     "final_cached_id_nba_games": 8,
-    "secondary_verified_explicit_dnp_players": 18,
-    "secondary_dnp_still_unverified": 40,
+    "secondary_verified_explicit_dnp_players": 22,
+    "secondary_dnp_still_unverified": 36,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 531,
-    "newly_retrieved_verified_rows": 20,
+    "verified_cache_rows": 533,
+    "newly_retrieved_verified_rows": 4,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 88,
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 72,
       "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 212
     },
     "players": [
@@ -1976,62 +1976,6 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kyle Filipowski",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
         "player": "Lauri Markkanen",
         "team": "UTA",
         "game": "Orlando Magic @ Utah Jazz",
@@ -2055,62 +1999,6 @@
       {
         "player": "Lauri Markkanen",
         "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tony Bradley",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tony Bradley",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tony Bradley",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tony Bradley",
-        "team": "UTA",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Orlando Magic @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
         "game": "Orlando Magic @ Utah Jazz",
         "stat": "REB",
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
