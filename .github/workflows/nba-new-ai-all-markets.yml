@@ -56,6 +56,10 @@ jobs:
           python-version: '3.11'
       - name: Install existing historical and ML requirements
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Verify official complete-game opportunity recovery and no lookahead
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_recover_official_opportunities.py' -v
       - name: Test standard-only quotes and correlated PRA math
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
