@@ -67,6 +67,13 @@ def current_games(local,validated_shooting):
             coverage["BOX_SCORE_DISAGREEMENT"]+=1;continue
         if abs(float(r.get("MIN",-999))-v["minutes"])>2.5:
             coverage["MINUTES_DISAGREEMENT"]+=1;continue
+        # CSV minutes are rounded; the crosschecked source can reveal a
+        # subminute cameo. All model inputs require at least one real minute
+        # (the CSV importer, CSV recovery and predict() share this boundary).
+        # Exclude just that row rather than poisoning otherwise sufficient
+        # history, and never round the observed duration up to qualify it.
+        if v["minutes"]<1:
+            coverage["BELOW_MODEL_MINIMUM_MINUTES"]+=1;continue
         enriched={**r,"season":"2026-27","FGA":v["fga"],
                   "FTA":v["fta"],"TOV":v["tov"],"OREB":v["oreb"],
                   "MIN":v["minutes"],"id":key[0]}
