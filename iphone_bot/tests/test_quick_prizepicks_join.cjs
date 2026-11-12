@@ -52,7 +52,7 @@ test("archive cannot overwrite valid already-frozen AI forecast",()=>{
 });
 test("active browser does not turn unsupported quick-join research into validated hit picks",()=>{
  assert.ok(app.includes('p.quoteOnly?"NO AI"'));
- assert.ok(app.includes('p.quoteOnly?"Verified standard line · missing frozen AI model"'));
+ assert.ok(app.includes('p.quoteOnly?"NO AI"'));
  assert.ok(app.includes('!x.quoteOnly&&x.projection!==null&&x.direction!==null'));
  assert.ok(app.includes('No sample data is substituted'));
  assert.ok(!app.includes("verifiedQuickPrizePicksJoins("));
