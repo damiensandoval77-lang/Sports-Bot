@@ -94,7 +94,9 @@ def evaluate(now,site,espn=None):
                      recovery_workflow=None))
     frozen={(r.get("game"),ts(r.get("start"))) for r in ledger.get("records",[])
             if isinstance(r,dict) and ts(r.get("start"))}
-    missing=[(g,s) for g,s,_ in soon if has_lines(g,s) and (g,s) not in frozen]
+    missing=[(g,s) for g,s,_ in soon if has_lines(g,s) and not any(
+        name==g and abs((captured_start-s).total_seconds())<=1800
+        for name,captured_start in frozen)]
     # Only an actual pretip missing pick can be repaired with a new frozen
     # forecast. Once tipped, new projections must not be backdated as pretip.
     failures=[f"{g} @ {s.isoformat()}" for g,s in missing
