@@ -1,6 +1,12 @@
 name: Verify tonight NBA frozen lines predictions and grades
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Guarded new NBA AI all markets PTS REB AST PRA
+      - Publish lightweight PrizePicks site data and per-game coverage
+    types: [completed]
+    branches: [main]
   schedule:
     # Every 30 minutes from afternoon pregame through overnight settlement (UTC).\n    # This is credit-free and catches changed archives after provider refreshes.
     - cron: '17,47 0-6,16-23 * * *'
@@ -12,12 +18,16 @@ on:
       - 'docs/lagged_matchup_all_market_ledger.json'
       - 'docs/ai_forecast_actual_ledger.json'
       - 'iphone_bot/tonight_capture_gradeability.py'
+      - 'iphone_bot/current_primary_coverage.py'
+      - 'iphone_bot/tests/test_current_primary_coverage.py'
       - 'iphone_bot/audit_primary_model_missing.py'
       - 'iphone_bot/tests/test_audit_primary_model_missing.py'
       - '.github/workflows/nba-tonight-capture-gradeability.yml'
   pull_request:
     paths:
       - 'iphone_bot/tonight_capture_gradeability.py'
+      - 'iphone_bot/current_primary_coverage.py'
+      - 'iphone_bot/tests/test_current_primary_coverage.py'
       - 'iphone_bot/tests/test_tonight_capture_gradeability.py'
       - 'iphone_bot/merge_new_ai_publishing.py'
       - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
@@ -42,6 +52,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_tonight_capture_gradeability.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_current_primary_coverage.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_audit_primary_model_missing.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_latest_report_publication.py' -v

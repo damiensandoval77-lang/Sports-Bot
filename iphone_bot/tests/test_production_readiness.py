@@ -27,6 +27,9 @@ def fixtures(now=NOW):
      "tonight_capture_gradeability.json":{
          "status":"CAPTURE_VERIFIED","checked_at":STAMP,
          "game_date_eastern":"2026-11-09",
+         "current_upcoming_coverage":{"status":"COMPLETE","missing_primary_offers":0,"issues":[],
+             "games":[{"game":GAME["game"],"start":GAME["start"],"verified_current_offers":3,
+                       "matched_primary_offers":3,"missing_primary_offers":0}]},
          "games":[{"game":GAME["game"],"issues":[]}],
          "summary":{"schedule_games":1,"games_with_saved_source_quotes":1,
                     "games_with_frozen_ai":1,"games_with_line_backed_models":1,
@@ -206,6 +209,20 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL",
                       result["components"]["unmodeled_provider_market_coverage"]["reasons"])
         self.assertEqual(result["components"]["pregame_capture"]["state"],"READY")
+
+    def test_current_missing_primary_remains_required_despite_research(self):
+        data=fixtures()
+        cur=data["tonight_capture_gradeability.json"]["current_upcoming_coverage"]
+        cur.update(status="INCOMPLETE",missing_primary_offers=1)
+        cur["games"][0].update(matched_primary_offers=2,missing_primary_offers=1)
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertTrue(result["components"]["current_primary_model_coverage"]["required"])
+        self.assertIn("CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL",result["components"]["current_primary_model_coverage"]["reasons"])
+
+    def test_absent_current_coverage_cannot_claim_ready(self):
+        data=fixtures();data["tonight_capture_gradeability.json"].pop("current_upcoming_coverage")
+        self.assertEqual(check(NOW,data)["components"]["current_primary_model_coverage"]["state"],"DEGRADED")
 
     def test_research_receipts_do_not_substitute_for_a_published_model(self):
         data=fixtures()
