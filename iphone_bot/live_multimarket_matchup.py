@@ -103,6 +103,41 @@ def feature_vector(history,team,opponent,day,team_context):
         return None,"NONFINITE_ALL_MARKET_FEATURES"
     return common,None
 
+def sparse_observed_baseline(history,team,opponent,day,team_context):
+    """Clearly labeled provisional baseline for 3-7 REAL, completed prior games.
+
+    Not the trained eight-game model and not a calibrated hit probability.
+    No synthetic player stats, no same-day lookahead and no borrowed team data.
+    """
+    try:
+        from .expanded_matchup_research import defense_factor
+    except ImportError:
+        from expanded_matchup_research import defense_factor
+    recent=sorted((r for r in history if r.get("team")==team
+                   and r.get("date","")<day),key=lambda r:r["date"])
+    if len({r["date"] for r in recent})!=len(recent) or len(recent)<3:
+        return None
+    recent=recent[-5:]
+    if any(r.get(k) is None for r in recent for k in ("PTS","REB","AST","MIN")):
+        return None
+    try:
+        if any(not np.isfinite(float(r[k])) or float(r[k])<0 for r in recent
+               for k in ("PTS","REB","AST","MIN")):
+            return None
+        if any(not 0<float(r["MIN"])<=60 for r in recent):
+            return None
+        weights=np.arange(1,len(recent)+1,dtype=float)
+        d=defense_factor(team_context,team,opponent,day)
+        factor=float(d["factor"]) if d["status"]=="PRIOR_RECIPROCAL_TEAM_BOX_CONTEXT" else 1.0
+        out={s:round(min(100.,max(0.,float(np.average([float(r[s]) for r in recent],weights=weights))*factor)),3)
+             for s in ("PTS","REB","AST")}
+    except (TypeError,ValueError,OverflowError):
+        return None
+    return out,{"sparse_history_games":len(recent),
+                "opponent_context_unavailable":d["status"]!="PRIOR_RECIPROCAL_TEAM_BOX_CONTEXT",
+                "prediction_quality":"SPARSE_OBSERVED_HISTORY_BASELINE_NO_VALIDATED_HIT_RATE"}
+
+
 def per_game_diagnostics(feed,selected,predictions,blocked):
     """Give each game auditable coverage and exclusion counts, without inventing picks."""
     games=defaultdict(lambda:{"observed_provider_quote_rows":0,"verified_standard_offers":0,
@@ -139,9 +174,13 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
     selected,excluded=select_standard(feed.get("picks",[]))
     rejected=defaultdict(int,excluded)
     blocked_by_game=defaultdict(lambda:defaultdict(int))
-    def block(item,reason):
+    excluded_details=[]
+    def block(item,reason,*,history=None):
         rejected[reason]+=1
         blocked_by_game[str(item.get("game") or "UNKNOWN")][reason]+=1
+        excluded_details.append({"player":item.get("player"),"team":item.get("team"),
+          "game":item.get("game"),"stat":STATS.get(item.get("stat"),item.get("stat")),
+          "reason":reason,"prior_observed_games":len(history or [])})
     by_id=defaultdict(list)
     roster=defaultdict(set)
     latest_by_id={}
@@ -184,13 +223,25 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
             use_csv=len(verified_prior)<8
             source_history=by_id[pid] if use_csv else verified_prior
             vec,reason=feature_vector(source_history,team,opponent,day,defense)
-            if reason:cache[key]=(None,reason)
+            from_csv=use_csv and any(
+                r.get("history_source_confidence") and r.get("team")==team
+                and r.get("date","")<day for r in source_history)
+            if reason=="INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY":
+                provisional=sparse_observed_baseline(source_history,team,opponent,day,defense)
+                if provisional:
+                    pred,flags=provisional
+                    feature_flags[key]={**flags,"single_source_history":from_csv,
+                                        "history_baseline_only":True}
+                    cache[key]=(pred,None)
+                else:
+                    cache[key]=(None,reason)
+            elif reason:
+                cache[key]=(None,reason)
             else:
                 feature_flags[key]={
                     "opponent_context_unavailable":vec.get("opponent_context_unavailable",False),
-                    "single_source_history":use_csv and any(
-                        r.get("history_source_confidence") and r.get("team")==team and r.get("date","")<day
-                        for r in source_history)}
+                    "single_source_history":from_csv,
+                    "history_baseline_only":False}
                 x=np.array([[vec[k] for k in FEATURES]],dtype=float)
                 xp=np.array([[vec[k] for k in COLS]],dtype=float)
                 model=pack["models"]
@@ -199,7 +250,10 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
                       "AST":max(0.,float(model["AST"].predict(x)[0]))}
                 cache[key]=(pred,None)
         p,reason=cache[key]
-        if reason:block(item,reason);continue
+        if reason:
+            observed=[r for r in by_id[pid] if r.get("team")==team and r.get("date","")<day]
+            block(item,reason,history=observed)
+            continue
         injury=injury_adjustment(p,pid,team,opponent,day,item["start"],now,
                                  injuries,news,records,free_watch=free_watch)
         if injury["status"]=="PLAYER_REPORTED_OUT_SUPPRESS_ALL_MARKETS":
@@ -223,6 +277,8 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
          "captured_at":now.isoformat(),
          "pickem_tier":"standard","standard_line_two_sided_verified":True,
          "estimated_hit_chance":simulation,
+         "history_baseline_only":bool((feature_flags.get(key) or {}).get("history_baseline_only")),
+         "sparse_history_games":(feature_flags.get(key) or {}).get("sparse_history_games"),
          "injury_reprojection_status":injury["status"],
          "injury_context":injury,
          "opponent_context_unavailable":bool((feature_flags.get(key) or {}).get("opponent_context_unavailable")),
@@ -230,7 +286,7 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
         "injury_uncertainty_unresolved":injury["status"]=="BASELINE_WITH_UNRESOLVED_INJURY",
          "opponent_adjustment_verified":not bool((feature_flags.get(key) or {}).get("opponent_context_unavailable"))
            and opponent not in single_source_teams,
-         "prediction_quality":"NEUTRAL_OPPONENT_CONTEXT_FALLBACK" if (feature_flags.get(key) or {}).get("opponent_context_unavailable") else "VERIFIED_PRIOR_OPPONENT_CONTEXT",
+         "prediction_quality":(feature_flags.get(key) or {}).get("prediction_quality") or ("NEUTRAL_OPPONENT_CONTEXT_FALLBACK" if (feature_flags.get(key) or {}).get("opponent_context_unavailable") else "VERIFIED_PRIOR_OPPONENT_CONTEXT"),
          "injury_adjustment_verified":injury["status"]!="BASELINE_WITH_UNRESOLVED_INJURY",
          "calibrated_probability":None,
          "source_prior_games":sum(r["date"]<day and r["team"]==team for r in by_id[pid]),
@@ -245,6 +301,8 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
       "market_counts":{s:sum(r["stat"]==s for r in predictions) for s in STATS.values()},
       "predictions":predictions,"published_projections":len(predictions),
       "excluded":dict(rejected),
+      "excluded_offer_details":excluded_details,
+      "sparse_history_baselines":sum(bool(x.get("history_baseline_only")) for x in predictions),
       "game_diagnostics":per_game_diagnostics(feed,selected,predictions,blocked_by_game),
       "calibrated":False,
       "injury_news_processed":news.get("status")=="UNDERDOGNBA_X_AUTHENTICATED_POLL",
