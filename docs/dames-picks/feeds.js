@@ -631,4 +631,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-opponent-fallback-20261111-r14";
+globalThis.__damesRunningAssets["feeds.js"]="dp-complete-form-20261111-r15";
