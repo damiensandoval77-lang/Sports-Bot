@@ -629,4 +629,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-live-archive-20261111-r12";
+globalThis.__damesRunningAssets["feeds.js"]="dp-injury-baseline-20261111-r13";
