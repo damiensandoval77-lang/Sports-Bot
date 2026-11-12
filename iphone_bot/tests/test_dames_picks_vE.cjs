@@ -793,3 +793,13 @@ test("Missing opponent defense outputs a baseline with no unsupported hit percen
  assert.equal(got[0].opponentContextUnavailable,true);
  assert.match(got[0].chanceSource,/opponent defensive sample unavailable/);
 });
+
+test("CSV-only complete history forecasts show a projection with unsupported hit confidence hidden",()=>{
+ const row={...pt,single_source_history:true};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[row]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].singleSourceHistory,true);
+ assert.match(got[0].chanceSource,/not independently confirmed/);
+});
