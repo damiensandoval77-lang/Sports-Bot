@@ -94,6 +94,29 @@ class TestAudit(unittest.TestCase):
             self.assertEqual(result["status"], "FAILED")
             self.assertTrue(any("older than 36 hours" in p for p in result["problems"]))
 
+    def test_verified_void_is_accounted_for_but_not_a_graded_win(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            self.make_data(root)
+            item={"game_id":"game0","grade_status":"void_verified_inactive",
+                  "actual":"","result":"Void","won":""}
+            with (root/"pp_graded_2026.csv").open("w",newline="") as f:
+                writer=csv.DictWriter(f,fieldnames=list(item));writer.writeheader();writer.writerow(item)
+            health=json.loads((root/"grading_health_2026.json").read_text())
+            health.update(void_picks=1,expected_final_picks=1)
+            (root/"grading_health_2026.json").write_text(json.dumps(health))
+            with patch("audit_nfl_reliability.closing",return_value=[item]):
+                result=audit(root)
+            self.assertEqual(result["problems"],[])
+            self.assertEqual(result["graded_picks"],0)
+            self.assertEqual(result["void_picks"],1)
+            item.update(actual="0",won="1")
+            with (root/"pp_graded_2026.csv").open("w",newline="") as f:
+                writer=csv.DictWriter(f,fieldnames=list(item));writer.writeheader();writer.writerow(item)
+            with patch("audit_nfl_reliability.closing",return_value=[item]):
+                self.assertEqual(audit(root)["status"],"FAILED")
+
     def test_stale_capture_is_warning_before_distant_kickoff(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
