@@ -39,7 +39,7 @@ def evaluate(expected,served,assets):
                        "expected":digest,"actual":git_blob_sha(blob) if blob is not None else None})
     checks.append({"name":"all_pinned_assets_listed",
                    "pass":set(expected.get("asset_blob_sha1",{}))==
-                   {"feeds.js","live_direct.js","dames_take.js","provisional.js","index.html"}})
+                   {"feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","index.html"}})
     return {"expected_release":expected.get("release_id"),
             "served_release":served.get("release_id"),
             "checks":checks,"status":"PASS" if all(x["pass"] for x in checks) else "FAIL"}

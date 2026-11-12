@@ -6,6 +6,11 @@ on:
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
       - 'iphone_bot/provisional_short_history.py'
+      - 'iphone_bot/short_history_candidate.py'
+      - 'iphone_bot/short_history_inference.py'
+      - 'iphone_bot/tests/test_short_history_candidate.py'
+      - 'iphone_bot/tests/test_short_history_inference.py'
+      - 'iphone_bot/tests/test_short_history_workflow.py'
       - 'research/build_matchup_card_estimates.py'
       - 'tests/test_matchup_card_estimates.py'
       - 'iphone_bot/tests/test_provisional_short_history.py'
@@ -43,12 +48,19 @@ on:
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
       - 'iphone_bot/provisional_short_history.py'
+      - 'iphone_bot/short_history_candidate.py'
+      - 'iphone_bot/short_history_inference.py'
+      - 'iphone_bot/tests/test_short_history_candidate.py'
+      - 'iphone_bot/tests/test_short_history_inference.py'
+      - 'iphone_bot/tests/test_short_history_workflow.py'
       - 'research/build_matchup_card_estimates.py'
       - 'tests/test_matchup_card_estimates.py'
       - 'iphone_bot/tests/test_provisional_short_history.py'
       - 'iphone_bot/live_lagged_matchup_sidecar.py'
       - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
       - 'iphone_bot/tests/test_multimarket_workflow_dependencies.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/multimarket_forecast_ledger.py'
       - 'iphone_bot/new_ai_injury_context.py'
       - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - '.github/workflows/nba-new-ai-all-markets.yml'
@@ -58,7 +70,8 @@ permissions:
   contents: write
   actions: write
 concurrency:
-  group: nba-new-ai-all-markets
+  # A PR validation must never displace a queued production recovery.
+  group: nba-new-ai-all-markets-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
 jobs:
   multi-market:
@@ -410,3 +423,67 @@ jobs:
           name: provisional-short-history
           path: docs/provisional_short_history.json
           retention-days: 7
+
+  short-history-research:
+    needs: [multi-market]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned isolated research model dependencies
+        run: pip install numpy==2.3.5 scikit-learn==1.8.0 pandas==2.2.3 pyarrow==26.0.1 joblib==1.5.3 requests PyYAML==6.0.3
+      - name: Test chronological cohort and fail-closed inference
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_short_history_workflow.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_short_history_candidate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_short_history_inference.py' -v
+      - name: Reproduce separately gated research model from pinned historical sources
+        id: train
+        continue-on-error: true
+        run: python -m iphone_bot.short_history_candidate --download --data-dir "$RUNNER_TEMP/short-history-data" --output-dir "$RUNNER_TEMP/short-history-model"
+      - name: Publish only separate research forecasts or explicit blocked output
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRAIN_OUTCOME: ${{ steps.train.outcome }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            rc=0
+            if [ "$TRAIN_OUTCOME" = success ] && python -m iphone_bot.fetch_current_form && python -m iphone_bot.build_prizepicks_model_input; then
+              python -m iphone_bot.short_history_inference --model-dir "$RUNNER_TEMP/short-history-model" --output docs/short_history_model.json || rc=$?
+            else
+              rc=1
+              python -m iphone_bot.short_history_inference --model-dir "$RUNNER_TEMP/short-history-model" --output docs/short_history_model.json --blocked SOURCE_OR_TRAINING_FAILED || true
+            fi
+            git add docs/short_history_model.json
+            if [ "$TRAIN_OUTCOME" = success ]; then
+              cp "$RUNNER_TEMP/short-history-model/validation.json" docs/short_history_model_validation.json
+              git add docs/short_history_model_validation.json
+            fi
+            if git diff --cached --quiet; then exit "$rc"; fi
+            git commit -m 'Publish separately evaluated short-history research projections'
+            if git push origin HEAD:main; then exit "$rc"; fi
+          done
+          echo '::error::Could not publish isolated short-history research after retries'
+          exit 1
+      - name: Preserve independent historical validation and current research receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: short-history-research-validation
+          path: |
+            ${{ runner.temp }}/short-history-model/validation.json
+            docs/short_history_model.json
+          retention-days: 21
+      - name: Fail visibly if historical research reproduction failed
+        if: steps.train.outcome != 'success'
+        run: exit 1
