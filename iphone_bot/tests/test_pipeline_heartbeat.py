@@ -42,6 +42,14 @@ class Heartbeat(unittest.TestCase):
     def test_overdue_pending_requires_settlement(self):
         r={"game":GAME,"start":time(hours=-10),"grade":"PENDING"}
         self.assertEqual(stage(evaluate(NOW,site(ledger=[r])),"settlement")["status"],"FAIL")
+    def test_alert_evidence_survives_disabled_github_issues(self):
+        from pathlib import Path
+        workflow=(Path(__file__).resolve().parents[2]/".github/workflows/pipeline-heartbeat.yml").read_text()
+        self.assertIn("GITHUB_STEP_SUMMARY",workflow)
+        self.assertIn("gh api \"repos/$GH_REPO\" --jq '.has_issues'",workflow)
+        self.assertIn("GitHub Issues disabled or unavailable",workflow)
+        self.assertIn('steps.health.outputs.code != \'0\'',workflow)
+
     def test_missing_feeds_report_non_ok(self):
         self.assertEqual(evaluate(NOW,{})["overall"],"FAIL")
 if __name__=="__main__":unittest.main()
