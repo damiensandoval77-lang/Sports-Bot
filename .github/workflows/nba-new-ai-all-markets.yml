@@ -70,7 +70,8 @@ permissions:
   contents: write
   actions: write
 concurrency:
-  group: nba-new-ai-all-markets
+  # A PR validation must never displace a queued production recovery.
+  group: nba-new-ai-all-markets-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
 jobs:
   multi-market:

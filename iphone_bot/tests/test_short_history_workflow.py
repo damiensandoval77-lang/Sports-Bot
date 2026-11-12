@@ -5,6 +5,12 @@ import yaml
 class IsolatedResearchWorkflowTests(unittest.TestCase):
     def setUp(self):
         self.job=yaml.safe_load(Path('.github/workflows/nba-new-ai-all-markets.yml').read_text())['jobs']['short-history-research']
+    def test_pr_runs_cannot_displace_production_recovery(self):
+        workflow=yaml.safe_load(Path('.github/workflows/nba-new-ai-all-markets.yml').read_text())
+        self.assertIn("github.event_name == 'pull_request'",workflow['concurrency']['group'])
+        self.assertIn("github.event.pull_request.number",workflow['concurrency']['group'])
+        self.assertIn("'production'",workflow['concurrency']['group'])
+        self.assertIs(workflow['concurrency']['cancel-in-progress'],False)
     def test_durable_merge_repairs_trigger_actual_publication(self):
         text=Path('.github/workflows/nba-new-ai-all-markets.yml').read_text()
         push=text.split('  push:',1)[1].split('  schedule:',1)[0]
