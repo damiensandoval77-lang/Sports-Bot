@@ -434,7 +434,7 @@ test("Merged dashboard shows independently verified pick-settlement health, not 
  assert.ok(html.includes('NBA published picks awaiting verified settlement'));
  assert.ok(html.includes('provider standard markets withheld from AI picks'));
  assert.ok(!html.includes('errors.push("NBA capture incomplete")'));
- assert.ok(html.includes('Official DNP verified · void'));
+ assert.ok(html.includes('DNP · VOID')); // verified exclusion remains in the card badge, not the OVER/UNDER footer
 });
 
 
@@ -802,4 +802,17 @@ test("CSV-only complete history forecasts show a projection with unsupported hit
  assert.equal(got[0].chance,null);
  assert.equal(got[0].singleSourceHistory,true);
  assert.match(got[0].chanceSource,/not independently confirmed/);
+});
+
+test("Board footer contains only actual OVER UNDER historical split, no frozen status or dots",()=>{
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(page.includes("function cardOverUnder(p)"));
+ assert.ok(page.includes('p.logs.filter(x=>Number.isFinite(Number(x.actual)))'));
+ assert.ok(page.includes("Number(x.actual)>Number(p.line)"));
+ assert.ok(page.includes("Number(x.actual)<Number(p.line)"));
+ assert.ok(page.includes('<div class="stampband over-under-footer">\'+cardOverUnder(p)+\'</div>'));
+ assert.ok(!page.includes('<span class="dots">●●●●●</span>'));
+ assert.ok(!page.includes('Frozen pregame forecast · awaiting final'));
+ assert.ok(page.includes('.hs-over{color:var(--lime)}'));
+ assert.ok(page.includes('.hs-under{color:var(--pink)}'));
 });
