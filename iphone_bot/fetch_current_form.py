@@ -114,8 +114,17 @@ def main():
         if previous and (previous["PTS"],previous["REB"],previous["AST"])!=(pts,reb,ast):
             raise ValueError(f"Conflicting duplicate for player id {ident} on {date}")
         by_player[ident][date]=game
+        # The published source already contains the full opportunity box.
+        # Keep its independently observable fields locally for model recovery.
+        # Never fill absent source numbers with synthetic zeros.
+        game["FGM"]=number(row.get("FGM"))
         game["FGA"]=number(row.get("FGA"))
+        game["FG3M"]=number(row.get("3PM"))
         game["FG3A"]=number(row.get("3PA"))
+        game["FTM"]=number(row.get("FTM"))
+        game["FTA"]=number(row.get("FTA"))
+        game["OREB"]=number(row.get("Off Reb"))
+        game["DREB"]=number(row.get("Def Reb"))
         game["TOV"]=number(row.get("Turnovers"))
         game["position"]=str(row.get("Pos","")).strip()
         local_games.append(game)

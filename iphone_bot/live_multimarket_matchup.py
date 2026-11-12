@@ -142,6 +142,8 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
         elif pid in latest_by_id and day_seen==latest_by_id[pid][0] and r["team"]!=latest_by_id[pid][1]:
             latest_by_id[pid]=(day_seen,None)
     latest_team={pid:team for pid,(_,team) in latest_by_id.items()}
+    single_source_teams={r["team"] for r in records
+                         if r.get("history_source_confidence")}
     defense=build_team_games(records,season="2026-27")
     cache={}
     feature_flags={}
@@ -158,10 +160,22 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
         day=tip.astimezone(ET).date().isoformat()
         key=(pid,team,opponent,day)
         if key not in cache:
-            vec,reason=feature_vector(by_id[pid],team,opponent,day,defense)
+            # Prefer the original independently crosschecked player history.
+            # Use arithmetic-validated CSV rows only when otherwise there are
+            # fewer than eight genuine prior team games for the model.
+            verified_prior=[r for r in by_id[pid] if r.get("team")==team
+                            and r.get("date","")<day
+                            and not r.get("history_source_confidence")]
+            use_csv=len(verified_prior)<8
+            source_history=by_id[pid] if use_csv else verified_prior
+            vec,reason=feature_vector(source_history,team,opponent,day,defense)
             if reason:cache[key]=(None,reason)
             else:
-                feature_flags[key]={"opponent_context_unavailable":vec.get("opponent_context_unavailable",False)}
+                feature_flags[key]={
+                    "opponent_context_unavailable":vec.get("opponent_context_unavailable",False),
+                    "single_source_history":use_csv and any(
+                        r.get("history_source_confidence") and r.get("team")==team and r.get("date","")<day
+                        for r in source_history)}
                 x=np.array([[vec[k] for k in FEATURES]],dtype=float)
                 xp=np.array([[vec[k] for k in COLS]],dtype=float)
                 model=pack["models"]
@@ -197,8 +211,10 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
          "injury_reprojection_status":injury["status"],
          "injury_context":injury,
          "opponent_context_unavailable":bool((feature_flags.get(key) or {}).get("opponent_context_unavailable")),
+        "single_source_history":bool((feature_flags.get(key) or {}).get("single_source_history")),
         "injury_uncertainty_unresolved":injury["status"]=="BASELINE_WITH_UNRESOLVED_INJURY",
-         "opponent_adjustment_verified":not bool((feature_flags.get(key) or {}).get("opponent_context_unavailable")),
+         "opponent_adjustment_verified":not bool((feature_flags.get(key) or {}).get("opponent_context_unavailable"))
+           and opponent not in single_source_teams,
          "prediction_quality":"NEUTRAL_OPPONENT_CONTEXT_FALLBACK" if (feature_flags.get(key) or {}).get("opponent_context_unavailable") else "VERIFIED_PRIOR_OPPONENT_CONTEXT",
          "injury_adjustment_verified":injury["status"]!="BASELINE_WITH_UNRESOLVED_INJURY",
          "calibrated_probability":None,
@@ -238,7 +254,20 @@ def main():
     if not need.issubset(data.columns):raise ValueError("Incomplete current game data")
     data=data.rename(columns={"player_id":"id","game_date":"date"})
     data["date"]=pd.to_datetime(data["date"],errors="raise").dt.strftime("%Y-%m-%d")
-    checked,coverage=current_games(form,data.to_dict(orient="records"))
+    second_source=data.to_dict(orient="records")
+    checked,coverage=current_games(form,second_source)
+    # The already-downloaded public player-game CSV includes full observed
+    # opportunity counts. Recover only absent (never contradictory) parquet
+    # identities after validating exact points and rebound arithmetic.
+    try:
+        try:
+            from .recover_csv_opportunities import recover as recover_csv
+        except ImportError:
+            from recover_csv_opportunities import recover as recover_csv
+        checked,coverage["csv_opportunity_recovery"]=recover_csv(form,checked,second_source)
+    except Exception as exc:
+        coverage["csv_opportunity_recovery"]={
+            "status":"CSV_RECOVERY_ERROR","detail":type(exc).__name__,"recovered":0}
     if len(checked)<1000:raise RuntimeError("Insufficient crosschecked player-games")
     injury_file=ROOT/"docs/injury_context.json"
     news_file=ROOT/"docs/underdog_nba_injury_alerts.json"
