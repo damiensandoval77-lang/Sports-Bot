@@ -284,14 +284,14 @@ test("Real published scoreboard game count is independent of model records",()=>
  const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(page.includes("renderLiveGames()"));
  assert.ok(page.includes("function openGame(game)"));
- assert.ok(page.includes("No frozen props saved for this game. Its scoreboard and box score remain visible."));
+ assert.ok(page.includes("No verified pregame standard quotes were archived for this game. Its scoreboard and box score remain visible."));
 });
 
 test("Every game detail exposes original locked model, observed actual, ungraded state and full box score",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  for(const text of ["FROZEN LINE","FROZEN PROJ","ACTUAL","LIVE · NOT GRADED",
  "Full published player box score","Scoreboard","data-prop","Actual unavailable",
- "No frozen props saved for this game"])assert.ok(html.includes(text),text);
+ "No verified pregame standard quotes were archived for this game"])assert.ok(html.includes(text),text);
  assert.ok(html.includes('g.sport==="NFL"?p.target:p.stat'),"NFL uses exact target stat");
  assert.ok(html.includes('normalize(x.player)===normalize(p.player)'),"Exact player-name guard");
  assert.ok(html.includes('matches.length!==1'),"Ambiguous matches not fabricated");
@@ -761,7 +761,7 @@ test("Closed developer diagnostic disclosure hides all child controls on mobile"
 test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
- assert.ok(!html.includes("p.game===g.game)&&!p.quoteOnly"));
+ assert.ok(html.includes("const related=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)));"));
  assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
  assert.ok(html.includes('SAVED PRETIP LINE'));
  assert.ok(html.includes('NO AI FORECAST'));
