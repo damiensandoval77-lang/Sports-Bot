@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_provisional_panel.cjs'
+      - 'iphone_bot/verify_provisional_panel_browser.py'
       - 'iphone_bot/tests/test_dames_picks_vE.cjs'
       - 'iphone_bot/tests/test_dames_take.cjs'
       - 'iphone_bot/tests/test_live_direct.cjs'
@@ -13,6 +15,8 @@ on:
     branches: [main]
     paths:
       - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_provisional_panel.cjs'
+      - 'iphone_bot/verify_provisional_panel_browser.py'
       - 'iphone_bot/tests/test_dames_picks_vE.cjs'
       - 'iphone_bot/tests/test_dames_take.cjs'
       - 'iphone_bot/verify_dames_picks_browser.py'
@@ -28,12 +32,13 @@ jobs:
         with:
           node-version: '22'
       - name: Verify NBA/NFL saved market integration
-        run: node --test iphone_bot/tests/test_dames_picks_vE.cjs iphone_bot/tests/test_dames_take.cjs iphone_bot/tests/test_line_history.cjs iphone_bot/tests/test_live_direct.cjs
+        run: node --test iphone_bot/tests/test_provisional_panel.cjs iphone_bot/tests/test_dames_picks_vE.cjs iphone_bot/tests/test_dames_take.cjs iphone_bot/tests/test_line_history.cjs iphone_bot/tests/test_live_direct.cjs
       - name: Validate JavaScript for mobile dashboard
         run: |
           node --check docs/dames-picks/feeds.js
           node --check docs/dames-picks/live_direct.js
           node --check docs/dames-picks/dames_take.js
+          node --check docs/dames-picks/provisional.js
           node - <<'JS'
           const fs=require('node:fs'),vm=require('node:vm');
           const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
@@ -53,5 +58,7 @@ jobs:
         run: |
           pip install 'playwright==1.56.0'
           python -m playwright install --with-deps chromium
+      - name: Verify provisional panel isolation and unavailable behavior on mobile
+        run: python -m iphone_bot.verify_provisional_panel_browser
       - name: Verify actual iPhone-width NBA and NFL DOM, details and exceptions
         run: python -m iphone_bot.verify_dames_picks_browser
