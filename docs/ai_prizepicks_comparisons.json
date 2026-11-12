@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-12T03:11:28.371642+00:00",
-  "last_form_update": "2026-11-12T03:11:24.730534+00:00",
+  "generated_at": "2026-11-12T03:57:35.388284+00:00",
+  "last_form_update": "2026-11-12T03:57:32.264040+00:00",
   "last_odds_update": "2026-11-12T00:07:35.302255+00:00",
   "status": "EXPERIMENTAL_NON_CALIBRATED",
   "verified_current_matchups": true,
@@ -9,14 +9,14 @@
   "games_with_ai_props": 1,
   "injury_data_verified": true,
   "injury_context_source": "OFFICIAL_NBA_REPORT_VERIFIED",
-  "official_injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_00PM.pdf",
+  "official_injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_45PM.pdf",
   "opponent_defense_applied_to_model": false,
   "lineup_research_adjustments_applied": true,
   "injury_minutes_research_status": "BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS",
   "minutes_baseline_validation": {
     "status": "PREGAME_BASELINE_HOLDOUT_ONLY",
     "evaluated": 378,
-    "baseline_mae": 4.692,
+    "baseline_mae": 4.693,
     "injury_scenario_mae": null,
     "live_model_unchanged": true,
     "notice": "An injury-specific holdout needs pregame-locked injury statuses; never infer old injuries from today's report."
@@ -47,8 +47,8 @@
     "earlier_samples": 1098,
     "holdout_samples": 413,
     "holdout_start": "2026-11-08",
-    "baseline_mae": 4.645,
-    "candidate_mae": 4.532,
+    "baseline_mae": 4.646,
+    "candidate_mae": 4.533,
     "candidate_minus_baseline_mae": -0.113,
     "live_model_unchanged": true,
     "validated_for_production": false
@@ -616,8 +616,8 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 14.8,
-        "league_group_avg": 18.4,
-        "vs_league_pct": -19.5,
+        "league_group_avg": 18.3,
+        "vs_league_pct": -19.0,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -1400,14 +1400,14 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 11.4,
-        "league_group_avg": 13.9,
-        "vs_league_pct": -18.2,
+        "league_group_avg": 14.0,
+        "vs_league_pct": -18.5,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
       "injury_status": "AVAILABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_45PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -2098,7 +2098,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -2199,8 +2199,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 36.2,
-        "league_group_avg": 37.6,
-        "vs_league_pct": -3.7,
+        "league_group_avg": 37.7,
+        "vs_league_pct": -4.0,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
@@ -2351,7 +2351,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 22.8 points + rebounds + assists per game over the last 5, versus 21.3 over up to the last 10 games. Minutes averaged 30.0 over the last 5 games.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 18.1 versus the original model's 18.6; their midpoint is 18.3."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -2384,7 +2384,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -2605,8 +2605,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 50.4,
-        "league_group_avg": 70.6,
-        "vs_league_pct": -28.6,
+        "league_group_avg": 70.3,
+        "vs_league_pct": -28.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -2999,8 +2999,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 30.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -30.6,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -30.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -3468,8 +3468,8 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 11.4,
-        "league_group_avg": 13.9,
-        "vs_league_pct": -18.2,
+        "league_group_avg": 14.0,
+        "vs_league_pct": -18.5,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
@@ -3874,8 +3874,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 30.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -30.6,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -30.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -4341,8 +4341,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 50.4,
-        "league_group_avg": 70.6,
-        "vs_league_pct": -28.6,
+        "league_group_avg": 70.3,
+        "vs_league_pct": -28.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -4734,7 +4734,7 @@
         "games": 5,
         "allowed_l5": 21.0,
         "league_group_avg": 19.5,
-        "vs_league_pct": 7.8,
+        "vs_league_pct": 7.5,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
@@ -5113,7 +5113,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -5214,14 +5214,14 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 36.2,
-        "league_group_avg": 37.6,
-        "vs_league_pct": -3.7,
+        "league_group_avg": 37.7,
+        "vs_league_pct": -4.0,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
       "injury_status": "AVAILABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_45PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [
@@ -5367,7 +5367,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 10.8 points + rebounds + assists per game over the last 5, versus 13.0 over up to the last 10 games. Minutes averaged 16.8 over the last 5 games and varied.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 13.9 versus the original model's 14.3; their midpoint is 14.1."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -5400,7 +5400,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -5620,7 +5620,7 @@
         "games": 5,
         "allowed_l5": 51.6,
         "league_group_avg": 52.2,
-        "vs_league_pct": -1.1,
+        "vs_league_pct": -1.2,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PG",
@@ -5987,7 +5987,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -6088,8 +6088,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 70.6,
-        "league_group_avg": 70.6,
-        "vs_league_pct": 0.1,
+        "league_group_avg": 70.3,
+        "vs_league_pct": 0.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -6240,7 +6240,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 26.4 points + rebounds + assists per game over the last 5, versus 26.8 over up to the last 10 games. Minutes averaged 35.6 over the last 5 games.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 29.3 versus the original model's 30.0; their midpoint is 29.6."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -6273,7 +6273,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -6494,14 +6494,14 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 14.8,
-        "league_group_avg": 18.4,
-        "vs_league_pct": -19.5,
+        "league_group_avg": 18.3,
+        "vs_league_pct": -19.0,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
       "injury_status": "PROBABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_45PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -6784,7 +6784,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -6885,8 +6885,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 70.6,
-        "league_group_avg": 70.6,
-        "vs_league_pct": 0.1,
+        "league_group_avg": 70.3,
+        "vs_league_pct": 0.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -7037,7 +7037,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 22.2 points + rebounds + assists per game over the last 5, versus 20.9 over up to the last 10 games. Minutes averaged 32.8 over the last 5 games.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 19.0 versus the original model's 19.3; their midpoint is 19.2."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -7070,7 +7070,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -7292,7 +7292,7 @@
         "games": 5,
         "allowed_l5": 43.2,
         "league_group_avg": 52.2,
-        "vs_league_pct": -17.2,
+        "vs_league_pct": -17.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SG",
@@ -7772,8 +7772,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 30.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -30.6,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -30.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -8239,8 +8239,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 50.4,
-        "league_group_avg": 70.6,
-        "vs_league_pct": -28.6,
+        "league_group_avg": 70.3,
+        "vs_league_pct": -28.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -8631,8 +8631,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 50.4,
-        "league_group_avg": 70.6,
-        "vs_league_pct": -28.6,
+        "league_group_avg": 70.3,
+        "vs_league_pct": -28.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -8922,7 +8922,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -9175,7 +9175,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 33.8 points + rebounds + assists per game over the last 5, versus 27.3 over up to the last 10 games. Minutes averaged 35.6 over the last 5 games.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 28.9 versus the original model's 30.4; their midpoint is 29.7."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -9208,7 +9208,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -9429,8 +9429,8 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 18.8,
-        "league_group_avg": 18.4,
-        "vs_league_pct": 2.3,
+        "league_group_avg": 18.3,
+        "vs_league_pct": 2.8,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -10642,8 +10642,8 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 14.8,
-        "league_group_avg": 18.4,
-        "vs_league_pct": -19.5,
+        "league_group_avg": 18.3,
+        "vs_league_pct": -19.0,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -11446,8 +11446,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 43.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -0.9,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -0.6,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -12224,7 +12224,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -12477,7 +12477,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 31.4 points + rebounds + assists per game over the last 5, versus 27.4 over up to the last 10 games. Minutes averaged 29.8 over the last 5 games.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 30.4 versus the original model's 30.6; their midpoint is 30.5."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -12510,7 +12510,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -13132,7 +13132,7 @@
         "games": 5,
         "allowed_l5": 43.2,
         "league_group_avg": 52.2,
-        "vs_league_pct": -17.2,
+        "vs_league_pct": -17.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PG",
@@ -13615,8 +13615,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 43.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -0.9,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -0.6,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -14101,14 +14101,14 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 30.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -30.6,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -30.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
       "injury_status": "PROBABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_45PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -14570,14 +14570,14 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 50.4,
-        "league_group_avg": 70.6,
-        "vs_league_pct": -28.6,
+        "league_group_avg": 70.3,
+        "vs_league_pct": -28.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
       "injury_status": "PROBABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_45PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -14863,7 +14863,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -14964,8 +14964,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 70.6,
-        "league_group_avg": 70.6,
-        "vs_league_pct": 0.1,
+        "league_group_avg": 70.3,
+        "vs_league_pct": 0.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -15116,7 +15116,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 13.2 points + rebounds + assists per game over the last 5, versus 12.5 over up to the last 10 games. Minutes averaged 21.6 over the last 5 games.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 12.3 versus the original model's 13.3; their midpoint is 12.8."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -15149,7 +15149,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -15373,8 +15373,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 43.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -0.9,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -0.6,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -15857,8 +15857,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 43.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -0.9,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -0.6,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -16342,7 +16342,7 @@
         "games": 5,
         "allowed_l5": 23.2,
         "league_group_avg": 19.5,
-        "vs_league_pct": 19.1,
+        "vs_league_pct": 18.7,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
@@ -16710,7 +16710,7 @@
         "games": 5,
         "allowed_l5": 174.2,
         "league_avg": 183.5,
-        "vs_league_pct": -5.0,
+        "vs_league_pct": -5.1,
         "label": "Fewer conceded",
         "type": "DESCRIPTIVE_TEAM_TOTALS_NOT_POSITIONAL"
       },
@@ -16811,8 +16811,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 70.6,
-        "league_group_avg": 70.6,
-        "vs_league_pct": 0.1,
+        "league_group_avg": 70.3,
+        "vs_league_pct": 0.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -16963,7 +16963,7 @@
       "projection_explanation": {
         "sentences": [
           "Recent form: 17.2 points + rebounds + assists per game over the last 5, versus 17.2 over up to the last 10 games. Minutes averaged 21.4 over the last 5 games.",
-          "Opponent: DAL. Across their last 5 games, they allowed 5.0% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
+          "Opponent: DAL. Across their last 5 games, they allowed 5.1% fewer team points + rebounds + assists than league average (team-wide context, not a direct player matchup).",
           "The opponent-aware model estimates 14.6 versus the original model's 14.1; their midpoint is 14.4."
         ],
         "status": "DESCRIPTIVE_FACTS_NOT_CAUSAL_EXPLANATION",
@@ -16996,7 +16996,7 @@
           "opponent": "DAL",
           "scope": "TEAM_TOTALS_NOT_POSITIONAL",
           "source_games": 10,
-          "opponent_vs_league_pct": -5.0,
+          "opponent_vs_league_pct": -5.1,
           "recent_allowed_avg": 176.2,
           "league_allowed_avg": 183.5,
           "adjustment_strength": 0.25,
@@ -17223,7 +17223,7 @@
         "games": 5,
         "allowed_l5": 8.4,
         "league_group_avg": 8.4,
-        "vs_league_pct": -0.1,
+        "vs_league_pct": 0.1,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -18028,8 +18028,8 @@
         "market": "PTS",
         "games": 5,
         "allowed_l5": 30.4,
-        "league_group_avg": 43.8,
-        "vs_league_pct": -30.6,
+        "league_group_avg": 43.6,
+        "vs_league_pct": -30.4,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -18498,8 +18498,8 @@
         "market": "PRA",
         "games": 5,
         "allowed_l5": 43.0,
-        "league_group_avg": 37.6,
-        "vs_league_pct": 14.4,
+        "league_group_avg": 37.7,
+        "vs_league_pct": 14.1,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
@@ -18894,7 +18894,7 @@
         "games": 5,
         "allowed_l5": 43.2,
         "league_group_avg": 52.2,
-        "vs_league_pct": -17.2,
+        "vs_league_pct": -17.3,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SG",
@@ -19377,8 +19377,8 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 18.8,
-        "league_group_avg": 18.4,
-        "vs_league_pct": 2.3,
+        "league_group_avg": 18.3,
+        "vs_league_pct": 2.8,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "PF",
@@ -19786,7 +19786,7 @@
       "research_position": "SG",
       "injury_status": "AVAILABLE",
       "injury_status_source": "OFFICIAL_NBA_REPORT",
-      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_00PM.pdf",
+      "injury_report_url": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-11_10_45PM.pdf",
       "requires_lineup_review": true,
       "lineup_research_adjustment_applied": true,
       "teammate_absence_splits": [],
@@ -20161,8 +20161,8 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 14.8,
-        "league_group_avg": 18.4,
-        "vs_league_pct": -19.5,
+        "league_group_avg": 18.3,
+        "vs_league_pct": -19.0,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "SF",
@@ -20556,8 +20556,8 @@
         "market": "REB",
         "games": 5,
         "allowed_l5": 14.4,
-        "league_group_avg": 13.9,
-        "vs_league_pct": 3.3,
+        "league_group_avg": 14.0,
+        "vs_league_pct": 2.9,
         "included_player_games_before": "2026-11-12"
       },
       "research_position": "C",
