@@ -3,12 +3,37 @@ import unittest
 import numpy as np
 try:
     from iphone_bot.multimarket_probability import simulate
-    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
+    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics,sparse_observed_baseline
 except ImportError:
     from multimarket_probability import simulate
-    from live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
+    from live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics,sparse_observed_baseline
 
 class MultimarketTests(unittest.TestCase):
+    def test_sparse_baseline_uses_observed_prior_box_games_not_same_day_result(self):
+        rows=[{"team":"SAS","date":f"2026-11-{i:02d}",
+               "PTS":10+i,"REB":4+i,"AST":3+i,"MIN":30.}
+              for i in (1,2,3,4)]
+        result=sparse_observed_baseline(rows,"SAS","CHI","2026-11-12",{})
+        self.assertIsNotNone(result)
+        projection,flags=result
+        self.assertTrue(flags["opponent_context_unavailable"])
+        self.assertEqual(flags["sparse_history_games"],4)
+        self.assertEqual(flags["prediction_quality"],
+            "SPARSE_OBSERVED_HISTORY_BASELINE_NO_VALIDATED_HIT_RATE")
+        future={**rows[-1],"date":"2026-11-12","PTS":99.}
+        again=sparse_observed_baseline(rows+[future],"SAS","CHI","2026-11-12",{})
+        self.assertEqual(projection,again[0])
+
+    def test_sparse_baseline_rejects_unobserved_less_than_three_games(self):
+        sample=[{"team":"SAS","date":"2026-11-01",
+                 "PTS":20,"REB":6,"AST":3,"MIN":30}]
+        self.assertIsNone(sparse_observed_baseline(sample,"SAS","CHI","2026-11-12",{}))
+        self.assertIsNone(sparse_observed_baseline(sample*3,"SAS","CHI","2026-11-12",{}))
+        self.assertIsNone(sparse_observed_baseline(
+            sample+[{**sample,"date":"2026-11-02","FTA":None},
+                    {**sample,"date":"2026-11-03","REB":None}],
+            "SAS","CHI","2026-11-12",{}))
+
     def test_game_diagnostics_explain_withheld_quotes_without_inventing_picks(self):
         game="Brooklyn Nets @ New Orleans Pelicans"
         offer={"game":game,"player":"Observed Player","stat":"Points","direction":"More"}
