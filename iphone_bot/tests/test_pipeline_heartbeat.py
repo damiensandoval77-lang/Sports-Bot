@@ -143,6 +143,26 @@ class Heartbeat(unittest.TestCase):
     def test_missing_schedule_fails_even_when_no_markets_expected(self):
         self.assertEqual(stage(evaluate(NOW,{}),"schedule")["status"],"FAIL")
 
+    def test_unreadable_ledger_cannot_report_settlement_complete(self):
+        s = site()
+        s["lagged_matchup_all_market_ledger.json"] = None
+        report = evaluate(NOW, s)
+        settlement = stage(report, "settlement")
+        self.assertEqual(settlement["status"], "FAIL")
+        self.assertIsNone(settlement["evidence"]["count"])
+        self.assertEqual(stage(report, "picks_frozen")["status"], "FAIL")
+
+    def test_fresh_audit_without_ai_report_cannot_report_zero_backlog(self):
+        s = site()
+        s["nightly_grade_health.json"] = {
+            "checked_at": time(minutes=-2),
+            "prizepicks_overdue": 0,
+            "ai_forecasts_ungraded": None,
+        }
+        report = evaluate(NOW, s)
+        self.assertEqual(stage(report, "prizepicks_grade_backlog")["status"], "OK")
+        self.assertEqual(stage(report, "ai_grade_backlog")["status"], "WARN")
+
     def test_overdue_pending_requires_settlement(self):
         r={"game":GAME,"start":time(hours=-10),"grade":"PENDING"}
         self.assertEqual(stage(evaluate(NOW,site(ledger=[r])),"settlement")["status"],"FAIL")

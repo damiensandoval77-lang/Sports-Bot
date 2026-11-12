@@ -40,6 +40,8 @@ def evaluate(now,site,espn=None):
     pp=site.get("prizepicks.json") or {}
     published=site.get("prizepicks_site.json") or {}
     ledger=site.get("lagged_matchup_all_market_ledger.json") or {}
+    ledger_available=isinstance(ledger.get("records"),list)
+    ledger_records=ledger["records"] if ledger_available else []
     model=site.get("lagged_matchup_live_all_markets.json") or {}
     schedule=site.get("nba_schedule.json") or {}
     capture=site.get("tonight_capture_gradeability.json") or {}
@@ -92,7 +94,7 @@ def evaluate(now,site,espn=None):
                      missing=line_fail+line_warn,within_90m=line_fail,
                      provider_status=pp.get("provider_status"),partial_board=pp.get("partial_board"),
                      recovery_workflow=None))
-    frozen={(r.get("game"),ts(r.get("start"))) for r in ledger.get("records",[])
+    frozen={(r.get("game"),ts(r.get("start"))) for r in ledger_records
             if isinstance(r,dict) and ts(r.get("start"))}
     missing=[(g,s) for g,s,_ in soon if has_lines(g,s) and not any(
         name==g and abs((captured_start-s).total_seconds())<=1800
@@ -105,10 +107,10 @@ def evaluate(now,site,espn=None):
     warnings=[f"{g} @ {s.isoformat()}" for g,s in missing if (s-now).total_seconds()>3*3600]
     model_at=ts(model.get("generated_at"))
     current=bool(model_at and s_at and model_at>=s_at)
-    st="FAIL" if failures or posttip else "WARN" if warnings else "OK"
+    st="FAIL" if failures or posttip or not ledger_available else "WARN" if warnings else "OK"
     details={g:(model.get("game_diagnostics") or {}).get(g) for g,s in missing}
     out.append(check("picks_frozen",st,"Saved forecasts missing for verified standard-line games",
-                     missing=failures+posttip+warnings,
+                     missing=failures+posttip+warnings,ledger_available=ledger_available,
                      too_late_to_capture=posttip,model_after_lines=current,
                      excluded_by_game=details,
                      recovery_workflow=REPAIR["picks_frozen"] if failures else None))
@@ -125,7 +127,7 @@ def evaluate(now,site,espn=None):
                        for g in covered)
         if primary_missing:
             state="FAIL"
-        elif capture.get("status")=="CAPTURE_VERIFIED":
+        elif len(covered)==len(soon) and capture.get("status")=="CAPTURE_VERIFIED":
             state="OK"
         else:
             state="WARN"
@@ -134,7 +136,7 @@ def evaluate(now,site,espn=None):
                          primary_unfrozen=primary_missing,
                          without_any_ai_receipt=no_receipt,
                          audit_day=audit_day,
-                         audited_games=len(covered),
+                         audited_games=len(covered),expected_games=len(soon),
                          recovery_workflow=REPAIR["picks_frozen"] if primary_missing and any(s>=now for name,s,_ in soon if any(g.get("game")==name for g in covered)) else None))
     elif soon:
         out.append(check("capture_integrity","WARN",
@@ -202,23 +204,25 @@ def evaluate(now,site,espn=None):
                          age_minutes=report_age,
                          recovery_workflow=None))
     else:
-        prize_overdue=int(overnight.get("prizepicks_overdue") or 0)
-        ai_ungraded=int(overnight.get("ai_forecasts_ungraded") or 0)
-        out.append(check("prizepicks_grade_backlog","FAIL" if prize_overdue else "OK",
+        prize_overdue=overnight.get("prizepicks_overdue")
+        ai_ungraded=overnight.get("ai_forecasts_ungraded")
+        out.append(check("prizepicks_grade_backlog","WARN" if prize_overdue is None else "FAIL" if prize_overdue else "OK",
                          "Original standard PrizePicks research settlement",
                          overdue=prize_overdue,
                          games=overnight.get("prizepicks_overdue_games") or {},
                          recovery_workflow="nba-prizepicks-research-ledger.yml" if prize_overdue else None))
-        out.append(check("ai_grade_backlog","FAIL" if ai_ungraded else "OK",
+        out.append(check("ai_grade_backlog","WARN" if ai_ungraded is None else "FAIL" if ai_ungraded else "OK",
                          "Original AI-only pregame forecast settlement",
                          ungraded=ai_ungraded,recorded=overnight.get("ai_forecasts_recorded"),
                          graded=overnight.get("ai_forecasts_graded"),
                          recovery_workflow="grade_frozen_ai_forecasts.yml" if ai_ungraded else None))
-    overdue=[r for r in ledger.get("records",[]) if r.get("grade")=="PENDING"
+    overdue=[r for r in ledger_records if r.get("grade")=="PENDING"
              and ts(r.get("start")) and (now-ts(r["start"])).total_seconds()>8*3600]
-    out.append(check("settlement","FAIL" if overdue else "OK",
+    out.append(check("settlement","FAIL" if overdue or not ledger_available else "OK",
                      "Unsettled authentic pretip picks >8h after tip",
-                     count=len(overdue),games=sorted({r.get("game") for r in overdue})[:15]))
+                     count=len(overdue) if ledger_available else None,
+                     games=sorted({r.get("game") for r in overdue})[:15],
+                     recovery_workflow=REPAIR["settlement"] if overdue else None))
     overall="FAIL" if any(x["status"]=="FAIL" for x in out) else "WARN" if any(
         x["status"]=="WARN" for x in out) else "OK"
     return {"checked_at":now.isoformat(),"overall":overall,"site":SITE,"stages":out}
