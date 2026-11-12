@@ -5,6 +5,10 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/provisional_short_history.py'
+      - 'research/build_matchup_card_estimates.py'
+      - 'tests/test_matchup_card_estimates.py'
+      - 'iphone_bot/tests/test_provisional_short_history.py'
       - 'iphone_bot/live_lagged_matchup_sidecar.py'
       - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
       - 'iphone_bot/tests/test_multimarket_workflow_dependencies.py'
@@ -37,6 +41,10 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/provisional_short_history.py'
+      - 'research/build_matchup_card_estimates.py'
+      - 'tests/test_matchup_card_estimates.py'
+      - 'iphone_bot/tests/test_provisional_short_history.py'
       - 'iphone_bot/live_lagged_matchup_sidecar.py'
       - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
       - 'iphone_bot/tests/test_multimarket_workflow_dependencies.py'
@@ -293,10 +301,109 @@ jobs:
               --archive docs/matchup_shadow_archive.json \
               --ledger docs/lagged_matchup_all_market_ledger.json \
               --output docs/matchup_calibration_report.json
-            git add docs/matchup_shadow_estimates.json docs/matchup_shadow_archive.json docs/matchup_calibration_report.json
+            python -m research.build_matchup_card_estimates \
+              --ledger docs/lagged_matchup_all_market_ledger.json \
+              --archive docs/matchup_shadow_archive.json \
+              --current docs/matchup_shadow_estimates.json \
+              --output docs/matchup_card_estimates.json
+            git add docs/matchup_shadow_estimates.json docs/matchup_shadow_archive.json docs/matchup_calibration_report.json docs/matchup_card_estimates.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish independently sourced research-only position hit estimates'
             if git push origin HEAD:main; then exit 0; fi
           done
           echo "::error::Unable to publish guarded research feed without overwriting newer main"
           exit 1
+
+  preserved-matchup-previews:
+    needs: [multi-market]
+    if: always() && !cancelled()
+    # Rebuild exact frozen-identity previews from retained evidence even when
+    # a new research-source run fails. This never computes probabilities.
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test exact archived preview identities and provenance
+        run: python -m unittest discover -s tests -p 'test_matchup_card_estimates.py' -v
+      - name: Rebuild and publish compact archived preview artifact only
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m research.build_matchup_card_estimates \
+              --ledger docs/lagged_matchup_all_market_ledger.json \
+              --archive docs/matchup_shadow_archive.json \
+              --current docs/matchup_shadow_estimates.json \
+              --output docs/matchup_card_estimates.json
+            git add docs/matchup_card_estimates.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Restore exact frozen-card previews from preserved research evidence'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo '::error::Could not publish compact preserved preview artifact after retries'
+          exit 1
+      - name: Retain compact archived preview artifact
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: preserved-matchup-card-estimates
+          path: docs/matchup_card_estimates.json
+          retention-days: 7
+
+  provisional-baseline:
+    needs: [multi-market]
+    if: always() && !cancelled()
+    # Separate cohort runs after primary settles, even on primary failure.
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public-history reader dependencies (no training)
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Test isolated provisional cohort and safety guards
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_provisional_short_history.py' -v
+      - name: Publish only provisional estimates or an explicit empty blocked artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            rc=0
+            # Refresh after every fetch. Inputs and injury report cannot be
+            # carried across publication races; old estimates are cleared
+            # explicitly if a fresh, verified source is unavailable.
+            if python -m iphone_bot.fetch_current_form && python -m iphone_bot.build_prizepicks_model_input; then
+              python -m iphone_bot.provisional_short_history || rc=$?
+            else
+              rc=1
+              python -m iphone_bot.provisional_short_history --blocked SOURCE_REFRESH_FAILED || true
+            fi
+            git add docs/provisional_short_history.json
+            if git diff --cached --quiet; then exit "$rc"; fi
+            git commit -m 'Publish isolated provisional short-history descriptive estimates'
+            if git push origin HEAD:main; then exit "$rc"; fi
+          done
+          echo '::error::Could not publish isolated provisional artifact after retries'
+          exit 1
+      - name: Retain separate cohort artifact (never primary grades)
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: provisional-short-history
+          path: docs/provisional_short_history.json
+          retention-days: 7

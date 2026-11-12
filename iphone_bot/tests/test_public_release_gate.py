@@ -39,7 +39,7 @@ class PublicReleaseGateTest(unittest.TestCase):
 
     def test_css_and_js_file_changes_are_hard_failures(self):
         local=self.files()
-        for name in ("feeds.js","live_direct.js","dames_take.js"):
+        for name in ("feeds.js","live_direct.js","dames_take.js","provisional.js"):
             remote=dict(local)
             remote[name]=b"old cached JavaScript"
             self.assertIn(name+": PUBLIC_FILE_DIFFERS_FROM_CHECKED_OUT_MAIN",
@@ -75,7 +75,7 @@ class PhoneRuntimeBundleTests(unittest.TestCase):
         self.assertIn("activeScriptsCorrect", html)
         self.assertIn("runtime[name]===RELEASE_ID", html)
         self.assertIn("latest?.runtime_bundle_id===RELEASE_ID", html)
-        for filename in ("feeds.js", "live_direct.js", "dames_take.js"):
+        for filename in ("feeds.js", "live_direct.js", "dames_take.js", "provisional.js"):
             self.assertIn('src="' + filename + '?bundle=' + version + '"', html)
             source = (root / filename).read_text()
             self.assertIn('globalThis.__damesRunningAssets[' + json.dumps(filename) + ']=' + json.dumps(version), source)
@@ -84,7 +84,7 @@ class PhoneRuntimeBundleTests(unittest.TestCase):
         from pathlib import Path
         root = Path(__file__).resolve().parents[2] / "docs" / "dames-picks"
         version = json.loads((root / "release.json").read_text())["release_id"]
-        required = ("feeds.js", "live_direct.js", "dames_take.js")
+        required = ("feeds.js", "live_direct.js", "dames_take.js", "provisional.js")
         def matches(runtime, script_urls):
             return all(runtime.get(name) == version and
                        name + "?bundle=" + version in script_urls
