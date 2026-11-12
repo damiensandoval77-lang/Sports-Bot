@@ -16,13 +16,35 @@ from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOAR
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
 from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset
 from iphone_bot.verified_nov9_nonparticipants import load_nonparticipants
-from iphone_bot.verified_final_cache import read_cache
+from iphone_bot.verified_final_cache import read_cache, merge_rows
 from iphone_bot.verified_gamebook_inactives import load_gamebook_inactives
 
 OUT=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 STATUS=ROOT/"docs/prizepicks_final_recovery_status.json"
 ET=ZoneInfo("America/New_York")
 S3_BASE="https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/"
+
+def merge_cached_finals(records, fetched, cached, now=None):
+    """Reuse verified final observations for exact pending fixtures after rollover.
+
+    The AI grader may already have obtained an explicit ESPN DNP that a later
+    NBA-only response omits. Missing rows must not erase that source evidence.
+    Conflicting cache/fetch observations remain rejected by merge_rows.
+    """
+    from iphone_bot.paper_pick_pipeline import expected_opponents
+    now=now or dt.datetime.now(dt.timezone.utc)
+    fixtures=set()
+    for r in records:
+        start=utc(r.get('start'))
+        if r.get('status')!='PENDING' or not start or start>=now:
+            continue
+        for opponent in expected_opponents(r.get('game'),r.get('team')):
+            day=start.astimezone(ET).date().isoformat()
+            fixtures.add((day,r['team'],opponent))
+            fixtures.add((day,opponent,r['team']))
+    selected=[r for r in cached
+              if (r.get('date'),r.get('team'),r.get('opponent')) in fixtures]
+    return merge_rows(selected,fetched)
 
 def multi_origin_request(url, requester=request_json):
     """Retry NBA and ESPN JSON through their own provider mirrors."""
@@ -107,6 +129,10 @@ def main():
         rows=[]
         report={"status":"PRIZEPICKS_FINAL_RECOVERY_FAILED","requested_matchups":None,
                 "verified_rows":0,"errors":[type(e).__name__]}
+    historical=read_cache(ROOT/"docs/verified_final_player_cache.json")
+    before_cache=len(rows)
+    rows=merge_cached_finals(records,rows,historical)
+    report['verified_cache_rows_reused']=max(0,len(rows)-before_cache)
     # Supplement missing official feed inactivity only with manually verified
     # NBA/club postgame source links and a matching independently final game ID.
     # A failed cross-check NEVER creates a DNP or changes a settled record.
@@ -119,7 +145,6 @@ def main():
     # An independently verified FINAL player cache can establish exact game
     # completion for historical source-confirmed nonparticipants. A cache
     # never supplies an absent player's made-up points or a betting win/loss.
-    historical=read_cache(ROOT/"docs/verified_final_player_cache.json")
     checked_historical=load_nonparticipants(historical+rows)
     existing={(x.get("source_game_id"),x.get("team"),x.get("player")) for x in rows}
     checked_historical=[r for r in checked_historical
@@ -142,6 +167,9 @@ def main():
     graded = [r for r in preview["records"] if r.get("status")=="SETTLED"]
     voided=[r for r in preview["records"] if r.get("status")=="VOID_DNP"]
     unresolved=[r for r in preview["records"] if r.get("status")=="PENDING"]
+    if (report['status']=='PRIZEPICKS_FINAL_RECOVERY_FAILED' and pending and
+            not unresolved and report['verified_cache_rows_reused']):
+        report['status']='VERIFIED_FINAL_CACHE_RECOVERY'
     report["recent_research_pending_before_recovery"]=len(pending)
     report["recent_research_settlement_matches"]=len(graded)
     report["recent_research_verified_dnp_voids"]=len(voided)
