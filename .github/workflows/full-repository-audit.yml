@@ -2,6 +2,8 @@ name: Full repository static and workflow architecture audit
 on:
   pull_request:
     paths:
+      - 'scripts/verify_recovery_outcome.py'
+      - 'tests/test_verify_recovery_outcome.py'
       - 'scripts/full_repository_audit.py'
       - 'scripts/audit_branch_inventory.py'
       - '.github/workflows/full-repository-audit.yml'
@@ -9,6 +11,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/verify_recovery_outcome.py'
+      - 'tests/test_verify_recovery_outcome.py'
       - 'scripts/full_repository_audit.py'
       - 'scripts/audit_branch_inventory.py'
       - '.github/workflows/full-repository-audit.yml'
@@ -34,6 +38,8 @@ jobs:
           node-version: '22'
       - name: Install YAML parser
         run: python -m pip install 'PyYAML>=6,<7'
+      - name: Test recovery outcome verification
+        run: python -m unittest discover -s tests -p 'test_verify_recovery_outcome.py' -v
       - name: Audit every tracked source and all Actions workflows
         id: audit
         run: |
@@ -111,12 +117,14 @@ jobs:
             echo "- Static source/workflow audit: $STATIC_RESULT"
             echo "- Complete branch/PR inventory: $BRANCH_RESULT"
             echo "- Production health and free recovery: $PROD_RESULT (skipped on PR)"
-            echo "- Source evidence: download both artifacts attached to this workflow run."
+            echo "- Source evidence: download the audit and recovery artifacts attached to this workflow run."
             echo ""
             if [[ "$STATIC_RESULT" != "success" || "$BRANCH_RESULT" != "success" || ( "$EVENT_NAME" != "pull_request" && "$PROD_RESULT" != "success" ) ]]; then
               echo "**PARTIAL / BLOCKED**: One or more audit or production health jobs failed. Credit-free recovery was attempted when eligible. The app is NOT verified healthy."
+            elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+              echo "**PASS (static and branch checks only)**: Production recovery and public-data checks are skipped on pull requests."
             else
-              echo "**PASS (static and branch checks only)**: This does not verify production data, grading, mobile UI or live deployment."
+              echo "**PASS (repository checks and published-data verification)**: Mobile UI interaction remains a separate check; see the production receipt for scope."
             fi
           } | tee out/summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload persistent summary
@@ -153,7 +161,7 @@ jobs:
             gh issue create --repo "$GH_REPO" --title "$title" --body "$message"
           fi
       - name: Fail the report job for incomplete audits
-        if: needs.static-audit.result != 'success' || needs.branch-inventory.result != 'success'
+        if: needs.static-audit.result != 'success' || needs.branch-inventory.result != 'success' || (github.event_name != 'pull_request' && needs.production-health.result != 'success')
         run: exit 1
 
   production-health:
@@ -173,41 +181,10 @@ jobs:
           python-version: '3.11'
       - name: Evaluate persisted live-readiness and overdue-grade evidence
         id: health
+        continue-on-error: true
         run: |
-          python - <<'PY'
-          import json,datetime as dt,pathlib
-          root=pathlib.Path('docs')
-          out=pathlib.Path('out/repo-audit')
-          out.mkdir(parents=True,exist_ok=True)
-          now=dt.datetime.now(dt.timezone.utc)
-          def read(name):
-              try:return json.loads((root/name).read_text())
-              except (OSError,ValueError):return {}
-          def age_minutes(stamp):
-              try:
-                  t=dt.datetime.fromisoformat(str(stamp).replace('Z','+00:00'))
-                  return round((now-t.astimezone(dt.timezone.utc)).total_seconds()/60,1)
-              except (ValueError,TypeError,AttributeError):return None
-          readiness=read('production_readiness.json')
-          grades=read('ai_forecast_grade_status.json')
-          overdue=read('grading_overdue_health.json')
-          ready_age=age_minutes(readiness.get('checked_at'))
-          ready=readiness.get('status')=='READY' and ready_age is not None and 0<=ready_age<=60
-          unresolved=int(grades.get('ungraded') or 0)
-          grade_ok=unresolved==0 and overdue.get('status') not in ('OVERDUE_UNGRADED','FAILED')
-          result={'checked_at':now.isoformat(),'readiness_status':readiness.get('status','MISSING'),
-                  'readiness_age_minutes':ready_age,'passing_required_checks':readiness.get('passing_required_checks'),
-                  'required_checks':readiness.get('required_checks'),
-                  'blocking_components':readiness.get('blocking_components',[]),
-                  'degraded_components':readiness.get('degraded_components',[]),
-                  'ungraded_frozen_forecasts':unresolved,'grade_status':grades.get('status'),
-                  'overdue_status':overdue.get('status'),
-                  'production_healthy':bool(ready and grade_ok),
-                  'recovery_policy':'Verified-only; no synthetic grades or paid provider refreshes'}
-          (out/'production-health.json').write_text(json.dumps(result,indent=2)+'\n')
-          print(json.dumps(result,indent=2))
-          if not result['production_healthy']:raise SystemExit(1)
-          PY
+          echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          python scripts/verify_recovery_outcome.py --local --output out/repo-audit/production-health.json
       - name: Trigger existing credit-free recovery when the coordinator is overdue
         if: always() && steps.health.outcome == 'failure'
         env:
@@ -222,13 +199,27 @@ jobs:
             echo "Credit-free coordinator already active or recently executed; no duplicate dispatch" | tee -a "$GITHUB_STEP_SUMMARY"
           else
             gh workflow run phase1-free-recovery.yml --ref main
-            echo "Dispatched credit-free source recovery; next audit must independently verify refreshed output" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "Dispatched credit-free source recovery; this run will independently verify refreshed public output" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Wait for same-run recovery and verify public data independently
+        if: always() && steps.health.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INITIAL_OUTCOME: ${{ steps.health.outcome }}
+          RECOVERY_STARTED: ${{ steps.health.outputs.started_at }}
+        run: |
+          args=()
+          if [ "$INITIAL_OUTCOME" != "success" ]; then
+            args+=(--not-before "$RECOVERY_STARTED")
+          fi
+          python scripts/verify_recovery_outcome.py --wait-seconds 480 "${args[@]}"
       - name: Preserve production health and recovery evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: production-health-audit-${{ github.run_id }}
-          path: out/repo-audit/production-health.json
+          path: |
+            out/repo-audit/production-health.json
+            out/repo-audit/recovery-verification.json
           if-no-files-found: warn
           retention-days: 90
