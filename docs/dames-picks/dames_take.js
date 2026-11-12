@@ -159,4 +159,4 @@ root.DamesTake={POOL,tierFor,support,damesTake,forSlate};
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["dames_take.js"]="dp-opponent-fallback-20261111-r14";
+globalThis.__damesRunningAssets["dames_take.js"]="dp-complete-form-20261111-r15";
