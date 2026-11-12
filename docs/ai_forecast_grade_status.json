@@ -1,15 +1,15 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-12T04:02:14.202379+00:00",
+  "generated_at": "2026-11-12T04:11:41.701913+00:00",
   "game_date_eastern": "2026-11-10",
   "recorded_pregame_forecasts": 568,
   "graded": 492,
-  "verified_dnp_exclusions": 0,
+  "verified_dnp_exclusions": 20,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 492,
-  "ungraded": 76,
-  "new_grades": 76,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 512,
+  "ungraded": 56,
+  "new_grades": 0,
+  "new_verified_dnp_exclusions": 68,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
@@ -37,12 +37,18 @@
   "ungraded_by_game": {
     "Boston Celtics @ Philadelphia 76ers": 4,
     "LA Clippers @ Phoenix Suns": 12,
-    "Miami Heat @ Utah Jazz": 24,
+    "Miami Heat @ Utah Jazz": 8,
     "Milwaukee Bucks @ New York Knicks": 8,
     "Oklahoma City Thunder @ Portland Trail Blazers": 12,
-    "Orlando Magic @ Sacramento Kings": 16
+    "Orlando Magic @ Sacramento Kings": 12
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Alex Karaban",
+    "Dru Smith",
+    "Nick Richards",
+    "Nikola Jovi\u0107",
+    "Tim Hardaway Jr."
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Boston Celtics @ Philadelphia 76ers": [
       "Adem Bona"
@@ -53,12 +59,8 @@
       "Nick Martinelli"
     ],
     "Miami Heat @ Utah Jazz": [
-      "Dru Smith",
       "Keyonte George",
-      "Lauri Markkanen",
-      "Nick Richards",
-      "Nikola Jovi\u0107",
-      "Tim Hardaway Jr."
+      "Lauri Markkanen"
     ],
     "Milwaukee Bucks @ New York Knicks": [
       "Josh Hart",
@@ -70,50 +72,34 @@
       "V\u00edt Krej\u010d\u00ed"
     ],
     "Orlando Magic @ Sacramento Kings": [
-      "Alex Karaban",
       "Jonathan Mogbo",
       "Nique Clifford",
       "Tristan da Silva"
     ]
   },
-  "ungraded_distinct_player_markets": 76,
+  "ungraded_distinct_player_markets": 56,
   "final_feed": {
     "pending_matchups": 16,
     "final_nba_games": 14,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 324,
+    "retrieved_player_lines": 342,
     "errors": [
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
+      "Secondary ESPN explicit DNP unverified: Direct ESPN final matchup mismatch"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 9,
     "final_cached_id_nba_games": 7,
-    "secondary_dnp_still_unverified": 53,
+    "secondary_verified_explicit_dnp_players": 18,
+    "secondary_dnp_still_unverified": 35,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 493,
-    "newly_retrieved_verified_rows": 25,
+    "verified_cache_rows": 511,
+    "newly_retrieved_verified_rows": 18,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 76
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 56
     },
     "players": [
       {
@@ -229,34 +215,6 @@
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
         "player": "Keyonte George",
         "team": "UTA",
         "game": "Miami Heat @ Utah Jazz",
@@ -308,90 +266,6 @@
       {
         "player": "Lauri Markkanen",
         "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
         "game": "Miami Heat @ Utah Jazz",
         "stat": "REB",
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
@@ -533,34 +407,6 @@
         "player": "V\u00edt Krej\u010d\u00ed",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
         "stat": "REB",
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },

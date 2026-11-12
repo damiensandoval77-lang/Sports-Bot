@@ -1,15 +1,15 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-12T04:02:14.202379+00:00",
+  "generated_at": "2026-11-12T04:11:41.701913+00:00",
   "game_date_eastern": "2026-11-11",
   "recorded_pregame_forecasts": 984,
   "graded": 560,
-  "verified_dnp_exclusions": 0,
+  "verified_dnp_exclusions": 48,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 560,
-  "ungraded": 424,
-  "new_grades": 76,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 608,
+  "ungraded": 376,
+  "new_grades": 0,
+  "new_verified_dnp_exclusions": 68,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
@@ -35,25 +35,35 @@
     }
   },
   "ungraded_by_game": {
-    "Boston Celtics @ Toronto Raptors": 20,
+    "Boston Celtics @ Toronto Raptors": 8,
     "Brooklyn Nets @ New Orleans Pelicans": 20,
-    "Cleveland Cavaliers @ New York Knicks": 24,
-    "Denver Nuggets @ Memphis Grizzlies": 16,
+    "Cleveland Cavaliers @ New York Knicks": 4,
+    "Denver Nuggets @ Memphis Grizzlies": 4,
     "Golden State Warriors @ Houston Rockets": 112,
     "Los Angeles Lakers @ Milwaukee Bucks": 8,
     "Oklahoma City Thunder @ Portland Trail Blazers": 100,
     "Orlando Magic @ Utah Jazz": 96,
-    "San Antonio Spurs @ Chicago Bulls": 12,
+    "San Antonio Spurs @ Chicago Bulls": 8,
     "Washington Wizards @ Indiana Pacers": 16
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Bryce Hopkins",
+    "Buddy Hield",
+    "Craig Porter Jr.",
+    "Jaden Bradley",
+    "James Wiseman",
+    "Jordan Clarkson",
+    "Jose Alvarado",
+    "Kris Murray",
+    "Olivier-Maxence Prosper",
+    "Ron Harper Jr.",
+    "Thomas Bryant",
+    "Trayce Jackson-Davis"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Boston Celtics @ Toronto Raptors": [
-      "Jaden Bradley",
       "Paul George",
-      "Ron Harper Jr.",
-      "Scottie Barnes",
-      "Trayce Jackson-Davis"
+      "Scottie Barnes"
     ],
     "Brooklyn Nets @ New Orleans Pelicans": [
       "Bennedict Mathurin",
@@ -63,17 +73,9 @@
       "Trey Murphy III"
     ],
     "Cleveland Cavaliers @ New York Knicks": [
-      "Craig Porter Jr.",
-      "James Wiseman",
-      "Jordan Clarkson",
-      "Jose Alvarado",
-      "Sam Merrill",
-      "Thomas Bryant"
+      "Sam Merrill"
     ],
     "Denver Nuggets @ Memphis Grizzlies": [
-      "Bryce Hopkins",
-      "Kris Murray",
-      "Olivier-Maxence Prosper",
       "Quinten Post"
     ],
     "Golden State Warriors @ Houston Rockets": [
@@ -164,7 +166,6 @@
       "Wendell Carter Jr."
     ],
     "San Antonio Spurs @ Chicago Bulls": [
-      "Buddy Hield",
       "Devin Vassell",
       "Norman Powell"
     ],
@@ -175,76 +176,33 @@
       "Will Riley"
     ]
   },
-  "ungraded_distinct_player_markets": 424,
+  "ungraded_distinct_player_markets": 376,
   "final_feed": {
     "pending_matchups": 16,
     "final_nba_games": 14,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 324,
+    "retrieved_player_lines": 342,
     "errors": [
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
-      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
-      "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
+      "Secondary ESPN explicit DNP unverified: Direct ESPN final matchup mismatch"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 9,
     "final_cached_id_nba_games": 7,
-    "secondary_dnp_still_unverified": 53,
+    "secondary_verified_explicit_dnp_players": 18,
+    "secondary_dnp_still_unverified": 35,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 493,
-    "newly_retrieved_verified_rows": 25,
+    "verified_cache_rows": 511,
+    "newly_retrieved_verified_rows": 18,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 116,
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 68,
       "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 308
     },
     "players": [
       {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
         "player": "Paul George",
         "team": "BOS",
         "game": "Boston Celtics @ Toronto Raptors",
@@ -273,34 +231,6 @@
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
         "player": "Scottie Barnes",
         "team": "TOR",
         "game": "Boston Celtics @ Toronto Raptors",
@@ -323,34 +253,6 @@
       },
       {
         "player": "Scottie Barnes",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "Boston Celtics @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
         "team": "TOR",
         "game": "Boston Celtics @ Toronto Raptors",
         "stat": "REB",
@@ -497,118 +399,6 @@
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Craig Porter Jr.",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
         "player": "Sam Merrill",
         "team": "CLE",
         "game": "Cleveland Cavaliers @ New York Knicks",
@@ -633,118 +423,6 @@
         "player": "Sam Merrill",
         "team": "CLE",
         "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Thomas Bryant",
-        "team": "CLE",
-        "game": "Cleveland Cavaliers @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Kris Murray",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Olivier-Maxence Prosper",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Olivier-Maxence Prosper",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Olivier-Maxence Prosper",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Olivier-Maxence Prosper",
-        "team": "MEM",
-        "game": "Denver Nuggets @ Memphis Grizzlies",
         "stat": "REB",
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
@@ -2987,34 +2665,6 @@
         "game": "Orlando Magic @ Utah Jazz",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "San Antonio Spurs @ Chicago Bulls",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Devin Vassell",
