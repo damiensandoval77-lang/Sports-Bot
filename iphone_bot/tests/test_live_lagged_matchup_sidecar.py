@@ -34,6 +34,26 @@ class SidecarTests(unittest.TestCase):
         self.assertIsNone(f)
         self.assertIsNotNone(why)
 
+    def test_missing_opponent_context_neutral_fallback_is_explicit_and_prior_only(self):
+        prior=[{"id":"123","player":"Example","team":"SAS","opponent":"CHI",
+                "date":f"2026-11-{i:02d}","PTS":20.,"REB":5.,"AST":4.,
+                "MIN":30.,"FGA":15.,"FTA":4.,"TOV":2.,"OREB":1.}
+               for i in range(1,8)]
+        blocked,reason=build_features(prior,"SAS","CHI","2026-11-12",{})
+        self.assertIsNone(blocked)
+        self.assertEqual(reason,"INSUFFICIENT_PRIOR_OPPONENT_PACE_DEFENSE")
+        features,reason=build_features(prior,"SAS","CHI","2026-11-12",{},
+                                       neutral_defense_on_missing=True)
+        self.assertIsNone(reason)
+        self.assertTrue(features["opponent_context_unavailable"])
+        self.assertEqual(features["opponent_pace_factor"],1.0)
+        self.assertEqual(features["opponent_defense_factor"],1.0)
+        # Never learn from a row dated on or after the upcoming matchup.
+        prior.append({**prior[-1],"date":"2026-11-12","PTS":80.})
+        again,reason=build_features(prior,"SAS","CHI","2026-11-12",{},
+                                    neutral_defense_on_missing=True)
+        self.assertEqual(again["last10_points"],features["last10_points"])
+
     def test_only_standard_points_two_sided_line_selected(self):
         base={"player":"Jokić","team":"DEN","game":"Denver Nuggets @ Houston Rockets",
               "start":"2026-11-10T01:30:00Z","stat":"Points",
