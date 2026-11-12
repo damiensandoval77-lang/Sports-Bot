@@ -7,7 +7,7 @@ const sched={games:[{game:"A @ B",start:"2026-11-12T00:00:00+00:00",game_state:"
 {game:"C @ D",start:"2026-11-12T03:00:00+00:00",game_state:"pre"},
 {game:"E @ F",start:"2026-11-11T00:00:00+00:00",game_state:"post"}]};
 test("near-tip game lacking saved predictions is disclosed",()=>{
- const result=C.tonight(sched,[{sport:"NBA",game:"C @ D",start:"2026-11-12T03:00:00+00:00"}],NOW);
+ const result=C.tonight(sched,[{sport:"NBA",game:"C @ D",start:"2026-11-12T03:00:00+00:00",projection:21.2,direction:"MORE",quoteOnly:false}],NOW);
  assert.equal(result.missing.length,1);assert.equal(result.alert,true);
  assert.match(C.message(result,()=>"7:00 PM"),/No saved picks yet for 1 of 2 upcoming games/);
 });
