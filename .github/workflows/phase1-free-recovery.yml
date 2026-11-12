@@ -55,7 +55,8 @@ jobs:
           import json,os
           p=json.load(open(os.environ["RUNNER_TEMP"]+"/recovery_plan.json"))
           allow={"nba-schedule.yml","nba-no-line-daily-projections.yml","nba-prizepicks-site-publish.yml",
-                 "nba-prizepicks-ai-board.yml","grade_frozen_ai_forecasts.yml"}
+                 "nba-prizepicks-ai-board.yml","grade_frozen_ai_forecasts.yml",
+                 "publish_live_pp_ai_join.yml"}
           assert p["credit_spending_allowed"] is False
           for row in p["dispatch_candidates"]:
               if row["workflow"] not in allow:raise ValueError("Unsafe workflow request")
@@ -66,15 +67,33 @@ jobs:
             # GitHub's list endpoint is repository-scoped and uses UTC timestamps.
             # An active, queued or recently dispatched workflow is left alone.
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=12" > "$RUNNER_TEMP/recent.json"
-            if ! python - "$RUNNER_TEMP/recent.json" <<'PY'
+            if ! python - "$RUNNER_TEMP/recent.json" "$workflow" <<'PY'
           import datetime,json,sys
+          from pathlib import Path
           runs=json.load(open(sys.argv[1])).get("workflow_runs",[])
           now=datetime.datetime.now(datetime.timezone.utc)
+          workflow=sys.argv[2]
+          ai_time=None
+          if workflow=="publish_live_pp_ai_join.yml":
+              try:
+                  ai=json.loads(Path("docs/ai_projection_fallback.json").read_text())
+                  ai_time=datetime.datetime.fromisoformat(
+                      ai["generated_at"].replace("Z","+00:00"))
+              except (OSError,ValueError,KeyError,TypeError):
+                  pass
           for r in runs:
               when=datetime.datetime.fromisoformat(r["created_at"].replace("Z","+00:00"))
+              age=(now-when).total_seconds()
               if r.get("status") in ("queued","waiting","pending","in_progress","requested"):
-                  if (now-when).total_seconds()<5400:sys.exit(1)
-              elif (now-when).total_seconds()<3600:sys.exit(1)
+                  if age<5400:sys.exit(1)
+              elif r.get("conclusion")=="success" and age<3600:
+                  # A successful join PRECEDING newly published model inputs
+                  # is no proof that those inputs reached the public feed.
+                  if ai_time is None or when>=ai_time:sys.exit(1)
+              elif r.get("conclusion")=="failure" and age<900:
+                  # Avoid rapid retry storms, but don't suppress recovery
+                  # for a full hour after a failed credit-free run.
+                  sys.exit(1)
           PY
             then
               echo "Skipping recently active workflow: $workflow"
