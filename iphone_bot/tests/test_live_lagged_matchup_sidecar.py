@@ -38,7 +38,7 @@ class SidecarTests(unittest.TestCase):
         prior=[{"id":"123","player":"Example","team":"SAS","opponent":"CHI",
                 "date":f"2026-11-{i:02d}","PTS":20.,"REB":5.,"AST":4.,
                 "MIN":30.,"FGA":15.,"FTA":4.,"TOV":2.,"OREB":1.}
-               for i in range(1,8)]
+               for i in range(1,10)]
         blocked,reason=build_features(prior,"SAS","CHI","2026-11-12",{})
         self.assertIsNone(blocked)
         self.assertEqual(reason,"INSUFFICIENT_PRIOR_OPPONENT_PACE_DEFENSE")
