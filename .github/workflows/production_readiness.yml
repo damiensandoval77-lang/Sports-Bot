@@ -133,11 +133,19 @@ jobs:
             esac
             # Compare with actual started runs, including in-progress.
             # Prevent every 20-minute audit from buying another board.
-            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status,headBranch |
-              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" '
-                [.[] | select(.headBranch=="main" and (.createdAt | fromdateiso8601) >= $cutoff)] | length')
+            # Keep the paid collector on a hard cooldown even if its last
+            # request failed: avoid repeatedly spending top-up credits.
+            # Free recovery is different: a failed run must not suppress the
+            # next verified retry. Suppress only active or successful runs.
+            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status,conclusion,headBranch |
+              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" \
+                 --arg paid "$([ "$workflow" = nba-prizepicks-full-slate.yml ] && echo true || echo false)" '
+                [.[] | select(.headBranch=="main" and
+                  ((.status != "completed") or
+                   ((.createdAt | fromdateiso8601) >= $cutoff and
+                    ($paid == "true" or .conclusion == "success"))))] | length')
             if [ "$recent" -gt 0 ]; then
-              echo "Skipping $workflow: an execution started within $cooldown_minutes minutes"
+              echo "Skipping $workflow: active or successfully completed within cooldown (paid calls also hard-capped)"
               continue
             fi
             echo "Dispatching bounded recovery: $workflow"
