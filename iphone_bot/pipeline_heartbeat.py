@@ -143,7 +143,7 @@ def evaluate(now,site,espn=None):
     out.append(check("next_slate","WARN" if readiness.get("status")=="NOT_READY" and next_rows else "OK"
                      if readiness.get("status") in ("READY","NO_SCHEDULED_GAMES") else "WARN",
                      "Next-slate line/forecast source readiness",
-                     status=readiness.get("status"),
+                     reported_status=readiness.get("status"),
                      target_date_eastern=readiness.get("target_date_eastern"),
                      missing_lines=[g.get("game") for g in next_rows
                                     if not g.get("captured_line_markets")][:20],
