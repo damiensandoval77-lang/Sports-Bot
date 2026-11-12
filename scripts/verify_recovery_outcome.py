@@ -47,6 +47,17 @@ def evaluate(documents, now=None, not_before=None):
     # Missing counts must never become zero and unknown health must not pass.
     if type(grades.get('ungraded')) is not int or grades['ungraded'] != 0:
         reasons.append('FROZEN_FORECASTS_NOT_FULLY_ACCOUNTED')
+    # A stale or internally inconsistent zero backlog cannot prove recovery.
+    for name, document, field in ((FILES[1], grades, 'generated_at'),
+                                  (FILES[2], overdue, 'checked_at')):
+        observed = moment(document.get(field))
+        if not observed or not 0 <= (now-observed).total_seconds() <= 26*3600:
+            reasons.append('GRADING_EVIDENCE_STALE_OR_UNDATED:' + name)
+    counts = [grades.get(key) for key in ('recorded_pregame_forecasts', 'graded',
+              'verified_dnp_exclusions', 'verified_pretip_transfer_exclusions', 'ungraded')]
+    if (any(type(value) is not int or value < 0 for value in counts)
+            or counts[0] != sum(counts[1:])):
+        reasons.append('FROZEN_FORECAST_COUNTS_DO_NOT_RECONCILE')
     if overdue.get('status') != 'NO_OVERDUE_PENDING':
         reasons.append('OVERDUE_GRADE_HEALTH_NOT_VERIFIED')
     summary = capture.get('summary')

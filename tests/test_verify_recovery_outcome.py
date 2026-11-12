@@ -9,14 +9,25 @@ NOW = dt.datetime(2026, 11, 12, 22, tzinfo=dt.timezone.utc)
 def healthy():
     return dict(zip(FILES, [
         {'status': 'READY', 'checked_at': NOW.isoformat()},
-        {'status': 'AI_PRETIP_FORECASTS_GRADED', 'ungraded': 0},
-        {'status': 'NO_OVERDUE_PENDING'},
+        {'status': 'AI_PRETIP_FORECASTS_GRADED', 'ungraded': 0, 'generated_at': NOW.isoformat(), 'recorded_pregame_forecasts': 10, 'graded': 8, 'verified_dnp_exclusions': 2, 'verified_pretip_transfer_exclusions': 0},
+        {'status': 'NO_OVERDUE_PENDING', 'checked_at': NOW.isoformat()},
         {'status': 'CAPTURE_VERIFIED', 'checked_at': NOW.isoformat(), 'game_date_eastern': '2026-11-12', 'summary': {'total_standard_markets_without_frozen_model': 0}},
     ]))
 
 class RecoveryOutcomeTests(unittest.TestCase):
     def test_complete_data_passes(self):
         self.assertTrue(evaluate(healthy(), NOW)['healthy'])
+
+    def test_stale_zero_backlog_and_inconsistent_totals_fail(self):
+        for index, field in [(1, 'generated_at'), (2, 'checked_at')]:
+            for stamp in (None, 'bad', '2026-11-10T22:00:00Z', '2026-11-13T22:00:00Z'):
+                docs=healthy()
+                docs[FILES[index]][field]=stamp
+                self.assertFalse(evaluate(docs,NOW)['healthy'])
+        for value in (None, False, -1, 11):
+            docs=healthy()
+            docs[FILES[1]]['recorded_pregame_forecasts']=value
+            self.assertIn('FROZEN_FORECAST_COUNTS_DO_NOT_RECONCILE',evaluate(docs,NOW)['reasons'])
 
     def test_missing_inputs_and_missing_zero_counts_fail_closed(self):
         for name in FILES:
