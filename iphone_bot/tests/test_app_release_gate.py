@@ -43,7 +43,7 @@ class AppReleaseGateTests(unittest.TestCase):
         r=evaluate(inp,NOW)
         self.assertFalse(r["checks_passing"])
         self.assertIn("nba_capture",r["blocking_checks"])
-    def test_unmodeled_raw_quotes_do_not_reclassify_saved_graded_picks(self):
+    def test_unmodeled_raw_quotes_block_full_app_certification(self):
         inp=fixture()
         inp["nba_capture"]={
             "checked_at":STAMP,"status":"CAPTURE_INCOMPLETE",
@@ -51,8 +51,8 @@ class AppReleaseGateTests(unittest.TestCase):
             "summary":{"schedule_games":1,"games_with_line_backed_models":1,
                        "total_standard_markets_without_frozen_model":139}}
         r=evaluate(inp,NOW)
-        self.assertTrue(r["checks_passing"],r["checks"])
-        self.assertEqual(r["status"],"MONITORING")
+        self.assertFalse(r["checks_passing"])
+        self.assertIn("PRIMARY_STANDARD_COVERAGE_INCOMPLETE",r["checks"]["nba_capture"]["issues"])
     def test_uncaptured_game_blocks_app_even_with_good_other_picks(self):
         inp=fixture()
         inp["nba_capture"]={
