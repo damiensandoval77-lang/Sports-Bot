@@ -1,42 +1,42 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-12T03:34:21.637728+00:00",
+  "generated_at": "2026-11-12T04:02:14.202379+00:00",
   "game_date_eastern": "2026-11-11",
   "recorded_pregame_forecasts": 984,
-  "graded": 484,
+  "graded": 560,
   "verified_dnp_exclusions": 0,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 484,
-  "ungraded": 500,
-  "new_grades": 164,
+  "accounted_for": 560,
+  "ungraded": 424,
+  "new_grades": 76,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 121,
-      "mae": 4.554,
-      "mean_signed_error": 0.671
+      "graded": 140,
+      "mae": 4.63,
+      "mean_signed_error": 0.529
     },
     "REB": {
-      "graded": 121,
-      "mae": 2.011,
-      "mean_signed_error": 0.783
+      "graded": 140,
+      "mae": 2.022,
+      "mean_signed_error": 0.832
     },
     "AST": {
-      "graded": 121,
-      "mae": 1.27,
-      "mean_signed_error": 0.031
+      "graded": 140,
+      "mae": 1.246,
+      "mean_signed_error": 0.016
     },
     "PRA": {
-      "graded": 121,
-      "mae": 6.15,
-      "mean_signed_error": 1.413
+      "graded": 140,
+      "mae": 6.191,
+      "mean_signed_error": 1.319
     }
   },
   "ungraded_by_game": {
     "Boston Celtics @ Toronto Raptors": 20,
-    "Brooklyn Nets @ New Orleans Pelicans": 96,
+    "Brooklyn Nets @ New Orleans Pelicans": 20,
     "Cleveland Cavaliers @ New York Knicks": 24,
     "Denver Nuggets @ Memphis Grizzlies": 16,
     "Golden State Warriors @ Houston Rockets": 112,
@@ -57,29 +57,10 @@
     ],
     "Brooklyn Nets @ New Orleans Pelicans": [
       "Bennedict Mathurin",
-      "Bryce McGowens",
-      "Chaney Johnson",
-      "Danny Wolf",
-      "Day'Ron Sharpe",
-      "Dejounte Murray",
-      "Derik Queen",
-      "Herbert Jones",
-      "Jeremiah Fears",
-      "Jordan Poole",
-      "Josh Minott",
-      "Julius Randle",
-      "Karlo Matkovi\u0107",
-      "Keon Ellis",
-      "Michael Porter Jr.",
       "Mikel Brown Jr.",
-      "Moritz Wagner",
-      "Noah Clowney",
       "Nolan Traore",
-      "Saddiq Bey",
-      "Terance Mann",
       "Trendon Watford",
-      "Trey Murphy III",
-      "Zion Williamson"
+      "Trey Murphy III"
     ],
     "Cleveland Cavaliers @ New York Knicks": [
       "Craig Porter Jr.",
@@ -194,30 +175,45 @@
       "Will Riley"
     ]
   },
-  "ungraded_distinct_player_markets": 500,
+  "ungraded_distinct_player_markets": 424,
   "final_feed": {
-    "pending_matchups": 15,
-    "final_nba_games": 13,
+    "pending_matchups": 16,
+    "final_nba_games": 14,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 299,
+    "retrieved_player_lines": 324,
     "errors": [
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
       "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
+      "Secondary ESPN explicit DNP unverified: All independent official NBA endpoints failed: HTTPError",
       "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 10,
-    "final_cached_id_nba_games": 8,
+    "cached_official_id_candidates": 9,
+    "final_cached_id_nba_games": 7,
+    "secondary_dnp_still_unverified": 53,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 478,
-    "newly_retrieved_verified_rows": 49,
+    "verified_cache_rows": 493,
+    "newly_retrieved_verified_rows": 25,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 96,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 404
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 116,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 308
     },
     "players": [
       {
@@ -365,672 +361,140 @@
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bennedict Mathurin",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bennedict Mathurin",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Bennedict Mathurin",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaney Johnson",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaney Johnson",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaney Johnson",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaney Johnson",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Danny Wolf",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Danny Wolf",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Danny Wolf",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Danny Wolf",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Day'Ron Sharpe",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Day'Ron Sharpe",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Day'Ron Sharpe",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Day'Ron Sharpe",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Minott",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Minott",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Minott",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Minott",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julius Randle",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julius Randle",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julius Randle",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julius Randle",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keon Ellis",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keon Ellis",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keon Ellis",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Keon Ellis",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Michael Porter Jr.",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Michael Porter Jr.",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Michael Porter Jr.",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Michael Porter Jr.",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Mikel Brown Jr.",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Mikel Brown Jr.",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Mikel Brown Jr.",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Mikel Brown Jr.",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moritz Wagner",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moritz Wagner",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moritz Wagner",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moritz Wagner",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noah Clowney",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noah Clowney",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noah Clowney",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noah Clowney",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nolan Traore",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nolan Traore",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nolan Traore",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Nolan Traore",
         "team": "BKN",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terance Mann",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terance Mann",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terance Mann",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terance Mann",
-        "team": "BKN",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trendon Watford",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trendon Watford",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trendon Watford",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trendon Watford",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trey Murphy III",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trey Murphy III",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trey Murphy III",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Trey Murphy III",
         "team": "NOP",
         "game": "Brooklyn Nets @ New Orleans Pelicans",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Brooklyn Nets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Craig Porter Jr.",
