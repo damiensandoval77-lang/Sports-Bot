@@ -757,3 +757,17 @@ test("Closed developer diagnostic disclosure hides all child controls on mobile"
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(html.includes("#diagnostics:not([open]) > :not(summary){display:none!important}"));
 });
+
+test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
+ assert.ok(!html.includes("p.game===g.game)&&!p.quoteOnly"));
+ assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
+ assert.ok(html.includes('SAVED PRETIP LINE'));
+ assert.ok(html.includes('NO AI FORECAST'));
+ assert.ok(html.includes('Quote-only lines are never graded as model picks.'));
+ const archive=JSON.parse(fs.readFileSync("docs/prizepicks_pregame_line_archive.json","utf8"));
+ for(const game of ["Brooklyn Nets @ New Orleans Pelicans","Los Angeles Lakers @ Milwaukee Bucks","San Antonio Spurs @ Chicago Bulls"]){
+  assert.ok(archive.quotes.some(q=>q.game===game&&q.tier==="standard"&&Date.parse(q.observed_at)<Date.parse(q.starts_at)),game);
+ }
+});
