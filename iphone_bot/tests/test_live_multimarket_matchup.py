@@ -30,8 +30,8 @@ class MultimarketTests(unittest.TestCase):
         self.assertIsNone(sparse_observed_baseline(sample,"SAS","CHI","2026-11-12",{}))
         self.assertIsNone(sparse_observed_baseline(sample*3,"SAS","CHI","2026-11-12",{}))
         self.assertIsNone(sparse_observed_baseline(
-            sample+[{**sample,"date":"2026-11-02","FTA":None},
-                    {**sample,"date":"2026-11-03","REB":None}],
+            sample+[{**sample[0],"date":"2026-11-02","REB":None},
+                    {**sample[0],"date":"2026-11-03","REB":None}],
             "SAS","CHI","2026-11-12",{}))
 
     def test_game_diagnostics_explain_withheld_quotes_without_inventing_picks(self):
