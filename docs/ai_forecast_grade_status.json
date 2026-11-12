@@ -1,37 +1,37 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-12T05:26:04.418114+00:00",
+  "generated_at": "2026-11-12T05:33:07.943378+00:00",
   "game_date_eastern": "2026-11-11",
   "recorded_pregame_forecasts": 984,
-  "graded": 740,
-  "verified_dnp_exclusions": 64,
+  "graded": 808,
+  "verified_dnp_exclusions": 80,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 804,
-  "ungraded": 180,
-  "new_grades": 104,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 888,
+  "ungraded": 96,
+  "new_grades": 68,
+  "new_verified_dnp_exclusions": 16,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 185,
-      "mae": 4.75,
-      "mean_signed_error": 0.561
+      "graded": 202,
+      "mae": 4.833,
+      "mean_signed_error": 0.396
     },
     "REB": {
-      "graded": 185,
-      "mae": 1.971,
-      "mean_signed_error": 0.721
+      "graded": 202,
+      "mae": 1.953,
+      "mean_signed_error": 0.673
     },
     "AST": {
-      "graded": 185,
-      "mae": 1.29,
-      "mean_signed_error": 0.145
+      "graded": 202,
+      "mae": 1.285,
+      "mean_signed_error": 0.147
     },
     "PRA": {
-      "graded": 185,
-      "mae": 6.247,
-      "mean_signed_error": 1.424
+      "graded": 202,
+      "mae": 6.227,
+      "mean_signed_error": 1.233
     }
   },
   "ungraded_by_game": {
@@ -41,12 +41,13 @@
     "Denver Nuggets @ Memphis Grizzlies": 4,
     "Golden State Warriors @ Houston Rockets": 8,
     "Los Angeles Lakers @ Milwaukee Bucks": 8,
-    "Oklahoma City Thunder @ Portland Trail Blazers": 100,
+    "Oklahoma City Thunder @ Portland Trail Blazers": 16,
     "Orlando Magic @ Utah Jazz": 4,
     "San Antonio Spurs @ Chicago Bulls": 8,
     "Washington Wizards @ Indiana Pacers": 16
   },
   "excluded_verified_dnp_players": [
+    "Brooks Barnhizer",
     "Bryce Hopkins",
     "Buddy Hield",
     "Craig Porter Jr.",
@@ -55,14 +56,17 @@
     "James Wiseman",
     "Jordan Clarkson",
     "Jose Alvarado",
+    "Josh Dix",
     "Kris Murray",
     "Kyle Filipowski",
+    "Micah Potter",
     "Olivier-Maxence Prosper",
     "Ron Harper Jr.",
     "Thomas Bryant",
     "Tony Bradley",
     "Trayce Jackson-Davis",
-    "Tristan da Silva"
+    "Tristan da Silva",
+    "Yang Hansen"
   ],
   "ungraded_distinct_player_names_by_game": {
     "Boston Celtics @ Toronto Raptors": [
@@ -91,31 +95,10 @@
       "Quentin Grimes"
     ],
     "Oklahoma City Thunder @ Portland Trail Blazers": [
-      "Aday Mara",
       "Ajay Mitchell",
-      "Alex Caruso",
-      "Bennett Stirtz",
-      "Branden Carlson",
-      "Brooks Barnhizer",
       "Chris Youngblood",
-      "Damian Lillard",
-      "Deni Avdija",
-      "Donovan Clingan",
-      "Isaiah Hartenstein",
-      "Jared McCain",
       "Jaylin Williams",
-      "Josh Dix",
-      "Jrue Holiday",
-      "Kenrich Williams",
-      "Micah Peavy",
-      "Micah Potter",
-      "Robert Williams III",
-      "Scoot Henderson",
-      "Shai Gilgeous-Alexander",
-      "Sidy Cissoko",
-      "Toumani Camara",
-      "V\u00edt Krej\u010d\u00ed",
-      "Yang Hansen"
+      "V\u00edt Krej\u010d\u00ed"
     ],
     "Orlando Magic @ Utah Jazz": [
       "Lauri Markkanen"
@@ -131,30 +114,29 @@
       "Will Riley"
     ]
   },
-  "ungraded_distinct_player_markets": 180,
+  "ungraded_distinct_player_markets": 96,
   "final_feed": {
     "pending_matchups": 17,
-    "final_nba_games": 16,
+    "final_nba_games": 17,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 392,
+    "retrieved_player_lines": 414,
     "errors": [
       "Secondary ESPN explicit DNP unverified: Direct ESPN final matchup mismatch"
     ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 8,
-    "final_cached_id_nba_games": 7,
-    "secondary_verified_explicit_dnp_players": 22,
-    "secondary_dnp_still_unverified": 38,
+    "final_cached_id_nba_games": 8,
+    "secondary_verified_explicit_dnp_players": 26,
+    "secondary_dnp_still_unverified": 42,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 559,
-    "newly_retrieved_verified_rows": 26,
+    "verified_cache_rows": 581,
+    "newly_retrieved_verified_rows": 22,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 80,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 100
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 96
     },
     "players": [
       {
@@ -522,704 +504,116 @@
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Ajay Mitchell",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Ajay Mitchell",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Ajay Mitchell",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Ajay Mitchell",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Chris Youngblood",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Chris Youngblood",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Chris Youngblood",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Chris Youngblood",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaylin Williams",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaylin Williams",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaylin Williams",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Jaylin Williams",
         "team": "OKC",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "V\u00edt Krej\u010d\u00ed",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "V\u00edt Krej\u010d\u00ed",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "V\u00edt Krej\u010d\u00ed",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "V\u00edt Krej\u010d\u00ed",
         "team": "POR",
         "game": "Oklahoma City Thunder @ Portland Trail Blazers",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Lauri Markkanen",
