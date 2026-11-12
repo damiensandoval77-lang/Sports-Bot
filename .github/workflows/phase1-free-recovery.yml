@@ -48,7 +48,7 @@ jobs:
           python - <<'PY' > "$RUNNER_TEMP/dispatch.txt"
           import json,os
           p=json.load(open(os.environ["RUNNER_TEMP"]+"/recovery_plan.json"))
-          allow={"nba-schedule.yml","nba-prizepicks-site-publish.yml",
+          allow={"nba-schedule.yml","nba-no-line-daily-projections.yml","nba-prizepicks-site-publish.yml",
                  "nba-prizepicks-ai-board.yml","grade_frozen_ai_forecasts.yml"}
           assert p["credit_spending_allowed"] is False
           for row in p["dispatch_candidates"]:
