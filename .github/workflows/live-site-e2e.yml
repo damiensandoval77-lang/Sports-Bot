@@ -1,5 +1,9 @@
 name: Live deployed Dame's Picks iPhone browser E2E
 on:
+  pull_request:
+    paths:
+      - 'scripts/e2e_live_site.py'
+      - '.github/workflows/live-site-e2e.yml'
   workflow_dispatch:
   schedule:
     - cron: '5,35 * * * *'
@@ -8,7 +12,6 @@ on:
     types: [completed]
 permissions:
   contents: read
-  issues: write
 concurrency:
   group: live-site-e2e
   cancel-in-progress: true
