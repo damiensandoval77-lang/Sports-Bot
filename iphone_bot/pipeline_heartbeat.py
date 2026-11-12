@@ -79,7 +79,8 @@ def evaluate(now,site,espn=None):
     # Exact date pairing prevents yesterday's quotes on the same matchup from
     # satisfying today's game. A missing start is not evidence of coverage.
     def has_lines(game,start):
-        return any(x.get("game")==game and ts(x.get("starts_at"))==start for x in board)
+        return any(x.get("game")==game and ts(x.get("starts_at")) and
+                   abs((ts(x["starts_at"])-start).total_seconds())<=1800 for x in board)
     unlined=[(g,s) for g,s,_ in pretip if not has_lines(g,s)]
     line_fail=[f"{g} @ {s.isoformat()}" for g,s in unlined if (s-now).total_seconds()<=90*60]
     line_warn=[f"{g} @ {s.isoformat()}" for g,s in unlined if (s-now).total_seconds()>90*60]
