@@ -7,6 +7,8 @@ the previous model history and explicitly report the coverage gap.
 """
 from collections import defaultdict
 from datetime import datetime,timezone
+from pathlib import Path
+import json
 try:
     from .fetch_final_boxscores import (NBA_SCHEDULE,NBA_SCHEDULE_ALT,NBA_BOX,
         request_json,verified_schedule_ids,team,local_date,minutes,number)
@@ -19,6 +21,106 @@ except ImportError:
 FIELDS={"FGA":"fieldGoalsAttempted","FTA":"freeThrowsAttempted",
         "TOV":"turnovers","OREB":"reboundsOffensive",
         "PTS":"points","REB":"reboundsTotal","AST":"assists"}
+
+ESPN_SUMMARY="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event={}"
+ESPN_ARCHIVE=Path(__file__).resolve().parents[1]/"docs/nba_season_schedule_2026_27.json"
+
+def _attempts(value):
+    """Extract observed attempts from ESPN's FG/FT made-attempted cell."""
+    parts=str(value or "").split("-")
+    if len(parts)!=2:return None
+    made,attempts=number(parts[0]),number(parts[1])
+    if made is None or attempts is None or made>attempts:return None
+    return attempts
+
+def completed_espn_row(local,event_id,summary,tip_day):
+    """ESPN independently final game, exact source ID and identity, full real stats."""
+    header=summary.get("header") or {}
+    if str(header.get("id"))!=str(event_id):return None
+    comps=header.get("competitions") or []
+    if len(comps)!=1:return None
+    comp=comps[0]
+    if (comp.get("status") or {}).get("type",{}).get("completed") is not True:
+        return None
+    date=local.get("date")
+    if not date or date>=tip_day:return None
+    if comp.get("date"):
+        try:
+            if local_date(comp["date"])!=date:return None
+        except (ValueError,TypeError):return None
+    teams={x.get("homeAway"):team((x.get("team") or {}).get("abbreviation"))
+           for x in comp.get("competitors",[])}
+    own,opp=team(local.get("team")),team(local.get("opponent"))
+    if not own or not opp or set(teams.values())!={own,opp}:return None
+    groups=summary.get("boxscore",{}).get("players") or []
+    if len(groups)!=2:return None
+    matched=[]
+    for g in groups:
+        if team((g.get("team") or {}).get("abbreviation"))!=own:continue
+        for table in g.get("statistics",[]):
+            names=[str(x).upper() for x in table.get("names",[])]
+            for athlete in table.get("athletes",[]):
+                if athlete.get("didNotPlay") is True:continue
+                if str((athlete.get("athlete") or {}).get("id") or "")!=str(local.get("id")):continue
+                vals=athlete.get("stats") or []
+                if len(vals)!=len(names):continue
+                matched.append(dict(zip(names,vals)))
+    if len(matched)!=1:return None
+    v=matched[0]
+    if not {"FG","FT","TO","OREB","PTS","REB","AST","MIN"}.issubset(v):return None
+    values={"FGA":_attempts(v["FG"]),"FTA":_attempts(v["FT"]),
+            "TOV":number(v["TO"]),"OREB":number(v["OREB"]),
+            "PTS":number(v["PTS"]),"REB":number(v["REB"]),"AST":number(v["AST"])}
+    played=minutes(v["MIN"])
+    if any(z is None for z in values.values()) or played is None or not 0<played<=60:
+        return None
+    if any(abs(float(local.get(k,-999))-values[k])>0.01 for k in ("PTS","REB","AST")):
+        return None
+    if abs(float(local.get("MIN",-999))-played)>2.5:
+        return None
+    if values["FGA"]>60 or values["FTA"]>50 or values["OREB"]>25 or values["TOV"]>25:
+        return None
+    return {**local,**values,"MIN":played,"season":"2026-27",
+            "team":own,"opponent":opp,"id":str(local["id"]),
+            "verified_source":"ESPN_FINAL_OPPORTUNITY_HISTORY",
+            "verified_game_id":str(event_id)}
+
+def recover_espn(needed,checked,*,fetch,season_schedule=None,max_games=24):
+    """Fallback when official NBA CDN schedule cannot be downloaded."""
+    if season_schedule is None:
+        try:season_schedule=json.loads(ESPN_ARCHIVE.read_text())
+        except (OSError,ValueError):season_schedule={}
+    if season_schedule.get("season") not in ("2026-27","2026"):
+        return checked,{"status":"ESPN_SEASON_SCHEDULE_UNAVAILABLE","recovered":0,"requested_games":0}
+    events=defaultdict(list)
+    for e in season_schedule.get("games",[]):
+        day=e.get("date_eastern")
+        a,b=team(e.get("away_abbreviation")),team(e.get("home_abbreviation"))
+        if day and a and b and str(e.get("id","")).isdigit():
+            events[(day,tuple(sorted((a,b))))].append(str(e["id"]))
+    candidates=[]
+    for key,rows in needed.items():
+        ids=list(set(events.get(key,[])))
+        if len(ids)==1:candidates.append((key[0],ids[0],rows))
+    candidates.sort(key=lambda item:item[0],reverse=True)
+    result=list(checked)
+    seen={(str(r["id"]),r["team"],r["date"]) for r in result}
+    failures=0
+    for day,gid,rows in candidates[:max_games]:
+        try:summary=fetch(ESPN_SUMMARY.format(gid))
+        except Exception:
+            failures+=1;continue
+        for local,tip_day in rows:
+            row=completed_espn_row(local,gid,summary,tip_day)
+            if row is None:continue
+            key=(row["id"],row["team"],row["date"])
+            if key not in seen:
+                seen.add(key);result.append(row)
+    return result,{"status":"ESPN_FINAL_CROSSCHECKED",
+                   "recovered":len(result)-len(checked),
+                   "requested_games":min(len(candidates),max_games),
+                   "eligible_games":len(candidates),"fetch_failures":failures,
+                   "remaining_missing":max(0,sum(len(v) for v in needed.values())-(len(result)-len(checked)))}
 
 def completed_row(local,game_id,box,tip_day):
     """Return a genuine independently confirmed historical player game."""
@@ -55,7 +157,7 @@ def completed_row(local,game_id,box,tip_day):
             "verified_source":"NBA_CDN_FINAL_OPPORTUNITY_HISTORY",
             "verified_game_id":str(game_id)}
 
-def recover(local,checked,feed,*,fetch=request_json,max_games=24):
+def recover(local,checked,feed,*,fetch=request_json,max_games=24,season_schedule=None):
     """Use official finalized boxes only for historical player-games missing
     from the two-source parquet match. Prioritize players in the live board.
     All dates must precede the exact quoted fixture tip (no post-tip leakage).
@@ -95,7 +197,7 @@ def recover(local,checked,feed,*,fetch=request_json,max_games=24):
             if isinstance(schedule.get("leagueSchedule"),dict):break
         except Exception:continue
     if not schedule or not isinstance(schedule.get("leagueSchedule"),dict):
-        return checked,{"status":"NBA_SCHEDULE_UNAVAILABLE","recovered":0,"requested_games":0}
+        return recover_espn(needed,checked,fetch=fetch,season_schedule=season_schedule,max_games=max_games)
     # Official schedule uses away/home identity; use game keys in either
     # direction but never accept ambiguous collisions.
     pending=set()
@@ -104,7 +206,7 @@ def recover(local,checked,feed,*,fetch=request_json,max_games=24):
     try:
         ids=verified_schedule_ids(schedule,pending)
     except (ValueError,TypeError,KeyError):
-        return checked,{"status":"NBA_SCHEDULE_UNVERIFIED","recovered":0,"requested_games":0}
+        return recover_espn(needed,checked,fetch=fetch,season_schedule=season_schedule,max_games=max_games)
     candidates=[]
     for (day,a,b),rows in needed.items():
         hits=[(key,gid) for key,gid in ids.items()
