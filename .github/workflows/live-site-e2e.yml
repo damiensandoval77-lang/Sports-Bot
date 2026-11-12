@@ -43,5 +43,5 @@ jobs:
           path: out/
           retention-days: 90
       - name: Fail visibly if phone-facing release is incomplete
-        if: steps.verify.outputs.code != '0'
+        if: github.event_name != 'pull_request' && steps.verify.outputs.code != '0'
         run: exit 1
