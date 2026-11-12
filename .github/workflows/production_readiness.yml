@@ -162,6 +162,13 @@ jobs:
           report=docs/production_readiness.json
           test -f "$report"
           title="Automated incident: NBA production readiness degraded"
+          status=$(jq -r '.status // "UNKNOWN"' "$report")
+          if [[ "$(gh api "repos/$GH_REPO" --jq .has_issues 2>/dev/null || echo false)" != "true" ]]; then
+            echo "::warning::GitHub Issues disabled: production incident will be retained in committed readiness JSON and workflow summary."
+            echo "## Production incident: $status" >> "$GITHUB_STEP_SUMMARY"
+            echo "Issues are disabled; see [readiness evidence](https://github.com/$GH_REPO/blob/main/docs/production_readiness.json)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           existing=$(gh issue list --state all --limit 100 --json number,title,state |
             jq -r --arg title "$title" '[.[] | select(.title == $title)] | first | .number // empty')
           status=$(jq -r '.status // "UNKNOWN"' "$report")
@@ -194,6 +201,14 @@ jobs:
             gh issue reopen "$existing" 2>/dev/null || true
             gh issue edit "$existing" --body-file "$RUNNER_TEMP/incident.md"
           fi
+      - name: Save production incident report artifact
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-readiness-${{ github.run_id }}
+          path: docs/production_readiness.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Fail visibly when bot is not ready for reliable picks
         if: always() && github.event_name != 'pull_request' && steps.check.outcome == 'failure'
         run: |
