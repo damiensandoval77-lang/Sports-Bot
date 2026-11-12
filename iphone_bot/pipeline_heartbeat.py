@@ -11,7 +11,8 @@ SITE="https://damiensandoval77-lang.github.io/Sports-Bot"
 FILES=["prizepicks.json","prizepicks_site.json","lagged_matchup_all_market_ledger.json",
        "lagged_matchup_live_all_markets.json","nba_schedule.json",
        "nba_scoreboard_independent.json","nba_player_tracking_independent.json",
-       "tonight_capture_gradeability.json","pregame_lifecycle_readiness.json"]
+       "tonight_capture_gradeability.json","pregame_lifecycle_readiness.json",
+       "nightly_grade_health.json"]
 REPAIR={"lines_publish":"nba-prizepicks-site-publish.yml",
         "picks_frozen":"nba-new-ai-all-markets.yml",
         "live_scores":"independent_scoreboard_refresh.yml",
@@ -131,7 +132,7 @@ def evaluate(now,site,espn=None):
                          without_any_ai_receipt=no_receipt,
                          audit_day=audit_day,
                          audited_games=len(covered),
-                         recovery_workflow=None))
+                         recovery_workflow=REPAIR["picks_frozen"] if primary_missing and any(s>=now for name,s,_ in soon if any(g.get("game")==name for g in covered)) else None))
     elif soon:
         out.append(check("capture_integrity","WARN",
                          "No same-slate exact market capture audit published",
@@ -179,6 +180,28 @@ def evaluate(now,site,espn=None):
                      age_minutes=player_age,missing=sorted(set(live)-player_games),
                      espn_available=espn is not None,
                      recovery_workflow=REPAIR["live_players"] if bad else None))
+    # Separate AI-only and standard PrizePicks research ledgers have their
+    # own immutable final grading systems. A healthy four-market ledger does
+    # NOT imply these archived markets were also graded.
+    overnight=site.get("nightly_grade_health.json") or {}
+    report_age=age(now,overnight.get("checked_at"))
+    if not overnight or report_age is None or report_age>180:
+        out.append(check("grading_report","WARN","Overnight grading health is missing or stale",
+                         age_minutes=report_age,
+                         recovery_workflow=None))
+    else:
+        prize_overdue=int(overnight.get("prizepicks_overdue") or 0)
+        ai_ungraded=int(overnight.get("ai_forecasts_ungraded") or 0)
+        out.append(check("prizepicks_grade_backlog","FAIL" if prize_overdue else "OK",
+                         "Original standard PrizePicks research settlement",
+                         overdue=prize_overdue,
+                         games=overnight.get("prizepicks_overdue_games") or {},
+                         recovery_workflow="nba-prizepicks-research-ledger.yml" if prize_overdue else None))
+        out.append(check("ai_grade_backlog","FAIL" if ai_ungraded else "OK",
+                         "Original AI-only pregame forecast settlement",
+                         ungraded=ai_ungraded,recorded=overnight.get("ai_forecasts_recorded"),
+                         graded=overnight.get("ai_forecasts_graded"),
+                         recovery_workflow="grade_frozen_ai_forecasts.yml" if ai_ungraded else None))
     overdue=[r for r in ledger.get("records",[]) if r.get("grade")=="PENDING"
              and ts(r.get("start")) and (now-ts(r["start"])).total_seconds()>8*3600]
     out.append(check("settlement","FAIL" if overdue else "OK",
