@@ -41,10 +41,11 @@ class OfficialOpportunityRecovery(unittest.TestCase):
         def fetch(url):
             if "site.api.espn.com" in url:return ESPN_SUMMARY
             raise OSError("Official CDN schedule temporarily unavailable")
+        self.assertIsNotNone(completed_espn_row(LOCAL,"401909789",ESPN_SUMMARY,"2026-11-11"))
         rows,report=recover([LOCAL],[],FEED,fetch=fetch,
                             season_schedule=ESPN_ARCHIVE)
         self.assertEqual(report["status"],"ESPN_FINAL_CROSSCHECKED")
-        self.assertEqual(report["recovered"],1)
+        self.assertEqual(report["recovered"],1,report)
         self.assertEqual(rows[0]["verified_source"],"ESPN_FINAL_OPPORTUNITY_HISTORY")
         self.assertEqual(rows[0]["FGA"],15)
         self.assertEqual(rows[0]["FTA"],4)
