@@ -133,15 +133,18 @@ def injury_adjustment(base,player_id,team,opponent,day,game_start,now,injuries,n
     if other:
         # Opponent defense changes require independently validated historical
         # matchup splits; do not pretend teammate minutes captures that effect.
-        return {"status":"INJURY_MATCHUP_DATA_INSUFFICIENT","factor":None,
-                "affected":affected,"reason":"OPPONENT_ABSENCE_NOT_MODELED"}
-    if len(same)!=1:return {"status":"INJURY_MATCHUP_DATA_INSUFFICIENT",
-                           "factor":None,"affected":affected,
-                           "reason":"MULTIPLE_TEAMMATES_OUT"}
+        return {"status":"BASELINE_WITH_UNRESOLVED_INJURY","factor":1.0,
+                "affected":affected,"reason":"OPPONENT_ABSENCE_NOT_MODELED",
+                "injury_adjusted":False,"probability_actionable":False}
+    if len(same)!=1:return {"status":"BASELINE_WITH_UNRESOLVED_INJURY",
+                           "factor":1.0,"affected":affected,
+                           "reason":"MULTIPLE_TEAMMATES_OUT",
+                           "injury_adjusted":False,"probability_actionable":False}
     ratio=minutes_shift(player_id,same[0]["player_id"],team,day,games)
-    if ratio is None:return {"status":"INJURY_MATCHUP_DATA_INSUFFICIENT",
-                             "factor":None,"affected":affected,
-                             "reason":"NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS"}
+    if ratio is None:return {"status":"BASELINE_WITH_UNRESOLVED_INJURY",
+                             "factor":1.0,"affected":affected,
+                             "reason":"NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+                             "injury_adjusted":False,"probability_actionable":False}
     return {"status":"CONDITIONAL_INJURY_REPROJECTION",
         "factor":ratio,"affected":affected,
         "provisional":not same[0]["official"],
