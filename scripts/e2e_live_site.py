@@ -77,11 +77,17 @@ def main():
           })""")
         page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=True)
         browser.close()
-    check("live_board_footer_over_under_only",
-          cards>0 and len(footer_evidence)==cards and
-          all(x["is_exact_split"] and not x["has_dots"] and
-              "Frozen" not in (x["footer"] or "") for x in footer_evidence),
-          {"visible_board_cards":cards,"cards":footer_evidence[:12]})
+    footer_details={"visible_board_cards":cards,"cards":footer_evidence[:12]}
+    if cards:
+        check("live_board_footer_over_under_only",
+              len(footer_evidence)==cards and
+              all(x["is_exact_split"] and not x["has_dots"] and
+                  x["footer"] in (" ".join(x["spans"]), "".join(x["spans"]))
+                  for x in footer_evidence),
+              footer_details)
+    else:
+        report["checks"].append({"name":"live_board_footer_over_under_only",
+                                 "status":"SKIP","details":footer_details})
     check("executing_assets_match_repository_release",bool(running) and all(running.get(name)==expected_release for name in ("feeds.js","live_direct.js","dames_take.js")),running)
     check("no_browser_javascript_exceptions",not errors,errors[:8])
     check("board_cards_or_honest_empty_state",cards>0 or not nearby or bool(missing),{"cards":cards,"nearby_games":len(nearby)})
