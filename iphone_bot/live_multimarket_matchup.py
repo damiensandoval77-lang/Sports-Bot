@@ -5,6 +5,8 @@ models with 2024-25 paired residual samples. Research estimates are
 not calibrated betting probabilities. Existing grades remain unmodified.
 """
 import json
+import unicodedata
+import re
 from collections import defaultdict
 from datetime import datetime,timezone
 from pathlib import Path
@@ -52,6 +54,19 @@ def select_standard(offers):
         for k,v in excluded.items():reasons[k]+=v
     return selected,dict(reasons)
 
+def normalized_player_name(value):
+    """Conservative identity key: remove Unicode accents and punctuation only.
+
+    This allows provider spelling differences like Sengun/Şengün and
+    Shannon Jr/Shannon Jr., without fuzzy matching distinct player names.
+    Exact current team, NBA player ID and unique fixture match are still
+    required; a market quote alone never establishes roster membership.
+    """
+    name=unicodedata.normalize("NFKD",str(value or "").casefold())
+    name="".join(ch for ch in name if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]+","",name)
+
+
 def resolve_current_roster_identity(player, game, roster, latest_team):
     """Match a name to one last-observed team present in this exact fixture.
 
@@ -62,7 +77,7 @@ def resolve_current_roster_identity(player, game, roster, latest_team):
     if len(sides)!=2 or None in sides or sides[0]==sides[1]:
         return None,"GAME_TEAM_IDENTITY_MISMATCH"
     candidates=set()
-    for pid,team in roster.get(str(player or "").casefold(),set()):
+    for pid,team in roster.get(normalized_player_name(player),set()):
         if team in sides and latest_team.get(pid)==team:
             candidates.add((pid,team))
     if len(candidates)!=1:
@@ -133,7 +148,7 @@ def forecasts(records,feed,pack,now=None,*,injuries=None,news=None,free_watch=No
     for r in records:
         pid=str(r["id"])
         by_id[pid].append(r)
-        roster[str(r.get("player","")).casefold()].add((pid,r["team"]))
+        roster[normalized_player_name(r.get("player",""))].add((pid,r["team"]))
         # Resolve traded histories using the latest actual player-game date,
         # not a historical team from the same season or a guessed quote team.
         day_seen=str(r.get("date") or "")
