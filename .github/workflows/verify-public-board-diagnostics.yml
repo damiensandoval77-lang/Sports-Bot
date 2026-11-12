@@ -7,6 +7,10 @@ on:
       - 'docs/dames-picks/release.json'
       - 'iphone_bot/verify_public_diagnostics.py'
       - '.github/workflows/verify-public-board-diagnostics.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/verify_public_diagnostics.py'
+      - '.github/workflows/verify-public-board-diagnostics.yml'
   workflow_dispatch:
   schedule:
     - cron: '27 15 * * *'

@@ -11,7 +11,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 BASE="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
-EXPECTED="dp-public-board-clean-20261111-r9"
+EXPECTED=json.loads((Path(__file__).resolve().parents[1]/"docs/dames-picks/release.json").read_text())["release_id"]
 def audit():
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True,args=["--no-sandbox"])
@@ -21,7 +21,7 @@ def audit():
             errors=[]
             page.on("pageerror",lambda e:errors.append(str(e)[:300]))
             # GitHub Pages may serve an older release briefly after the
-            # push-triggered canary starts. Poll for the exact new r8 HTML
+            # push-triggered canary starts. Poll for the checked-out release HTML
             # instead of misclassifying deployment latency as UI regression.
             live_release=None
             for attempt in range(16):
@@ -32,7 +32,7 @@ def audit():
                     break
                 if attempt<15:time.sleep(5)
             if live_release!=EXPECTED:
-                raise SystemExit("DEPLOYMENT_NOT_YET_R9: hosted release="+str(live_release))
+                raise SystemExit("DEPLOYMENT_RELEASE_MISMATCH: hosted release="+str(live_release))
             page.wait_for_function("() => typeof state!=='undefined' && !state.loading && !!state.updated",timeout=60000)
             public=page.evaluate("""() => ({
               release:document.querySelector('meta[name="dames-release"]')?.content,
