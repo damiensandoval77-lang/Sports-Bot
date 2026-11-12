@@ -48,6 +48,26 @@ class Heartbeat(unittest.TestCase):
         self.assertIsNone(stage(report,"lines_coverage")["recovery_workflow"])
         self.assertEqual(report["overall"],"FAIL")
 
+    def test_verified_provider_tip_shift_does_not_fake_missing_line(self):
+        s=site()
+        offset=time(minutes=40)
+        for f in ("prizepicks.json","prizepicks_site.json"):
+            s[f]["board_offers"][0]["starts_at"]=offset
+        report=evaluate(NOW,s)
+        self.assertEqual(stage(report,"lines_coverage")["status"],"OK")
+        self.assertEqual(stage(report,"picks_frozen")["status"],"FAIL")
+        s["lagged_matchup_all_market_ledger.json"]["records"]=[
+            {"game":GAME,"start":offset,"grade":"PENDING"}]
+        report=evaluate(NOW,s)
+        self.assertEqual(stage(report,"picks_frozen")["status"],"OK")
+
+    def test_yesterday_matchup_never_counts_as_todays_standard_lines(self):
+        s=site()
+        for f in ("prizepicks.json","prizepicks_site.json"):
+            s[f]["board_offers"][0]["starts_at"]=time(days=-1)
+        report=evaluate(NOW,s)
+        self.assertEqual(stage(report,"lines_coverage")["status"],"FAIL")
+
     def test_missing_source_quotes_early_in_day_is_a_warning_not_fake_zero(self):
         s=site(start=time(hours=5))
         s["prizepicks.json"]["board_offers"]=[]
