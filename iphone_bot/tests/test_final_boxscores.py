@@ -117,7 +117,8 @@ class FinalBoxscoreTests(unittest.TestCase):
               "athletes":[{"athlete":{"displayName":"Sample Player"},
                            "stats":["30:12","5","4","26"]}]}]}]}}
         def request(url):
-            if url==NBA_SCOREBOARD:raise TimeoutError("The read operation timed out")\n            if url in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):raise TimeoutError("NBA schedule unavailable")
+            if url==NBA_SCOREBOARD:raise TimeoutError("The read operation timed out")
+            if url in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):raise TimeoutError("NBA schedule unavailable")
             if url.startswith(ESPN_SCORE):return {"events":[event]}
             if url.startswith(ESPN_BOX):return stats
             raise AssertionError(url)
