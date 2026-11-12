@@ -13,6 +13,7 @@ on:
       - 'iphone_bot/merge_ai_actual_publishing.py'
       - 'iphone_bot/tests/test_merge_ai_actual_publishing.py'
       - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/recover_prizepicks_final_games.py'
       - 'iphone_bot/tests/test_final_boxscores.py'
       - 'iphone_bot/tests/test_direct_espn_final_recovery.py'
       - 'iphone_bot/verified_final_cache.py'
@@ -33,6 +34,7 @@ on:
   pull_request:
     paths:
       - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/recover_prizepicks_final_games.py'
       - 'iphone_bot/archived_espn_game_ids.py'
       - 'iphone_bot/tests/test_archived_espn_game_ids.py'
       - 'iphone_bot/tests/test_fetch_final_boxscores.py'

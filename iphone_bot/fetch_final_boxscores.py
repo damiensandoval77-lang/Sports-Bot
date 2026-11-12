@@ -55,8 +55,10 @@ def local_date(value):
 
 
 def request_json(url,timeout=12):
+    host=urllib.parse.urlsplit(url).hostname or ""
+    referer="https://www.espn.com/" if host.endswith(".espn.com") else "https://www.nba.com/"
     headers={"User-Agent":"Mozilla/5.0 (compatible; SportsBotBoxscoreAudit/1.0)",
-             "Accept":"application/json","Referer":"https://www.nba.com/"}
+             "Accept":"application/json","Referer":referer}
     req=urllib.request.Request(url,headers=headers)
     with urllib.request.urlopen(req,timeout=timeout) as resp:
         data=json.load(resp)
