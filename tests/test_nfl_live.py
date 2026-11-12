@@ -118,3 +118,18 @@ class NFLLiveTests(unittest.TestCase):
             self.assertEqual(result["games"],[])
             self.assertNotIn("players",result)
 if __name__=="__main__":unittest.main()
+
+class NFLTeamAliasTests(NFLLiveTests):
+    def test_washington_alias_matches_scoreboard_and_player_totals(self):
+        game={**self.game(),"away":"WAS"}
+        board=self.scoreboard()
+        board["events"][0]["competitions"][0]["competitors"][1]["team"]["abbreviation"]="WSH"
+        result=parse_scoreboard(board,[game])[game["game_id"]]
+        self.assertEqual(result["away"],"WAS")
+        summary=self.summary()
+        summary["boxscore"]["players"][0]["team"]["abbreviation"]="WSH"
+        players=parse_summary(summary,"WAS","MIN")
+        self.assertEqual(players[0]["team"],"WAS")
+        self.assertEqual(players[0]["stats"]["RUSH_REC_YDS"],51)
+        game["kickoff_utc"]="2026-11-24T01:15:00Z"
+        self.assertEqual(parse_scoreboard(board,[game]),{})
