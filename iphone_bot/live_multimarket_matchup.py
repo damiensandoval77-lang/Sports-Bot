@@ -239,6 +239,19 @@ def main():
     data=data.rename(columns={"player_id":"id","game_date":"date"})
     data["date"]=pd.to_datetime(data["date"],errors="raise").dt.strftime("%Y-%m-%d")
     checked,coverage=current_games(form,data.to_dict(orient="records"))
+    # Recover missing FGA/FTA/TOV/OREB fields only from independently completed,
+    # exactly matched NBA CDN boxes. Never substitute guessed values or use
+    # a game on/after the forecast's own tip date.
+    try:
+        try:
+            from .recover_official_opportunities import recover
+        except ImportError:
+            from recover_official_opportunities import recover
+        checked,official_recovery=recover(form,checked,feed,max_games=24)
+    except Exception as exc:
+        official_recovery={"status":"SOURCE_RECOVERY_ERROR","detail":type(exc).__name__,
+                           "recovered":0}
+    coverage["official_opportunity_recovery"]=official_recovery
     if len(checked)<1000:raise RuntimeError("Insufficient crosschecked player-games")
     injury_file=ROOT/"docs/injury_context.json"
     news_file=ROOT/"docs/underdog_nba_injury_alerts.json"
