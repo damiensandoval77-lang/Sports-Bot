@@ -1,6 +1,6 @@
 {
   "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-12T01:07:06.463962+00:00",
+  "generated_at": "2026-11-12T01:52:09.096494+00:00",
   "game_date_eastern": "2026-11-11",
   "recorded_pregame_forecasts": 676,
   "graded": 0,
@@ -231,14 +231,19 @@
   },
   "ungraded_distinct_player_markets": 676,
   "final_feed": {
-    "pending_matchups": 11,
+    "pending_matchups": 14,
     "final_nba_games": 11,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
     "retrieved_player_lines": 260,
-    "errors": [],
+    "errors": [
+      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
+      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
+      "Direct ESPN final unavailable: All independent official NBA endpoints failed: HTTPError",
+      "ESPN scoreboard unavailable: All independent official NBA endpoints failed: HTTPError"
+    ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 11,
+    "cached_official_id_candidates": 14,
     "final_cached_id_nba_games": 11,
     "status": "FINAL_BOXSCORES_FOUND",
     "verified_cache_rows": 342,
