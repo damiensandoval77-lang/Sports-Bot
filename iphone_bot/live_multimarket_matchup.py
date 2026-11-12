@@ -67,6 +67,18 @@ def normalized_player_name(value):
     return re.sub(r"[^a-z0-9]+","",name)
 
 
+# Explicit provider alias verified 2026-11-12, not generic suffix stripping.
+# NBA player profile identifies Christian Anderson as NBA ID 1643515, CHA:
+# https://www.nba.com/player/1643515/christian-anderson
+# The team's draft announcement uses Christian Anderson Jr. for the same player:
+# https://www.nba.com/hornets/news/hornets-select-christian-anderson-jr-18th-overall-in-2026-nba-draft
+# These aliases never establish roster membership: the exact observed ID/team
+# and latest team must still agree, and ambiguous names fail closed.
+VERIFIED_PROVIDER_ALIASES={
+    "christianandersonjr":("christiananderson","1643515","CHA"),
+}
+
+
 def resolve_current_roster_identity(player, game, roster, latest_team):
     """Match a name to one last-observed team present in this exact fixture.
 
@@ -76,8 +88,17 @@ def resolve_current_roster_identity(player, game, roster, latest_team):
     sides=[TEAM.get(x.strip()) for x in str(game or "").split(" @ ")]
     if len(sides)!=2 or None in sides or sides[0]==sides[1]:
         return None,"GAME_TEAM_IDENTITY_MISMATCH"
+    name_key=normalized_player_name(player)
+    name_matches=set(roster.get(name_key,set()))
+    alias=VERIFIED_PROVIDER_ALIASES.get(name_key)
+    if alias:
+        canonical,expected_id,expected_team=alias
+        name_matches.update(roster.get(canonical,set()))
+        if name_matches!={(expected_id,expected_team)}:
+            return None,("PLAYER_IDENTITY_NOT_UNIQUE" if len(name_matches)>1
+                         else "CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
     candidates=set()
-    for pid,team in roster.get(normalized_player_name(player),set()):
+    for pid,team in name_matches:
         if team in sides and latest_team.get(pid)==team:
             candidates.add((pid,team))
     if len(candidates)!=1:
