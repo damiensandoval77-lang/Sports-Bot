@@ -13,13 +13,13 @@ on:
       - 'scripts/audit_branch_inventory.py'
       - '.github/workflows/full-repository-audit.yml'
   schedule:
-    - cron: '17 11 * * 1'
+    - cron: '28 */2 * * *'
 permissions:
   contents: read
   pull-requests: read
 concurrency:
   group: full-repository-audit-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   static-audit:
     runs-on: ubuntu-24.04
@@ -80,4 +80,69 @@ jobs:
           retention-days: 90
       - name: Fail if any branch could not be verified
         if: steps.branches.outputs.code != '0'
+        run: exit 1
+
+  publish-report:
+    name: Publish evidence and surface audit failures
+    if: always()
+    needs: [static-audit, branch-inventory]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Produce run summary even when an audit job fails
+        env:
+          STATIC_RESULT: ${{ needs.static-audit.result }}
+          BRANCH_RESULT: ${{ needs.branch-inventory.result }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          REF: ${{ github.sha }}
+        run: |
+          mkdir -p out
+          {
+            echo "## Full repository audit receipt"
+            echo ""
+            echo "- Run: https://github.com/$REPO/actions/runs/$RUN_ID"
+            echo "- Commit: $REF"
+            echo "- Static source/workflow audit: $STATIC_RESULT"
+            echo "- Complete branch/PR inventory: $BRANCH_RESULT"
+            echo "- Source evidence: download both artifacts attached to this workflow run."
+            echo ""
+            if [[ "$STATIC_RESULT" != "success" || "$BRANCH_RESULT" != "success" ]]; then
+              echo "**FAILED / INCOMPLETE**: One or more audit jobs failed or did not run. Do not classify this audit as healthy."
+            else
+              echo "**PASS (static and branch checks only)**: This does not verify production data, grading, mobile UI or live deployment."
+            fi
+          } | tee out/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload persistent summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-summary-${{ github.run_id }}
+          path: out/summary.md
+          retention-days: 90
+      - name: Open or update a GitHub issue on audit failures
+        if: needs.static-audit.result != 'success' || needs.branch-inventory.result != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_LINK: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STATIC_RESULT: ${{ needs.static-audit.result }}
+          BRANCH_RESULT: ${{ needs.branch-inventory.result }}
+        run: |
+          title="Automated full repository audit failure"
+          message="Audit run: $RUN_LINK
+          Static source/workflow audit: $STATIC_RESULT
+          Complete branch inventory: $BRANCH_RESULT
+          This is an outstanding repair condition, not a completed fix. Check run artifacts and logs. Do not close until the underlying problem is repaired and a later run passes."
+          existing="$(gh issue list --repo "$GH_REPO" --state open --search "$title in:title" --json number,title --jq '.[] | select(.title=="Automated full repository audit failure") | .number' | head -n 1)"
+          if [[ -n "$existing" ]]; then
+            gh issue comment "$existing" --repo "$GH_REPO" --body "$message"
+          else
+            gh issue create --repo "$GH_REPO" --title "$title" --body "$message"
+          fi
+      - name: Fail the report job for incomplete audits
+        if: needs.static-audit.result != 'success' || needs.branch-inventory.result != 'success'
         run: exit 1
