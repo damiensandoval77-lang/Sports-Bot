@@ -19,13 +19,17 @@ MANIFEST=ROOT/"docs/dames-picks/release.json"
 def git_blob_sha(content):
     return hashlib.sha1(b"blob "+str(len(content)).encode()+b"\0"+content).hexdigest()
 
-def fetch(name):
+RETRY_BUDGET_SECONDS = 360
+RETRY_INTERVAL_SECONDS = 12
+REQUEST_TIMEOUT_SECONDS = 25
+
+def fetch(name, timeout=REQUEST_TIMEOUT_SECONDS):
     # A unique query avoids a stale intermediary cache while using normal
     # GitHub Pages read-only HTTPS endpoints.
     stamp=int(dt.datetime.now(dt.timezone.utc).timestamp())
     req=urllib.request.Request(BASE+name+"?release_audit="+str(stamp),
        headers={"Cache-Control":"no-cache","User-Agent":"DamesPicks-SourceModeVerifier"})
-    with urllib.request.urlopen(req,timeout=25) as response:return response.read()
+    with urllib.request.urlopen(req,timeout=timeout) as response:return response.read()
 
 def evaluate(expected,served,assets):
     checks=[{"name":"release_id_matches_main",
@@ -44,21 +48,47 @@ def evaluate(expected,served,assets):
             "served_release":served.get("release_id"),
             "checks":checks,"status":"PASS" if all(x["pass"] for x in checks) else "FAIL"}
 
+def verify_with_retry(expected, *, fetcher=fetch, clock=time.monotonic,
+                      sleep=time.sleep, budget=RETRY_BUDGET_SECONDS,
+                      interval=RETRY_INTERVAL_SECONDS):
+    """Wait for native Pages convergence, never relax release or byte checks.
+
+    Use elapsed time rather than attempt count: seven slow HTTP requests must
+    share the same six-minute budget. Each request receives only time remaining.
+    """
+    started = clock()
+    deadline = started + budget
+    evidence = {"status": "FAIL", "error": "Verification budget exhausted"}
+    attempts = 0
+    while clock() < deadline:
+        attempts += 1
+        try:
+            def get(name):
+                remaining = deadline - clock()
+                if remaining <= 0:
+                    raise TimeoutError("Verification budget exhausted")
+                return fetcher(name, timeout=min(REQUEST_TIMEOUT_SECONDS, remaining))
+            served = json.loads(get("release.json"))
+            assets = {name: get(name) for name in expected.get("asset_blob_sha1", {})}
+            evidence = evaluate(expected, served, assets)
+        except Exception as err:
+            evidence = {"status": "FAIL",
+                        "error": type(err).__name__ + ": " + str(err)[:250]}
+        evidence["attempt"] = attempts
+        if evidence["status"] == "PASS":
+            break
+        remaining = deadline - clock()
+        if remaining <= 0:
+            break
+        sleep(min(interval, remaining))
+    evidence["elapsed_seconds"] = round(clock() - started, 3)
+    evidence["retry_budget_seconds"] = budget
+    return evidence
+
 def main():
     out=Path(sys.argv[1] if len(sys.argv)>1 else "pages-release-verification.json")
     expected=json.loads(MANIFEST.read_text())
-    evidence={}
-    for attempt in range(1,4):
-        try:
-            served=json.loads(fetch("release.json"))
-            assets={name:fetch(name) for name in expected.get("asset_blob_sha1",{})}
-            evidence=evaluate(expected,served,assets)
-            evidence["attempt"]=attempt
-            if evidence["status"]=="PASS":break
-        except Exception as err:
-            evidence={"status":"FAIL","attempt":attempt,
-                      "error":type(err).__name__+": "+str(err)[:250]}
-        if attempt<3:time.sleep(12)
+    evidence=verify_with_retry(expected)
     evidence["checked_at"]=dt.datetime.now(dt.timezone.utc).isoformat()
     evidence["source_mode"]="legacy_branch"
     evidence["note"]="Verifies native Pages deployment; does NOT claim GitHub Actions deploy-pages was run."
