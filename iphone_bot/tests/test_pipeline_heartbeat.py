@@ -7,8 +7,8 @@ def time(**kw):return (NOW+dt.timedelta(**kw)).isoformat()
 GAME="Miami Heat @ Utah Jazz"
 def site(start=None,snapshot=None,ledger=None,model=None):
     start=start or time(minutes=30)
-    return {"prizepicks.json":{"generated_at":time(minutes=-15),"board_offers":[{"game":GAME}]},
-            "prizepicks_site.json":{"generated_at":snapshot or time(minutes=-10),"board_offers":[{"game":GAME}]},
+    return {"prizepicks.json":{"generated_at":time(minutes=-15),"board_offers":[{"game":GAME,"starts_at":start,"more_tier":"standard","less_tier":"standard"}]},
+            "prizepicks_site.json":{"generated_at":snapshot or time(minutes=-10),"board_offers":[{"game":GAME,"starts_at":start,"more_tier":"standard","less_tier":"standard"}]},
             "lagged_matchup_all_market_ledger.json":{"records":ledger or []},
             "lagged_matchup_live_all_markets.json":model or {},
             "nba_schedule.json":{"games":[{"game":GAME,"start":start}]},
@@ -38,6 +38,64 @@ class Heartbeat(unittest.TestCase):
         self.assertEqual(report["status"],"FAIL")
         self.assertEqual(report["evidence"]["excluded_by_game"][GAME]["frozen_forecasts"],0)
         self.assertEqual(report["evidence"]["excluded_by_game"][GAME]["excluded"],diagnostic["excluded"])
+
+    def test_schedule_without_any_source_quotes_must_not_be_green(self):
+        s=site()
+        s["prizepicks.json"]["board_offers"]=[]
+        s["prizepicks_site.json"]["board_offers"]=[]
+        report=evaluate(NOW,s)
+        self.assertEqual(stage(report,"lines_coverage")["status"],"FAIL")
+        self.assertIsNone(stage(report,"lines_coverage")["recovery_workflow"])
+        self.assertEqual(report["overall"],"FAIL")
+
+    def test_missing_source_quotes_early_in_day_is_a_warning_not_fake_zero(self):
+        s=site(start=time(hours=5))
+        s["prizepicks.json"]["board_offers"]=[]
+        s["prizepicks_site.json"]["board_offers"]=[]
+        report=evaluate(NOW,s)
+        self.assertEqual(stage(report,"lines_coverage")["status"],"WARN")
+
+    def test_partial_primary_frozen_market_is_not_hidden_by_game_coverage(self):
+        s=site()
+        start=time(minutes=30)
+        s["lagged_matchup_all_market_ledger.json"]["records"]=[{"game":GAME,"start":start,"grade":"PENDING"}]
+        s["tonight_capture_gradeability.json"]={
+            "game_date_eastern":"2026-11-11","status":"CAPTURE_INCOMPLETE",
+            "games":[{"game":GAME,"start":start,
+                      "standard_player_stat_markets_never_primary_frozen":11,
+                      "missing_primary_without_any_ai_receipt":3}]}
+        s["nba_schedule.json"]["games"][0]["date_eastern"]="2026-11-11"
+        report=evaluate(NOW,s)
+        self.assertEqual(stage(report,"picks_frozen")["status"],"OK")
+        cap=stage(report,"capture_integrity")
+        self.assertEqual(cap["status"],"FAIL")
+        self.assertEqual(cap["evidence"]["without_any_ai_receipt"],3)
+
+    def test_incomplete_pretip_capture_never_backdates_after_tip(self):
+        s=site(start=time(minutes=-70))
+        report=evaluate(NOW,s)
+        picked=stage(report,"picks_frozen")
+        self.assertEqual(picked["status"],"FAIL")
+        self.assertTrue(picked["evidence"]["too_late_to_capture"])
+        self.assertIsNone(picked["recovery_workflow"])
+
+    def test_espn_unavailable_during_possible_live_game_is_not_green(self):
+        s=site(start=time(minutes=-75))
+        # Missing official ESPN response is uncertainty; avoid a false OK.
+        report=evaluate(NOW,s,espn=None)
+        self.assertEqual(stage(report,"live_scores")["status"],"WARN")
+        self.assertEqual(stage(report,"live_players")["status"],"WARN")
+
+    def test_scoreboard_live_game_with_missing_player_rows_is_failure(self):
+        s=site(start=time(minutes=-75))
+        s["nba_scoreboard_independent.json"]={
+            "generated_at":time(minutes=-3),
+            "games":[{"game":GAME,"game_state":"in"}]}
+        report=evaluate(NOW,s)
+        self.assertEqual(stage(report,"live_players")["status"],"FAIL")
+
+    def test_missing_schedule_fails_even_when_no_markets_expected(self):
+        self.assertEqual(stage(evaluate(NOW,{}),"schedule")["status"],"FAIL")
 
     def test_overdue_pending_requires_settlement(self):
         r={"game":GAME,"start":time(hours=-10),"grade":"PENDING"}
