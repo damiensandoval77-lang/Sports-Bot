@@ -60,6 +60,52 @@ class MultimarketTests(unittest.TestCase):
         self.assertTrue(all(r["line"]==20.5 for r in selected))
         self.assertEqual(excluded["NON_STANDARD_POINTS_TIER"],16)
 
+    def test_verified_christian_anderson_alias_resolves_exact_current_identity(self):
+        identity,reason=resolve_current_roster_identity(
+            "Christian Anderson Jr.","Charlotte Hornets @ Phoenix Suns",
+            {"christiananderson":{("1643515","CHA")}}, {"1643515":"CHA"})
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("1643515","CHA","PHX"))
+
+    def test_verified_alias_does_not_invent_missing_roster_or_override_id_team(self):
+        game="Charlotte Hornets @ Phoenix Suns"
+        for roster,latest in [
+            ({},{"1643515":"CHA"}),
+            ({"christiananderson":{("999","CHA")}},{"999":"CHA"}),
+            ({"christianandersonjr":{("999","CHA")}},{"999":"CHA"}),
+            ({"christiananderson":{("1643515","PHX")}},{"1643515":"PHX"}),
+            ({"christiananderson":{("1643515","CHA")}},{"1643515":"DAL"}),
+        ]:
+            with self.subTest(roster=roster,latest=latest):
+                identity,reason=resolve_current_roster_identity(
+                    "Christian Anderson Jr.",game,roster,latest)
+                self.assertIsNone(identity)
+                self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+        identity,reason=resolve_current_roster_identity(
+            "Christian Anderson Jr.","Dallas Mavericks @ Minnesota Timberwolves",
+            {"christiananderson":{("1643515","CHA")}},{"1643515":"CHA"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+
+    def test_verified_alias_fails_closed_on_canonical_or_exact_name_collision(self):
+        for roster in [
+            {"christiananderson":{("1643515","CHA"),("999","CHA")}},
+            {"christiananderson":{("1643515","CHA")},
+             "christianandersonjr":{("999","PHX")}},
+        ]:
+            identity,reason=resolve_current_roster_identity(
+                "Christian Anderson Jr.","Charlotte Hornets @ Phoenix Suns",
+                roster,{"1643515":"CHA","999":"PHX"})
+            self.assertIsNone(identity)
+            self.assertEqual(reason,"PLAYER_IDENTITY_NOT_UNIQUE")
+
+    def test_unverified_jr_suffix_is_not_generically_removed(self):
+        identity,reason=resolve_current_roster_identity(
+            "Example Jr.","Charlotte Hornets @ Phoenix Suns",
+            {"example":{("123","CHA")}},{"123":"CHA"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+
     def test_accented_surname_matches_same_verified_player_id(self):
         roster={"alperensengun":{("1630578","HOU")}}
         identity,reason=resolve_current_roster_identity(
