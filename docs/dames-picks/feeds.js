@@ -631,4 +631,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-provisional-isolated-20261112-r18";
+globalThis.__damesRunningAssets["feeds.js"]="dp-short-history-research-20261112-r19";

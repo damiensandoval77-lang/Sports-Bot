@@ -14,7 +14,7 @@ import urllib.request
 from pathlib import Path
 
 BASE="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
-FILES=("index.html","feeds.js","live_direct.js","dames_take.js","provisional.js","release.json")
+FILES=("index.html","feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","release.json")
 
 
 def digest(data):

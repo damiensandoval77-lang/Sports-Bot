@@ -88,7 +88,7 @@ def main():
     else:
         report["checks"].append({"name":"live_board_footer_over_under_only",
                                  "status":"SKIP","details":footer_details})
-    check("executing_assets_match_repository_release",bool(running) and all(running.get(name)==expected_release for name in ("feeds.js","live_direct.js","dames_take.js","provisional.js")),running)
+    check("executing_assets_match_repository_release",bool(running) and all(running.get(name)==expected_release for name in ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js")),running)
     check("no_browser_javascript_exceptions",not errors,errors[:8])
     check("board_cards_or_honest_empty_state",cards>0 or not nearby or bool(missing),{"cards":cards,"nearby_games":len(nearby)})
     check("near_tip_saved_picks",not [g for g in missing if g["minutes_to_tip"]<=60],missing)
