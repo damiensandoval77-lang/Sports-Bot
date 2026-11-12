@@ -30,6 +30,7 @@ on:
       - 'iphone_bot/tests/test_multimarket_forecast_ledger.py'
       - 'iphone_bot/lagged_matchup_training.py'
       - 'iphone_bot/tests/test_live_multimarket_matchup.py'
+      - 'iphone_bot/tests/test_multimarket_source_receipt.py'
       - 'docs/index.html'
       - '.github/workflows/nba-new-ai-all-markets.yml'
   workflow_dispatch:
@@ -80,7 +81,9 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_recover_csv_opportunities.py' -v
       - name: Test standard-only quotes and correlated PRA math
         if: github.event_name == 'pull_request'
-        run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_source_receipt.py' -v
       - name: Test authenticated NBA news and no unvalidated injury uplift
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
