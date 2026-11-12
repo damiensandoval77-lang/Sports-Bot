@@ -77,6 +77,17 @@ def plan(root=ROOT,now=None):
         and fresh(pp.get("generated_at") or pp.get("updated_at"),now,120))
     if genuine_lines and not fresh(health.get("model_generated_at"),now,180):
         add("nba-prizepicks-ai-board.yml","FRESH_LINES_WITH_STALE_AI")
+    # The join is a cheap replay of already observed standard lines and
+    # verified current AI. GitHub Actions bot commits do not trigger normal
+    # push workflows, so explicitly hand off newly refreshed model snapshots.
+    provider=read(root,"docs/prizepicks_site.json")
+    if (fresh(ai.get("generated_at"),now,180)
+        and fresh(provider.get("generated_at"),now,90)
+        and provider.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
+        and (health.get("status")!="FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS"
+             or not fresh(health.get("generated_at"),now,90)
+             or health.get("model_generated_at")!=ai.get("generated_at"))):
+        add("publish_live_pp_ai_join.yml","FRESH_AI_AND_VERIFIED_LINES_REQUIRE_JOIN_REPLAY")
     # Grading is also free: request independent final verification again.
     if (grades.get("game_date_eastern")==yesterday and
         int(grades.get("ungraded") or 0)>0 and
