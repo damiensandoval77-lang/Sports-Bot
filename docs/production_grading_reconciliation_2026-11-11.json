@@ -2,7 +2,7 @@
   "status": "BLOCKED",
   "scope": "ONE_EASTERN_GAME_DATE_TWO_INDEPENDENT_FORECAST_LEDGERS",
   "game_date_eastern": "2026-11-11",
-  "checked_at": "2026-11-12T13:14:34.072089+00:00",
+  "checked_at": "2026-11-12T14:58:07.921928+00:00",
   "ai_only": {
     "frozen": 984,
     "graded": 808,
@@ -25,11 +25,21 @@
         "recomputed": 80
       }
     },
-    "standard_report_mismatch": {}
+    "standard_report_mismatch": {
+      "frozen_picks": {
+        "reported": 1011,
+        "recomputed": 1020
+      },
+      "pending": {
+        "reported": 216,
+        "recomputed": 225
+      }
+    }
   },
   "blockers": {
     "AI_STATUS_REPORT_LEDGER_DRIFT": 1,
     "INVALID_VERIFIED_FINAL_RECORD": 80,
+    "STANDARD_PUBLISHED_REPORT_LEDGER_DRIFT": 1,
     "AI_OVERDUE_WITHOUT_VERIFIED_FINAL": 80
   },
   "unresolved_ai_only": [
