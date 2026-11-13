@@ -51,10 +51,11 @@ const timestamp=t=>{const n=Date.parse(t);return Number.isFinite(n)?n:0};
    background data commits. GitHub raw source is the same public repo content,
    fetched read-only, never an odds API or guessed game observation. */
 const RAW_LIVE_BASE="https://raw.githubusercontent.com/damiensandoval77-lang/Sports-Bot/main/docs/";
-const RAW_LIVE_FILES=new Set(["live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json"]);
-const liveStamp=o=>Date.parse(o?.captured_at||o?.generated_at||"");
+const RAW_LIVE_FILES=new Set(["nfl/data/live_2026.json","live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json"]);
+const liveStamp=o=>Date.parse(o?.captured_at||o?.generated_at||o?.checked_at||"");
 const validLiveJSON=(p,o)=>{
  if(!o||!Array.isArray(o.games))return false;
+ if(p==="nfl/data/live_2026.json")return o.status==="ok"&&Number.isFinite(liveStamp(o));
  if(p==="nba_scoreboard_independent.json")
   return o.is_live_score_source===true&&o.status==="OBSERVED_NBA_LIVE_SCOREBOARD"&&Number.isFinite(liveStamp(o));
  if(p==="nba_player_tracking_independent.json")
@@ -349,7 +350,8 @@ async function liveTick(force=false){
    Promise.allSettled([
      getJSON("live_player_tracking.json"),
      getJSON("nba_scoreboard_independent.json"),
-     getJSON("nba_player_tracking_independent.json")
+     getJSON("nba_player_tracking_independent.json"),
+     getJSON("nfl/data/live_2026.json")
    ])
   ]);
   let changed=false;
@@ -360,8 +362,8 @@ async function liveTick(force=false){
    changed=true;
   }
   if(state.raw){
-   const fields=["nbaLive","nbaScores","independentPlayers"];
-   const names=["live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json"];
+   const fields=["nbaLive","nbaScores","independentPlayers","nflLive"];
+   const names=["live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json","nfl/data/live_2026.json"];
    for(let i=0;i<raw.length;i++){
     if(raw[i].status!=="fulfilled")continue;
     const candidate=raw[i].value;
