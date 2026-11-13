@@ -30,6 +30,15 @@ def dataset():
 def audit(data=None,checked_at=NOW):
     return reconcile(*(data or dataset()),game_date=DAY,checked_at=checked_at)
 class ReconciliationTests(unittest.TestCase):
+    def test_midnight_report_selection_preserves_original_counts(self):
+        from iphone_bot.reconcile_grading_production import select_dated_report
+        stale={"game_date_eastern":"2026-11-11","graded":808}
+        correct={"game_date_eastern":"2026-11-12","graded":332,"generated_at":"2026-11-13T04:57:58Z"}
+        self.assertEqual(select_dated_report("2026-11-12",[stale,correct]),correct)
+        self.assertEqual(select_dated_report("2026-11-13",[stale,correct]),{})
+        older={**correct,"graded":300,"generated_at":"2026-11-13T04:30:00Z"}
+        self.assertEqual(select_dated_report("2026-11-12",[correct,older]),correct)
+
     def test_historical_report_rebuild_does_not_create_forecasts_or_grades(self):
         from datetime import datetime, timezone
         from iphone_bot.reconcile_grading_production import historical_status

@@ -1,5 +1,10 @@
 name: Cross-domain Sports-Bot reliability audit (no provider credits)
 on:
+  pull_request:
+    paths:
+      - 'iphone_bot/audit_failure_domains.py'
+      - 'iphone_bot/tests/test_failure_domain_phase.py'
+      - '.github/workflows/cross-domain-reliability-audit.yml'
   workflow_dispatch:
   schedule:
     - cron: '9,39 * * * *'
@@ -25,4 +30,7 @@ jobs:
       - name: Validate audit script syntax without using provider APIs
         run: python -m py_compile iphone_bot/audit_failure_domains.py
       - name: Check preserved standard NFL grades, source readiness, captures and live data
+        if: github.event_name != 'pull_request'
         run: python -m iphone_bot.audit_failure_domains
+      - name: Validate phase-aware checks never hide incomplete schedules
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_failure_domain_phase.py' -v
