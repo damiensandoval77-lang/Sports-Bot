@@ -603,6 +603,25 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
  }
  return result;
 }
+/* Verified final cache is a boxscore, never a forecast or inferred DNP zero.
+   Match Eastern game day and both teams; conflicting source games fail closed. */
+function attachNBAFinals(games,cache){
+ const rows=Array.isArray(cache?.rows)?cache.rows:[];
+ return games.map(g=>{
+  if(g.sport!=="NBA"||g.state!=="final"||!Number.isFinite(stamp(g.start)))return g;
+  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(g.start));
+  const day=["year","month","day"].map(k=>parts.find(p=>p.type===k)?.value).join("-");
+  const away=nbaTeamCode(g.away),home=nbaTeamCode(g.home);
+  const candidates=rows.filter(p=>p.date===day&&p.final_confirmed===true&&
+   ["NBA_CDN_FINAL","ESPN_FINAL"].includes(p.source)&&p.source_game_id&&
+   ((nbaTeamCode(p.team)===away&&nbaTeamCode(p.opponent)===home)||(nbaTeamCode(p.team)===home&&nbaTeamCode(p.opponent)===away)));
+  if(new Set(candidates.map(p=>p.source+"|"+p.source_game_id)).size!==1)return g;
+  const counts=new Map();for(const p of candidates){const k=nbaTeamCode(p.team)+"|"+norm(p.player);counts.set(k,(counts.get(k)||0)+1)}
+  const players=candidates.filter(p=>counts.get(nbaTeamCode(p.team)+"|"+norm(p.player))===1&&n(p.MIN)>0&&
+   ["PTS","REB","AST","PRA"].every(k=>n(p[k])!==null&&n(p[k])>=0)).map(p=>({player:p.player,team:nbaTeamCode(p.team),position:"",stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}}));
+  return players.length?{...g,players,finalBoxscore:true,finalSource:candidates[0].source}:g;
+ });
+}
 /* Game catalog is schedule-first, then updated with genuine scoreboard observations.
    Schedule-only data is never promoted to a live score or fabricated final. */
 function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaScoreFeed=null){
@@ -707,7 +726,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -734,4 +753,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-browser-live-20261113-r31";
+globalThis.__damesRunningAssets["feeds.js"]="dp-final-boxscore-20261113-r32";
