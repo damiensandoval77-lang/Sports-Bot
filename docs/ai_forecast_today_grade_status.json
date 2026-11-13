@@ -1,15 +1,15 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-13T03:53:18.757866+00:00",
+  "generated_at": "2026-11-13T04:06:48.560176+00:00",
   "game_date_eastern": "2026-11-12",
   "recorded_pregame_forecasts": 388,
   "graded": 260,
-  "verified_dnp_exclusions": 0,
+  "verified_dnp_exclusions": 8,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 260,
-  "ungraded": 128,
+  "accounted_for": 268,
+  "ungraded": 120,
   "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "new_verified_dnp_exclusions": 8,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
@@ -36,10 +36,13 @@
   },
   "ungraded_by_game": {
     "Charlotte Hornets @ Phoenix Suns": 100,
-    "Detroit Pistons @ Washington Wizards": 12,
+    "Detroit Pistons @ Washington Wizards": 4,
     "Toronto Raptors @ Philadelphia 76ers": 16
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Tolu Smith",
+    "Tre Mann"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Charlotte Hornets @ Phoenix Suns": [
       "Brandon Miller",
@@ -69,9 +72,7 @@
       "Tidjane Sala\u00fcn"
     ],
     "Detroit Pistons @ Washington Wizards": [
-      "Ebuka Okorie",
-      "Tolu Smith",
-      "Tre Mann"
+      "Ebuka Okorie"
     ],
     "Toronto Raptors @ Philadelphia 76ers": [
       "Adem Bona",
@@ -80,30 +81,27 @@
       "Trayce Jackson-Davis"
     ]
   },
-  "ungraded_distinct_player_markets": 128,
+  "ungraded_distinct_player_markets": 120,
   "final_feed": {
     "pending_matchups": 16,
     "final_nba_games": 15,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 358,
-    "errors": [
-      "Secondary ESPN explicit DNP unverified: Direct ESPN final matchup mismatch",
-      "Secondary ESPN explicit DNP unverified: Direct ESPN final matchup mismatch"
-    ],
+    "retrieved_player_lines": 363,
+    "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 13,
     "final_cached_id_nba_games": 12,
-    "secondary_dnp_still_unverified": 37,
-    "secondary_verified_explicit_dnp_players": 21,
+    "secondary_dnp_still_unverified": 32,
+    "secondary_verified_explicit_dnp_players": 26,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 650,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 655,
+    "newly_retrieved_verified_rows": 5,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 28,
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 20,
       "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 100
     },
     "players": [
@@ -831,62 +829,6 @@
       {
         "player": "Ebuka Okorie",
         "team": "DET",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tre Mann",
-        "team": "WAS",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tre Mann",
-        "team": "WAS",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tre Mann",
-        "team": "WAS",
-        "game": "Detroit Pistons @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tre Mann",
-        "team": "WAS",
         "game": "Detroit Pistons @ Washington Wizards",
         "stat": "REB",
         "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
