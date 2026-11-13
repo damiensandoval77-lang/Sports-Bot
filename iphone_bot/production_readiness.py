@@ -335,9 +335,11 @@ def check(now,files):
     age,issues=common("scoreboard")
     if not isinstance(sb.get("games"),list) or not sb.get("games"):
         issues.append("NO_SCOREBOARD_GAMES")
-    scoreboard_keys={(g.get("date_eastern"),g.get("away_abbreviation"),g.get("home_abbreviation"))
+    def canonical_team(value):
+        return {"WSH":"WAS", "GS":"GSW", "NY":"NYK", "NO":"NOP", "SA":"SAS", "UTAH":"UTA"}.get(value,value)
+    scoreboard_keys={(g.get("date_eastern"),canonical_team(g.get("away_abbreviation")),canonical_team(g.get("home_abbreviation")))
                      for g in (sb.get("games") or []) if isinstance(g,dict)}
-    scheduled_keys={(g.get("date_eastern"),g.get("away_abbreviation"),g.get("home_abbreviation"))
+    scheduled_keys={(g.get("date_eastern"),canonical_team(g.get("away_abbreviation")),canonical_team(g.get("home_abbreviation")))
                     for g in todays}
     if scheduled_keys-scoreboard_keys:
         issues.append("SCOREBOARD_MISSING_SCHEDULED_MATCHUPS")
@@ -354,16 +356,39 @@ def check(now,files):
         required=bool(todays))
 
     live=load("nba_player_tracking_independent.json")
+    fallback=load("live_player_tracking.json")
     live_age=age_of(live,"captured_at")
     active=bool(in_progress)
     live_issues=[]
     if active:
-        if live.get("status") not in ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-                                       "PARTIAL_NBA_PLAYER_BOXSCORES"):
-            live_issues.append("NO_VERIFIED_LIVE_PLAYER_FEED")
-        if live_age is None or live_age>30 or live_age< -5:
-            live_issues.append("LIVE_PLAYER_DATA_STALE_OR_MISSING")
-        tracked={g.get("game") for g in live.get("games",[]) if isinstance(g,dict)}
+        tracked=set()
+        valid_source=False
+        fresh_source=False
+        if live.get("status") in ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+                                  "PARTIAL_NBA_PLAYER_BOXSCORES"):
+            valid_source=True
+            if live_age is not None and -5<=live_age<=30:
+                fresh_source=True
+                tracked.update(g.get("game") for g in live.get("games",[]) if isinstance(g,dict))
+        fallback_age=age_of(fallback,"captured_at")
+        if (fallback.get("status")=="OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK"
+                and fallback.get("date_eastern")==day
+                and fallback.get("player_totals_are_observations") is True):
+            valid_source=True
+            if fallback_age is not None and 0<=fallback_age<=5:
+                fresh_source=True
+                for game in fallback.get("games",[]):
+                    if not isinstance(game,dict):continue
+                    observed=parse_time(game.get("observed_at"))
+                    seconds=(now-observed).total_seconds() if observed else None
+                    if (game.get("state") in ("in","post") and game.get("stale") is False
+                            and str(game.get("event_id","")).isdecimal()
+                            and isinstance(game.get("player_rows"),list) and game["player_rows"]
+                            and seconds is not None and 0<=seconds<=300):
+                        tracked.add(game.get("game"))
+                live_age=min(live_age,fallback_age) if live_age is not None else fallback_age
+        if not valid_source:live_issues.append("NO_VERIFIED_LIVE_PLAYER_FEED")
+        if not fresh_source:live_issues.append("LIVE_PLAYER_DATA_STALE_OR_MISSING")
         if {g.get("game") for g in in_progress}-tracked:
             live_issues.append("ACTIVE_GAMES_MISSING_PLAYER_TOTALS")
     add("live_player_stats","READY" if not live_issues else "BLOCKED",live_issues,live_age,
@@ -403,7 +428,7 @@ def check(now,files):
 def main():
     names=["nba_schedule.json","ai_projection_fallback.json",
            "nba_scoreboard_independent.json","prizepicks_site.json",
-           "nightly_grade_health.json","nba_player_tracking_independent.json",
+           "nightly_grade_health.json","nba_player_tracking_independent.json","live_player_tracking.json",
            "data.json","ai_comparisons.json","verified_official_nba_fixtures.json",
            "ai_prizepicks_quick_join_health.json",
            "tonight_capture_gradeability.json","dames-picks/browser_readiness.json",
