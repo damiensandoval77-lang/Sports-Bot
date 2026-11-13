@@ -529,7 +529,7 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
    if(nbaDates.length && !nbaDates.includes(g.date_eastern))continue;
    const id="NBA|"+g.id;
    const existing=result.get(id)||observed.find(x=>x.sport==="NBA"&&x.game===g.game);
-   if(existing)continue;
+   if(existing){existing.start=g.start;continue;}
    const start=stamp(g.start);
    result.set(id,{sport:"NBA",gameId:g.id,game:g.game,away:g.away||"",home:g.home||"",
     start:g.start,observedAt:null,state:start<=now?"unknown":"scheduled",
@@ -584,6 +584,21 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
  }
  return [...result.values()];
 }
+// Live NBA view is one Eastern slate. Keep the full catalog for schedule coverage.
+function currentSlateGames(games,league,now=Date.now()){
+ const selected=(games||[]).filter(g=>g.sport===league);
+ if(league!=="NBA")return selected;
+ const day=value=>{
+  const ms=stamp(value);if(!Number.isFinite(ms))return null;
+  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(ms));
+  return ["year","month","day"].map(k=>parts.find(p=>p.type===k)?.value).join("-");
+ };
+ const today=day(new Date(now).toISOString());
+ const dates=[...new Set(selected.map(g=>day(g.start)).filter(Boolean))].sort();
+ const chosen=dates.includes(today)?today:dates.filter(d=>d<today).at(-1)||dates[0];
+ return selected.filter(g=>day(g.start)===chosen||(!day(g.start)&&g.sourceState!=="schedule")||
+  (g.state==="in"&&g.fresh));
+}
 function numberOrNull(v){return n(v)}
 function gradingAuditSummary(payload,now=Date.now()){
  if(!payload||!payload.days||typeof payload.days!=="object")return null;
@@ -604,7 +619,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -631,4 +646,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-live-team-alias-20261113-r20";
+globalThis.__damesRunningAssets["feeds.js"]="dp-current-live-slate-20261113-r21";
