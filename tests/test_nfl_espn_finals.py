@@ -35,6 +35,15 @@ class FinalTests(unittest.TestCase):
         self.setUp();self.ids['1']['display_name']='Someone Else'
         with self.assertRaises(ValueError):self.build()
         with self.assertRaises(ValueError):e.identities('espn_id,gsis_id\n1,00-1\n1,00-2\n')
+    def test_full_source_wins(self):
+        game=self.build()
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d);(p/'manifest.json').write_text('{"season":2026}')
+            official=copy.deepcopy(game);official['players'][0]['passing_yards']=251
+            (p/'week_10.json').write_text(json.dumps({'season':2026,'week':10,'games':[official]}))
+            (p/'espn_verified_finals.json').write_text(json.dumps({'season':2026,'games':[game]}))
+            boxes,bad=r.verified_boxscores({self.g['game_id']:self.g},p)
+            self.assertFalse(bad);self.assertEqual(boxes[self.g['game_id']]['00-0001']['passing_yards'],251)
     def test_integrity_and_grader(self):
         game=self.build()
         with tempfile.TemporaryDirectory() as d:

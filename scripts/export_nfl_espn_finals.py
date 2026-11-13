@@ -35,11 +35,13 @@ def digest(value):
 
 def identities(text):
     result = {}
+    registry_sha256=hashlib.sha256(text.encode()).hexdigest()
     for r in csv.DictReader(io.StringIO(text)):
         eid, gid = str(r.get('espn_id') or '').strip(), str(r.get('gsis_id') or '').strip()
         if not eid or not gid: continue
         if not re.fullmatch(r'\d+',eid) or not re.fullmatch(r'00-\d+',gid): continue
         if eid in result and result[eid]['gsis_id'] != gid: raise ValueError('Ambiguous ESPN/GSIS registry')
+        r['registry_sha256']=registry_sha256
         result[eid] = r
     if not result: raise ValueError('Empty identity registry')
     return result
@@ -100,7 +102,7 @@ def build_game(payload, scheduled, registry, fetched_at):
     game={k:scheduled[k] for k in ('game_id','week','home','away','home_score','away_score','kickoff_utc')}
     game.update(source='ESPN_COMPLETED_EXPLICIT_STATS', source_url=SUMMARY.format(event=event),
                 espn_event_id=event, verified_final=True, fetched_at=fetched_at,
-                identity_source=REGISTRY, partial_stats=True, unknown_players=unknown,
+                identity_source=REGISTRY, identity_registry_observed_at=fetched_at, identity_registry_sha256=next(iter(registry.values()))['registry_sha256'], partial_stats=True, unknown_players=unknown,
                 players=rows, source_payload_sha256=digest(payload))
     game['integrity_sha256']=digest(game)
     return game
