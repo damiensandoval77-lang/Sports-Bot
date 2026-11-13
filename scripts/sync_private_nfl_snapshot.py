@@ -131,6 +131,11 @@ def sync(fetch, dest=DEST):
     total=validate_payload(manifest,blobs)
     dest=Path(dest)
     dest.mkdir(parents=True,exist_ok=True)
+    # Archive the currently published snapshot before replacing any chunks.
+    # The post-sync reconciliation alone cannot recover a rotated source.
+    if existing.exists() and (dest/"schedule_2026.json").exists():
+        from reconcile_nfl_picks import run as archive_snapshot
+        archive_snapshot(dest)
     with tempfile.TemporaryDirectory(prefix="private-nfl-sync-",dir=str(dest)) as folder:
         stage=Path(folder)
         for name,raw in blobs.items():

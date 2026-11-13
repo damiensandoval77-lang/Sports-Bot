@@ -11,6 +11,8 @@ import json
 import math
 import os
 import tempfile
+import subprocess
+import re
 from datetime import datetime,timezone
 from pathlib import Path
 
@@ -384,7 +386,24 @@ def write_json_if_changed(path,object):
     os.replace(name,file)
     return True
 
-def run(root=ROOT):
+def historic_snapshot(ref):
+    if not re.fullmatch(r"[0-9a-f]{40}",ref):
+        raise ValueError("NFL recovery requires exact immutable commit")
+    def read(name):
+        return subprocess.check_output(["git","show",f"{ref}:docs/nfl/data/{name}"])
+    manifest=json.loads(read("latest_2026.json"))
+    with tempfile.TemporaryDirectory(prefix="nfl-original-recovery-") as folder:
+        path=Path(folder)
+        (path/"latest_2026.json").write_text(json.dumps(manifest))
+        for name in manifest.get("files",[]):
+            if not isinstance(name,str) or not re.fullmatch(r"latest_2026_[0-9]{2}\.csv",name):
+                raise ValueError("Invalid historical snapshot filename")
+            (path/name).write_bytes(read(name))
+        rows,issue=read_published_snapshot(path)
+        if issue:raise ValueError(issue)
+    return rows,manifest
+
+def run(root=ROOT,recovery_ref=None):
     schedule_data=json.loads((Path(root)/"schedule_2026.json").read_text(encoding="utf-8"))
     if schedule_data.get("game_count")!=272:
         raise ValueError("Incomplete season schedule; refusing grade update")
@@ -395,6 +414,17 @@ def run(root=ROOT):
     prior_history=read_csv(archive_path)
     prior_health_path=Path(root)/HEALTH.name
     prior_health=json.loads(prior_health_path.read_text(encoding="utf-8")) if prior_health_path.exists() else {}
+    recovery_receipt=None
+    receipt_path=Path(root)/"original_evidence_recovery_2026.json"
+    if recovery_ref and (not receipt_path.exists() or
+          json.loads(receipt_path.read_text()).get("source_commit")!=recovery_ref):
+        original,original_manifest=historic_snapshot(recovery_ref)
+        prior_history,_=collect_history(prior_history,original,schedule)
+        recovery_receipt={"source_commit":recovery_ref,
+            "captured_at":original_manifest["captured_at"],
+            "source_rows":len(original),
+            "source_rows_with_exact_evidence":sum(bool(r.get("matchup_evidence")) for r in original),
+            "method":"IDENTICAL_FROZEN_SOURCE_BYTES_NO_RETROACTIVE_MODEL"}
     history,rejected=collect_history(prior_history,snapshot,schedule)
     # An API outage, corrupted archive or invalid snapshot may not silently
     # reduce the number of durable valid frozen pregame observations.
@@ -459,8 +489,13 @@ def run(root=ROOT):
     write_csv_if_changed(Path(root)/GRADES.name,graded,OUTPUT_FIELDS)
     write_csv_if_changed(Path(root)/PENDING.name,pending,OUTPUT_FIELDS)
     write_json_if_changed(Path(root)/HEALTH.name,metrics)
+    if recovery_receipt:write_json_if_changed(receipt_path,recovery_receipt)
     print("NFL public grading:",json.dumps(metrics,sort_keys=True))
     return metrics
 
 if __name__=="__main__":
-    run()
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--recover-snapshot-ref")
+    args=parser.parse_args()
+    run(recovery_ref=args.recover_snapshot_ref)
