@@ -3,9 +3,20 @@ name: Phase 1 dashboard scoreboard integration
 on:
   pull_request:
     paths:
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
       - "docs/index.html"
       - "iphone_bot/tests/test_dashboard_scoreboard_integration.py"
       - ".github/workflows/phase1_dashboard_scoreboard.yml"
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase1_dashboard_scoreboard.yml'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_dashboard_scoreboard_integration.py'
+      - 'iphone_bot/tests/test_real_prizepicks_pregame_join.cjs'
   workflow_dispatch:
 
 permissions:
@@ -16,8 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
       - name: Test scoreboard fallback integration
