@@ -161,7 +161,7 @@ def main():
     now = dt.datetime.now(dt.timezone.utc)
     pending = [r for r in records if r.get("status")=="PENDING" and
                (start:=utc(r.get("start"))) and
-               (now-start).total_seconds()>=4*3600 and
+               (now-start).total_seconds()>=2*3600 and
                start.astimezone(ET).date().isoformat() in target_dates]
     preview = settle({"records":pending},[],final_games=rows)
     graded = [r for r in preview["records"] if r.get("status")=="SETTLED"]
