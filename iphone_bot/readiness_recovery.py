@@ -15,7 +15,8 @@ RECOVERABLE = {
     "live_player_stats": "independent_nba_player_boxscores.yml",
 }
 NO_COST = ("nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml",
-           "independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml")
+           "independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml",
+           "nba-live-tracker-backup.yml")
 
 def recovery_targets(report):
     if report.get("status") == "READY":
@@ -37,6 +38,9 @@ def recovery_targets(report):
         out.append(RECOVERABLE["scoreboard"])
     if "live_player_stats" in failed:
         out.append(RECOVERABLE["live_player_stats"])
+        # An official-feed outage needs an independent verified fallback, not
+        # repeated retries against only the same unavailable provider.
+        out.append("nba-live-tracker-backup.yml")
     # Rerunning a capture audit cannot repair absent frozen projections.
     # Route pretip gaps to model generation and verify in the next audit.
     if "pregame_capture" in failed and report.get("upcoming_games", 0) > 0:
