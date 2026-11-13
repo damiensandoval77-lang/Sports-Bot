@@ -72,7 +72,7 @@ def pending_matchup_requests(records,now=None,max_matchups=12,days_back=3):
     for r in records:
         if r.get("status")!="PENDING":continue
         start=utc(r.get("start"))
-        if start is None or (now-start).total_seconds()<4*3600:continue
+        if start is None or (now-start).total_seconds()<2*3600:continue
         date=start.astimezone(ET).date().isoformat()
         if date<minimum or not r.get("game") or not r.get("team"):continue
         key=(date,r["game"])
