@@ -367,6 +367,15 @@ def historical_status(day, archive, actuals, now):
     result["report_provenance"]="RECOMPUTED_FROM_ORIGINAL_CAPTURE_AND_FINAL_LEDGERS"
     return result
 
+def select_dated_report(day, reports):
+    """Select original published evidence for the requested Eastern date.
+
+    The 'today' report can become yesterday's evidence at midnight, before
+    the producer rotates its filenames. Never alter its reported counts.
+    """
+    matching=[r for r in reports if isinstance(r,dict) and r.get("game_date_eastern")==day]
+    return max(matching,key=lambda r:str(r.get("generated_at", ""))) if matching else {}
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--date",required=True,help="Eastern game date YYYY-MM-DD")
@@ -377,7 +386,12 @@ def main():
         return json.loads((ROOT/path).read_text())
     archive=read("docs/ai_no_line_pregame_archive.json")
     actuals=read("docs/ai_forecast_actual_ledger.json")
-    ai_status=read("docs/ai_forecast_grade_status.json")
+    candidates=[]
+    for name in ("ai_forecast_grade_status.json","ai_forecast_today_grade_status.json",
+                 "ai_forecast_grade_status_"+args.date+".json"):
+        path=ROOT/"docs"/name
+        if path.exists():candidates.append(json.loads(path.read_text()))
+    ai_status=select_dated_report(args.date,candidates)
     now=datetime.now(timezone.utc)
     if args.date < (now.astimezone(ET).date()-timedelta(days=1)).isoformat() and ai_status.get("game_date_eastern")!=args.date:
         ai_status=historical_status(args.date,archive,actuals,now)

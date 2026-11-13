@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import os
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent.parent / "docs"
 
@@ -14,6 +15,20 @@ def load(relative):
         return json.loads((ROOT / relative).read_text())
     except (OSError, ValueError, UnicodeError) as exc:
         return {"_read_error": str(exc)}
+
+def verified_posttip_slate(schedule,season,now):
+    from iphone_bot.end_to_end_readiness import age_ok,parse_time
+    from iphone_bot.season_schedule_baseline import validate
+    try:
+        validate(season)
+        if schedule.get("coverage_complete") is not True or not age_ok(schedule.get("generated_at"),now,180):return False
+        day=now.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+        games=[g for g in schedule.get("games",[]) if g.get("date_eastern")==day]
+        expected=[g for g in season["games"] if g["date_eastern"]==day]
+        identity=lambda g:(g.get("away_abbreviation"),g.get("home_abbreviation"),g.get("start"))
+        return bool(games) and len(games)==len(expected) and {identity(g) for g in games}=={identity(g) for g in expected} and all(parse_time(g.get("start")) and parse_time(g["start"])<=now for g in games)
+    except (ValueError,KeyError,TypeError):
+        return False
 
 def check_artifacts(now=None):
     now = now or dt.datetime.now(dt.timezone.utc)
@@ -81,6 +96,9 @@ def check_artifacts(now=None):
     freshness("NBA lines and AI join", join, "generated_at", 120)
     if join.get("_read_error"):
         record("NBA lines and AI join", "critical", "JOIN_UNAVAILABLE", join["_read_error"])
+    elif join.get("status")!="ERROR" and verified_posttip_slate(load("nba_schedule.json"),load("nba_season_schedule_2026_27.json"),now):
+        record("NBA lines and AI join", "ok", "POSTTIP_USE_IMMUTABLE_CAPTURES",
+               "All independently scheduled games have tipped; capture integrity is checked separately below")
     elif join.get("status") in ("STALE_OR_UNVERIFIED_SOURCE", "STALE_PROVIDER_BOARD", "ERROR"):
         record("NBA lines and AI join", "critical", "STALE_OR_UNVERIFIED_SOURCE",
                f"status={join.get('status')}; matched_games={join.get('matched_games')}")
