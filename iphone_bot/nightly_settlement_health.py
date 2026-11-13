@@ -31,14 +31,9 @@ def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12,ai_gr
             now-start).total_seconds()>=grace_hours*3600
     overdue_pp=[r for r in pp_rows if overdue(r,"start")]
     overdue_paper=[r for r in paper_rows if overdue(r,"event_start")]
-    all_started=all(
-        (now-dt.datetime.fromisoformat(r["start"].replace("Z","+00:00"))).total_seconds()
-        >=grace_hours*3600
-        for r in pp_rows
-    ) if pp_rows else False
     if overdue_pp or overdue_paper:
         status="OVERDUE_UNRESOLVED_GRADES"
-    elif pp_rows and not result["prizepicks_date_pending"] and all_started:
+    elif result["prizepicks_date_specific_verified"]:
         status="ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED"
     elif pp_rows:
         status="AWAITING_FINALS_OR_SETTLEMENT_GRACE_PERIOD"
