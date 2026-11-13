@@ -133,6 +133,38 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("PARTIAL_PRIZEPICKS_PROVIDER_COVERAGE",
                       r["components"]["prizepicks_lines"]["reasons"])
 
+    def live_fallback_fixture(self):
+        data=fixtures()
+        data["nba_schedule.json"]["games"][0]["start"]="2026-11-09T16:00:00Z"
+        data["live_player_tracking.json"]={"status":"OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
+            "date_eastern":"2026-11-09","captured_at":NOW.isoformat(),
+            "player_totals_are_observations":True,"games":[{"game":GAME["game"],
+            "state":"in","stale":False,"event_id":"123","observed_at":NOW.isoformat(),
+            "player_rows":[{"PTS":2}]}]}
+        return data
+
+    def test_verified_fresh_espn_fallback_covers_official_outage(self):
+        result=check(NOW,self.live_fallback_fixture())
+        self.assertEqual(result["components"]["live_player_stats"]["state"],"READY")
+
+    def test_fallback_rejects_stale_missing_wrong_day_or_unverified_rows(self):
+        mutations=[{"stale":True},{"player_rows":[]},{"event_id":"bad"},
+                   {"observed_at":"2026-11-09T17:54:00Z"},{"game":"Wrong @ Game"}]
+        for mutation in mutations:
+            data=self.live_fallback_fixture()
+            data["live_player_tracking.json"]["games"][0].update(mutation)
+            self.assertEqual(check(NOW,data)["components"]["live_player_stats"]["state"],"BLOCKED")
+        for mutation in [{"date_eastern":"2026-11-08"},{"captured_at":"2026-11-09T17:54:00Z"},
+                         {"player_totals_are_observations":False}]:
+            data=self.live_fallback_fixture();data["live_player_tracking.json"].update(mutation)
+            self.assertEqual(check(NOW,data)["components"]["live_player_stats"]["state"],"BLOCKED")
+
+    def test_scoreboard_team_alias_is_same_matchup(self):
+        data=fixtures()
+        data["nba_schedule.json"]["games"][0].update(away_abbreviation="WAS",home_abbreviation="DET")
+        data["nba_scoreboard_independent.json"]["games"][0].update(away_abbreviation="WSH",home_abbreviation="DET")
+        self.assertNotIn("SCOREBOARD_MISSING_SCHEDULED_MATCHUPS",check(NOW,data)["components"]["scoreboard"]["reasons"])
+
     def test_tipoff_requires_live_scores_and_player_stats(self):
         data=fixtures()
         data["nba_schedule.json"]["games"][0]["start"]="2026-11-09T16:00:00Z"
