@@ -7,7 +7,7 @@ assert(from>=0&&to>from,"Unified game detail renderer missing");
 const elements={};
 const escapeText=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const context={escapeText,fmt:String,when:String,scoreText:String,rows:()=>[],
- m:{displayCurrentPicks:x=>x},state:{gamePicked:{sport:"NFL",gameId:"g",game:"ARI @ SEA",statusText:"Final",players:[
+ m:{displayCurrentPicks:x=>x,sortByTeamPosition:x=>x},state:{gamePicked:{sport:"NFL",gameId:"g",game:"ARI @ SEA",statusText:"Final",players:[
  {player:"Jacoby Brissett",team:"ARI",stats:{PASS_YDS:267}},
  {player:"Marvin Harrison Jr.",team:"ARI",stats:{REC_YDS:90}},
  {player:"Jeremiyah Love",team:"ARI",stats:{RUSH_YDS:77}},

@@ -198,6 +198,28 @@ function preferredNBALiveFeed(primary,independent,now=Date.now()){
 }
 
 /* Merge observation feeds by exact game/player/team. No observations alter frozen projections. */
+// A descriptive game-clock extrapolation, separate from the frozen AI forecast.
+function livePace(actual,sport,period,clock){
+ const length=sport==="NBA"?12:sport==="NFL"?15:null;
+ if(!length||!Number.isInteger(period)||period<1||period>4||typeof actual!=="number"||!Number.isFinite(actual)||actual<0)return null;
+ let seconds=null;
+ if(typeof clock==="number"&&Number.isFinite(clock))seconds=clock;
+ else if(typeof clock==="string"){
+  const ordinary=/^(\d{1,2}):(\d{2})(?:\.\d+)?$/.exec(clock);
+  const iso=/^PT(\d+)M([0-9.]+)S$/.exec(clock);
+  if(ordinary&&Number(ordinary[2])<60)seconds=Number(ordinary[1])*60+Number(ordinary[2]);
+  else if(iso&&Number(iso[2])<60)seconds=Number(iso[1])*60+Number(iso[2]);
+ }
+ if(seconds===null||seconds<0||seconds>length*60)return null;
+ const elapsed=period*length-seconds/60;
+ if(elapsed<5||elapsed>=4*length)return null;
+ return {value:actual*(4*length)/elapsed,elapsedMinutes:elapsed,regulationMinutes:4*length};
+}
+function sortByTeamPosition(rows){
+ const order={PG:0,G:0,SG:1,SF:2,F:2,PF:3,C:4,QB:0,RB:1,FB:1,WR:2,TE:3,K:4};
+ return [...(rows||[])].sort((a,b)=>nbaTeamCode(a.team).localeCompare(nbaTeamCode(b.team))||
+  (order[a.position]??99)-(order[b.position]??99)||String(a.player||"").localeCompare(String(b.player||""))||String(a.stat||"").localeCompare(String(b.stat||"")));
+}
 function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
  const nbaFresh=nbaFeed?.status&&Number.isFinite(stamp(nbaFeed.captured_at))&&
   Math.abs(now-stamp(nbaFeed.captured_at))<20*60000;
@@ -216,14 +238,14 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
    const hits=(game?.player_rows||[]).filter(x=>nbaTeamCode(x.team)===nbaTeamCode(p.team)&&norm(x.player)===norm(p.player));
    if(hits.length!==1)return {...p,live:null};
    const actual=n(hits[0][p.stat]);
-   return {...p,live:actual===null?null:{actual,gameStatus:game.shortDetail||game.displayClock||"In progress",
+   return {...p,position:hits[0].position||p.position,live:actual===null?null:{actual,pace:livePace(actual,"NBA",game.period,game.clock??game.displayClock),gameStatus:game.shortDetail||game.displayClock||"In progress",
     period:game.period,observedAt:game.observed_at||nbaFeed.captured_at,source:game.source_label||"ESPN player snapshot"}};
   }
   const game=nflGames.get(p.gameId);
   const hits=(game?.players||[]).filter(x=>x.team===p.team&&norm(x.player)===norm(p.player));
   if(hits.length!==1||!p.target)return {...p,live:null};
   const actual=n(hits[0].stats?.[p.target]);
-  return {...p,live:actual===null?null:{actual,gameStatus:game.status_text||"In progress",
+  return {...p,live:actual===null?null:{actual,pace:livePace(actual,"NFL",game.period,game.clock),gameStatus:game.status_text||"In progress",
    period:game.period,observedAt:nflFeed.checked_at,source:"ESPN player snapshot"}};
  });
 }
@@ -495,7 +517,7 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
    result.push({sport:"NBA",gameId:g.event_id||g.game,game:g.game,observedAt:g.observed_at||nbaFeed.captured_at,
     state:!isCurrent&&state==="in"?"stale":state,sourceState:state,fresh:isCurrent,
     statusText:isCurrent?(g.shortDetail||g.displayClock||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
-    players:players.map(p=>({player:p.player,team:nbaTeamCode(p.team),stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
+    players:players.map(p=>({player:p.player,team:nbaTeamCode(p.team),position:p.position||"",stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
     away:g.game.split(" @ ")[0]||"",home:g.game.split(" @ ")[1]||""});
   }
  }
@@ -510,7 +532,7 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
     sourceState:state,fresh:isCurrent,
     statusText:isCurrent?(g.status_text||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
     away:g.away||"",home:g.home||"",awayScore:n(g.away_score),homeScore:n(g.home_score),
-    players:(Array.isArray(g.players)?g.players:[]).map(p=>({player:p.player,team:p.team,stats:p.stats||{}}))});
+    players:(Array.isArray(g.players)?g.players:[]).map(p=>({player:p.player,team:p.team,position:p.position||"",stats:p.stats||{}}))});
   }
  }
  return result;
@@ -619,7 +641,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -646,4 +668,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-current-live-slate-20261113-r21";
+globalThis.__damesRunningAssets["feeds.js"]="dp-live-pace-position-20261113-r22";
