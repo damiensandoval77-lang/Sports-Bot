@@ -170,6 +170,10 @@ def compact_for_dashboard(report,max_pairs_per_event=140):
 
 
 def main():
+    if os.environ.get("SPORTS_BOT_ENABLE_PAID_ODDS") != "1":
+        save_status("PAID_ODDS_POLLING_DISABLED", note="Explicit paid-provider opt-in required; authentic prior quotes preserved and may be stale.")
+        print("Paid odds polling disabled; preserving prior observations.")
+        return
     key = os.environ.get("ODDS_API_KEY", "").strip()
     if not key:
         save_status("MISSING_ODDS_API_KEY")

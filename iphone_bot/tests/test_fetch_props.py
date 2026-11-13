@@ -78,7 +78,7 @@ class FetchPropsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp,\
                 patch.object(fetch_props,"OUT",Path(temp)/"out.json"),\
                 patch.object(fetch_props,"MAX_EVENTS",15),\
-                patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
+                patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy","SPORTS_BOT_ENABLE_PAID_ODDS":"1"}),\
                 patch.object(fetch_props,"request",side_effect=fake):
             fetch_props.main()
             report=json.loads((Path(temp)/"out.json").read_text())
@@ -104,7 +104,7 @@ class FetchPropsTests(unittest.TestCase):
             with patch.object(fetch_props,"OUT",root/"out.json"),\
                  patch.object(fetch_props,"COMPACT",root/"compact.json"),\
                  patch.object(fetch_props,"STATUS",root/"status.json"),\
-                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy","SPORTS_BOT_ENABLE_PAID_ODDS":"1"}),\
                  patch.object(fetch_props,"request",side_effect=fake):
                 fetch_props.main()
             self.assertEqual(calls,["/events"])
@@ -124,7 +124,7 @@ class FetchPropsTests(unittest.TestCase):
             with patch.object(fetch_props,"OUT",root/"out.json"),\
                  patch.object(fetch_props,"COMPACT",root/"compact.json"),\
                  patch.object(fetch_props,"STATUS",root/"status.json"),\
-                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy","SPORTS_BOT_ENABLE_PAID_ODDS":"1"}),\
                  patch.object(fetch_props,"request",return_value=([],500)):
                 fetch_props.main()
             self.assertEqual((root/"out.json").read_text(),prior)
@@ -146,7 +146,7 @@ class FetchPropsTests(unittest.TestCase):
             with patch.object(fetch_props,"OUT",root/"out.json"),\
                  patch.object(fetch_props,"COMPACT",root/"compact.json"),\
                  patch.object(fetch_props,"STATUS",root/"status.json"),\
-                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
+                 patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy","SPORTS_BOT_ENABLE_PAID_ODDS":"1"}),\
                  patch.object(fetch_props,"request",side_effect=fake):
                 fetch_props.main()
             self.assertIn('"Real"',(root/"out.json").read_text())
@@ -161,7 +161,7 @@ class FetchPropsTests(unittest.TestCase):
             return {"bookmakers":[bookmaker(["Player"])]},10
         with tempfile.TemporaryDirectory() as temp,\
                 patch.object(fetch_props,"OUT",Path(temp)/"out.json"),\
-                patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy"}),\
+                patch.dict(fetch_props.os.environ,{"ODDS_API_KEY":"dummy","SPORTS_BOT_ENABLE_PAID_ODDS":"1"}),\
                 patch.object(fetch_props,"request",side_effect=fake):
             fetch_props.main()
             report=json.loads((Path(temp)/"out.json").read_text())
