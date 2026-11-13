@@ -1,11 +1,12 @@
 {
   "status": "PRIMARY_STANDARD_CAPTURE_INCOMPLETE",
-  "checked_at": "2026-11-13T19:12:54.615084+00:00",
+  "checked_at": "2026-11-13T19:24:43.640763+00:00",
   "game_date_eastern": "2026-11-13",
-  "verified_standard_quotes": 631,
+  "verified_standard_quotes": 634,
   "original_primary_frozen_quotes": 605,
-  "unmatched_exact_standard_thresholds": 29,
+  "unmatched_exact_standard_thresholds": 32,
   "missing_by_cause": {
+    "MOVED_ORIGINAL_STANDARD_THRESHOLD": 3,
     "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 29
   },
   "details": [
@@ -59,6 +60,18 @@
     },
     {
       "game": "Cleveland Cavaliers @ Miami Heat",
+      "player": "James Harden",
+      "team": "CLE",
+      "stat": "PRA",
+      "standard_line": 28.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+    },
+    {
+      "game": "Cleveland Cavaliers @ Miami Heat",
       "player": "Jaylon Tyson",
       "team": "CLE",
       "stat": "PRA",
@@ -104,6 +117,18 @@
       "separate_research_receipt": true,
       "original_primary_frozen_market": false,
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Golden State Warriors @ San Antonio Spurs",
+      "player": "Keldon Johnson",
+      "team": "SAS",
+      "stat": "PTS",
+      "standard_line": 9.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
     },
     {
       "game": "Milwaukee Bucks @ Orlando Magic",
@@ -164,6 +189,18 @@
       "separate_research_receipt": false,
       "original_primary_frozen_market": false,
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Milwaukee Bucks @ Orlando Magic",
+      "player": "Tristan da Silva",
+      "team": "ORL",
+      "stat": "PTS",
+      "standard_line": 11.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
     },
     {
       "game": "New York Knicks @ Indiana Pacers",
