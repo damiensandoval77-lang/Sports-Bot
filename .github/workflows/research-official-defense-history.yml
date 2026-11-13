@@ -19,7 +19,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: official-defense-research
+  # Keep collectors serialized, but never queue offline PR tests behind them.
+  group: ${{ github.event_name == 'pull_request' && format('official-defense-research-pr-{0}', github.event.pull_request.number) || 'official-defense-research' }}
   cancel-in-progress: false
 jobs:
   backfill:

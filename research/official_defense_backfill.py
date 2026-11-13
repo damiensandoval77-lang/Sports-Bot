@@ -16,7 +16,7 @@ from iphone_bot.fetch_final_boxscores import (
     final_schedule_boxscore, verified_direct_espn_summary, team, local_date
 )
 from iphone_bot.verified_final_cache import merge_rows
-from research.verified_team_defense_context import final_games
+from research.verified_team_defense_context import final_games, complete_rotation
 
 MAX_GAMES = 90
 MAX_LOOKBACK_DAYS = 25
@@ -146,7 +146,7 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
             continue
         if (set(numeric_scores)!=teams or any(not 0<=v<=250 for v in numeric_scores.values()) or
             {r["team"] for r in rows}!=teams or any(
-                sum(r["team"]==t and not r.get("dnp_final_verified") for r in rows)<7
+                not complete_rotation([r for r in rows if r["team"]==t and not r.get("dnp_final_verified")])
                 or abs(sum(r["PTS"] for r in rows if r["team"]==t and
                            not r.get("dnp_final_verified"))-numeric_scores[t])>.01
                 for t in teams)):
