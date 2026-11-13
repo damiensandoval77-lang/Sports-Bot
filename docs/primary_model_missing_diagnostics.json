@@ -1,12 +1,13 @@
 {
   "status": "PRIMARY_STANDARD_CAPTURE_INCOMPLETE",
-  "checked_at": "2026-11-13T10:35:34.631968+00:00",
+  "checked_at": "2026-11-13T11:55:01.860913+00:00",
   "game_date_eastern": "2026-11-13",
-  "verified_standard_quotes": 481,
+  "verified_standard_quotes": 486,
   "original_primary_frozen_quotes": 464,
-  "unmatched_exact_standard_thresholds": 20,
+  "unmatched_exact_standard_thresholds": 25,
   "missing_by_cause": {
-    "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 20
+    "MOVED_ORIGINAL_STANDARD_THRESHOLD": 4,
+    "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 21
   },
   "details": [
     {
@@ -58,6 +59,30 @@
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
     },
     {
+      "game": "Golden State Warriors @ San Antonio Spurs",
+      "player": "Devin Vassell",
+      "team": "SAS",
+      "stat": "PRA",
+      "standard_line": 18.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+    },
+    {
+      "game": "Memphis Grizzlies @ New Orleans Pelicans",
+      "player": "Isaiah Stewart",
+      "team": "MEM",
+      "stat": "PRA",
+      "standard_line": 17.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+    },
+    {
       "game": "Milwaukee Bucks @ Orlando Magic",
       "player": "Jalen Suggs",
       "team": "ORL",
@@ -92,6 +117,18 @@
       "separate_research_receipt": false,
       "original_primary_frozen_market": false,
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Milwaukee Bucks @ Orlando Magic",
+      "player": "Nate Ament",
+      "team": "MIL",
+      "stat": "PTS",
+      "standard_line": 8.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
     },
     {
       "game": "New York Knicks @ Indiana Pacers",
@@ -206,6 +243,18 @@
       "player": "Keegan Murray",
       "team": "SAC",
       "stat": "PRA",
+      "standard_line": 15.5,
+      "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": false,
+      "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Portland Trail Blazers @ Sacramento Kings",
+      "player": "Keegan Murray",
+      "team": "SAC",
+      "stat": "PRA",
       "standard_line": 16.5,
       "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
       "new_live_model_available": false,
@@ -248,6 +297,18 @@
       "separate_research_receipt": false,
       "original_primary_frozen_market": false,
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Utah Jazz @ Houston Rockets",
+      "player": "Jaxson Hayes",
+      "team": "UTA",
+      "stat": "PRA",
+      "standard_line": 14.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
     }
   ],
   "note": "Only original pre-tip validated models count in the primary grade ledger. Line moves and research-only quotes are never promoted, repriced, or retrograded."
