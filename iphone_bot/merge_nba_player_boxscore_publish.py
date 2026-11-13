@@ -72,6 +72,7 @@ def merge(old_raw,new_raw):
         if game.get("game") and game.get("id") is not None:
             matchup_ids[str(game["game"])]=str(game["id"])
     incoming_ids=set()
+    rejected_observations=set()
     for game in new["games"]:
         if not isinstance(game,dict):raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_GAME")
         k=game_key(game)
@@ -83,19 +84,24 @@ def merge(old_raw,new_raw):
                 raise ValueError("NBA_PLAYER_BOXSCORE_GAME_ID_MISMATCH")
         prior=by_id.get(k)
         if prior is not None:
+            if prior.get("game") and game.get("game") and prior["game"]!=game["game"]:
+                raise ValueError("NBA_PLAYER_BOXSCORE_GAME_IDENTITY_CONFLICT")
             # Never turn a final verified box back into a live snapshot.
             if prior.get("state") in ("post","final") and game.get("state")=="in":
+                rejected_observations.add(k)
                 continue
             # An empty or older observation cannot overwrite real player rows.
             if prior.get("player_rows") and not game.get("player_rows"):
+                rejected_observations.add(k)
                 continue
             older=game_observed(prior,old)
             current=game_observed(game,new)
             if older and current and older>current:
+                rejected_observations.add(k)
                 continue
         by_id[k]=game
     merged={**new,"games":list(by_id.values())}
-    retained=sum(1 for k in by_id if k not in incoming_ids)
+    retained=sum(1 for k in by_id if k not in incoming_ids or k in rejected_observations)
     # The original source's coverage flags cannot be promoted to complete when
     # missing games were rescued from an older run.
     coverage={**(new.get("coverage") or {})}

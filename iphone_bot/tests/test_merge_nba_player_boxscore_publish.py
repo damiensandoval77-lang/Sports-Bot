@@ -58,6 +58,8 @@ class SafeBoxscorePublicationTests(unittest.TestCase):
              "player_rows":[{"PTS":14}]}])
         result=merge(previous,newest)
         self.assertEqual(result["games"][0]["player_rows"][0]["PTS"],19)
+        self.assertEqual(result["coverage"]["retained_prior_game_count"],1)
+        self.assertEqual(result["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
 
     def test_final_game_cannot_revert_to_in_progress(self):
         previous=snap("2026-11-10T00:20:00Z",games=[
@@ -77,6 +79,26 @@ class SafeBoxscorePublicationTests(unittest.TestCase):
             {"id":"2","game":"BOS @ NYK","player_rows":[{"PTS":11}]}])
         with self.assertRaisesRegex(ValueError,"GAME_ID_MISMATCH"):
             merge(old,new)
+
+    def test_same_id_with_different_matchup_fails_closed(self):
+        old=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","player_rows":[{"PTS":9}]}])
+        new=snap("2026-11-10T00:30:00Z",games=[
+            {"id":"1","game":"UTA @ MIA","player_rows":[{"PTS":11}]}])
+        with self.assertRaisesRegex(ValueError,"GAME_IDENTITY_CONFLICT"):
+            merge(old,new)
+
+    def test_empty_or_regressed_same_game_cannot_claim_complete(self):
+        old=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","state":"post","player_rows":[{"PTS":100}]}])
+        for state,players in [("post",[]),("in",[{"PTS":65}])]:
+            new=json.loads(snap("2026-11-10T00:30:00Z",games=[
+                {"id":"1","game":"BOS @ NYK","state":state,"player_rows":players}]))
+            new["coverage"]={"complete":True}
+            result=merge(old,json.dumps(new))
+            self.assertEqual(result["games"][0]["player_rows"][0]["PTS"],100)
+            self.assertFalse(result["coverage"]["complete"])
+            self.assertEqual(result["coverage"]["retained_prior_game_count"],1)
 
     def test_incoming_json_requires_schema_and_utc(self):
         with self.assertRaisesRegex(ValueError,"INCOMING_TIMESTAMP_INVALID"):
