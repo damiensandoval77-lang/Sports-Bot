@@ -129,10 +129,12 @@ function nba(ledger,form){
    rows without evidence remain unavailable; never infer it from hit history. */
 function nflMatchupPreview(p,start){
  let x;try{x=JSON.parse(p.matchup_evidence||"null")}catch(_){return null}
- if(!x||x.schema!=="NFL_OPPONENT_FEATURES_V1"||
-    !["NFL_MATCHUP_RESIDUAL_V1","NFL_MATCHUP_POISSON_V1"].includes(x.method)||
+ if(!x||!["NFL_OPPONENT_FEATURES_V1","NFL_OPPONENT_FEATURES_V2"].includes(x.schema)||
+    !["NFL_MATCHUP_RESIDUAL_V1","NFL_MATCHUP_POISSON_V1","NFL_MATCHUP_RESIDUAL_V2","NFL_MATCHUP_POISSON_V2"].includes(x.method)||
     x.calibrated!==false||x.research_only!==true||
     !/^[a-f0-9]{64}$/.test(x.artifact_sha256||""))return null;
+ if(x.schema.endsWith("V2")!==x.method.endsWith("V2")||
+    (x.schema==="NFL_OPPONENT_FEATURES_V1"&&Number.isInteger(n(p.line))))return null;
  const direction=p.pick==="More"?"MORE":p.pick==="Less"?"LESS":null;
  for(const k of ["player_id","game_id","team","opponent","target"])
   if(!p[k]||x[k]!==p[k])return null;
@@ -141,15 +143,18 @@ function nflMatchupPreview(p,start){
     observed>captured||captured>=tip||stamp(x.captured_at)!==captured||
     x.direction!==direction||n(x.original_line)!==n(p.line))return null;
  const more=n(x.modeled_more_probability),selected=n(x.selected_probability),original=n(p.p_more);
+ const v2=x.schema==="NFL_OPPONENT_FEATURES_V2",less=v2?n(x.modeled_less_probability):(more===null?null:1-more),push=v2?n(x.modeled_push_probability):0;
+ if(v2&&(less===null||push===null||less<0||less>1||push<0||push>1||
+    Math.abs(more+less+push-1)>1e-8))return null;
  if(more===null||selected===null||more<0||more>1||selected<0||selected>1||
     original===null||Math.abs(more-original)>1e-8||
-    Math.abs(selected-(direction==="MORE"?more:1-more))>1e-8)return null;
+    Math.abs(selected-(direction==="MORE"?more:less))>1e-8)return null;
  const features=x.opponent_features,used=x.model_feature_names;
  if(!features||typeof features!=="object"||Array.isArray(features)||!Array.isArray(used)||
     !Object.keys(features).length||Object.entries(features).some(([k,v])=>
       !/^OPP_ALLOW_(REC_YDS|RUSH_YDS|REC|FPTS)_L6$/.test(k)||!used.includes(k)||n(v)===null||n(v)<0))return null;
  return {rate:selected,asOf:p.captured_at,method:x.method,calibrated:false,
-  sport:"NFL",opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
+  sport:"NFL",pushRate:push,opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
 }
 function nfl(chunks,schedule){
  const games=new Map((schedule?.games||[]).map(g=>[g.game_id,g]));
@@ -711,4 +716,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-hit-estimate-sort-20261113-r25";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-push-evidence-20261113-r26";
