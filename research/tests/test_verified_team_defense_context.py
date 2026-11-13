@@ -26,6 +26,21 @@ def cache(n=5):
     return {"version":1,"rows":sum([rows(str(x),f"2026-11-{x+1:02d}") for x in range(n)],[])}
 
 class TeamDefenseTests(unittest.TestCase):
+    def test_short_rotation_requires_precise_official_full_game_minutes(self):
+        for n in (5, 6):
+            c={"version":1,"rows":rows("short","2026-11-01",num=n)}
+            for r in c["rows"]:r["MIN"]=240/n
+            self.assertEqual(len(final_games(c)[0]),1)
+            c["rows"][0]["MIN"]-=1
+            self.assertEqual(final_games(c)[1],{"partial_boxscore":1})
+
+    def test_rounded_or_missing_minutes_do_not_certify_short_rotation(self):
+        for change in ({"MIN":None},{"MIN":40,"source":"ESPN_FINAL"},{"MIN":float("nan")}):
+            c={"version":1,"rows":rows("short","2026-11-01",num=6)}
+            for r in c["rows"]:r["MIN"]=40
+            c["rows"][0].update(change)
+            self.assertEqual(final_games(c)[1],{"partial_boxscore":1})
+
     def test_verified_dnp_without_totals_does_not_discard_complete_game(self):
         c=cache(1)
         c["rows"].append({"source_game_id":"0", "date":"2026-11-01",

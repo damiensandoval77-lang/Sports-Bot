@@ -34,6 +34,24 @@ def fetch(url):
     return final_box()
 
 class OfficialBackfillTests(unittest.TestCase):
+    def test_six_player_final_rotation_reconciles_minutes_and_score(self):
+        def request(url):
+            if "scheduleLeague" in url:return official()
+            x=final_box()
+            side=x["game"]["homeTeam"]
+            side["players"]=side["players"][:6]
+            for p in side["players"]:p["statistics"]["minutes"]="40:00"
+            side["score"]=sum(p["statistics"]["points"] for p in side["players"])
+            return x
+        result=collect(season(),{"version":1,"rows":[]},now=NOW,request=request)
+        self.assertEqual(result["verified_new_games"],1)
+        self.assertEqual(result["verified_combined_games"],1)
+        def inconsistent(url):
+            x=request(url)
+            if "game" in x:x["game"]["homeTeam"]["score"]+=1
+            return x
+        self.assertEqual(collect(season(),{"version":1,"rows":[]},now=NOW,request=inconsistent)["verified_new_games"],0)
+
     def test_saved_official_ids_recover_blocked_schedule_but_verify_live_box(self):
         from iphone_bot.fetch_final_boxscores import NBA_SCHEDULE
         snapshot={**official(),"source_url":NBA_SCHEDULE,"captured_at":NOW.isoformat()}
