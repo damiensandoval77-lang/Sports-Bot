@@ -2,12 +2,14 @@ name: NFL frozen-pick grading and accuracy ledger
 on:
   pull_request:
     paths:
+      - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
       - '.github/workflows/nfl-pick-grading.yml'
   push:
     branches: [main]
     paths:
+      - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
       - '.github/workflows/nfl-pick-grading.yml'
@@ -15,6 +17,7 @@ on:
       - 'docs/nfl/data/latest_2026.json'
       - 'docs/nfl/data/boxscores/week_*.json'
       - 'docs/nfl/data/boxscores/manifest.json'
+      - 'docs/nfl/data/boxscores/espn_verified_finals.json'
       - 'docs/nfl/data/verified_inactives_2026.json'
       - 'docs/nfl/data/verified_zero_snap_stats_2026.json'
       - 'docs/nfl/data/verified_full_scoring_2026_09_BUF_MIN.json'
