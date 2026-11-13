@@ -40,6 +40,9 @@ def fetch(url,timeout=15):
 def evaluate(site,html,health,now=None):
     now=now or dt.datetime.now(UTC)
     failed=[]
+    if not isinstance(health,dict):
+        failed.append("PUBLIC_AI_RESEARCH_JSON_INVALID_SHAPE")
+        health={}
     def check(ok,reason):
         if not ok:failed.append(reason)
     check('feeds.js?bundle=' in html,
