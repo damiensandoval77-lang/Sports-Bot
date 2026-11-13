@@ -6,6 +6,13 @@ const pick=(side="MORE",more={})=>({sport:"NBA",player:"Example Guard",playerId:
  game:"A @ B",gameId:"A @ B",start:"2026-11-11T00:00:00Z",stat:"PTS",
  source:"PrizePicks",line:27.5,projection:30.1,side,confidenceTier:undefined,
  chance:.64,captured:"2026-11-10T17:00:00Z",...more});
+test("Player-facing takes use Over/Under and retain the surname before Jr.",()=>{
+ for(const pool of Object.values(t.POOL))assert.ok(pool.every(s=>!/\b(?:more|less)\b/i.test(s)));
+ const used=new Set(t.POOL.UNDER);
+ const text=t.damesTake(pick("LESS",{player:"Christian Anderson Jr.",projection:24}),{usedOpeners:used});
+ assert.match(text,/for Anderson PTS/);
+ assert.doesNotMatch(text,/for Jr/);
+});
 test("At least 10 different non-corny openers exist for each of four tiers",()=>{
  for(const [tier,pool] of Object.entries(t.POOL)){
   assert.ok(pool.length>=10,tier);

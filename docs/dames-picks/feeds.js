@@ -218,7 +218,7 @@ function summarize(rows,nflHealth,now=Date.now(),league=null){
   return {games:gameCount,wins:settled!==null&&wins!==null?wins:null,
    losses:settled!==null&&wins!==null?settled-wins:null,
    hitRate:settled>0&&wins!==null?wins/settled:null,
-   graded:settled||0,pending:n(nflHealth?.pending_picks)};
+   graded:settled||0,pending:n(nflHealth?.standard_pending_picks)??rows.filter(r=>r.grade==="PENDING"&&r.frozenSettlementArchive&&r.pendingReason).length};
  }
  const wins=graded.filter(x=>x.hit).length;
  return {games:gameCount,wins:graded.length?wins:null,losses:graded.length?graded.length-wins:null,
@@ -753,4 +753,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-final-boxscore-20261113-r32";
+globalThis.__damesRunningAssets["feeds.js"]="dp-take-over-under-20261113-r33";

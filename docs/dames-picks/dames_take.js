@@ -16,18 +16,18 @@ const POOL={
  OVER:[
   "He been getting to it","This number looking light","Bro got room to clear",
   "They set this one low","His numbers sitting higher","That line ain't caught up",
-  "I like the more here","He got some space on this","This over got a case",
+  "I like the over here","He got some space on this","This over got a case",
   "He been above this pace","That's a reachable number","He can get past that",
   "The model got him higher","This side looking better","There's room on the over",
-  "More makes sense here","I see him clearing","Not sold on that low line"
+  "Over makes sense here","I see him clearing","Not sold on that low line"
  ],
  UNDER:[
   "They asking too much","That number sitting high","He ain't been near that",
-  "Less looking cleaner here","I don't love that line","This feels a little rich",
+  "Under looking cleaner here","I don't love that line","This feels a little rich",
   "That line needs a lot","They got him too high","I see him staying below",
-  "The model leaning less","That under got a case","His numbers sitting lower",
+  "The model leaning under","That under got a case","His numbers sitting lower",
   "I ain't chasing that total","That's a heavy number","He gotta do too much",
-  "Less makes sense here","They reaching with that line","I like the lower side"
+  "Under makes sense here","They reaching with that line","I like the lower side"
  ],
  "THIN EDGE":[
   "It's a lean not a lock","I ain't all in here","This one real close",
@@ -118,7 +118,7 @@ function openingFor(p,tier,used=new Set()){
  }
  // When a slate has more picks than the finite pool, disambiguate by player
  // and stat without claiming any new metric.
- const who=String(p.player||"this player").split(" ").slice(-1)[0];
+ const who=String(p.player||"this player").trim().split(/\s+/).filter(part=>!/^(?:jr\.?|sr\.?|ii|iii|iv|v)$/i.test(part)).slice(-1)[0]||"this player";
  const stat=String(p.stat||"this stat");
  const base=pool[start]+" for "+who+" "+stat;
  let text=base;
@@ -159,4 +159,4 @@ root.DamesTake={POOL,tierFor,support,damesTake,forSlate};
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["dames_take.js"]="dp-final-boxscore-20261113-r32";
+globalThis.__damesRunningAssets["dames_take.js"]="dp-take-over-under-20261113-r33";

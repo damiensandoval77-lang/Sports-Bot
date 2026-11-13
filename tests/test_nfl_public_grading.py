@@ -9,7 +9,7 @@ from datetime import datetime,timezone,timedelta
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 from reconcile_nfl_picks import (
-    historic_snapshot,collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,verified_zero_snaps,verified_full_game_scoring,exact_fantasy_score,run)
+    historic_snapshot,collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,verified_zero_snaps,verified_full_game_scoring,exact_fantasy_score,pending_counts,run)
 
 def schedule():
     kickoff="2026-11-15T18:00:00+00:00"
@@ -33,6 +33,14 @@ def box():
              "rushing_tds":0,"receiving_tds":1}}}
 
 class PublicNFLGradeTests(unittest.TestCase):
+    def test_pending_standard_scope_excludes_alternative_tiers(self):
+        rows=[dict(odds_type=t,grade_status="boxscore_not_yet_published")
+              for t in ("standard","demon","goblin","standard")]
+        self.assertEqual(pending_counts(rows),{
+            "standard_pending_picks":2,"alternative_tier_pending_excluded":2,
+            "standard_pending_reasons":{"boxscore_not_yet_published":2}})
+        self.assertEqual(pending_counts([])["standard_pending_picks"],0)
+
     def test_real_bills_vikings_final_has_gradeable_archived_picks(self):
         # Regression: 2026 Nov 9 game is final, 1,374 pretip lines saved;
         # a stale health file said 0 graded and 0 pending despite a verified box.
