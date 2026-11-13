@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/pipeline_heartbeat.py'
+      - 'iphone_bot/heartbeat_recovery.py'
+      - 'iphone_bot/tests/test_heartbeat_recovery.py'
       - '.github/workflows/pipeline-heartbeat.yml'
   schedule:
     - cron: '*/10 * * * *'
@@ -20,6 +22,8 @@ on:
     paths:
       - '.github/workflows/pipeline-heartbeat.yml'
       - 'iphone_bot/pipeline_heartbeat.py'
+      - 'iphone_bot/heartbeat_recovery.py'
+      - 'iphone_bot/tests/test_heartbeat_recovery.py'
       - 'iphone_bot/tests/test_pipeline_heartbeat.py'
       - 'tests/test_critical_production_repair_contracts.py'
 permissions:
@@ -44,7 +48,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           python -m pip install --disable-pip-version-check "PyYAML>=6,<7"
-          python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v
+          python -m unittest iphone_bot.tests.test_pipeline_heartbeat iphone_bot.tests.test_heartbeat_recovery -v
           python -m unittest discover -s tests -p 'test_critical_production_repair_contracts.py' -v
       - name: Run deployed-site monitoring
         if: github.event_name != 'pull_request'
@@ -54,39 +58,37 @@ jobs:
           python -m iphone_bot.pipeline_heartbeat pipeline_heartbeat.json
           echo "code=$?" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Save evidence
-        if: github.event_name != 'pull_request' && always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: deployed-heartbeat-${{ github.run_id }}
-          path: pipeline_heartbeat.json
-          retention-days: 90
       - name: Retry failed free stages without suppressing recovery after failures
         if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          set -euo pipefail
-          for wf in $(jq -r '.stages[] | select(.status == "FAIL" and .recovery_workflow != null) | .recovery_workflow' pipeline_heartbeat.json | sort -u); do
-            busy=$(gh run list --workflow "$wf" --limit 30 --json createdAt,status,conclusion,headBranch |
-              jq --argjson cutoff "$(( $(date -u +%s) - 1800 ))"                 '[.[] | select(.headBranch == "main" and (.status != "completed" or (.conclusion == "success" and (.createdAt|fromdateiso8601) >= $cutoff)))] | length')
-            if [ "$busy" -gt 0 ]; then echo "$wf has an active or recently successful run"; continue; fi
-            gh workflow run "$wf" --ref main
-            echo "Dispatched free recovery for $wf"
-          done
+          python -m iphone_bot.heartbeat_recovery pipeline_heartbeat.json heartbeat_recovery.json
+      - name: Save evidence
+        if: github.event_name != 'pull_request' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-heartbeat-${{ github.run_id }}
+          path: |
+            pipeline_heartbeat.json
+            heartbeat_recovery.json
+          retention-days: 90
       - name: Publish source-grounded status in the Actions run summary
         if: github.event_name != 'pull_request' && always()
         run: |
           echo "## Dame's Picks deployed pipeline heartbeat" >> "$GITHUB_STEP_SUMMARY"
           echo "This report checks deployed data; a green preceding workflow alone is not proof of a healthy app." >> "$GITHUB_STEP_SUMMARY"
           if [ -s pipeline_heartbeat.json ]; then
-            jq -r '.stages[] | "- **\\(.status)** \\(.stage): \\(.detail) | evidence: \\(.evidence|tojson)"' pipeline_heartbeat.json >> "$GITHUB_STEP_SUMMARY"
+            jq -r '.stages[] | "- **\(.status)** \(.stage): \(.detail) | evidence: \(.evidence|tojson)"' pipeline_heartbeat.json >> "$GITHUB_STEP_SUMMARY"
           else
             echo "- **FAIL** Heartbeat report missing; inspect failed workflow and artifact." >> "$GITHUB_STEP_SUMMARY"
           fi
+          if [ -s heartbeat_recovery.json ]; then
+            jq -r '.recoveries[] | "- Recovery **\(.status)** \(.workflow): \(.reason // "requested; verify deployed output")"' heartbeat_recovery.json >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Open or close one GitHub alert per failing stage
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && always()
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
