@@ -96,4 +96,33 @@ class OverdueGradeChecks(unittest.TestCase):
                          "OVERDUE_MONITOR_SOURCE_ERROR")
         self.assertEqual(assess(S,{},F,NOW)["status"],"OVERDUE_MONITOR_SOURCE_ERROR")
 
+    def test_future_capture_does_not_include_old_meeting_of_same_teams(self):
+        old={**S['games'][0],'start':'2026-10-24T00:00:00+00:00',
+             'date_eastern':'2026-10-23'}
+        future={**P,'start':'2026-11-14T00:00:00+00:00',
+                'captured_at':'2026-11-13T12:00:00+00:00'}
+        result=assess({**S,'games':[old]}, {**A,'predictions':[future]},F,NOW)
+        self.assertEqual(result['games'],[])
+        self.assertEqual(result['status'],'NO_OVERDUE_PENDING')
+
+    def test_repeated_matchups_preserve_each_archived_meeting(self):
+        old={**S['games'][0],'start':'2026-10-24T00:00:00+00:00',
+             'date_eastern':'2026-10-23'}
+        prior={**P,'start':old['start'],'captured_at':'2026-10-23T23:30:00+00:00'}
+        settled={**P,'status':'GRADED','actual':19,'final_source':'NBA_CDN_FINAL',
+                 'source_game_id':'0022600204'}
+        for games in ([old,S['games'][0]],[S['games'][0],old]):
+            result=assess({**S,'games':games},{**A,'predictions':[prior,P]},
+                          {'records':[settled]},NOW)
+            self.assertEqual(result['totals']['scanned_game_count'],2)
+            self.assertEqual(result['totals']['overdue_forecasts'],1)
+            self.assertEqual(result['totals']['settled_forecasts'],1)
+            self.assertEqual(result['games'][0]['start'],old['start'])
+            self.assertEqual(result['games'][0]['status'],'OVERDUE_UNGRADED')
+
+    def test_equivalent_timezone_and_small_tip_shift_match(self):
+        shifted={**S['games'][0],'start':'2026-11-09T19:10:00-05:00'}
+        result=assess({**S,'games':[shifted]},A,F,NOW)
+        self.assertEqual(result['totals']['overdue_forecasts'],1)
+
 if __name__=="__main__":unittest.main()
