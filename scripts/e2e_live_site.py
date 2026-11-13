@@ -82,6 +82,21 @@ def main():
                       /^(?:\\d+|—) OVER$/.test(spans[0]) &&
                       /^(?:\\d+|—) UNDER$/.test(spans[1])};
           })""")
+        # Fault injection against the actual deployed helper. Route only this
+        # synthetic same-origin request; no provider request or data is changed.
+        page.route("**/__audit_stalled_feed__*", lambda route: None)
+        deadline_evidence=page.evaluate("""async () => {
+          const started=performance.now();
+          try {
+            await fetchData(new URL('__audit_stalled_feed__',location.href).href,'json',120);
+            return {rejected:false,elapsed_ms:performance.now()-started};
+          } catch(error) {
+            return {rejected:true,error:String(error.message),elapsed_ms:performance.now()-started};
+          }
+        }""")
+        check("deployed_stalled_feed_deadline",deadline_evidence.get("rejected") is True
+              and deadline_evidence.get("error")=="Feed request timed out"
+              and 80<=deadline_evidence.get("elapsed_ms",0)<3000,deadline_evidence)
         page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=True)
         browser.close()
     footer_details={"visible_board_cards":cards,"cards":footer_evidence[:12]}
