@@ -55,8 +55,10 @@ jobs:
         run: |
           pip install --disable-pip-version-check pandas pyarrow
           python scripts/recover_nfl_zero_stat_snaps.py
+      - name: Fetch immutable original evidence for one-time archive recovery
+        run: git fetch origin 7d787f218c9d5667536a391257f873126f42476f
       - name: Reconcile captured pregame lines with verified final player stats
-        run: python scripts/reconcile_nfl_picks.py
+        run: python scripts/reconcile_nfl_picks.py --recover-snapshot-ref 7d787f218c9d5667536a391257f873126f42476f
       - name: Check grading coverage, including pending results
         run: |
           python - <<'PY'
@@ -88,7 +90,8 @@ jobs:
                     docs/nfl/data/pp_graded_2026.csv \
                     docs/nfl/data/pp_grading_pending_2026.csv \
                     docs/nfl/data/grading_health_2026.json \
-                    docs/nfl/data/active_frozen_2026.json
+                    docs/nfl/data/active_frozen_2026.json \
+                    docs/nfl/data/original_evidence_recovery_2026.json
             if git diff --cached --quiet; then
               echo "NFL frozen grades unchanged; preserving stable Pages deployment"
               exit 0
@@ -98,7 +101,7 @@ jobs:
             echo "Concurrent Sports-Bot commit detected; refresh and recompute on new main"
             git fetch origin main
             git reset --hard origin/main
-            python scripts/reconcile_nfl_picks.py
+            python scripts/reconcile_nfl_picks.py --recover-snapshot-ref 7d787f218c9d5667536a391257f873126f42476f
           done
           echo "::error::Could not publish NFL grading after three safe retries"
           exit 1

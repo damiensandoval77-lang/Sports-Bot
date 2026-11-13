@@ -5,6 +5,7 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 from sync_private_nfl_snapshot import sync,validate_payload
@@ -32,6 +33,24 @@ class TestNFLSync(unittest.TestCase):
             original=(out/NAME).read_bytes()
             self.assertFalse(sync(lambda n:data[n],out)["changed"])
             self.assertEqual(original,(out/NAME).read_bytes())
+    def test_archives_old_snapshot_before_rotation_and_failure_blocks_copy(self):
+        with tempfile.TemporaryDirectory() as folder:
+            out=Path(folder);old=payload();sync(lambda n:old[n],out)
+            (out/"schedule_2026.json").write_text("{}")
+            newer=payload(capture="2026-11-10T17:00:00+00:00")
+            seen=[]
+            def archive(root):
+                seen.append(json.loads((root/"latest_2026.json").read_text())["captured_at"])
+            with patch("reconcile_nfl_picks.run",side_effect=archive):
+                sync(lambda n:newer[n],out)
+            self.assertEqual(seen,[CAPTURE])
+            newer2=payload(capture="2026-11-11T17:00:00+00:00")
+            before=(out/NAME).read_bytes()
+            with patch("reconcile_nfl_picks.run",side_effect=ValueError("archive failed")):
+                with self.assertRaisesRegex(ValueError,"archive failed"):
+                    sync(lambda n:newer2[n],out)
+            self.assertEqual((out/NAME).read_bytes(),before)
+
     def test_bad_new_chunk_preserves_last_good(self):
         with tempfile.TemporaryDirectory() as folder:
             out=Path(folder)

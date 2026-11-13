@@ -4,11 +4,12 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 from reconcile_nfl_picks import (
-    collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,verified_zero_snaps,verified_full_game_scoring,exact_fantasy_score,run)
+    historic_snapshot,collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,verified_zero_snaps,verified_full_game_scoring,exact_fantasy_score,run)
 
 def schedule():
     kickoff="2026-11-15T18:00:00+00:00"
@@ -91,6 +92,17 @@ class PublicNFLGradeTests(unittest.TestCase):
         self.assertIsNone(exact_fantasy_score(player,None))
         self.assertIsNone(exact_fantasy_score({**player,"receiving_tds":1},scoring))
         self.assertIsNone(exact_fantasy_score({**player,"passing_yards":None},scoring))
+
+    def test_historical_recovery_requires_immutable_commit_and_exact_manifest(self):
+        with self.assertRaisesRegex(ValueError,"immutable commit"):
+            historic_snapshot("main")
+        r=bet();r["matchup_evidence"]='{"original":"bytes"}'
+        import io
+        out=io.StringIO();w=csv.DictWriter(out,fieldnames=list(r));w.writeheader();w.writerow(r)
+        manifest={"season":2026,"captured_at":r["captured_at"],"rows":1,"files":["latest_2026_00.csv"]}
+        with patch("reconcile_nfl_picks.subprocess.check_output",side_effect=[json.dumps(manifest).encode(),out.getvalue().encode()]):
+            rows,_=historic_snapshot("a"*40)
+        self.assertEqual(rows[0]["matchup_evidence"],r["matchup_evidence"])
 
     def test_exact_evidence_survives_repeat_and_source_rotation(self):
         original=bet(); original.update(p_more="0.58",p_less="0.32",p_push="0.10",
