@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-13T05:33:58.245456+00:00",
+  "checked_at": "2026-11-13T05:39:44.363682+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -9,9 +9,7 @@
   "blocking_checks": [
     "unified_artifacts",
     "nba_production",
-    "nba_capture",
-    "nba_grading",
-    "nfl_grading"
+    "nba_capture"
   ],
   "checks": {
     "unified_artifacts": {
@@ -29,9 +27,7 @@
       "state": "DEGRADED",
       "issues": [
         "NBA_PRODUCTION_NOT_READY",
-        "NBA_FAILED_SEASON_CALENDAR",
-        "NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE",
-        "NBA_FAILED_NIGHTLY_GRADES"
+        "NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE"
       ]
     },
     "nba_capture": {
@@ -41,21 +37,16 @@
       ]
     },
     "nba_grading": {
-      "state": "DEGRADED",
-      "issues": [
-        "HISTORICAL_AI_FORECASTS_UNRESOLVED",
-        "GRADING_INCOMPLETE:2026-11-12"
-      ]
+      "state": "READY",
+      "issues": []
     },
     "published_pick_settlement": {
       "state": "READY",
       "issues": []
     },
     "nfl_grading": {
-      "state": "DEGRADED",
-      "issues": [
-        "NFL_PENDING_GRADES_UNRESOLVED"
-      ]
+      "state": "READY",
+      "issues": []
     }
   },
   "scope": "UNIFIED_DAMES_PICKS_NBA_NFL_RELEASE_GATE",
