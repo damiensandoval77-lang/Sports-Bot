@@ -1,0 +1,449 @@
+{
+  "schema": "SPORTS_BOT_REPAIR_RECEIPT_V1",
+  "status": "PARTIAL",
+  "run_start": "2026-11-13T08:37:41Z",
+  "evidence_cutoff": "2026-11-13T08:52:31.850202+00:00",
+  "run_end": "See final automation response and receipt PR description after persistence verification",
+  "pinned_main": "b023b39ae1c965afcd53896f20b891a322a75d19",
+  "repair_head": "d92c5917ef2d9c6926b3bc01693c89c216b4dc61",
+  "repair_merge": "03833185417cc441dc2fa581e8adb813c1ea4590",
+  "repair_pr": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/404",
+  "permissions": {
+    "github_read": true,
+    "github_branch_blob_commit_pr_merge_write_verified": true,
+    "local_code_execution": true,
+    "public_https_reachable": true,
+    "pages_settings_tool": false,
+    "settings_browser_authenticated": false,
+    "main_protected": false
+  },
+  "automation": {
+    "id": "Automation_e692466cc8688191bd360a9d6de62973",
+    "enabled": true,
+    "schedule": "FREQ=HOURLY;INTERVAL=2",
+    "notification_requested": true,
+    "notification_delivery_confirmed": false,
+    "schedule_modified": false
+  },
+  "counts": {
+    "new_code_defects_repaired": 3,
+    "targeted_tests_passed": 41,
+    "ui_tests_passed": 146,
+    "new_primary_predictions_recovered": 0,
+    "historical_missing_captures_fabricated": 0
+  },
+  "inventory": {
+    "heads_at_fetch": 405,
+    "historical_pull_refs": 403,
+    "refs_compared": 808,
+    "method": "git fetch all advertised heads and refs/pull/*/head; local pinned-SHA rev-list divergence; merge-tree for all seven pre-existing open PRs",
+    "exceptions": [
+      "New repair PR404 and its branch were created after inventory and recorded separately",
+      "Deleted unreachable branches cannot be enumerated",
+      "Ancestry is not semantic verification; squash-merged tips may still diverge",
+      "No execution of every historical branch; obsolete/conflicting PRs not blindly merged"
+    ],
+    "open_pr_checks": [
+      {
+        "pr": 307,
+        "sha": "eeabd5b7a0598daf905eb2d1c721ae49ba4b92bc",
+        "merge_test_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in .github/workflows/live-site-e2e.yml",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/dames_take.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/feeds.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/live_direct.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/release.json",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs",
+          "CONFLICT (content): Merge conflict in scripts/e2e_live_site.py"
+        ]
+      },
+      {
+        "pr": 272,
+        "sha": "1dc5e775322071ac826d913902c88a9369bfd73e",
+        "merge_test_exit": 0,
+        "conflicts": []
+      },
+      {
+        "pr": 249,
+        "sha": "29c9616b923362b872a11d773088491e9c56efd1",
+        "merge_test_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in .github/workflows/live-night-integration.yml",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/merge_nba_player_boxscore_publish.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs"
+        ]
+      },
+      {
+        "pr": 135,
+        "sha": "2026b606d4a3db2652f141402cf0c83e88f00b5b",
+        "merge_test_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in docs/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_restored_main_card_coverage.cjs",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_verify_browser_dashboard.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/verify_browser_dashboard.py"
+        ]
+      },
+      {
+        "pr": 132,
+        "sha": "c6187d7fd4be15b8f015e70050dbb2becd6200bf",
+        "merge_test_exit": 0,
+        "conflicts": []
+      },
+      {
+        "pr": 72,
+        "sha": "07696e01a28fb92bbf8bf9827f788a52b470f29c",
+        "merge_test_exit": 0,
+        "conflicts": []
+      },
+      {
+        "pr": 3,
+        "sha": "a6102b0b75ce61da1870d9ed3916f3c9785cfe2a",
+        "merge_test_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in .github/workflows/nba-schedule.yml"
+        ]
+      }
+    ],
+    "workflows": 174,
+    "jobs": 185,
+    "sampled_runs": 600,
+    "sampled_outcomes": {
+      "success": 393,
+      "failure": 65,
+      "cancelled": 142
+    },
+    "definitions_with_runtime_sample": 67,
+    "definitions_without_runtime_sample": 107,
+    "branch_inventory": "branches.json.gz",
+    "workflow_inventory": "workflows.json.gz",
+    "static_audit": "static-audit.json.gz"
+  },
+  "repairs": [
+    {
+      "id": "HB-RECOVERY-ABORT",
+      "severity": "HIGH",
+      "root_cause": "set -e aborted independent workflow recovery loop after one gh lookup or dispatch failed",
+      "before": "Later eligible free stages were not attempted",
+      "after": "Per-workflow isolation, explicit free allowlist, duplicate suppression and failure receipts; unknown inventory does not dispatch blindly",
+      "files": [
+        "iphone_bot/heartbeat_recovery.py",
+        ".github/workflows/pipeline-heartbeat.yml",
+        "iphone_bot/tests/test_heartbeat_recovery.py"
+      ],
+      "verification": "Fault-injected failed dispatch and inventory timeout continue to second workflow in local and hosted tests; helper executed on production main. Production run needed no recovery dispatch; no real outage recovery claimed."
+    },
+    {
+      "id": "HB-FUTURE-FRESHNESS",
+      "severity": "HIGH",
+      "root_cause": "Negative ages satisfied only upper-bound freshness comparisons",
+      "before": "24-hour-future live scores and player observations reported OK at age -1440 minutes",
+      "after": "Future observation ages unavailable; live checks fail, publication future timestamps fail, future grading report cannot prove zero backlog",
+      "files": [
+        "iphone_bot/pipeline_heartbeat.py",
+        "iphone_bot/tests/test_pipeline_heartbeat.py"
+      ],
+      "verification": "Three regression cases pass locally and in hosted heartbeat suite; code deployed and main heartbeat executed."
+    },
+    {
+      "id": "HB-LITERAL-SUMMARY",
+      "severity": "MEDIUM",
+      "root_cause": "Doubled jq backslashes escaped interpolation",
+      "before": "Actions summary printed literal .status/.stage/.detail placeholders",
+      "after": "Actual health/recovery state and evidence rendered; artifact and summary retained after recovery errors",
+      "files": [
+        ".github/workflows/pipeline-heartbeat.yml",
+        "iphone_bot/tests/test_heartbeat_recovery.py"
+      ],
+      "verification": "Original YAML shell reproduced literal placeholders; patched YAML shell asserted actual FAIL/evidence; production summary step succeeded."
+    }
+  ],
+  "tests": {
+    "targeted": 41,
+    "ui": 146,
+    "ci_runs": [
+      43395773462,
+      43395773440,
+      43395773382
+    ],
+    "ci_all_passed": true,
+    "production_heartbeat": 43396085437,
+    "production_heartbeat_artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43396085437/artifacts/14023221265",
+    "production_heartbeat_recoveries": [],
+    "pages_deployment": 43396084243,
+    "pages_deployment_status": "success"
+  },
+  "production": {
+    "release": "dp-nfl-threshold-labels-20261113-r35",
+    "byte_verification": {
+      "attempts": 1,
+      "expected_release": "dp-nfl-threshold-labels-20261113-r35",
+      "local_files": {
+        "dames_take.js": "7a4f7aef9471953de50fcdfd73974cd8daebc53d0e8be275ccd853a5d18de16b",
+        "feeds.js": "bac4957c5f357c88448033ecba76822691aaeb2d67252f41dde441b092d783b1",
+        "index.html": "e8eeddba8678a8be9071c2033242c59a9d59c3fdce3bb40050967960833325e0",
+        "live_direct.js": "da522a8484945c1071731b1f27e48641e3af4cd3d2690d9f3ad5dfab5c0dafbe",
+        "provisional.js": "c51a30cbc2cf1e53c2373a8bad5630a1fa4f6c3bd833e7d4dc2127b4d55868e9",
+        "release.json": "24f2672485c37d00554c95d8120ae9d023a3801ad9b7356d2227b7745efaee52",
+        "short_history.js": "266142dc9a5625350cac494adcdc9aa0790f0ed8de54ae6b87bc77ec1505dcf5"
+      },
+      "mode": "PUBLIC_HTTP_BYTE_FOR_BYTE_CHECK",
+      "public_files": {
+        "dames_take.js": "7a4f7aef9471953de50fcdfd73974cd8daebc53d0e8be275ccd853a5d18de16b",
+        "feeds.js": "bac4957c5f357c88448033ecba76822691aaeb2d67252f41dde441b092d783b1",
+        "folder-root.html": "e8eeddba8678a8be9071c2033242c59a9d59c3fdce3bb40050967960833325e0",
+        "index.html": "e8eeddba8678a8be9071c2033242c59a9d59c3fdce3bb40050967960833325e0",
+        "live_direct.js": "da522a8484945c1071731b1f27e48641e3af4cd3d2690d9f3ad5dfab5c0dafbe",
+        "provisional.js": "c51a30cbc2cf1e53c2373a8bad5630a1fa4f6c3bd833e7d4dc2127b4d55868e9",
+        "release.json": "24f2672485c37d00554c95d8120ae9d023a3801ad9b7356d2227b7745efaee52",
+        "short_history.js": "266142dc9a5625350cac494adcdc9aa0790f0ed8de54ae6b87bc77ec1505dcf5"
+      },
+      "public_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+      "reasons": [],
+      "state": "DEPLOYED_BYTES_VERIFIED"
+    },
+    "public_fetches": [
+      {
+        "path": "production_readiness.json",
+        "observed_at": "2026-11-13T08:47:18.468421+00:00",
+        "http_status": 200,
+        "source_time": "2026-11-13T08:34:03.809597+00:00",
+        "status": "DEGRADED",
+        "summary": null
+      },
+      {
+        "path": "tonight_capture_gradeability.json",
+        "observed_at": "2026-11-13T08:47:18.513184+00:00",
+        "http_status": 200,
+        "source_time": "2026-11-13T08:06:42.650041+00:00",
+        "status": "CAPTURE_INCOMPLETE",
+        "summary": {
+          "schedule_games": 9,
+          "games_with_saved_source_quotes": 9,
+          "games_with_frozen_ai": 9,
+          "games_with_line_backed_models": 9,
+          "total_quotes": 466,
+          "total_standard_source_quotes": 466,
+          "total_standard_markets_without_frozen_model": 20,
+          "total_price_moves_from_original_frozen_line": 0,
+          "total_player_stat_markets_never_primary_frozen": 20,
+          "total_missing_primary_with_separate_research_receipt": 8,
+          "total_missing_primary_without_any_ai_receipt": 12,
+          "total_ai_only": 904,
+          "total_line_backed": 449,
+          "total_line_backed_graded": 0,
+          "total_ai_only_graded": 0
+        }
+      },
+      {
+        "path": "nfl/data/grading_health_2026.json",
+        "observed_at": "2026-11-13T08:47:18.454701+00:00",
+        "http_status": 200,
+        "source_time": null,
+        "status": null,
+        "summary": null
+      },
+      {
+        "path": "nightly_grade_health.json",
+        "observed_at": "2026-11-13T08:47:18.471767+00:00",
+        "http_status": 200,
+        "source_time": "2026-11-13T08:31:01.120795+00:00",
+        "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+        "summary": null
+      },
+      {
+        "path": "dames-picks/app_release_gate.json",
+        "observed_at": "2026-11-13T08:47:22.102007+00:00",
+        "http_status": 200,
+        "source_time": "2026-11-13T08:34:03.907135+00:00",
+        "status": "DEGRADED",
+        "summary": null
+      },
+      {
+        "path": "nba_scoreboard_independent.json",
+        "observed_at": "2026-11-13T08:47:22.145214+00:00",
+        "http_status": 200,
+        "source_time": "2026-11-13T08:41:07.112021+00:00",
+        "status": "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE",
+        "summary": null
+      },
+      {
+        "path": "nfl/data/live_2026.json",
+        "observed_at": "2026-11-13T08:47:22.153272+00:00",
+        "http_status": 200,
+        "source_time": "2026-11-13T06:38:03.339535+00:00",
+        "status": "ok",
+        "summary": null
+      }
+    ],
+    "nba_schedule_fixed_games": 1200,
+    "nba_current_slate_games": 9,
+    "nba_next_day_games": 5,
+    "nfl_season_games": 272,
+    "capture_summary": {
+      "schedule_games": 9,
+      "games_with_saved_source_quotes": 9,
+      "games_with_frozen_ai": 9,
+      "games_with_line_backed_models": 9,
+      "total_quotes": 466,
+      "total_standard_source_quotes": 466,
+      "total_standard_markets_without_frozen_model": 20,
+      "total_price_moves_from_original_frozen_line": 0,
+      "total_player_stat_markets_never_primary_frozen": 20,
+      "total_missing_primary_with_separate_research_receipt": 8,
+      "total_missing_primary_without_any_ai_receipt": 12,
+      "total_ai_only": 904,
+      "total_line_backed": 449,
+      "total_line_backed_graded": 0,
+      "total_ai_only_graded": 0
+    },
+    "current_coverage": {
+      "status": "INCOMPLETE",
+      "checked_at": "2026-11-13T08:06:42.650041+00:00",
+      "source_generated_at": "2026-11-13T08:05:26.037173+00:00",
+      "verified_current_offers": 323,
+      "matched_primary_offers": 309,
+      "missing_primary_offers": 14,
+      "issues": [],
+      "scope": "CURRENT_UPCOMING_STANDARD_OFFERS_ONLY",
+      "research_and_provisional_count_as_primary": false
+    },
+    "nba_nov12_standard": {
+      "recorded": 315,
+      "graded": 306,
+      "verified_dnp_excluded": 9,
+      "pending": 0
+    },
+    "nba_nov12_ai": {
+      "recorded": 388,
+      "graded": 332,
+      "verified_dnp_excluded": 56,
+      "pending": 0
+    },
+    "nba_nov12_research": {
+      "recorded": 327,
+      "settled": 318,
+      "void": 9,
+      "pending": 0
+    },
+    "nfl_grading": {
+      "alternative_tier_historical_grades_excluded": 932,
+      "alternative_tier_pending_excluded": 4,
+      "archived_pregame_lines": 66654,
+      "expected_final_picks": 1087,
+      "final_games_with_frozen_picks": 2,
+      "frozen_final_pick_candidates": 1087,
+      "graded_picks": 1067,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 4,
+      "pending_reasons": {
+        "player_not_in_verified_boxscore": 4
+      },
+      "pushes": 3,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 135,
+      "standard_hit_rate": 39.39,
+      "standard_pending_picks": 0,
+      "standard_pending_reasons": {},
+      "standard_settled": 132,
+      "standard_wins": 52,
+      "void_picks": 16
+    },
+    "nba_score_source_state": "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE",
+    "nfl_final_score": "WAS 24 NYG 21",
+    "nfl_live_snapshot_source_time": "2026-11-13T06:38:03.339535+00:00",
+    "live_limit": "No active NBA/NFL game observed: 30-second live correctness during an active game was not demonstrated. NBA source explicitly uses schedule fallback rather than falsely confirming live.",
+    "public_ui": {
+      "direct_browser_observed": true,
+      "phone_width_direct_browser": false,
+      "NBA": "9 games; Ty Jerome detail projection25.4 line23.5 Over, Take below projection",
+      "NFL": "52W80L39%; final WAS24NYG21; game detail74 saved standard lines and observed player box",
+      "prior_recent_hosted_phone_run": 43394363387,
+      "hosted_phone_time": "2026-11-13T08:36:12Z",
+      "hosted_phone_cards": 354,
+      "hosted_phone_artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43394363387/artifacts/14022520843",
+      "hosted_phone_limit": "Chromium phone-size emulation, not physical iPhone/WebKit; completed just before this run, same r35 assets independently verified during run"
+    }
+  },
+  "unresolved": [
+    {
+      "id": "NBA-PRIMARY-COVERAGE",
+      "severity": "HIGH",
+      "current_missing_offers": 14,
+      "current_offers": 323,
+      "matched_primary": 309,
+      "archived_nov13_unmatched_thresholds": 20,
+      "root_cause": "Insufficient eligible opportunity history for established 8-game primary model",
+      "available_prior_game_counts": {
+        "Jaylon Tyson": 5,
+        "Ivica Zubac": 7,
+        "Keegan Murray": 4,
+        "Max Strus": 4,
+        "Patrick Williams": 3
+      },
+      "safe_workaround": "Existing separate provisional/research outputs retained; not relabelled as primary. Short-history PTS/REB retrospective gate passes, AST/PRA fails; global primary_model_eligible false. Jalen Suggs included among current withheld offers.",
+      "blocked_on": "Additional real eligible input history or separately validated replacement; no fabrication or blind promotion of PR307"
+    },
+    {
+      "id": "HISTORICAL-CAPTURE-GAPS",
+      "severity": "HIGH",
+      "nov12_missing_thresholds": 20,
+      "moved_original_threshold": 5,
+      "never_primary_modeled": 15,
+      "outcome": "Original records preserved. Exact missing pretip evidence cannot be recreated after tip."
+    },
+    {
+      "id": "PAGES-NATIVE-CANCELLATIONS",
+      "severity": "MEDIUM",
+      "sample_cancelled_runs": 142,
+      "outcome": "Latest deployment and actual r35 bytes verified; cancellation cause not fixed",
+      "blocker": "Pages settings action absent from connected tools; settings browser signed out (404 with Sign in). Existing serialized workflow is ready for workflow-mode Pages.",
+      "required_action": "Repository owner can change Settings > Pages > Build and deployment > Source to GitHub Actions, then verify controlled workflow deployment; this run could not change authenticated settings."
+    },
+    {
+      "id": "LEGACY-FEED-STALE",
+      "severity": "MEDIUM",
+      "outcome": "Legacy Phase1 feed checks still fail on disabled sportsbook data. Paid polling not restarted; current standard-line readiness tracked separately."
+    },
+    {
+      "id": "SUPPLY-CHAIN-UNPINNED",
+      "severity": "MEDIUM",
+      "mutable_action_references": 402,
+      "outcome": "Not fully remediated. Broad workflow edits can trigger provider refreshes; no mass mutation during this repair."
+    },
+    {
+      "id": "OPEN-PR-CONFLICTS",
+      "severity": "MEDIUM",
+      "prs": [
+        307,
+        249,
+        135,
+        3
+      ],
+      "outcome": "Conflicts recorded; useful prior249 backend already carried in earlier repair; no stale UI or unvalidated primary replacement merged."
+    }
+  ],
+  "failed_runs_latest": {
+    "43394776443": "Phase1 stale legacy odds/tracker",
+    "43394354789": "Current NBA readiness degraded",
+    "43394197823": "unified_artifacts,nba_production,nba_capture",
+    "43393718510": "Current primary model coverage incomplete",
+    "43390626497": "20 archived standard thresholds missing primary and14 current offers missing primary",
+    "43389890892": "NBA archived and current primary coverage incomplete;NFL ready",
+    "43388476211": "Production readiness/comparison coverage degraded",
+    "43387821956": "Same-run free recovery did not close real primary gaps"
+  },
+  "limitations": [
+    "Full requested repair scope remains incomplete; not all code on all branches runtime tested",
+    "No paid calls, Replit, secret changes, destructive Git actions, historical fabrication or silent notifications",
+    "No additional Underdog capture coverage proved in this run",
+    "Main protection and GitHub Issues settings not changed; summaries/artifacts are retained",
+    "Notification delivery depends on ChatGPT/device settings and has no delivery confirmation"
+  ]
+}
