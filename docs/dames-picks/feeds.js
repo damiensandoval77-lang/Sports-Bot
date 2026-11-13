@@ -13,6 +13,22 @@ const nbaTeamCode=v=>{
 };
 
 const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat,p.line,p.captured].join("|");
+/* Rank the same probability shown on pick cards, never an unrelated legacy
+   field. Missing estimates remain last; ties are stable by start then identity. */
+function displayedHitRate(p){
+ const candidate=hitEstimate(p)?.rate??p?.matchupPreview?.rate;
+ return typeof candidate==="number"&&Number.isFinite(candidate)&&candidate>=0&&candidate<=1?candidate:null;
+}
+function sortByHitEstimate(rows){
+ return [...(rows||[])].sort((a,b)=>{
+  const ar=displayedHitRate(a),br=displayedHitRate(b);
+  if(ar===null&&br!==null)return 1;
+  if(br===null&&ar!==null)return -1;
+  if(ar!==br)return br-ar;
+  const at=stamp(a.start),bt=stamp(b.start);
+  return (Number.isFinite(at)?at:Infinity)-(Number.isFinite(bt)?bt:Infinity)||key(a).localeCompare(key(b));
+ });
+}
 /* Card display only: one current captured standard line per player/stat/
    scheduled game. Never rewrite the immutable frozen-price/grade ledger.
    A real pretip model outranks an unmodeled quote-only research receipt;
@@ -668,7 +684,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -695,4 +711,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-matchup-evidence-20261113-r24";
+globalThis.__damesRunningAssets["feeds.js"]="dp-hit-estimate-sort-20261113-r25";
