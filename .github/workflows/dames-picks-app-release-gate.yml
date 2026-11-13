@@ -46,9 +46,17 @@ jobs:
             git reset --hard origin/main
             # Re-evaluate after pulling latest reports, not before. Prevents
             # old inputs and a stale streak being published over new evidence.
+            # These audits only read committed evidence: no network or dispatch.
+            # Recompute derived reports together so a resolved grade/calendar
+            # cannot remain blocked by an earlier cached audit snapshot.
+            for module in audit_ai_forecast_coverage production_readiness unified_dames_readiness; do
+              report_rc=0
+              python -m "iphone_bot.$module" || report_rc=$?
+              if [ "$report_rc" -ne 0 ] && [ "$report_rc" -ne 2 ]; then exit "$report_rc"; fi
+            done
             rc=0
             python -m iphone_bot.app_release_gate || rc=$?
-            git add docs/dames-picks/app_release_gate.json
+            git add docs/ai_forecast_coverage_audit.json docs/production_readiness.json docs/dames-picks/unified_readiness.json docs/dames-picks/app_release_gate.json
             if git diff --cached --quiet; then exit "$rc"; fi
             git commit -m 'Record combined NBA and NFL app release gate'
             if git push origin HEAD:main; then exit "$rc"; fi

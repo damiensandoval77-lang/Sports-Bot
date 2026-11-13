@@ -114,7 +114,10 @@ def evaluate(inputs, now=None, previous=None):
         errors.append("NFL_STANDARD_GRADE_SCOPE_INVALID")
     if not isinstance(nfl.get("standard_settled"),int) or nfl["standard_settled"]<1:
         errors.append("NFL_STANDARD_SETTLEMENT_NOT_PRESENT")
-    if nfl.get("pending_picks",0)>0:
+    pending=nfl.get("standard_pending_picks")
+    if type(pending) is not int or pending<0:
+        errors.append("NFL_STANDARD_PENDING_COUNT_INVALID")
+    elif pending>0:
         errors.append("NFL_PENDING_GRADES_UNRESOLVED")
 
     failing=[key for key,issues in reasons.items() if issues]
