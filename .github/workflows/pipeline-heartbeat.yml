@@ -6,6 +6,8 @@ on:
     paths:
       - 'iphone_bot/pipeline_heartbeat.py'
       - 'iphone_bot/heartbeat_recovery.py'
+      - 'iphone_bot/readiness_watchdog.py'
+      - 'iphone_bot/tests/test_readiness_watchdog.py'
       - 'iphone_bot/tests/test_heartbeat_recovery.py'
       - '.github/workflows/pipeline-heartbeat.yml'
   schedule:
@@ -23,6 +25,8 @@ on:
       - '.github/workflows/pipeline-heartbeat.yml'
       - 'iphone_bot/pipeline_heartbeat.py'
       - 'iphone_bot/heartbeat_recovery.py'
+      - 'iphone_bot/readiness_watchdog.py'
+      - 'iphone_bot/tests/test_readiness_watchdog.py'
       - 'iphone_bot/tests/test_heartbeat_recovery.py'
       - 'iphone_bot/tests/test_pipeline_heartbeat.py'
       - 'tests/test_critical_production_repair_contracts.py'
@@ -35,6 +39,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   heartbeat:
+    # Never grant a pull-request completion access to production dispatch.
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.event != 'pull_request')
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
@@ -48,7 +54,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           python -m pip install --disable-pip-version-check "PyYAML>=6,<7"
-          python -m unittest iphone_bot.tests.test_pipeline_heartbeat iphone_bot.tests.test_heartbeat_recovery -v
+          python -m unittest iphone_bot.tests.test_pipeline_heartbeat iphone_bot.tests.test_heartbeat_recovery iphone_bot.tests.test_readiness_watchdog -v
           python -m unittest discover -s tests -p 'test_critical_production_repair_contracts.py' -v
       - name: Run deployed-site monitoring
         if: github.event_name != 'pull_request'
@@ -65,6 +71,12 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           python -m iphone_bot.heartbeat_recovery pipeline_heartbeat.json heartbeat_recovery.json
+      - name: Wake bounded readiness controller if its independent schedule is late
+        if: always() && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python -m iphone_bot.readiness_watchdog
       - name: Save evidence
         if: github.event_name != 'pull_request' && always()
         uses: actions/upload-artifact@v4
@@ -73,6 +85,7 @@ jobs:
           path: |
             pipeline_heartbeat.json
             heartbeat_recovery.json
+            readiness_watchdog.json
           retention-days: 90
       - name: Publish source-grounded status in the Actions run summary
         if: github.event_name != 'pull_request' && always()
