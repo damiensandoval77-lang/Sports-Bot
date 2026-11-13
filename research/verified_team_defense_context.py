@@ -44,6 +44,14 @@ def final_games(cache):
         if x["team"] == x["opponent"]:
             invalid_game_keys.add(key)
             continue
+        # Official DNP records deliberately have no performance totals. They
+        # neither invalidate an otherwise complete box nor count as players
+        # who played. A contradictory or unexplained DNP remains a bad game.
+        if x.get("dnp_final_verified") is True:
+            if (not isinstance(x.get("dnp_reason"), str) or not x["dnp_reason"].strip()
+                or any(x.get(stat) not in (None, 0) for stat in (*STATS, "MIN"))):
+                invalid_game_keys.add(key)
+            continue
         # A corrupt row invalidates the complete game: silently dropping it
         # would undercount that team's final score despite >=7 other rows.
         try:
