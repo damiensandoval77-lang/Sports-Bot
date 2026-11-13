@@ -761,7 +761,7 @@ test("Closed developer diagnostic disclosure hides all child controls on mobile"
 test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
- assert.ok(html.includes("const related=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)));"));
+ assert.ok(html.includes("const related=m.sortByTeamPosition(m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game))));"));
  assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
  assert.ok(html.includes('SAVED PRETIP LINE'));
  assert.ok(html.includes('NO AI FORECAST'));

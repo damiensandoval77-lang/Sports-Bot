@@ -35,7 +35,7 @@ function playerRows(summary){
     if(!name||!Array.isArray(values))continue;
     const [PTS,REB,AST]=["PTS","REB","AST"].map(k=>num(values[ix(k)]));
     if(PTS===null||REB===null||AST===null)continue;
-    rows.push({player_id:String(a.athlete.id||""),player:name,team,PTS,REB,AST,PRA:PTS+REB+AST});
+    rows.push({player_id:String(a.athlete.id||""),player:name,team,position:a.athlete.position?.abbreviation||"",PTS,REB,AST,PRA:PTS+REB+AST});
    }
   }
  }
@@ -159,4 +159,4 @@ root.DamesPicksLive={etDate,matchup,playerRows,build,fetchNBA,mergeFeeds,mergeSc
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["live_direct.js"]="dp-current-live-slate-20261113-r21";
+globalThis.__damesRunningAssets["live_direct.js"]="dp-live-pace-position-20261113-r22";
