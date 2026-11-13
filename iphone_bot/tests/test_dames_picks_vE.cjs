@@ -69,7 +69,12 @@ test("Real published NBA and NFL artifacts both produce nonempty integrated play
  const manifest=JSON.parse(fs.readFileSync(root+"nfl/data/latest_2026.json","utf8"));
  const schedule=JSON.parse(fs.readFileSync(root+"nfl/data/schedule_2026.json","utf8"));
  const parts=manifest.files.map(name=>m.csv(fs.readFileSync(root+"nfl/data/"+name,"utf8")));
- const b=m.nfl(parts,schedule);
+ const active=JSON.parse(fs.readFileSync(root+"nfl/data/active_frozen_2026.json","utf8"));
+ const b=m.nfl([active.records||[],...parts],schedule);
+ const raw=[...(active.records||[]),...parts.flat()];
+ for(const card of b.filter(x=>Date.parse(x.start)>Date.now())){
+  assert.ok(raw.some(p=>p.player_id===card.playerId&&p.game_id===card.gameId&&p.stat===card.stat&&Number(p.line)===card.line&&m.nflProviderEventVerified(p,card.start)),"Future card requires actual provider event attribution");
+ }
  assert.ok(b.length>0,"Published NFL model yielded zero eligible standard player props");
  assert.ok(b.every(x=>x.player&&Number.isFinite(x.line)&&Number.isFinite(x.projection)));
  console.log("Live contract counts: NBA",a.length,"NFL",b.length);

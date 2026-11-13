@@ -44,7 +44,7 @@ jobs:
       - name: Verify sync data-integrity safeguards
         if: github.event_name == 'pull_request'
         run: |
-          node --test tests/test_nfl_pregame_coverage.cjs
+          node --test tests/test_nfl_pregame_coverage.cjs tests/test_nfl_provider_event.cjs
           python -m unittest discover -s tests -p 'test_nfl_private_sync.py' -v
           python -m unittest discover -s tests -p 'test_nfl_reliability.py' -v
           python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v

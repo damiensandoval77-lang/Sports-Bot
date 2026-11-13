@@ -19,7 +19,7 @@ function check(rows,schedule,manifest,now=Date.now()){
   if(upcoming.has(r.game_id))upcoming.set(r.game_id,upcoming.get(r.game_id)+1);
   let e;try{e=JSON.parse(r.matchup_evidence||'null')}catch(_){}
   const sideFields=e&&['less','push'].every(k=>r['p_'+k]!==''&&r['p_'+k]!=null&&Number.isFinite(Number(r['p_'+k]))&&Math.abs(Number(r['p_'+k])-Number(e['modeled_'+k+'_probability']))<=1e-8);
-  if(r.captured_at!==manifest.captured_at||!M.nflMatchupPreview(r,g.kickoff_utc)||e?.schema!=='NFL_OPPONENT_FEATURES_V2'||!sideFields){
+  if(!M.nflProviderEventVerified(r,g.kickoff_utc)||r.captured_at!==manifest.captured_at||!M.nflMatchupPreview(r,g.kickoff_utc)||e?.schema!=='NFL_OPPONENT_FEATURES_V2'||!sideFields){
    problems.push('Missing/invalid V2 pregame distribution: '+[r.game_id,r.player_id,r.target,r.line].join('/'));
   }else verified++;
  }
