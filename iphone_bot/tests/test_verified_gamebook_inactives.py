@@ -28,6 +28,16 @@ class OfficialGamebookTests(unittest.TestCase):
                     and (r['player'], r['team']) in names and r['start'].startswith('2026-11-12')]
         self.assertEqual(len(resolved), 96)
 
+    def test_nov12_reviewed_final_gamebooks_preserve_null_actuals(self):
+        root = Path(__file__).resolve().parents[2] / 'docs'
+        actuals = json.loads((root / 'verified_final_player_cache.json').read_text())['rows']
+        evidence = [r for r in load_gamebook_inactives(actuals) if r['date'] == '2026-11-12']
+        self.assertEqual({(r['player'], r['team']) for r in evidence}, {
+            ('Scottie Barnes', 'TOR'), ('Trayce Jackson-Davis', 'TOR'),
+            ('Adem Bona', 'PHI'), ('LeBron James', 'PHI'), ('Ebuka Okorie', 'DET')})
+        self.assertTrue(all(r['dnp_final_verified'] and r.get('PTS') is None for r in evidence))
+        self.assertTrue(all(r['source'] == 'NBA_OFFICIAL_INACTIVE_CROSSCHECKED' for r in evidence))
+
     def test_requires_exact_final_and_rejects_played_player(self):
         rows = [
             dict(player=f"Player {team} {i}", team=team, opponent=opponent,
