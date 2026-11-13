@@ -1,0 +1,160 @@
+{
+  "status": "FIXED_SHORT_HISTORY_DISTRIBUTION_DIAGNOSTIC",
+  "spec_sha256": "c19d7065a130c40841bbd3631cb40ca21e0fd18ba7ea41d423fbf5d84d327b86",
+  "counts": {
+    "2022-23": 2755,
+    "2023-24": 2888,
+    "2024-25": 2913,
+    "2025-26": 2903
+  },
+  "source_hashes": [
+    {
+      "season": "2022-23",
+      "sha256": "f398a553e4c92216fc2dfc4d25622470c8a62bd8254811fccb3496d4cafc553f",
+      "bytes": 393440,
+      "rows": 25687
+    },
+    {
+      "season": "2023-24",
+      "sha256": "5fff5e5a57dd73ea36b6610c61fb1cb182156ace89e5c8e1c7024427bb9eefc4",
+      "bytes": 405025,
+      "rows": 26095
+    },
+    {
+      "season": "2024-25",
+      "sha256": "a4cc538112a7c4c7a4f42476022726159907ed71fc13cdd9a070c9950c2b50d6",
+      "bytes": 437754,
+      "rows": 26158
+    },
+    {
+      "season": "2025-26",
+      "sha256": "2119a573915ebcd548a290e9d2d9c509921adb85b7e01e570908f423d60cb3a3",
+      "bytes": 445819,
+      "rows": 26648
+    }
+  ],
+  "excluded": {
+    "OUTSIDE_3_TO_7_GAME_COHORT": 92519,
+    "INSUFFICIENT_PRIOR_RECIPROCAL_TEAM_CONTEXT": 177
+  },
+  "results": {
+    "PTS": {
+      "player_games": 2903,
+      "dates": 156,
+      "thresholds": [
+        4.5,
+        9.5,
+        14.5,
+        19.5,
+        24.5,
+        29.5
+      ],
+      "brier": 0.09243876802440719,
+      "baseline_brier": 0.09276351954853297,
+      "difference": -0.00032475152412575687,
+      "date_cluster_ci95": [
+        -0.0012989155598908347,
+        0.0006840715521208301
+      ],
+      "ece": 0.006695103665430707,
+      "absolute_bias": 0.001080434046696675,
+      "distribution_gate_passed": false,
+      "primary_release_eligible": false,
+      "per_threshold_ece": [
+        0.04263336593249937,
+        0.033694372636065825,
+        0.02025893980246748,
+        0.02135788797957076,
+        0.01433476734294814,
+        0.00921593009422034
+      ]
+    },
+    "REB": {
+      "player_games": 2903,
+      "dates": 156,
+      "thresholds": [
+        1.5,
+        3.5,
+        5.5,
+        7.5,
+        9.5
+      ],
+      "brier": 0.117485885327737,
+      "baseline_brier": 0.11706728829323813,
+      "difference": 0.00041859703449887163,
+      "date_cluster_ci95": [
+        -0.0011354334681021793,
+        0.0020269061332803934
+      ],
+      "ece": 0.009454501705742432,
+      "absolute_bias": 0.008825948017135937,
+      "distribution_gate_passed": false,
+      "primary_release_eligible": false,
+      "per_threshold_ece": [
+        0.026547700457417594,
+        0.03657265621442744,
+        0.025789148927532025,
+        0.017593115435051526,
+        0.00870505709267314
+      ]
+    },
+    "AST": {
+      "player_games": 2903,
+      "dates": 156,
+      "thresholds": [
+        0.5,
+        2.5,
+        4.5,
+        6.5,
+        8.5
+      ],
+      "brier": 0.09112724489094945,
+      "baseline_brier": 0.09168130891244727,
+      "difference": -0.000554064021497864,
+      "date_cluster_ci95": [
+        -0.0018824579449907095,
+        0.0006856016660466701
+      ],
+      "ece": 0.005979744748366431,
+      "absolute_bias": 0.0027681168905736024,
+      "distribution_gate_passed": false,
+      "primary_release_eligible": false,
+      "per_threshold_ece": [
+        0.02444922645656245,
+        0.04712356953305972,
+        0.012567447497191067,
+        0.013675292300099017,
+        0.014937057175536315
+      ]
+    },
+    "PRA": {
+      "player_games": 2903,
+      "dates": 156,
+      "thresholds": [
+        9.5,
+        19.5,
+        29.5,
+        39.5
+      ],
+      "brier": 0.0893481401272639,
+      "baseline_brier": 0.08972518949076931,
+      "difference": -0.0003770493635054274,
+      "date_cluster_ci95": [
+        -0.001269342652510514,
+        0.00043180218384879677
+      ],
+      "ece": 0.007547231799968048,
+      "absolute_bias": 0.0035437382612593417,
+      "distribution_gate_passed": false,
+      "primary_release_eligible": false,
+      "per_threshold_ece": [
+        0.035464183189760294,
+        0.024866529894415956,
+        0.015284565048778686,
+        0.009562351636303347
+      ]
+    }
+  },
+  "production_modified": false,
+  "release_blocker": "No independently untouched prospective actual-offered-line calibration; synthetic threshold diagnostic cannot establish betting hit probabilities."
+}
