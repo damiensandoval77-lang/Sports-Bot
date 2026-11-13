@@ -175,3 +175,15 @@ class RecoveryTests(unittest.TestCase):
 
 if __name__=="__main__":
     unittest.main()
+
+class EarlyCompletedRecoveryTests(unittest.TestCase):
+    def test_completed_game_is_eligible_before_four_hour_delay(self):
+        now=dt.datetime(2026,11,13,5,30,tzinfo=dt.timezone.utc)
+        row={**research(),"start":"2026-11-13T02:00:00Z"}
+        self.assertEqual(len(pending_matchup_requests([row],now=now)),1)
+
+    def test_eligibility_never_substitutes_for_final_evidence(self):
+        now=dt.datetime(2026,11,9,3,0,tzinfo=dt.timezone.utc)
+        row=research()
+        result=settle({"records":[row]},[],now=now,final_games=[{**verified(),"final_confirmed":False}])
+        self.assertEqual(result["records"][0]["status"],"PENDING")
