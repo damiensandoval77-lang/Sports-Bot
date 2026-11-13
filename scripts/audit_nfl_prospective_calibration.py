@@ -63,9 +63,15 @@ def observation(row, games):
     if (result == 'Push' and row.get('won') not in ('', None)) or (result != 'Push' and number(row.get('won')) != int(win)): return None, 'grade_mismatch'
     support = e.get('training_support') or {}
     context = e.get('eligibility_context') or {}
+    event_attested = (bool(e.get('provider_game_id')) and e.get('provider_team') == row['team']
+                      and timestamp(e.get('provider_start_time')) == start)
+    support_attested = (support.get('verified') is True and support.get('target') == row['target']
+                        and support.get('position') == row.get('position') and support.get('source') == 'NFL_TRAINING_RULES_V1')
     return dict(game=row['game_id'], player=row['player_id'], market=row['target'], position=row.get('position') or 'unknown',
                 direction=direction, line=line, capture=capture.isoformat(), model=e.get('model_id', 'unknown'), artifact=artifact,
                 p=p, push_probability=push, win=int(win), push=int(result=='Push'),
+                evidence_cohort=('event_attested' if event_attested else 'legacy_event_unattested') + '/' +
+                                ('training_support_attested' if support_attested else 'legacy_training_support_unknown'),
                 role='returner_uncertain' if context.get('playing_time_uncertain') else ('training_supported' if support.get('verified') is True else 'legacy_support_unknown')), None
 
 
@@ -90,7 +96,7 @@ def build(rows, schedule):
         if key in identities: raise ValueError('Duplicate frozen standard line; refuse biased calibration')
         identities.add(key); accepted.append(item)
     groups = {}
-    for dim in ('game','market','direction','position','role','artifact'):
+    for dim in ('game','market','direction','position','role','artifact','evidence_cohort'):
         d=defaultdict(list)
         for item in accepted: d[item[dim]].append(item)
         groups[dim]={k:summarize(v) for k,v in sorted(d.items())}
@@ -103,7 +109,8 @@ def build(rows, schedule):
                 limitations=['Correlated player markets within games; do not interpret row count as independent trials.',
                             'Legacy captures without complete pregame probability evidence are excluded.',
                             'No weights, thresholds, or probabilities are fitted from these results.',
-                            'Role slices reflect only context captured before kickoff, never retrospective role assignments.'],
+                            'Role slices reflect only context captured before kickoff, never retrospective role assignments.',
+                            'Legacy event/training support was not attested; cohorts remain separate from later repaired captures.'],
                 summary=summarize(accepted),excluded=dict(sorted(excluded.items())),by=groups,bins=bins)
 
 

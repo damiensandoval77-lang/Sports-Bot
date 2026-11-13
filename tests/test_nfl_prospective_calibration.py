@@ -35,6 +35,10 @@ class CalibrationTests(unittest.TestCase):
     def test_role_provenance_only(self):
         self.assertIn('legacy_support_unknown',self.run_report()['by']['role'])
         self.assertIn('returner_uncertain',self.run_report(evidence=dict(self.e,eligibility_context={'playing_time_uncertain':True}))['by']['role'])
+    def test_legacy_and_supported_cohorts_distinguished(self):
+        self.assertIn('legacy_event_unattested/legacy_training_support_unknown',self.run_report()['by']['evidence_cohort'])
+        e=dict(self.e,provider_game_id='provider-g',provider_team='WAS',provider_start_time='2026-11-13T01:15:00Z',training_support={'verified':True,'source':'NFL_TRAINING_RULES_V1','target':'REC','position':'WR'})
+        self.assertIn('event_attested/training_support_attested',self.run_report(evidence=e)['by']['evidence_cohort'])
     def test_input_not_mutated(self):
         r=dict(self.r,matchup_evidence=json.dumps(self.e));old=copy.deepcopy(r);build([r],self.schedule);self.assertEqual(r,old)
 if __name__=='__main__':unittest.main()
