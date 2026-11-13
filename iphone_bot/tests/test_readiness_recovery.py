@@ -30,7 +30,8 @@ class RecoveryRoutingTests(unittest.TestCase):
                    "live_player_stats":{"required":True,"state":"BLOCKED"}}}
         self.assertEqual(recovery_targets(report),[
           "independent_scoreboard_refresh.yml",
-          "independent_nba_player_boxscores.yml"])
+          "independent_nba_player_boxscores.yml",
+          "nba-live-tracker-backup.yml"])
 
     def test_only_raw_provider_coverage_gap_does_not_trigger_paid_refresh(self):
         report={"status":"READY","components":{
