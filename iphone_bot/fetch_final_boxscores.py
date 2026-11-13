@@ -27,6 +27,7 @@ STATUS=ROOT/"docs/final_boxscores_status.json"
 ET=ZoneInfo("America/New_York")
 NBA_SCOREBOARD="https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json"
 NBA_BOX="https://cdn.nba.com/static/json/liveData/boxscore/boxscore_{}.json"
+NBA_BOX_ALT="https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_{}.json"
 NBA_SCHEDULE="https://cdn.nba.com/static/json/staticData/scheduleLeagueV2.json"
 NBA_SCHEDULE_ALT="https://cdn.nba.com/static/json/staticData/scheduleLeagueV2_1.json"
 ESPN_SCORE="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard"
@@ -54,7 +55,7 @@ def local_date(value):
     return date.astimezone(ET).date().isoformat()
 
 
-def request_json(url,timeout=12):
+def _request_json(url,timeout=12):
     host=urllib.parse.urlsplit(url).hostname or ""
     referer="https://www.espn.com/" if host.endswith(".espn.com") else "https://www.nba.com/"
     headers={"User-Agent":"Mozilla/5.0 (compatible; SportsBotBoxscoreAudit/1.0)",
@@ -64,6 +65,19 @@ def request_json(url,timeout=12):
         data=json.load(resp)
     if not isinstance(data,dict):raise ValueError("response not object")
     return data
+
+
+def request_json(url,timeout=12):
+    try:
+        return _request_json(url,timeout)
+    except (OSError,ValueError):
+        # The official CDN sometimes returns 403 while its NBA media-ops
+        # origin serves the same final box. Identity/date/final checks below
+        # still apply; this is never a fallback to guessed player statistics.
+        match=re.fullmatch(r"https://cdn\.nba\.com/static/json/liveData/boxscore/boxscore_(\d{10})\.json",url)
+        if not match:
+            raise
+        return _request_json(NBA_BOX_ALT.format(match.group(1)),timeout)
 
 
 def number(value):
@@ -143,14 +157,18 @@ def nba_boxscore_rows(score_event,box):
                 for v in ("firstName","familyName")).strip()
             # A source-explicit inactive entry may have no statistics object.
             # Never mistake a missing row or absent numerical stats for a DNP.
-            explicit_dnp=(player.get("played") is False and (
+            explicit_dnp=(player.get("played") in (False,0,"0") and (
                 player.get("notPlayingReason") or
                 str(player.get("status","")).upper() in ("INACTIVE","DNP","NOT_PLAYING")))
             if explicit_dnp:
                 numbers=stats if isinstance(stats,dict) else {}
                 # Contradictory minutes/points are not safe to exclude.
-                if any(str(numbers.get(field) or "").strip() not in ("","0","0.0","00:00","0:00")
-                       for field in ("points","reboundsTotal","assists","minutes","minutesCalculated")):
+                activity=("points","reboundsTotal","assists","blocks","steals",
+                          "turnovers","fieldGoalsAttempted","freeThrowsAttempted")
+                if (any(numbers.get(field) not in (None,"") and number(numbers[field])!=0
+                        for field in activity) or
+                    any(numbers.get(field) not in (None,"") and minutes(numbers[field])!=0
+                        for field in ("minutes","minutesCalculated"))):
                     continue
                 dnp=verified_dnp_player(name,tcode,opp,day,
                       str(player.get("notPlayingReason") or player.get("status")),
