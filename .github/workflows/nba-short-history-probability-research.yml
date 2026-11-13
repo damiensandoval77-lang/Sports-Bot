@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - run: pip install numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.3 requests pyarrow
+      - run: pip install numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.3 requests pyarrow pyyaml
       - run: python -m unittest discover -s iphone_bot/tests -p 'test_short_history*.py' -v
   capture:
     if: github.event_name != 'pull_request'
@@ -36,7 +36,7 @@ jobs:
         with: {ref: main, fetch-depth: 0}
       - uses: actions/setup-python@v5
         with: {python-version: '3.11'}
-      - run: pip install numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.3 requests pyarrow
+      - run: pip install numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.3 requests pyarrow pyyaml
       - name: Read genuine current game history
         env:
           GITHUB_TOKEN: ${{ github.token }}
