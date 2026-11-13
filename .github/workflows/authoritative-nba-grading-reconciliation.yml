@@ -44,6 +44,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           set -euo pipefail
+          python -m iphone_bot.published_pick_settlement || test "$?" -eq 2
           python - <<'PY'
           import datetime as dt
           from zoneinfo import ZoneInfo
@@ -76,6 +77,7 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
+            python -m iphone_bot.published_pick_settlement || test "$?" -eq 2
             python - <<'PY'
           import datetime as dt
           from zoneinfo import ZoneInfo
@@ -91,7 +93,7 @@ jobs:
           Path("docs/production_grading_reconciliation.json").write_bytes(
               Path("docs/production_grading_reconciliation_"+yesterday+".json").read_bytes())
           PY
-            git add docs/production_grading_reconciliation*.json
+            git add docs/production_grading_reconciliation*.json docs/ai_forecast_grade_status_*.json docs/dames-picks/published_pick_settlement.json
             if git diff --cached --quiet; then break; fi
             git commit -m 'Publish independent NBA grading reconciliations including blockers'
             if git push origin HEAD:main; then break; fi

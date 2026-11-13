@@ -7,7 +7,7 @@ NBA/ESPN final-player ledger, never live totals or implied probabilities.
 import argparse
 import json
 from pathlib import Path
-from iphone_bot.multimarket_forecast_ledger import merge, key, valid, with_voids
+from iphone_bot.multimarket_forecast_ledger import merge, key, valid, with_voids, utc
 
 IMMUTABLE=("player_id","player","team","game","start","stat",
            "line","projection","market_updated","captured_at","pickem_tier",
@@ -32,9 +32,20 @@ def durable_merge(current,incoming,finals):
         if key(r) in runner and runner[key(r)]!=r:
             raise ValueError("Conflicting runner frozen records")
         runner[key(r)]=r
+    concurrent=[]
     for ident,r in runner.items():
         prev=old.get(ident)
         if prev is not None and any(prev.get(f)!=r.get(f) for f in IMMUTABLE):
+            # Two runners can independently freeze a newly observed threshold
+            # before either sees the other's commit. Keep the already-published
+            # original byte-for-byte; a distinct valid pending observation is
+            # not permission to reprice, reproject, or revert its grade.
+            if (r.get("grade")=="PENDING" and
+                utc(prev["captured_at"]) != utc(r["captured_at"])):
+                concurrent.append({"identity":list(ident),
+                    "preserved_capture":prev["captured_at"],
+                    "ignored_capture":r["captured_at"]})
+                continue
             raise ValueError("Original frozen pretip market changed: "+str(ident))
         if prev and prev.get("grade") in ("GRADED","EXCLUDED_VERIFIED_DNP") and r.get("grade") in ("GRADED","EXCLUDED_VERIFIED_DNP"):
             if any(prev.get(k)!=r.get(k) for k in
@@ -49,6 +60,7 @@ def durable_merge(current,incoming,finals):
             raise ValueError("Frozen pregame record disappeared or changed")
         if prev.get("grade") in ("GRADED","EXCLUDED_VERIFIED_DNP") and after.get("grade")!=prev.get("grade"):
             raise ValueError("Previously settled record reverted or changed status")
+    result["concurrent_refreezes_ignored"]=concurrent
     return result
 
 def main():

@@ -2,12 +2,30 @@ name: NBA production readiness and stability gate
 
 on:
   workflow_dispatch:
+  # GitHub Actions bot commits do not fire regular push workflows.
+  # Reevaluate the published readiness report after real source recovery.
+  workflow_run:
+    workflows:
+      - Publish full NBA daily schedule (independent of sportsbook)
+      - Verify tonight NBA frozen lines predictions and grades
+      - Publish daily NBA AI player projections without paid prop lines
+      - Publish lightweight verified PrizePicks AI comparisons
+      - Backup NBA live player tracker observations (no sportsbook API)
+      - Independent NBA player boxscores
+      - Independent NBA scoreboard refresh
+      - Refresh independent NBA PrizePicks full-slate lines
+      - Guarded new NBA AI all markets PTS REB AST PRA
+      - Publish lightweight PrizePicks site data and per-game coverage
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '9,29,49 * * * *'
   push:
     branches: [main]
     paths:
       - 'iphone_bot/production_readiness.py'
+      - 'iphone_bot/readiness_recovery.py'
+      - 'iphone_bot/tests/test_readiness_recovery.py'
       - 'iphone_bot/tests/test_production_readiness.py'
       - 'iphone_bot/tests/test_production_live_recovery_workflow.py'
       - 'docs/tonight_capture_gradeability.json'
@@ -17,6 +35,8 @@ on:
   pull_request:
     paths:
       - 'iphone_bot/production_readiness.py'
+      - 'iphone_bot/readiness_recovery.py'
+      - 'iphone_bot/tests/test_readiness_recovery.py'
       - 'iphone_bot/tests/test_production_readiness.py'
       - '.github/workflows/production_readiness.yml'
 
@@ -26,18 +46,22 @@ permissions:
   actions: write
 
 concurrency:
-  group: nba-production-readiness
+  group: nba-production-readiness-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
   cancel-in-progress: false
 
 jobs:
   verify-readiness:
+    # Evaluate every trusted main source completion, including failure,
+    # timeout and cancellation. Never execute upstream code: checkout main.
+    # Dispatch remains conditional on actual degraded data and cooldowns.
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.event != 'pull_request')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.head_ref || 'main' }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.11'
       - name: Run fail-closed production data quality tests
@@ -74,7 +98,6 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          cp docs/production_readiness.json "$RUNNER_TEMP/production_readiness.json"
           if [ -f docs/nba_scoreboard_independent.json ]; then
             cp docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
           fi
@@ -93,7 +116,6 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp "$RUNNER_TEMP/production_readiness.json" docs/production_readiness.json
             if [ -f "$RUNNER_TEMP/nba_scoreboard_independent.json" ]; then
               python -m iphone_bot.merge_scoreboard_snapshot docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
             fi
@@ -102,6 +124,9 @@ jobs:
                 --current docs/nba_player_tracking_independent.json \
                 --incoming "$RUNNER_TEMP/nba_player_tracking_independent.json"
             fi
+            # Classify the exact inputs we will publish after each latest-main
+            # merge. Exit 2 is an honest degraded report, not a script crash.
+            python -u -m iphone_bot.production_readiness || test "$?" -eq 2
             git add docs/production_readiness.json docs/nba_scoreboard_independent.json docs/nba_player_tracking_independent.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Record honest NBA production feed readiness'
@@ -129,15 +154,33 @@ jobs:
               nba-new-ai-all-markets.yml) cooldown_minutes=90 ;;
               independent_scoreboard_refresh.yml) cooldown_minutes=18 ;;
               independent_nba_player_boxscores.yml) cooldown_minutes=12 ;;
+              nba-live-tracker-backup.yml) cooldown_minutes=4 ;;
               *) cooldown_minutes=35 ;;
             esac
+            # Failure-triggered evaluation must not create an immediate retry
+            # cycle. Back off failed/cancelled free producers from completion;
+            # expensive model generation gets a longer recovery interval.
+            failure_backoff_minutes=5
+            if [ "$workflow" = nba-new-ai-all-markets.yml ]; then failure_backoff_minutes=15; fi
             # Compare with actual started runs, including in-progress.
             # Prevent every 20-minute audit from buying another board.
-            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status,headBranch |
-              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" '
-                [.[] | select(.headBranch=="main" and (.createdAt | fromdateiso8601) >= $cutoff)] | length')
+            # Keep the paid collector on a hard cooldown even if its last
+            # request failed: avoid repeatedly spending top-up credits.
+            # Failed free runs may retry sooner than successful runs, but not
+            # immediately on their own completion-triggered readiness event.
+            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,updatedAt,status,conclusion,headBranch |
+              jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" \
+                 --argjson failed_cutoff "$(($(date -u +%s) - failure_backoff_minutes * 60))" \
+                 --arg paid "$([ "$workflow" = nba-prizepicks-full-slate.yml ] && echo true || echo false)" '
+                [.[] | select(.headBranch=="main" and (
+                  .status != "completed" or
+                  ((.createdAt | fromdateiso8601) >= $cutoff and
+                   ($paid == "true" or .conclusion == "success")) or
+                  ($paid != "true" and .conclusion != "success" and
+                   (.updatedAt | fromdateiso8601) >= $failed_cutoff)
+                ))] | length')
             if [ "$recent" -gt 0 ]; then
-              echo "Skipping $workflow: an execution started within $cooldown_minutes minutes"
+              echo "Skipping $workflow: active, successful cooldown, or failure backoff (paid calls hard-capped)"
               continue
             fi
             echo "Dispatching bounded recovery: $workflow"
@@ -154,6 +197,13 @@ jobs:
           report=docs/production_readiness.json
           test -f "$report"
           title="Automated incident: NBA production readiness degraded"
+          status=$(jq -r '.status // "UNKNOWN"' "$report")
+          if [[ "$(gh api "repos/$GH_REPO" --jq .has_issues 2>/dev/null || echo false)" != "true" ]]; then
+            echo "::warning::GitHub Issues disabled: production incident will be retained in committed readiness JSON and workflow summary."
+            echo "## Production incident: $status" >> "$GITHUB_STEP_SUMMARY"
+            echo "Issues are disabled; see [readiness evidence](https://github.com/$GH_REPO/blob/main/docs/production_readiness.json)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           existing=$(gh issue list --state all --limit 100 --json number,title,state |
             jq -r --arg title "$title" '[.[] | select(.title == $title)] | first | .number // empty')
           status=$(jq -r '.status // "UNKNOWN"' "$report")
@@ -186,8 +236,17 @@ jobs:
             gh issue reopen "$existing" 2>/dev/null || true
             gh issue edit "$existing" --body-file "$RUNNER_TEMP/incident.md"
           fi
+      - name: Save production incident report artifact
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: production-readiness-${{ github.run_id }}
+          path: docs/production_readiness.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Fail visibly when bot is not ready for reliable picks
-        if: always() && github.event_name != 'pull_request' && steps.check.outcome == 'failure'
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
         run: |
+          if [ -s docs/production_readiness.json ] && jq -e '.status == "READY"' docs/production_readiness.json >/dev/null; then exit 0; fi
           echo "::error::NBA live data/projections/line coverage not fully ready. See docs/production_readiness.json"
           exit 1

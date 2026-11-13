@@ -1,8 +1,9 @@
 """Final-boxscore eligibility and verified completion regression tests."""
 import unittest
+from unittest.mock import patch
 from datetime import datetime,timezone
 from iphone_bot.fetch_final_boxscores import (
-    pending_games,box_player,nba_boxscore_rows,espn_final_events,minutes,gather,verified_schedule_ids,final_schedule_boxscore,NBA_BOX
+    pending_games,box_player,nba_boxscore_rows,espn_final_events,minutes,gather,verified_schedule_ids,final_schedule_boxscore,NBA_BOX,NBA_BOX_ALT,request_json
 )
 
 def pick(start="2026-11-06T00:00:00Z",status="PENDING"):
@@ -11,6 +12,40 @@ def pick(start="2026-11-06T00:00:00Z",status="PENDING"):
 
 
 class FinalBoxscoreSettlementTests(unittest.TestCase):
+    def test_official_string_zero_inactive_with_iso_zero_minutes(self):
+        game={"gameId":"0022600230","gameStatus":3,
+              "gameTimeUTC":"2026-11-13T02:00:00Z",
+              "awayTeam":{"teamTricode":"CHA"},"homeTeam":{"teamTricode":"PHX"}}
+        player={"name":"Verified Inactive","played":"0","status":"INACTIVE",
+                "notPlayingReason":"INACTIVE_INJURY",
+                "statistics":{"points":0,"reboundsTotal":0,"assists":0,
+                              "minutes":"PT00M00.00S"}}
+        box={"game":{**game,"awayTeam":{"teamTricode":"CHA","players":[player]}}}
+        for flag in (False,0,"0"):
+            player["played"]=flag
+            rows=nba_boxscore_rows(game,box)
+            self.assertEqual(len(rows),1)
+            self.assertTrue(rows[0]["dnp_final_verified"])
+            self.assertNotIn("PTS",rows[0])
+        for flag in (None,"",True,1,"1"):
+            player["played"]=flag
+            self.assertEqual(nba_boxscore_rows(game,box),[])
+        player["played"]="0"
+        for field,value in (("minutes","PT00M01.00S"),("fieldGoalsAttempted",1),("points",2)):
+            with self.subTest(field=field):
+                old=player["statistics"].get(field)
+                player["statistics"][field]=value
+                self.assertFalse(any(r.get("dnp_final_verified") for r in nba_boxscore_rows(game,box)))
+                player["statistics"][field]=old
+
+    def test_official_boxscore_origin_recovers_cdn_access_error(self):
+        payload={"game":{"gameId":"0022600230","gameStatus":3}}
+        with patch("iphone_bot.fetch_final_boxscores._request_json",side_effect=[OSError("403"),payload]) as fetch:
+            self.assertEqual(request_json(NBA_BOX.format("0022600230")),payload)
+            self.assertEqual(fetch.call_args_list[1].args[0],NBA_BOX_ALT.format("0022600230"))
+        with patch("iphone_bot.fetch_final_boxscores._request_json",side_effect=OSError("unavailable")):
+            with self.assertRaises(OSError):request_json(NBA_BOX.format("0022600230"))
+
     def test_actual_pending_game_enters_grading_window(self):
         now=datetime(2026,11,7,6,tzinfo=timezone.utc)
         games=pending_games([pick()],now)

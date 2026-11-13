@@ -50,4 +50,19 @@ def verified_trade_rows(final_rows,fixture):
 
 def verified_trade_subset(final_rows,path=FIXTURE):
     if not path.exists():return []
-    return verified_trade_rows(final_rows,json.loads(path.read_text()))
+    fixture=json.loads(path.read_text())
+    original=verified_trade_rows(final_rows,fixture)
+    # The same documented trade also invalidates the stale SAC assignment
+    # two days later. Require his verified OKC appearance that same night.
+    played = [r for r in final_rows if r.get("date")=="2026-11-10"
+              and r.get("final_confirmed") is True and r.get("source")=="NBA_CDN_FINAL"
+              and r.get("dnp_final_verified") is not True]
+    if original and any(r.get("team")=="OKC" and r.get("opponent")=="POR"
+                        and str(r.get("source_game_id"))=="0022600216"
+                        and r.get("player")=="Nique Clifford" for r in played):
+        kings = [r for r in played if r.get("team")=="SAC" and r.get("opponent")=="ORL"
+                 and str(r.get("source_game_id"))=="0022600215"]
+        if len(kings)>=3 and not any(r.get("player")=="Nique Clifford" for r in kings):
+            original.append({**original[0],"date":"2026-11-10","opponent":"ORL",
+                             "source_game_id":"0022600215"})
+    return original

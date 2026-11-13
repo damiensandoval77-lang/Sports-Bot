@@ -92,6 +92,6 @@ test("verified final grades are not confused with pending and DNP",()=>{
 test("public interface identifies frozen, unmodeled, and DNP status without synthetic wins",()=>{
  assert.ok(html.includes('p.quoteOnly?"NO AI"'));
  assert.ok(html.includes('p.grade==="EXCLUDED_VERIFIED_DNP"'));
- assert.ok(html.includes('Verified standard line · missing frozen AI model'));
+ assert.ok(html.includes('class="stampband over-under-footer"')); // quote-only NO AI remains in badge; footer is history split only
  assert.ok(html.includes('No sample data is substituted'));
 });

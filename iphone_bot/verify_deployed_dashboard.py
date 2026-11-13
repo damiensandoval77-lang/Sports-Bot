@@ -7,6 +7,7 @@ import datetime as dt
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -40,13 +41,16 @@ def fetch(url,timeout=15):
 def evaluate(site,html,health,now=None):
     now=now or dt.datetime.now(UTC)
     failed=[]
+    if not isinstance(health,dict):
+        failed.append("PUBLIC_AI_RESEARCH_JSON_INVALID_SHAPE")
+        health={}
     def check(ok,reason):
         if not ok:failed.append(reason)
-    check('fetchJSON("ai_prizepicks_quick_join.json")' in html,
+    check('feeds.js?bundle=' in html,
           "DEPLOYED_HTML_MISSING_NEW_PRIZEPICKS_HANDOFF")
-    check("verifiedPublishedPrizePicksJoins(" in html,
+    check("m.nba(" in html,
           "DEPLOYED_HTML_MISSING_VERIFIED_CARD_CONVERTER")
-    check('id="ai-board"' in html,"DEPLOYED_HTML_MISSING_AI_BOARD")
+    check('id="cards"' in html,"DEPLOYED_HTML_MISSING_AI_BOARD")
     check(isinstance(health,dict) and
           health.get("status")=="FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS",
           "PUBLIC_AI_JOIN_UNAVAILABLE")
@@ -65,7 +69,7 @@ def evaluate(site,html,health,now=None):
             "reasons":failed,"matched_offers":health.get("offers_matched"),
             "matched_by_game":health.get("matched_by_game"),
             "provider_partial":health.get("partial_provider_board"),
-            "html_handoff_present":'fetchJSON("ai_prizepicks_quick_join.json")' in html,
+            "html_handoff_present":'feeds.js?bundle=' in html,
             "note":"Public HTML and JSON readiness, not a browser screenshot, wager or calibrated betting accuracy."}
 
 def run(site,now=None,request=fetch):
@@ -75,7 +79,7 @@ def run(site,now=None,request=fetch):
     base=site.rstrip("/")+"/"
     errors=[]
     try:
-        html=request(base)
+        html=request(urljoin(base,"dames-picks/"))
     except (OSError,ValueError,UnicodeError) as exc:
         html=""
         errors.append("PUBLIC_DASHBOARD_HTTP_FAILED:"+type(exc).__name__)
@@ -93,9 +97,26 @@ def run(site,now=None,request=fetch):
     report["browser_render_verified"]=False
     return report
 
+def run_with_retry(site, attempts=3, delay=20, probe=run, sleep=time.sleep):
+    """Allow Pages propagation, retaining every failed observation as evidence.
+
+    Only public static files are fetched. Exhaustion remains a real failure.
+    """
+    if not 1 <= attempts <= 3 or not 0 <= delay <= 20:
+        raise ValueError("Canary retry budget exceeded")
+    observations=[]
+    for attempt in range(attempts):
+        result=probe(site)
+        observations.append({key: result.get(key) for key in
+                             ("checked_at", "status", "reasons", "matched_offers")})
+        if result["status"] == "READY" or attempt == attempts-1:
+            break
+        sleep(delay)
+    return {**result, "attempt_count":len(observations), "attempts":observations}
+
 def main():
     site=os.environ.get("SPORTS_BOT_PUBLIC_SITE_URL",DEFAULT_SITE)
-    result=run(site)
+    result=run_with_retry(site)
     STATUS.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("PUBLIC DEPLOYMENT CHECK:",json.dumps(result,sort_keys=True))
     if result["status"]!="READY":

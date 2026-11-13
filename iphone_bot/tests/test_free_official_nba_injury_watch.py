@@ -11,6 +11,14 @@ def report(status,issued="2026-11-09T22:00:00Z"):
       "players":[{"player":"Austin Reaves","player_id":"1630559","team":"LAL",
                   "game_date":"2026-11-09","status":status}]}
 class FreeOfficialWatchTests(unittest.TestCase):
+    def test_daytime_freshness_and_research_recovery_wiring(self):
+        from pathlib import Path
+        text=Path('.github/workflows/nba-free-official-injury-watch.yml').read_text()
+        self.assertIn("17 6-15 * * *",text)
+        self.assertIn("INJURY_CONTEXT_UNVERIFIED_OR_STALE",text)
+        self.assertIn("short_history_model.json",text)
+        self.assertIn("provisional_short_history.json",text)
+        self.assertIn("Model refresh already active; no duplicate dispatch",text)
     def test_first_snapshot_does_not_invent_a_change(self):
         r,changed,_=update({},report("Out"),NOW)
         self.assertTrue(changed)

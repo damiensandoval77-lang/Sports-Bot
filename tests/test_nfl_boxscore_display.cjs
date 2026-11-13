@@ -1,29 +1,23 @@
-/* Regression: NFL boxscore player and team labels must render as text. */
+/* Exercise the actual unified game detail renderer, not retired NFL redirect. */
 const fs=require("fs"),vm=require("vm"),assert=require("assert");
-const html=fs.readFileSync("docs/nfl/index.html","utf8");
-const script=html.split("<script>")[1].split("</script>")[0];
-new vm.Script(script,{filename:"docs/nfl/index.html"});
-const from=script.indexOf("function boxMetric(");
-const to=script.indexOf("function renderFinalBoxscore(",from);
-assert(from>=0&&to>from,"Boxscore table rendering functions missing");
-const context={esc:(v)=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))};
-vm.createContext(context);
-vm.runInContext(script.slice(from,to),context);
-const player={player:"Jacoby Brissett",team:"ARI",position:"QB",
- attempts:37,completions:25,passing_yards:267,passing_tds:2,passing_interceptions:0};
-assert.strictEqual(context.boxMetric(player,"player"),"Jacoby Brissett");
-assert.strictEqual(context.boxMetric(player,"team"),"ARI");
-assert.strictEqual(context.boxMetric(player,"position"),"QB");
-assert.strictEqual(context.boxMetric(player,"passing_yards"),"267");
-assert.strictEqual(context.boxMetric(player,"fumbles_lost"),"—");
-const passing=context.gameStatsTable({players:[player]},"Passing");
-assert(passing.includes("<td>Jacoby Brissett</td>"),"Player name missing from passing boxscore");
-assert(passing.includes("<td>ARI</td>"),"Team name missing from passing boxscore");
-assert(passing.includes("<td>267</td>"),"Passing stat missing");
-const receiving=context.gameStatsTable({players:[{player:"Marvin Harrison Jr.",team:"ARI",targets:9,receptions:6,receiving_yards:90,receiving_tds:1}]},"Receiving");
-assert(receiving.includes("Marvin Harrison Jr."),"Receiver name missing");
-const rushing=context.gameStatsTable({players:[{player:"Jeremiyah Love",team:"ARI",carries:14,rushing_yards:77,rushing_tds:1}]},"Rushing");
-assert(rushing.includes("Jeremiyah Love"),"Rusher name missing");
-assert.strictEqual(context.boxMetric({player:"<script>alert(1)</script>"},"player"),"&lt;script&gt;alert(1)&lt;/script&gt;","Name must be escaped");
-assert.strictEqual(context.boxMetric({player:null},"player"),"Unknown","Missing names cannot show numeric em dash");
-console.log("NFL boxscore rendering OK: player names, teams, stats, XSS escaping, missing labels");
+const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+const from=html.indexOf("function renderGameDetail(){");
+const to=html.indexOf("function ",from+10);
+assert(from>=0&&to>from,"Unified game detail renderer missing");
+const elements={};
+const escapeText=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const context={escapeText,fmt:String,when:String,scoreText:String,rows:()=>[],
+ m:{displayCurrentPicks:x=>x,sortByTeamPosition:x=>x},state:{gamePicked:{sport:"NFL",gameId:"g",game:"ARI @ SEA",statusText:"Final",players:[
+ {player:"Jacoby Brissett",team:"ARI",stats:{PASS_YDS:267}},
+ {player:"Marvin Harrison Jr.",team:"ARI",stats:{REC_YDS:90}},
+ {player:"Jeremiyah Love",team:"ARI",stats:{RUSH_YDS:77}},
+ {player:"<script>alert(1)</script>",team:"SEA",stats:{REC_YDS:10}}]}},
+ $:id=>elements[id]||(elements[id]={querySelectorAll:()=>[]})};
+vm.createContext(context);vm.runInContext(html.slice(from,to),context);
+context.renderGameDetail();const rendered=elements["detail-content"].innerHTML;
+for(const text of ["Jacoby Brissett","Marvin Harrison Jr.","Jeremiyah Love","ARI","PASS_YDS 267","REC_YDS 90","RUSH_YDS 77"])
+ assert(rendered.includes(text),"Missing rendered NFL player/stat: "+text);
+assert(rendered.includes("&lt;script&gt;alert(1)&lt;/script&gt;"));
+assert(!rendered.includes("<script>"));
+assert(rendered.includes("No verified pregame standard quotes"));
+console.log("Unified NFL boxscore labels, stats, empty capture disclosure and escaping verified");

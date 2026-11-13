@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 REPORT=ROOT/"docs/browser_card_probe.json"
-URL=os.environ.get("SPORTS_BOT_PUBLIC_SITE_URL","https://damiensandoval77-lang.github.io/Sports-Bot/")
+URL=os.environ.get("SPORTS_BOT_PUBLIC_SITE_URL","https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/")
 EXPECTED={"Cleveland Cavaliers @ Charlotte Hornets",
           "Los Angeles Lakers @ Atlanta Hawks",
           "Washington Wizards @ Detroit Pistons",
@@ -24,6 +24,7 @@ EXPECTED={"Cleveland Cavaliers @ Charlotte Hornets",
 
 def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=None,standard_lines=0,model_chances=0,diagnostics=None,expected_games=None,required_upcoming=None):
     reasons=[]
+    if errors:reasons.append("UNHANDLED_JS_ERRORS")
     expected=set(EXPECTED if expected_games is None else expected_games)
     upcoming=set(expected if required_upcoming is None else required_upcoming)
     if not upcoming.issubset(expected):
@@ -64,107 +65,50 @@ def assess(board_count,labels,tiles,errors,now,per_game=None,simulation_count=No
     }
 
 def probe():
+    """Check the current unified DOM and current official slate at phone width."""
     from playwright.sync_api import sync_playwright
     now=dt.datetime.now(dt.timezone.utc)
     errors=[]
-    with sync_playwright() as p:
-        browser=p.chromium.launch(headless=True,args=["--no-sandbox"])
+    with sync_playwright() as pw:
+        browser=pw.chromium.launch(headless=True,args=["--no-sandbox"])
         try:
             page=browser.new_page(viewport={"width":390,"height":844},
-                                  device_scale_factor=2,
                                   locale="en-US",timezone_id="America/New_York")
             page.on("pageerror",lambda e:errors.append(str(e)[:240]))
             response=page.goto(URL,wait_until="domcontentloaded",timeout=45000)
-            if response is None or response.status!=200:
-                raise RuntimeError("Public dashboard HTTP status not 200")
-            try:
-                page.wait_for_function(
-                    "() => document.querySelectorAll('#ai-board article.compact-prop').length > 0",
-                    timeout=30000)
-            except Exception:
-                errors.append("NO_RENDERED_AI_CARDS")
-            cards=page.locator("#ai-board article.compact-prop")
-            count=cards.count()
-            present=[]
-            standard_lines=0
-            modeled=0
-            for item in cards.all()[:350]:
-                labels=item.locator(".ai-metric-label").all_inner_texts()
-                values=item.locator(".ai-metric-value").all_inner_texts()
-                if "PRIZEPICKS STD" not in labels:continue
-                ix=labels.index("PRIZEPICKS STD")
-                if len(values)<=ix or values[ix].strip() in ("","—"):continue
-                standard_lines+=1
-                present.append(item.inner_text().splitlines()[0][:75])
-                if "NEW AI PROJECTION" in labels and "NEW AI CHANCE" in labels:
-                    pidx=labels.index("NEW AI PROJECTION")
-                    cidx=labels.index("NEW AI CHANCE")
-                    if len(values)>max(pidx,cidx) and values[pidx].strip() not in ("","—") and values[cidx].strip().endswith("%"):modeled+=1
-            diagnostics=page.evaluate("""async () => {
-              const out={standardLineCards:typeof standardLineCards==='undefined'?null:standardLineCards.length,
-                newModelIndexSize:typeof newMarketIndex==='undefined'?null:newMarketIndex.size,
-                aiRows:typeof ai==='undefined'?null:ai.length,
-                now:new Date().toISOString()};
-              try {
-                const [p,sch]=await Promise.all([
-                  fetch('./prizepicks_model_input.json?probe='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-                  fetch('./nba_schedule.json?probe='+Date.now(),{cache:'no-store'}).then(r=>r.json())]);
-                out.providerTimestamp=p.updated_at;
-                out.rawStandardOffers=p.picks?.filter(x=>x.pickem_tier==='standard').length;
-                out.directVerifiedStandardLines=verifiedStandardLineCoverage(p,sch).length;
-                out.scheduleTimestamp=sch.generated_at;
-                const parts=new Intl.DateTimeFormat('en-US',{
-                  timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'
-                }).formatToParts(new Date());
-                const part=kind=>parts.find(p=>p.type===kind)?.value||'';
-                const day=part('year')+'-'+part('month')+'-'+part('day');
-                out.scheduledToday=(sch.games||[]).filter(g=>g.date_eastern===day&&
-                    typeof g.game==='string').map(g=>g.game);
-                out.upcomingToday=(sch.games||[]).filter(g=>g.date_eastern===day&&
-                    typeof g.game==='string'&&Number.isFinite(Date.parse(g.start))&&
-                    Date.parse(g.start)>Date.now()).map(g=>g.game);
-                out.scheduleUsable=sch.coverage_complete===true&&
-                    Array.isArray(sch.games)&&Array.isArray(sch.dates_eastern)&&
-                    sch.dates_eastern.includes(day);
-              } catch(e) {out.diagnosticError=String(e).slice(0,240);}
-              return out;
+            if response is None or response.status!=200:raise RuntimeError("Public dashboard HTTP status not 200")
+            page.wait_for_function("() => typeof state!=='undefined' && !!state.updated && !state.loading",timeout=60000)
+            page.locator('button[data-league="NBA"]').click()
+            page.locator('button[data-view="board"]').click()
+            obs=page.evaluate("""() => {
+              const sch=state.raw?.nbaSchedule;
+              const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York'}).format(new Date());
+              const games=(sch?.games||[]).filter(g=>g.date_eastern===day);
+              const cards=[...document.querySelectorAll('#cards button.pick[data-id]')];
+              const models=new Map(state.nba.map(p=>[m.key(p),p]));
+              const perGame={}, names=[];let standard=0,chances=0;
+              for(const card of cards){
+                const p=models.get(card.dataset.id),values=[...card.querySelectorAll('.stat-grid strong')].map(x=>x.textContent.trim());
+                if(!p||p.quoteOnly||p.source!=='PrizePicks'||values.length<3||!Number.isFinite(Number(values[0]))||!Number.isFinite(Number(values[1])))continue;
+                standard++;names.push(p.player);perGame[p.game]=(perGame[p.game]||0)+1;
+                if(/[0-9]/.test(values[2]))chances++;
+              }
+              return {cards:cards.length,names,standard,chances,perGame,
+                expected:games.map(g=>g.game),upcoming:games.filter(g=>Date.parse(g.start)>Date.now()).map(g=>g.game),
+                scheduleUsable:sch?.coverage_complete===true&&sch?.dates_eastern?.includes(day)===true};
             }""")
-            game_tiles=page.locator("#game-strip button.score-tile").all()
-            tiles=[t.get_attribute("aria-label") or "" for t in game_tiles]
-            # Navigation must still include every official game, but stopped
-            # pregame cards after tipoff are an intentional UI safety feature.
-            schedule_valid=diagnostics.get("scheduleUsable") is True
-            expected=set(diagnostics.get("scheduledToday") or []) if schedule_valid else set(EXPECTED)
-            upcoming=set(diagnostics.get("upcomingToday") or []) if schedule_valid else set(EXPECTED)
-            recognized=[game for game in expected if any(game in label for label in tiles)]
-            per_game={}
-            for game in sorted(upcoming):
-                tile=next((t for t in game_tiles if game in (t.get_attribute("aria-label") or "")),None)
-                if tile is None:
-                    per_game[game]=0
-                    continue
-                try:
-                    tile.click(timeout=6000)
-                    page.wait_for_timeout(200)
-                    per_game[game]=sum(game in card.inner_text() and "PRIZEPICKS STD" in card.locator(".ai-metric-label").all_inner_texts()
-                      for card in page.locator("#ai-board article.compact-prop").all())
-                except Exception as exc:
-                    errors.append("GAME_FILTER_FAILED:"+game+":"+type(exc).__name__)
-                    per_game[game]=0
-            page.locator("#game-strip button.all-games").click(timeout=6000)
-            result=assess(count,present,recognized,errors,now,per_game,
-                          standard_lines=standard_lines,model_chances=modeled,
-                          diagnostics=diagnostics,expected_games=expected,
-                          required_upcoming=upcoming)
-            if not schedule_valid:
-                result["reasons"].append("OFFICIAL_SLATE_DIAGNOSTICS_MISSING")
-                result["status"]="DEGRADED"
-                result["browser_render_verified"]=False
-            result["ai_summary"]=page.locator("#ai-total").inner_text()[:240]
-            result["public_status"]=page.locator("#status").inner_text()[:120]
+            page.locator('button[data-view="live"]').click()
+            tiles=page.evaluate("""() => [...document.querySelectorAll('#cards button[data-game]')].map(b=>
+              state.liveGames.find(g=>g.sport+'|'+g.gameId===b.dataset.game)?.game).filter(Boolean)""")
+            result=assess(obs['cards'],obs['names'],tiles,errors,now,obs['perGame'],
+                          standard_lines=obs['standard'],model_chances=obs['chances'],
+                          expected_games=obs['expected'],required_upcoming=obs['upcoming'],
+                          diagnostics={"scheduleUsable":obs['scheduleUsable'],"viewport":{"width":390,"height":844}})
+            if not obs['scheduleUsable']:
+                result['reasons'].append('OFFICIAL_SLATE_DIAGNOSTICS_MISSING')
+                result['status']='DEGRADED';result['browser_render_verified']=False
             return result
-        finally:
-            browser.close()
+        finally:browser.close()
 
 def main():
     now=dt.datetime.now(dt.timezone.utc)

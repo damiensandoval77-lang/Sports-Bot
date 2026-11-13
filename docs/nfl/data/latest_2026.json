@@ -1,7 +1,7 @@
 {
   "season": 2026,
-  "captured_at": "2026-11-10T01:07:41.376261+00:00",
-  "rows": 2315,
+  "captured_at": "2026-11-13T15:42:27.208200+00:00",
+  "rows": 4042,
   "files": [
     "latest_2026_00.csv",
     "latest_2026_01.csv",
@@ -12,7 +12,14 @@
     "latest_2026_06.csv",
     "latest_2026_07.csv",
     "latest_2026_08.csv",
-    "latest_2026_09.csv"
+    "latest_2026_09.csv",
+    "latest_2026_10.csv",
+    "latest_2026_11.csv",
+    "latest_2026_12.csv",
+    "latest_2026_13.csv",
+    "latest_2026_14.csv",
+    "latest_2026_15.csv",
+    "latest_2026_16.csv"
   ],
   "schema": [
     "captured_at",
@@ -44,6 +51,7 @@
     "target_share_l3",
     "carry_share_l3",
     "usage_model_active",
+    "matchup_evidence",
     "season_over",
     "season_under",
     "season_push",
@@ -53,43 +61,49 @@
     "season_last5_under",
     "season_last5_push",
     "season_last5_games",
-    "season_game_log"
+    "season_game_log",
+    "p_less",
+    "p_push",
+    "provider_game_id",
+    "provider_start_time",
+    "provider_team"
   ],
   "health": {
     "ok": true,
     "issues": [],
     "warnings": [],
-    "rows": 2315,
-    "games": 15,
-    "players": 281,
-    "captured_at": "2026-11-10T01:07:41.376261+00:00",
+    "rows": 4042,
+    "games": 13,
+    "players": 204,
+    "captured_at": "2026-11-13T15:42:27.208200+00:00",
     "age_hours": 0.01
   },
   "pipeline_health": {
-    "checked_at": "2026-11-10T01:08:26.565890+00:00",
-    "latest_capture": "2026-11-10T01:07:41.376261+00:00",
-    "capture_rows": 53542,
-    "graded_rows": 0,
+    "checked_at": "2026-11-13T15:43:08.741375+00:00",
+    "latest_capture": "2026-11-13T15:42:27.208200+00:00",
+    "capture_rows": 142795,
+    "graded_rows": 1247,
     "grading": {
-      "final_games": 0,
-      "expected_lines": 0,
-      "graded_lines": 0,
-      "missing_lines": 0,
-      "status": "no_eligible_finals",
+      "final_games": 2,
+      "expected_lines": 1248,
+      "graded_lines": 1247,
+      "missing_lines": 1,
+      "status": "needs_review",
       "reconciliation": {
-        "status": "not_run",
-        "expected": 0,
-        "graded": 0,
+        "status": "missing_stats",
+        "expected": 1248,
+        "graded": 1227,
         "preserved": 0,
-        "pending": 0,
-        "pushes": 0,
-        "settled": 0
+        "pending": 1,
+        "pushes": 3,
+        "voids": 20,
+        "settled": 1224
       }
     },
     "schedule": {
       "season": 2026,
       "scheduled_games": 272,
-      "games_with_lines": 15,
+      "games_with_lines": 13,
       "games_with_projections": 0,
       "weeks": [
         {
@@ -417,10 +431,11 @@
         {
           "week": 9,
           "scheduled_games": 15,
-          "games_with_lines": 1,
+          "games_with_lines": 0,
           "games_with_projections": 0,
           "games_missing_lines": [
             "2026_09_ARI_SEA",
+            "2026_09_BUF_MIN",
             "2026_09_CIN_ATL",
             "2026_09_CLE_NO",
             "2026_09_DAL_IND",
@@ -456,9 +471,11 @@
         {
           "week": 10,
           "scheduled_games": 14,
-          "games_with_lines": 14,
+          "games_with_lines": 13,
           "games_with_projections": 0,
-          "games_missing_lines": [],
+          "games_missing_lines": [
+            "2026_10_WAS_NYG"
+          ],
           "games_missing_projections": [
             "2026_10_BUF_NYJ",
             "2026_10_CAR_NO",
@@ -802,11 +819,11 @@
         }
       ],
       "unknown_line_games": [],
-      "next_week": 9,
-      "next_week_games": 1,
-      "next_week_games_with_props": 1,
+      "next_week": 10,
+      "next_week_games": 13,
+      "next_week_games_with_props": 13,
       "next_week_missing_props": []
     },
-    "status": "ok"
+    "status": "needs_review"
   }
 }

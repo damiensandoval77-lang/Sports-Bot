@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import os
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent.parent / "docs"
 
@@ -14,6 +15,20 @@ def load(relative):
         return json.loads((ROOT / relative).read_text())
     except (OSError, ValueError, UnicodeError) as exc:
         return {"_read_error": str(exc)}
+
+def verified_posttip_slate(schedule,season,now):
+    from iphone_bot.end_to_end_readiness import age_ok,parse_time
+    from iphone_bot.season_schedule_baseline import validate
+    try:
+        validate(season)
+        if schedule.get("coverage_complete") is not True or not age_ok(schedule.get("generated_at"),now,180):return False
+        day=now.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+        games=[g for g in schedule.get("games",[]) if g.get("date_eastern")==day]
+        expected=[g for g in season["games"] if g["date_eastern"]==day]
+        identity=lambda g:(g.get("away_abbreviation"),g.get("home_abbreviation"),g.get("start"))
+        return bool(games) and len(games)==len(expected) and {identity(g) for g in games}=={identity(g) for g in expected} and all(parse_time(g.get("start")) and parse_time(g["start"])<=now for g in games)
+    except (ValueError,KeyError,TypeError):
+        return False
 
 def check_artifacts(now=None):
     now = now or dt.datetime.now(dt.timezone.utc)
@@ -33,10 +48,24 @@ def check_artifacts(now=None):
         elif grading.get("official_grading_scope") != "FROZEN_STANDARD_LINE_ONLY":
             record("NFL grading", "critical", "ALTERNATIVE_TIER_RISK", "Official grades must use standard lines only")
         else:
-            record("NFL grading", "ok", "ACCOUNTED", f"{expected} final candidates accounted for")
-        if grading.get("pending_picks", 0):
+            record("NFL grading", "ok", "ACCOUNTED", f"{expected} historical final candidates accounted for across all tiers")
+        # The legacy totals include alternative tiers. Only explicit standard
+        # counts describe the official board; absent data must not imply zero.
+        pending = grading.get("standard_pending_picks")
+        if type(pending) is not int or pending < 0:
+            record("NFL grading", "critical", "STANDARD_PENDING_COUNT_INVALID",
+                   "Explicit nonnegative standard-line pending count required")
+        elif pending:
             record("NFL grading", "warning", "PENDING_FINAL_GRADES",
-                   f"{grading['pending_picks']} pending frozen picks")
+                   f"{pending} pending frozen standard-line picks")
+        else:
+            record("NFL grading", "ok", "STANDARD_GRADES_SETTLED",
+                   "0 pending frozen standard-line picks")
+        record("NFL grading archive", "ok", "ALTERNATIVE_TIERS_EXCLUDED",
+               f"{grading.get('alternative_tier_historical_grades_excluded', 'unknown')} "
+               "historical alternative-tier grades and "
+               f"{grading.get('alternative_tier_pending_excluded', 'unknown')} "
+               "pending alternative-tier rows excluded from official standard results")
 
     def freshness(domain, report, field, max_age_minutes):
         raw = report.get(field)
@@ -81,6 +110,9 @@ def check_artifacts(now=None):
     freshness("NBA lines and AI join", join, "generated_at", 120)
     if join.get("_read_error"):
         record("NBA lines and AI join", "critical", "JOIN_UNAVAILABLE", join["_read_error"])
+    elif join.get("status")!="ERROR" and verified_posttip_slate(load("nba_schedule.json"),load("nba_season_schedule_2026_27.json"),now):
+        record("NBA lines and AI join", "ok", "POSTTIP_USE_IMMUTABLE_CAPTURES",
+               "All independently scheduled games have tipped; capture integrity is checked separately below")
     elif join.get("status") in ("STALE_OR_UNVERIFIED_SOURCE", "STALE_PROVIDER_BOARD", "ERROR"):
         record("NBA lines and AI join", "critical", "STALE_OR_UNVERIFIED_SOURCE",
                f"status={join.get('status')}; matched_games={join.get('matched_games')}")

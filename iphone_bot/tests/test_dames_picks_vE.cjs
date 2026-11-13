@@ -69,7 +69,12 @@ test("Real published NBA and NFL artifacts both produce nonempty integrated play
  const manifest=JSON.parse(fs.readFileSync(root+"nfl/data/latest_2026.json","utf8"));
  const schedule=JSON.parse(fs.readFileSync(root+"nfl/data/schedule_2026.json","utf8"));
  const parts=manifest.files.map(name=>m.csv(fs.readFileSync(root+"nfl/data/"+name,"utf8")));
- const b=m.nfl(parts,schedule);
+ const active=JSON.parse(fs.readFileSync(root+"nfl/data/active_frozen_2026.json","utf8"));
+ const b=m.nfl([active.records||[],...parts],schedule);
+ const raw=[...(active.records||[]),...parts.flat()];
+ for(const card of b.filter(x=>Date.parse(x.start)>Date.now())){
+  assert.ok(raw.some(p=>p.player_id===card.playerId&&p.game_id===card.gameId&&p.stat===card.stat&&Number(p.line)===card.line&&m.nflFutureEvidenceVerified(p,card.start)),"Future card requires actual provider event attribution");
+ }
  assert.ok(b.length>0,"Published NFL model yielded zero eligible standard player props");
  assert.ok(b.every(x=>x.player&&Number.isFinite(x.line)&&Number.isFinite(x.projection)));
  console.log("Live contract counts: NBA",a.length,"NFL",b.length);
@@ -138,6 +143,11 @@ test("NFL confirmed result joins only the exact original captured line",()=>{
 test("NFL missing grades cannot inherit NBA hit-rate stats",()=>{
  const s=m.summarize([], {standard_settled:0,standard_wins:0,pending_picks:0},Date.now(),"NFL");
  assert.equal(s.hitRate,null);assert.equal(s.graded,0);
+});
+test("NFL pending total excludes historical demon/goblin records during health rollout",()=>{
+ const rows=[{grade:"PENDING",frozenSettlementArchive:true,pendingReason:"boxscore_not_yet_published"}];
+ assert.equal(m.summarize(rows,{pending_picks:631},Date.now(),"NFL").pending,1);
+ assert.equal(m.summarize(rows,{pending_picks:631,standard_pending_picks:74},Date.now(),"NFL").pending,74);
 });
 test("Production source feeds keep expected real stat keys and health flags",()=>{
  const liveNBA=JSON.parse(fs.readFileSync("docs/live_player_tracking.json","utf8"));
@@ -372,8 +382,10 @@ test("Production NFL grades in immutable archive all join Tracker, including old
  assert.ok(rows.some(p=>p.frozenSettlementArchive===true&&p.captured==="2026-11-09T19:58:51.614124+00:00"&&p.player==="Ray Davis"&&p.grade==="GRADED"),
    "Historic Ray Davis standard prop not retained after latest snapshot rolled");
  const pendingCards=rows.filter(p=>p.grade==="PENDING"&&p.frozenSettlementArchive===true&&p.pendingReason);
- assert.equal(pendingCards.length,health.pending_picks,
-   "Every published NFL pending record must be represented by a pending reason, without inventing missing players");
+ const standardPending=pending.filter(p=>p.odds_type==="standard");
+ assert.equal(pendingCards.length,standardPending.length,
+   "Every published standard NFL pending record must be represented by a pending reason, without inventing missing players");
+ if(health.standard_pending_picks!==undefined)assert.equal(pendingCards.length,health.standard_pending_picks);
  console.log("NFL standard outcomes rendered",directional.length,"wins",winners,"pending",rows.filter(p=>p.pendingReason).length);
 });
 test("Source-mismatched final prop is never attached as a real grade",()=>{
@@ -434,7 +446,7 @@ test("Merged dashboard shows independently verified pick-settlement health, not 
  assert.ok(html.includes('NBA published picks awaiting verified settlement'));
  assert.ok(html.includes('provider standard markets withheld from AI picks'));
  assert.ok(!html.includes('errors.push("NBA capture incomplete")'));
- assert.ok(html.includes('Official DNP verified · void'));
+ assert.ok(html.includes('DNP · VOID')); // verified exclusion remains in the card badge, not the OVER/UNDER footer
 });
 
 
@@ -761,7 +773,7 @@ test("Closed developer diagnostic disclosure hides all child controls on mobile"
 test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
- assert.ok(html.includes("const related=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)));"));
+ assert.ok(html.includes("const related=m.sortByTeamPosition(m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game))));"));
  assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
  assert.ok(html.includes('SAVED PRETIP LINE'));
  assert.ok(html.includes('NO AI FORECAST'));
@@ -804,14 +816,35 @@ test("CSV-only complete history forecasts show a projection with unsupported hit
  assert.match(got[0].chanceSource,/not independently confirmed/);
 });
 
-test("Short observed-history baseline shows a real projection, but no claimed hit probability",()=>{
- const row={...pt,history_baseline_only:true,sparse_history_games:4,
-            prediction_quality:"SPARSE_OBSERVED_HISTORY_BASELINE_NO_VALIDATED_HIT_RATE"};
- const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[row]},{players:[]});
- assert.equal(got.length,1);
- assert.equal(got[0].projection,31.391);
- assert.equal(got[0].chance,null);
- assert.equal(got[0].sparseHistoryBaseline,true);
- assert.equal(got[0].sparseHistoryGames,4);
- assert.match(got[0].chanceSource,/provisional projection only/);
+test("Board footer contains only actual OVER UNDER historical split, no frozen status or dots",()=>{
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(page.includes("function cardOverUnder(p)"));
+ assert.ok(page.includes('p.logs.filter(x=>Number.isFinite(Number(x.actual)))'));
+ assert.ok(page.includes("Number(x.actual)>Number(p.line)"));
+ assert.ok(page.includes("Number(x.actual)<Number(p.line)"));
+ assert.ok(page.includes('<div class="stampband over-under-footer">\'+cardOverUnder(p)+\'</div>'));
+ assert.ok(!page.includes('<span class="dots">●●●●●</span>'));
+ assert.ok(!page.includes('Frozen pregame forecast · awaiting final'));
+ assert.ok(page.includes('.hs-over{color:var(--lime)}'));
+ assert.ok(page.includes('.hs-under{color:var(--pink)}'));
+});
+
+test("Visible direction labels use Over/Under without mutating stored provider direction",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const fn=html.match(/function directionLabel\(value\)\{[^}]+\}/)[0];
+ const c={};vm.createContext(c);vm.runInContext(fn,c);
+ assert.equal(c.directionLabel("MORE"),"OVER");assert.equal(c.directionLabel("LESS"),"UNDER");
+ assert.equal(c.directionLabel(null),null);
+ assert(!html.includes('escapeText(p.direction||"PASS")'));
+ assert(!html.includes('escapeText(p.direction||"NO AI")'));
+});
+
+test("game-detail NBA player teams normalize provider aliases without changing observations",()=>{
+ const now=Date.parse("2026-11-13T00:17:00Z");
+ const teams={WSH:"WAS",NY:"NYK",GS:"GSW",NO:"NOP",SA:"SAS",UTAH:"UTA"};
+ const games=m.liveGames({captured_at:"2026-11-13T00:17:00Z",games:[{
+ event_id:"test",game:"Detroit Pistons @ Washington Wizards",state:"in",
+ player_rows:Object.keys(teams).map(team=>({player:team,team,PTS:7,REB:2,AST:3,PRA:12}))
+ }]},null,now);
+ for(const row of games[0].players){assert.equal(row.team,teams[row.player]);assert.equal(row.stats.PRA,12);}
 });

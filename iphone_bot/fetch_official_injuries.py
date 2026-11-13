@@ -104,6 +104,9 @@ def parse_rows(text,roster):
             current_team=value
         elif kind=="PLAYER":
             player,status=value
+            # A team/player mention without a preceding official game date
+            # cannot be represented as a verified game-specific status.
+            if current_date is None or current_team is None:continue
             if str(player.get("team","")).upper()!=current_team:continue
             ident=str(player["player_id"])
             k=(ident,current_date)

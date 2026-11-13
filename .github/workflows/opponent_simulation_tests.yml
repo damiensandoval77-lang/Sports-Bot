@@ -36,12 +36,14 @@ jobs:
           from pathlib import Path
           model=Path('iphone_bot/compare_live_models.py').read_text()
           sim=Path('iphone_bot/combined_simulation.py').read_text()
-          html=Path('docs/index.html').read_text()
           assert 'opponent=opponent,' in model
           assert 'defense_history=[v[target] for day,v in opp_games' in model
           assert 'opponent_defense=row["opponent_defense"]' in model
           assert 'if day<upcoming_date and target in v' in model
           assert 'mean_shift_applied":False' in sim
-          assert 'OPPONENT-CONDITIONED 20K SCENARIOS:' in html
-          print('Verified real historical pregame team-defense source, no double-counted mean, and disclosed matchup context')
+          print('Verified real historical pregame team-defense source, no double-counted mean, without treating legacy simulation copy as the active app contract')
           PY
+      - name: Validate current public probability provenance
+        run: |
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs

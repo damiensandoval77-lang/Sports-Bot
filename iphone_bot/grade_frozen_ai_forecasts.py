@@ -23,6 +23,7 @@ from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset, a
 from iphone_bot.verified_boxscore_dnps import verified_boxscore_dnp_subset, SOURCE as BOXSCORE_DNP_SOURCE
 from iphone_bot.verified_nba_official_dnps import load_official_dnp
 from iphone_bot.verified_nov9_nonparticipants import load_nonparticipants
+from iphone_bot.verified_gamebook_inactives import load_gamebook_inactives
 from iphone_bot.verified_pretip_trade import verified_trade_subset, SOURCE as TRADE_SOURCE
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -286,6 +287,21 @@ def main():
     selected=eligible_predictions(archive,now)
     old=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
     requested=final_requests(selected)
+    # Each original archived player belongs to one exact scheduled game.
+    # Cross-provider lookup is permitted ONLY for missing players, and only
+    # explicit independently verified ESPN final DNPs can be accepted.
+    secondary_dnp_requests={}
+    for p in selected:
+        teams=str(p.get("game") or "").split(" @ ")
+        if len(teams)!=2:
+            continue
+        away=TEAM_ABBREVIATIONS.get(teams[0].strip())
+        home=TEAM_ABBREVIATIONS.get(teams[1].strip())
+        if not away or not home or away==home or p.get("team") not in (away,home):
+            continue
+        group=(eastern_day(p["start"]),away,home)
+        secondary_dnp_requests.setdefault(group,set()).add(
+            (strict_player_name(p.get("player")),p["team"]))
     if len(requested)>25:
         raise SystemExit("More than 25 final matchups; refusing incomplete grade fetch")
     if requested:
@@ -305,7 +321,8 @@ def main():
             actuals,fetch_report=gather(requested,now=now,request=multi_origin_request,
                                       known_game_ids=recovery_game_ids(ROOT/"docs/official_nba_game_ids.json",
                                           ROOT/"docs/verified_official_final_game_ids.json"),
-                                      known_espn_games=espn_hints)
+                                      known_espn_games=espn_hints,
+                                      supplemental_espn_dnp_names=secondary_dnp_requests)
         except (OSError,ValueError,TypeError,KeyError) as e:
             actuals=[];fetch_report={"status":"FINAL_FETCH_FAILED","errors":[type(e).__name__]}
     else:
@@ -338,6 +355,7 @@ def main():
                              load_nonparticipants(actuals))
     except (OSError,ValueError,TypeError,KeyError):
         confirmed_inactives=[]
+    confirmed_inactives.extend(load_gamebook_inactives(actuals + confirmed_inactives))
     try:
         confirmed_transfers=verified_trade_subset(actuals)
     except (OSError,ValueError,TypeError,KeyError):

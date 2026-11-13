@@ -7,6 +7,8 @@ on:
       - 'iphone_bot/compare_live_models.py'
       - 'iphone_bot/tests/test_archive_pregame_ai_board.py'
       - 'iphone_bot/tests/test_fetch_props.py'
+      - 'iphone_bot/tests/test_paid_odds_disabled.py'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
       - 'docs/index.html'
       - '.github/workflows/nba-slate-resilience-tests.yml'
   push:
@@ -26,23 +28,11 @@ jobs:
         run: |
           python -m py_compile iphone_bot/fetch_props.py iphone_bot/compare_live_models.py iphone_bot/archive_pregame_ai_board.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_paid_odds_disabled.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v
-      - name: Validate mobile dashboard inline JavaScript syntax and archive labels
+      - name: Validate canonical unified app redirect preserves deep links
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          s=Path('docs/index.html').read_text()
-          assert s.count('<script>')==1 and s.count('</script>')==2
-          assert '<script src="./live-prop-tracker.js' in s
-          script=s.split('<script>',1)[1].split('</script>',1)[0]
-          Path('/tmp/sports-bot-dashboard.js').write_text(script)
-          assert 'FROZEN_PREGAME_HISTORICAL_ARCHIVE_NOT_LIVE' in script
-          assert 'aiArchiveMode' in script
-          assert 'Historical line and simulation, NOT live' in script
-          assert 'easternGameDay' in script
-          print('Checked explicit separation of archived versus live odds')
-          PY
-          node --check /tmp/sports-bot-dashboard.js
+          node --test iphone_bot/tests/test_root_redirect.cjs
       - name: Validate no sportsbook credentials or fabricated real-time odds
         run: |
           python - <<'PY'

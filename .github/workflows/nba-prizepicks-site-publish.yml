@@ -9,11 +9,13 @@ on:
     paths:
       - '.github/workflows/nba-prizepicks-site-publish.yml'
       - 'iphone_bot/tests/test_model_dispatch_recovery.py'
+      - 'iphone_bot/model_dispatch_recovery.py'
   push:
     branches: [main]
     paths:
       - 'docs/prizepicks.json'
       - 'iphone_bot/publish_prizepicks_site.py'
+      - 'iphone_bot/model_dispatch_recovery.py'
       - 'iphone_bot/build_prizepicks_model_input.py'
       - 'iphone_bot/tests/test_build_prizepicks_model_input.py'
       - 'iphone_bot/tests/test_publish_prizepicks_site.py'
@@ -122,13 +124,14 @@ jobs:
             echo 'No future NBA fixtures; skip guarded model recovery'
             exit 0
           fi
-          # Failed runs must not suppress unattended recovery. Only an active
-          # run or a successful run within the last hour provides a cooldown.
-          now=$(date -u +%s)
+          # An older active run may already have read its source. Queue a
+          # successor for a newer snapshot instead of losing its offers.
+          # Existing cancel-in-progress:false serializes those model runs;
+          # a queued successor covering this source prevents duplicates.
           recent=$(gh run list --workflow nba-new-ai-all-markets.yml --limit 30 --json createdAt,headBranch,status,conclusion |
-            jq --argjson cutoff "$((now - 60*60))" '[.[] | select(.headBranch == "main" and (.status != "completed" or (.conclusion == "success" and (.createdAt | fromdateiso8601) >= $cutoff)))] | length')
+            python -m iphone_bot.model_dispatch_recovery --source docs/prizepicks_model_input.json)
           if [ "$recent" -gt 0 ]; then
-            echo 'Model run in progress or succeeded within 60 minutes'
+            echo 'An active or recent successful model run already covers this provider snapshot'
             exit 0
           fi
           gh workflow run nba-new-ai-all-markets.yml --ref main

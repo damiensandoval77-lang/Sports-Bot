@@ -8,6 +8,7 @@ source-unverified row as graded. No network or paid sportsbook APIs.
 import argparse
 import json
 import math
+import subprocess
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -20,7 +21,7 @@ VALID_MARKETS = frozenset(("PTS", "REB", "AST", "PRA"))
 FINAL_SOURCES = frozenset(("NBA_CDN_FINAL", "ESPN_FINAL"))
 DNP_SOURCES = frozenset(("NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
                          "VERIFIED_FINAL_BOXSCORE_DNP_CROSSCHECKED",
-                         "ESPN_FINAL_BOX_ABSENT_INJURY_LISTED"))
+                         "ESPN_FINAL_BOX_ABSENT_INJURY_LISTED")) | FINAL_SOURCES
 EXCLUSION_SOURCES = DNP_SOURCES | frozenset(("NBA_OFFICIAL_PRETIP_TRADE_CROSSCHECKED",))
 NO_LINE_FINAL_STATES = frozenset(("GRADED", "EXCLUDED_VERIFIED_DNP",
                                   "EXCLUDED_VERIFIED_NONPARTICIPANT"))
@@ -70,7 +71,8 @@ def observed_final(row):
     if status == "EXCLUDED_VERIFIED_NONPARTICIPANT":
         return (source in EXCLUSION_SOURCES and bool(row.get("source_game_id"))
                 and bool(row.get("verified_dnp_reason") or row.get("verified_transfer_reason") or
-                         row.get("verified_nonparticipant_reason")))
+                         row.get("verified_nonparticipant_reason") or row.get("verified_nonparticipation_reason"))
+                and row.get("actual") is None)
     return False
 
 def name_key(raw):
@@ -354,6 +356,45 @@ def reconcile(no_line_archive, actuals, standard, ai_report=None, published_repo
         "notice":"A clean job is not a complete grading night. Missing final player rows remain pending, never losses or inferred DNPs. Each original standard line is a separate quote."
     }
 
+def historical_status(day, archive, actuals, now):
+    """Rebuild a dated summary from original captures and retained final records.
+
+    This produces a report now, never a new pretip forecast or settlement.
+    The independent reconcile() checks its counts and every final's provenance.
+    """
+    from iphone_bot.grade_frozen_ai_forecasts import report
+    result=report(day,archive.get("predictions",[]),
+                  {"records":actuals.get("records",[]),"new_grades":0},now=now)
+    result["report_provenance"]="RECOMPUTED_FROM_ORIGINAL_CAPTURE_AND_FINAL_LEDGERS"
+    return result
+
+def select_dated_report(day, reports):
+    """Select original published evidence for the requested Eastern date.
+
+    The 'today' report can become yesterday's evidence at midnight, before
+    the producer rotates its filenames. Never alter its reported counts.
+    """
+    matching=[r for r in reports if isinstance(r,dict) and r.get("game_date_eastern")==day]
+    return max(matching,key=lambda r:str(r.get("generated_at", ""))) if matching else {}
+
+def recover_historical_archive(day, archive, now, root=ROOT):
+    """Read original Git bytes before a completed date left the rolling feed."""
+    if day >= (now.astimezone(ET).date()-timedelta(days=1)).isoformat():return archive
+    path="docs/ai_no_line_pregame_archive.json"
+    cutoff=(datetime.fromisoformat(day).replace(tzinfo=timezone.utc)+timedelta(days=2)).isoformat()
+    def git(*args):return subprocess.check_output(["git",*args],cwd=root,text=True,stderr=subprocess.DEVNULL)
+    try:
+        ref=git("rev-list","-1","--before="+cutoff,"HEAD","--",path).strip()
+        if not ref:return archive
+        original=json.loads(git("show",ref+":"+path))
+        def dated(row):return datetime.fromisoformat(row["start"].replace("Z","+00:00")).astimezone(ET).date().isoformat()==day
+        rows=[p for p in original.get("predictions",[]) if dated(p)]
+        if not rows or original.get("status")!=archive.get("status"):return archive
+        return {**archive,"predictions":[p for p in archive.get("predictions",[]) if not dated(p)]+rows,
+                "historical_capture_source_commit":ref,"historical_capture_source_path":path}
+    except (subprocess.CalledProcessError,ValueError,KeyError,TypeError):
+        return archive  # Existing independent count/provenance checks remain red.
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--date",required=True,help="Eastern game date YYYY-MM-DD")
@@ -362,14 +403,29 @@ def main():
     args=p.parse_args()
     def read(path):
         return json.loads((ROOT/path).read_text())
-    result=reconcile(read("docs/ai_no_line_pregame_archive.json"),
-        read("docs/ai_forecast_actual_ledger.json"),
+    archive=read("docs/ai_no_line_pregame_archive.json")
+    actuals=read("docs/ai_forecast_actual_ledger.json")
+    candidates=[]
+    for name in ("ai_forecast_grade_status.json","ai_forecast_today_grade_status.json",
+                 "ai_forecast_grade_status_"+args.date+".json"):
+        path=ROOT/"docs"/name
+        if path.exists():candidates.append(json.loads(path.read_text()))
+    ai_status=select_dated_report(args.date,candidates)
+    now=datetime.now(timezone.utc)
+    archive=recover_historical_archive(args.date,archive,now)
+    if args.date < (now.astimezone(ET).date()-timedelta(days=1)).isoformat() and ai_status.get("game_date_eastern")!=args.date:
+        ai_status=historical_status(args.date,archive,actuals,now)
+        (ROOT/("docs/ai_forecast_grade_status_"+args.date+".json")).write_text(json.dumps(ai_status,indent=2)+"\n")
+    result=reconcile(archive, actuals,
         read("docs/lagged_matchup_all_market_ledger.json"),
-        read("docs/ai_forecast_grade_status.json"),
+        ai_status,
         read("docs/dames-picks/published_pick_settlement.json"),
         final_cache=read("docs/verified_final_player_cache.json"),
         game_date=args.date,checked_at=datetime.now(timezone.utc).isoformat())
     path=Path(args.output)
+    if archive.get("historical_capture_source_commit"):
+        result["historical_capture_source_commit"]=archive["historical_capture_source_commit"]
+        result["historical_capture_source_path"]=archive["historical_capture_source_path"]
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
     print("AUTHORITATIVE_GRADING_RECONCILIATION",json.dumps({

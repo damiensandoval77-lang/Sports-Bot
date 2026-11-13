@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - 'docs/index.html'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
       - '.github/workflows/nba-ui-integrity.yml'
 permissions:
   contents: read
@@ -17,20 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate HTML script syntax and confidence truthfulness
+      - name: Verify active unified app truthfulness, pretip eligibility and live updates
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          html=Path('docs/index.html').read_text()
-          # Protect current truthfulness constraints, not obsolete UI badge copy.
-          assert 'frozenResearchScreen(p)' in html
-          assert 'Market hit rates:' in html
-          assert 'combinedSimAvailable(p)' in html
-          assert 'SIM EST. %",validEstimate(p)' not in html
-          assert 'No verified hit probability or EV' in html
-          assert 'Directional research signal only' in html
-          assert 'edge.verified_edge!==true' in html
-          assert 'function renderPrizePicksBoard()' in html
-          Path('/tmp/sports-bot-board.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
-          PY
-          node --check /tmp/sports-bot-board.js
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs
+          node --test iphone_bot/tests/test_live_direct.cjs

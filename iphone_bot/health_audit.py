@@ -24,6 +24,8 @@ def assess(data, tracking, now=None, max_age_minutes=180):
     updated = parse_timestamp(data.get("updated_at"))
     if not updated:
         add("error", "ODDS_TIMESTAMP_MISSING", "Sportsbook feed has no valid updated_at")
+    elif updated > now + dt.timedelta(minutes=5):
+        add("error", "ODDS_TIMESTAMP_FUTURE", "Sportsbook observation is more than five minutes in the future")
     elif (now - updated).total_seconds() > max_age_minutes * 60:
         add("error", "ODDS_STALE", f"Sportsbook feed age: {int((now-updated).total_seconds()/60)} minutes")
 
@@ -42,6 +44,8 @@ def assess(data, tracking, now=None, max_age_minutes=180):
     tracked = parse_timestamp(tracking.get("captured_at"))
     if not tracked:
         add("error", "TRACKER_TIMESTAMP_MISSING", "Live tracker missing valid captured_at")
+    elif tracked > now + dt.timedelta(minutes=5):
+        add("error", "TRACKER_TIMESTAMP_FUTURE", "Live observation is more than five minutes in the future")
     elif (now-tracked).total_seconds() > max_age_minutes * 60:
         add("warning", "TRACKER_STALE", "Live player observations have not updated recently")
     coverage = tracking.get("coverage") or {}

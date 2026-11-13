@@ -35,6 +35,23 @@ class HealthAuditTests(unittest.TestCase):
         tracking["coverage"]["missing_fresh_matchups"] = ["match-1"]
         self.assertFalse(assess(odds, tracking, now=NOW)["ok"])
 
+    def test_future_observations_cannot_claim_freshness(self):
+        for field, code in (("updated_at", "ODDS_TIMESTAMP_FUTURE"),
+                            ("captured_at", "TRACKER_TIMESTAMP_FUTURE")):
+            with self.subTest(field=field):
+                odds, tracking = feeds()
+                target = odds if field == "updated_at" else tracking
+                target[field] = (NOW + dt.timedelta(minutes=6)).isoformat()
+                result = assess(odds, tracking, now=NOW)
+                self.assertFalse(result["ok"])
+                self.assertIn(code, [f["code"] for f in result["findings"]])
+
+    def test_bounded_clock_skew_is_allowed(self):
+        odds, tracking = feeds()
+        odds["updated_at"] = (NOW + dt.timedelta(minutes=5)).isoformat()
+        tracking["captured_at"] = (NOW + dt.timedelta(minutes=5)).isoformat()
+        self.assertTrue(assess(odds, tracking, now=NOW)["ok"])
+
     def test_partial_coverage_warns(self):
         odds, tracking = feeds(12, 11)
         result = assess(odds, tracking, now=NOW)

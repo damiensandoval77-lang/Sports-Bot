@@ -4,11 +4,12 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 from reconcile_nfl_picks import (
-    collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,verified_zero_snaps,verified_full_game_scoring,exact_fantasy_score,run)
+    historic_snapshot,collect_history,closing,grade_finals,read_published_snapshot,read_csv,verified_boxscores,verified_inactives,verified_zero_snaps,verified_full_game_scoring,exact_fantasy_score,pending_counts,run)
 
 def schedule():
     kickoff="2026-11-15T18:00:00+00:00"
@@ -32,6 +33,14 @@ def box():
              "rushing_tds":0,"receiving_tds":1}}}
 
 class PublicNFLGradeTests(unittest.TestCase):
+    def test_pending_standard_scope_excludes_alternative_tiers(self):
+        rows=[dict(odds_type=t,grade_status="boxscore_not_yet_published")
+              for t in ("standard","demon","goblin","standard")]
+        self.assertEqual(pending_counts(rows),{
+            "standard_pending_picks":2,"alternative_tier_pending_excluded":2,
+            "standard_pending_reasons":{"boxscore_not_yet_published":2}})
+        self.assertEqual(pending_counts([])["standard_pending_picks"],0)
+
     def test_real_bills_vikings_final_has_gradeable_archived_picks(self):
         # Regression: 2026 Nov 9 game is final, 1,374 pretip lines saved;
         # a stale health file said 0 graded and 0 pending despite a verified box.
@@ -91,6 +100,40 @@ class PublicNFLGradeTests(unittest.TestCase):
         self.assertIsNone(exact_fantasy_score(player,None))
         self.assertIsNone(exact_fantasy_score({**player,"receiving_tds":1},scoring))
         self.assertIsNone(exact_fantasy_score({**player,"passing_yards":None},scoring))
+
+    def test_historical_recovery_requires_immutable_commit_and_exact_manifest(self):
+        with self.assertRaisesRegex(ValueError,"immutable commit"):
+            historic_snapshot("main")
+        r=bet();r["matchup_evidence"]='{"original":"bytes"}'
+        import io
+        out=io.StringIO();w=csv.DictWriter(out,fieldnames=list(r));w.writeheader();w.writerow(r)
+        manifest={"season":2026,"captured_at":r["captured_at"],"rows":1,"files":["latest_2026_00.csv"]}
+        with patch("reconcile_nfl_picks.subprocess.check_output",side_effect=[json.dumps(manifest).encode(),out.getvalue().encode()]):
+            rows,_=historic_snapshot("a"*40)
+        self.assertEqual(rows[0]["matchup_evidence"],r["matchup_evidence"])
+
+    def test_exact_evidence_survives_repeat_and_source_rotation(self):
+        original=bet(); original.update(p_more="0.58",p_less="0.32",p_push="0.10",
+                                       matchup_evidence='{"original":"bytes"}')
+        rows,_=collect_history([bet()],[original],schedule())
+        for field in ("p_more","p_less","p_push","matchup_evidence"):
+            self.assertEqual(rows[0][field],original[field])
+        repeated,_=collect_history(rows,[bet()],schedule())
+        self.assertEqual(repeated,rows)
+        rotated,_=collect_history(rows,[],schedule())
+        self.assertEqual(rotated,rows)
+        grades,_,_=grade_finals(rows,schedule(),box(),set())
+        self.assertEqual(grades[0]["matchup_evidence"],original["matchup_evidence"])
+
+    def test_conflicting_forecast_or_evidence_cannot_recertify_archive(self):
+        original=bet();original.update(p_more="0.58",matchup_evidence='{"original":true}')
+        for patch in ({"proj":"99"},{"p_more":"0.9"},{"matchup_evidence":"{}"}):
+            with self.assertRaisesRegex(ValueError,"NFL_FROZEN_"):
+                collect_history([original],[{**original,**patch}],schedule())
+        late={**original,"captured_at":"2026-11-15T18:00:00+00:00"}
+        rows,rejected=collect_history([original],[late],schedule())
+        self.assertEqual(len(rows),1);self.assertEqual(rejected,1)
+        self.assertEqual(rows[0]["matchup_evidence"],original["matchup_evidence"])
 
     def test_only_pregame_captures_are_archived(self):
         old=bet()

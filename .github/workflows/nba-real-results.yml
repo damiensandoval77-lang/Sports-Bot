@@ -63,13 +63,20 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_grade_quality_scorecard.py" -v
           python - <<'PY'
           from pathlib import Path
-          html=Path('docs/index.html').read_text()
-          assert 'tab-results' in html
-          assert 'minutes-v2-validation' in html
-          assert 'chronological-accuracy-feedback' in html
-          Path('/tmp/sports-bot-live-results.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          html=Path('docs/dames-picks/index.html').read_text()
+          assert 'NBA + NFL' in html
+          assert 'data-league="NBA"' in html and 'data-league="NFL"' in html
+          assert 'data-view="tracker"' in html
+          # Root index is intentionally a redirect; do not assert obsolete
+          # tabs or extract its redirect JS as the production application.
+          assert 'dames-picks/' in Path('docs/index.html').read_text()
+          assert '<script>' in html and '</script>' in html
+          Path('/tmp/sports-bot-live-results.js').write_text(
+              html.split('<script>',1)[1].split('</script>',1)[0])
           PY
           node --check /tmp/sports-bot-live-results.js
+          node --check docs/dames-picks/feeds.js
+          node --check docs/dames-picks/dames_take.js
       - name: Refresh completed real NBA player game logs
         env:
           GITHUB_TOKEN: ${{ github.token }}

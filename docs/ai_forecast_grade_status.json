@@ -1,635 +1,77 @@
 {
-  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-12T01:07:06.463962+00:00",
-  "game_date_eastern": "2026-11-10",
-  "recorded_pregame_forecasts": 568,
-  "graded": 492,
-  "verified_dnp_exclusions": 0,
+  "status": "AI_PRETIP_FORECASTS_GRADED",
+  "generated_at": "2026-11-13T22:19:47.843718+00:00",
+  "game_date_eastern": "2026-11-12",
+  "recorded_pregame_forecasts": 388,
+  "graded": 332,
+  "verified_dnp_exclusions": 56,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 492,
-  "ungraded": 76,
+  "accounted_for": 388,
+  "ungraded": 0,
   "new_grades": 0,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 123,
-      "mae": 4.314,
-      "mean_signed_error": 0.737
+      "graded": 83,
+      "mae": 5.154,
+      "mean_signed_error": 0.017
     },
     "REB": {
-      "graded": 123,
-      "mae": 1.84,
-      "mean_signed_error": 0.495
+      "graded": 83,
+      "mae": 2.193,
+      "mean_signed_error": 0.296
     },
     "AST": {
-      "graded": 123,
-      "mae": 1.271,
-      "mean_signed_error": 0.251
+      "graded": 83,
+      "mae": 1.595,
+      "mean_signed_error": -0.147
     },
     "PRA": {
-      "graded": 123,
-      "mae": 5.728,
-      "mean_signed_error": 1.543
+      "graded": 83,
+      "mae": 7.093,
+      "mean_signed_error": 0.288
     }
   },
-  "ungraded_by_game": {
-    "Boston Celtics @ Philadelphia 76ers": 4,
-    "LA Clippers @ Phoenix Suns": 12,
-    "Miami Heat @ Utah Jazz": 24,
-    "Milwaukee Bucks @ New York Knicks": 8,
-    "Oklahoma City Thunder @ Portland Trail Blazers": 12,
-    "Orlando Magic @ Sacramento Kings": 16
-  },
-  "excluded_verified_dnp_players": [],
-  "ungraded_distinct_player_names_by_game": {
-    "Boston Celtics @ Philadelphia 76ers": [
-      "Adem Bona"
-    ],
-    "LA Clippers @ Phoenix Suns": [
-      "Cam Christie",
-      "Duop Reath",
-      "Nick Martinelli"
-    ],
-    "Miami Heat @ Utah Jazz": [
-      "Dru Smith",
-      "Keyonte George",
-      "Lauri Markkanen",
-      "Nick Richards",
-      "Nikola Jovi\u0107",
-      "Tim Hardaway Jr."
-    ],
-    "Milwaukee Bucks @ New York Knicks": [
-      "Josh Hart",
-      "Tyler Herro"
-    ],
-    "Oklahoma City Thunder @ Portland Trail Blazers": [
-      "Jaylin Williams",
-      "Josh Dix",
-      "V\u00edt Krej\u010d\u00ed"
-    ],
-    "Orlando Magic @ Sacramento Kings": [
-      "Alex Karaban",
-      "Jonathan Mogbo",
-      "Nique Clifford",
-      "Tristan da Silva"
-    ]
-  },
-  "ungraded_distinct_player_markets": 76,
+  "ungraded_by_game": {},
+  "excluded_verified_dnp_players": [
+    "Adem Bona",
+    "Brandon Miller",
+    "Dennis Schr\u00f6der",
+    "Duop Reath",
+    "Ebuka Okorie",
+    "Hannes Steinbach",
+    "Jamaree Bouyea",
+    "Koa Peat",
+    "LeBron James",
+    "Liam McNeeley",
+    "Scottie Barnes",
+    "Tolu Smith",
+    "Trayce Jackson-Davis",
+    "Tre Mann"
+  ],
+  "ungraded_distinct_player_names_by_game": {},
+  "ungraded_distinct_player_markets": 0,
   "final_feed": {
-    "pending_matchups": 11,
-    "final_nba_games": 11,
+    "pending_matchups": 14,
+    "final_nba_games": 14,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 260,
+    "retrieved_player_lines": 353,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 11,
-    "final_cached_id_nba_games": 11,
+    "cached_official_id_candidates": 14,
+    "final_cached_id_nba_games": 14,
+    "secondary_espn_dnp_no_verified_game_hint": 47,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 342,
+    "verified_cache_rows": 721,
     "newly_retrieved_verified_rows": 0,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 76
-    },
-    "players": [
-      {
-        "player": "Adem Bona",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Adem Bona",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Adem Bona",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Adem Bona",
-        "team": "PHI",
-        "game": "Boston Celtics @ Philadelphia 76ers",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Cam Christie",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Cam Christie",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Cam Christie",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Cam Christie",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Duop Reath",
-        "team": "PHX",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Duop Reath",
-        "team": "PHX",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Duop Reath",
-        "team": "PHX",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Duop Reath",
-        "team": "PHX",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Martinelli",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Martinelli",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Martinelli",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Martinelli",
-        "team": "LAC",
-        "game": "LA Clippers @ Phoenix Suns",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dru Smith",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Keyonte George",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Keyonte George",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Keyonte George",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Keyonte George",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Lauri Markkanen",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Lauri Markkanen",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Lauri Markkanen",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Lauri Markkanen",
-        "team": "UTA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tim Hardaway Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ Utah Jazz",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tyler Herro",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tyler Herro",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tyler Herro",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tyler Herro",
-        "team": "MIL",
-        "game": "Milwaukee Bucks @ New York Knicks",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jaylin Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jaylin Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jaylin Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jaylin Williams",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Oklahoma City Thunder @ Portland Trail Blazers",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nique Clifford",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nique Clifford",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nique Clifford",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Nique Clifford",
-        "team": "SAC",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Orlando Magic @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      }
-    ],
+    "by_reason": {},
+    "players": [],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,

@@ -17,6 +17,19 @@ def fin(status="GRADED"):
          "actual":23 if status=="GRADED" else None,
          "verified_dnp_reason":"INACTIVE" if status!="GRADED" else None}
 class PublishedCaptureSettlementTests(unittest.TestCase):
+ def test_cross_provider_dnp_ids_match_only_exact_verified_event(self):
+  p={**BASE,"grade":"EXCLUDED_VERIFIED_DNP","source_game_id":"401909960",
+     "final_source":"ESPN_FINAL_BOX_ABSENT_INJURY_LISTED",
+     "verified_dnp_reason":"Final box inactive","actual":None,"direction_hit":None}
+  final=fin("EXCLUDED_VERIFIED_DNP")
+  self.assertEqual(evaluate(ledger(p),finals(final),NOW)["status"],"READY")
+  from iphone_bot.published_pick_settlement import same_verified_event
+  self.assertFalse(same_verified_event(p,{**final,"start":"2026-11-12T01:00:00Z"}))
+  self.assertFalse(same_verified_event(p,{**final,"team":"NYK"}))
+  self.assertFalse(same_verified_event(p,{**final,"player_id":"456"}))
+  self.assertFalse(same_verified_event(p,{**final,"source_game_id":"401909961","final_source":"ESPN_FINAL"}))
+  self.assertFalse(same_verified_event(p,{**final,"source_game_id":"wrong"}))
+
  def test_verified_pregame_pending_is_allowed_before_official_final(self):
   r=evaluate(ledger(BASE),finals(),NOW.replace(hour=2))
   self.assertEqual(r["status"],"READY")
@@ -48,6 +61,32 @@ class PublishedCaptureSettlementTests(unittest.TestCase):
   r=evaluate(ledger(p),finals(fin()),NOW)
   self.assertEqual(r["status"],"READY")
   self.assertEqual(r["counts"]["graded"],1)
+ def test_grade_must_match_independent_final_value(self):
+  p={**BASE,"grade":"GRADED","source_game_id":"0022600123",
+     "final_source":"NBA_CDN_FINAL","actual":29,"absolute_error":3.5,
+     "direction_hit":True}
+  r=evaluate(ledger(p),finals(fin()),NOW)
+  self.assertIn("GRADED_FINAL_MISMATCH",r["issues"])
+  self.assertFalse(r["reconciled"])
+ def test_completed_flag_does_not_confuse_pending_with_success(self):
+  r=evaluate(ledger(BASE),finals(),NOW.replace(hour=2))
+  self.assertTrue(r["reconciled"])
+  self.assertFalse(r["complete"])
+ def test_standard_direction_is_checked_against_original_line(self):
+  p={**BASE,"grade":"GRADED","source_game_id":"0022600123",
+     "final_source":"NBA_CDN_FINAL","actual":23,"absolute_error":2.5,
+     "direction_hit":True,"estimated_hit_chance":{"modeled_direction":"More"}}
+  r=evaluate(ledger(p),finals(fin()),NOW)
+  self.assertIn("INCORRECT_STANDARD_LINE_DIRECTION_GRADE",r["issues"])
+ def test_exact_line_push_requires_no_win_or_loss(self):
+  p={**BASE,"line":23,"grade":"GRADED","source_game_id":"0022600123",
+     "final_source":"NBA_CDN_FINAL","actual":23,"absolute_error":2.5,
+     "direction_hit":None,"estimated_hit_chance":{"modeled_direction":"More"}}
+  r=evaluate(ledger(p),finals(fin()),NOW)
+  self.assertTrue(r["reconciled"])
+  p["direction_hit"]=False
+  r=evaluate(ledger(p),finals(fin()),NOW)
+  self.assertIn("PUSH_RECORDED_AS_WIN_OR_LOSS",r["issues"])
  def test_reject_duplicate_saved_pick_versions(self):
   r=evaluate(ledger(BASE,BASE),finals(),NOW.replace(hour=2))
   self.assertIn("INVALID_OR_DUPLICATE_FROZEN_PICK",r["issues"])

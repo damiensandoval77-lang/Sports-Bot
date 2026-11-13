@@ -1,5 +1,6 @@
 import datetime as dt
 import unittest
+from pathlib import Path
 from iphone_bot.pregame_lifecycle_readiness import audit
 
 NOW=dt.datetime(2026,11,9,22,tzinfo=dt.timezone.utc)
@@ -51,6 +52,15 @@ class PregameLifecycleReadinessTests(unittest.TestCase):
     result=audit(SCHEDULE,archive([q]),predictions([predict()]),now=NOW)
     self.assertEqual(result["counts"]["games_with_saved_quotes"],0)
     self.assertEqual(result["status"],"NOT_READY")
+ def test_workflow_rechecks_sources_and_does_not_republish_stale_receipt(self):
+    workflow=(Path(__file__).resolve().parents[2]/'.github/workflows/nba-full-game-lifecycle.yml').read_text()
+    self.assertIn('workflow_run:',workflow)
+    self.assertIn('Publish lightweight PrizePicks site data and per-game coverage',workflow)
+    self.assertIn('Guarded new NBA AI all markets PTS REB AST PRA',workflow)
+    publish=workflow.split('Publish truthful readiness status',1)[1]
+    self.assertLess(publish.index('git reset --hard origin/main'),publish.index('python -m iphone_bot.pregame_lifecycle_readiness'))
+    self.assertNotIn('$RUNNER_TEMP/pregame_lifecycle_readiness.json',publish)
+    self.assertNotIn("steps.preflight.outcome == 'failure'",publish)
  def test_bad_schedule_fails_closed(self):
     s={**SCHEDULE,"coverage_complete":False}
     result=audit(s,archive([]),predictions([]),now=NOW)

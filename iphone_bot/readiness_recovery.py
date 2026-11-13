@@ -8,14 +8,17 @@ import sys
 from pathlib import Path
 
 RECOVERABLE = {
+    "schedule": "nba-schedule.yml",
+    "ai_forecasts": "nba-no-line-daily-projections.yml",
     "prizepicks_lines": "nba-prizepicks-full-slate.yml",
     "pregame_capture": "nba-new-ai-all-markets.yml",
     "public_browser": "nba-prizepicks-site-publish.yml",
     "scoreboard": "independent_scoreboard_refresh.yml",
     "live_player_stats": "independent_nba_player_boxscores.yml",
 }
-NO_COST = ("nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml",
-           "independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml")
+NO_COST = ("nba-schedule.yml", "nba-no-line-daily-projections.yml", "nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml",
+           "independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml",
+           "nba-live-tracker-backup.yml")
 
 def recovery_targets(report):
     if report.get("status") == "READY":
@@ -27,6 +30,12 @@ def recovery_targets(report):
               if isinstance(value, dict) and value.get("required") is True
               and value.get("state") != "READY"}
     out = []
+    # These required inputs previously went red without any recovery route.
+    # Refresh real fixtures at any time; no-line generation is pretip only.
+    if "schedule" in failed:
+        out.append(RECOVERABLE["schedule"])
+    if "ai_forecasts" in failed and report.get("upcoming_games", 0) > 0:
+        out.append(RECOVERABLE["ai_forecasts"])
     if "prizepicks_lines" in failed and report.get("upcoming_games", 0) > 0:
         out.append(RECOVERABLE["prizepicks_lines"])
     if "public_browser" in failed:
@@ -37,6 +46,9 @@ def recovery_targets(report):
         out.append(RECOVERABLE["scoreboard"])
     if "live_player_stats" in failed:
         out.append(RECOVERABLE["live_player_stats"])
+        # An official-feed outage needs an independent verified fallback, not
+        # repeated retries against only the same unavailable provider.
+        out.append("nba-live-tracker-backup.yml")
     # Rerunning a capture audit cannot repair absent frozen projections.
     # Route pretip gaps to model generation and verify in the next audit.
     if "pregame_capture" in failed and report.get("upcoming_games", 0) > 0:

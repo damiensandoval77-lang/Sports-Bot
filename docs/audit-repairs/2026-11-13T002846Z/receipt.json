@@ -1,0 +1,2270 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "started_at": "2026-11-13T00:28:46.041577Z",
+  "evidence_completed_at": "2026-11-13T01:25:28.609300+00:00",
+  "pinned_main_sha": "22017027114276d6350ed4035cdc10072bb7e8b3",
+  "capabilities": {
+    "github_read": true,
+    "github_write_branch_commit_pr_merge": true,
+    "actions_rerun": true,
+    "local_python_node_git_tests": true,
+    "public_site_http": true,
+    "hosted_phone_browser": true,
+    "administration": false,
+    "shell_github_api_auth": false
+  },
+  "counts": {
+    "new_defects": 8,
+    "repaired": 8,
+    "independently_verified": 8,
+    "primary_forecasts_recovered": 0,
+    "verified_live": 7,
+    "dependency_environment_verified": 1
+  },
+  "inventory": {
+    "local_branch_heads": 354,
+    "discoverable_pr_refs": 353,
+    "local_ref_checks": 707,
+    "local_unverified": 0,
+    "api_inventory_current_branches": 354,
+    "api_inventory_historical_extra_tips": 5,
+    "api_comparisons_checked": 113,
+    "api_comparisons_blocked": 246,
+    "api_failure": "HTTP 403 on unauthenticated comparisons; reproduced using fetched Git ancestry in same run",
+    "open_prs_at_start": [
+      307,
+      272,
+      249,
+      135,
+      132,
+      72,
+      3
+    ],
+    "conflicts": [
+      {
+        "pr": 307,
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in docs/dames-picks/dames_take.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/feeds.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/live_direct.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/release.json",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs",
+          "CONFLICT (content): Merge conflict in scripts/e2e_live_site.py"
+        ],
+        "checked_against": "22017027114276d6350ed4035cdc10072bb7e8b3"
+      },
+      {
+        "pr": 272,
+        "merge_tree_exit": 0,
+        "conflicts": [],
+        "checked_against": "22017027114276d6350ed4035cdc10072bb7e8b3"
+      },
+      {
+        "pr": 249,
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/merge_nba_player_boxscore_publish.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs"
+        ],
+        "checked_against": "22017027114276d6350ed4035cdc10072bb7e8b3"
+      },
+      {
+        "pr": 135,
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in docs/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_restored_main_card_coverage.cjs",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_verify_browser_dashboard.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/verify_browser_dashboard.py"
+        ],
+        "checked_against": "22017027114276d6350ed4035cdc10072bb7e8b3"
+      },
+      {
+        "pr": 132,
+        "merge_tree_exit": 0,
+        "conflicts": [],
+        "checked_against": "22017027114276d6350ed4035cdc10072bb7e8b3"
+      },
+      {
+        "pr": 72,
+        "merge_tree_exit": 0,
+        "conflicts": [],
+        "checked_against": "22017027114276d6350ed4035cdc10072bb7e8b3"
+      },
+      {
+        "pr": 3,
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in .github/workflows/nba-schedule.yml"
+        ],
+        "checked_against": "22017027114276d6350ed4035cdc10072bb7e8b3"
+      }
+    ],
+    "exceptions": [
+      "Deleted unreachable branches without a discoverable PR ref cannot be inventoried.",
+      "New repair refs 354-357 and 359 were created after initial fetch and verified individually.",
+      "Local ancestry does not certify all branch code or imply safe mergeability.",
+      "PRs 362,363,365 and concurrent changes arrived after the initial inventory snapshot; checks recorded individually."
+    ],
+    "concurrent_pr_not_modified": {
+      "number": 358,
+      "title": "Prompt stale open tabs to load a coherent app update",
+      "branch": "fix/open-tab-release-update",
+      "state": "open",
+      "reason": "Concurrent separate repair; not overwritten or claimed complete in this cycle."
+    },
+    "concurrent_work": [
+      {
+        "pr": 358,
+        "not_counted_as_our_repair": true
+      },
+      {
+        "pr": 360,
+        "not_counted_as_our_repair": true
+      },
+      {
+        "pr": 361,
+        "not_counted_as_our_repair": true
+      },
+      {
+        "pr": 364,
+        "not_counted_as_our_repair": true
+      }
+    ]
+  },
+  "static_audit": {
+    "counts": {
+      "tracked_files": 1092,
+      "extension:.yml": 174,
+      "extension:": 3,
+      "extension:.md": 21,
+      "extension:.live-tracker": 1,
+      "extension:.csv": 41,
+      "extension:.json": 184,
+      "json_parse_pass": 184,
+      "extension:.py": 549,
+      "python_ast_pass": 549,
+      "extension:.js": 7,
+      "node_syntax_pass": 23,
+      "extension:.html": 3,
+      "extension:.webmanifest": 1,
+      "extension:.gz": 90,
+      "extension:.txt": 2,
+      "extension:.cjs": 16,
+      "workflows_total": 174,
+      "workflow_jobs": 183,
+      "pr_workflows": 101,
+      "manually_dispatchable": 149,
+      "workflow_steps": 1153,
+      "actions_not_sha_pinned": 406,
+      "runtime_test_commands_unguarded_steps": 78,
+      "scheduled_workflows": 83,
+      "continue_on_error_steps": 35,
+      "workflow_push_steps": 97,
+      "workflow_run_triggers": 9
+    },
+    "errors": 0,
+    "warnings": 45,
+    "findings": [
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/assist-v2-research.yml",
+        "detail": "research: Syntax and unit tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/assist-v2-shadow.yml",
+        "detail": "shadow: Verify V2 research safety checks"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/confidence-readiness-research.yml",
+        "detail": "offline-tests: Test confidence audit and existing combined proxy validation"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test published browser coverage notification"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test evidence-based DNP exclusions"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test heartbeat freshness and missing capture"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test frozen model ledger and grade preservation"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dashboard-ui-check.yml",
+        "detail": "dashboard_ui: Verify real AI forecasts render without a sportsbook quote"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dashboard-ui-check.yml",
+        "detail": "dashboard_ui: Offline tests for the independent public deployment probe"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dashboard-ui-check.yml",
+        "detail": "dashboard_ui: Verify fresh authentic PrizePicks line + AI direction fallback"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/end_to_end_readiness.yml",
+        "detail": "verify: Test fail-closed coverage and grading checks (no API requests)"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Run offline snapshot contract tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test point-in-time ID joins and leakage guards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test paired shadow evaluation and leakage safeguards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test prospective model promotion safeguards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Validate expanded opponent, minutes and injury isolation"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test verified official usage, injury and positional pretip gates"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/full-repository-audit.yml",
+        "detail": "static-audit: Test recovery outcome verification"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/live-night-integration.yml",
+        "detail": "check: Validate live source without paid provider access"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-consensus-test.yml",
+        "detail": "test: Verify consensus and paired bookmaker quotas"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-defender-rotation.yml",
+        "detail": "defender-research: Validate leakage controlled individual defender features"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-defense-challenger.yml",
+        "detail": "evaluate: Test prior-game-only defensive features"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-expanded-matchup-holdout.yml",
+        "detail": "test-and-backtest: Run matchup and injury-source isolation regression tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-injury-ai-recovery.yml",
+        "detail": "check-and-recover: Validate injury-to-model version and recovery decisions"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-lagged-matchup-training.yml",
+        "detail": "train-and-evaluate: Guard feature time and missing-data handling"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-main-card-coverage.yml",
+        "detail": "verify: Test live standard PrizePicks card coverage and isolated injury updates"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-new-ai-all-markets.yml",
+        "detail": "preserved-matchup-previews: Test exact archived preview identities and provenance"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-new-ai-all-markets.yml",
+        "detail": "provisional-baseline: Test isolated provisional cohort and safety guards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-new-ai-all-markets.yml",
+        "detail": "short-history-research: Test chronological cohort and fail-closed inference"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-no-line-daily-projections.yml",
+        "detail": "predict: Protect immutable price-free pregame forecasts"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-offensive-involvement-holdout.yml",
+        "detail": "historical-research: Verify temporal and opportunity proxy contracts"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-opportunity-shadow-tests.yml",
+        "detail": "validation: Validate time-safe tracking history and paired assist/rebound models"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-position-defense.yml",
+        "detail": "position-research: Validate DvP feature construction"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-pregame-ai-archive.yml",
+        "detail": "archive: Preserve a lossless dated immutable pregame archive for future research"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-ai-board.yml",
+        "detail": "ai_board: Check genuine, fresh NBA pick'em lines"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-ai-board.yml",
+        "detail": "ai_board: Validate and import current NBA player shooting rates for research only"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-ai-research.yml",
+        "detail": "predict: Prove price-less model output cannot invent picks or confidence"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-rest-setup.yml",
+        "detail": "rest_setup: Backtest sample against strictly earlier confirmed NBA game logs"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-sample-backtest-tests.yml",
+        "detail": "validate: Validate historical join and backtest without any API calls"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-projection-upgrade-research.yml",
+        "detail": "projection_research: Verify pregame isolation, injury dates and calibration"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-real-results.yml",
+        "detail": "grade: Validate paper pick invariants and dashboard JavaScript"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-rebound-shadow-validation.yml",
+        "detail": "verify: Compile and run full REB prospective integrity tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-shooting-efficiency-v1.yml",
+        "detail": "audit: Validate and import current NBA player shooting rates for research only"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-tracking-opportunities-validation.yml",
+        "detail": "validate: Test tracked chances, data cutoffs, snapshot integrity and exact-line grading"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-trained-ai-board.yml",
+        "detail": "trained_board: Validate and import current NBA player shooting rates for research only"
+      }
+    ]
+  },
+  "workflows": {
+    "definitions_checked": 174,
+    "sampled_unique_runs": 1008,
+    "sampled_paths": 79,
+    "definitions_without_sampled_run": 96,
+    "matrix": "workflows.json",
+    "failed_job_evidence": [
+      {
+        "run": 43335822067,
+        "job": 131591597169,
+        "name": "verify",
+        "steps": [
+          "Recompute and publish real combined release gate, even when degraded"
+        ],
+        "evidence": [
+          "2026-11-13T00:17:10.7071234Z \u001b[36;1mecho \"::error::Could not publish merged app release verification\"\u001b[0m",
+          "2026-11-13T00:17:12.3768540Z DAMES_PICKS_RELEASE_GATE {\"checked_at\": \"2026-11-13T00:17:12.375859+00:00\", \"status\": \"DEGRADED\", \"checks_passing\": false, \"release_certified\": false, \"healthy_streak_started_at\": null, \"healthy_streak_hours\": 0.0, \"required_consecutive_hours\": 72, \"blocking_checks\": [\"unified_artifacts\", \"nba_production\", \"nba_capture\"], \"checks\": {\"unified_artifacts\": {\"state\": \"DEGRADED\", \"issues\": [\"UNIFIED_APP_ARTIFACTS_NOT_READY\", \"NBA_OR_NFL_ARTIFACTS_NOT_READY\"]}, \"public_unified_browser\": {\"state\": \"READY\", \"issues\": []}, \"nba_production\": {\"state\": \"DEGRADED\", \"issues\": [\"NBA_PRODUCTION_NOT_READY\", \"NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE\", \"NBA_FAILED_SCOREBOARD\", \"NBA_FAILED_LIVE_PLAYER_STATS\"]}, \"nba_capture\": {\"state\": \"DEGRADED\", \"issues\": [\"PRIMARY_STANDARD_COVERAGE_INCOMPLETE\"]}, \"nba_grading\": {\"state\": \"READY\", \"issues\": []}, \"published_pick_settlement\": {\"state\": \"READY\", \"issues\": []}, \"nfl_grading\": {\"state\": \"READY\", \"issues\": []}}, \"scope\": \"UNIFIED_DAMES_PICKS_NBA_NFL_RELEASE_GATE\", \"note\": \"72h sustained clean artifacts and observed public browser, pretip captures, frozen standard-only grading and current source gates; this does not prove predictive accuracy or zero downtime.\"}",
+          "2026-11-13T00:17:13.7145452Z ##[error]Process completed with exit code 2."
+        ]
+      },
+      {
+        "run": 43337662526,
+        "job": 131598187816,
+        "name": "verify-readiness",
+        "steps": [
+          "Fail visibly when bot is not ready for reliable picks"
+        ],
+        "evidence": [
+          "2026-11-13T00:32:16.3759130Z {\"status\": \"OBSERVED_NBA_LIVE_SCOREBOARD\", \"total_games\": 4, \"generated_at\": \"2026-11-13T00:31:50.841988+00:00\", \"error\": null}",
+          "2026-11-13T00:33:07.3750650Z {\"status\": \"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES\", \"date\": \"2026-11-12\", \"observed_games\": 2, \"errors\": [\"The read operation timed out\", \"BOXSCORE_0022600227_TimeoutError: The read operation timed out\", \"BOXSCORE_0022600228_TimeoutError: The read operation timed out\"]}",
+          "2026-11-13T00:33:07.4318530Z PRODUCTION READINESS: {\"blocked\": [], \"degraded\": [\"current_primary_model_coverage\"], \"passing\": 10, \"required\": 11, \"status\": \"DEGRADED\"}",
+          "2026-11-13T00:33:07.4373940Z ##[error]Process completed with exit code 2.",
+          "2026-11-13T00:33:09.6015234Z \u001b[36;1m  jq -r '.components | to_entries[] | select(.value.required == true and .value.state != \"READY\") | \"- **\" + .key + \"** (\" + .value.state + \"): \" + (.value.reasons | join(\", \"))' \"$report\"\u001b[0m",
+          "2026-11-13T00:33:10.9184721Z   if-no-files-found: error",
+          "2026-11-13T00:33:11.6819130Z (node:2277) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+          "2026-11-13T00:33:12.4674743Z ##[group]Run echo \"::error::NBA live data/projections/line coverage not fully ready. See docs/production_readiness.json\"",
+          "2026-11-13T00:33:12.4675400Z \u001b[36;1mecho \"::error::NBA live data/projections/line coverage not fully ready. See docs/production_readiness.json\"\u001b[0m",
+          "2026-11-13T00:33:12.4790277Z ##[error]NBA live data/projections/line coverage not fully ready. See docs/production_readiness.json",
+          "2026-11-13T00:33:12.4792275Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      {
+        "run": 43335282348,
+        "job": 131589791701,
+        "name": "verify",
+        "steps": [
+          "Audit real committed snapshots (no sportsbook credits)"
+        ],
+        "evidence": [
+          "2026-11-13T00:13:15.4615588Z   \"status\": \"DEGRADED\",",
+          "2026-11-13T00:13:15.4637549Z     \"INCOMPLETE_VERIFIED_SLATE\",",
+          "2026-11-13T00:13:15.4689337Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      {
+        "run": 43325869765,
+        "job": 131558036693,
+        "name": "Verify actual production health and invoke bounded free recovery",
+        "steps": [
+          "Wait for same-run recovery and verify public data independently"
+        ],
+        "evidence": [
+          "2026-11-12T23:13:59.6921839Z       \"reasons\": [",
+          "2026-11-12T23:13:59.6922042Z         \"PRIMARY_FROZEN_MODEL_COVERAGE_INCOMPLETE\"",
+          "2026-11-12T23:13:59.6925430Z       \"reasons\": [",
+          "2026-11-12T23:13:59.6925625Z         \"PRIMARY_FROZEN_MODEL_COVERAGE_INCOMPLETE\"",
+          "2026-11-12T23:13:59.6929148Z       \"reasons\": [",
+          "2026-11-12T23:13:59.6929358Z         \"PRIMARY_FROZEN_MODEL_COVERAGE_INCOMPLETE\"",
+          "2026-11-12T23:13:59.6932716Z       \"reasons\": [",
+          "2026-11-12T23:13:59.6932926Z         \"PRIMARY_FROZEN_MODEL_COVERAGE_INCOMPLETE\"",
+          "2026-11-12T23:13:59.6937433Z     \"reasons\": [",
+          "2026-11-12T23:13:59.6937725Z       \"PRIMARY_FROZEN_MODEL_COVERAGE_INCOMPLETE\"",
+          "2026-11-12T23:13:59.6942988Z ##[error]Process completed with exit code 1.",
+          "2026-11-12T23:14:00.2007811Z (node:2439) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities."
+        ]
+      },
+      {
+        "run": 43336813444,
+        "job": 131594940062,
+        "name": "verify",
+        "steps": [
+          "Publish both-sport integrity report without losing failures",
+          "Fail if either sport or unified entry point is degraded"
+        ],
+        "evidence": [
+          "2026-11-13T00:24:35.4112473Z {\"status\": \"DEGRADED\", \"app\": {\"state\": \"READY\", \"issues\": []}, \"sports\": {\"NBA\": {\"state\": \"DEGRADED\", \"issues\": [\"ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL\", \"CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL\"]}, \"NFL\": {\"state\": \"READY\", \"issues\": []}}}",
+          "2026-11-13T00:24:35.4174335Z ##[error]Process completed with exit code 2.",
+          "2026-11-13T00:24:35.8909656Z {\"status\": \"DEGRADED\", \"app\": {\"state\": \"READY\", \"issues\": []}, \"sports\": {\"NBA\": {\"state\": \"DEGRADED\", \"issues\": [\"ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL\", \"CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL\"]}, \"NFL\": {\"state\": \"READY\", \"issues\": []}}}",
+          "2026-11-13T00:24:37.3867776Z ##[error]Process completed with exit code 2.",
+          "2026-11-13T00:24:37.3913917Z ##[group]Run echo \"::error::Unified Dame's Picks integrity DEGRADED; inspect docs/dames-picks/unified_readiness.json\"",
+          "2026-11-13T00:24:37.3914570Z \u001b[36;1mecho \"::error::Unified Dame's Picks integrity DEGRADED; inspect docs/dames-picks/unified_readiness.json\"\u001b[0m",
+          "2026-11-13T00:24:37.4035549Z ##[error]Unified Dame's Picks integrity DEGRADED; inspect docs/dames-picks/unified_readiness.json",
+          "2026-11-13T00:24:37.4037309Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      {
+        "run": 43331133994,
+        "job": 131575826897,
+        "name": "audit",
+        "steps": [
+          "Check preserved standard NFL grades, source readiness, captures and live data"
+        ],
+        "evidence": [
+          "2026-11-12T23:42:49.4566870Z   \"status\": \"DEGRADED\",",
+          "2026-11-12T23:42:49.4608006Z       \"code\": \"PRIMARY_FROZEN_MODEL_INCOMPLETE\",",
+          "2026-11-12T23:42:49.4656140Z ##[error]Process completed with exit code 1."
+        ]
+      },
+      {
+        "run": 43336735215,
+        "job": 131594681337,
+        "name": "feed-health",
+        "steps": [
+          "Check published feeds for stale or missing game coverage"
+        ],
+        "evidence": [
+          "2026-11-13T00:24:00.6913570Z test_available_games_but_none_checked_is_error (test_health_audit.HealthAuditTests.test_available_games_but_none_checked_is_error) ... ok",
+          "2026-11-13T00:24:00.8876127Z       \"level\": \"error\",",
+          "2026-11-13T00:24:00.8877605Z       \"code\": \"ODDS_STALE\",",
+          "2026-11-13T00:24:00.8883848Z       \"level\": \"error\",",
+          "2026-11-13T00:24:00.8919546Z ##[error]Process completed with exit code 1."
+        ]
+      }
+    ],
+    "per_workflow_api_blocker": "Connector rejects /actions/workflows/<id>/runs; used paginated repository run listing and scheduled-event pages.",
+    "sampling_note": "Initial recent/scheduled pages plus 100 closing runs; not continuous enumeration of every run ever executed. Later successful retries recorded separately so initial failures remain auditable."
+  },
+  "repairs": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "root_cause": "Exact unversioned script-tag assertion rejected deployed cache-busted bundle; missing summaries could pass with zero eligible rows.",
+      "before": "Live integration failed before ESPN checks.",
+      "after": "Versioned script path accepted; exact scores and nonempty player summaries required.",
+      "pr": 354,
+      "commit": "05aba9e1bc9a32ae06b8f51552bce34920c32ff7",
+      "files": [
+        "scripts/integration_live_night.cjs",
+        "tests/test_live_night_integration.cjs",
+        ".github/workflows/live-night-integration.yml"
+      ],
+      "tests": 11,
+      "production_run": 43338563477,
+      "production_job": 131600870563,
+      "verified": true,
+      "live_evidence": {
+        "games": 2,
+        "eligible_frozen_rows": 146,
+        "rows_with_live_totals": 146,
+        "mismatched_scores": 0,
+        "errors": []
+      },
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/354",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/05aba9e1bc9a32ae06b8f51552bce34920c32ff7",
+      "run_urls": {
+        "production_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43338563477"
+      },
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/05aba9e1bc9a32ae06b8f51552bce34920c32ff7/scripts/integration_live_night.cjs",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/05aba9e1bc9a32ae06b8f51552bce34920c32ff7/tests/test_live_night_integration.cjs",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/05aba9e1bc9a32ae06b8f51552bce34920c32ff7/.github/workflows/live-night-integration.yml"
+      ]
+    },
+    {
+      "id": "R2",
+      "severity": "medium",
+      "root_cause": "NBA Live rendered the rolling schedule spanning tonight and tomorrow; counter used a different card population.",
+      "before": "13 Live game cards and count 6 for tonight's four-game slate.",
+      "after": "4 Live game cards and count 4; full schedule retained; fresh overnight games preserved.",
+      "pr": 355,
+      "commit": "92f9533116fe562a1383516b858d2b1fbbd7388a",
+      "files": [
+        "docs/dames-picks/feeds.js",
+        "docs/dames-picks/index.html",
+        "docs/dames-picks/release.json",
+        "tests/test_live_slate.cjs",
+        ".github/workflows/dames-picks-version-e.yml"
+      ],
+      "tests": 110,
+      "verified": true,
+      "public_observed_at": "2026-11-13T00:47:00Z",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/355",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/92f9533116fe562a1383516b858d2b1fbbd7388a",
+      "run_urls": {},
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/92f9533116fe562a1383516b858d2b1fbbd7388a/docs/dames-picks/feeds.js",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/92f9533116fe562a1383516b858d2b1fbbd7388a/docs/dames-picks/index.html",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/92f9533116fe562a1383516b858d2b1fbbd7388a/docs/dames-picks/release.json",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/92f9533116fe562a1383516b858d2b1fbbd7388a/tests/test_live_slate.cjs",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/92f9533116fe562a1383516b858d2b1fbbd7388a/.github/workflows/dames-picks-version-e.yml"
+      ]
+    },
+    {
+      "id": "R3",
+      "severity": "medium",
+      "root_cause": "Unified live attachment and player detail omitted pacing entirely.",
+      "before": "Actual totals and frozen forecasts displayed with no pacing.",
+      "after": "Derived regulation game-clock pace displayed separately; invalid clocks, early game, final clock, overtime and stale data withheld.",
+      "pr": 356,
+      "commit": "21d0881373c4819bb1c3c5451f733741ecfb5e9b",
+      "files": [
+        "docs/dames-picks/feeds.js",
+        "docs/dames-picks/index.html",
+        "tests/test_live_pace_sort.cjs"
+      ],
+      "tests": 115,
+      "verified": true,
+      "public_example": {
+        "player": "Ausar Thompson",
+        "stat": "PTS",
+        "actual": 4,
+        "frozen_projection": 11.4,
+        "frozen_line": 10.5,
+        "pace": 11.2,
+        "game_clock": "6:48 - 2nd",
+        "observed_at": "2026-11-13T00:47:00Z"
+      },
+      "limitation": "NFL formula tested offline; no live NFL game had started during this observation.",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/356",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/21d0881373c4819bb1c3c5451f733741ecfb5e9b",
+      "run_urls": {},
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/docs/dames-picks/feeds.js",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/docs/dames-picks/index.html",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/tests/test_live_pace_sort.cjs"
+      ]
+    },
+    {
+      "id": "R4",
+      "severity": "medium",
+      "root_cause": "ESPN positions were discarded and tracker/detail list lacked team-position ordering.",
+      "before": "NBA positions blank; mixed unsorted player list.",
+      "after": "Exact observed positions retained; team then position then player ordering; missing positions remain unknown.",
+      "pr": 356,
+      "commit": "21d0881373c4819bb1c3c5451f733741ecfb5e9b",
+      "files": [
+        "docs/dames-picks/live_direct.js",
+        "docs/dames-picks/feeds.js",
+        "docs/dames-picks/index.html",
+        "tests/test_live_pace_sort.cjs",
+        "tests/test_nfl_boxscore_display.cjs",
+        "iphone_bot/tests/test_dames_picks_vE.cjs"
+      ],
+      "tests": 115,
+      "verified": true,
+      "public_example": "Ausar Thompson DET G, guards before forwards/centers, DET before WAS.",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/356",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/21d0881373c4819bb1c3c5451f733741ecfb5e9b",
+      "run_urls": {},
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/docs/dames-picks/live_direct.js",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/docs/dames-picks/feeds.js",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/docs/dames-picks/index.html",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/tests/test_live_pace_sort.cjs",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/tests/test_nfl_boxscore_display.cjs",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/21d0881373c4819bb1c3c5451f733741ecfb5e9b/iphone_bot/tests/test_dames_picks_vE.cjs"
+      ]
+    },
+    {
+      "id": "R5",
+      "severity": "medium",
+      "root_cause": "Push E2E ran before native Pages convergence; workflow_run could check an older checkout.",
+      "before": "Run 43339514621 expected r22 but saw r21 at 00:45:40Z.",
+      "after": "Checkout main; bounded six-minute exact release/asset wait precedes phone checks; either failed stage still fails the job.",
+      "pr": 357,
+      "commit": "e435212fab79925e37809fca54899934a0e7bc5c",
+      "files": [
+        ".github/workflows/live-site-e2e.yml",
+        "tests/test_verify_legacy_pages_release.py",
+        "scripts/verify_legacy_pages_release.py"
+      ],
+      "tests": 10,
+      "recovery_run": 43339514621,
+      "recovery_attempt": 2,
+      "recovery_status": "success",
+      "new_workflow_verification": "PASS",
+      "followup_pr": 359,
+      "initial_followup_run": 43340327971,
+      "initial_followup_failure": "FileNotFoundError writing out/deployment-convergence.json in a clean checkout",
+      "followup_commit": "10a8b3d97acc215db5b0f67b11b49900831fcaf3",
+      "repaired_initial_attempt_error": "Receipt parent directory now created and CLI regression passed.",
+      "verified": true,
+      "verification_run": 43340327971,
+      "verification_attempt": 2,
+      "verification_job": 131609014121,
+      "verified_at": "2026-11-13T00:56:57Z",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/357",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/e435212fab79925e37809fca54899934a0e7bc5c",
+      "followup_pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/359",
+      "run_urls": {
+        "recovery_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43339514621",
+        "initial_followup_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43340327971",
+        "verification_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43340327971"
+      },
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/e435212fab79925e37809fca54899934a0e7bc5c/.github/workflows/live-site-e2e.yml",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/e435212fab79925e37809fca54899934a0e7bc5c/tests/test_verify_legacy_pages_release.py",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/e435212fab79925e37809fca54899934a0e7bc5c/scripts/verify_legacy_pages_release.py"
+      ]
+    },
+    {
+      "id": "R6",
+      "severity": "high",
+      "root_cause": "Stale pinned Python dependencies matched 253 advisory records across 21 packages.",
+      "before": "253 advisory matches in 137 pinned dependencies.",
+      "after": "21 vulnerable package pins patched; Streamlit updated for Pillow compatibility; Mistune follow-up patch removes the advisory found during the second scan. CI now runs advisory regression gate.",
+      "pr": 362,
+      "commit": "ec165ba216c6b7d3e8bb604156625c3050f9f6ea",
+      "files": [
+        "requirements.txt",
+        ".github/workflows/pipeline-contracts.yml"
+      ],
+      "tests": {
+        "pinned_packages_scanned": 137,
+        "resolved_packages_scanned": 145,
+        "advisory_matches_after": 0,
+        "contract_commands_passed": 218,
+        "quarantined": 0
+      },
+      "ci_run": 43343125543,
+      "ci_job": 131615982191,
+      "verified": true,
+      "verification_scope": "Dependency environment and full contract CI; GitHub Pages is static and does not run these Python packages. Not a proof of absence of every vulnerability.",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/362",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/ec165ba216c6b7d3e8bb604156625c3050f9f6ea",
+      "run_urls": {
+        "ci_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343125543"
+      },
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/ec165ba216c6b7d3e8bb604156625c3050f9f6ea/requirements.txt",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/ec165ba216c6b7d3e8bb604156625c3050f9f6ea/.github/workflows/pipeline-contracts.yml"
+      ]
+    },
+    {
+      "id": "R7",
+      "severity": "high",
+      "root_cause": "Grading watchdog keyed by team names alone: a future capture included an unrelated old meeting, and one meeting could overwrite another.",
+      "before": "Run 43343045764 falsely included October 24 POR-SAC and reported missing captures.",
+      "after": "Scope and reconciliation include tip timestamp, preserving each repeated meeting and authentic overdue failures.",
+      "pr": 363,
+      "commit": "8792412e1968ce0ef73ba11ce0bf3c7ffad386fd",
+      "files": [
+        "iphone_bot/grading_overdue_watchdog.py",
+        "iphone_bot/tests/test_grading_overdue_watchdog.py"
+      ],
+      "tests": 12,
+      "ci_run": 43343544220,
+      "production_run": 43343866180,
+      "verified": true,
+      "public_output": {
+        "status": "NO_OVERDUE_PENDING",
+        "checked_at": "2026-11-13T01:18:13.244991+00:00",
+        "threshold_minutes": 240,
+        "games": [
+          {
+            "game": "Boston Celtics @ Philadelphia 76ers",
+            "start": "2026-11-11T01:00:00+00:00",
+            "eligible_saved_forecasts": 92,
+            "settled_verified": 92,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Boston Celtics @ Toronto Raptors",
+            "start": "2026-11-12T00:00:00+00:00",
+            "eligible_saved_forecasts": 100,
+            "settled_verified": 100,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Brooklyn Nets @ New Orleans Pelicans",
+            "start": "2026-11-12T01:00:00+00:00",
+            "eligible_saved_forecasts": 96,
+            "settled_verified": 96,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Cleveland Cavaliers @ New York Knicks",
+            "start": "2026-11-12T00:00:00+00:00",
+            "eligible_saved_forecasts": 96,
+            "settled_verified": 96,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Denver Nuggets @ Memphis Grizzlies",
+            "start": "2026-11-12T01:00:00+00:00",
+            "eligible_saved_forecasts": 92,
+            "settled_verified": 92,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Golden State Warriors @ Houston Rockets",
+            "start": "2026-11-12T02:30:00+00:00",
+            "eligible_saved_forecasts": 112,
+            "settled_verified": 112,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "LA Clippers @ Phoenix Suns",
+            "start": "2026-11-11T02:00:00+00:00",
+            "eligible_saved_forecasts": 100,
+            "settled_verified": 100,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Los Angeles Lakers @ Milwaukee Bucks",
+            "start": "2026-11-12T01:00:00+00:00",
+            "eligible_saved_forecasts": 96,
+            "settled_verified": 96,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Miami Heat @ Utah Jazz",
+            "start": "2026-11-11T02:00:00+00:00",
+            "eligible_saved_forecasts": 100,
+            "settled_verified": 100,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Milwaukee Bucks @ New York Knicks",
+            "start": "2026-11-11T00:30:00+00:00",
+            "eligible_saved_forecasts": 88,
+            "settled_verified": 88,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Oklahoma City Thunder @ Portland Trail Blazers",
+            "start": "2026-11-11T04:00:00+00:00",
+            "eligible_saved_forecasts": 96,
+            "settled_verified": 96,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Oklahoma City Thunder @ Portland Trail Blazers",
+            "start": "2026-11-12T03:00:00+00:00",
+            "eligible_saved_forecasts": 100,
+            "settled_verified": 100,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Orlando Magic @ Sacramento Kings",
+            "start": "2026-11-11T03:00:00+00:00",
+            "eligible_saved_forecasts": 92,
+            "settled_verified": 92,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Orlando Magic @ Utah Jazz",
+            "start": "2026-11-12T02:00:00+00:00",
+            "eligible_saved_forecasts": 96,
+            "settled_verified": 96,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "San Antonio Spurs @ Chicago Bulls",
+            "start": "2026-11-12T01:00:00+00:00",
+            "eligible_saved_forecasts": 100,
+            "settled_verified": 100,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          },
+          {
+            "game": "Washington Wizards @ Indiana Pacers",
+            "start": "2026-11-12T00:00:00+00:00",
+            "eligible_saved_forecasts": 96,
+            "settled_verified": 96,
+            "overdue_unresolved": 0,
+            "status": "SETTLED"
+          }
+        ],
+        "issues": [],
+        "schedule_source": "VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
+        "note": "Persistent season schedule preserves games after rolling schedule resets. Overdue age is not proof of completion; only verified final player rows settle grades.",
+        "totals": {
+          "scanned_game_count": 16,
+          "overdue_game_count": 0,
+          "overdue_forecasts": 0,
+          "settled_forecasts": 1552
+        }
+      },
+      "verification_note": "1552 settled forecasts across 16 monitored games; scope differs from earlier 1556 snapshot. No grades modified by this watchdog repair.",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/363",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/8792412e1968ce0ef73ba11ce0bf3c7ffad386fd",
+      "run_urls": {
+        "ci_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343544220",
+        "production_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343866180"
+      },
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/8792412e1968ce0ef73ba11ce0bf3c7ffad386fd/iphone_bot/grading_overdue_watchdog.py",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/8792412e1968ce0ef73ba11ce0bf3c7ffad386fd/iphone_bot/tests/test_grading_overdue_watchdog.py"
+      ]
+    },
+    {
+      "id": "R8",
+      "severity": "high",
+      "root_cause": "NFL overnight cron covered Tuesday UTC only; Thursday-night play continues into Friday UTC. International/holiday fixture windows also missing.",
+      "before": "Public NFL snapshot remained pregame from 00:37 at 01:15 UTC kickoff.",
+      "after": "Patch covers 272 published fixtures from 15 minutes before kickoff to four hours after; free ESPN collection only.",
+      "pr": 365,
+      "files": [
+        ".github/workflows/nfl-live-tracker.yml",
+        "tests/test_nfl_live_schedule.py"
+      ],
+      "tests": 3,
+      "ci_run": 43344102319,
+      "provider_smoke_run": 43344102296,
+      "verified": true,
+      "status": "REPAIRED_AND_VERIFIED_PUBLIC",
+      "commit": "12c3e316dea8e96a9d79780f94c07c6a6f3cec3e",
+      "production_run": 43344344838,
+      "production_job": 131619932225,
+      "public_checked_at": "2026-11-13T01:23:00.894794+00:00",
+      "phone_run": 43343923365,
+      "phone_attempt": 2,
+      "phone_job": 131620207235,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/365",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/12c3e316dea8e96a9d79780f94c07c6a6f3cec3e",
+      "run_urls": {
+        "ci_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43344102319",
+        "provider_smoke_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43344102296",
+        "production_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43344344838",
+        "phone_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343923365"
+      },
+      "source_file_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/12c3e316dea8e96a9d79780f94c07c6a6f3cec3e/.github/workflows/nfl-live-tracker.yml",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/blob/12c3e316dea8e96a9d79780f94c07c6a6f3cec3e/tests/test_nfl_live_schedule.py"
+      ]
+    }
+  ],
+  "deployment": {
+    "expected_release": "dp-nfl-push-evidence-20261113-r26",
+    "served_release": "dp-nfl-push-evidence-20261113-r26",
+    "checks": [
+      {
+        "name": "release_id_matches_main",
+        "pass": true
+      },
+      {
+        "name": "release_manifest_exact_match",
+        "pass": true
+      },
+      {
+        "name": "served_asset_index.html",
+        "pass": true,
+        "expected": "e6be5b1f3db48439abfa4b959e9a3c6b9eb5db93",
+        "actual": "e6be5b1f3db48439abfa4b959e9a3c6b9eb5db93"
+      },
+      {
+        "name": "served_asset_feeds.js",
+        "pass": true,
+        "expected": "7b3bf5aef1fae10ab6e8d01bb2d4259898f74aee",
+        "actual": "7b3bf5aef1fae10ab6e8d01bb2d4259898f74aee"
+      },
+      {
+        "name": "served_asset_live_direct.js",
+        "pass": true,
+        "expected": "da190e8dd58439e581028d52837443a25e71414d",
+        "actual": "da190e8dd58439e581028d52837443a25e71414d"
+      },
+      {
+        "name": "served_asset_dames_take.js",
+        "pass": true,
+        "expected": "5ea0d0c0e09bd5a5fcbc86a71433ef4f1d8df352",
+        "actual": "5ea0d0c0e09bd5a5fcbc86a71433ef4f1d8df352"
+      },
+      {
+        "name": "served_asset_provisional.js",
+        "pass": true,
+        "expected": "84b05dca4b84fb161d5cbc79295e2fb51dc46a20",
+        "actual": "84b05dca4b84fb161d5cbc79295e2fb51dc46a20"
+      },
+      {
+        "name": "served_asset_short_history.js",
+        "pass": true,
+        "expected": "35bda36ebf64c98923761b5abf20c2245ebb5395",
+        "actual": "35bda36ebf64c98923761b5abf20c2245ebb5395"
+      },
+      {
+        "name": "all_pinned_assets_listed",
+        "pass": true
+      }
+    ],
+    "status": "PASS",
+    "attempt": 1,
+    "elapsed_seconds": 29.611,
+    "retry_budget_seconds": 120,
+    "checked_at": "2026-11-13T01:25:07.417785+00:00",
+    "main_sha": "a029974b41b9f6d536b57d677fd94c991220e1eb"
+  },
+  "public_ui": {
+    "url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "release": "dp-live-pace-position-20261113-r22",
+    "manual_browser_verified": [
+      "4 NBA games",
+      "scores advanced without manual refresh",
+      "player actuals",
+      "Over/Under",
+      "Dame's Take directly below projection",
+      "live pace distinct from frozen projection",
+      "observed positions and ordered players",
+      "NFL weekly view and 26-34 results"
+    ],
+    "mobile_workflow": 43339514333,
+    "mobile_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "mobile_report": {
+      "checked_at": "2026-11-13T00:45:53.221189+00:00",
+      "status": "READY",
+      "browser_render_verified": true,
+      "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+      "app_title": "Dame's Picks \u00b7 NBA + NFL",
+      "NBA": {
+        "selected": "NBA",
+        "loaded": true,
+        "rows": 1679,
+        "rendered": 207,
+        "live_expected": 2,
+        "live_missing": 0,
+        "score_missing": 0,
+        "player_missing": 0,
+        "errors": [],
+        "status": "Checked 7:45 PM \u00b7 20 provider standard markets withheld from AI picks \u00b7 2026-11-11 NBA AI-only: 808 graded, 0 pending, 176 exclusions \u00b7 Live values show only fresh verified player snapshots"
+      },
+      "NFL": {
+        "selected": "NFL",
+        "loaded": true,
+        "rows": 1232,
+        "rendered": 71,
+        "live_expected": 0,
+        "live_missing": 0,
+        "score_missing": 0,
+        "player_missing": 0,
+        "errors": [],
+        "status": "Checked 7:45 PM \u00b7 20 provider standard markets withheld from AI picks \u00b7 2026-11-11 NBA AI-only: 808 graded, 0 pending, 176 exclusions \u00b7 Live values show only fresh verified player snapshots"
+      },
+      "reasons": [],
+      "browser_errors": [],
+      "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
+      "browser_direct_probe": {
+        "attempted": true,
+        "received": false,
+        "directGames": 0,
+        "directScores": 0,
+        "directErrors": [],
+        "at": null
+      }
+    },
+    "e2e_rerun": 43339514621,
+    "phone_e2e_artifacts": [
+      {
+        "run": 43339514621,
+        "attempt": 2,
+        "artifact_id": 13999150893,
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43339514621/artifacts/13999150893"
+      },
+      {
+        "run": 43340327971,
+        "attempt": 2,
+        "artifact_id": 13999955732,
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43340327971/artifacts/13999955732"
+      }
+    ],
+    "closing_mobile_report": {
+      "checked_at": "2026-11-13T01:23:00.894794+00:00",
+      "status": "READY",
+      "browser_render_verified": true,
+      "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+      "app_title": "Dame's Picks \u00b7 NBA + NFL",
+      "NBA": {
+        "selected": "NBA",
+        "loaded": true,
+        "rows": 1679,
+        "rendered": 207,
+        "live_expected": 3,
+        "live_missing": 0,
+        "score_missing": 0,
+        "player_missing": 0,
+        "errors": [],
+        "status": "Checked 8:22 PM \u00b7 20 provider standard markets withheld from AI picks \u00b7 2026-11-11 NBA AI-only: 808 graded, 0 pending, 176 exclusions \u00b7 Live values show only fresh verified player snapshots"
+      },
+      "NFL": {
+        "selected": "NFL",
+        "loaded": true,
+        "rows": 1295,
+        "rendered": 71,
+        "live_expected": 1,
+        "live_missing": 0,
+        "score_missing": 0,
+        "player_missing": 0,
+        "errors": [],
+        "status": "Checked 8:22 PM \u00b7 20 provider standard markets withheld from AI picks \u00b7 2026-11-11 NBA AI-only: 808 graded, 0 pending, 176 exclusions \u00b7 Live values show only fresh verified player snapshots"
+      },
+      "reasons": [],
+      "browser_errors": [],
+      "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
+      "browser_direct_probe": {
+        "attempted": true,
+        "received": false,
+        "directGames": 0,
+        "directScores": 0,
+        "directErrors": [],
+        "at": null
+      }
+    },
+    "closing_mobile_run": 43343923365,
+    "closing_mobile_attempt": 2,
+    "closing_mobile_job": 131620207235,
+    "closing_release": "dp-nfl-push-evidence-20261113-r26"
+  },
+  "nba": {
+    "season_baseline_games": 1200,
+    "capture": {
+      "checked_at": "2026-11-13T01:04:53.826344+00:00",
+      "game_date_eastern": "2026-11-12",
+      "status": "CAPTURE_INCOMPLETE",
+      "games": [
+        {
+          "game": "Detroit Pistons @ Washington Wizards",
+          "start": "2026-11-13T00:00:00+00:00",
+          "source_quotes": 76,
+          "standard_source_quotes": 76,
+          "standard_unique_markets": 76,
+          "standard_markets_without_frozen_model": 1,
+          "standard_price_moves_from_original_frozen_line": 1,
+          "standard_player_stat_markets_never_primary_frozen": 0,
+          "missing_primary_with_separate_research_receipt": 1,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 49,
+          "frozen_ai_only": 88,
+          "frozen_line_backed": 75,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 75,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        },
+        {
+          "game": "Toronto Raptors @ Philadelphia 76ers",
+          "start": "2026-11-13T00:00:00+00:00",
+          "source_quotes": 83,
+          "standard_source_quotes": 83,
+          "standard_unique_markets": 83,
+          "standard_markets_without_frozen_model": 3,
+          "standard_price_moves_from_original_frozen_line": 3,
+          "standard_player_stat_markets_never_primary_frozen": 0,
+          "missing_primary_with_separate_research_receipt": 3,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 46,
+          "frozen_ai_only": 96,
+          "frozen_line_backed": 80,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 80,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "start": "2026-11-13T01:00:00+00:00",
+          "source_quotes": 86,
+          "standard_source_quotes": 86,
+          "standard_unique_markets": 86,
+          "standard_markets_without_frozen_model": 6,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 6,
+          "missing_primary_with_separate_research_receipt": 3,
+          "missing_primary_without_any_ai_receipt": 3,
+          "unique_provider_player_stat_markets": 55,
+          "frozen_ai_only": 104,
+          "frozen_line_backed": 85,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 85,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "start": "2026-11-13T02:00:00+00:00",
+          "source_quotes": 82,
+          "standard_source_quotes": 82,
+          "standard_unique_markets": 82,
+          "standard_markets_without_frozen_model": 10,
+          "standard_price_moves_from_original_frozen_line": 1,
+          "standard_player_stat_markets_never_primary_frozen": 9,
+          "missing_primary_with_separate_research_receipt": 3,
+          "missing_primary_without_any_ai_receipt": 7,
+          "unique_provider_player_stat_markets": 55,
+          "frozen_ai_only": 100,
+          "frozen_line_backed": 72,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 72,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        }
+      ],
+      "issues": [
+        "Detroit Pistons @ Washington Wizards: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Toronto Raptors @ Philadelphia 76ers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Dallas Mavericks @ Minnesota Timberwolves: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Charlotte Hornets @ Phoenix Suns: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+      ],
+      "note": "Provider quotes, AI-only forecasts, line-backed frozen predictions and final grades are separate. Missing records never fabricated.",
+      "summary": {
+        "schedule_games": 4,
+        "games_with_saved_source_quotes": 4,
+        "games_with_frozen_ai": 4,
+        "games_with_line_backed_models": 4,
+        "total_quotes": 327,
+        "total_standard_source_quotes": 327,
+        "total_standard_markets_without_frozen_model": 20,
+        "total_price_moves_from_original_frozen_line": 5,
+        "total_player_stat_markets_never_primary_frozen": 15,
+        "total_missing_primary_with_separate_research_receipt": 10,
+        "total_missing_primary_without_any_ai_receipt": 10,
+        "total_ai_only": 388,
+        "total_line_backed": 312,
+        "total_line_backed_graded": 0,
+        "total_ai_only_graded": 0
+      },
+      "current_upcoming_coverage": {
+        "status": "INCOMPLETE",
+        "checked_at": "2026-11-13T01:04:53.826344+00:00",
+        "source_generated_at": "2026-11-13T00:04:19.797992+00:00",
+        "verified_current_offers": 46,
+        "matched_primary_offers": 41,
+        "missing_primary_offers": 5,
+        "games": [
+          {
+            "game": "Charlotte Hornets @ Phoenix Suns",
+            "start": "2026-11-13T02:00:00+00:00",
+            "verified_current_offers": 46,
+            "matched_primary_offers": 41,
+            "missing_primary_offers": 5,
+            "missing": [
+              {
+                "player": "Coby White",
+                "team": "CHA",
+                "stat": "PRA",
+                "line": 20.5
+              },
+              {
+                "player": "Coby White",
+                "team": "CHA",
+                "stat": "PTS",
+                "line": 14.0
+              },
+              {
+                "player": "Coby White",
+                "team": "CHA",
+                "stat": "REB",
+                "line": 2.5
+              },
+              {
+                "player": "Jordan Goodwin",
+                "team": "PHX",
+                "stat": "PTS",
+                "line": 6.5
+              },
+              {
+                "player": "Jordan Goodwin",
+                "team": "PHX",
+                "stat": "PRA",
+                "line": 11.5
+              }
+            ]
+          }
+        ],
+        "issues": [],
+        "scope": "CURRENT_UPCOMING_STANDARD_OFFERS_ONLY",
+        "research_and_provisional_count_as_primary": false
+      }
+    },
+    "missing_primary": {
+      "status": "PRIMARY_STANDARD_CAPTURE_INCOMPLETE",
+      "checked_at": "2026-11-13T01:04:53.642917+00:00",
+      "game_date_eastern": "2026-11-12",
+      "verified_standard_quotes": 327,
+      "original_primary_frozen_quotes": 312,
+      "unmatched_exact_standard_thresholds": 20,
+      "missing_by_cause": {
+        "MOVED_ORIGINAL_STANDARD_THRESHOLD": 5,
+        "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 15
+      },
+      "details": [
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Christian Anderson Jr.",
+          "team": "CHA",
+          "stat": "PTS",
+          "standard_line": 8.5,
+          "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": true,
+          "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Coby White",
+          "team": "CHA",
+          "stat": "AST",
+          "standard_line": 3.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Coby White",
+          "team": "CHA",
+          "stat": "PRA",
+          "standard_line": 20.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Coby White",
+          "team": "CHA",
+          "stat": "PRA",
+          "standard_line": 21.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Coby White",
+          "team": "CHA",
+          "stat": "PTS",
+          "standard_line": 13.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Coby White",
+          "team": "CHA",
+          "stat": "PTS",
+          "standard_line": 14.0,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Coby White",
+          "team": "CHA",
+          "stat": "REB",
+          "standard_line": 2.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Jordan Goodwin",
+          "team": "PHX",
+          "stat": "PRA",
+          "standard_line": 11.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Jordan Goodwin",
+          "team": "PHX",
+          "stat": "PTS",
+          "standard_line": 6.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Charlotte Hornets @ Phoenix Suns",
+          "player": "Jordan Goodwin",
+          "team": "PHX",
+          "stat": "PTS",
+          "standard_line": 7.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "player": "Caleb Martin",
+          "team": "DAL",
+          "stat": "PRA",
+          "standard_line": 7.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "player": "Caleb Martin",
+          "team": "DAL",
+          "stat": "PTS",
+          "standard_line": 3.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "player": "Santi Aldama",
+          "team": "DAL",
+          "stat": "PTS",
+          "standard_line": 6.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "player": "Santi Aldama",
+          "team": "DAL",
+          "stat": "PTS",
+          "standard_line": 7.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "player": "Santi Aldama",
+          "team": "DAL",
+          "stat": "REB",
+          "standard_line": 3.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": false,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "player": "Walter Clayton Jr.",
+          "team": "DAL",
+          "stat": "PRA",
+          "standard_line": 12.5,
+          "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": false,
+          "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+        },
+        {
+          "game": "Detroit Pistons @ Washington Wizards",
+          "player": "AJ Dybantsa",
+          "team": "WAS",
+          "stat": "PTS",
+          "standard_line": 15.5,
+          "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": true,
+          "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+        },
+        {
+          "game": "Toronto Raptors @ Philadelphia 76ers",
+          "player": "Ja'Kobe Walter",
+          "team": "TOR",
+          "stat": "PTS",
+          "standard_line": 11.5,
+          "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": true,
+          "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+        },
+        {
+          "game": "Toronto Raptors @ Philadelphia 76ers",
+          "player": "Jaylen Brown",
+          "team": "PHI",
+          "stat": "PRA",
+          "standard_line": 34.5,
+          "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": true,
+          "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+        },
+        {
+          "game": "Toronto Raptors @ Philadelphia 76ers",
+          "player": "VJ Edgecombe",
+          "team": "PHI",
+          "stat": "PTS",
+          "standard_line": 14.5,
+          "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+          "new_live_model_available": false,
+          "separate_research_receipt": true,
+          "original_primary_frozen_market": true,
+          "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+        }
+      ],
+      "note": "Only original pre-tip validated models count in the primary grade ledger. Line moves and research-only quotes are never promoted, repriced, or retrograded."
+    },
+    "readiness": {
+      "checked_at": "2026-11-13T00:33:07.430520+00:00",
+      "game_date_eastern": "2026-11-12",
+      "status": "DEGRADED",
+      "ready_for_trustworthy_picks": false,
+      "readiness_is_not_model_accuracy": true,
+      "today_schedule_games": 4,
+      "upcoming_games": 2,
+      "started_not_marked_final": 2,
+      "next_tip_at": "2026-11-13T01:00:00+00:00",
+      "components": {
+        "schedule": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 41.0
+        },
+        "season_calendar": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 207.4
+        },
+        "ai_forecasts": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 40.9
+        },
+        "prizepicks_lines": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 28.8
+        },
+        "pregame_capture": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 8.8
+        },
+        "unmodeled_provider_market_coverage": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
+          ],
+          "age_minutes": 8.8
+        },
+        "current_primary_model_coverage": {
+          "state": "DEGRADED",
+          "required": true,
+          "reasons": [
+            "CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL",
+            "CURRENT_STANDARD_MODEL_COVERAGE_INCOMPLETE"
+          ],
+          "age_minutes": 8.8
+        },
+        "published_pick_settlement": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 19.5
+        },
+        "published_pick_cards": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
+            "PUBLISHED_PICK_BOARD_STALE",
+            "NO_PROVIDER_EVENTS_CHECKED",
+            "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
+          ],
+          "age_minutes": 7240.9
+        },
+        "prizepicks_research_cards": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT"
+          ],
+          "age_minutes": 3.1
+        },
+        "public_browser": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 2.4
+        },
+        "scoreboard": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 1.3
+        },
+        "live_player_stats": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 0.8
+        },
+        "nightly_grades": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 6.5
+        }
+      },
+      "blocking_components": [],
+      "degraded_components": [
+        "current_primary_model_coverage"
+      ],
+      "required_checks": 11,
+      "passing_required_checks": 10,
+      "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
+    },
+    "historical_grading": {
+      "status": "AI_PRETIP_FORECASTS_GRADED",
+      "generated_at": "2026-11-13T00:18:02.337300+00:00",
+      "game_date_eastern": "2026-11-11",
+      "recorded_pregame_forecasts": 984,
+      "graded": 808,
+      "verified_dnp_exclusions": 176,
+      "verified_pretip_transfer_exclusions": 0,
+      "accounted_for": 984,
+      "ungraded": 0,
+      "new_grades": 0,
+      "new_verified_dnp_exclusions": 0,
+      "new_verified_pretip_transfer_exclusions": 0,
+      "excluded_verified_transfer_players": [],
+      "by_stat": {
+        "PTS": {
+          "graded": 202,
+          "mae": 4.833,
+          "mean_signed_error": 0.396
+        },
+        "REB": {
+          "graded": 202,
+          "mae": 1.953,
+          "mean_signed_error": 0.673
+        },
+        "AST": {
+          "graded": 202,
+          "mae": 1.285,
+          "mean_signed_error": 0.147
+        },
+        "PRA": {
+          "graded": 202,
+          "mae": 6.227,
+          "mean_signed_error": 1.233
+        }
+      },
+      "ungraded_by_game": {},
+      "excluded_verified_dnp_players": [
+        "Ajay Mitchell",
+        "Bennedict Mathurin",
+        "Braden Smith",
+        "Brandon Williams",
+        "Brooks Barnhizer",
+        "Bryce Hopkins",
+        "Buddy Hield",
+        "Chris Youngblood",
+        "Craig Porter Jr.",
+        "Devin Vassell",
+        "Gary Payton II",
+        "Jaden Bradley",
+        "Jamal Cain",
+        "James Wiseman",
+        "Jaylin Williams",
+        "Jordan Clarkson",
+        "Jose Alvarado",
+        "Josh Dix",
+        "Kobe Brown",
+        "Kris Murray",
+        "Kyle Filipowski",
+        "Lauri Markkanen",
+        "Micah Potter",
+        "Mikel Brown Jr.",
+        "Myles Turner",
+        "Nolan Traore",
+        "Norman Powell",
+        "Olivier-Maxence Prosper",
+        "Paul George",
+        "Quentin Grimes",
+        "Quinten Post",
+        "Ron Harper Jr.",
+        "Sam Merrill",
+        "Scottie Barnes",
+        "Thomas Bryant",
+        "Tony Bradley",
+        "Trayce Jackson-Davis",
+        "Tre Mann",
+        "Trendon Watford",
+        "Trey Murphy III",
+        "Tristan da Silva",
+        "V\u00edt Krej\u010d\u00ed",
+        "Will Riley",
+        "Yang Hansen"
+      ],
+      "ungraded_distinct_player_names_by_game": {},
+      "ungraded_distinct_player_markets": 0,
+      "final_feed": {
+        "pending_matchups": 16,
+        "final_nba_games": 16,
+        "final_schedule_discovered_nba_games": 0,
+        "final_espn_games": 0,
+        "retrieved_player_lines": 389,
+        "errors": [
+          "Secondary ESPN explicit DNP unverified: Direct ESPN final matchup mismatch"
+        ],
+        "source": "NBA live CDN; ESPN completed boxscore fallback",
+        "cached_official_id_candidates": 16,
+        "final_cached_id_nba_games": 16,
+        "secondary_dnp_still_unverified": 38,
+        "secondary_verified_explicit_dnp_players": 25,
+        "status": "FINAL_BOXSCORES_FOUND",
+        "verified_cache_rows": 579,
+        "newly_retrieved_verified_rows": 0,
+        "cache_recovery_used": true
+      },
+      "ungraded_diagnostics": {
+        "by_reason": {},
+        "players": [],
+        "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
+      },
+      "is_betting_hit_rate": false,
+      "note": "Forecast-vs-actual absolute error only; no market line or bet direction. Missing players/DNP are not assigned zero."
+    },
+    "overdue": {
+      "status": "NO_OVERDUE_PENDING",
+      "checked_at": "2026-11-13T01:18:13.244991+00:00",
+      "threshold_minutes": 240,
+      "games": [
+        {
+          "game": "Boston Celtics @ Philadelphia 76ers",
+          "start": "2026-11-11T01:00:00+00:00",
+          "eligible_saved_forecasts": 92,
+          "settled_verified": 92,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Boston Celtics @ Toronto Raptors",
+          "start": "2026-11-12T00:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Brooklyn Nets @ New Orleans Pelicans",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Cleveland Cavaliers @ New York Knicks",
+          "start": "2026-11-12T00:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Denver Nuggets @ Memphis Grizzlies",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 92,
+          "settled_verified": 92,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Golden State Warriors @ Houston Rockets",
+          "start": "2026-11-12T02:30:00+00:00",
+          "eligible_saved_forecasts": 112,
+          "settled_verified": 112,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "LA Clippers @ Phoenix Suns",
+          "start": "2026-11-11T02:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Los Angeles Lakers @ Milwaukee Bucks",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Miami Heat @ Utah Jazz",
+          "start": "2026-11-11T02:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Milwaukee Bucks @ New York Knicks",
+          "start": "2026-11-11T00:30:00+00:00",
+          "eligible_saved_forecasts": 88,
+          "settled_verified": 88,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Oklahoma City Thunder @ Portland Trail Blazers",
+          "start": "2026-11-11T04:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Oklahoma City Thunder @ Portland Trail Blazers",
+          "start": "2026-11-12T03:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Orlando Magic @ Sacramento Kings",
+          "start": "2026-11-11T03:00:00+00:00",
+          "eligible_saved_forecasts": 92,
+          "settled_verified": 92,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Orlando Magic @ Utah Jazz",
+          "start": "2026-11-12T02:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "San Antonio Spurs @ Chicago Bulls",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Washington Wizards @ Indiana Pacers",
+          "start": "2026-11-12T00:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        }
+      ],
+      "issues": [],
+      "schedule_source": "VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
+      "note": "Persistent season schedule preserves games after rolling schedule resets. Overdue age is not proof of completion; only verified final player rows settle grades.",
+      "totals": {
+        "scanned_game_count": 16,
+        "overdue_game_count": 0,
+        "overdue_forecasts": 0,
+        "settled_forecasts": 1552
+      }
+    },
+    "today_grading": "Games in progress/pregame; no final grades fabricated.",
+    "provider_limits": "No new paid or partner API calls in this cycle. Independent Underdog coverage not established.",
+    "live_final_probe": {
+      "checked_at": "2026-11-13T01:15:57.094Z",
+      "site": "https://damiensandoval77-lang.github.io/Sports-Bot",
+      "snapshot_age_min": {
+        "legacy": 11,
+        "independent": 10,
+        "scoreboard": 10
+      },
+      "in_progress": [
+        "Toronto Raptors @ Philadelphia 76ers",
+        "Detroit Pistons @ Washington Wizards",
+        "Dallas Mavericks @ Minnesota Timberwolves"
+      ],
+      "direct_errors": [],
+      "games": [
+        {
+          "game": "Toronto Raptors @ Philadelphia 76ers",
+          "espn_score": "60-60",
+          "production_card_score": "49-47",
+          "fixed_card_score": "60-60",
+          "pending_frozen_picks": 80,
+          "picks_with_player_in_box": 71,
+          "production_live_attached": 80,
+          "fixed_live_attached": 71,
+          "teams_missing_live": []
+        },
+        {
+          "game": "Detroit Pistons @ Washington Wizards",
+          "espn_score": "64-61",
+          "production_card_score": "54-55",
+          "fixed_card_score": "64-61",
+          "pending_frozen_picks": 75,
+          "picks_with_player_in_box": 75,
+          "production_live_attached": 75,
+          "fixed_live_attached": 75,
+          "teams_missing_live": []
+        },
+        {
+          "game": "Dallas Mavericks @ Minnesota Timberwolves",
+          "espn_score": "10-9",
+          "production_card_score": "MISSING",
+          "fixed_card_score": "10-9",
+          "pending_frozen_picks": 85,
+          "picks_with_player_in_box": 55,
+          "production_live_attached": 0,
+          "fixed_live_attached": 55,
+          "teams_missing_live": []
+        }
+      ],
+      "failures": [],
+      "field_note": "production_* compares static snapshots before the deployed browser-direct merge; fixed_* is the active deployed merge behavior. These are diagnostic labels, not two different deployed releases."
+    },
+    "missing_prior_games_note": "Coby White 4 and Santi Aldama 3 prior games; other markets require genuine verified injury/on-off evidence. Research/provisional cohorts remain separate from the primary frozen ledger.",
+    "current_upcoming_missing_primary": 5
+  },
+  "nfl": {
+    "schedule_games": 272,
+    "verified_final_boxscores": 136,
+    "overdue_final_boxscores": 0,
+    "grading": {
+      "alternative_tier_historical_grades_excluded": 379,
+      "archived_pregame_lines": 16021,
+      "expected_final_picks": 456,
+      "final_games_with_frozen_picks": 1,
+      "frozen_final_pick_candidates": 456,
+      "graded_picks": 440,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 0,
+      "pending_reasons": {},
+      "pushes": 1,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 61,
+      "standard_hit_rate": 43.33,
+      "standard_settled": 60,
+      "standard_wins": 26,
+      "void_picks": 16
+    },
+    "live_snapshot": {
+      "season": 2026,
+      "checked_at": "2026-11-13T01:21:55.870511+00:00",
+      "source": "espn_public_scoreboard",
+      "status": "ok",
+      "errors": [],
+      "games": [
+        {
+          "game_id": "2026_10_WAS_NYG",
+          "espn_event_id": "401873052",
+          "status": "in",
+          "status_text": "11:28 - 1st",
+          "period": 1,
+          "clock": "11:28",
+          "away": "WAS",
+          "home": "NYG",
+          "away_score": 0.0,
+          "home_score": 0.0,
+          "players": [
+            {
+              "player": "J.J. McCarthy",
+              "team": "NYG",
+              "espn_id": "4433970",
+              "stats": {
+                "PASS_CMP": 2.0,
+                "PASS_ATT": 4.0,
+                "PASS_YDS": 12.0,
+                "PASS_TD": 0.0,
+                "PASS_INT": 0.0
+              }
+            },
+            {
+              "player": "Cam Skattebo",
+              "team": "NYG",
+              "espn_id": "4696981",
+              "stats": {
+                "RUSH_ATT": 2.0,
+                "RUSH_YDS": 23.0,
+                "RUSH_TD": 0.0,
+                "REC": 1.0,
+                "REC_YDS": 3.0,
+                "REC_TD": 0.0,
+                "TGT": 1.0,
+                "RUSH_REC_YDS": 26.0,
+                "ANY_TD": 0.0
+              }
+            },
+            {
+              "player": "Devin Singletary",
+              "team": "NYG",
+              "espn_id": "4040761",
+              "stats": {
+                "RUSH_ATT": 1.0,
+                "RUSH_YDS": 3.0,
+                "RUSH_TD": 0.0
+              }
+            },
+            {
+              "player": "Isaiah Likely",
+              "team": "NYG",
+              "espn_id": "4361050",
+              "stats": {
+                "REC": 1.0,
+                "REC_YDS": 9.0,
+                "REC_TD": 0.0,
+                "TGT": 2.0
+              }
+            }
+          ],
+          "player_stats_status": "available"
+        }
+      ]
+    },
+    "live_runtime_exception": "Live WAS-NYG now verified in published JSON and hosted phone browser; current snapshot has four observed player records. No claim all NFL props have a recorded live stat. Collector cadence is five minutes, not guaranteed 30-second source updates."
+  },
+  "unresolved": [
+    {
+      "id": "U1",
+      "severity": "high",
+      "problem": "20 unmatched archived NBA standard thresholds: 5 moved thresholds, 15 missing validated primary forecasts. Five current upcoming CHA-PHX offers missing primary model at 01:04 UTC; decrease from nine reflects DAL-MIN starting, not recovered forecasts.",
+      "blocker": "Available primary features/history and verified injury splits do not support these forecasts. Coby White has 4 prior games; Santi Aldama 3, below the five-game primary minimum. Other missing models require supported injury adjustment evidence.",
+      "workaround": "Separate research/provisional cohorts already exist; they were not promoted to primary grades. Prior captures preserved.",
+      "user_action": "None needed for GitHub access. Requires genuine eligible input history or separately validated replacement model; past-tip evidence cannot be invented."
+    },
+    {
+      "id": "U2",
+      "severity": "medium",
+      "problem": "Historical PR conflicts and incomplete branch feature validation.",
+      "blocker": "PR307,249,135,3 conflict with current source. Several target superseded pages or experimental model behavior.",
+      "workaround": "Current per-game retention regression tests passed (10); active deployed provider integration repaired without merging stale page/model changes.",
+      "user_action": "None; not certified as fully repaired or safely mergeable."
+    },
+    {
+      "id": "U3",
+      "severity": "medium",
+      "problem": "406 action references not SHA-pinned in initial workflow snapshot; main unprotected. Dependency pins now patched and scanned.",
+      "blocker": "No repository administration capability; version-reference warning is not a verified exploitable vulnerability.",
+      "user_action": "Repository owner must configure branch protection. Historical and inline workflow dependency environments are not all certified."
+    }
+  ],
+  "other_findings": {
+    "paid_legacy_monitors": "nba-trained-ai-board and phase1_feed_health still reference intentionally stale legacy sportsbook feeds; no paid refresh attempted. These failures were not cleared.",
+    "tomorrow_slate": "9 scheduled games, 900 AI-only forecasts, saved quotes for 2 games / 45 markets; remaining provider offers unavailable in saved source snapshot.",
+    "pages": "Intermediate native Pages cancellations continue during bot publication churn. Exact r22 asset convergence verified; no claim all cancellations eliminated.",
+    "recent_scoreboard_failure": "43335866341 failed upstream at 00:17; current public scoreboard and live browser recovered. No fabricated fallback scores.",
+    "nba_comparisons_failure": {
+      "run_id": 43314762279,
+      "job_id": 131519748560,
+      "cause": "NO_FRESH_PAIRED_PROPS; retained prior board; duplicate paid fetch explicitly refused."
+    },
+    "remaining_runtime_limit": "NFL frontend rereads public JSON every 30 seconds, but underlying collector is scheduled every five minutes and GitHub can delay cron; 30-second NFL observations are not certified."
+  },
+  "prohibited_actions_taken": [],
+  "notification_requested": true,
+  "notification_delivery_confirmed": false,
+  "receipt_path": "docs/audit-repairs/2026-11-13T002846Z/receipt.json",
+  "security": {
+    "receipt": "dependencies.json",
+    "patched_pr": 362,
+    "before_advisory_matches": 253,
+    "after_pinned_advisory_matches": 0,
+    "after_resolved_advisory_matches": 0
+  },
+  "deployment_at_repair": {
+    "expected_release": "dp-live-pace-position-20261113-r22",
+    "served_release": "dp-live-pace-position-20261113-r22",
+    "checks": [
+      {
+        "name": "release_id_matches_main",
+        "pass": true
+      },
+      {
+        "name": "release_manifest_exact_match",
+        "pass": true
+      },
+      {
+        "name": "served_asset_index.html",
+        "pass": true,
+        "expected": "734b20e7d852a0bdbe68ad76f0f60c755da0c41f",
+        "actual": "734b20e7d852a0bdbe68ad76f0f60c755da0c41f"
+      },
+      {
+        "name": "served_asset_feeds.js",
+        "pass": true,
+        "expected": "cecb5bc6f98e9b0a5425ac98c6a84a6f9c1d35b8",
+        "actual": "cecb5bc6f98e9b0a5425ac98c6a84a6f9c1d35b8"
+      },
+      {
+        "name": "served_asset_live_direct.js",
+        "pass": true,
+        "expected": "08ef6b4fd524eecbbc60db232b0a20732d3f9695",
+        "actual": "08ef6b4fd524eecbbc60db232b0a20732d3f9695"
+      },
+      {
+        "name": "served_asset_dames_take.js",
+        "pass": true,
+        "expected": "738116496837b98eabade37619f8ab64aa5b6907",
+        "actual": "738116496837b98eabade37619f8ab64aa5b6907"
+      },
+      {
+        "name": "served_asset_provisional.js",
+        "pass": true,
+        "expected": "5439f3c6c2b45c5b6355e36c590e1c5ce269bd0a",
+        "actual": "5439f3c6c2b45c5b6355e36c590e1c5ce269bd0a"
+      },
+      {
+        "name": "served_asset_short_history.js",
+        "pass": true,
+        "expected": "86ebe919c9e68ee8f4b98d3e544fc75e1265507f",
+        "actual": "86ebe919c9e68ee8f4b98d3e544fc75e1265507f"
+      },
+      {
+        "name": "all_pinned_assets_listed",
+        "pass": true
+      }
+    ],
+    "status": "PASS",
+    "attempt": 2,
+    "elapsed_seconds": 72.362,
+    "retry_budget_seconds": 360,
+    "checked_at": "2026-11-13T00:46:04.644628+00:00",
+    "source_mode": "legacy_branch",
+    "note": "Verifies native Pages deployment; does NOT claim GitHub Actions deploy-pages was run."
+  },
+  "postrepair_verification": [
+    {
+      "run": 43340327971,
+      "attempt": 2,
+      "job": 131609014121,
+      "result": "success",
+      "purpose": "Exact release convergence and real phone E2E"
+    },
+    {
+      "run": 43343125543,
+      "job": 131615982191,
+      "result": "success",
+      "purpose": "Patched dependency installation, clean advisory audit and 218 contract commands"
+    },
+    {
+      "run": 43343866180,
+      "result": "success",
+      "purpose": "Publish corrected grading watchdog output"
+    },
+    {
+      "run": 43344344838,
+      "job": 131619932225,
+      "result": "success",
+      "purpose": "Collect and publish active NFL snapshot"
+    },
+    {
+      "run": 43343923365,
+      "attempt": 2,
+      "job": 131620207235,
+      "result": "success",
+      "purpose": "Phone UI: three active NBA games and one active NFL game; no missing live scores or players"
+    }
+  ],
+  "main_sha_at_closing_verification": "a029974b41b9f6d536b57d677fd94c991220e1eb",
+  "duration_seconds_through_evidence": 3402.568,
+  "receipt_url": "https://github.com/damiensandoval77-lang/Sports-Bot/blob/main/docs/audit-repairs/2026-11-13T002846Z/receipt.json",
+  "repair_execution_ended_at": "2026-11-13T01:25:28.609300+00:00",
+  "publication_note": "Receipt publication/CI occurs after evidence collection; final user response reports publication completion separately."
+}

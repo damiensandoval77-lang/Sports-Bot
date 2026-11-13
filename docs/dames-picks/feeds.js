@@ -13,7 +13,23 @@ const nbaTeamCode=v=>{
 };
 
 const key=p=>[p.sport,p.playerId||norm(p.player),p.gameId||p.game,p.start,p.stat,p.line,p.captured].join("|");
-/* Card display only: one current captured standard line per player/stat/
+/* Rank the same probability shown on pick cards, never an unrelated legacy
+   field. Missing estimates remain last; ties are stable by start then identity. */
+function displayedHitRate(p){
+ const candidate=hitEstimate(p)?.rate??p?.matchupPreview?.rate;
+ return typeof candidate==="number"&&Number.isFinite(candidate)&&candidate>=0&&candidate<=1?candidate:null;
+}
+function sortByHitEstimate(rows){
+ return [...(rows||[])].sort((a,b)=>{
+  const ar=displayedHitRate(a),br=displayedHitRate(b);
+  if(ar===null&&br!==null)return 1;
+  if(br===null&&ar!==null)return -1;
+  if(ar!==br)return br-ar;
+  const at=stamp(a.start),bt=stamp(b.start);
+  return (Number.isFinite(at)?at:Infinity)-(Number.isFinite(bt)?bt:Infinity)||key(a).localeCompare(key(b));
+ });
+}
+/* Card display only: current captured standard lines per player/stat/
    scheduled game. Never rewrite the immutable frozen-price/grade ledger.
    A real pretip model outranks an unmodeled quote-only research receipt;
    among equivalent records, the latest verified pretip capture wins. */
@@ -29,12 +45,15 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
  const validStart=p=>p&&["NBA","NFL"].includes(p.sport)&&
    Number.isFinite(stamp(p.start))&&Number.isFinite(stamp(p.captured))&&
    stamp(p.captured)<stamp(p.start);
- const source=(rows||[]).filter(validStart);
+ const source=(rows||[]).filter(p=>validStart(p)&&
+   (p.sport!=="NFL"||!p.marketTier||p.marketTier==="standard"));
  const dates=[...new Set(source.map(p=>et(stamp(p.start)).date))].sort();
  // On a league off-day the tracker shows the last slate with saved lines,
  // never a mixture of that slate and the next one.
  const selectedDate=dates.includes(today.date)?today.date:
    dates.filter(d=>d<today.date).at(-1)||dates.find(d=>d>today.date)||null;
+ const marketKey=p=>[p.sport,p.gameId||p.game,stamp(p.start),norm(p.player)||p.playerId,
+                    nbaTeamCode(p.team),p.stat].join("|");
  const latest=new Map();
  for(const p of source){
   if(!p||!["NBA","NFL"].includes(p.sport))continue;
@@ -46,8 +65,7 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
       start>=now-10*3600000&&start<=now;
    if(when.date!==selectedDate&&!recentLateGame)continue;
   }
-  const match=[p.sport,p.gameId||p.game,start,norm(p.player)||p.playerId,
-               nbaTeamCode(p.team),p.stat].join("|");
+  const match=marketKey(p);
   const prior=latest.get(match);
   if(!prior){latest.set(match,p);continue;}
   const modeled=p.quoteOnly!==true&&Number.isFinite(n(p.projection));
@@ -57,7 +75,24 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
   if(captured>priorAt||(captured===priorAt&&Number(p.line)<Number(prior.line)))
    latest.set(match,p);
  }
- return [...latest.values()];
+ // A provider can simultaneously designate multiple genuine standard lines.
+ // Preserve distinct thresholds from the SAME newest snapshot, not stale lines
+ // or demon/goblin offers. Completed-game and NBA display behavior is unchanged.
+ const displayed=[];
+ for(const [match,p] of latest){
+  if(p.sport!=="NFL"||stamp(p.start)<=now||p.marketTier!=="standard"){
+   displayed.push(p);continue;
+  }
+  const exact=new Map();
+  for(const candidate of source){
+   if(candidate.marketTier!=="standard"||marketKey(candidate)!==match||
+      stamp(candidate.captured)!==stamp(p.captured)||n(candidate.line)===null)continue;
+   const line=n(candidate.line);
+   if(!exact.has(line))exact.set(line,candidate);
+  }
+  displayed.push(...[...exact.values()].sort((a,b)=>a.line-b.line));
+ }
+ return displayed;
 }
 function csv(text){
  let cells=[],row=[],field="",quoted=false;
@@ -93,13 +128,11 @@ function nba(ledger,form){
    sport:"NBA",playerId:p.player_id,player:p.player,team:p.team,opponent:p.opponent,
    position:"",game:p.game,gameId:p.game,start:p.start,stat:p.stat,source:"PrizePicks",
    line:n(p.line),projection:n(p.projection),direction:c.modeled_direction==="More"?"MORE":"LESS",
-   chance:!p.history_baseline_only&&!p.injury_uncertainty_unresolved&&!p.opponent_context_unavailable&&!p.single_source_history&&prob>=0&&prob<=1?prob:null,
-   chanceSource:p.history_baseline_only?"Limited completed-game history: provisional projection only, no validated hit probability":p.single_source_history?"Full box-score stats from one public source, not independently confirmed; hit confidence withheld":p.opponent_context_unavailable?"Baseline projection only; opponent defensive sample unavailable; hit confidence withheld":p.injury_uncertainty_unresolved?"Baseline projection only; injury impact unresolved; hit confidence withheld":"Frozen new-AI model vs original standard line; residual uncertainty; uncalibrated",
+   chance:!p.injury_uncertainty_unresolved&&!p.opponent_context_unavailable&&!p.single_source_history&&prob>=0&&prob<=1?prob:null,
+   chanceSource:p.single_source_history?"Full box-score stats from one public source, not independently confirmed; hit confidence withheld":p.opponent_context_unavailable?"Baseline projection only; opponent defensive sample unavailable; hit confidence withheld":p.injury_uncertainty_unresolved?"Baseline projection only; injury impact unresolved; hit confidence withheld":"Frozen new-AI model vs original standard line; residual uncertainty; uncalibrated",
    injuryUncertainty:p.injury_uncertainty_unresolved===true,
    opponentContextUnavailable:p.opponent_context_unavailable===true,
    singleSourceHistory:p.single_source_history===true,
-   sparseHistoryBaseline:p.history_baseline_only===true,
-   sparseHistoryGames:p.sparse_history_games||null,
    chanceMethod:c.method,chanceDraws:c.draws,chanceCalibrated:c.calibrated,
    opponentAwareVerified:false,
    matchupEstimate:p.matchup_hit_estimate||null,
@@ -111,7 +144,53 @@ function nba(ledger,form){
   };
  });
 }
-function nfl(chunks,schedule){
+/* Fresh NFL evidence is exported with its original pregame probability. Old
+   rows without evidence remain unavailable; never infer it from hit history. */
+function nflMatchupPreview(p,start){
+ let x;try{x=JSON.parse(p.matchup_evidence||"null")}catch(_){return null}
+ if(!x||!["NFL_OPPONENT_FEATURES_V1","NFL_OPPONENT_FEATURES_V2"].includes(x.schema)||
+    !["NFL_MATCHUP_RESIDUAL_V1","NFL_MATCHUP_POISSON_V1","NFL_MATCHUP_RESIDUAL_V2","NFL_MATCHUP_POISSON_V2"].includes(x.method)||
+    x.calibrated!==false||x.research_only!==true||
+    !/^[a-f0-9]{64}$/.test(x.artifact_sha256||""))return null;
+ if(x.schema.endsWith("V2")!==x.method.endsWith("V2")||
+    (x.schema==="NFL_OPPONENT_FEATURES_V1"&&Number.isInteger(n(p.line))))return null;
+ const direction=p.pick==="More"?"MORE":p.pick==="Less"?"LESS":null;
+ for(const k of ["player_id","game_id","team","opponent","target"])
+  if(!p[k]||x[k]!==p[k])return null;
+ const captured=stamp(p.captured_at),observed=stamp(x.observed_at),tip=stamp(start);
+ if(!Number.isFinite(captured)||!Number.isFinite(observed)||!Number.isFinite(tip)||
+    observed>captured||captured>=tip||stamp(x.captured_at)!==captured||
+    x.direction!==direction||n(x.original_line)!==n(p.line))return null;
+ const more=n(x.modeled_more_probability),selected=n(x.selected_probability),original=n(p.p_more);
+ const v2=x.schema==="NFL_OPPONENT_FEATURES_V2",less=v2?n(x.modeled_less_probability):(more===null?null:1-more),push=v2?n(x.modeled_push_probability):0;
+ if(v2&&(less===null||push===null||less<0||less>1||push<0||push>1||
+    Math.abs(more+less+push-1)>1e-8))return null;
+ if(more===null||selected===null||more<0||more>1||selected<0||selected>1||
+    original===null||Math.abs(more-original)>1e-8||
+    Math.abs(selected-(direction==="MORE"?more:less))>1e-8)return null;
+ const features=x.opponent_features,used=x.model_feature_names;
+ if(!features||typeof features!=="object"||Array.isArray(features)||!Array.isArray(used)||
+    !Object.keys(features).length||Object.entries(features).some(([k,v])=>
+      !/^OPP_ALLOW_(REC_YDS|RUSH_YDS|REC|FPTS)_L6$/.test(k)||!used.includes(k)||n(v)===null||n(v)<0))return null;
+ return {rate:selected,asOf:p.captured_at,method:x.method,calibrated:false,
+  sport:"NFL",pushRate:push,playingTimeUncertain:x.eligibility_context?.playing_time_uncertain===true,opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
+}
+function nflRequiresProviderEvent(start){return stamp(start)>=Date.parse("2026-11-13T02:00:00Z")}
+function nflProviderEventVerified(p,start){
+ let x;try{x=JSON.parse(p.matchup_evidence||"null")}catch(_){return false}
+ return !!(x&&typeof x.provider_game_id==="string"&&x.provider_game_id.trim()&&
+   x.provider_team===p.team&&Number.isFinite(stamp(start))&&stamp(x.provider_start_time)===stamp(start));
+}
+function nflTrainingSupportVerified(p){
+ let e;try{e=JSON.parse(p.matchup_evidence||"null")}catch(_){return false}
+ const rules={PASS_YDS:[["QB"],"PASS_ATT_L5",15],PASS_ATT:[["QB"],"PASS_ATT_L5",15],PASS_CMP:[["QB"],"PASS_ATT_L5",15],PASS_TD:[["QB"],"PASS_ATT_L5",15],PASS_INT:[["QB"],"PASS_ATT_L5",15],PASS_RUSH_YDS:[["QB"],"PASS_ATT_L5",15],RUSH_YDS:[["QB","RB","WR"],"RUSH_ATT_L5",2],RUSH_ATT:[["QB","RB","WR"],"RUSH_ATT_L5",2],REC_YDS:[["RB","WR","TE"],"TGT_L5",2],REC:[["RB","WR","TE"],"TGT_L5",2],TGT:[["RB","WR","TE"],"TGT_L5",2],RUSH_REC_YDS:[["RB","WR","TE"],"TOUCH_L5",3],ANY_TD:[["QB","RB","WR","TE"],"TOUCH_L5",3],FPTS:[["QB","RB","WR","TE"],"TOUCH_L5",3]};
+ const rule=rules[p.target],x=e?.training_support;
+ if(!rule||!x||x.verified!==true||x.source!=="NFL_TRAINING_RULES_V1"||x.target!==p.target||x.position!==p.position||x.position_allowed!==true||!rule[0].includes(p.position)||!Number.isInteger(x.history_games)||x.history_games<=0||!Number.isInteger(x.current_season_history_games)||x.current_season_history_games<0)return false;
+ const value=x.rules?.[rule[1]];
+ return !!(value&&typeof value.value==="number"&&Number.isFinite(value.value)&&value.minimum===rule[2]&&value.value>=rule[2]);
+}
+function nflFutureEvidenceVerified(p,start){return nflProviderEventVerified(p,start)&&nflTrainingSupportVerified(p)}
+function nfl(chunks,schedule,now=Date.now()){
  const games=new Map((schedule?.games||[]).map(g=>[g.game_id,g]));
  const found=new Map();
  for(const p of chunks.flat()){
@@ -119,15 +198,19 @@ function nfl(chunks,schedule){
   if(!game||p.odds_type!=="standard"||n(p.line)===null||n(p.proj)===null||
    !p.player||!p.player_id||!p.stat||!["More","Less"].includes(p.pick)||
    !(stamp(p.captured_at)<stamp(game.kickoff_utc)))continue;
+  // Future markets require actual provider event attribution, never a name-only
+  // join to both upcoming weeks. Keep already-started immutable history intact.
+  if(nflRequiresProviderEvent(game.kickoff_utc)&&!nflFutureEvidenceVerified(p,game.kickoff_utc))continue;
   const prob=n(p.p_more),direction=p.pick==="More"?"MORE":"LESS";
   const chance=prob!==null&&prob>=0&&prob<=1?(direction==="MORE"?prob:1-prob):null;
   let logs=[];try{logs=JSON.parse(p.season_game_log||"[]")}catch(_){}
   const obj={
    sport:"NFL",playerId:p.player_id,player:p.player,position:p.position||"",team:p.team,opponent:p.opponent,
    game:p.team+" vs "+p.opponent,gameId:p.game_id,start:game.kickoff_utc,stat:p.stat,target:p.target,
-   source:"PrizePicks",line:n(p.line),projection:n(p.proj),direction,chance,
+   source:"PrizePicks",marketTier:"standard",line:n(p.line),projection:n(p.proj),direction,chance,
    chanceSource:"NFL model estimate; not a calibrated hit probability",
    chanceMethod:"NFL_FROZEN_MODEL",chanceCalibrated:false,
+   matchupPreview:nflMatchupPreview(p,game.kickoff_utc),
    opponentAwareVerified:false,
    captured:p.captured_at,grade:"PENDING",actual:null,hit:null,gradeSource:null,
    form:{season:n(p.season_avg),l5:null,l10:null,games:n(p.season_games),
@@ -154,7 +237,7 @@ function summarize(rows,nflHealth,now=Date.now(),league=null){
   return {games:gameCount,wins:settled!==null&&wins!==null?wins:null,
    losses:settled!==null&&wins!==null?settled-wins:null,
    hitRate:settled>0&&wins!==null?wins/settled:null,
-   graded:settled||0,pending:n(nflHealth?.pending_picks)};
+   graded:settled||0,pending:n(nflHealth?.standard_pending_picks)??rows.filter(r=>r.grade==="PENDING"&&r.frozenSettlementArchive&&r.pendingReason).length};
  }
  const wins=graded.filter(x=>x.hit).length;
  return {games:gameCount,wins:graded.length?wins:null,losses:graded.length?graded.length-wins:null,
@@ -200,6 +283,28 @@ function preferredNBALiveFeed(primary,independent,now=Date.now()){
 }
 
 /* Merge observation feeds by exact game/player/team. No observations alter frozen projections. */
+// A descriptive game-clock extrapolation, separate from the frozen AI forecast.
+function livePace(actual,sport,period,clock){
+ const length=sport==="NBA"?12:sport==="NFL"?15:null;
+ if(!length||!Number.isInteger(period)||period<1||period>4||typeof actual!=="number"||!Number.isFinite(actual)||actual<0)return null;
+ let seconds=null;
+ if(typeof clock==="number"&&Number.isFinite(clock))seconds=clock;
+ else if(typeof clock==="string"){
+  const ordinary=/^(\d{1,2}):(\d{2})(?:\.\d+)?$/.exec(clock);
+  const iso=/^PT(\d+)M([0-9.]+)S$/.exec(clock);
+  if(ordinary&&Number(ordinary[2])<60)seconds=Number(ordinary[1])*60+Number(ordinary[2]);
+  else if(iso&&Number(iso[2])<60)seconds=Number(iso[1])*60+Number(iso[2]);
+ }
+ if(seconds===null||seconds<0||seconds>length*60)return null;
+ const elapsed=period*length-seconds/60;
+ if(elapsed<5||elapsed>=4*length)return null;
+ return {value:actual*(4*length)/elapsed,elapsedMinutes:elapsed,regulationMinutes:4*length};
+}
+function sortByTeamPosition(rows){
+ const order={PG:0,G:0,SG:1,SF:2,F:2,PF:3,C:4,QB:0,RB:1,FB:1,WR:2,TE:3,K:4};
+ return [...(rows||[])].sort((a,b)=>nbaTeamCode(a.team).localeCompare(nbaTeamCode(b.team))||
+  (order[a.position]??99)-(order[b.position]??99)||String(a.player||"").localeCompare(String(b.player||""))||String(a.stat||"").localeCompare(String(b.stat||"")));
+}
 function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
  const nbaFresh=nbaFeed?.status&&Number.isFinite(stamp(nbaFeed.captured_at))&&
   Math.abs(now-stamp(nbaFeed.captured_at))<20*60000;
@@ -211,22 +316,22 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
   now-stamp(g.observed_at||nbaFeed.captured_at)>=-120000&&
   now-stamp(g.observed_at||nbaFeed.captured_at)<20*60000
  ).map(g=>[g.game,g]));
- const nflGames=new Map((nflFresh?nflFeed.games:[]).filter(g=>g.status==="in").map(g=>[g.game_id,g]));
+ const nflGames=new Map((nflFresh?nflFeed.games:[]).filter(g=>g.status==="in"&&Number.isFinite(stamp(g.observed_at||nflFeed.checked_at))&&now-stamp(g.observed_at||nflFeed.checked_at)>=-120000&&now-stamp(g.observed_at||nflFeed.checked_at)<20*60000).map(g=>[g.game_id,g]));
  return rows.map(p=>{
   if(p.sport==="NBA"){
    const game=nbaGames.get(p.game);
    const hits=(game?.player_rows||[]).filter(x=>nbaTeamCode(x.team)===nbaTeamCode(p.team)&&norm(x.player)===norm(p.player));
    if(hits.length!==1)return {...p,live:null};
    const actual=n(hits[0][p.stat]);
-   return {...p,live:actual===null?null:{actual,gameStatus:game.shortDetail||game.displayClock||"In progress",
+   return {...p,position:hits[0].position||p.position,live:actual===null?null:{actual,pace:livePace(actual,"NBA",game.period,game.clock??game.displayClock),gameStatus:game.shortDetail||game.displayClock||"In progress",
     period:game.period,observedAt:game.observed_at||nbaFeed.captured_at,source:game.source_label||"ESPN player snapshot"}};
   }
   const game=nflGames.get(p.gameId);
   const hits=(game?.players||[]).filter(x=>x.team===p.team&&norm(x.player)===norm(p.player));
   if(hits.length!==1||!p.target)return {...p,live:null};
   const actual=n(hits[0].stats?.[p.target]);
-  return {...p,live:actual===null?null:{actual,gameStatus:game.status_text||"In progress",
-   period:game.period,observedAt:nflFeed.checked_at,source:"ESPN player snapshot"}};
+  return {...p,live:actual===null?null:{actual,pace:livePace(actual,"NFL",game.period,game.clock),gameStatus:game.status_text||"In progress",
+   period:game.period,observedAt:game.observed_at||nflFeed.checked_at,source:"ESPN player snapshot"}};
  });
 }
 /* Observed NBA game logs strictly before the pick's Eastern game date.
@@ -389,7 +494,7 @@ function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
   for(const r of records||[]){
    const game=games.get(r.game_id);
    const at=stamp(r.captured_at),kickoff=stamp(game?.kickoff_utc);
-   const valid=game?.status==="final"&&n(game.home_score)!==null&&
+   const valid=game?.status==="final"&&(!nflRequiresProviderEvent(game.kickoff_utc)||nflFutureEvidenceVerified(r,game.kickoff_utc))&&n(game.home_score)!==null&&
       n(game.away_score)!==null&&Number.isFinite(at)&&Number.isFinite(kickoff)&&
       at<kickoff&&r.odds_type==="standard"&&
       !!r.player_id&&!!r.player&&!!r.stat&&n(r.line)!==null&&n(r.proj)!==null&&
@@ -418,7 +523,7 @@ function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
       pendingReason:waiting?r.grade_status:null,
       frozenSettlementArchive:true};
    if(present){
-    existing.set(key,{...present,...extra});
+    existing.set(key,{...present,...extra,matchupPreview:present.matchupPreview||nflMatchupPreview(r,game.kickoff_utc)});
    }else{
     const pct=n(r.model_pct);
     const p={sport:"NFL",playerId:r.player_id,player:r.player,position:r.position||"",
@@ -429,7 +534,7 @@ function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
        chance:pct!==null&&pct>=0&&pct<=100?pct/100:null,
        chanceSource:"Original saved NFL model estimate, not a calibrated hit probability",
        captured:r.captured_at,form:{season:null,l5:null,l10:null,games:null},
-       logs:[],depth:null,modelId:null,component:null,...extra};
+       logs:[],depth:null,modelId:null,component:null,matchupPreview:nflMatchupPreview(r,game.kickoff_utc),...extra};
     existing.set(key,p);
    }
   }
@@ -454,6 +559,14 @@ function attachInjuries(rows,report){
   return {...row,injury:found.length===1?{status:found[0].status,asOf:report.report_issued_at,source:"Official NBA report"}:null};
  });
 }
+// Exact franchise identity only; ambiguous archived matchup labels stay unknown.
+function archivedNBAOpponent(q){
+ const names={ATL:"Atlanta Hawks",BOS:"Boston Celtics",BKN:"Brooklyn Nets",CHA:"Charlotte Hornets",CHI:"Chicago Bulls",CLE:"Cleveland Cavaliers",DAL:"Dallas Mavericks",DEN:"Denver Nuggets",DET:"Detroit Pistons",GSW:"Golden State Warriors",HOU:"Houston Rockets",IND:"Indiana Pacers",LAC:"Los Angeles Clippers",LAL:"Los Angeles Lakers",MEM:"Memphis Grizzlies",MIA:"Miami Heat",MIL:"Milwaukee Bucks",MIN:"Minnesota Timberwolves",NOP:"New Orleans Pelicans",NYK:"New York Knicks",OKC:"Oklahoma City Thunder",ORL:"Orlando Magic",PHI:"Philadelphia 76ers",PHX:"Phoenix Suns",POR:"Portland Trail Blazers",SAC:"Sacramento Kings",SAS:"San Antonio Spurs",TOR:"Toronto Raptors",UTA:"Utah Jazz",WAS:"Washington Wizards"};
+ const parts=String(q.game||"").split(" @ "),code=nbaTeamCode(q.team);
+ if(parts.length!==2)return "Opponent unavailable";
+ const own=parts.map(t=>nbaTeamCode(t)===code||t===names[code]||(code==="LAC"&&t==="LA Clippers"));
+ return own.filter(Boolean).length===1?parts[own[0]?1:0]:"Opponent unavailable";
+}
 /* Preserve every independently observed STANDARD pregame quote even if no model was frozen.
    A quote-only card is explicitly ungraded and NEVER claims a projection or AI side. */
 function includeArchivedStandard(rows,archive){
@@ -472,7 +585,7 @@ function includeArchivedStandard(rows,archive){
   if(!old||stamp(q.observed_at)>stamp(old.observed_at))missing.set(ident,q);
  }
  const additions=[...missing.values()].map(q=>({
-  sport:"NBA",playerId:"",player:q.player,team:q.team,opponent:q.game.split(" @ ")[0]||"",
+  sport:"NBA",playerId:"",player:q.player,team:q.team,opponent:archivedNBAOpponent(q),
   position:"",game:q.game,gameId:q.game,start:q.starts_at,stat:q.stat,source:"PrizePicks archived standard",
   line:n(q.line),projection:null,direction:null,chance:null,chanceSource:"No frozen model forecast was captured for this standard line",
   captured:q.observed_at,grade:"UNMODELED",actual:null,hit:null,gradeSource:null,
@@ -497,7 +610,7 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
    result.push({sport:"NBA",gameId:g.event_id||g.game,game:g.game,observedAt:g.observed_at||nbaFeed.captured_at,
     state:!isCurrent&&state==="in"?"stale":state,sourceState:state,fresh:isCurrent,
     statusText:isCurrent?(g.shortDetail||g.displayClock||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
-    players:players.map(p=>({player:p.player,team:p.team,stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
+    players:players.map(p=>({player:p.player,team:nbaTeamCode(p.team),position:p.position||"",stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
     away:g.game.split(" @ ")[0]||"",home:g.game.split(" @ ")[1]||""});
   }
  }
@@ -512,10 +625,29 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
     sourceState:state,fresh:isCurrent,
     statusText:isCurrent?(g.status_text||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
     away:g.away||"",home:g.home||"",awayScore:n(g.away_score),homeScore:n(g.home_score),
-    players:(Array.isArray(g.players)?g.players:[]).map(p=>({player:p.player,team:p.team,stats:p.stats||{}}))});
+    players:(Array.isArray(g.players)?g.players:[]).map(p=>({player:p.player,team:p.team,position:p.position||"",stats:p.stats||{}}))});
   }
  }
  return result;
+}
+/* Verified final cache is a boxscore, never a forecast or inferred DNP zero.
+   Match Eastern game day and both teams; conflicting source games fail closed. */
+function attachNBAFinals(games,cache){
+ const rows=Array.isArray(cache?.rows)?cache.rows:[];
+ return games.map(g=>{
+  if(g.sport!=="NBA"||g.state!=="final"||!Number.isFinite(stamp(g.start)))return g;
+  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(g.start));
+  const day=["year","month","day"].map(k=>parts.find(p=>p.type===k)?.value).join("-");
+  const away=nbaTeamCode(g.awayCode||g.away),home=nbaTeamCode(g.homeCode||g.home);
+  const candidates=rows.filter(p=>p.date===day&&p.final_confirmed===true&&p.dnp_final_verified!==true&&n(p.MIN)>0&&
+   ["NBA_CDN_FINAL","ESPN_FINAL"].includes(p.source)&&p.source_game_id&&
+   ((nbaTeamCode(p.team)===away&&nbaTeamCode(p.opponent)===home)||(nbaTeamCode(p.team)===home&&nbaTeamCode(p.opponent)===away)));
+  if(new Set(candidates.map(p=>p.source+"|"+p.source_game_id)).size!==1)return g;
+  const counts=new Map();for(const p of candidates){const k=nbaTeamCode(p.team)+"|"+norm(p.player);counts.set(k,(counts.get(k)||0)+1)}
+  const players=candidates.filter(p=>counts.get(nbaTeamCode(p.team)+"|"+norm(p.player))===1&&n(p.MIN)>0&&
+   ["PTS","REB","AST","PRA"].every(k=>n(p[k])!==null&&n(p[k])>=0)).map(p=>({player:p.player,team:nbaTeamCode(p.team),position:"",stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}}));
+  return players.length?{...g,players,finalBoxscore:true,finalSource:candidates[0].source}:g;
+ });
 }
 /* Game catalog is schedule-first, then updated with genuine scoreboard observations.
    Schedule-only data is never promoted to a live score or fabricated final. */
@@ -531,10 +663,10 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
    if(nbaDates.length && !nbaDates.includes(g.date_eastern))continue;
    const id="NBA|"+g.id;
    const existing=result.get(id)||observed.find(x=>x.sport==="NBA"&&x.game===g.game);
-   if(existing)continue;
+   if(existing){existing.start=g.start;existing.awayCode=g.away_abbreviation;existing.homeCode=g.home_abbreviation;continue;}
    const start=stamp(g.start);
    result.set(id,{sport:"NBA",gameId:g.id,game:g.game,away:g.away||"",home:g.home||"",
-    start:g.start,observedAt:null,state:start<=now?"unknown":"scheduled",
+    awayCode:g.away_abbreviation,homeCode:g.home_abbreviation,start:g.start,observedAt:null,state:start<=now?"unknown":"scheduled",
     sourceState:"schedule",fresh:false,source:"Independent NBA schedule",
     statusText:start<=now?"Started or finished · live status unavailable":"Scheduled · no live player data",
     players:[],awayScore:null,homeScore:null});
@@ -586,6 +718,21 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
  }
  return [...result.values()];
 }
+// Live NBA view is one Eastern slate. Keep the full catalog for schedule coverage.
+function currentSlateGames(games,league,now=Date.now()){
+ const selected=(games||[]).filter(g=>g.sport===league);
+ if(league!=="NBA")return selected;
+ const day=value=>{
+  const ms=stamp(value);if(!Number.isFinite(ms))return null;
+  const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(ms));
+  return ["year","month","day"].map(k=>parts.find(p=>p.type===k)?.value).join("-");
+ };
+ const today=day(new Date(now).toISOString());
+ const dates=[...new Set(selected.map(g=>day(g.start)).filter(Boolean))].sort();
+ const chosen=dates.includes(today)?today:dates.filter(d=>d<today).at(-1)||dates[0];
+ return selected.filter(g=>day(g.start)===chosen||(!day(g.start)&&g.sourceState!=="schedule")||
+  (g.state==="in"&&g.fresh));
+}
 function numberOrNull(v){return n(v)}
 function gradingAuditSummary(payload,now=Date.now()){
  if(!payload||!payload.days||typeof payload.days!=="object")return null;
@@ -606,7 +753,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,liveGames,gameCatalog,gradingAuditSummary};
+root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -633,4 +780,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-sparse-recovery-20261111-r16";
+globalThis.__damesRunningAssets["feeds.js"]="dp-bounded-feeds-20261113-r37";

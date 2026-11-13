@@ -7,6 +7,12 @@ from iphone_bot.verify_browser_dashboard import assess,EXPECTED
 NOW=dt.datetime(2026,11,9,19,20,tzinfo=dt.timezone.utc)
 
 class BrowserCardProbeTests(unittest.TestCase):
+    def test_rendered_cards_cannot_mask_browser_exception(self):
+        report=assess(120,["Actual card"],list(EXPECTED),["ReferenceError"],NOW,
+                      {g:1 for g in EXPECTED},standard_lines=120,model_chances=120)
+        self.assertEqual(report["status"],"DEGRADED")
+        self.assertIn("UNHANDLED_JS_ERRORS",report["reasons"])
+
     def test_renders_real_prizepicks_and_ai_metrics_for_full_eight_game_slate(self):
         report=assess(120,["Game card verified"],list(EXPECTED),[],NOW,
                       {g:1 for g in EXPECTED},standard_lines=120,model_chances=30)

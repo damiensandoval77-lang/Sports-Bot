@@ -26,6 +26,51 @@ def cache(n=5):
     return {"version":1,"rows":sum([rows(str(x),f"2026-11-{x+1:02d}") for x in range(n)],[])}
 
 class TeamDefenseTests(unittest.TestCase):
+    def test_short_rotation_requires_precise_official_full_game_minutes(self):
+        for n in (5, 6):
+            c={"version":1,"rows":rows("short","2026-11-01",num=n)}
+            for r in c["rows"]:r["MIN"]=240/n
+            self.assertEqual(len(final_games(c)[0]),1)
+            c["rows"][0]["MIN"]-=1
+            self.assertEqual(final_games(c)[1],{"partial_boxscore":1})
+
+    def test_rounded_or_missing_minutes_do_not_certify_short_rotation(self):
+        for change in ({"MIN":None},{"MIN":40,"source":"ESPN_FINAL"},{"MIN":float("nan")}):
+            c={"version":1,"rows":rows("short","2026-11-01",num=6)}
+            for r in c["rows"]:r["MIN"]=40
+            c["rows"][0].update(change)
+            self.assertEqual(final_games(c)[1],{"partial_boxscore":1})
+
+    def test_verified_dnp_without_totals_does_not_discard_complete_game(self):
+        c=cache(1)
+        c["rows"].append({"source_game_id":"0", "date":"2026-11-01",
+            "player":"DNP player", "team":"BOS", "opponent":"NYK",
+            "source":"NBA_CDN_FINAL", "final_confirmed":True,
+            "dnp_final_verified":True, "dnp_reason":"INACTIVE_INJURY"})
+        games,rejected=final_games(c)
+        self.assertEqual(len(games),1)
+        self.assertEqual(rejected,{})
+        self.assertEqual(games[0]["players_by_team"],{"BOS":8,"NYK":8})
+        self.assertEqual(games[0]["totals"]["BOS"]["PTS"],68)
+
+    def test_dnp_cannot_fill_missing_played_players(self):
+        c={"version":1,"rows":rows("0","2026-11-01",num=6)}
+        for team,opp in [("BOS","NYK"),("NYK","BOS")]:
+            c["rows"].append({"source_game_id":"0", "date":"2026-11-01",
+                "player":team+"DNP", "team":team,"opponent":opp,
+                "source":"NBA_CDN_FINAL", "final_confirmed":True,
+                "dnp_final_verified":True,"dnp_reason":"INACTIVE"})
+        self.assertEqual(final_games(c)[1],{"partial_boxscore":1})
+
+    def test_contradictory_or_unexplained_dnp_invalidates_game(self):
+        for change in [{"PTS":3},{"MIN":12},{"dnp_reason":""}]:
+            c=cache(1)
+            c["rows"].append({"source_game_id":"0","date":"2026-11-01",
+                "player":"DNP", "team":"BOS","opponent":"NYK",
+                "source":"NBA_CDN_FINAL","final_confirmed":True,
+                "dnp_final_verified":True,"dnp_reason":"INACTIVE",**change})
+            self.assertEqual(len(final_games(c)[0]),0)
+
     def test_true_reciprocal_prior_team_totals(self):
         x=build(cache(),schedule(),frozen_at=LOCK)
         self.assertEqual(x["verified_final_games"],5)

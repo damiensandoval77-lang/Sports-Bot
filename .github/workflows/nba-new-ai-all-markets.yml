@@ -5,6 +5,20 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/provisional_short_history.py'
+      - 'iphone_bot/short_history_candidate.py'
+      - 'iphone_bot/short_history_inference.py'
+      - 'iphone_bot/short_history_archive.py'
+      - 'iphone_bot/tests/test_short_history_archive.py'
+      - 'iphone_bot/tests/test_short_history_candidate.py'
+      - 'iphone_bot/tests/test_short_history_inference.py'
+      - 'iphone_bot/tests/test_short_history_workflow.py'
+      - 'research/build_matchup_card_estimates.py'
+      - 'tests/test_matchup_card_estimates.py'
+      - 'iphone_bot/tests/test_provisional_short_history.py'
+      - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_multimarket_workflow_dependencies.py'
       - 'research/pretip_matchup_shadow.py'
       - 'research/publish_matchup_shadow_guard.py'
       - 'research/archive_matchup_forecasts.py'
@@ -23,6 +37,7 @@ on:
       - 'iphone_bot/tests/test_multimarket_forecast_ledger.py'
       - 'iphone_bot/lagged_matchup_training.py'
       - 'iphone_bot/tests/test_live_multimarket_matchup.py'
+      - 'iphone_bot/tests/test_multimarket_source_receipt.py'
       - 'docs/index.html'
       - '.github/workflows/nba-new-ai-all-markets.yml'
   workflow_dispatch:
@@ -34,6 +49,22 @@ on:
       - 'iphone_bot/multimarket_matchup_training.py'
       - 'iphone_bot/multimarket_probability.py'
       - 'iphone_bot/live_multimarket_matchup.py'
+      - 'iphone_bot/provisional_short_history.py'
+      - 'iphone_bot/short_history_candidate.py'
+      - 'iphone_bot/short_history_inference.py'
+      - 'iphone_bot/short_history_archive.py'
+      - 'iphone_bot/tests/test_short_history_archive.py'
+      - 'iphone_bot/tests/test_short_history_candidate.py'
+      - 'iphone_bot/tests/test_short_history_inference.py'
+      - 'iphone_bot/tests/test_short_history_workflow.py'
+      - 'research/build_matchup_card_estimates.py'
+      - 'tests/test_matchup_card_estimates.py'
+      - 'iphone_bot/tests/test_provisional_short_history.py'
+      - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/tests/test_multimarket_workflow_dependencies.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/multimarket_forecast_ledger.py'
       - 'iphone_bot/new_ai_injury_context.py'
       - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - '.github/workflows/nba-new-ai-all-markets.yml'
@@ -43,7 +74,8 @@ permissions:
   contents: write
   actions: write
 concurrency:
-  group: nba-new-ai-all-markets
+  # A PR validation must never displace a queued production recovery.
+  group: nba-new-ai-all-markets-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
 jobs:
   multi-market:
@@ -56,12 +88,19 @@ jobs:
           python-version: '3.11'
       - name: Install existing historical and ML requirements
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Test shared live-history dependency and automatic refresh wiring
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_live_lagged_matchup_sidecar.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_workflow_dependencies.py' -v
       - name: Validate complete player-game CSV opportunity recovery contracts
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_recover_csv_opportunities.py' -v
       - name: Test standard-only quotes and correlated PRA math
         if: github.event_name == 'pull_request'
-        run: python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_source_receipt.py' -v
       - name: Test authenticated NBA news and no unvalidated injury uplift
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
@@ -282,10 +321,177 @@ jobs:
               --archive docs/matchup_shadow_archive.json \
               --ledger docs/lagged_matchup_all_market_ledger.json \
               --output docs/matchup_calibration_report.json
-            git add docs/matchup_shadow_estimates.json docs/matchup_shadow_archive.json docs/matchup_calibration_report.json
+            python -m research.build_matchup_card_estimates \
+              --ledger docs/lagged_matchup_all_market_ledger.json \
+              --archive docs/matchup_shadow_archive.json \
+              --current docs/matchup_shadow_estimates.json \
+              --output docs/matchup_card_estimates.json
+            git add docs/matchup_shadow_estimates.json docs/matchup_shadow_archive.json docs/matchup_calibration_report.json docs/matchup_card_estimates.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish independently sourced research-only position hit estimates'
             if git push origin HEAD:main; then exit 0; fi
           done
           echo "::error::Unable to publish guarded research feed without overwriting newer main"
           exit 1
+
+  preserved-matchup-previews:
+    needs: [multi-market]
+    if: always() && !cancelled()
+    # Rebuild exact frozen-identity previews from retained evidence even when
+    # a new research-source run fails. This never computes probabilities.
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test exact archived preview identities and provenance
+        run: python -m unittest discover -s tests -p 'test_matchup_card_estimates.py' -v
+      - name: Rebuild and publish compact archived preview artifact only
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m research.build_matchup_card_estimates \
+              --ledger docs/lagged_matchup_all_market_ledger.json \
+              --archive docs/matchup_shadow_archive.json \
+              --current docs/matchup_shadow_estimates.json \
+              --output docs/matchup_card_estimates.json
+            git add docs/matchup_card_estimates.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Restore exact frozen-card previews from preserved research evidence'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo '::error::Could not publish compact preserved preview artifact after retries'
+          exit 1
+      - name: Retain compact archived preview artifact
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: preserved-matchup-card-estimates
+          path: docs/matchup_card_estimates.json
+          retention-days: 7
+
+  provisional-baseline:
+    needs: [multi-market]
+    if: always() && !cancelled()
+    # Separate cohort runs after primary settles, even on primary failure.
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public-history reader dependencies (no training)
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Test isolated provisional cohort and safety guards
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_provisional_short_history.py' -v
+      - name: Publish only provisional estimates or an explicit empty blocked artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            rc=0
+            # Refresh after every fetch. Inputs and injury report cannot be
+            # carried across publication races; old estimates are cleared
+            # explicitly if a fresh, verified source is unavailable.
+            if python -m iphone_bot.fetch_current_form && python -m iphone_bot.build_prizepicks_model_input; then
+              python -m iphone_bot.provisional_short_history || rc=$?
+            else
+              rc=1
+              python -m iphone_bot.provisional_short_history --blocked SOURCE_REFRESH_FAILED || true
+            fi
+            git add docs/provisional_short_history.json
+            if git diff --cached --quiet; then exit "$rc"; fi
+            git commit -m 'Publish isolated provisional short-history descriptive estimates'
+            if git push origin HEAD:main; then exit "$rc"; fi
+          done
+          echo '::error::Could not publish isolated provisional artifact after retries'
+          exit 1
+      - name: Retain separate cohort artifact (never primary grades)
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: provisional-short-history
+          path: docs/provisional_short_history.json
+          retention-days: 7
+
+  short-history-research:
+    needs: [multi-market]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned isolated research model dependencies
+        run: pip install numpy==2.3.5 scikit-learn==1.8.0 pandas==2.2.3 pyarrow==26.0.1 joblib==1.5.3 requests PyYAML==6.0.3
+      - name: Test chronological cohort and fail-closed inference
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_short_history_workflow.py' -v
+          python -m unittest iphone_bot.tests.test_push_research_snapshot -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_short_history_candidate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_short_history_inference.py' -v
+          python -m unittest iphone_bot.tests.test_short_history_archive -v
+      - name: Reproduce separately gated research model from pinned historical sources
+        id: train
+        continue-on-error: true
+        run: python -m iphone_bot.short_history_candidate --download --data-dir "$RUNNER_TEMP/short-history-data" --output-dir "$RUNNER_TEMP/short-history-model"
+      - name: Publish only separate research forecasts or explicit blocked output
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRAIN_OUTCOME: ${{ steps.train.outcome }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            rc=0
+            if [ "$TRAIN_OUTCOME" = success ] && python -m iphone_bot.fetch_current_form && python -m iphone_bot.build_prizepicks_model_input; then
+              python -m iphone_bot.short_history_inference --model-dir "$RUNNER_TEMP/short-history-model" --output docs/short_history_model.json || rc=$?
+            else
+              rc=1
+              python -m iphone_bot.short_history_inference --model-dir "$RUNNER_TEMP/short-history-model" --output docs/short_history_model.json --blocked SOURCE_OR_TRAINING_FAILED || true
+            fi
+            python -m iphone_bot.short_history_archive
+            git add docs/short_history_model.json
+            git add docs/short_history_prospective_archive.json
+            if [ "$TRAIN_OUTCOME" = success ]; then
+              cp "$RUNNER_TEMP/short-history-model/validation.json" docs/short_history_model_validation.json
+              git add docs/short_history_model_validation.json
+            fi
+            if git diff --cached --quiet; then exit "$rc"; fi
+            git commit -m 'Publish separately evaluated short-history research projections'
+            if python -m iphone_bot.push_research_snapshot; then exit "$rc"; fi
+          done
+          echo '::error::Could not publish isolated short-history research after retries'
+          exit 1
+      - name: Preserve independent historical validation and current research receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: short-history-research-validation
+          path: |
+            ${{ runner.temp }}/short-history-model/validation.json
+            docs/short_history_model.json
+          retention-days: 21
+      - name: Fail visibly if historical research reproduction failed
+        if: steps.train.outcome != 'success'
+        run: exit 1

@@ -10,6 +10,10 @@ on:
       - 'iphone_bot/projection_explanation.py'
       - 'iphone_bot/tests/test_projection_explanation.py'
       - 'docs/index.html'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
       - 'iphone_bot/fetch_prizepicks.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
       - 'iphone_bot/research_context.py'
@@ -48,32 +52,11 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v
-      - name: Check dashboard JavaScript syntax
+      - name: Verify active unified app truthfulness, pretip eligibility and live updates
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          page=Path("docs/index.html").read_text()
-          script=page.split("<script>",1)[1].split("</script>",1)[0]
-          # Syntax checking alone did not catch the previous runtime ReferenceError.
-          assert "recent-block-grid" in page and "recent-stat-tile" in page, "Recent performance cards missing"
-          details=script.split('const details=node("details","compact-details")',1)[1].split("details.append(summary,body)",1)[0]
-          assert details.index('Recent performance') < details.index('Actual sportsbook quotes') < details.index('Why this projection?'), "Featured recent stats and actual book prices must precede analysis"
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs
+          node --test iphone_bot/tests/test_live_direct.cjs
 
-          assert '["LAST 5",statVal(recentForm,p.stat,"l5")' in script, "L5 average tile missing"
-          assert '["LAST 10",statVal(recentForm,p.stat,"l10")' in script, "L10 average tile missing"
-          assert '["MINUTES",p.minutes_context?.observed_l5' in script, "Minutes average tile missing"
-          assert "mainSide" not in script, "Stale renamed variable would break AI card rendering"
-          assert 'id="perf-market"' in page and 'weight-experiment' in page, "Per-market research controls missing"
-          assert 'Availability & matchup research' in script, "Pregame research disclosure missing"
-          assert 'function reasoningSentences(p,person)' in script, "Legacy data reasoning fallback is missing"
-          assert 'for(const sentence of reasoningSentences(p,recentForm))' in script, "Reasoning does not render unconditionally"
-          assert 'if(opponentAlreadyNamed)return known.slice(0,3)' in script, "Already-published opponent reasoning should be preserved"
-          assert 'opponentNote' in script, "Reasoning must include opponent for older live model feeds"
-
-          assert 'const side=primaryDirection(p)' in script, "Expected direction calculation missing"
-          assert 'shadowSide===side' in script, "Shadow analysis must use the defined direction"
-          Path("/tmp/sports-bot-board.js").write_text(script)
-          PY
-          node --check /tmp/sports-bot-board.js
       - name: Confirm no paid provider calls
         run: echo "All checks used local test fixtures only. No Odds API requests."

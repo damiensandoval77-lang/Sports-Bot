@@ -30,6 +30,28 @@ def number(x):
         raise ValueError("invalid stat total")
     return float(x)
 
+def complete_rotation(rows):
+    """A short official rotation is complete only with precise full-game minutes.
+
+    Some final NBA games use only five or six players. Rounded ESPN minutes
+    cannot prove completeness; require NBA CDN observations totaling 240 team
+    minutes (plus 25 per overtime), with no missing or impossible duration.
+    Score reconciliation and game/player identity remain separate gates.
+    """
+    if len(rows) >= MIN_TEAMS_PLAYED:
+        return True
+    if not 5 <= len(rows) < MIN_TEAMS_PLAYED:
+        return False
+    if any(r.get("source") != "NBA_CDN_FINAL" for r in rows):
+        return False
+    try:
+        minutes = [number(r["MIN"]) for r in rows]
+    except (KeyError, ValueError):
+        return False
+    return (all(0 < value <= 60 for value in minutes)
+            and any(abs(sum(minutes) - (240 + 25 * overtime)) <= .05
+                    for overtime in range(3)))
+
 def final_games(cache):
     if cache.get("version") != 1 or not isinstance(cache.get("rows"), list):
         raise ValueError("invalid official final cache")
@@ -43,6 +65,14 @@ def final_games(cache):
         key = (str(x["source_game_id"]), x["date"])
         if x["team"] == x["opponent"]:
             invalid_game_keys.add(key)
+            continue
+        # Official DNP records deliberately have no performance totals. They
+        # neither invalidate an otherwise complete box nor count as players
+        # who played. A contradictory or unexplained DNP remains a bad game.
+        if x.get("dnp_final_verified") is True:
+            if (not isinstance(x.get("dnp_reason"), str) or not x["dnp_reason"].strip()
+                or any(x.get(stat) not in (None, 0) for stat in (*STATS, "MIN"))):
+                invalid_game_keys.add(key)
             continue
         # A corrupt row invalidates the complete game: silently dropping it
         # would undercount that team's final score despite >=7 other rows.
@@ -67,7 +97,7 @@ def final_games(cache):
             continue
         a,b = teams
         by_team = {t:[x for x in rows if x["team"] == t] for t in teams}
-        if any(len(by_team[t]) < MIN_TEAMS_PLAYED for t in teams):
+        if any(not complete_rotation(by_team[t]) for t in teams):
             rejected["partial_boxscore"] += 1
             continue
         if any(any(x["opponent"] != (b if t == a else a) for x in by_team[t]) for t in teams):

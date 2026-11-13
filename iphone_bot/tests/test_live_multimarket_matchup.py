@@ -3,37 +3,12 @@ import unittest
 import numpy as np
 try:
     from iphone_bot.multimarket_probability import simulate
-    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics,sparse_observed_baseline
+    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
 except ImportError:
     from multimarket_probability import simulate
-    from live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics,sparse_observed_baseline
+    from live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
 
 class MultimarketTests(unittest.TestCase):
-    def test_sparse_baseline_uses_observed_prior_box_games_not_same_day_result(self):
-        rows=[{"team":"SAS","date":f"2026-11-{i:02d}",
-               "PTS":10+i,"REB":4+i,"AST":3+i,"MIN":30.}
-              for i in (1,2,3,4)]
-        result=sparse_observed_baseline(rows,"SAS","CHI","2026-11-12",{})
-        self.assertIsNotNone(result)
-        projection,flags=result
-        self.assertTrue(flags["opponent_context_unavailable"])
-        self.assertEqual(flags["sparse_history_games"],4)
-        self.assertEqual(flags["prediction_quality"],
-            "SPARSE_OBSERVED_HISTORY_BASELINE_NO_VALIDATED_HIT_RATE")
-        future={**rows[-1],"date":"2026-11-12","PTS":99.}
-        again=sparse_observed_baseline(rows+[future],"SAS","CHI","2026-11-12",{})
-        self.assertEqual(projection,again[0])
-
-    def test_sparse_baseline_rejects_unobserved_less_than_three_games(self):
-        sample=[{"team":"SAS","date":"2026-11-01",
-                 "PTS":20,"REB":6,"AST":3,"MIN":30}]
-        self.assertIsNone(sparse_observed_baseline(sample,"SAS","CHI","2026-11-12",{}))
-        self.assertIsNone(sparse_observed_baseline(sample*3,"SAS","CHI","2026-11-12",{}))
-        self.assertIsNone(sparse_observed_baseline(
-            sample+[{**sample[0],"date":"2026-11-02","REB":None},
-                    {**sample[0],"date":"2026-11-03","REB":None}],
-            "SAS","CHI","2026-11-12",{}))
-
     def test_game_diagnostics_explain_withheld_quotes_without_inventing_picks(self):
         game="Brooklyn Nets @ New Orleans Pelicans"
         offer={"game":game,"player":"Observed Player","stat":"Points","direction":"More"}
@@ -84,6 +59,52 @@ class MultimarketTests(unittest.TestCase):
                          {"Points","Rebounds","Assists","Points Rebounds Assists"})
         self.assertTrue(all(r["line"]==20.5 for r in selected))
         self.assertEqual(excluded["NON_STANDARD_POINTS_TIER"],16)
+
+    def test_verified_christian_anderson_alias_resolves_exact_current_identity(self):
+        identity,reason=resolve_current_roster_identity(
+            "Christian Anderson Jr.","Charlotte Hornets @ Phoenix Suns",
+            {"christiananderson":{("1643515","CHA")}}, {"1643515":"CHA"})
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("1643515","CHA","PHX"))
+
+    def test_verified_alias_does_not_invent_missing_roster_or_override_id_team(self):
+        game="Charlotte Hornets @ Phoenix Suns"
+        for roster,latest in [
+            ({},{"1643515":"CHA"}),
+            ({"christiananderson":{("999","CHA")}},{"999":"CHA"}),
+            ({"christianandersonjr":{("999","CHA")}},{"999":"CHA"}),
+            ({"christiananderson":{("1643515","PHX")}},{"1643515":"PHX"}),
+            ({"christiananderson":{("1643515","CHA")}},{"1643515":"DAL"}),
+        ]:
+            with self.subTest(roster=roster,latest=latest):
+                identity,reason=resolve_current_roster_identity(
+                    "Christian Anderson Jr.",game,roster,latest)
+                self.assertIsNone(identity)
+                self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+        identity,reason=resolve_current_roster_identity(
+            "Christian Anderson Jr.","Dallas Mavericks @ Minnesota Timberwolves",
+            {"christiananderson":{("1643515","CHA")}},{"1643515":"CHA"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+
+    def test_verified_alias_fails_closed_on_canonical_or_exact_name_collision(self):
+        for roster in [
+            {"christiananderson":{("1643515","CHA"),("999","CHA")}},
+            {"christiananderson":{("1643515","CHA")},
+             "christianandersonjr":{("999","PHX")}},
+        ]:
+            identity,reason=resolve_current_roster_identity(
+                "Christian Anderson Jr.","Charlotte Hornets @ Phoenix Suns",
+                roster,{"1643515":"CHA","999":"PHX"})
+            self.assertIsNone(identity)
+            self.assertEqual(reason,"PLAYER_IDENTITY_NOT_UNIQUE")
+
+    def test_unverified_jr_suffix_is_not_generically_removed(self):
+        identity,reason=resolve_current_roster_identity(
+            "Example Jr.","Charlotte Hornets @ Phoenix Suns",
+            {"example":{("123","CHA")}},{"123":"CHA"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
 
     def test_accented_surname_matches_same_verified_player_id(self):
         roster={"alperensengun":{("1630578","HOU")}}

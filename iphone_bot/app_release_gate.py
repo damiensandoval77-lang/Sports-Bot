@@ -60,12 +60,15 @@ def evaluate(inputs, now=None, previous=None):
             errors.append("NBA_FAILED_"+name.upper())
 
     capture,errors=check("nba_capture",inputs.get("nba_capture"),70)
-    # Exact raw-quote gaps remain in the source audit. They are NOT published
-    # recommendations. Only verified saved picks count as release-gradeable.
+    # Valid saved picks remain usable, but incomplete standard coverage cannot
+    # establish the full-app release certification requested by the owner.
     status=capture.get("status")
     if status not in ("CAPTURE_VERIFIED","CAPTURE_INCOMPLETE"):
         errors.append("PRETIP_CAPTURE_SOURCE_INVALID")
     summary=capture.get("summary") if isinstance(capture.get("summary"),dict) else {}
+    missing=summary.get("total_standard_markets_without_frozen_model")
+    if type(missing) is not int or missing != 0:
+        errors.append("PRIMARY_STANDARD_COVERAGE_INCOMPLETE")
     if status=="CAPTURE_INCOMPLETE":
         issues=capture.get("issues")
         if (not isinstance(issues,list) or not issues or any(
@@ -111,7 +114,10 @@ def evaluate(inputs, now=None, previous=None):
         errors.append("NFL_STANDARD_GRADE_SCOPE_INVALID")
     if not isinstance(nfl.get("standard_settled"),int) or nfl["standard_settled"]<1:
         errors.append("NFL_STANDARD_SETTLEMENT_NOT_PRESENT")
-    if nfl.get("pending_picks",0)>0:
+    pending=nfl.get("standard_pending_picks")
+    if type(pending) is not int or pending<0:
+        errors.append("NFL_STANDARD_PENDING_COUNT_INVALID")
+    elif pending>0:
         errors.append("NFL_PENDING_GRADES_UNRESOLVED")
 
     failing=[key for key,issues in reasons.items() if issues]

@@ -6,6 +6,7 @@ projections or player availability. Empty pregame slates aren't live stats.
 """
 import datetime as dt
 import json
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -20,77 +21,90 @@ BOX_BASES = (
     "https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_",
 )
 
+SOURCE_ERRORS = (OSError, ValueError, TypeError, KeyError, AttributeError)
+
+
+def collect_game_boxscore(raw, parsed, fetch, now):
+    gid = str(raw.get("gameId") or "")
+    if not gid.isdigit() or len(gid) != 10:
+        return None, ["INVALID_GAME_ID"]
+
+    failures = []
+    for prefix in BOX_BASES:
+        try:
+            box = fetch(prefix + gid + ".json")["game"]
+            if str(box.get("gameId")) != gid:
+                raise ValueError("Boxscore/game id mismatch")
+            rows = []
+            for kind in ("awayTeam", "homeTeam"):
+                team = box[kind]
+                tricode = team["teamTricode"]
+                if not tricode or tricode != raw[kind]["teamTricode"]:
+                    raise ValueError("Boxscore team mismatch")
+                team_rows = []
+                for player in team.get("players") or []:
+                    stats = player.get("statistics") or {}
+                    pid = player.get("personId")
+                    if not pid or not player.get("name"):
+                        continue
+                    vals = (stats.get("points"), stats.get("reboundsTotal"), stats.get("assists"))
+                    if any(type(n) not in (int, float) or n < 0 for n in vals):
+                        continue
+                    pts, reb, ast = vals
+                    team_rows.append({"player": player["name"], "player_id": str(pid), "team": tricode,
+                                      "PTS": pts, "REB": reb, "AST": ast, "PRA": pts + reb + ast})
+                if not team_rows:
+                    raise ValueError("Empty team player boxscore")
+                rows.extend(team_rows)
+            return {"game": parsed["game"], "id": parsed["id"],
+                    "state": parsed["game_state"], "period": parsed.get("period"),
+                    "shortDetail": raw.get("gameStatusText"), "clock": raw.get("gameClock"),
+                    "observed_at": now.isoformat(), "player_rows": rows}, failures
+        except SOURCE_ERRORS as err:
+            failures.append(f"BOXSCORE_{gid}_{type(err).__name__}: {err}")
+    return None, failures
+
+
 def collect_boxscores(day, fetch=request_json, now=None, max_games=15):
     now = now or dt.datetime.now(dt.timezone.utc)
     if not (1 <= max_games <= 15):
         raise ValueError("max_games must be between 1 and 15")
     failures = []
-    scoreboard = None
     for url in NBA_LIVE_URLS:
         try:
-            result = fetch(url)
-            scoreboard = result["scoreboard"]
-            if not isinstance(scoreboard.get("games"), list):
+            scoreboard = fetch(url)["scoreboard"]
+            raw_games = scoreboard["games"]
+            if not isinstance(raw_games, list):
                 raise ValueError("Malformed liveData scoreboard")
+            if scoreboard.get("gameDate") and scoreboard["gameDate"] != day.isoformat():
+                raise ValueError("NBA liveData scoreboard has not rolled to the requested Eastern date")
             break
-        except (OSError, ValueError, TypeError, KeyError, TimeoutError) as err:
-            failures.append(type(err).__name__)
-    if scoreboard is None:
-        raise RuntimeError("NBA liveData scoreboard unavailable: " + ",".join(failures))
-    if scoreboard.get("gameDate") and scoreboard["gameDate"] != day.isoformat():
-        raise ValueError("NBA liveData scoreboard has not rolled to the requested Eastern date")
-    games = []
-    for raw in scoreboard["games"]:
+        except SOURCE_ERRORS as err:
+            failures.append(str(err))
+    else:
+        raise ValueError("NBA liveData scoreboard unavailable: " + "; ".join(failures))
+
+    active = []
+    for raw in raw_games:
         parsed = parse_nba_game(raw, {day})
-        if not parsed or parsed["game_state"] not in ("in", "post"):
-            continue
-        if len(games) >= max_games:
-            raise ValueError("Active game limit exceeded; cannot claim full coverage")
-        gid = str(raw.get("gameId") or "")
-        if not gid.isdigit() or len(gid) != 10:
-            failures.append("INVALID_GAME_ID")
-            continue
-        box = None
-        for prefix in BOX_BASES:
-            try:
-                response = fetch(prefix + gid + ".json")
-                box = response["game"]
-                if str(box.get("gameId")) != gid:
-                    raise ValueError("Boxscore/game id mismatch")
-                break
-            except (OSError, ValueError, TypeError, KeyError, TimeoutError) as err:
-                failures.append("BOXSCORE_" + type(err).__name__)
-        if box is None:
-            continue
-        rows = []
-        for kind in ("awayTeam", "homeTeam"):
-            team = box.get(kind) or {}
-            tricode = team.get("teamTricode")
-            if tricode != raw.get(kind, {}).get("teamTricode"):
-                raise ValueError("Boxscore team mismatch")
-            for player in team.get("players") or []:
-                stats = player.get("statistics") or {}
-                pid = player.get("personId")
-                if not pid or not player.get("name"):
-                    continue
-                vals = (stats.get("points"), stats.get("reboundsTotal"), stats.get("assists"))
-                if any(type(n) not in (int, float) or n < 0 for n in vals):
-                    continue
-                pts, reb, ast = vals
-                rows.append({"player": player["name"], "player_id": str(pid), "team": tricode,
-                             "PTS": pts, "REB": reb, "AST": ast, "PRA": pts + reb + ast})
-        if not rows:
-            failures.append("EMPTY_PLAYER_BOXSCORE")
-            continue
-        games.append({"game": parsed["game"], "id": parsed["id"],
-                      "state": parsed["game_state"], "period": parsed.get("period"),
-                      "shortDetail": raw.get("gameStatusText"),
-                      "clock": raw.get("gameClock"),
-                      "observed_at": now.isoformat(), "player_rows": rows})
-    count_active = sum(
-        1 for raw in scoreboard["games"]
-        if (parsed := parse_nba_game(raw, {day}))
-        and parsed["game_state"] in ("in", "post"))
+        if parsed and parsed["game_state"] in ("in", "post"):
+            active.append((raw, parsed))
+    count_active = len(active)
+    if count_active > max_games:
+        raise ValueError("Active game limit exceeded; cannot claim full coverage")
+
+    games = []
+    if active:
+        # Bound concurrent requests so one stalled fixture does not consume
+        # the workflow deadline or suppress independent verified boxes.
+        with ThreadPoolExecutor(max_workers=min(5, count_active)) as pool:
+            pending = [pool.submit(collect_game_boxscore, raw, parsed, fetch, now)
+                       for raw, parsed in active]
+            for future in pending:
+                observation, errors = future.result()
+                failures.extend(errors)
+                if observation is not None:
+                    games.append(observation)
     complete = len(games) == count_active
     return {"status": ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"
                        if complete else "PARTIAL_NBA_PLAYER_BOXSCORES"),

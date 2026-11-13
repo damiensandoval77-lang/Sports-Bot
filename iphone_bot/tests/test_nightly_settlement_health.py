@@ -73,3 +73,28 @@ class NightlySettlementHealthTests(unittest.TestCase):
 
 if __name__=="__main__":
     unittest.main()
+
+class NightlyReportRolloverTests(unittest.TestCase):
+    def test_midnight_reads_matching_today_report_without_changing_evidence(self):
+        from iphone_bot.nightly_settlement_health import select_nightly_ai_report
+        now=dt.datetime(2026,11,13,5,2,tzinfo=UTC)
+        reports={
+            "docs/ai_forecast_grade_status.json":{"game_date_eastern":"2026-11-11","graded":808},
+            "docs/ai_forecast_today_grade_status.json":{"game_date_eastern":"2026-11-12","graded":332,"ungraded":0,"verified_dnp_excluded":56}}
+        selected=select_nightly_ai_report(now,lambda p:reports.get(p,{}))
+        self.assertIs(selected,reports["docs/ai_forecast_today_grade_status.json"])
+        self.assertEqual(selected["graded"],332)
+
+    def test_other_dates_cannot_fill_missing_nightly_evidence(self):
+        from iphone_bot.nightly_settlement_health import select_nightly_ai_report
+        selected=select_nightly_ai_report(dt.datetime(2026,11,13,5,2,tzinfo=UTC),lambda p:{"game_date_eastern":"2026-11-11","graded":808})
+        self.assertEqual(selected,{})
+
+class SettledGracePeriodTests(unittest.TestCase):
+    def test_actual_settlement_does_not_wait_for_twelve_hour_timeout(self):
+        now=dt.datetime(2026,11,13,5,35,tzinfo=UTC)
+        report=health(now,{}, {"records":[row("SETTLED",start="2026-11-13T02:00:00Z"),row("VOID_DNP",start="2026-11-13T02:00:00Z")]})
+        self.assertEqual(report["status"],"ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED")
+    def test_unknown_status_is_not_resolved_even_with_zero_pending(self):
+        report=health(NOW,{}, {"records":[row("UNKNOWN")]})
+        self.assertNotEqual(report["status"],"ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED")
