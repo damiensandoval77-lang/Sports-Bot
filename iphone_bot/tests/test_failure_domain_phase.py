@@ -20,3 +20,32 @@ class FailureDomainPhaseTests(unittest.TestCase):
         self.assertFalse(verified_posttip_slate({**schedule,"generated_at":pre.isoformat()},season,pre))
         mismatch=copy.deepcopy(schedule);mismatch["games"][0]["home_abbreviation"]="INVALID"
         self.assertFalse(verified_posttip_slate(mismatch,season,now))
+
+
+class NFLStandardPendingAuditTests(unittest.TestCase):
+    def checks(self, **changes):
+        from unittest.mock import patch
+        from iphone_bot import audit_failure_domains as audit
+        original = audit.load
+        report = original("nfl/data/grading_health_2026.json")
+        report.update(changes)
+        with patch.object(audit, "load", side_effect=lambda path: report if path == "nfl/data/grading_health_2026.json" else original(path)):
+            result = audit.check_artifacts()
+        return result["checks"]
+
+    def test_alternative_pending_is_not_standard_failure(self):
+        result = self.checks(pending_picks=4, standard_pending_picks=0,
+                            alternative_tier_pending_excluded=4)
+        self.assertFalse(any(x["code"] == "PENDING_FINAL_GRADES" for x in result))
+        self.assertTrue(any(x["code"] == "STANDARD_GRADES_SETTLED" for x in result))
+        self.assertTrue(any(x["code"] == "ALTERNATIVE_TIERS_EXCLUDED" and "4 pending" in x["detail"] for x in result))
+
+    def test_actual_standard_pending_remains_visible(self):
+        result = self.checks(standard_pending_picks=2)
+        self.assertTrue(any(x["code"] == "PENDING_FINAL_GRADES" and "2 pending" in x["detail"] for x in result))
+
+    def test_invalid_standard_pending_fails_closed(self):
+        for value in (None, -1, "0", False):
+            with self.subTest(value=value):
+                result = self.checks(standard_pending_picks=value)
+                self.assertTrue(any(x["code"] == "STANDARD_PENDING_COUNT_INVALID" and x["level"] == "critical" for x in result))
