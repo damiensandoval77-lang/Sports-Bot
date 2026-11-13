@@ -3,13 +3,13 @@
   "repository": "damiensandoval77-lang/Sports-Bot",
   "status": "PARTIAL",
   "run_start": "2026-11-13T16:30:28Z",
-  "run_end": "2026-11-13T17:33:28.177005+00:00",
+  "run_end": "2026-11-13T17:50:31.116634+00:00",
   "main_sha_start": "ecf0cf06c89af8608c5f02ab718970a7ce764637",
-  "main_sha_static_verified": "c2ba848447fe2fbafdaa71f9208e32d42228623c",
-  "main_sha_before_receipt": "c27954440370d56635377ebbbc12081c5cbec200",
+  "main_sha_static_verified": "94c48fec955c3bc11a5760e2773f373a2b648919",
+  "main_sha_before_receipt": "94c48fec955c3bc11a5760e2773f373a2b648919",
   "deployed_release": "dp-public-qa-labels-20261113-r36",
-  "new_actionable_defect_groups": 9,
-  "merged_repair_prs": 6,
+  "new_actionable_defect_groups": 10,
+  "merged_repair_prs": 7,
   "repairs": [
     {
       "id": "D1",
@@ -203,7 +203,7 @@
       "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/9c6133d32d827b5992b02f62ebf6133977b8622e",
       "before": "Legacy UI CI failed against the retired root dashboard",
       "root_cause": "Tests still required old widgets, old timer, and simulation labels",
-      "after": "Run canonical unified app/root redirect contracts while retaining backend tests",
+      "after": "Run canonical unified app/root redirect contracts while retaining backend tests; follow-up PR424 replaces remaining obsolete test entry points with canonical app/live/redirect behavior and fixes their triggers.",
       "files": [
         ".github/workflows/hide-tipped-ai-props-tests.yml",
         ".github/workflows/nba-consensus-test.yml",
@@ -228,7 +228,13 @@
         43469958488,
         43470363267,
         43470363196,
-        43470363163
+        43470363163,
+        43475664150,
+        43475664064,
+        43475663741,
+        43476030403,
+        43476030315,
+        43476030003
       ],
       "run_urls": [
         "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43469958544",
@@ -241,7 +247,18 @@
         "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43470363196",
         "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43470363163"
       ],
-      "verification": "HOSTED_CI_AND_PRODUCTION_VERIFIED"
+      "verification": "HOSTED_CI_AND_PRODUCTION_VERIFIED",
+      "additional_pr": 424,
+      "additional_commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/93321d4ea27d52a16ecf066c3796bbdbcedabb9b",
+      "additional_files": [
+        ".github/workflows/nfl-ui-smoke.yml",
+        ".github/workflows/phase1_dashboard_scoreboard.yml",
+        ".github/workflows/phase1_real_pp_join.yml",
+        "tests/test_nfl_player_cards.cjs",
+        "iphone_bot/tests/test_dashboard_scoreboard_integration.py",
+        "iphone_bot/tests/test_real_prizepicks_pregame_join.cjs"
+      ],
+      "additional_verification": "All three corrected entry points passed production push runs after PR424 merged."
     },
     {
       "id": "D9",
@@ -271,6 +288,35 @@
       "run_ids": [],
       "run_urls": [],
       "verification": "CONFIGURATION_VERIFIED_NOT_EXECUTED"
+    },
+    {
+      "id": "D10",
+      "severity": "high",
+      "pr": 424,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/424",
+      "merge_sha": "93321d4ea27d52a16ecf066c3796bbdbcedabb9b",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/93321d4ea27d52a16ecf066c3796bbdbcedabb9b",
+      "before": "Tracking coverage publication failed after three successive main push conflicts",
+      "root_cause": "Only three immediate retries and re-use of a saved stale report instead of newest source inputs",
+      "after": "Recompute after each fresh fetch/reset; ten bounded attempts with backoff; explicit failure on exhaustion; PR cannot publish",
+      "files": [
+        ".github/workflows/nba-tracking-coverage.yml",
+        "iphone_bot/tests/test_tracking_coverage_workflow.py"
+      ],
+      "run_ids": [
+        43475664143,
+        43475664430
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43475664143",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43475664430"
+      ],
+      "verification": "PUBLIC_JSON_AND_HOSTED_EXECUTION_VERIFIED",
+      "production_run_id": 43476029907,
+      "production_run_url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43476029907",
+      "public_output": "https://damiensandoval77-lang.github.io/Sports-Bot/tracking_coverage_status.json",
+      "public_generated_at": "2026-11-13T17:46:14.789647+00:00",
+      "public_read_at": "2026-11-13T17:47:27.165015+00:00"
     }
   ],
   "permissions": {
@@ -286,8 +332,8 @@
   "branch_coverage": {
     "start_active_heads": 418,
     "start_historical_pr_tips": 416,
-    "final_active_heads": 424,
-    "final_historical_pr_tips": 423,
+    "final_active_heads": 425,
+    "final_historical_pr_tips": 424,
     "inventory_method": "Fetched all advertised heads and refs/pull/*/head; compared ancestry to pinned main",
     "exceptions": "Ancestry/static audit is not execution of every historical revision. Deleted unreachable tips cannot be inventoried. Conflicting old PRs are not merged blindly.",
     "open_prs_at_start": [
@@ -378,69 +424,27 @@
         "changed_files": " .github/workflows/nba-schedule.yml         |  7 ++-\n .github/workflows/research-safety-ci.yml   | 75 ++++++++++++++++++++++++++++++\n iphone_bot/fetch_official_injuries.py      |  3 ++\n iphone_bot/minutes_model_v2.py             |  9 ++--\n iphone_bot/tests/test_minutes_model_v2.py  | 16 ++++++-\n iphone_bot/tests/test_research_upgrades.py | 15 +++++-\n 6 files changed, 119 insertions(+), 6 deletions(-)\n"
       }
     ],
-    "concurrent_pr_422": "Merged by separate actor at 17:03:47 UTC, commit 479a9c253174bd8c83ea690c2b868c30f7d1fb18; not included in this cycle repair count"
+    "concurrent_pr_422": "Merged by separate actor at 17:03:47 UTC, commit 479a9c253174bd8c83ea690c2b868c30f7d1fb18; not included in this cycle repair count",
+    "closeout_inventory": "branches-closeout.json.gz"
   },
   "workflow_coverage": {
     "tracked_definitions": 174,
-    "run_history_queried": 130,
-    "runtime_with_observed_run": 129,
+    "run_history_queried": 174,
+    "runtime_with_observed_run": 173,
     "scheduled_without_any_observed_run": [],
-    "unique_runs": 1939,
+    "unique_runs": 2124,
     "conclusions": {
-      "success": 1274,
-      "cancelled": 427,
-      "failure": 225,
+      "success": 1413,
+      "cancelled": 456,
+      "failure": 247,
       "skipped": 4,
-      "in_progress": 9
+      "in_progress": 4
     },
     "no_runtime_evidence": [
-      ".github/workflows/nba-backtest-real-market.yml",
-      ".github/workflows/nba-position-defense.yml",
-      ".github/workflows/nba-pregame-ai-archive.yml",
-      ".github/workflows/nba-prizepicks-ai-offline-tests.yml",
-      ".github/workflows/nba-prizepicks-current-balance.yml",
-      ".github/workflows/nba-prizepicks-rest-setup.yml",
-      ".github/workflows/nba-prizepicks-sample-backtest-tests.yml",
-      ".github/workflows/nba-prizepicks-topup-verification.yml",
-      ".github/workflows/nba-props.yml",
-      ".github/workflows/nba-publish-research.yml",
-      ".github/workflows/nba-rebound-shadow-validation.yml",
-      ".github/workflows/nba-research-prospective-capture-tests.yml",
-      ".github/workflows/nba-scores.yml",
-      ".github/workflows/nba-shooting-efficiency-v1.yml",
-      ".github/workflows/nba-tracking-coverage.yml",
-      ".github/workflows/nba-tracking-opportunities-validation.yml",
-      ".github/workflows/nba-tracking-provider-access.yml",
-      ".github/workflows/nba-train-provisional.yml",
-      ".github/workflows/nba-underprojection-research.yml",
-      ".github/workflows/nfl-ui-smoke.yml",
-      ".github/workflows/nightly_grade_date_audit.yml",
-      ".github/workflows/pbpstats-connectivity-probe.yml",
-      ".github/workflows/pbpstats-current-season-probe.yml",
-      ".github/workflows/pbpstats-onoff-coverage-probe.yml",
-      ".github/workflows/pbpstats-wowy-validation.yml",
-      ".github/workflows/phase1-e2e-grading.yml",
-      ".github/workflows/phase1-live-service-replit.yml",
-      ".github/workflows/phase1_dashboard_scoreboard.yml",
-      ".github/workflows/phase1_real_pp_join.yml",
-      ".github/workflows/prizepicks-full-board-tests.yml",
-      ".github/workflows/prizepicks_nba_collector.yml",
-      ".github/workflows/reliability_guardrails.yml",
-      ".github/workflows/research-matchup-hit-estimate.yml",
-      ".github/workflows/research-matchup-shadow-tests.yml",
-      ".github/workflows/sanity-shadow-grading-research.yml",
-      ".github/workflows/sanity-shadow-v1-research.yml",
-      ".github/workflows/test_final_transition_grade_trigger.yml",
-      ".github/workflows/test_hoopr_schedule_integrity.yml",
-      ".github/workflows/test_pregame_line_archive.yml",
-      ".github/workflows/underdog-nba-injury-watch.yml",
-      ".github/workflows/underdog-xurl-connection-test.yml",
-      ".github/workflows/unified-reliability-research.yml",
-      ".github/workflows/verified-research-no-play-tests.yml",
-      ".github/workflows/verify-prizepicks-credits.yml",
-      ".github/workflows/verify_live_pregame_line_browser.yml"
+      ".github/workflows/nba-backtest-real-market.yml"
     ],
-    "sample_cutoff": "2026-11-13T17:21:03Z"
+    "definition_sha": "94c48fec955c3bc11a5760e2773f373a2b648919",
+    "sample_cutoff": "2026-11-13T17:50:31.116634+00:00"
   },
   "failed_runs": [
     {
@@ -522,20 +526,53 @@
       "id": 42599207324,
       "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42599207324",
       "cause": "Historical retired external tracker probe"
+    },
+    {
+      "id": 42930933845,
+      "job": 130229193947,
+      "cause": "Legacy Odds API score provider fetch failed; schedule preserved. Default-off paid guard in PR423 now prevents spending. Current public ESPN/NBA feeds independently verified.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42930933845"
+    },
+    {
+      "id": 43124311963,
+      "job": 130872385760,
+      "cause": "Three consecutive main push conflicts exhausted retries. PR424 recalculates against newest main on ten bounded retries with backoff.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43124311963"
+    },
+    {
+      "id": 42921113538,
+      "cause": "NFL smoke test required groupPlayerMarkets in retired redirect HTML; reproduced locally; PR424 runs unified app plus redirect contracts.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921113538"
+    },
+    {
+      "id": 42921102157,
+      "cause": "Phase1 scoreboard test required removed root refreshScoresOnly; reproduced locally; PR424 verifies canonical live contracts.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921102157"
+    },
+    {
+      "id": 42921102576,
+      "cause": "Phase1 PP join test expected retired root provider widgets; reproduced locally; PR424 verifies canonical frozen standard-line joins.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921102576"
+    },
+    {
+      "id": 42717086323,
+      "job": 129501301491,
+      "cause": "UNDERDOG_X_BEARER_TOKEN missing; diagnostic is manual-only. No secret or paid service changes made; X integration remains unavailable.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42717086323"
     }
   ],
   "static_validation": {
-    "tracked_files": 1192,
+    "tracked_files": 1225,
     "extension:.yml": 174,
     "extension:": 3,
-    "extension:.md": 22,
+    "extension:.md": 24,
     "extension:.live-tracker": 1,
     "extension:.csv": 42,
-    "extension:.json": 223,
-    "json_parse_pass": 223,
-    "extension:.py": 570,
-    "python_ast_pass": 570,
-    "extension:.gz": 113,
+    "extension:.json": 246,
+    "json_parse_pass": 246,
+    "extension:.py": 571,
+    "python_ast_pass": 571,
+    "extension:.gz": 120,
     "extension:.js": 7,
     "node_syntax_pass": 38,
     "extension:.html": 3,
@@ -544,18 +581,18 @@
     "extension:.cjs": 31,
     "workflows_total": 174,
     "workflow_jobs": 185,
-    "pr_workflows": 103,
+    "pr_workflows": 104,
     "manually_dispatchable": 149,
     "workflow_steps": 1173,
-    "actions_not_sha_pinned": 396,
-    "runtime_test_commands_unguarded_steps": 88,
+    "actions_not_sha_pinned": 390,
+    "runtime_test_commands_unguarded_steps": 89,
     "scheduled_workflows": 83,
     "continue_on_error_steps": 36,
     "workflow_push_steps": 94,
     "workflow_run_triggers": 11
   },
   "tests": {
-    "distinct_targeted_local_tests": 234,
+    "distinct_targeted_local_tests": 242,
     "breakdown": {
       "public_monitor": 10,
       "team_defense": 16,
@@ -565,11 +602,21 @@
       "paid_collectors_parsers": 19,
       "archive": 5,
       "retained_boxscore_compatibility": 12,
-      "unified_app_live_root_javascript": 74
+      "unified_app_live_root_javascript": 74,
+      "tracking_status_and_conflict": 5,
+      "nfl_redirect": 2,
+      "scoreboard_wrapper": 1
     },
     "static_errors": 0,
     "static_warnings": 45,
-    "dependency_advisories": "Pipeline contract advisory check passed; not a guarantee of zero supply-chain vulnerabilities"
+    "dependency_advisories": "Pipeline contract advisory check passed; not a guarantee of zero supply-chain vulnerabilities",
+    "additional_PR424": {
+      "tracking_status_and_conflict_tests": 5,
+      "UI_entry_point_executions": 134,
+      "note": "Shared unified suite runs through both entry points; 134 is not 134 new distinct tests. Two new NFL redirect cases plus three new publisher tests.",
+      "scoreboard_wrapper": 1,
+      "all_passed": true
+    }
   },
   "data_coverage": {
     "NBA_season_games": 1200,
@@ -915,7 +962,9 @@
       },
       "source_url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873052",
       "public_url": "https://damiensandoval77-lang.github.io/Sports-Bot/nfl/data/live_2026.json"
-    }
+    },
+    "last_release_read_at": "2026-11-13T17:47:27.165015+00:00",
+    "release_unchanged_from_phone_test": true
   },
   "blockers": [
     {
@@ -956,8 +1005,14 @@
     {
       "id": "B5",
       "severity": "medium",
-      "issue": "396 remaining mutable action references and incomplete historical runtime evidence",
-      "action": "Recorded as supply-chain/coverage limitations, not 396 proven exploited vulnerabilities. Bulk workflow changes can activate prohibited paid collectors; no indiscriminate trigger."
+      "issue": "Remaining mutable action references are supply-chain hardening findings, not proof of an exploited vulnerability",
+      "action": "Critical touched publisher actions pinned; broad unrelated workflow changes could activate prohibited provider work."
+    },
+    {
+      "id": "B6",
+      "severity": "medium",
+      "issue": "Manual Underdog X diagnostic lacks UNDERDOG_X_BEARER_TOKEN",
+      "action": "No secret changes or paid X access attempted. Full Underdog end-to-end coverage remains unverified."
     }
   ],
   "evidence_integrity": {
@@ -970,8 +1025,8 @@
     "requested": true,
     "delivery_confirmed": false
   },
-  "duration_seconds": 3780,
-  "independently_verified_defect_groups": 8,
+  "duration_seconds": 4803,
+  "independently_verified_defect_groups": 9,
   "configuration_only_defect_groups": 1,
   "hosted_recovery_verification": {
     "captured_at": "2026-11-13T17:11:42.126532+00:00",
@@ -1889,8 +1944,9 @@
     "passing": 9,
     "total": 10,
     "required_stale_components": 0,
-    "checked_at": "2026-11-13T17:20:10.091090+00:00",
-    "remaining_required_failure": "current_primary_model_coverage"
+    "checked_at": "2026-11-13T17:34:12.906701+00:00",
+    "remaining_required_failure": "current_primary_model_coverage",
+    "read_at": "2026-11-13T17:47:27.165015+00:00"
   },
   "schedule_verified": {
     "enabled": true,
@@ -1904,40 +1960,59 @@
   ],
   "scope_exceptions": [
     "All advertised refs fetched and ancestry compared, but not all historical revisions executed",
-    "Runtime history available for 129/174 tracked workflows; 45 have no returned runtime evidence",
     "Underdog full pretip-to-grade path not independently verified",
     "Native Pages cancellation cause observed; administrative source setting not changed",
-    "Research-only model/data artifacts remain separate from production probabilities and frozen grades"
+    "Research-only model/data artifacts remain separate from production probabilities and frozen grades",
+    "All 174 workflows had history queried; nba-backtest-real-market.yml returned no runs. Histories sampled, not every execution ever."
   ],
   "files_sha256": {
-    "repair-run-events.json": "a0706076fcecd270249895464b8416d9bc09fecfad667cabb21ea628bb538fd8",
+    "repair-run-events.json": "58a51fe58d52bcef2215e9bc6dc14810643916db305cbb5b5e866d4c21746e69",
     "heartbeat-live.json": "776b466a560456c09b929bdd3188addd7814410150729adcae1a347a560cc78d",
+    "tracking-coverage-public.json": "093a16e61243dbd1c48aea89944e3f10a155922288265dbe0220dc8f8705b2e5",
+    "remaining-workflow-history.json": "d9eaa45b893786e86f7dd16c1a6190e24ad2738da63b2e199c2488245ddecd04",
     "open-prs.json": "13ccce06a38ff26e09f5f52a58b9a2e83cd173986f598c73a7e635b1acf1e8d0",
     "nightly-grading.json": "77939bc7e20805562143324311d3da11c6dd1797822fc2e0baa7a0de6c54f445",
     "public-canary-independent.json": "cf3c3ba960d972f07a5a6deb398b543ee3de5b98861978b1f6da512b4ba51774",
     "nfl-grading.json": "d328241cd055a042c636a120808e17e4cada6debc6e007d5e22543c2fc4ab435",
     "action-pins.json": "cd10ece0c4fb6f0f171c4b68ff502949eda81fd422c2aeeca9657e37281af5da",
     "cached-discovery-replay.json": "8def3aec6a7e470f322c2cd67ae532cedcb37ec209bea67e17a612c05b548d8f",
-    "workflow-coverage.json": "e77a256bd58f8de330f3538c712cd9a63ff1165e262931b8369a23ee086a6381",
+    "public-release-final.json": "da8f8491fe93507b5aa7a35277d570c710b88696e0c32eb6e56798bea4eda438",
+    "branches-closeout.json.gz": "31d5b27f8cc6fafa7599b1aa67867a372a643c5566a1d708a837753533229e58",
+    "workflow-coverage.json": "2094d1b621f8cc085da2b9ba5dbd7decbed9ca76cc4b49cb4edf9c90733b9890",
+    "workflow-security-patterns.json": "1579fd01436df81954907bdb09509f7952bcb4a44c090cf9b1a343f0208fd5af",
     "nfl-live-reconciliation.json": "7becb617e1ada3df4f8cbc042196be79a821ee79419db43ee27c93539d5b5f6e",
     "branches.json.gz": "ee58bb2f2cb9647d6a1d4f14be48394c8b38603dac67032207e331123a33bbe7",
     "static-audit-start.json": "2d928f7055f7f89e52ff6a5ef8f51da4302c122db6aa9fd81da118f7cd8d7a18",
     "branches-final.json.gz": "13ff7d93203475121e6d2386c6e0f2f56ce69d65b074a595a45fc8ad8e96db32",
     "workflow-api-inventory.json": "d4319afad60c29b6e93505c4685108aa699686701c9b1c914ae9bdce17608726",
+    "additional-failure-diagnoses.json": "c2d7a24c7b62b448aa0d55bdac8ed74693a0408bf5c607909fc752448309a2e6",
     "public-canary-final.json": "8b8999a089bb3bfd15a87575b1681f715f89a732bd41b03ca76484e7be2aee05",
     "hosted-recovery-verification.json": "1c7f1f5e28e481d6abb5caf593193e32c6487ad2a14613f117fda53387ec19d2",
-    "production-readiness-final.json": "2649b646015ed3673c01fc3a5c4ce23a6ed67c4df9efa56c3d864d005969fbe5",
+    "production-readiness-final.json": "40f007e295550e49e67eb404f0b6533816627e396e232b8ebc90b5887c28b218",
     "iphone-deployed.json": "00f6c3f95d5c4549e34f13bb322c7a9bf4d399a982f05557c4e1f6332d761994",
     "nba-live-schedule-reconciliation.json": "5d40287ae4fecb0fadb8a3364e7f449046cb8560d162ee8fc5a2a56392e2692f",
-    "capture-coverage.json": "7c210834b2e5a3d53ff00c272fd25f390dede71955e8561e883e9d098622f9f9",
+    "capture-coverage.json": "e6289f38d8963a46b40bf818ffda4e4d610ef84308dce94f6cdbfd5cd2342d92",
     "official-defense-history-recovered.json.gz": "af4eb397de11ca37ea5773e2084e566e554ed63305e0b9f426d5a8cc8f8e90d9",
-    "workflow-runs.json.gz": "3b55e1e75fed8f3e6ad6c352509aa7e31e7f50ad2d7c8187346f0d2a6963bbd0",
+    "workflow-runs.json.gz": "3b7c61b9cf9c6eee339e552faa6ce22e86309dd44c7c2afb4077195445a6c4ba",
     "paid-polling-public.json": "ae2f37f064d87579414b5fd567e54d7d296db2ad40164e9df6ab72fef4358f67",
-    "workflow-inventory.json.gz": "8ae63e1f58f8f0bd3aa508502388a83c6452b52113dad1db5ffb72c3cb321a64",
-    "workflows.md": "1c941f5dfa99108e01f72358b7559c05bb96d30ecbdc2a941be2d1699aa8e01f",
+    "workflow-inventory.json.gz": "b0abf8b69db7f895fd78875987b4fe5e0b0ed3c094553ddcb267a8017572e92f",
+    "workflows.md": "67565b92ab5b3cd1cbf796c917bd7b229c4c83550413f66009a906a5783029fd",
     "history-recovery-summary.json": "a2a8e3fbb41c14c87d8abfe03e38063ac7c6674ecdfa0f5da7cd246b108b79b3",
-    "static-audit-final.json": "e9cad997d7fa21b178cb184491eed6a2fc0120074821b0e7b9d0e2c73a59f86e",
+    "static-audit-final.json": "b765418d51e5fd770ee7ae7d8cfefe58b9da7de112364116a43d0807d993b013",
     "deployment-convergence.json": "188222741b9ae6657373cd4f26af39aa47f55cb8467051f249b0b106bf94a756",
     "recovered-defense-context.json.gz": "4ab0652fadd29d8d44795b65fbe6011079546bc9923c79ca3fe9071bf1437470"
+  },
+  "additional_verification": {
+    "concurrent_NFL_audit_fix": {
+      "pr": 422,
+      "tests_passed": 4,
+      "test_file": "iphone_bot/tests/test_failure_domain_phase.py",
+      "cases": [
+        "actual standard pending remains visible",
+        "alternative pending excluded",
+        "invalid standard pending fails closed"
+      ],
+      "credited_to_this_run": false
+    }
   }
 }
