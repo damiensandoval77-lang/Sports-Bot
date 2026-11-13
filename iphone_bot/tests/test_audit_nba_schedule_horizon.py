@@ -44,3 +44,26 @@ class ScheduleHorizonTests(unittest.TestCase):
 
 if __name__=="__main__":
     unittest.main()
+
+class MidnightCalendarRepairTests(unittest.TestCase):
+    def test_midnight_rolls_verified_fixtures_without_fabricating_props(self):
+        from iphone_bot.audit_nba_schedule_horizon import repair_daily_window
+        from iphone_bot.publish_nba_schedule_atomic import stage
+        import datetime as dt
+        master=baseline()
+        before=dt.datetime(2026,11,11,4,59,tzinfo=dt.timezone.utc)
+        after=dt.datetime(2026,11,11,5,1,tzinfo=dt.timezone.utc)
+        daily,_=stage({},master,{},master,now=before)
+        self.assertIn("DAILY_DATE_NOT_PUBLISHED",audit(master,daily,now=after)["reason_codes"])
+        repaired=repair_daily_window(master,daily,now=after)
+        self.assertEqual(audit(master,repaired,now=after)["status"],"READY")
+        self.assertFalse(repaired["has_sportsbook_props"])
+        self.assertFalse(repaired["has_verified_player_availability"])
+        self.assertEqual(set(repaired["dates_eastern"]),{"2026-11-11","2026-11-12"})
+        self.assertTrue(all(g.get("home_score") is None for g in repaired["games"]))
+
+    def test_invalid_master_cannot_generate_calendar(self):
+        from iphone_bot.audit_nba_schedule_horizon import repair_daily_window
+        daily={"games":[],"dates_eastern":[]}
+        self.assertEqual(repair_daily_window({},daily,now=NOW),daily)
+        self.assertEqual(audit({},daily,now=NOW)["status"],"BLOCKED")
