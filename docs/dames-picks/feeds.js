@@ -486,7 +486,7 @@ function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
       pendingReason:waiting?r.grade_status:null,
       frozenSettlementArchive:true};
    if(present){
-    existing.set(key,{...present,...extra});
+    existing.set(key,{...present,...extra,matchupPreview:present.matchupPreview||nflMatchupPreview(r,game.kickoff_utc)});
    }else{
     const pct=n(r.model_pct);
     const p={sport:"NFL",playerId:r.player_id,player:r.player,position:r.position||"",
@@ -497,7 +497,7 @@ function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
        chance:pct!==null&&pct>=0&&pct<=100?pct/100:null,
        chanceSource:"Original saved NFL model estimate, not a calibrated hit probability",
        captured:r.captured_at,form:{season:null,l5:null,l10:null,games:null},
-       logs:[],depth:null,modelId:null,component:null,...extra};
+       logs:[],depth:null,modelId:null,component:null,matchupPreview:nflMatchupPreview(r,game.kickoff_utc),...extra};
     existing.set(key,p);
    }
   }
@@ -716,4 +716,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-push-evidence-20261113-r26";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-archive-evidence-20261113-r27";

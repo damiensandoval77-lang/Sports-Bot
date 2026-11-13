@@ -26,6 +26,8 @@ SUPPLEMENTAL_SNAPS=ROOT/"verified_supplemental_snaps_2026.json"
 FIELDS=["captured_at","season","week","game_id","player_id","player",
         "position","team","opponent","stat","target","line","odds_type",
         "proj","pick","model_pct"]
+EVIDENCE_FIELDS=["p_more","p_less","p_push","matchup_evidence"]
+FIELDS+=EVIDENCE_FIELDS
 KEY=["captured_at","game_id","player_id","target","odds_type","line"]
 MARKET={
  "PASS_YDS":"passing_yards","PASS_ATT":"attempts","PASS_CMP":"completions",
@@ -100,7 +102,18 @@ def collect_history(existing,snapshot,schedule):
             rejected+=1
             continue
         r=normalize(row)
-        rows[tuple(r[k] for k in KEY)]=r
+        key=tuple(r[k] for k in KEY)
+        prior=rows.get(key)
+        if prior:
+            # Evidence can be restored only from the exact same original
+            # snapshot identity AND unchanged frozen model values.
+            if any(prior[k]!=r[k] for k in FIELDS if k not in EVIDENCE_FIELDS):
+                raise ValueError("NFL_FROZEN_FORECAST_CONFLICT")
+            for field in EVIDENCE_FIELDS:
+                if prior[field] and r[field] and prior[field]!=r[field]:
+                    raise ValueError("NFL_FROZEN_EVIDENCE_CONFLICT")
+                r[field]=prior[field] or r[field]
+        rows[key]=r
     ordered=sorted(rows.values(),key=lambda r:(r["captured_at"],r["game_id"],r["player_id"],r["target"],r["odds_type"],float(r["line"])))
     return ordered,rejected
 
@@ -434,6 +447,15 @@ def run(root=ROOT):
     # Fail closed on a bad new snapshot while still grading already archived
     # predictions; never destroy previous frozen history.
     write_csv_if_changed(archive_path,history,FIELDS)
+    # Small durable active-game feed survives latest-snapshot rotation. Final
+    # cards come from grade/pending ledgers with the same evidence columns.
+    now=datetime.now(timezone.utc)
+    active_ids={gid for gid,g in schedule.items() if g.get("status")!="final"
+                and utc(g.get("kickoff_utc")) and utc(g["kickoff_utc"])<=now}
+    active=closing(history,active_ids)
+    active=[r for r in active if r["odds_type"]=="standard"]
+    write_json_if_changed(Path(root)/"active_frozen_2026.json",
+                          {"season":2026,"scope":"EXACT_ARCHIVED_PREGAME_ROWS","records":active})
     write_csv_if_changed(Path(root)/GRADES.name,graded,OUTPUT_FIELDS)
     write_csv_if_changed(Path(root)/PENDING.name,pending,OUTPUT_FIELDS)
     write_json_if_changed(Path(root)/HEALTH.name,metrics)

@@ -68,7 +68,8 @@ jobs:
                     docs/nfl/data/frozen_pick_history_2026.csv \
                     docs/nfl/data/pp_graded_2026.csv \
                     docs/nfl/data/pp_grading_pending_2026.csv \
-                    docs/nfl/data/grading_health_2026.json
+                    docs/nfl/data/grading_health_2026.json \
+                    docs/nfl/data/active_frozen_2026.json
             if git diff --cached --quiet; then
               echo "Public NFL snapshot and verified grading are unchanged"
               exit 0

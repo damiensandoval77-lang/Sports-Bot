@@ -8,3 +8,21 @@ test('rejects wrong identity, line, probability, timestamp, missing input and un
 test('retains exact pregame evidence after kickoff but rejects late capture',()=>{let{p,x}=row();p.captured_at=tip;x.captured_at=tip;p.matchup_evidence=JSON.stringify(x);assert.equal(m.nflMatchupPreview(p,tip),null)});
 
 test('V2 integer under excludes push mass and enforces normalized triplet',()=>{let{p,x}=row();p.pick='Less';p.line='4';p.p_more='0.3';Object.assign(x,{schema:'NFL_OPPONENT_FEATURES_V2',method:'NFL_MATCHUP_RESIDUAL_V2',direction:'LESS',original_line:4,modeled_more_probability:.3,modeled_less_probability:.5,modeled_push_probability:.2,selected_probability:.5});p.matchup_evidence=JSON.stringify(x);assert.equal(m.nflMatchupPreview(p,tip).rate,.5);assert.equal(m.nflMatchupPreview(p,tip).pushRate,.2);x.selected_probability=.7;p.matchup_evidence=JSON.stringify(x);assert.equal(m.nflMatchupPreview(p,tip),null);x.selected_probability=.5;x.modeled_push_probability=.1;p.matchup_evidence=JSON.stringify(x);assert.equal(m.nflMatchupPreview(p,tip),null)});
+
+test('archived final cards retain original evidence after latest rotates',()=>{
+ const {p,x}=row();Object.assign(p,{player:'Player',position:'WR',stat:'Receptions',target:'REC',proj:'5',odds_type:'standard',model_pct:'60',matchup_evidence:JSON.stringify(x),actual:'6',result:'More',won:'1',grade_status:'graded'});
+ const schedule={games:[{game_id:'G',kickoff_utc:tip,status:'final',home_score:7,away_score:3}]};
+ const cards=m.reconcileNFLSettlementCards([], [p], [], schedule);
+ assert.equal(cards.length,1);assert.equal(cards[0].matchupPreview.rate,.6);
+ const legacy=m.reconcileNFLSettlementCards([], [{...p,matchup_evidence:''}], [],schedule);
+ assert.equal(legacy[0].matchupPreview,null);
+ const invalid=m.reconcileNFLSettlementCards([], [{...p,matchup_evidence:JSON.stringify({...x,opponent:'WRONG'})}], [],schedule);
+ assert.equal(invalid[0].matchupPreview,null);
+});
+test('exact archived active rows remain valid without latest snapshot',()=>{
+ const {p,x}=row();Object.assign(p,{player:'Player',stat:'Receptions',proj:'5',odds_type:'standard',matchup_evidence:JSON.stringify(x)});
+ const schedule={games:[{game_id:'G',kickoff_utc:tip,status:'in'}]};
+ const cards=m.nfl([[p]],schedule);
+ assert.equal(cards.length,1);assert.equal(cards[0].matchupPreview.rate,.6);
+ assert.equal(cards[0].captured,p.captured_at);
+});
