@@ -127,7 +127,7 @@ def settle(archive,final_rows,now=None):
     now=stamp(now or datetime.now(timezone.utc));out=deepcopy(archive);out.setdefault('outcomes',{})
     candidates={}
     for row in final_rows:
-        if row.get('grade_source')!='NBA_CDN_FINAL' or not row.get('source_game_id'):continue
+        if row.get('grade_source')!='NBA_CDN_FINAL' or not row.get('source_game_id') or row.get('grade') not in ('HIT','MISS','NO_LEAN','PUSH'):continue
         v=row.get('actual')
         if type(v) not in (int,float) or not math.isfinite(v) or v<0:continue
         key=(str(row.get('player_id')),row.get('team'),row.get('game'),row.get('start'),row.get('stat'))
