@@ -1,0 +1,14 @@
+{
+ "model":"SHORT_HISTORY_DISTRIBUTION_V1",
+ "declared_before_run":"2026-11-13",
+ "cohort":"3-7 verified same-team prior games",
+ "training":"2022-23",
+ "residual_distribution":"2023-24",
+ "probability_calibration":"2024-25",
+ "fixed_final_diagnostic":"2025-26",
+ "caveat":"2025-26 was previously inspected for other models; not an untouched prospective confirmation",
+ "method":"Fixed HistGradientBoosting absolute-error components; paired residual bootstrap with nonnegative rounded stat outcomes; one-v-rest isotonic calibration over fixed half-integer threshold grid; raw probabilities retain integer push mass",
+ "threshold_grid":{"PTS":[4.5,9.5,14.5,19.5,24.5,29.5],"REB":[1.5,3.5,5.5,7.5,9.5],"AST":[0.5,2.5,4.5,6.5,8.5],"PRA":[9.5,19.5,29.5,39.5]},
+ "gates":{"min_test_player_games":1000,"min_test_dates":30,"brier_improvement_date_clustered_upper95":0,"ece_max":0.05,"calibration_absolute_bias_max":0.03},
+ "release_gate":"Never primary production without actual archived offered-line prospective calibration and current exact line identity, pretip, freshness/injury guards. Fixed synthetic thresholds validate distribution only, not betting-market calibration. Failed markets stay withheld. No retuning on final diagnostic."
+}
