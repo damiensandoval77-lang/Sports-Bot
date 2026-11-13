@@ -189,7 +189,7 @@ function render(){
  $("wl").textContent=sum.wins===null?"—":sum.wins+"–"+sum.losses;
  $("rate").textContent=pct(sum.hitRate);$("games").textContent=sum.games;
  {const C=window.DamesPicksCoverage, coverage=C&&state.league==="NBA"?C.tonight(state.nbaScheduleData,state.nba,Date.now()):null,el=$("coverage");
-  const msg=state.league==="NFL"&&state.mode==="board"&&state.nflWithheld?"Upcoming NFL estimates are unavailable where exact game attribution or model-training support could not be verified. Those forecasts are withheld, not guessed. This does not mean there are no upcoming games.":coverage?C.message(coverage,v=>new Date(v).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})):"";
+  const msg=state.league==="NFL"&&state.mode==="board"?(state.nflWithheld?"Upcoming NFL estimates are unavailable where exact game attribution or model-training support could not be verified. Those forecasts are withheld, not guessed. This does not mean there are no upcoming games.":"Only NFL estimates with verified game attribution and supported model inputs are shown. Unsupported offers, including previously shown estimates, are withheld rather than guessed."):coverage?C.message(coverage,v=>new Date(v).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})):"";
   el.textContent=msg;el.hidden=!msg;el.dataset.missing=coverage?String(coverage.missing.length):"";el.dataset.games=coverage?String(coverage.games):"";}
  $("section-title").textContent=state.mode==="board"?"Top picks":state.mode==="live"?(state.league==="NBA"?"Today’s games":"Live and upcoming games"):state.mode==="tracker"?"Today’s frozen picks":"Saved props";
  $("status").textContent=(state.updated?"Checked "+state.updated.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"")+
