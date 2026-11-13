@@ -14,6 +14,7 @@ on:
       - 'tests/test_pick_hit_sort.cjs'
       - 'tests/test_nfl_matchup_evidence.cjs'
       - 'tests/test_open_tab_release.cjs'
+      - 'tests/test_feed_deadlines.cjs'
       - 'iphone_bot/tests/test_dames_take.cjs'
       - 'iphone_bot/tests/test_live_direct.cjs'
       - 'iphone_bot/tests/test_line_history.cjs'
@@ -34,6 +35,7 @@ on:
       - 'tests/test_pick_hit_sort.cjs'
       - 'tests/test_nfl_matchup_evidence.cjs'
       - 'tests/test_open_tab_release.cjs'
+      - 'tests/test_feed_deadlines.cjs'
       - 'iphone_bot/tests/test_dames_take.cjs'
       - 'iphone_bot/verify_dames_picks_browser.py'
       - '.github/workflows/dames-picks-version-e.yml'
@@ -81,3 +83,5 @@ jobs:
         run: python -m iphone_bot.verify_short_history_browser
       - name: Verify actual iPhone-width NBA and NFL DOM, details and exceptions
         run: python -m iphone_bot.verify_dames_picks_browser
+      - name: Verify stalled feed requests cannot hang the board
+        run: node --test tests/test_feed_deadlines.cjs
