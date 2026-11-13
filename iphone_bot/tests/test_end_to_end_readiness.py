@@ -1,6 +1,7 @@
 """Pure offline contract tests for the eight-game readiness audit."""
 import datetime as dt
 import unittest
+from unittest.mock import patch
 from iphone_bot.end_to_end_readiness import evaluate
 
 NOW = dt.datetime(2026, 11, 9, 17, 30, tzinfo=dt.timezone.utc)
@@ -23,6 +24,33 @@ def fixtures():
     return slate, health, production, grades
 
 class ReadinessTests(unittest.TestCase):
+    def test_posttip_uses_frozen_capture_not_expired_live_offer(self):
+        a=fixtures()
+        a[0]["games"][0]["start"]="2026-11-09T16:00:00+00:00"
+        a[1].clear()
+        capture={"game_date_eastern":"2026-11-09","checked_at":NOW.isoformat(),
+                 "games":[{"game":GAME,"frozen_line_backed":4,"standard_markets_without_frozen_model":0}]}
+        result=evaluate(*a,now=NOW,capture=capture)
+        self.assertEqual(result["status"],"READY")
+        capture["games"][0]["standard_markets_without_frozen_model"]=1
+        result=evaluate(*a,now=NOW,capture=capture)
+        self.assertIn("ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL",result["failures"])
+        self.assertNotIn("STALE_PRIZEPICKS_SOURCE",result["failures"])
+        self.assertIn("STALE_OR_MISSING_CAPTURE_AUDIT",evaluate(*a,now=NOW)["failures"])
+
+    def test_validated_season_requires_exact_matchup_not_only_count(self):
+        a=fixtures()
+        a[0]["official_fixture_reconciliation"]={}
+        game=a[0]["games"][0]
+        game.update(away_abbreviation="WAS",home_abbreviation="DET",start="2026-11-09T20:00:00Z")
+        season={"games":[dict(game)]}
+        with patch("iphone_bot.season_schedule_baseline.validate"):
+            result=evaluate(*a,now=NOW,season=season)
+            self.assertEqual(result["status"],"READY")
+            season["games"][0]["away_abbreviation"]="CHA"
+            self.assertIn("INCOMPLETE_VERIFIED_SLATE",evaluate(*a,now=NOW,season=season)["failures"])
+        self.assertIn("INCOMPLETE_VERIFIED_SLATE",evaluate(*a,now=NOW,season=season)["failures"])
+
     def test_healthy_snapshot(self):
         result = evaluate(*fixtures(), now=NOW)
         self.assertEqual(result["status"], "READY")
