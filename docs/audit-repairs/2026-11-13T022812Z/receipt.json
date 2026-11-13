@@ -1,0 +1,2220 @@
+{
+  "status": "PARTIAL",
+  "started_at": "2026-11-13T02:28:12Z",
+  "pinned_main_sha": "1ae04f3ad40c0042c5dc7586d52c60ea237fc94d",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "capabilities": {
+    "github_read_write_merge": true,
+    "local_execution": true,
+    "public_site_reachable": true,
+    "administration": false
+  },
+  "counts": {
+    "new_defects": 1,
+    "carried_forward_repairs": 1,
+    "merged_repairs": 2,
+    "verified_production_repairs": 1,
+    "missing_primary_forecasts_recovered": 0
+  },
+  "repairs": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "pr": 370,
+      "commit": "97e0ae9e6ab8e8c11dbf70a2464f3f93144fa2ed",
+      "root_cause": "Required stale schedule and pretip forecast inputs lacked recovery routing.",
+      "change": "Carry forward existing passing PR, add no-cost routing and isolate PR concurrency; keep post-tip generation prohibited.",
+      "files": [
+        "iphone_bot/readiness_recovery.py",
+        ".github/workflows/production_readiness.yml",
+        "iphone_bot/tests/test_readiness_recovery.py",
+        "iphone_bot/tests/test_audit_ai_forecast_coverage.py"
+      ],
+      "checks": "Four GitHub checks passed before merge.",
+      "post_merge_run": 43352506293,
+      "verification": "Deployed and post-merge workflow executed; stale-schedule/pregame recovery routes not naturally exercised because inputs were ready and all games had tipped. No live forecast-recovery claim.",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/370",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/97e0ae9e6ab8e8c11dbf70a2464f3f93144fa2ed"
+    },
+    {
+      "id": "R2",
+      "severity": "high",
+      "pr": 373,
+      "commit": "6f9a42f52508d825fc91e072f195b9eae8b9a79a",
+      "root_cause": "First syntactically valid live CDN response returned before slate/freshness validation; stale HTTP 200 prevented trying the S3 endpoint.",
+      "change": "Validate rows within endpoint loop; try alternate live endpoint on semantic rejection; fail closed if both invalid.",
+      "files": [
+        "iphone_bot/refresh_independent_scoreboard.py",
+        "iphone_bot/tests/test_independent_scoreboard.py"
+      ],
+      "tests_passed": 21,
+      "ci_run": 43352686619,
+      "production_run": 43352897638,
+      "production_job": 131648048583,
+      "publication_commit": "2e7f420",
+      "production_generated_at": "2026-11-13T02:33:00.387516+00:00",
+      "verification": "Post-merge real collection succeeded with four games and no errors; stale-CDN-to-S3 transition tested with regression fixtures, not deliberately induced in production.",
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/373",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/6f9a42f52508d825fc91e072f195b9eae8b9a79a"
+    }
+  ],
+  "inventory": {
+    "active_branch_heads": 372,
+    "discoverable_pr_tips": 371,
+    "refs_checked": 743,
+    "method": "Fetched all heads/PR tips; reproduced ancestry inventory locally",
+    "open_at_start": [
+      370,
+      307,
+      272,
+      249,
+      135,
+      132,
+      72,
+      3
+    ],
+    "historical_conflicts": [
+      {
+        "pr": 307,
+        "conflict": true,
+        "details": [
+          "CONFLICT (content): Merge conflict in .github/workflows/live-site-e2e.yml",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/dames_take.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/feeds.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/live_direct.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/release.json",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs",
+          "CONFLICT (content): Merge conflict in scripts/e2e_live_site.py"
+        ]
+      },
+      {
+        "pr": 272,
+        "conflict": false,
+        "details": []
+      },
+      {
+        "pr": 249,
+        "conflict": true,
+        "details": [
+          "CONFLICT (content): Merge conflict in .github/workflows/live-night-integration.yml",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/merge_nba_player_boxscore_publish.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs"
+        ]
+      },
+      {
+        "pr": 135,
+        "conflict": true,
+        "details": [
+          "CONFLICT (content): Merge conflict in docs/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_restored_main_card_coverage.cjs",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_verify_browser_dashboard.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/verify_browser_dashboard.py"
+        ]
+      },
+      {
+        "pr": 132,
+        "conflict": false,
+        "details": []
+      },
+      {
+        "pr": 72,
+        "conflict": false,
+        "details": []
+      },
+      {
+        "pr": 3,
+        "conflict": true,
+        "details": [
+          "CONFLICT (content): Merge conflict in .github/workflows/nba-schedule.yml"
+        ]
+      }
+    ],
+    "exceptions": [
+      "Deleted unreachable branches without PR tips not discoverable.",
+      "Ancestry checks are not semantic validation of every branch.",
+      "Concurrent changes after pinned fetch are not included in the initial inventory."
+    ]
+  },
+  "static_audit": {
+    "repository": "damiensandoval77-lang/Sports-Bot",
+    "audited_ref": "1ae04f3ad40c0042c5dc7586d52c60ea237fc94d",
+    "checked_at": "2026-11-13T02:28:59.588521+00:00",
+    "scope": "Every tracked Python, JS, JSON, shell and workflow YAML source file; static validation",
+    "counts": {
+      "tracked_files": 1111,
+      "extension:.yml": 174,
+      "extension:": 3,
+      "extension:.md": 21,
+      "extension:.live-tracker": 1,
+      "extension:.csv": 42,
+      "extension:.json": 190,
+      "json_parse_pass": 190,
+      "extension:.py": 550,
+      "python_ast_pass": 550,
+      "extension:.js": 7,
+      "node_syntax_pass": 32,
+      "extension:.html": 3,
+      "extension:.webmanifest": 1,
+      "extension:.gz": 92,
+      "extension:.txt": 2,
+      "extension:.cjs": 25,
+      "workflows_total": 174,
+      "workflow_jobs": 183,
+      "pr_workflows": 101,
+      "manually_dispatchable": 149,
+      "workflow_steps": 1156,
+      "actions_not_sha_pinned": 406,
+      "runtime_test_commands_unguarded_steps": 78,
+      "scheduled_workflows": 83,
+      "continue_on_error_steps": 35,
+      "workflow_push_steps": 97,
+      "workflow_run_triggers": 9
+    },
+    "workflow_names": {
+      ".github/workflows/assist-v2-research.yml": "Assist V2 research validation",
+      ".github/workflows/assist-v2-shadow.yml": "Assist V2 pregame shadow capture and verified settlement",
+      ".github/workflows/audit-ai-forecast-coverage.yml": "Audit immutable NBA forecast grading completeness",
+      ".github/workflows/authoritative-nba-grading-reconciliation.yml": "Authoritative NBA nightly grading reconciliation - fail closed",
+      ".github/workflows/confidence-readiness-research.yml": "Research Confidence Readiness (offline)",
+      ".github/workflows/cross-domain-reliability-audit.yml": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+      ".github/workflows/dames-picks-app-release-gate.yml": "Dame's Picks unified NBA + NFL app release gate",
+      ".github/workflows/dames-picks-recovery-regressions.yml": "Dame's Picks recovery regressions",
+      ".github/workflows/dames-picks-version-e.yml": "Dame's Picks integrated Version E CI",
+      ".github/workflows/dashboard-ui-check.yml": "Validate Sports-Bot dashboard navigation",
+      ".github/workflows/dunkapi-import-one-game.yml": "Import one DunkAPI historical NBA game",
+      ".github/workflows/dunkapi-probe.yml": "Probe DunkAPI historical NBA props",
+      ".github/workflows/end_to_end_readiness.yml": "Phase 1 end-to-end eight-game reliability check",
+      ".github/workflows/espn-live-json-resilience.yml": "ESPN live backup JSON resilience",
+      ".github/workflows/external_stats_snapshot_tests.yml": "External stats research snapshot validation (no provider calls)",
+      ".github/workflows/freeze_baseline_pregame_quotes.yml": "Automatically lock verified NBA pretip lines with saved baseline AI",
+      ".github/workflows/full-repository-audit.yml": "Full repository static and workflow architecture audit",
+      ".github/workflows/grade-standard-quote-ai-research.yml": "Grade immutable standard-line AI research receipts (credit free)",
+      ".github/workflows/grade_automatic_baseline_join.yml": "Grade immutable baseline NBA quote-paired forecasts from verified finals",
+      ".github/workflows/grade_frozen_ai_forecasts.yml": "Grade frozen pretip AI forecasts against verified NBA finals",
+      ".github/workflows/grade_frozen_baseline_join.yml": "Grade prospective frozen baseline PrizePicks markets with real finals",
+      ".github/workflows/hide-tipped-ai-props-tests.yml": "Hide tipped-off AI props (offline UI tests)",
+      ".github/workflows/independent_nba_player_boxscores.yml": "Independent NBA player boxscores",
+      ".github/workflows/independent_scoreboard_refresh.yml": "Independent NBA scoreboard refresh",
+      ".github/workflows/inspect-prizepicks-compact.yml": "Inspect PrizePicks compact field shape once",
+      ".github/workflows/live-night-integration.yml": "Live-night deployed ESPN integration (read-only)",
+      ".github/workflows/live-site-e2e.yml": "Live deployed Dame's Picks iPhone browser E2E",
+      ".github/workflows/model-disagreement-research.yml": "Model Disagreement Research Tests (offline)",
+      ".github/workflows/nba-20k-stress-research.yml": "NBA 20K Stress Research Tests (offline)",
+      ".github/workflows/nba-ai-comparisons.yml": "Update experimental AI sportsbook comparisons",
+      ".github/workflows/nba-ai-record.yml": "Settle immutable NBA AI record from completed box scores",
+      ".github/workflows/nba-assist-night-comparison.yml": "Publish actual assist model grades by Eastern game night",
+      ".github/workflows/nba-audit-real-props.yml": "Audit saved real NBA props (no API credits)",
+      ".github/workflows/nba-backtest-provisional.yml": "Backtest NBA model probabilities (synthetic lines)",
+      ".github/workflows/nba-backtest-real-market.yml": "Backtest NBA against recorded real sportsbook lines",
+      ".github/workflows/nba-build-dataset.yml": "Build NBA historical training dataset",
+      ".github/workflows/nba-consensus-test.yml": "Test sportsbook consensus without odds API calls",
+      ".github/workflows/nba-cross-market-coherence.yml": "NBA cross-market projection coherence audit",
+      ".github/workflows/nba-current-form.yml": "Update 2026-27 NBA player recent form",
+      ".github/workflows/nba-defender-rotation.yml": "Evaluate individual NBA defender rotation signals",
+      ".github/workflows/nba-defender-v3-research.yml": "NBA Defender Matchup V3 Research (no live model changes)",
+      ".github/workflows/nba-defense-challenger.yml": "Evaluate opponent-aware NBA challenger",
+      ".github/workflows/nba-durable-research-tests.yml": "Validate NBA Research Storage Integrity (offline)",
+      ".github/workflows/nba-expanded-matchup-holdout.yml": "Expanded NBA pregame matchup historical research",
+      ".github/workflows/nba-extreme-miss-forensics.yml": "Extreme NBA Miss Forensics (offline)",
+      ".github/workflows/nba-fast-injury-reprojection.yml": "Refresh NBA AI projections after official injury changes (no paid odds)",
+      ".github/workflows/nba-free-official-injury-watch.yml": "Free NBA official injury changes and AI refresh",
+      ".github/workflows/nba-full-game-lifecycle.yml": "NBA full-game lifecycle and next-slate readiness gate",
+      ".github/workflows/nba-grading-overdue.yml": "Detect overdue verified NBA finals and missing forecast grades",
+      ".github/workflows/nba-historical-minutes.yml": "Validate historical NBA minutes across seasons (research only)",
+      ".github/workflows/nba-hoopr-schedule-probe.yml": "Probe alternate full 2026-27 NBA schedule data source",
+      ".github/workflows/nba-injury-ai-recovery.yml": "NBA injury-to-AI self-recovery watchdog (free)",
+      ".github/workflows/nba-kaggle-file-list.yml": "List Kaggle NBA individual files without large download",
+      ".github/workflows/nba-kaggle-range-inspect.yml": "Inspect Kaggle NBA archive index by HTTPS byte range",
+      ".github/workflows/nba-kaggle-schema-audit.yml": "Inspect Kaggle NBA archive files before model ingestion",
+      ".github/workflows/nba-kaggle-source-audit.yml": "Audit public Kaggle NBA historical dataset coverage",
+      ".github/workflows/nba-lagged-matchup-training.yml": "Season-separated lagged matchup research training",
+      ".github/workflows/nba-live-lagged-challenger.yml": "Guarded live NBA points challenger (independent sidecar)",
+      ".github/workflows/nba-live-matchup-tracker-tests.yml": "NBA Live Matchup Tracker (offline)",
+      ".github/workflows/nba-live-research-checkpoints.yml": "Save live NBA player box score research checkpoints",
+      ".github/workflows/nba-live-tracker-backup.yml": "Backup NBA live player tracker observations (no sportsbook API)",
+      ".github/workflows/nba-live-tracker-external-verification.yml": "Verify externally hosted NBA live tracker end to end",
+      ".github/workflows/nba-live-tracker-v2-tests.yml": "Started NBA matchup live tracker, pace and iPhone fallback (offline)",
+      ".github/workflows/nba-main-card-coverage.yml": "NBA main board eight-game card coverage and injury display gate",
+      ".github/workflows/nba-market-refresh.yml": "Refresh full-slate NBA sportsbook props (lightweight)",
+      ".github/workflows/nba-minutes-v3-opportunity-v2.yml": "Joint Minutes V3 and AST-REB Opportunity V2 historical backtest",
+      ".github/workflows/nba-model-readiness.yml": "NBA AI model readiness",
+      ".github/workflows/nba-moneylines.yml": "Refresh verified NBA sportsbook game moneylines",
+      ".github/workflows/nba-new-ai-all-markets.yml": "Guarded new NBA AI all markets PTS REB AST PRA",
+      ".github/workflows/nba-new-ai-multimarket-grade.yml": "Grade frozen new AI PTS REB AST PRA (no provider credits)",
+      ".github/workflows/nba-new-model-points-grading.yml": "Grade frozen new-model NBA points forecasts (no provider credits)",
+      ".github/workflows/nba-no-line-daily-projections.yml": "Publish daily NBA AI player projections without paid prop lines",
+      ".github/workflows/nba-odds-budget-coverage-tests.yml": "NBA Odds Budget and Full-Slate Coverage Tests (offline)",
+      ".github/workflows/nba-odds-current-balance.yml": "Verify current Odds API credits without paying for prop markets",
+      ".github/workflows/nba-offensive-involvement-holdout.yml": "Historical offensive involvement vs baseline (research only)",
+      ".github/workflows/nba-opportunity-shadow-tests.yml": "Validate assist/rebound opportunity models independent of live lines",
+      ".github/workflows/nba-position-defense.yml": "Evaluate defense versus NBA player position",
+      ".github/workflows/nba-postgame-settlement.yml": "Settle saved NBA props using verified final player box scores",
+      ".github/workflows/nba-pregame-ai-archive.yml": "Preserve last genuine NBA pregame AI predictions",
+      ".github/workflows/nba-prizepicks-ai-board.yml": "Train NBA AI against verified current PrizePicks pick'em lines (no sportsbook API)",
+      ".github/workflows/nba-prizepicks-ai-offline-tests.yml": "Verify PrizePicks-only NBA AI research (offline)",
+      ".github/workflows/nba-prizepicks-ai-research.yml": "Research AI projections for independent PrizePicks NBA lines",
+      ".github/workflows/nba-prizepicks-current-balance.yml": "Check funded independent PrizePicks API key and current quota",
+      ".github/workflows/nba-prizepicks-full-slate.yml": "Refresh independent NBA PrizePicks full-slate lines",
+      ".github/workflows/nba-prizepicks-research-ledger.yml": "Freeze and grade authentic pregame PrizePicks AI research",
+      ".github/workflows/nba-prizepicks-rest-setup.yml": "PrizePicks authenticated REST onboarding and NBA model sample",
+      ".github/workflows/nba-prizepicks-sample-backtest-tests.yml": "Validate historical PrizePicks sample joins and backtest",
+      ".github/workflows/nba-prizepicks-site-publish.yml": "Publish lightweight PrizePicks site data and per-game coverage",
+      ".github/workflows/nba-prizepicks-topup-verification.yml": "Verify funded PrizePicks top-up availability (single API page)",
+      ".github/workflows/nba-projection-upgrade-research.yml": "NBA Projection Upgrade Research Audit (research only)",
+      ".github/workflows/nba-props.yml": "Update NBA sportsbook props",
+      ".github/workflows/nba-publish-research.yml": "Publish experimental NBA model forecasts",
+      ".github/workflows/nba-published-pick-settlement.yml": "Verify and self-heal published NBA pick settlement",
+      ".github/workflows/nba-real-results.yml": "Grade actual completed NBA paper picks (no paid odds calls)",
+      ".github/workflows/nba-rebound-shadow-validation.yml": "Verify pregame rebound challenger before research scoring",
+      ".github/workflows/nba-research-prospective-capture-tests.yml": "Prospective NBA Research Coverage Guards (offline)",
+      ".github/workflows/nba-research-storage-integrity.yml": "Audit saved NBA games, predictions, quotes and research evidence",
+      ".github/workflows/nba-schedule.yml": "Publish full NBA daily schedule (independent of sportsbook)",
+      ".github/workflows/nba-scores.yml": "Refresh NBA game scores using existing authorized odds provider",
+      ".github/workflows/nba-season-horizon-audit.yml": "Verify full NBA season and upcoming 14-day fixture coverage",
+      ".github/workflows/nba-shooting-efficiency-v1.yml": "Backtest Shooting Efficiency V1 vs historical and frozen Combined AI",
+      ".github/workflows/nba-slate-coverage-health.yml": "Audit NBA slate versus verified sportsbook props (no API credits)",
+      ".github/workflows/nba-slate-resilience-tests.yml": "NBA Slate Resilience Tests (no odds API calls)",
+      ".github/workflows/nba-tonight-capture-gradeability.yml": "Verify tonight NBA frozen lines predictions and grades",
+      ".github/workflows/nba-tracking-coverage.yml": "Keep NBA tracking opportunity coverage transparent",
+      ".github/workflows/nba-tracking-opportunities-validation.yml": "Validate authorized NBA tracking chance research without live model changes",
+      ".github/workflows/nba-tracking-provider-access.yml": "Inspect NBA potential-assist and rebound-chance provider safely",
+      ".github/workflows/nba-train-provisional.yml": "Train NBA provisional prediction models",
+      ".github/workflows/nba-trained-ai-board.yml": "Publish trained NBA AI props for every available game",
+      ".github/workflows/nba-ui-integrity.yml": "Validate NBA dashboard against false probability confidence",
+      ".github/workflows/nba-underprojection-research.yml": "NBA Underprojection Research Audit (offline)",
+      ".github/workflows/nfl-boxscores-publish.yml": "Publish verified NFL final boxscores",
+      ".github/workflows/nfl-live-tracker.yml": "NFL live player-stat snapshots",
+      ".github/workflows/nfl-live-ui-qa.yml": "NFL production site and mobile visual QA",
+      ".github/workflows/nfl-pick-grading.yml": "NFL frozen-pick grading and accuracy ledger",
+      ".github/workflows/nfl-private-sync.yml": "Sync private NFL lines for public grading",
+      ".github/workflows/nfl-reconciliation-ci.yml": "NFL postgame reconciliation tests",
+      ".github/workflows/nfl-schedule-publish.yml": "Publish complete NFL season schedule",
+      ".github/workflows/nfl-ui-smoke.yml": "NFL player card UI smoke tests",
+      ".github/workflows/nightly_grade_date_audit.yml": "Phase 1 verify nightly paper grades by Eastern game date",
+      ".github/workflows/nightly_settlement_health.yml": "Verify overnight NBA grading completeness",
+      ".github/workflows/official_nba_fixture_reconciliation.yml": "Reconcile official NBA games before picks",
+      ".github/workflows/opponent_simulation_tests.yml": "Opponent-conditioned 20K simulation regression (no provider credits)",
+      ".github/workflows/pages-controlled.yml": "Controlled Sports-Bot GitHub Pages deployment",
+      ".github/workflows/pbpstats-connectivity-probe.yml": "Verify public PBP Stats API reachability (metadata only)",
+      ".github/workflows/pbpstats-current-season-probe.yml": "One-time 2026-27 PBP Stats historical ON-OFF availability (metadata only)",
+      ".github/workflows/pbpstats-onoff-coverage-probe.yml": "One-time PBP Stats current-season game-level overlap audit",
+      ".github/workflows/pbpstats-wowy-validation.yml": "Validate PBP Stats WOWY adapter and full offline pipeline",
+      ".github/workflows/phase1-e2e-grading.yml": "Phase 1 end-to-end grading acceptance (offline)",
+      ".github/workflows/phase1-free-recovery.yml": "Phase 1 credit-free source recovery coordinator",
+      ".github/workflows/phase1-live-service-replit.yml": "Phase 1 deployable live service smoke (offline)",
+      ".github/workflows/phase1_board_readiness.yml": "Phase 1 pregame board readiness",
+      ".github/workflows/phase1_dashboard_scoreboard.yml": "Phase 1 dashboard scoreboard integration",
+      ".github/workflows/phase1_data_integrity.yml": "Phase 1 data integrity",
+      ".github/workflows/phase1_feed_health.yml": "Phase 1 feed health audit",
+      ".github/workflows/phase1_real_pp_join.yml": "Phase 1 real PrizePicks and AI join regression",
+      ".github/workflows/pipeline-contracts.yml": "pipeline-contracts",
+      ".github/workflows/pipeline-heartbeat.yml": "Pipeline heartbeat - deployed lines picks live and grades",
+      ".github/workflows/pregame_coverage_watchdog.yml": "NBA pretip per-game forecast freeze and comparison watchdog",
+      ".github/workflows/prizepicks-full-board-tests.yml": "PrizePicks NBA full board and UI validation (offline)",
+      ".github/workflows/prizepicks_nba_collector.yml": "PrizePicks NBA collector (manual and quota guarded)",
+      ".github/workflows/production_readiness.yml": "NBA production readiness and stability gate",
+      ".github/workflows/publish_live_pp_ai_join.yml": "Publish lightweight verified PrizePicks AI comparisons",
+      ".github/workflows/readiness.yml": "NBA Bot Readiness Check",
+      ".github/workflows/refresh_ai_forecast_coverage_audit.yml": "Refresh immutable NBA AI grading coverage for merged Dame's Picks",
+      ".github/workflows/reliability_guardrails.yml": "Reliability guardrails tests",
+      ".github/workflows/research-current-position-defense.yml": "Prospective NBA listed-position defensive research",
+      ".github/workflows/research-defensive-rating-source.yml": "Verify current NBA team defensive rating source",
+      ".github/workflows/research-matchup-asof-audit.yml": "Audit matchup pretip feature provenance (research only)",
+      ".github/workflows/research-matchup-hit-estimate.yml": "Research matchup hit estimate (not production)",
+      ".github/workflows/research-matchup-prospective-calibration.yml": "Prospective matchup probability accuracy and calibration",
+      ".github/workflows/research-matchup-shadow-tests.yml": "Test analytical matchup shadow without sportsbook API",
+      ".github/workflows/research-official-defense-history.yml": "Research official NBA opponent-defense history backfill",
+      ".github/workflows/research-pregame-evidence.yml": "Capture sourced NBA pregame context for research",
+      ".github/workflows/sanity-shadow-grading-research.yml": "Sanity Shadow Grading Research (offline)",
+      ".github/workflows/sanity-shadow-v1-research.yml": "Sanity Shadow V1 Research (offline)",
+      ".github/workflows/test_final_transition_grade_trigger.yml": "Test final-only NBA grade wake-up",
+      ".github/workflows/test_hoopr_schedule_integrity.yml": "Protect verified NBA game counts from schedule overwrite",
+      ".github/workflows/test_pregame_line_archive.yml": "Verify persistent pretip PrizePicks line archive",
+      ".github/workflows/underdog-nba-injury-watch.yml": "Monitor authenticated Underdog NBA OUT reports",
+      ".github/workflows/underdog-xurl-connection-test.yml": "Diagnose Underdog NBA X API connection with xurl",
+      ".github/workflows/unified-dames-picks-readiness.yml": "Unified Dame's Picks NBA + NFL integrity",
+      ".github/workflows/unified-reliability-research.yml": "Unified NBA Reliability Research Tests",
+      ".github/workflows/verified-research-no-play-tests.yml": "Verify source-linked NBA research no-play exclusions",
+      ".github/workflows/verify-dames-picks-public.yml": "Verify live Dame's Picks layout",
+      ".github/workflows/verify-live-tracker-espn.yml": "Verify deployed NBA live tracker and ESPN player stats",
+      ".github/workflows/verify-prizepicks-credits.yml": "Verify PrizePicks API credits once",
+      ".github/workflows/verify-public-board-diagnostics.yml": "Verify clean public mobile board and opt-in diagnostics",
+      ".github/workflows/verify-public-dames-release.yml": "Verify PUBLIC Dame's Picks release matches main",
+      ".github/workflows/verify-public-matchup-preview.yml": "Verify real public mobile matchup estimates are visible",
+      ".github/workflows/verify_browser_dashboard.yml": "Verify rendered NBA PrizePicks AI cards in public mobile browser",
+      ".github/workflows/verify_live_pregame_line_browser.yml": "Check saved pregame lines in started NBA matchup cards",
+      ".github/workflows/verify_public_dashboard.yml": "Verify public Sports-Bot dashboard deployment and real JSON",
+      ".github/workflows/verify_unified_dames_browser.yml": "Verify public unified Dame's Picks NBA + NFL browser"
+    },
+    "workflow_edges": [
+      {
+        "from": ".github/workflows/full-repository-audit.yml",
+        "to": "phase1-free-recovery.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/grade_frozen_ai_forecasts.yml",
+        "to": "nba-new-ai-multimarket-grade.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": "pages build and deployment",
+        "to": ".github/workflows/live-site-e2e.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Controlled Sports-Bot GitHub Pages deployment",
+        "to": ".github/workflows/live-site-e2e.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": ".github/workflows/nba-free-official-injury-watch.yml",
+        "to": "nba-new-ai-all-markets.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-injury-ai-recovery.yml",
+        "to": "nba-new-ai-all-markets.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-live-tracker-backup.yml",
+        "to": "grade_frozen_ai_forecasts.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-new-ai-all-markets.yml",
+        "to": "nba-tonight-capture-gradeability.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-prizepicks-full-slate.yml",
+        "to": "nba-prizepicks-site-publish.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+        "to": "nba-tonight-capture-gradeability.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+        "to": "nba-prizepicks-ai-board.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+        "to": "nba-new-ai-all-markets.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+        "to": "nba-prizepicks-ai-research.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+        "to": "publish_live_pp_ai_join.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": "Publish trained NBA AI props for every available game",
+        "to": ".github/workflows/nba-projection-upgrade-research.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Settle saved NBA props using verified final player box scores",
+        "to": ".github/workflows/nba-projection-upgrade-research.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Guarded new NBA AI all markets PTS REB AST PRA",
+        "to": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Publish lightweight PrizePicks site data and per-game coverage",
+        "to": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Publish verified NFL final boxscores",
+        "to": ".github/workflows/nfl-pick-grading.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Sync private NFL lines for public grading",
+        "to": ".github/workflows/nfl-pick-grading.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Freeze and grade authentic pregame PrizePicks AI research",
+        "to": ".github/workflows/nightly_settlement_health.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Grade frozen pretip AI forecasts against verified NBA finals",
+        "to": ".github/workflows/nightly_settlement_health.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": ".github/workflows/official_nba_fixture_reconciliation.yml",
+        "to": "independent_scoreboard_refresh.yml",
+        "type": "dispatch"
+      },
+      {
+        "from": "Publish lightweight PrizePicks site data and per-game coverage",
+        "to": ".github/workflows/pipeline-heartbeat.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Guarded new NBA AI all markets PTS REB AST PRA",
+        "to": ".github/workflows/pipeline-heartbeat.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Independent NBA scoreboard refresh",
+        "to": ".github/workflows/pipeline-heartbeat.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Independent NBA player boxscores",
+        "to": ".github/workflows/pipeline-heartbeat.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Grade frozen new AI PTS REB AST PRA (no provider credits)",
+        "to": ".github/workflows/pipeline-heartbeat.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Verify tonight NBA frozen lines predictions and grades",
+        "to": ".github/workflows/production_readiness.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Publish daily NBA AI player projections without paid prop lines",
+        "to": ".github/workflows/production_readiness.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Publish lightweight verified PrizePicks AI comparisons",
+        "to": ".github/workflows/production_readiness.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Backup NBA live player tracker observations (no sportsbook API)",
+        "to": ".github/workflows/production_readiness.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Independent NBA player boxscores",
+        "to": ".github/workflows/production_readiness.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Verify tonight NBA frozen lines predictions and grades",
+        "to": ".github/workflows/unified-dames-picks-readiness.yml",
+        "type": "workflow_run"
+      },
+      {
+        "from": "Publish lightweight verified PrizePicks AI comparisons",
+        "to": ".github/workflows/verify_unified_dames_browser.yml",
+        "type": "workflow_run"
+      }
+    ],
+    "data_evidence": {
+      "docs/nightly_grade_health.json": {
+        "present": true,
+        "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+        "generated_at": null,
+        "checked_at": "2026-11-13T02:06:46.073117+00:00",
+        "release_id": null,
+        "failures": null,
+        "ai_forecasts_recorded": 984,
+        "ai_forecasts_ungraded": 0,
+        "ai_forecasts_graded": 808
+      },
+      "docs/tonight_capture_gradeability.json": {
+        "present": true,
+        "status": "CAPTURE_INCOMPLETE",
+        "generated_at": null,
+        "checked_at": "2026-11-13T02:17:08.671842+00:00",
+        "release_id": null,
+        "failures": [
+          "Detroit Pistons @ Washington Wizards: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+          "Toronto Raptors @ Philadelphia 76ers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+          "Dallas Mavericks @ Minnesota Timberwolves: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+          "Charlotte Hornets @ Phoenix Suns: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      "docs/production_readiness.json": {
+        "present": true,
+        "status": "BLOCKED",
+        "generated_at": null,
+        "checked_at": "2026-11-13T02:20:44.315813+00:00",
+        "release_id": null,
+        "failures": null
+      },
+      "docs/pregame_lifecycle_readiness.json": {
+        "present": true,
+        "status": "NOT_READY",
+        "generated_at": "2026-11-13T01:54:33.780369+00:00",
+        "checked_at": null,
+        "release_id": null,
+        "failures": [
+          "SOME_SCHEDULED_GAMES_WITHOUT_SAVED_VERIFIED_LINES"
+        ]
+      },
+      "docs/lagged_matchup_live_all_markets.json": {
+        "present": true,
+        "status": "LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
+        "generated_at": "2026-11-13T02:16:49.841522+00:00",
+        "checked_at": null,
+        "release_id": null,
+        "failures": null
+      },
+      "docs/dames-picks/release.json": {
+        "present": true,
+        "status": null,
+        "generated_at": null,
+        "checked_at": null,
+        "release_id": "dp-nfl-provider-event-20261113-r28",
+        "failures": null
+      },
+      "docs/dames-picks/unified_readiness.json": {
+        "present": true,
+        "status": "DEGRADED",
+        "generated_at": null,
+        "checked_at": "2026-11-13T02:27:47.112474+00:00",
+        "release_id": null,
+        "failures": null
+      }
+    },
+    "findings": [
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/assist-v2-research.yml",
+        "detail": "research: Syntax and unit tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/assist-v2-shadow.yml",
+        "detail": "shadow: Verify V2 research safety checks"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/confidence-readiness-research.yml",
+        "detail": "offline-tests: Test confidence audit and existing combined proxy validation"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test published browser coverage notification"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test evidence-based DNP exclusions"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test heartbeat freshness and missing capture"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+        "detail": "recovery-regressions: Test frozen model ledger and grade preservation"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dashboard-ui-check.yml",
+        "detail": "dashboard_ui: Verify real AI forecasts render without a sportsbook quote"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dashboard-ui-check.yml",
+        "detail": "dashboard_ui: Offline tests for the independent public deployment probe"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/dashboard-ui-check.yml",
+        "detail": "dashboard_ui: Verify fresh authentic PrizePicks line + AI direction fallback"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/end_to_end_readiness.yml",
+        "detail": "verify: Test fail-closed coverage and grading checks (no API requests)"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Run offline snapshot contract tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test point-in-time ID joins and leakage guards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test paired shadow evaluation and leakage safeguards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test prospective model promotion safeguards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Validate expanded opponent, minutes and injury isolation"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/external_stats_snapshot_tests.yml",
+        "detail": "offline-snapshot-tests: Test verified official usage, injury and positional pretip gates"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/full-repository-audit.yml",
+        "detail": "static-audit: Test recovery outcome verification"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/live-night-integration.yml",
+        "detail": "check: Validate live source without paid provider access"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-consensus-test.yml",
+        "detail": "test: Verify consensus and paired bookmaker quotas"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-defender-rotation.yml",
+        "detail": "defender-research: Validate leakage controlled individual defender features"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-defense-challenger.yml",
+        "detail": "evaluate: Test prior-game-only defensive features"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-expanded-matchup-holdout.yml",
+        "detail": "test-and-backtest: Run matchup and injury-source isolation regression tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-injury-ai-recovery.yml",
+        "detail": "check-and-recover: Validate injury-to-model version and recovery decisions"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-lagged-matchup-training.yml",
+        "detail": "train-and-evaluate: Guard feature time and missing-data handling"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-main-card-coverage.yml",
+        "detail": "verify: Test live standard PrizePicks card coverage and isolated injury updates"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-new-ai-all-markets.yml",
+        "detail": "preserved-matchup-previews: Test exact archived preview identities and provenance"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-new-ai-all-markets.yml",
+        "detail": "provisional-baseline: Test isolated provisional cohort and safety guards"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-new-ai-all-markets.yml",
+        "detail": "short-history-research: Test chronological cohort and fail-closed inference"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-no-line-daily-projections.yml",
+        "detail": "predict: Protect immutable price-free pregame forecasts"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-offensive-involvement-holdout.yml",
+        "detail": "historical-research: Verify temporal and opportunity proxy contracts"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-opportunity-shadow-tests.yml",
+        "detail": "validation: Validate time-safe tracking history and paired assist/rebound models"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-position-defense.yml",
+        "detail": "position-research: Validate DvP feature construction"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-pregame-ai-archive.yml",
+        "detail": "archive: Preserve a lossless dated immutable pregame archive for future research"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-ai-board.yml",
+        "detail": "ai_board: Check genuine, fresh NBA pick'em lines"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-ai-board.yml",
+        "detail": "ai_board: Validate and import current NBA player shooting rates for research only"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-ai-research.yml",
+        "detail": "predict: Prove price-less model output cannot invent picks or confidence"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-rest-setup.yml",
+        "detail": "rest_setup: Backtest sample against strictly earlier confirmed NBA game logs"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-prizepicks-sample-backtest-tests.yml",
+        "detail": "validate: Validate historical join and backtest without any API calls"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-projection-upgrade-research.yml",
+        "detail": "projection_research: Verify pregame isolation, injury dates and calibration"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-real-results.yml",
+        "detail": "grade: Validate paper pick invariants and dashboard JavaScript"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-rebound-shadow-validation.yml",
+        "detail": "verify: Compile and run full REB prospective integrity tests"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-shooting-efficiency-v1.yml",
+        "detail": "audit: Validate and import current NBA player shooting rates for research only"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-tracking-opportunities-validation.yml",
+        "detail": "validate: Test tracked chances, data cutoffs, snapshot integrity and exact-line grading"
+      },
+      {
+        "severity": "WARN",
+        "code": "PRODUCTION_UNIT_TEST_GATE",
+        "path": ".github/workflows/nba-trained-ai-board.yml",
+        "detail": "trained_board: Validate and import current NBA player shooting rates for research only"
+      }
+    ],
+    "errors": 0,
+    "warnings": 45
+  },
+  "workflow_coverage": {
+    "definitions_checked": 174,
+    "sampled_runs": 600,
+    "sampled_paths": 67,
+    "definitions_without_runtime_sample": 108,
+    "matrix": "workflows.json",
+    "failed_runs": [
+      {
+        "id": 43352524928,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:29:29Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43352524928"
+      },
+      {
+        "id": 43352506293,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:29:19Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43352506293"
+      },
+      {
+        "id": 43352495424,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:29:13Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43352495424"
+      },
+      {
+        "id": 43352318385,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:27:37Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43352318385"
+      },
+      {
+        "id": 43351399561,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:19:57Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43351399561"
+      },
+      {
+        "id": 43351322228,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:19:19Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43351322228"
+      },
+      {
+        "id": 43351113292,
+        "path": ".github/workflows/verify_unified_dames_browser.yml",
+        "name": "Verify public unified Dame's Picks NBA + NFL browser",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:17:36Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43351113292"
+      },
+      {
+        "id": 43351113183,
+        "path": ".github/workflows/verify-public-board-diagnostics.yml",
+        "name": "Verify clean public mobile board and opt-in diagnostics",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:17:36Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43351113183"
+      },
+      {
+        "id": 43351113141,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:17:36Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43351113141"
+      },
+      {
+        "id": 43351029903,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:16:57Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43351029903"
+      },
+      {
+        "id": 43350394001,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:11:40Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43350394001"
+      },
+      {
+        "id": 43350094399,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:09:14Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43350094399"
+      },
+      {
+        "id": 43350094352,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:09:14Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43350094352"
+      },
+      {
+        "id": 43349636446,
+        "path": ".github/workflows/cross-domain-reliability-audit.yml",
+        "name": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:05:31Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43349636446"
+      },
+      {
+        "id": 43349564918,
+        "path": ".github/workflows/dames-picks-version-e.yml",
+        "name": "Dame's Picks integrated Version E CI",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:04:59Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43349564918"
+      },
+      {
+        "id": 43349564783,
+        "path": ".github/workflows/pipeline-contracts.yml",
+        "name": "pipeline-contracts",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:04:59Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43349564783"
+      },
+      {
+        "id": 43349462785,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:04:07Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43349462785"
+      },
+      {
+        "id": 43349228945,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:02:11Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43349228945"
+      },
+      {
+        "id": 43348957953,
+        "path": ".github/workflows/pipeline-contracts.yml",
+        "name": "pipeline-contracts",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T02:00:05Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43348957953"
+      },
+      {
+        "id": 43348258578,
+        "path": ".github/workflows/nba-full-game-lifecycle.yml",
+        "name": "NBA full-game lifecycle and next-slate readiness gate",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:54:00Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43348258578"
+      },
+      {
+        "id": 43348015694,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:51:56Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43348015694"
+      },
+      {
+        "id": 43348007861,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:51:52Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43348007861"
+      },
+      {
+        "id": 43348007771,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:51:52Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43348007771"
+      },
+      {
+        "id": 43347979592,
+        "path": ".github/workflows/phase1_feed_health.yml",
+        "name": "Phase 1 feed health audit",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:51:38Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43347979592"
+      },
+      {
+        "id": 43347970139,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:51:33Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43347970139"
+      },
+      {
+        "id": 43347970112,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:51:33Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43347970112"
+      },
+      {
+        "id": 43347945615,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:51:20Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43347945615"
+      },
+      {
+        "id": 43347848387,
+        "path": ".github/workflows/nba-trained-ai-board.yml",
+        "name": "Publish trained NBA AI props for every available game",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:50:31Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43347848387"
+      },
+      {
+        "id": 43347761930,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:49:48Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43347761930"
+      },
+      {
+        "id": 43347154226,
+        "path": ".github/workflows/dames-picks-app-release-gate.yml",
+        "name": "Dame's Picks unified NBA + NFL app release gate",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:44:39Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43347154226"
+      },
+      {
+        "id": 43346947057,
+        "path": ".github/workflows/end_to_end_readiness.yml",
+        "name": "Phase 1 end-to-end eight-game reliability check",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:42:51Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43346947057"
+      },
+      {
+        "id": 43346263930,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:37:14Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43346263930"
+      },
+      {
+        "id": 43346171235,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:36:27Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43346171235"
+      },
+      {
+        "id": 43346131698,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:36:07Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43346131698"
+      },
+      {
+        "id": 43346131663,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:36:07Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43346131663"
+      },
+      {
+        "id": 43346097645,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:35:51Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43346097645"
+      },
+      {
+        "id": 43346097618,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:35:51Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43346097618"
+      },
+      {
+        "id": 43345966387,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:34:47Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43345966387"
+      },
+      {
+        "id": 43345873893,
+        "path": ".github/workflows/full-repository-audit.yml",
+        "name": "Full repository static and workflow architecture audit",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:34:02Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43345873893"
+      },
+      {
+        "id": 43345618242,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:31:57Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43345618242"
+      },
+      {
+        "id": 43344927527,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:26:24Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43344927527"
+      },
+      {
+        "id": 43344927381,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:26:24Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43344927381"
+      },
+      {
+        "id": 43344895154,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:26:07Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43344895154"
+      },
+      {
+        "id": 43344187945,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:20:34Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43344187945"
+      },
+      {
+        "id": 43343923369,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:18:31Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343923369"
+      },
+      {
+        "id": 43343679203,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:16:36Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343679203"
+      },
+      {
+        "id": 43343424145,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:14:42Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343424145"
+      },
+      {
+        "id": 43343423801,
+        "path": ".github/workflows/verify_unified_dames_browser.yml",
+        "name": "Verify public unified Dame's Picks NBA + NFL browser",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:14:42Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343423801"
+      },
+      {
+        "id": 43343045764,
+        "path": ".github/workflows/nba-grading-overdue.yml",
+        "name": "Detect overdue verified NBA finals and missing forecast grades",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:11:50Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343045764"
+      },
+      {
+        "id": 43343021168,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:11:38Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43343021168"
+      },
+      {
+        "id": 43342940432,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:11:02Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43342940432"
+      },
+      {
+        "id": 43342854657,
+        "path": ".github/workflows/independent_scoreboard_refresh.yml",
+        "name": "Independent NBA scoreboard refresh",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:10:23Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43342854657"
+      },
+      {
+        "id": 43342227164,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:05:34Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43342227164"
+      },
+      {
+        "id": 43342227073,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:05:34Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43342227073"
+      },
+      {
+        "id": 43342109751,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:04:43Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43342109751"
+      },
+      {
+        "id": 43342056643,
+        "path": ".github/workflows/cross-domain-reliability-audit.yml",
+        "name": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:04:19Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43342056643"
+      },
+      {
+        "id": 43341883825,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:03:01Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43341883825"
+      },
+      {
+        "id": 43341488567,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T01:00:04Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43341488567"
+      },
+      {
+        "id": 43341455470,
+        "path": ".github/workflows/pipeline-contracts.yml",
+        "name": "pipeline-contracts",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:59:50Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43341455470"
+      },
+      {
+        "id": 43341386192,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:59:17Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43341386192"
+      },
+      {
+        "id": 43341134647,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:57:12Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43341134647"
+      },
+      {
+        "id": 43341134581,
+        "path": ".github/workflows/verify_unified_dames_browser.yml",
+        "name": "Verify public unified Dame's Picks NBA + NFL browser",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:57:12Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43341134581"
+      },
+      {
+        "id": 43340730995,
+        "path": ".github/workflows/live-site-e2e.yml",
+        "name": "Live deployed Dame's Picks iPhone browser E2E",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:54:04Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43340730995"
+      },
+      {
+        "id": 43339514351,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:44:53Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43339514351"
+      },
+      {
+        "id": 43338878396,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:40:10Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43338878396"
+      },
+      {
+        "id": 43338878286,
+        "path": ".github/workflows/live-site-e2e.yml",
+        "name": "Live deployed Dame's Picks iPhone browser E2E",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:40:10Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43338878286"
+      },
+      {
+        "id": 43337662526,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:30:54Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43337662526"
+      },
+      {
+        "id": 43337642023,
+        "path": ".github/workflows/nba-full-game-lifecycle.yml",
+        "name": "NBA full-game lifecycle and next-slate readiness gate",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:30:45Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43337642023"
+      },
+      {
+        "id": 43337581385,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:30:18Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43337581385"
+      },
+      {
+        "id": 43337555923,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:30:08Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43337555923"
+      },
+      {
+        "id": 43337249489,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:27:45Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43337249489"
+      },
+      {
+        "id": 43337086326,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:26:29Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43337086326"
+      },
+      {
+        "id": 43336813511,
+        "path": ".github/workflows/production_readiness.yml",
+        "name": "NBA production readiness and stability gate",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:24:27Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336813511"
+      },
+      {
+        "id": 43336813444,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:24:27Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336813444"
+      },
+      {
+        "id": 43336768550,
+        "path": ".github/workflows/pipeline-heartbeat.yml",
+        "name": "Pipeline heartbeat - deployed lines picks live and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:24:07Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336768550"
+      },
+      {
+        "id": 43336768499,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_run",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:24:06Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336768499"
+      },
+      {
+        "id": 43336741380,
+        "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+        "name": "Verify tonight NBA frozen lines predictions and grades",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:23:55Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336741380"
+      },
+      {
+        "id": 43336735215,
+        "path": ".github/workflows/phase1_feed_health.yml",
+        "name": "Phase 1 feed health audit",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:23:52Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336735215"
+      },
+      {
+        "id": 43336601103,
+        "path": ".github/workflows/nba-trained-ai-board.yml",
+        "name": "Publish trained NBA AI props for every available game",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:22:53Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336601103"
+      },
+      {
+        "id": 43336420951,
+        "path": ".github/workflows/unified-dames-picks-readiness.yml",
+        "name": "Unified Dame's Picks NBA + NFL integrity",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:21:31Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336420951"
+      },
+      {
+        "id": 43336420929,
+        "path": ".github/workflows/live-site-e2e.yml",
+        "name": "Live deployed Dame's Picks iPhone browser E2E",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:21:31Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43336420929"
+      },
+      {
+        "id": 43335866341,
+        "path": ".github/workflows/independent_scoreboard_refresh.yml",
+        "name": "Independent NBA scoreboard refresh",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:17:23Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43335866341"
+      },
+      {
+        "id": 43335822067,
+        "path": ".github/workflows/dames-picks-app-release-gate.yml",
+        "name": "Dame's Picks unified NBA + NFL app release gate",
+        "event": "schedule",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-11-13T00:17:02Z",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43335822067"
+      }
+    ]
+  },
+  "deployment": {
+    "expected_release": "dp-nfl-provider-event-20261113-r28",
+    "served_release": "dp-nfl-provider-event-20261113-r28",
+    "checks": [
+      {
+        "name": "release_id_matches_main",
+        "pass": true
+      },
+      {
+        "name": "release_manifest_exact_match",
+        "pass": true
+      },
+      {
+        "name": "served_asset_index.html",
+        "pass": true,
+        "expected": "1f569947fa55695006dd4bd05dfac3af0bce1ce0",
+        "actual": "1f569947fa55695006dd4bd05dfac3af0bce1ce0"
+      },
+      {
+        "name": "served_asset_feeds.js",
+        "pass": true,
+        "expected": "7acfa5a249141a12ef5b02a73c494c0ff3236011",
+        "actual": "7acfa5a249141a12ef5b02a73c494c0ff3236011"
+      },
+      {
+        "name": "served_asset_live_direct.js",
+        "pass": true,
+        "expected": "405ea450170d84994b400c1bf1341b8f35e73494",
+        "actual": "405ea450170d84994b400c1bf1341b8f35e73494"
+      },
+      {
+        "name": "served_asset_dames_take.js",
+        "pass": true,
+        "expected": "41f7bea86da6f53d961daaeeef134a294a667ac4",
+        "actual": "41f7bea86da6f53d961daaeeef134a294a667ac4"
+      },
+      {
+        "name": "served_asset_provisional.js",
+        "pass": true,
+        "expected": "5d0b2a403539a189ad31a36ae9bdb4fd7dbac65c",
+        "actual": "5d0b2a403539a189ad31a36ae9bdb4fd7dbac65c"
+      },
+      {
+        "name": "served_asset_short_history.js",
+        "pass": true,
+        "expected": "e1cebbe750dcbaf6f9ced5dddbb8137178659328",
+        "actual": "e1cebbe750dcbaf6f9ced5dddbb8137178659328"
+      },
+      {
+        "name": "all_pinned_assets_listed",
+        "pass": true
+      }
+    ],
+    "status": "PASS",
+    "attempt": 1,
+    "elapsed_seconds": 55.49,
+    "retry_budget_seconds": 360,
+    "checked_at": "2026-11-13T02:31:58.895142+00:00",
+    "source_mode": "legacy_branch",
+    "note": "Verifies native Pages deployment; does NOT claim GitHub Actions deploy-pages was run."
+  },
+  "phone_browser": {
+    "checked_at": "2026-11-13T02:35:12.454304+00:00",
+    "status": "READY",
+    "browser_render_verified": true,
+    "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "app_title": "Dame's Picks \u00b7 NBA + NFL",
+    "NBA": {
+      "selected": "NBA",
+      "loaded": true,
+      "rows": 1790,
+      "rendered": 208,
+      "live_expected": 4,
+      "live_missing": 0,
+      "score_missing": 0,
+      "player_missing": 0,
+      "errors": [],
+      "status": "Checked 9:35 PM \u00b7 20 provider standard markets withheld from AI picks \u00b7 2026-11-11 NBA AI-only: 808 graded, 0 pending, 176 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    },
+    "NFL": {
+      "selected": "NFL",
+      "loaded": true,
+      "rows": 746,
+      "rendered": 74,
+      "live_expected": 1,
+      "live_missing": 0,
+      "score_missing": 0,
+      "player_missing": 0,
+      "errors": [],
+      "status": "Checked 9:35 PM \u00b7 20 provider standard markets withheld from AI picks \u00b7 2026-11-11 NBA AI-only: 808 graded, 0 pending, 176 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    },
+    "reasons": [],
+    "browser_errors": [],
+    "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
+    "browser_direct_probe": {
+      "attempted": true,
+      "received": false,
+      "directGames": 0,
+      "directScores": 0,
+      "directErrors": [],
+      "at": null
+    }
+  },
+  "phone_run": 43351113292,
+  "phone_attempt": 3,
+  "live_direct_probe": {
+    "status": "FAILED",
+    "error": "ESPN direct scoreboard unavailable from local execution",
+    "workaround": "Free GitHub collector retry and hosted phone browser verification succeeded."
+  },
+  "nba": {
+    "capture": {
+      "schedule_games": 4,
+      "games_with_saved_source_quotes": 4,
+      "games_with_frozen_ai": 4,
+      "games_with_line_backed_models": 4,
+      "total_quotes": 330,
+      "total_standard_source_quotes": 330,
+      "total_standard_markets_without_frozen_model": 20,
+      "total_price_moves_from_original_frozen_line": 5,
+      "total_player_stat_markets_never_primary_frozen": 15,
+      "total_missing_primary_with_separate_research_receipt": 10,
+      "total_missing_primary_without_any_ai_receipt": 10,
+      "total_ai_only": 388,
+      "total_line_backed": 315,
+      "total_line_backed_graded": 0,
+      "total_ai_only_graded": 0
+    },
+    "capture_checked_at": "2026-11-13T02:17:08.671842+00:00",
+    "season_baseline_games": 1200,
+    "previous_date_grading": {
+      "game_date_eastern": "2026-11-11",
+      "recorded_pregame_forecasts": 984,
+      "graded": 808,
+      "verified_dnp_exclusions": 176,
+      "ungraded": 0
+    },
+    "overdue": {
+      "status": "NO_OVERDUE_PENDING",
+      "checked_at": "2026-11-13T02:11:51.927309+00:00",
+      "threshold_minutes": 240,
+      "games": [
+        {
+          "game": "Boston Celtics @ Toronto Raptors",
+          "start": "2026-11-12T00:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Brooklyn Nets @ New Orleans Pelicans",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Cleveland Cavaliers @ New York Knicks",
+          "start": "2026-11-12T00:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Denver Nuggets @ Memphis Grizzlies",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 92,
+          "settled_verified": 92,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Golden State Warriors @ Houston Rockets",
+          "start": "2026-11-12T02:30:00+00:00",
+          "eligible_saved_forecasts": 112,
+          "settled_verified": 112,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Los Angeles Lakers @ Milwaukee Bucks",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Oklahoma City Thunder @ Portland Trail Blazers",
+          "start": "2026-11-11T04:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Oklahoma City Thunder @ Portland Trail Blazers",
+          "start": "2026-11-12T03:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Orlando Magic @ Sacramento Kings",
+          "start": "2026-11-11T03:00:00+00:00",
+          "eligible_saved_forecasts": 92,
+          "settled_verified": 92,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Orlando Magic @ Utah Jazz",
+          "start": "2026-11-12T02:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "San Antonio Spurs @ Chicago Bulls",
+          "start": "2026-11-12T01:00:00+00:00",
+          "eligible_saved_forecasts": 100,
+          "settled_verified": 100,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        },
+        {
+          "game": "Washington Wizards @ Indiana Pacers",
+          "start": "2026-11-12T00:00:00+00:00",
+          "eligible_saved_forecasts": 96,
+          "settled_verified": 96,
+          "overdue_unresolved": 0,
+          "status": "SETTLED"
+        }
+      ],
+      "issues": [],
+      "schedule_source": "VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
+      "note": "Persistent season schedule preserves games after rolling schedule resets. Overdue age is not proof of completion; only verified final player rows settle grades.",
+      "totals": {
+        "scanned_game_count": 12,
+        "overdue_game_count": 0,
+        "overdue_forecasts": 0,
+        "settled_forecasts": 1172
+      }
+    }
+  },
+  "nfl": {
+    "scheduled_games": 272,
+    "live_checked_at": "2026-11-13T02:17:50.382858+00:00",
+    "games": [
+      {
+        "game_id": "2026_10_WAS_NYG",
+        "status": "in",
+        "away_score": 3.0,
+        "home_score": 7.0,
+        "player_records": 14
+      }
+    ],
+    "grading": {
+      "alternative_tier_historical_grades_excluded": 379,
+      "archived_pregame_lines": 50515,
+      "expected_final_picks": 456,
+      "final_games_with_frozen_picks": 1,
+      "frozen_final_pick_candidates": 456,
+      "graded_picks": 440,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 0,
+      "pending_reasons": {},
+      "pushes": 1,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 61,
+      "standard_hit_rate": 43.33,
+      "standard_settled": 60,
+      "standard_wins": 26,
+      "void_picks": 16
+    }
+  },
+  "security": {
+    "pinned_dependency_packages": 137,
+    "advisory_matches": 0,
+    "scope": "Pinned requirements only; no all-branch security certification",
+    "unpinned_action_refs": 406,
+    "main_protected": false
+  },
+  "unresolved": [
+    {
+      "severity": "high",
+      "issue": "20 unmatched archived standard thresholds: five moved thresholds and 15 without validated primary models.",
+      "blocker": "Missing authentic pretip/model evidence. Cannot create post-tip historical forecasts.",
+      "action": "Preserve evidence and explicit gaps; no user credential change resolves historical absence."
+    },
+    {
+      "severity": "medium",
+      "issue": "Historical conflicting PRs and all-branch semantic validation incomplete.",
+      "action": "Do not merge obsolete/conflicting UI/model changes blindly."
+    },
+    {
+      "severity": "medium",
+      "issue": "406 action refs unpinned; main unprotected.",
+      "action": "Owner-level repository settings access needed for branch protection; broad pinning remains incomplete."
+    },
+    {
+      "severity": "medium",
+      "issue": "NFL source cadence is five minutes; 30-second observed source refresh not certified.",
+      "action": "No paid polling or duplicate billable collection used."
+    }
+  ],
+  "prohibited_actions_taken": [],
+  "notification_requested": true,
+  "notification_delivered": false,
+  "evidence_completed_at": "2026-11-13T02:36:17.171492+00:00",
+  "scoreboard_after_merge": {
+    "generated_at": "2026-11-13T02:33:00.387516+00:00",
+    "status": "OBSERVED_NBA_LIVE_SCOREBOARD",
+    "source": "NBA official liveData scoreboard via mediaops S3",
+    "is_live_score_source": true,
+    "dates_eastern": [
+      "2026-11-12"
+    ],
+    "total_games": 4,
+    "games": [
+      {
+        "id": "0022600227",
+        "game": "Toronto Raptors @ Philadelphia 76ers",
+        "away": "Toronto Raptors",
+        "home": "Philadelphia 76ers",
+        "away_abbreviation": "TOR",
+        "home_abbreviation": "PHI",
+        "away_score": 112,
+        "home_score": 123,
+        "period": null,
+        "start": "2026-11-13T00:00:00+00:00",
+        "date_eastern": "2026-11-12",
+        "game_state": "post"
+      },
+      {
+        "id": "0022600228",
+        "game": "Detroit Pistons @ Washington Wizards",
+        "away": "Detroit Pistons",
+        "home": "Washington Wizards",
+        "away_abbreviation": "DET",
+        "home_abbreviation": "WAS",
+        "away_score": 117,
+        "home_score": 118,
+        "period": 4,
+        "start": "2026-11-13T00:00:00+00:00",
+        "date_eastern": "2026-11-12",
+        "game_state": "in"
+      },
+      {
+        "id": "0022600229",
+        "game": "Dallas Mavericks @ Minnesota Timberwolves",
+        "away": "Dallas Mavericks",
+        "home": "Minnesota Timberwolves",
+        "away_abbreviation": "DAL",
+        "home_abbreviation": "MIN",
+        "away_score": 59,
+        "home_score": 87,
+        "period": 3,
+        "start": "2026-11-13T01:00:00+00:00",
+        "date_eastern": "2026-11-12",
+        "game_state": "in"
+      },
+      {
+        "id": "0022600230",
+        "game": "Charlotte Hornets @ Phoenix Suns",
+        "away": "Charlotte Hornets",
+        "home": "Phoenix Suns",
+        "away_abbreviation": "CHA",
+        "home_abbreviation": "PHX",
+        "away_score": 18,
+        "home_score": 25,
+        "period": 1,
+        "start": "2026-11-13T02:00:00+00:00",
+        "date_eastern": "2026-11-12",
+        "game_state": "in"
+      }
+    ],
+    "source_records_rejected": 0,
+    "is_sportsbook_feed": false,
+    "is_prizepicks_feed": false,
+    "error": null
+  },
+  "readiness_after_recovery": {
+    "checked_at": "2026-11-13T02:32:18.593237+00:00",
+    "game_date_eastern": "2026-11-12",
+    "status": "DEGRADED",
+    "ready_for_trustworthy_picks": false,
+    "readiness_is_not_model_accuracy": true,
+    "today_schedule_games": 4,
+    "upcoming_games": 0,
+    "started_not_marked_final": 4,
+    "next_tip_at": null,
+    "components": {
+      "schedule": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 20.9
+      },
+      "season_calendar": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 64.9
+      },
+      "ai_forecasts": {
+        "state": "READY",
+        "required": false,
+        "reasons": [],
+        "age_minutes": 20.9
+      },
+      "prizepicks_lines": {
+        "state": "READY",
+        "required": false,
+        "reasons": [],
+        "age_minutes": 56.1
+      },
+      "pregame_capture": {
+        "state": "READY",
+        "required": false,
+        "reasons": [],
+        "age_minutes": 2.9
+      },
+      "unmodeled_provider_market_coverage": {
+        "state": "READY",
+        "required": false,
+        "reasons": [],
+        "age_minutes": 2.9
+      },
+      "current_primary_model_coverage": {
+        "state": "READY",
+        "required": false,
+        "reasons": [],
+        "age_minutes": 2.9
+      },
+      "published_pick_settlement": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 49.3
+      },
+      "published_pick_cards": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
+          "PUBLISHED_PICK_BOARD_STALE",
+          "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
+        ],
+        "age_minutes": 7360.1
+      },
+      "prizepicks_research_cards": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT"
+        ],
+        "age_minutes": 40.5
+      },
+      "public_browser": {
+        "state": "DEGRADED",
+        "required": true,
+        "reasons": [
+          "UNIFIED_BROWSER_NOT_VERIFIED"
+        ],
+        "age_minutes": 14.1
+      },
+      "scoreboard": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 1.3
+      },
+      "live_player_stats": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 0.8
+      },
+      "nightly_grades": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 25.5
+      }
+    },
+    "blocking_components": [],
+    "degraded_components": [
+      "public_browser"
+    ],
+    "required_checks": 7,
+    "passing_required_checks": 6,
+    "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
+  },
+  "phone_job": 131648663082,
+  "verification_limit": "Post-merge phone test verifies rendered production data; exact CDN rejection/S3 retry transition exercised by tests, not induced against live providers.",
+  "readiness_retry": {
+    "run": 43351322228,
+    "job": 131648538310,
+    "status": "in_progress_at_receipt",
+    "step": "Recover authentic live NBA player totals"
+  }
+}
