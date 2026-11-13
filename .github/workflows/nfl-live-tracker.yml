@@ -4,6 +4,7 @@ on:
     paths:
       - 'scripts/fetch_nfl_live.py'
       - 'tests/test_nfl_live.py'
+      - 'tests/test_nfl_live_schedule.py'
       - 'docs/nfl/index.html'
       - '.github/workflows/nfl-live-tracker.yml'
   push:
@@ -13,9 +14,12 @@ on:
       - '.github/workflows/nfl-live-tracker.yml'
   workflow_dispatch:
   schedule:
-    # Frequent game-night updates; GitHub Actions cron may run late.
-    - cron: '*/5 0-5 * 1,2,9-12 2'
-    - cron: '*/5 17-23 * 1,2,9-12 0,1,4'
+    # UTC windows cover all 272 published fixtures, including Thursday-night
+    # play after midnight Friday, international Sundays and holiday Saturdays.
+    # Public ESPN only; GitHub Actions cron can run late.
+    - cron: '*/5 0-5 * 1,2,9-12 0,1,2,4,5,6'
+    - cron: '*/5 13-16 * 1,2,9-12 0'
+    - cron: '*/5 17-23 * 1,2,9-12 0,1,4,5,6'
 permissions:
   contents: write
 concurrency:
@@ -35,6 +39,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_nfl_live.py' -v
           python -m unittest discover -s tests -p 'test_nfl_live_guard.py' -v
+          python -m unittest discover -s tests -p 'test_nfl_live_schedule.py' -v
       - name: Smoke-test actual ESPN live provider during PR
         if: github.event_name == 'pull_request'
         run: python scripts/fetch_nfl_live.py
