@@ -159,4 +159,4 @@ root.DamesTake={POOL,tierFor,support,damesTake,forSlate};
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["dames_take.js"]="dp-nfl-threshold-labels-20261113-r35";
+globalThis.__damesRunningAssets["dames_take.js"]="dp-public-qa-labels-20261113-r36";
