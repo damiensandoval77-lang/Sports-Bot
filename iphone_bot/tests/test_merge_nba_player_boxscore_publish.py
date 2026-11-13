@@ -7,6 +7,19 @@ def snap(time,status="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",games=None):
                        "games":[] if games is None else games})
 
 class SafeBoxscorePublicationTests(unittest.TestCase):
+    def test_first_snapshot_rejects_malformed_games_before_publication(self):
+        malformed = [["bad"], [{"id":""}], [{"id":"1"},{"id":"1"}],
+                     [{"id":"1","player_rows":{}}]]
+        for games in malformed:
+            with self.subTest(games=games), self.assertRaises(ValueError):
+                merge(None,snap("2026-11-10T00:05:00Z",games=games))
+
+    def test_new_slate_rejects_malformed_game_rows(self):
+        previous=snap("2026-11-10T00:03:00Z",games=[{"id":"1"}])
+        incoming=json.loads(snap("2026-11-11T00:05:00Z",games=[{"id":"2","player_rows":{}}]))
+        incoming["date_eastern"]="2026-11-11"
+        with self.assertRaises(ValueError):merge(previous,json.dumps(incoming))
+
     def test_repairs_specific_trailing_literal_newline(self):
         prior=snap("2026-11-10T00:03:00Z",games=[{"id":"1"}])+r"\n"
         incoming=snap("2026-11-10T00:05:00Z",games=[{"id":"1"},{"id":"2"}])

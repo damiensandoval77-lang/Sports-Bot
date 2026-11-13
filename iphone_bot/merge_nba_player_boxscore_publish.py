@@ -16,6 +16,16 @@ def parse(raw, *, allow_legacy_suffix=False):
     payload=json.loads(text)
     if not isinstance(payload,dict) or not isinstance(payload.get("games"),list):
         raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_SCHEMA")
+    # Validate before any first-snapshot, new-date, or older-wrapper return.
+    # Otherwise malformed rows can enter production through those fast paths.
+    seen=set()
+    for game in payload["games"]:
+        if not isinstance(game,dict):raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_GAME")
+        key=game_key(game)
+        if key in seen:raise ValueError("NBA_PLAYER_BOXSCORE_DUPLICATE_GAME")
+        seen.add(key)
+        if game.get("player_rows") is not None and not isinstance(game["player_rows"],list):
+            raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_PLAYER_ROWS")
     return payload
 
 def stamp(obj):
@@ -29,10 +39,10 @@ def stamp(obj):
 
 def game_key(game):
     """Stable official event ID; only use the matchup when ID is unavailable."""
-    if game.get("id") is not None:
-        return "id:"+str(game["id"])
-    if game.get("game"):
-        return "game:"+str(game["game"])
+    if game.get("id") is not None and str(game["id"]).strip():
+        return "id:"+str(game["id"]).strip()
+    if game.get("game") and str(game["game"]).strip():
+        return "game:"+str(game["game"]).strip()
     raise ValueError("NBA_PLAYER_BOXSCORE_GAME_IDENTITY_MISSING")
 
 def game_observed(game,parent):
