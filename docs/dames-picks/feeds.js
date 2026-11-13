@@ -668,4 +668,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-live-pace-position-20261113-r22";
+globalThis.__damesRunningAssets["feeds.js"]="dp-open-tab-update-20261113-r23";
