@@ -17,6 +17,15 @@ def step(name,step_name):
     raise AssertionError(name+": step not found: "+step_name)
 
 class CriticalProductionRepairContracts(unittest.TestCase):
+    def test_write_capable_health_controllers_pin_external_actions(self):
+        import re
+        for name in ('pipeline-heartbeat.yml', 'production_readiness.yml'):
+            for job in load(name)['jobs'].values():
+                for item in job.get('steps', []):
+                    action = item.get('uses', '')
+                    if action and not action.startswith('./'):
+                        self.assertRegex(action, r'^[^@]+@[0-9a-f]{40}$', name)
+
     def test_paid_collector_is_never_called_in_pr(self):
         name="nba-prizepicks-full-slate.yml"
         data=load(name)
