@@ -30,6 +30,7 @@ class InferenceTests(unittest.TestCase):
     def test_separate_model_not_promoted_baseline(self):
         p,r,b=fixture();before=deepcopy(b);out=self.call(p,r,b)
         self.assertEqual(out['estimates'][0]['projection'],12.25)
+        self.assertEqual(out['estimates'][0]['descriptive_baseline_projection'],9.)
         self.assertEqual(b,before)
         self.assertFalse(out['primary_model_eligible']);self.assertFalse(out['official_grade_eligible'])
         self.assertIsNone(out['estimates'][0]['hit_probability'])

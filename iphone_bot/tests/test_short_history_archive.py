@@ -7,7 +7,7 @@ def feed():
     return {'status':'SHORT_HISTORY_TRAINED_RESEARCH_PROJECTIONS','model':MODEL,
       'generated_at':'2026-11-13T11:55:00Z','model_artifact_sha256':'a'*64,
       'estimates':[{'model':MODEL,'player_id':'1','player':'Player','team':'BOS','opponent':'NYK',
-       'game':'BOS @ NYK','start':'2026-11-14T00:00:00Z','stat':'PTS','line':12.5,'projection':11.,
+       'game':'BOS @ NYK','start':'2026-11-14T00:00:00Z','stat':'PTS','line':12.5,'projection':11.,'descriptive_baseline_projection':10.,
        'captured_at':'2026-11-13T11:55:00Z','market_updated':'2026-11-13T11:50:00Z',
        'research_only':True,'trained_model':True,'primary_model_eligible':False,'official_grade_eligible':False,
        'pickem_tier':'standard','standard_line_two_sided_verified':True,

@@ -40,7 +40,7 @@ def archive(previous, feed, now=None):
                 if any(row.get(k) is not None for k in ('hit_probability','estimated_hit_chance','calibrated_probability')):
                     raise ValueError('UNSUPPORTED_PROBABILITY')
                 if any(type(row[k]) not in (int,float) or not math.isfinite(row[k]) or row[k]<0
-                       for k in ('projection','line')):
+                       for k in ('projection','line','descriptive_baseline_projection')):
                     raise ValueError('INVALID_NUMBER')
                 if not 3 <= row['prior_games'] <= 7 or len(row['history_dates']) != row['prior_games']:
                     raise ValueError('INVALID_COHORT')

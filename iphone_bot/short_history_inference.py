@@ -56,6 +56,7 @@ def estimates(records,feed,pack,report,*,primary,now=None,injuries=None,news=Non
         if not np.isfinite(projection) or not 0<=projection<=200:
             excluded['INVALID_MODEL_OUTPUT']+=1;continue
         output.append({**row,'projection':round(projection,3),
+            'descriptive_baseline_projection':row['projection'],
             'label':'Short-history model (research)','cohort':'SHORT_HISTORY_TRAINED_RESEARCH',
             'model':MODEL,'method':MODEL,'trained_model':True,
             'historically_evaluated':True,'prospective_validation_verified':False,
