@@ -48,10 +48,24 @@ def check_artifacts(now=None):
         elif grading.get("official_grading_scope") != "FROZEN_STANDARD_LINE_ONLY":
             record("NFL grading", "critical", "ALTERNATIVE_TIER_RISK", "Official grades must use standard lines only")
         else:
-            record("NFL grading", "ok", "ACCOUNTED", f"{expected} final candidates accounted for")
-        if grading.get("pending_picks", 0):
+            record("NFL grading", "ok", "ACCOUNTED", f"{expected} historical final candidates accounted for across all tiers")
+        # The legacy totals include alternative tiers. Only explicit standard
+        # counts describe the official board; absent data must not imply zero.
+        pending = grading.get("standard_pending_picks")
+        if type(pending) is not int or pending < 0:
+            record("NFL grading", "critical", "STANDARD_PENDING_COUNT_INVALID",
+                   "Explicit nonnegative standard-line pending count required")
+        elif pending:
             record("NFL grading", "warning", "PENDING_FINAL_GRADES",
-                   f"{grading['pending_picks']} pending frozen picks")
+                   f"{pending} pending frozen standard-line picks")
+        else:
+            record("NFL grading", "ok", "STANDARD_GRADES_SETTLED",
+                   "0 pending frozen standard-line picks")
+        record("NFL grading archive", "ok", "ALTERNATIVE_TIERS_EXCLUDED",
+               f"{grading.get('alternative_tier_historical_grades_excluded', 'unknown')} "
+               "historical alternative-tier grades and "
+               f"{grading.get('alternative_tier_pending_excluded', 'unknown')} "
+               "pending alternative-tier rows excluded from official standard results")
 
     def freshness(domain, report, field, max_age_minutes):
         raw = report.get(field)
