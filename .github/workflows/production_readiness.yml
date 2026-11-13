@@ -47,7 +47,7 @@ concurrency:
 
 jobs:
   verify-readiness:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.name == 'Verify tonight NBA frozen lines predictions and grades'
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.name == 'Verify tonight NBA frozen lines predictions and grades' || (github.event.workflow_run.name == 'Publish lightweight verified PrizePicks AI comparisons' && github.event.workflow_run.conclusion == 'failure')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
