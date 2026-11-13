@@ -5,6 +5,7 @@ import json
 import sys
 import urllib.request
 from pathlib import Path
+from mobile_board_health import board_rendered
 from playwright.sync_api import sync_playwright
 
 BASE=(sys.argv[1] if len(sys.argv)>1 else "https://damiensandoval77-lang.github.io/Sports-Bot").rstrip("/")
@@ -28,6 +29,7 @@ def main():
     expected_release=expected_manifest["release_id"]
     sched=get("nba_schedule.json").get("games",[])
     saved=get("lagged_matchup_all_market_ledger.json").get("records",[])
+    expected_upcoming_picks=sum(1 for r in saved if r.get("start") and now <= stamp(r["start"]) <= now + dt.timedelta(hours=24))
     recorded={(r.get("game"),stamp(r["start"])) for r in saved if r.get("start")}
     nearby=[]
     for game in sched:
@@ -60,6 +62,11 @@ def main():
         page.on("pageerror",lambda error:errors.append(str(error)))
         page.goto(f"{BASE}/dames-picks/?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
         page.wait_for_timeout(5000)
+        if expected_upcoming_picks:
+            try:
+                page.wait_for_function("document.querySelectorAll('button.pick').length > 0", timeout=45000)
+            except Exception:
+                pass  # Record a failed rendering check and screenshot below.
         running=page.evaluate("globalThis.__damesRunningAssets || {}")
         coverage=page.evaluate("(()=>{const x=document.querySelector('#coverage');return {visible:!!x&&!x.hidden&&!!x.textContent,text:x?.textContent||''}})()")
         cards=page.locator("button.pick").count()
@@ -90,7 +97,7 @@ def main():
                                  "status":"SKIP","details":footer_details})
     check("executing_assets_match_repository_release",bool(running) and all(running.get(name)==expected_release for name in ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js")),running)
     check("no_browser_javascript_exceptions",not errors,errors[:8])
-    check("board_cards_or_honest_empty_state",cards>0 or not nearby or bool(missing),{"cards":cards,"nearby_games":len(nearby)})
+    check("board_cards_or_honest_empty_state",board_rendered(cards, expected_upcoming_picks),{"cards":cards,"nearby_games":len(nearby),"expected_upcoming_picks":expected_upcoming_picks})
     check("near_tip_saved_picks",not [g for g in missing if g["minutes_to_tip"]<=60],missing)
     check("missing_games_disclosed",not missing or coverage["visible"],coverage)
     report["overall"]="FAIL" if any(c["status"]=="FAIL" for c in report["checks"]) else "PASS"
