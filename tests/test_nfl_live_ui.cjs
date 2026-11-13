@@ -89,6 +89,21 @@ async function verify(browser,name,viewport){
  await page.locator('#detail-content [data-prop]').first().click();
  assert(await page.locator('#detail-content .hero').count()===1,name+' game-to-prop navigation broken');
  await page.locator('#back').click();
+ if(!isLive){
+  const offline=await page.evaluate(()=>{
+   const g=state.liveGames.find(g=>g.sport==='NFL'&&state.nfl.some(p=>p.gameId===g.gameId));
+   const saved=state.nfl.filter(p=>p.gameId===g.gameId);
+   const original=JSON.stringify(saved.map(p=>[m.key(p),p.line,p.projection]));
+   openGame({...g,players:[],state:'stale',statusText:'Live feed unavailable',observedAt:null});
+   renderGameDetail();
+   return {count:m.displayCurrentPicks(saved).length,original,
+    after:JSON.stringify(state.nfl.filter(p=>p.gameId===g.gameId).map(p=>[m.key(p),p.line,p.projection]))};
+  });
+  assert.equal(await page.locator('#detail-content [data-prop]').count(),offline.count,name+' unavailable live feed hid saved lines');
+  assert.equal(offline.after,offline.original,name+' missing live feed changed frozen evidence');
+  assert((await page.locator('#matchup').innerText()).includes('Live feed unavailable'),name+' missing unavailable-source disclosure');
+  await page.locator('#back').click();
+ }
  await page.locator('[data-view="tracker"]').click();
  assert(await page.locator('#board').isVisible(),name+' tracker navigation broken');
  const metrics=await page.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth}));
