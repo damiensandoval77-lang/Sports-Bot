@@ -59,9 +59,36 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
         self.assertIn("head_repository.full_name == github.repository", condition)
         self.assertIn("event != 'pull_request'", condition)
         self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=90", text)
-        self.assertIn('(.status != "completed")', text)
+        self.assertIn('.status != "completed"', text)
         self.assertIn('($paid == "true" or .conclusion == "success")', text)
         self.assertIn('python -m iphone_bot.readiness_recovery', text)
+
+    def test_failure_completion_cannot_immediately_redispatch_itself(self):
+        text=(ROOT/".github/workflows/production_readiness.yml").read_text()
+        self.assertIn("failure_backoff_minutes=5",text)
+        self.assertIn("failure_backoff_minutes=15",text)
+        self.assertIn(".updatedAt | fromdateiso8601",text)
+        self.assertIn("$failed_cutoff",text)
+        self.assertIn('$paid != "true" and .conclusion != "success"',text)
+
+    def test_actual_cooldown_filter_bounds_failures_without_blocking_other_branches(self):
+        import json, subprocess
+        text=(ROOT/".github/workflows/production_readiness.yml").read_text()
+        expression=text.split('echo false)" \'',1)[1].split("')",1)[0]
+        def recent(paid,branch,status,conclusion,created,updated):
+            row={"headBranch":branch,"status":status,"conclusion":conclusion,
+                 "createdAt":created,"updatedAt":updated}
+            p=subprocess.run(["jq","--argjson","cutoff","3600","--argjson","failed_cutoff","6900",
+                "--arg","paid",paid,expression],input=json.dumps([row]),text=True,capture_output=True,check=True)
+            return int(p.stdout)
+        early="1970-01-01T00:00:00Z"; recent_time="1970-01-01T01:59:00Z"
+        for conclusion in ("failure","cancelled","timed_out"):
+            self.assertEqual(recent("false","main","completed",conclusion,early,recent_time),1)
+            self.assertEqual(recent("false","main","completed",conclusion,early,early),0)
+            self.assertEqual(recent("false","feature","completed",conclusion,early,recent_time),0)
+        self.assertEqual(recent("true","main","completed","failure",recent_time,recent_time),1)
+        self.assertEqual(recent("false","main","completed","success",recent_time,recent_time),1)
+        self.assertEqual(recent("false","main","in_progress",None,early,early),1)
 
     def test_every_recovery_producer_completion_is_subscribed(self):
         text=(ROOT/".github/workflows/production_readiness.yml").read_text()
