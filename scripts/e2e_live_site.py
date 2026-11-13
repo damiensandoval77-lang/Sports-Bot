@@ -2,6 +2,7 @@
 import datetime as dt
 import hashlib
 import json
+import os
 import sys
 import urllib.request
 from pathlib import Path
@@ -22,6 +23,8 @@ def stamp(raw):
 
 def main():
     OUT.mkdir(parents=True,exist_ok=True)
+    engine=os.environ.get("DAMES_BROWSER","chromium")
+    if engine not in ("chromium","webkit"):raise ValueError("Unsupported browser engine")
     now=dt.datetime.now(dt.timezone.utc)
     expected_manifest=json.loads((Path(__file__).resolve().parents[1]/"docs/dames-picks/release.json").read_text())
     remote_manifest=get("dames-picks/release.json")
@@ -40,7 +43,7 @@ def main():
             nearby.append({"game":game.get("game"),"minutes_to_tip":round(delta),
                            "has_pick":(game.get("game"),start) in recorded})
     missing=[r for r in nearby if not r["has_pick"]]
-    report={"checked_at":now.isoformat(),"deployed_release":release,"expected_repository_release":expected_release,"nearby_games":nearby,"checks":[]}
+    report={"browser":engine,"timezone":"America/New_York","checked_at":now.isoformat(),"deployed_release":release,"expected_repository_release":expected_release,"nearby_games":nearby,"checks":[]}
     def check(name,ok,details):
         report["checks"].append({"name":name,"status":"PASS" if ok else "FAIL","details":details})
     check("deployed_release_matches_repository",release==expected_release,
@@ -56,8 +59,8 @@ def main():
             asset_evidence[name]={"expected":expected_sha,"error":str(error),"exact_match":False}
     check("every_deployed_asset_matches_exact_repository_blob",bool(asset_evidence) and all(v["exact_match"] for v in asset_evidence.values()),asset_evidence)
     with sync_playwright() as browser_tool:
-        browser=browser_tool.chromium.launch(headless=True,args=["--no-sandbox"])
-        page=browser.new_page(viewport={"width":390,"height":844},device_scale_factor=3,is_mobile=True,has_touch=True)
+        browser=getattr(browser_tool,engine).launch(headless=True,**({"args":["--no-sandbox"]} if engine=="chromium" else {}))
+        page=browser.new_page(viewport={"width":390,"height":844},device_scale_factor=2,is_mobile=True,has_touch=True,timezone_id="America/New_York")
         errors=[]
         page.on("pageerror",lambda error:errors.append(str(error)))
         page.goto(f"{BASE}/dames-picks/?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
@@ -97,7 +100,43 @@ def main():
         check("deployed_stalled_feed_deadline",deadline_evidence.get("rejected") is True
               and deadline_evidence.get("error")=="Feed request timed out"
               and 80<=deadline_evidence.get("elapsed_ms",0)<3000,deadline_evidence)
-        page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=True)
+        check("phone_has_no_horizontal_overflow",page.evaluate(
+            "document.documentElement.scrollWidth <= innerWidth + 1"),{"width":390})
+        # Bound screenshot size even when hundreds of cards are present.
+        page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=False)
+        detail_evidence=[]
+        for sport in ("NBA","NFL"):
+            page.locator('[data-view="tracker"]').click()
+            page.locator('[data-league="'+sport+'"]').click()
+            try:
+                page.locator('button.pick').first.wait_for(timeout=15000)
+                page.locator('button.pick').first.click()
+                page.locator('#detail:not(.hidden)').wait_for(timeout=10000)
+                evidence=page.evaluate("""() => {
+                    const hero=document.querySelector('#detail-content .hero');
+                    return {player:document.querySelector('#player')?.textContent,
+                            projection:!!hero, take_immediately_after_projection:
+                            !!hero?.nextElementSibling?.classList.contains('take')};
+                }""")
+                detail_evidence.append({"sport":sport,**evidence})
+                page.screenshot(path=str(OUT/(sport.lower()+"-player-detail.png")))
+                page.locator('#back').click()
+                check(sport.lower()+"_player_detail_and_take",bool(evidence.get("projection"))
+                      and bool(evidence.get("take_immediately_after_projection")),evidence)
+            except Exception as error:
+                check(sport.lower()+"_player_detail_and_take",False,{"error":str(error)[:400]})
+                if page.locator('#back').is_visible():page.locator('#back').click()
+            page.locator('[data-view="live"]').click()
+            game_count=page.locator('[data-game]').count()
+            if game_count:
+                page.locator('[data-game]').first.click()
+                text=page.locator('#detail-content').inner_text()
+                check(sport.lower()+"_game_detail",'Full published player box score' in text,
+                      {"games":game_count,"boxscore_section":'Full published player box score' in text})
+                page.screenshot(path=str(OUT/(sport.lower()+"-game-detail.png")))
+                page.locator('#back').click()
+            else:
+                check(sport.lower()+"_game_detail",False,{"games":0})
         browser.close()
     footer_details={"visible_board_cards":cards,"cards":footer_evidence[:12]}
     if cards:
