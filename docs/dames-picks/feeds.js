@@ -559,6 +559,14 @@ function attachInjuries(rows,report){
   return {...row,injury:found.length===1?{status:found[0].status,asOf:report.report_issued_at,source:"Official NBA report"}:null};
  });
 }
+// Exact franchise identity only; ambiguous archived matchup labels stay unknown.
+function archivedNBAOpponent(q){
+ const names={ATL:"Atlanta Hawks",BOS:"Boston Celtics",BKN:"Brooklyn Nets",CHA:"Charlotte Hornets",CHI:"Chicago Bulls",CLE:"Cleveland Cavaliers",DAL:"Dallas Mavericks",DEN:"Denver Nuggets",DET:"Detroit Pistons",GSW:"Golden State Warriors",HOU:"Houston Rockets",IND:"Indiana Pacers",LAC:"Los Angeles Clippers",LAL:"Los Angeles Lakers",MEM:"Memphis Grizzlies",MIA:"Miami Heat",MIL:"Milwaukee Bucks",MIN:"Minnesota Timberwolves",NOP:"New Orleans Pelicans",NYK:"New York Knicks",OKC:"Oklahoma City Thunder",ORL:"Orlando Magic",PHI:"Philadelphia 76ers",PHX:"Phoenix Suns",POR:"Portland Trail Blazers",SAC:"Sacramento Kings",SAS:"San Antonio Spurs",TOR:"Toronto Raptors",UTA:"Utah Jazz",WAS:"Washington Wizards"};
+ const parts=String(q.game||"").split(" @ "),code=nbaTeamCode(q.team);
+ if(parts.length!==2)return "Opponent unavailable";
+ const own=parts.map(t=>nbaTeamCode(t)===code||t===names[code]||(code==="LAC"&&t==="LA Clippers"));
+ return own.filter(Boolean).length===1?parts[own[0]?1:0]:"Opponent unavailable";
+}
 /* Preserve every independently observed STANDARD pregame quote even if no model was frozen.
    A quote-only card is explicitly ungraded and NEVER claims a projection or AI side. */
 function includeArchivedStandard(rows,archive){
@@ -577,7 +585,7 @@ function includeArchivedStandard(rows,archive){
   if(!old||stamp(q.observed_at)>stamp(old.observed_at))missing.set(ident,q);
  }
  const additions=[...missing.values()].map(q=>({
-  sport:"NBA",playerId:"",player:q.player,team:q.team,opponent:q.game.split(" @ ")[0]||"",
+  sport:"NBA",playerId:"",player:q.player,team:q.team,opponent:archivedNBAOpponent(q),
   position:"",game:q.game,gameId:q.game,start:q.starts_at,stat:q.stat,source:"PrizePicks archived standard",
   line:n(q.line),projection:null,direction:null,chance:null,chanceSource:"No frozen model forecast was captured for this standard line",
   captured:q.observed_at,grade:"UNMODELED",actual:null,hit:null,gradeSource:null,
