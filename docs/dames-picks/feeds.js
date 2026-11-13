@@ -725,4 +725,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-provider-event-20261113-r28";
+globalThis.__damesRunningAssets["feeds.js"]="dp-snapshot-time-20261113-r29";

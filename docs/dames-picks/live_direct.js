@@ -159,4 +159,4 @@ root.DamesPicksLive={etDate,matchup,playerRows,build,fetchNBA,mergeFeeds,mergeSc
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["live_direct.js"]="dp-nfl-provider-event-20261113-r28";
+globalThis.__damesRunningAssets["live_direct.js"]="dp-snapshot-time-20261113-r29";
