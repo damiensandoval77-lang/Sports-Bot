@@ -74,4 +74,4 @@ const api={select,render};root.DamesProvisional=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window!=="undefined"?window:globalThis);
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["provisional.js"]="dp-live-pace-position-20261113-r22";
+globalThis.__damesRunningAssets["provisional.js"]="dp-open-tab-update-20261113-r23";
