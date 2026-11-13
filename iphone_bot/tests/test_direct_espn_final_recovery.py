@@ -45,6 +45,24 @@ class DirectEspnFinalFallback(unittest.TestCase):
         self.assertEqual(verified_direct_espn_summary(EVENT_ID,IDENT,summary(completed=False)),[])
         self.assertEqual(verified_direct_espn_summary(EVENT_ID,IDENT,summary())[0]["PTS"],26)
 
+    def test_washington_alias_retains_exact_matchup_and_explicit_dnp(self):
+        ident=("2026-11-09", "DET", "WAS")
+        record=summary(away="DET", home="WSH")
+        record["boxscore"]["players"].append({
+            "team":{"abbreviation":"WSH"}, "statistics":[{
+                "names":["MIN","REB","AST","PTS"], "athletes":[{
+                    "athlete":{"displayName":"Explicit Washington DNP"},
+                    "didNotPlay":True,"reason":"Coach's Decision","stats":[]}]}]})
+        rows=verified_direct_espn_summary(EVENT_ID,ident,record)
+        dnps=[r for r in rows if r.get("dnp_final_verified")]
+        self.assertEqual(len(dnps),1)
+        self.assertEqual(dnps[0]["team"],"WAS")
+        self.assertEqual(dnps[0]["opponent"],"DET")
+        self.assertEqual(rows[0]["opponent"],"WAS")
+        record["header"]["competitions"][0]["competitors"][1]["team"]["abbreviation"]="NY"
+        with self.assertRaises(ValueError):
+            verified_direct_espn_summary(EVENT_ID,ident,record)
+
     def test_rejects_mismatched_event_team_day_and_incomplete_status(self):
         for altered in (
             {"event_id":"999"}, {"away":"BOS"}, {"home":"MIA"},
