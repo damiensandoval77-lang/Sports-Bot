@@ -1,5 +1,11 @@
 name: Verify public Sports-Bot dashboard deployment and real JSON
 on:
+  workflow_run:
+    # Recheck the public site after fresh comparisons replace a failed snapshot.
+    # Never trigger from Pages itself: publishing this receipt also deploys Pages.
+    workflows: ['Publish lightweight verified PrizePicks AI comparisons']
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
   schedule:
     # Independent check even when site publisher misses a dispatch.
@@ -22,6 +28,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deployed-site:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:

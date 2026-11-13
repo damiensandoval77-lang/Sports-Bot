@@ -7,6 +7,7 @@ import datetime as dt
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -96,9 +97,26 @@ def run(site,now=None,request=fetch):
     report["browser_render_verified"]=False
     return report
 
+def run_with_retry(site, attempts=3, delay=20, probe=run, sleep=time.sleep):
+    """Allow Pages propagation, retaining every failed observation as evidence.
+
+    Only public static files are fetched. Exhaustion remains a real failure.
+    """
+    if not 1 <= attempts <= 3 or not 0 <= delay <= 20:
+        raise ValueError("Canary retry budget exceeded")
+    observations=[]
+    for attempt in range(attempts):
+        result=probe(site)
+        observations.append({key: result.get(key) for key in
+                             ("checked_at", "status", "reasons", "matched_offers")})
+        if result["status"] == "READY" or attempt == attempts-1:
+            break
+        sleep(delay)
+    return {**result, "attempt_count":len(observations), "attempts":observations}
+
 def main():
     site=os.environ.get("SPORTS_BOT_PUBLIC_SITE_URL",DEFAULT_SITE)
-    result=run(site)
+    result=run_with_retry(site)
     STATUS.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("PUBLIC DEPLOYMENT CHECK:",json.dumps(result,sort_keys=True))
     if result["status"]!="READY":

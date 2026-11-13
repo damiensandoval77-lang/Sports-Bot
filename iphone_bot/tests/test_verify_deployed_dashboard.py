@@ -1,7 +1,8 @@
 import datetime as dt
 import json
 import unittest
-from iphone_bot.verify_deployed_dashboard import evaluate, run
+from iphone_bot.verify_deployed_dashboard import evaluate, run, run_with_retry
+from unittest.mock import Mock
 
 NOW=dt.datetime(2026,11,9,18,0,tzinfo=dt.timezone.utc)
 HTML='<div id="cards"></div><script src="feeds.js?bundle=r17"></script> m.nba('
@@ -12,6 +13,38 @@ HEALTH={"status":"FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS",
         "partial_provider_board":False,"source_coverage_complete":True}
 
 class PublicDeploymentCanaryTests(unittest.TestCase):
+    def test_pages_propagation_recovers_and_keeps_failed_observation(self):
+        failed={"status":"DEGRADED", "reasons":["PUBLIC_AI_JOIN_UNAVAILABLE"]}
+        ready={"status":"READY", "reasons":[], "matched_offers":12}
+        probe=Mock(side_effect=[failed,ready])
+        sleep=Mock()
+        result=run_with_retry("https://example.github.io/",probe=probe,sleep=sleep)
+        self.assertEqual(result["status"],"READY")
+        self.assertEqual(result["attempt_count"],2)
+        self.assertEqual(result["attempts"][0]["reasons"],failed["reasons"])
+        sleep.assert_called_once_with(20)
+
+    def test_persistent_bad_data_exhausts_budget_without_false_green(self):
+        probe=Mock(return_value={"status":"DEGRADED", "reasons":["PUBLIC_PROVIDER_SNAPSHOT_STALE"]})
+        sleep=Mock()
+        result=run_with_retry("https://example.github.io/",probe=probe,sleep=sleep)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertEqual(result["attempt_count"],3)
+        self.assertEqual(probe.call_count,3)
+        self.assertEqual(sleep.call_count,2)
+
+    def test_ready_first_probe_does_not_repeat_requests(self):
+        probe=Mock(return_value={"status":"READY", "reasons":[]})
+        sleep=Mock()
+        self.assertEqual(run_with_retry("https://example.github.io/",probe=probe,sleep=sleep)["attempt_count"],1)
+        probe.assert_called_once()
+        sleep.assert_not_called()
+
+    def test_invalid_retry_budgets_rejected(self):
+        for options in [{"attempts":0},{"attempts":4},{"delay":21},{"delay":-1}]:
+            with self.subTest(options=options), self.assertRaises(ValueError):
+                run_with_retry("https://example.github.io/",**options)
+
     def test_valid_public_page_and_fresh_complete_data(self):
         responses={"https://example.github.io/Sports-Bot/dames-picks/":HTML,
                    "https://example.github.io/Sports-Bot/ai_prizepicks_quick_join_health.json":json.dumps(HEALTH)}
