@@ -6,7 +6,7 @@ recompute after a nonzero result. Only the two research output files may change.
 import subprocess
 
 OUTPUTS={'docs/short_history_model.json','docs/short_history_model_validation.json'}
-INPUTS={'docs/prizepicks.json','docs/prizepicks_model_input.json',
+INPUTS={'docs/current_form.json','docs/prizepicks.json','docs/prizepicks_model_input.json',
         'docs/lagged_matchup_all_market_ledger.json','docs/injury_context.json',
         'docs/underdog_nba_injury_alerts.json','docs/free_nba_injury_watch.json'}
 
