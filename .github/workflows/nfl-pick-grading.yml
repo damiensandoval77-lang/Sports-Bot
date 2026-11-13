@@ -31,14 +31,36 @@ on:
   schedule:
     - cron: '45 5,11,17,23 * 1,2,9-12 *'
     # Game and postgame fallback checks if upstream workflow_run is delayed.
-    - cron: '15,45 0-5 * 1,2,9-12 1,2'
+    - cron: '15,45 * * 1,2,9-12 *'
 permissions:
   contents: write
 concurrency:
   group: nfl-public-frozen-grading
   cancel-in-progress: false
 jobs:
+  due:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.window.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify postgame window safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_postgame_schedule.py' -v
+      - id: window
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" = "schedule" ] && [ "${{ github.event.schedule }}" != "45 5,11,17,23 * 1,2,9-12 *" ]; then
+            echo "run=$(python scripts/nfl_postgame_due.py)" >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          fi
   verify-grade-publish:
+    needs: due
+    if: needs.due.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
