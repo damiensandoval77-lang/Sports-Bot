@@ -32,6 +32,5 @@ jobs:
           git add docs/nfl/data/schedule_2026.json
           if ! git diff --cached --quiet; then
             git commit -m "Refresh independent 2026 NFL season schedule"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            python scripts/push_with_retry.py
           fi
