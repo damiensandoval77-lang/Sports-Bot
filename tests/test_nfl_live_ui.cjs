@@ -1,249 +1,124 @@
-/* Verify actual NFL dashboard rendering at mobile and desktop sizes.
- * Never modifies production data; screenshots are GitHub Actions artifacts.
+/* Exercise the real NFL redirect and unified app, not the retired dashboard.
+ * Local runs use checked-in feeds only. Hosted runs never inject data.
  */
 const { chromium } = require('playwright');
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
-
 const url = process.env.NFL_UI_URL || 'http://127.0.0.1:8765/nfl/';
 const isLive = url.startsWith('https://');
 const requireDeployed = isLive && process.env.NFL_REQUIRE_DEPLOYED_VERSION === 'true';
 const output = process.env.NFL_SCREENSHOT_DIR || 'nfl-ui-artifacts';
-fs.mkdirSync(output, { recursive: true });
+const expectedRelease = JSON.parse(fs.readFileSync('docs/dames-picks/release.json','utf8')).release_id;
+fs.mkdirSync(output,{recursive:true});
 
-async function ensurePublished() {
-  if (!isLive) return;
-  for (let attempt=1; attempt<=(requireDeployed?28:12); attempt++) {
-    try {
-      const response = await fetch(url, {cache:'no-store'});
-      const html=response.ok?await response.text():'';
-      if (html.includes('function groupPlayerMarkets(') &&
-          (!requireDeployed || html.includes('standard-team-position-v2'))) return;
-    } catch (error) {
-      console.log('Live site not yet reachable: '+error.message);
-    }
-    if(attempt===(requireDeployed?28:12)) throw new Error(requireDeployed?'Production Pages has NOT deployed standard-only team-position tracker v2':'Live GitHub Pages does not yet serve grouped NFL player cards');
-    await new Promise(resolve=>setTimeout(resolve,15000));
-  }
+async function ensurePublished(){
+ if(!requireDeployed)return;
+ const releaseURL=new URL('../dames-picks/release.json',url.endsWith('/')?url:url+'/');
+ for(let attempt=0;attempt<40;attempt++){
+  try{const r=await fetch(releaseURL+'?v='+Date.now(),{cache:'no-store'});if(r.ok&&(await r.json()).release_id===expectedRelease)return;}catch(_){}
+  if(attempt<39)await new Promise(resolve=>setTimeout(resolve,12000));
+ }
+ throw Error('Hosted release has not converged to '+expectedRelease);
 }
-
-async function verify(browser, name, viewport) {
-  const page=await browser.newPage({viewport,deviceScaleFactor:1});
-  const failures=[];
-  page.on('pageerror',error=>failures.push(error.message));
-  const reply=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
-  assert(reply && reply.ok(),name+' page did not return HTTP 200');
-  await page.waitForFunction(()=>document.getElementById('status').textContent!=='CONNECTING',
-    {timeout:30000}).catch(()=>{});
-  // Production data integrity: the UI must use the same recent validated
-  // snapshot as main, not a stale Pages artifact or incomplete chunk upload.
-  const manifest=await page.evaluate(async()=>{
-    const response=await fetch('./data/latest_2026.json?t='+Date.now(),{cache:'no-store'});
-    if(!response.ok) throw new Error('NFL latest manifest unavailable');
-    return response.json();
+async function verify(browser,name,viewport){
+ const page=await browser.newPage({viewport,deviceScaleFactor:1});
+ const errors=[]; page.on('pageerror',e=>errors.push(e.message));
+ // Deterministic local QA must not mix checked-in fixtures with raw main or
+ // current ESPN data. Published browser checks retain the real network path.
+ if(!isLive)await page.route('**/*',route=>new URL(route.request().url()).origin===new URL(url).origin?route.continue():route.abort());
+ const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+ assert(response?.ok(),name+' entry HTTP failure');
+ await page.waitForURL('**/dames-picks/**',{timeout:15000});
+ await page.waitForFunction(()=>typeof state!=='undefined'&&!state.loading&&state.updated,{timeout:45000});
+ await page.locator('[data-league="NFL"]').click();
+ const integrity=await page.evaluate(async()=>{
+   const root=new URL('../nfl/data/',location.href);
+   const json=async file=>{const r=await fetch(new URL(file,root),{cache:'no-store'});if(!r.ok)throw Error(file+' HTTP '+r.status);return r.json()};
+   const manifest=await json('latest_2026.json');
+   const chunks=await Promise.all(manifest.files.map(async file=>{const r=await fetch(new URL(file,root),{cache:'no-store'});if(!r.ok)throw Error(file+' HTTP '+r.status);return m.csv(await r.text())}));
+   const latest=chunks.flat(),schedule=await json('schedule_2026.json'),archive=await json('active_frozen_2026.json');
+   const expected=m.nfl([archive.records,...chunks],schedule);
+   const keys=new Set(state.nfl.map(m.key));
+   const actualByKey=new Map(state.nfl.map(p=>[m.key(p),p]));
+   return {manifest,latestCount:latest.length,usageCount:latest.filter(r=>['1','1.0','True','true'].includes(String(r.usage_model_active))).length,
+     withSnaps:latest.filter(r=>r.snap_pct_l3!==undefined&&r.snap_pct_l3!==null&&r.snap_pct_l3!=='').length,
+     depthMismatches:expected.filter(p=>actualByKey.has(m.key(p))&&actualByKey.get(m.key(p)).depth?.snapPct!==p.depth?.snapPct).length,expected:expected.length,missing:expected.filter(r=>!keys.has(m.key(r))).length,loaded:state.nfl.length,
+     errors:state.errors.filter(x=>x.startsWith('NFL ')),nonStandard:state.nfl.filter(p=>p.source!=='PrizePicks standard').map(p=>p.source),
+     allFinite:state.nfl.every(p=>Number.isFinite(p.line)),build:document.querySelector('#app-build').textContent};
+ });
+ assert.equal(integrity.manifest.season,2026,name+' wrong season');
+ assert(integrity.manifest.rows>0,name+' empty export');
+ assert.equal(integrity.latestCount,integrity.manifest.rows,name+' incomplete chunk export');
+ for(const col of ['snap_pct_l3','snap_pct_trend','target_share_l3','carry_share_l3','usage_model_active'])assert(integrity.manifest.schema.includes(col),'missing usage field '+col);
+ assert.equal(integrity.usageCount,integrity.latestCount,name+' missing trained usage provenance');
+ // Real sources can lack snap history (e.g. a returning player). Preserve
+ // exact observed/null values rather than inventing a near-100% coverage quota.
+ assert(integrity.withSnaps>0,name+' entire offensive snap feed absent');
+ assert.equal(integrity.depthMismatches,0,name+' altered or lost observed snap provenance');
+ assert(integrity.expected>0&&integrity.loaded>0,name+' no eligible archived/latest standard forecasts');
+ assert.equal(integrity.missing,0,name+' app lost eligible source records');
+ assert.deepEqual(integrity.errors,[],name+' NFL load failure');
+ assert(integrity.allFinite,name+' invalid saved line');
+ if(requireDeployed)assert(integrity.build.includes(expectedRelease),name+' deployed release mismatch: '+integrity.build);
+ // Board rendering and highest-estimate order: zero cards is valid only when
+ // no eligible upcoming lines exist. Never substitute synthetic public picks.
+ const board=await page.evaluate(()=>({expected:shown().length,rendered:document.querySelectorAll('#cards [data-id]').length,
+   rates:shown().map(p=>(m.hitEstimate(p)||p.matchupPreview)?.rate??null)}));
+ assert.equal(board.rendered,board.expected,name+' board card count');
+ let prior=Infinity;for(const value of board.rates){const rate=value===null?-Infinity:value;assert(rate<=prior,name+' hit-estimate ordering');prior=rate;}
+ // Use a real saved player with multiple markets, even after kickoff.
+ const sample=await page.evaluate(()=>{
+  const groups=new Map();for(const p of state.nfl){const k=[p.gameId,p.playerId||p.player].join('|');if(!groups.has(k))groups.set(k,[]);groups.get(k).push(p)}
+  const group=[...groups.values()].find(g=>new Set(g.map(p=>p.stat)).size>=2);if(!group)return null;
+  open(m.key(group[0]));return {player:group[0].player,line:group[0].line,projection:group[0].projection};
+ });
+ assert(sample,name+' no real multi-market NFL sample');
+ assert(await page.locator('#detail').isVisible(),name+' detail missing');
+ assert((await page.locator('#player').innerText()).includes(sample.player),name+' wrong detail identity');
+ assert(await page.locator('#markets button').count()>=2,name+' market switching missing');
+ const text=await page.locator('#detail-content').innerText();
+ for(const label of ['Matchup','Opponent','Saved at','Automatic grading','Pending results do not count as losses'])assert(text.includes(label),name+' missing detail '+label);
+ await page.locator('#markets button').last().click();
+ assert(await page.locator('#detail-content .hero').count()===1,name+' market switch broke detail');
+ await page.locator('#back').click();
+ await page.locator('[data-view="live"]').click();
+ const game=await page.evaluate(()=>{const g=state.liveGames.find(g=>g.sport==='NFL'&&state.nfl.some(p=>p.gameId===g.gameId));if(!g)return null;openGame(g);return {id:g.gameId,count:m.displayCurrentPicks(state.nfl.filter(p=>p.gameId===g.gameId)).length};});
+ assert(game&&game.count>0,name+' no saved game comparison');
+ assert.equal(await page.locator('#detail-content [data-prop]').count(),game.count,name+' saved comparison records missing');
+ const before=await page.locator('#detail-content').innerText();
+ assert(before.includes('FROZEN LINE')&&before.includes('FROZEN PROJ')&&before.includes('ACTUAL'),name+' missing frozen/live comparison');
+ // Re-render/refresh must retain the selected game and immutable saved records.
+ await page.evaluate(()=>renderGameDetail());
+ assert.equal(await page.locator('#detail-content [data-prop]').count(),game.count,name+' redraw lost records');
+ await page.locator('#detail-content [data-prop]').first().click();
+ assert(await page.locator('#detail-content .hero').count()===1,name+' game-to-prop navigation broken');
+ await page.locator('#back').click();
+ if(!isLive){
+  const offline=await page.evaluate(()=>{
+   const g=state.liveGames.find(g=>g.sport==='NFL'&&state.nfl.some(p=>p.gameId===g.gameId));
+   const saved=state.nfl.filter(p=>p.gameId===g.gameId);
+   const original=JSON.stringify(saved.map(p=>[m.key(p),p.line,p.projection]));
+   openGame({...g,players:[],state:'stale',statusText:'Live feed unavailable',observedAt:null});
+   renderGameDetail();
+   return {count:m.displayCurrentPicks(saved).length,original,
+    after:JSON.stringify(state.nfl.filter(p=>p.gameId===g.gameId).map(p=>[m.key(p),p.line,p.projection]))};
   });
-  assert(manifest.season===2026 && manifest.rows>=2236,
-    name+' is serving an older/incomplete NFL usage snapshot: '+JSON.stringify({
-      rows:manifest.rows,captured_at:manifest.captured_at}));
-  for(const col of ['snap_pct_l3','snap_pct_trend','target_share_l3',
-                    'carry_share_l3','usage_model_active']){
-    assert(manifest.schema.includes(col),name+' missing validated usage field '+col);
-  }
-  const loaded=await page.evaluate(()=>({
-    rows:state.lines.length,
-    usageCount:state.lines.filter(row=>row.usage_model_active==='1.0'||
-      row.usage_model_active==='1'||row.usage_model_active==='True').length,
-    withSnaps:state.lines.filter(row=>row.snap_pct_l3!==undefined&&
-       row.snap_pct_l3!==null&&row.snap_pct_l3!=='').length
-  }));
-  assert.equal(loaded.rows,manifest.rows,name+' did not load complete snapshot');
-  assert.equal(loaded.usageCount,manifest.rows,
-    name+' trained usage provenance is missing on some lines');
-  assert(loaded.withSnaps>=manifest.rows-2,
-    name+' offensive snap data unexpectedly absent');
-  const status=await page.locator('#status').innerText();
-  assert(!['CONNECTING','DATA UNAVAILABLE','SCHEDULE ONLY'].includes(status),
-    name+' failed to load prediction feed: '+status);
-  const sample=await page.evaluate(()=>{
-    const byPlayer=new Map();
-    for(const row of state.lines) {
-      if(row.odds_type!=='standard') continue;
-      const key=[row.game_id,row.team,row.player_id||row.player].join('|');
-      if(!byPlayer.has(key)) byPlayer.set(key,[]);
-      byPlayer.get(key).push(row);
-    }
-    const group=[...byPlayer.values()].find(rows=>rows.length>=2);
-    if(!group)return null;
-    const player=group[0];
-    state.week=String(player.week);state.game=player.game_id;
-    document.getElementById('weekfilter').value=state.week;
-    document.getElementById('search').value=player.player;
-    document.getElementById('kind').value='standard';
-    render();
-    return {player:player.player,game:player.game_id,marketCount:group.length};
-  });
-  assert(sample,name+' has no multiple-market player in loaded standard lines');
-  const cards=page.locator('#cards > article.player-group');
-  assert(await cards.count()>=1,name+' did not render grouped player card');
-  const card=cards.first();
-  const marketCount=await card.locator('.market-entry').count();
-  assert(marketCount>=2,name+' shows separate player cards instead of grouped markets');
-  assert((await card.locator('.group-count').innerText()).includes('markets'),
-    name+' missing group-count label');
-  assert.equal(await card.locator('.pickbar').count(),marketCount,name+' missing distinct market rows');
-  assert.equal(await card.locator('.vals').count(),marketCount,name+' missing individual projections');
-  await card.locator('details > summary').first().click();
-  assert(await card.locator('.detailbody .seasonbar').count()>0,
-    name+' market details did not retain season record');
-  const usageLabels=await card.locator('.detailbody').first().innerText();
-  for(const label of ['Offensive snaps (L3)','Snap trend',
-                      'Target share (L3)','Carry share (L3)','Usage model inputs']){
-    assert(usageLabels.includes(label),name+' expanded prop is missing '+label);
-  }
-  const playerHeaderColor=await card.locator('> .mainline').evaluate(node=>
-    getComputedStyle(node).backgroundColor);
-  assert(['rgb(5, 6, 8)','rgb(0, 0, 0)'].includes(playerHeaderColor),
-    name+' did not retain the black player header: '+playerHeaderColor);
-  await page.screenshot({path:output+'/'+name+'-player-card.png',fullPage:false});
-  const metrics=await page.evaluate(()=>({screen:innerWidth,page:document.documentElement.scrollWidth,
-    body:document.body.scrollWidth}));
-  assert(metrics.page<=metrics.screen+2,
-    name+' horizontal overflow detected: '+JSON.stringify(metrics));
-  await page.locator('button[data-tab="live"]').click();
-  assert(await page.locator('#live').isVisible(),name+' matchups tab broken');
-  const newTrackerDeployed=await page.evaluate(()=>
-    typeof liveComparisonRows==='function' &&
-    liveComparisonRows.toString().includes('standard-team-position-v2'));
-  if(requireDeployed)assert(newTrackerDeployed,
-    name+' Pages must serve standard-only v2 before this test can pass');
-  if(!isLive || newTrackerDeployed){
-  await page.waitForFunction(()=>state.frozenReady,{timeout:15000}).catch(()=>{});
-  // Direct UI fixture: a saved pregame quote stays visible beside live stats
-  // even if the public network live feed is unavailable.
-  const tracker=await page.evaluate(()=>{
-    const chosen=state.lines.find(r=>r.game_id===state.game && r.odds_type==="standard" && Number.isFinite(Number(r.line)));
-    if(!chosen)return null;
-    const demon={...chosen,odds_type:"demon",line:String(Number(chosen.line)+113.5)};
-    const goblin={...chosen,odds_type:"goblin",line:String(Number(chosen.line)+227.5)};
-    state.frozen=[chosen,demon,goblin];state.frozenReady=true;
-    state.live={season:2026,checked_at:new Date().toISOString(),games:[{
-      game_id:chosen.game_id,status:'in',status_text:'Q1 10:00',period:1,clock:'10:00',
-      away:chosen.opponent,home:chosen.team,
-      players:[{player:chosen.player,team:chosen.team,stats:{[chosen.target]:3}}]
-    }]};
-    render();
-    return {game:chosen.game_id,line:chosen.line,player:chosen.player,demon:String(Number(chosen.line)+113.5),goblin:String(Number(chosen.line)+227.5)};
-  });
-  assert(tracker,name+' missing fixture-compatible saved line');
-  const liveDetail=page.locator('details[data-livegame="'+tracker.game+'"]');
-  assert(await liveDetail.count()===1,name+' missing live comparison panel');
-  await liveDetail.locator('summary').click();
-  let detail=await liveDetail.innerText();
-  assert(detail.includes('Frozen line vs live stats')&&detail.includes(tracker.player)&&
-    detail.includes(tracker.line),name+' frozen standard line / live actual not rendered');
-  const standardFilterPublished=await page.evaluate(()=>
-    typeof gameFrozenLines==='function'&&
-    gameFrozenLines.toString().includes('&&r.odds_type==="standard"&&Date.parse')&&
-    typeof liveComparisonRows==='function'&&
-    liveComparisonRows.toString().includes('standard-team-position-v2'));
-  if(requireDeployed)assert(standardFilterPublished,
-    name+' production Pages is still on the old live tracker; do not report deployment success');
-  // GitHub Pages can lag the PR source. Always enforce the new behavior
-  // locally; require it in production as soon as the deployment includes it.
-  if(!isLive||standardFilterPublished){
-    assert(!detail.includes(tracker.demon)&&!detail.includes(tracker.goblin),
-      name+' goblin or demon quote leaked into live tracker');
-    assert.equal(await liveDetail.locator('tbody tr:not(.tracker-team):not(.tracker-position)').count(),1,
-      name+' live tracker must display one standard quote per player and market');
-  }else{
-    console.log(name+' Pages has not deployed standard-only filter yet; local regression passed');
-  }
-  // Verify deterministic team -> position -> player ordering and headers
-  // with five injected standard records, independent of feed availability.
-  if(!isLive||standardFilterPublished){
-    const grouped=await page.evaluate(()=>{
-      const g=state.schedule.find(x=>x.game_id===state.game);
-      const original=state.frozen.slice();
-      const base=original[0];
-      const beforeKick=new Date(Date.parse(g.kickoff_utc)-60000).toISOString();
-      const row=(team,position,player,id)=>({
-        ...base,game_id:g.game_id,team,position,player,player_id:id,
-        target:'REC_YDS',captured_at:beforeKick,odds_type:'standard'
-      });
-      state.frozen=[
-        row(g.home,'WR','Zulu Wide','w1'),
-        row(g.away,'TE','Bravo Tight','t1'),
-        row(g.away,'QB','Alpha Quarterback','q1'),
-        row(g.home,'RB','Alpha Running','r1'),
-        row(g.away,'WR','Charlie Wide','w2')
-      ];
-      const rows=gameFrozenLines(g.game_id);
-      const ordered=rows.map(r=>({team:r.team,position:r.position,player:r.player}));
-      const html=liveComparisonRows(g,rows);
-      state.frozen=original;
-      return {ordered,teams:(html.match(/class="tracker-team"/g)||[]).length,
-        positions:(html.match(/class="tracker-position"/g)||[]).length};
-    });
-    const teams=[...new Set(grouped.ordered.map(r=>r.team))];
-    assert.deepEqual(teams,[...teams].sort(),name+' team order incorrect');
-    const positionRank={QB:0,RB:1,WR:2,TE:3,FB:4};
-    for(const team of teams){
-      const positions=grouped.ordered.filter(x=>x.team===team).map(x=>x.position);
-      assert.deepEqual(positions,[...positions].sort((a,b)=>(positionRank[a]??99)-(positionRank[b]??99)),name+' position order incorrect');
-    }
-    assert.equal(grouped.teams,2,name+' expected two team headers');
-    assert.equal(grouped.positions,5,name+' expected five position headers');
-    if(!isLive){
-      const matched=await page.evaluate(()=>{
-        const a=livePlayerFor({team:'MIN',player:'Aaron Jones'},[
-          {team:'MIN',player:'Aaron Jones Sr.',stats:{RUSH_YDS:12}}]);
-        const b=livePlayerFor({team:'BUF',player:'James Cook'},[
-          {team:'BUF',player:'James Cook III',stats:{RUSH_YDS:7}}]);
-        const collision=livePlayerFor({team:'MIN',player:'Aaron Jones'},[
-          {team:'MIN',player:'Aaron Jones Sr.'},
-          {team:'MIN',player:'Aaron Jones Jr.'}
-        ]);
-        return {a:a?.stats?.RUSH_YDS,b:b?.stats?.RUSH_YDS,collision};
-      });
-      assert.equal(matched.a,12,name+' ESPN Sr. name mismatch');
-      assert.equal(matched.b,7,name+' ESPN III name mismatch');
-      assert.equal(matched.collision,null,name+' ambiguous player names must stay unmatched');
-    }
-    // Every automatic refresh re-renders markup. The expanded card must stay open.
-    await page.evaluate(()=>{
-      const item=document.querySelector('#livegames details[data-livegame="'+state.game+'"]');
-      if(!item)throw Error('Missing matchup for refresh test');
-      item.open=true;
-      render();
-    });
-    assert(await page.locator('details[data-livegame="'+tracker.game+'"]').evaluate(el=>el.open),
-      name+' auto-refresh collapsed open live matchup');
-  }
-  // On Pages, a pending network fetch can race this synthetic offline state.
-  // The local source test is authoritative until the new Pages build deploys.
-  if(!isLive||standardFilterPublished){
-    await page.evaluate(()=>{state.live=null;render()});
-    const expanded=page.locator('details[data-livegame="'+tracker.game+'"]');
-    if(!(await expanded.evaluate(el=>el.open)))await expanded.locator('summary').click();
-    detail=await expanded.innerText();
-    assert(detail.includes(tracker.line)&&detail.includes('Live feed unavailable'),
-      name+' unavailable feed incorrectly hides previously frozen props');
-  }
-  }else{
-    console.log(name+' deployed Pages has not yet received new live tracker; local source checks enforce this PR.');
-  }
-  await page.locator('button[data-tab="graded"]').click();
-  assert(await page.locator('#graded').isVisible(),name+' graded tab broken');
-  assert.equal(failures.length,0,name+' browser script errors: '+failures.join(' / '));
-  console.log(name+' OK: '+JSON.stringify({status,sample,marketCount,metrics}));
-  await page.close();
+  assert.equal(await page.locator('#detail-content [data-prop]').count(),offline.count,name+' unavailable live feed hid saved lines');
+  assert.equal(offline.after,offline.original,name+' missing live feed changed frozen evidence');
+  assert((await page.locator('#matchup').innerText()).includes('Live feed unavailable'),name+' missing unavailable-source disclosure');
+  await page.locator('#back').click();
+ }
+ await page.locator('[data-view="tracker"]').click();
+ assert(await page.locator('#board').isVisible(),name+' tracker navigation broken');
+ const metrics=await page.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth}));
+ assert(metrics.width<=metrics.screen+2,name+' horizontal overflow '+JSON.stringify(metrics));
+ await page.screenshot({path:output+'/'+name+'-unified-nfl.png',fullPage:false});
+ assert.deepEqual(errors,[],name+' browser errors');
+ console.log(name+' OK '+JSON.stringify({manifestRows:integrity.latestCount,eligible:integrity.expected,board:board.rendered,game,build:integrity.build,metrics}));
+ await page.close();
 }
-
 (async()=>{
-  await ensurePublished();
-  const browser=await chromium.launch({headless:true});
-  try {
-    await verify(browser,'iphone-390',{width:390,height:844});
-    await verify(browser,'desktop-1280',{width:1280,height:900});
-  } finally {await browser.close();}
-})().catch(error=>{console.error(error);process.exitCode=1;});
+ await ensurePublished();
+ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
+ try{await verify(browser,'iphone-390',{width:390,height:844});await verify(browser,'desktop-1280',{width:1280,height:900});}finally{await browser.close()}
+})().catch(e=>{console.error(e);process.exitCode=1});
