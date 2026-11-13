@@ -1,0 +1,332 @@
+{
+  "browser": "chromium",
+  "timezone": "America/New_York",
+  "checked_at": "2026-11-13T22:52:59.746701+00:00",
+  "deployed_release": "dp-under-detail-20261113-r38",
+  "expected_repository_release": "dp-under-detail-20261113-r38",
+  "nearby_games": [
+    {
+      "game": "New York Knicks @ Indiana Pacers",
+      "minutes_to_tip": 67,
+      "has_pick": true
+    },
+    {
+      "game": "Milwaukee Bucks @ Orlando Magic",
+      "minutes_to_tip": 67,
+      "has_pick": true
+    },
+    {
+      "game": "Cleveland Cavaliers @ Miami Heat",
+      "minutes_to_tip": 127,
+      "has_pick": true
+    },
+    {
+      "game": "Atlanta Hawks @ Chicago Bulls",
+      "minutes_to_tip": 127,
+      "has_pick": true
+    },
+    {
+      "game": "Memphis Grizzlies @ New Orleans Pelicans",
+      "minutes_to_tip": 127,
+      "has_pick": true
+    },
+    {
+      "game": "Utah Jazz @ Houston Rockets",
+      "minutes_to_tip": 157,
+      "has_pick": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "deployed_release_matches_repository",
+      "status": "PASS",
+      "details": {
+        "deployed": "dp-under-detail-20261113-r38",
+        "repository": "dp-under-detail-20261113-r38"
+      }
+    },
+    {
+      "name": "deployed_manifest_matches_repository",
+      "status": "PASS",
+      "details": {
+        "deployed_asset_pins": {
+          "index.html": "eb6a62644a819bcae5b6c424c72ddbea29cc3346",
+          "feeds.js": "8478719b2f4fc2fa23aedef4a02bec658555ff3d",
+          "live_direct.js": "83d337b6eec4b0ff51d39abda50f9afd0a5cba00",
+          "dames_take.js": "a137983aeab16bb5e18a1ad341742e99f5686ef7",
+          "provisional.js": "7da9ae1fd4a2ec12a60e00da8d467e03534e9e8b",
+          "short_history.js": "e0e4ac420de9af0481021a47a8acff7320ec4c98"
+        },
+        "repository_asset_pins": {
+          "index.html": "eb6a62644a819bcae5b6c424c72ddbea29cc3346",
+          "feeds.js": "8478719b2f4fc2fa23aedef4a02bec658555ff3d",
+          "live_direct.js": "83d337b6eec4b0ff51d39abda50f9afd0a5cba00",
+          "dames_take.js": "a137983aeab16bb5e18a1ad341742e99f5686ef7",
+          "provisional.js": "7da9ae1fd4a2ec12a60e00da8d467e03534e9e8b",
+          "short_history.js": "e0e4ac420de9af0481021a47a8acff7320ec4c98"
+        }
+      }
+    },
+    {
+      "name": "every_deployed_asset_matches_exact_repository_blob",
+      "status": "PASS",
+      "details": {
+        "index.html": {
+          "expected": "eb6a62644a819bcae5b6c424c72ddbea29cc3346",
+          "deployed": "eb6a62644a819bcae5b6c424c72ddbea29cc3346",
+          "exact_match": true
+        },
+        "feeds.js": {
+          "expected": "8478719b2f4fc2fa23aedef4a02bec658555ff3d",
+          "deployed": "8478719b2f4fc2fa23aedef4a02bec658555ff3d",
+          "exact_match": true
+        },
+        "live_direct.js": {
+          "expected": "83d337b6eec4b0ff51d39abda50f9afd0a5cba00",
+          "deployed": "83d337b6eec4b0ff51d39abda50f9afd0a5cba00",
+          "exact_match": true
+        },
+        "dames_take.js": {
+          "expected": "a137983aeab16bb5e18a1ad341742e99f5686ef7",
+          "deployed": "a137983aeab16bb5e18a1ad341742e99f5686ef7",
+          "exact_match": true
+        },
+        "provisional.js": {
+          "expected": "7da9ae1fd4a2ec12a60e00da8d467e03534e9e8b",
+          "deployed": "7da9ae1fd4a2ec12a60e00da8d467e03534e9e8b",
+          "exact_match": true
+        },
+        "short_history.js": {
+          "expected": "e0e4ac420de9af0481021a47a8acff7320ec4c98",
+          "deployed": "e0e4ac420de9af0481021a47a8acff7320ec4c98",
+          "exact_match": true
+        }
+      }
+    },
+    {
+      "name": "deployed_stalled_feed_deadline",
+      "status": "PASS",
+      "details": {
+        "rejected": true,
+        "error": "Feed request timed out",
+        "elapsed_ms": 120.39999999996508
+      }
+    },
+    {
+      "name": "phone_has_no_horizontal_overflow",
+      "status": "PASS",
+      "details": {
+        "width": 390
+      }
+    },
+    {
+      "name": "under_detail_is_red",
+      "status": "PASS",
+      "details": {
+        "color": "rgb(255, 107, 122)"
+      }
+    },
+    {
+      "name": "nba_player_detail_and_take",
+      "status": "PASS",
+      "details": {
+        "player": "Kingston Flemings",
+        "projection": true,
+        "take_immediately_after_projection": true
+      }
+    },
+    {
+      "name": "nba_game_detail",
+      "status": "PASS",
+      "details": {
+        "games": 9,
+        "boxscore_section": true
+      }
+    },
+    {
+      "name": "nfl_player_detail_and_take",
+      "status": "PASS",
+      "details": {
+        "player": "J.J. McCarthy",
+        "projection": true,
+        "take_immediately_after_projection": true
+      }
+    },
+    {
+      "name": "nfl_game_detail",
+      "status": "PASS",
+      "details": {
+        "games": 15,
+        "boxscore_section": true
+      }
+    },
+    {
+      "name": "live_board_footer_over_under_only",
+      "status": "PASS",
+      "details": {
+        "visible_board_cards": 409,
+        "cards": [
+          {
+            "player": "Myles Turner",
+            "footer": "7 OVER3 UNDER",
+            "spans": [
+              "7 OVER",
+              "3 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Ty Jerome",
+            "footer": "5 OVER5 UNDER",
+            "spans": [
+              "5 OVER",
+              "5 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Jeremiah Fears",
+            "footer": "4 OVER3 UNDER",
+            "spans": [
+              "4 OVER",
+              "3 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Matas Buzelis",
+            "footer": "1 OVER9 UNDER",
+            "spans": [
+              "1 OVER",
+              "9 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Julian Champagnie",
+            "footer": "3 OVER7 UNDER",
+            "spans": [
+              "3 OVER",
+              "7 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Amen Thompson",
+            "footer": "3 OVER7 UNDER",
+            "spans": [
+              "3 OVER",
+              "7 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Matas Buzelis",
+            "footer": "2 OVER8 UNDER",
+            "spans": [
+              "2 OVER",
+              "8 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Donovan Mitchell",
+            "footer": "2 OVER8 UNDER",
+            "spans": [
+              "2 OVER",
+              "8 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Andrew Nembhard",
+            "footer": "5 OVER4 UNDER",
+            "spans": [
+              "5 OVER",
+              "4 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Isaiah Stewart",
+            "footer": "0 OVER6 UNDER",
+            "spans": [
+              "0 OVER",
+              "6 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Aday Mara",
+            "footer": "5 OVER5 UNDER",
+            "spans": [
+              "5 OVER",
+              "5 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Pascal Siakam",
+            "footer": "7 OVER3 UNDER",
+            "spans": [
+              "7 OVER",
+              "3 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "executing_assets_match_repository_release",
+      "status": "PASS",
+      "details": {
+        "feeds.js": "dp-under-detail-20261113-r38",
+        "live_direct.js": "dp-under-detail-20261113-r38",
+        "dames_take.js": "dp-under-detail-20261113-r38",
+        "provisional.js": "dp-under-detail-20261113-r38",
+        "short_history.js": "dp-under-detail-20261113-r38"
+      }
+    },
+    {
+      "name": "no_browser_javascript_exceptions",
+      "status": "PASS",
+      "details": []
+    },
+    {
+      "name": "board_cards_or_honest_empty_state",
+      "status": "PASS",
+      "details": {
+        "cards": 409,
+        "nearby_games": 6,
+        "expected_upcoming_picks": 649
+      }
+    },
+    {
+      "name": "near_tip_saved_picks",
+      "status": "PASS",
+      "details": []
+    },
+    {
+      "name": "missing_games_disclosed",
+      "status": "PASS",
+      "details": {
+        "visible": false,
+        "text": ""
+      }
+    }
+  ],
+  "overall": "PASS"
+}

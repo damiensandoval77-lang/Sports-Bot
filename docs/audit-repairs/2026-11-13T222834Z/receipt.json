@@ -1,0 +1,481 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "run_start": "2026-11-13T22:28:34+00:00",
+  "evidence_cutoff": "2026-11-13T22:59:14.399783+00:00",
+  "duration_seconds_to_evidence_cutoff": 1840,
+  "pinned_main_sha": "bc35651e88e935c856abfb26186adea2ca4b0085",
+  "latest_observed_main_sha": "7303ae5848d54b312e8745c80fa1dbf224439b45",
+  "deployment_version": "dp-under-detail-20261113-r38",
+  "deployment_source_mode": "legacy_branch",
+  "repair_merge_sha": "0a60fbbfbff0cff8d455b9bc1d2592bfdeac1dee",
+  "code_test_defects_discovered": 7,
+  "code_test_defects_repaired": 7,
+  "independently_verified_repairs": 7,
+  "verified_live_browser_behavior_repairs": 3,
+  "remaining_operational_findings": 3,
+  "verification_limitations": 2,
+  "repairs": [
+    {
+      "id": "D1",
+      "severity": "high",
+      "title": "Stalled feed can hang application startup",
+      "pr": 427,
+      "merge": "0ad4eb949b494207395d7b1cb31dc480900d4d5c",
+      "root_cause": "Feed requests and body parsing lacked a bounded deadline.",
+      "before": "An unresolved fetch/body promise could keep board startup waiting.",
+      "after": "Shared fetchData aborts/rejects after 8 seconds and existing fallback paths can continue.",
+      "tests": "4 helper cases; 78 targeted Node tests; CI pipeline 43520562660 passed.",
+      "production": "Public deployed actual helper rejected synthetic stalled same-origin request in 120.4ms Chromium / 122ms WebKit with test timeout 120ms.",
+      "verification": "VERIFIED_LIVE",
+      "runs": [
+        43520562660,
+        43520829975,
+        43522674315
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/427",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/0ad4eb949b494207395d7b1cb31dc480900d4d5c",
+      "changed_files": [
+        ".github/workflows/dames-picks-version-e.yml",
+        "docs/dames-picks/dames_take.js",
+        "docs/dames-picks/feeds.js",
+        "docs/dames-picks/index.html",
+        "docs/dames-picks/live_direct.js",
+        "docs/dames-picks/provisional.js",
+        "docs/dames-picks/release.json",
+        "docs/dames-picks/short_history.js",
+        "requirements.txt",
+        "scripts/e2e_live_site.py",
+        "tests/test_feed_deadlines.cjs"
+      ],
+      "workflow_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520562660",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520829975",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43522674315"
+      ]
+    },
+    {
+      "id": "D2",
+      "severity": "high",
+      "title": "Vulnerable Tornado dependency",
+      "pr": 427,
+      "merge": "0ad4eb949b494207395d7b1cb31dc480900d4d5c",
+      "root_cause": "requirements.txt pinned Tornado 6.6; pip-audit reported CVE-2026-126347.",
+      "before": "PR pipeline 43519837338 failed security audit.",
+      "after": "Pin upgraded to 6.6.1; security gate retained and subsequent pipeline passed.",
+      "tests": "pip-audit and full PR pipeline 43520562660.",
+      "production": "Merged source dependency fixed; no browser exploit simulation was performed.",
+      "verification": "SECURITY_CI_VERIFIED",
+      "runs": [
+        43519837338,
+        43520562660
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/427",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/0ad4eb949b494207395d7b1cb31dc480900d4d5c",
+      "changed_files": [
+        ".github/workflows/dames-picks-version-e.yml",
+        "docs/dames-picks/dames_take.js",
+        "docs/dames-picks/feeds.js",
+        "docs/dames-picks/index.html",
+        "docs/dames-picks/live_direct.js",
+        "docs/dames-picks/provisional.js",
+        "docs/dames-picks/release.json",
+        "docs/dames-picks/short_history.js",
+        "requirements.txt",
+        "scripts/e2e_live_site.py",
+        "tests/test_feed_deadlines.cjs"
+      ],
+      "workflow_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43519837338",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520562660"
+      ]
+    },
+    {
+      "id": "D3",
+      "severity": "medium",
+      "title": "Conflicting duplicate minutes could be re-admitted",
+      "pr": 3,
+      "merge": "57f75152cfef7c7755a299b9cebe2db56e0b58cd",
+      "root_cause": "A later repeated value restored a player-day previously rejected for conflicting minutes.",
+      "before": "30,42,30 sequence could restore the conflicting sample.",
+      "after": "Conflicted player-day remains excluded.",
+      "tests": "Original PR regressions reproduced failures; 33 targeted tests passed after repair.",
+      "production": "Postmerge minutes/injury pipeline 43521131098 succeeded; public minutes validation refreshed 22:40:29Z, research-only adjustments preserved.",
+      "verification": "REGRESSION_AND_PRODUCTION_EXECUTION_VERIFIED",
+      "runs": [
+        43521130920,
+        43521131098
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/3",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/57f75152cfef7c7755a299b9cebe2db56e0b58cd",
+      "changed_files": [
+        ".github/workflows/nba-schedule.yml",
+        ".github/workflows/research-safety-ci.yml",
+        "iphone_bot/fetch_official_injuries.py",
+        "iphone_bot/minutes_model_v2.py",
+        "iphone_bot/tests/test_minutes_model_v2.py",
+        "iphone_bot/tests/test_research_upgrades.py"
+      ],
+      "workflow_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43521130920",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43521131098"
+      ]
+    },
+    {
+      "id": "D4",
+      "severity": "high",
+      "title": "Undated injury fragments accepted",
+      "pr": 3,
+      "merge": "57f75152cfef7c7755a299b9cebe2db56e0b58cd",
+      "root_cause": "Parser accepted a status fragment without game-date context.",
+      "before": "Undated fragment produced Out with game_date null.",
+      "after": "Missing game-date context rejected; current provider provenance rules retained.",
+      "tests": "Regression reproduced before patch; included in 33 passing targeted tests.",
+      "production": "Public injury_context refreshed 22:40:30Z: 69 players, zero undated records. Malformed edge case verified by regression, not observed naturally in production.",
+      "verification": "REGRESSION_AND_PRODUCTION_EXECUTION_VERIFIED",
+      "runs": [
+        43521131098
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/3",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/57f75152cfef7c7755a299b9cebe2db56e0b58cd",
+      "changed_files": [
+        ".github/workflows/nba-schedule.yml",
+        ".github/workflows/research-safety-ci.yml",
+        "iphone_bot/fetch_official_injuries.py",
+        "iphone_bot/minutes_model_v2.py",
+        "iphone_bot/tests/test_minutes_model_v2.py",
+        "iphone_bot/tests/test_research_upgrades.py"
+      ],
+      "workflow_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43521131098"
+      ]
+    },
+    {
+      "id": "D5",
+      "severity": "high",
+      "title": "First/new-slate boxscore validation bypass",
+      "pr": 249,
+      "merge": "3800a1bfb7b8816bfed90b52d1825112af4320aa",
+      "root_cause": "Early-return publication paths bypassed per-game structure and identity validation.",
+      "before": "First/new-slate malformed games, duplicates or invalid player_rows could publish.",
+      "after": "Parse validates each game before any early return; existing partial merge and final-state safeguards retained.",
+      "tests": "Five failing regression cases before fix; 14 targeted tests passed afterward; CI 43521072656 passed.",
+      "production": "Postmerge collector 43521470787 passed; public independent tracking refreshed 22:46:10Z. NBA pregame means no natural malformed live event observed.",
+      "verification": "REGRESSION_AND_PRODUCTION_EXECUTION_VERIFIED",
+      "runs": [
+        43521072656,
+        43521470787
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/249",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/3800a1bfb7b8816bfed90b52d1825112af4320aa",
+      "changed_files": [
+        "iphone_bot/merge_nba_player_boxscore_publish.py",
+        "iphone_bot/tests/test_merge_nba_player_boxscore_publish.py"
+      ],
+      "workflow_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43521072656",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43521470787"
+      ]
+    },
+    {
+      "id": "D6",
+      "severity": "medium",
+      "title": "Deployed phone verification omitted WebKit and detail flows",
+      "pr": 307,
+      "merge": "4888a4ef6ce416791438644f32e4a40ddd4c582a",
+      "root_cause": "Browser coverage did not exercise both engines and actual NBA/NFL details.",
+      "before": "Top-level checks could miss phone detail regressions.",
+      "after": "Chromium/WebKit 390px touch matrix checks exact deployed assets, player/game details, Dame\u2019s Take placement, overflow and JS errors; bounded screenshots.",
+      "tests": "3 mobile-health tests and Python compile; CI passed.",
+      "production": "Both engines PASS in 43521955806 and final 43522674315; 409 board cards, 9 NBA games, 15 NFL games; NBA/NFL player and game detail checks pass.",
+      "verification": "VERIFIED_LIVE",
+      "runs": [
+        43521955806,
+        43522674315
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/307",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/4888a4ef6ce416791438644f32e4a40ddd4c582a",
+      "changed_files": [
+        ".github/workflows/live-site-e2e.yml",
+        "scripts/e2e_live_site.py"
+      ],
+      "workflow_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43521955806",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43522674315"
+      ]
+    },
+    {
+      "id": "D7",
+      "severity": "low",
+      "title": "Under detail box remained white",
+      "pr": 428,
+      "merge": "0a60fbbfbff0cff8d455b9bc1d2592bfdeac1dee",
+      "root_cause": ".lean.under CSS background was white.",
+      "before": "Under player detail did not use requested red treatment.",
+      "after": "Background #ff6b7a; coherent r38 assets and release manifest.",
+      "tests": "78 targeted Node tests; PR checks 12 success, one intentional deployed-main-only skip.",
+      "production": "Actual public Under card computed rgb(255,107,122) in Chromium and WebKit; WebKit screenshot visually inspected.",
+      "verification": "VERIFIED_LIVE",
+      "runs": [
+        43522674315,
+        43522674263
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/428",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/0a60fbbfbff0cff8d455b9bc1d2592bfdeac1dee",
+      "changed_files": [
+        "docs/dames-picks/dames_take.js",
+        "docs/dames-picks/feeds.js",
+        "docs/dames-picks/index.html",
+        "docs/dames-picks/live_direct.js",
+        "docs/dames-picks/provisional.js",
+        "docs/dames-picks/release.json",
+        "docs/dames-picks/short_history.js",
+        "scripts/e2e_live_site.py"
+      ],
+      "workflow_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43522674315",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43522674263"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "B1",
+      "severity": "high",
+      "status": "BLOCKED_EVIDENCE",
+      "issue": "Primary-model coverage incomplete",
+      "evidence": "Current 348/365 offers matched; 17 missing across seven players with fewer than eight recorded current-team games. Archive: 682 standard quotes, 36 without frozen primary threshold: 15 separate research, 21 without AI receipt.",
+      "workaround": "Existing trained short-history/research paths kept separate; recovery and fresh quote feed examined. Did not lower eligibility or fabricate predictions/pretip timestamps.",
+      "required": "Authentic eligible pretip history plus validated model support, or independently validated short-history production model. Past uncaptured evidence cannot be recreated truthfully."
+    },
+    {
+      "id": "B2",
+      "severity": "medium",
+      "status": "BLOCKED_USER_COST_CONSTRAINT",
+      "issue": "Legacy sportsbook-dependent AI/comparison jobs have stale inputs",
+      "evidence": "43519076571 and 43514736498 fail freshness guards.",
+      "workaround": "Retained prior board and guards; standard PrizePicks refresh occurred through existing automation at 22:44:09Z, with current line freshness healthy.",
+      "required": "No-cost valid source replacement or deliberate retirement after consumer/dependency review. No paid polling authorized."
+    },
+    {
+      "id": "B3",
+      "severity": "high",
+      "status": "BLOCKED_ADMIN_ACCESS",
+      "issue": "Native Pages cancellations and duplicate publication control",
+      "evidence": "Public convergence reports source_mode legacy_branch. Connector does not expose Pages settings/admin writes; browser settings route signed-out 404.",
+      "workaround": "Verified eventual native deployment and all r38 asset hashes using existing convergence workflow; no false deploy-pages claim.",
+      "required": "Repository owner: Settings > Pages > Build and deployment > Source = GitHub Actions. Existing controlled workflow must then be verified in Actions mode."
+    },
+    {
+      "id": "V1",
+      "severity": "medium",
+      "status": "BLOCKED_HISTORY_ACCESS",
+      "issue": "Per-workflow history not completely retrievable",
+      "evidence": "178 registered workflow histories attempted: 57 retrieved, 121 returned HTTP403. Connector rejects workflow-specific collection endpoint.",
+      "workaround": "Fetched global recent run samples, individual failed jobs/logs and all 175 current workflow definitions.",
+      "required": "Supported authenticated Actions workflow-history read capability; exact exceptions persisted in workflow-history.json.gz."
+    },
+    {
+      "id": "V2",
+      "severity": "medium",
+      "status": "NOT_OBSERVED",
+      "issue": "Active NBA pacing and all-provider historical completeness not independently proven",
+      "evidence": "No active NBA game before 00:00UTC; full Underdog quote ingestion and every historical branch semantic execution not completed.",
+      "workaround": "Fresh NBA/NFL ESPN reconciliation, public phone flows and current archive grading inspected.",
+      "required": "Live-game observations with real totals, authentic provider coverage evidence; do not count missing observations as pass."
+    }
+  ],
+  "failed_runs": [
+    {
+      "run_id": 43519837338,
+      "workflow": "pipeline",
+      "cause": "Tornado 6.6 security vulnerability; fixed by 6.6.1 in PR427; 43520562660 passed.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43519837338"
+    },
+    {
+      "run_id": 43519076571,
+      "workflow": "NBA trained AI",
+      "cause": "Legacy sportsbook quote source older than six hours. Paid refresh forbidden; stale-data gate retained.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43519076571"
+    },
+    {
+      "run_id": 43514736498,
+      "workflow": "AI comparisons",
+      "cause": "NO_FRESH_PAIRED_PROPS; old board preserved. No paid refresh dispatched.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43514736498"
+    },
+    {
+      "run_id": 43519584064,
+      "workflow": "Heartbeat",
+      "cause": "capture_integrity failed; recovery dispatched existing NBA/readiness workflows but missing primary coverage persists.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43519584064"
+    },
+    {
+      "run_id": 43508627882,
+      "workflow": "Full repository audit",
+      "cause": "Static and branch jobs passed; production recovery still lacked 31 frozen primary markets at that run, report job correctly failed.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43508627882"
+    },
+    {
+      "run_id": 43513614075,
+      "workflow": "Unified release gate",
+      "cause": "NBA capture and production / unified artifacts degraded; NFL ready; healthy streak zero.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43513614075"
+    },
+    {
+      "run_id": 43519246203,
+      "workflow": "Unified integrity",
+      "cause": "Report successfully committed 83e2b414; process exited 2 for degraded coverage, not failed write.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43519246203"
+    },
+    {
+      "run_id": 43520828939,
+      "workflow": "Native Pages",
+      "cause": "Cancelled during repeated native branch publishes; later deployment converged.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520828939"
+    },
+    {
+      "run_id": 43520859533,
+      "workflow": "Native Pages",
+      "cause": "Cancelled; branch-mode publish race remains administratively blocked.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520859533"
+    },
+    {
+      "run_id": 43520928878,
+      "workflow": "Native Pages",
+      "cause": "Cancelled; eventual 43521005832 succeeded.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520928878"
+    },
+    {
+      "run_id": 43520964647,
+      "workflow": "Native Pages",
+      "cause": "Cancelled; public r38 subsequently verified.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520964647"
+    },
+    {
+      "run_id": 43520971741,
+      "workflow": "Native Pages",
+      "cause": "Cancelled; public r38 subsequently verified.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43520971741"
+    }
+  ],
+  "branch_inventory": {
+    "initial_heads": 427,
+    "initial_pr_tips": 426,
+    "final_heads": 429,
+    "final_pr_tips": 428,
+    "comparison_main_sha": "4b1b73958a8302f81fb9113bf2055b397243580f",
+    "open_prs_initial": 7,
+    "open_prs_final": 0,
+    "carried_prs_merged": [
+      3,
+      249,
+      307
+    ],
+    "new_prs_merged": [
+      427,
+      428
+    ],
+    "obsolete_prs_closed": [
+      135,
+      132,
+      72,
+      272
+    ],
+    "exceptions": [
+      "Unreachable deleted tips cannot be inventoried.",
+      "All refs fetched and ahead/behind compared; every historical revision was not semantically executed."
+    ]
+  },
+  "workflows": {
+    "definitions_checked": 175,
+    "registered_histories_attempted": 178,
+    "histories_retrieved": 57,
+    "histories_blocked": 121,
+    "unique_run_observations": 589,
+    "static_errors": 0,
+    "static_warnings": 45,
+    "mutable_action_refs": 381,
+    "static_basis": "Working tree based on 5943d34 with tested r38 changes before merge; no claim static audit SHA alone equals final production SHA."
+  },
+  "coverage": {
+    "nba_schedule_today": 9,
+    "nba_fixed_season_games": 1200,
+    "nfl_season_games": 272,
+    "nba_current_standard_offers": 365,
+    "nba_current_primary_matched": 348,
+    "nba_current_primary_missing": 17,
+    "nba_archived_standard_quotes": 682,
+    "nba_archived_primary_missing": 36,
+    "nba_missing_with_research": 15,
+    "nba_missing_without_ai_receipt": 21,
+    "nba_line_backed_forecasts": 649,
+    "nba_ai_only_forecasts": 904,
+    "readiness_checks_passed": 9,
+    "readiness_checks_total": 10,
+    "quote_source_generated_at": "2026-11-13T22:44:09.606794Z",
+    "current_quote_stale_count": 0,
+    "current_quote_staleness_scope": "Readiness quote component; not all repository artifacts",
+    "nba_first_tip": "2026-11-14T00:00:00Z",
+    "nfl_espn_player_rows_reconciled": 18,
+    "nfl_espn_mismatches": 0
+  },
+  "grading": {
+    "nba_nov12_ai_recorded": 388,
+    "nba_ai_graded": 332,
+    "nba_verified_dnp": 56,
+    "nba_ai_unaccounted": 0,
+    "nba_captured_prizepicks": 327,
+    "nba_settled": 318,
+    "nba_void": 9,
+    "nba_overdue_captured": 0,
+    "nfl_standard_graded_including_pushes": 135,
+    "nfl_standard_pushes": 3,
+    "nfl_standard_decisions": 132,
+    "nfl_standard_wins": 52,
+    "nfl_standard_losses": 80,
+    "nfl_standard_hit_rate_percent": 39.39,
+    "nfl_standard_pending": 0,
+    "nfl_alt_grades_excluded": 932,
+    "nfl_alt_pending_excluded": 4,
+    "nfl_void": 16,
+    "missing_uncaptured_historical_count": null,
+    "missing_uncaptured_historical_status": "Unknown; cannot reconstruct without authentic pretip evidence."
+  },
+  "live_verification": {
+    "url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "run_id": 43522674315,
+    "run_url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43522674315",
+    "checked_at": "2026-11-13T22:52:59Z",
+    "browsers": [
+      "chromium",
+      "webkit"
+    ],
+    "width": 390,
+    "checks_per_browser": 16,
+    "status": "PASS",
+    "physical_iphone_tested": false,
+    "all_six_asset_hashes_match": true,
+    "board_cards": 409,
+    "js_errors": 0
+  },
+  "automation": {
+    "enabled": true,
+    "schedule_changed": false,
+    "duplicate_created": false,
+    "prior_run_published_report": true,
+    "notification_delivery": "UNCONFIRMED",
+    "notification_request": "Please notify Damien through enabled ChatGPT mobile notifications."
+  },
+  "safeguards": {
+    "paid_api_calls": false,
+    "replit_used": false,
+    "secrets_changed": false,
+    "destructive_actions": false,
+    "fabricated_historical_evidence": false,
+    "security_and_freshness_gates_retained": true
+  },
+  "run_end": "2026-11-13T23:01:33.671018+00:00",
+  "duration_seconds": 1980
+}
