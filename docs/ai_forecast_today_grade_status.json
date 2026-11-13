@@ -1,15 +1,15 @@
 {
-  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-13T04:32:51.843717+00:00",
+  "status": "AI_PRETIP_FORECASTS_GRADED",
+  "generated_at": "2026-11-13T04:44:53.444160+00:00",
   "game_date_eastern": "2026-11-12",
   "recorded_pregame_forecasts": 388,
   "graded": 332,
-  "verified_dnp_exclusions": 44,
+  "verified_dnp_exclusions": 56,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 376,
-  "ungraded": 12,
-  "new_grades": 72,
-  "new_verified_dnp_exclusions": 16,
+  "accounted_for": 388,
+  "ungraded": 0,
+  "new_grades": 0,
+  "new_verified_dnp_exclusions": 12,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
@@ -34,13 +34,14 @@
       "mean_signed_error": 0.288
     }
   },
-  "ungraded_by_game": {
-    "Charlotte Hornets @ Phoenix Suns": 12
-  },
+  "ungraded_by_game": {},
   "excluded_verified_dnp_players": [
     "Adem Bona",
+    "Brandon Miller",
+    "Dennis Schr\u00f6der",
     "Duop Reath",
     "Ebuka Okorie",
+    "Hannes Steinbach",
     "Jamaree Bouyea",
     "Koa Peat",
     "LeBron James",
@@ -50,122 +51,29 @@
     "Trayce Jackson-Davis",
     "Tre Mann"
   ],
-  "ungraded_distinct_player_names_by_game": {
-    "Charlotte Hornets @ Phoenix Suns": [
-      "Brandon Miller",
-      "Dennis Schr\u00f6der",
-      "Hannes Steinbach"
-    ]
-  },
-  "ungraded_distinct_player_markets": 12,
+  "ungraded_distinct_player_names_by_game": {},
+  "ungraded_distinct_player_markets": 0,
   "final_feed": {
     "pending_matchups": 14,
     "final_nba_games": 14,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 319,
+    "retrieved_player_lines": 359,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 10,
     "final_cached_id_nba_games": 10,
-    "secondary_espn_dnp_no_verified_game_hint": 44,
+    "secondary_espn_dnp_no_verified_game_hint": 41,
     "secondary_verified_explicit_dnp_players": 6,
-    "secondary_dnp_still_unverified": 8,
+    "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 682,
-    "newly_retrieved_verified_rows": 24,
+    "verified_cache_rows": 721,
+    "newly_retrieved_verified_rows": 40,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 12
-    },
-    "players": [
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dennis Schr\u00f6der",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dennis Schr\u00f6der",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dennis Schr\u00f6der",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Dennis Schr\u00f6der",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Charlotte Hornets @ Phoenix Suns",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      }
-    ],
+    "by_reason": {},
+    "players": [],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,
