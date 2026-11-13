@@ -12,6 +12,10 @@ on:
       - Publish lightweight verified PrizePicks AI comparisons
       - Backup NBA live player tracker observations (no sportsbook API)
       - Independent NBA player boxscores
+      - Independent NBA scoreboard refresh
+      - Refresh independent NBA PrizePicks full-slate lines
+      - Guarded new NBA AI all markets PTS REB AST PRA
+      - Publish lightweight PrizePicks site data and per-game coverage
     types: [completed]
     branches: [main]
   schedule:
@@ -47,7 +51,10 @@ concurrency:
 
 jobs:
   verify-readiness:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.name == 'Verify tonight NBA frozen lines predictions and grades' || (github.event.workflow_run.name == 'Publish lightweight verified PrizePicks AI comparisons' && github.event.workflow_run.conclusion == 'failure')
+    # Evaluate every trusted main source completion, including failure,
+    # timeout and cancellation. Never execute upstream code: checkout main.
+    # Dispatch remains conditional on actual degraded data and cooldowns.
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.event != 'pull_request')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -150,21 +157,30 @@ jobs:
               nba-live-tracker-backup.yml) cooldown_minutes=4 ;;
               *) cooldown_minutes=35 ;;
             esac
+            # Failure-triggered evaluation must not create an immediate retry
+            # cycle. Back off failed/cancelled free producers from completion;
+            # expensive model generation gets a longer recovery interval.
+            failure_backoff_minutes=5
+            if [ "$workflow" = nba-new-ai-all-markets.yml ]; then failure_backoff_minutes=15; fi
             # Compare with actual started runs, including in-progress.
             # Prevent every 20-minute audit from buying another board.
             # Keep the paid collector on a hard cooldown even if its last
             # request failed: avoid repeatedly spending top-up credits.
-            # Free recovery is different: a failed run must not suppress the
-            # next verified retry. Suppress only active or successful runs.
-            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,status,conclusion,headBranch |
+            # Failed free runs may retry sooner than successful runs, but not
+            # immediately on their own completion-triggered readiness event.
+            recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,updatedAt,status,conclusion,headBranch |
               jq --argjson cutoff "$(($(date -u +%s) - cooldown_minutes * 60))" \
+                 --argjson failed_cutoff "$(($(date -u +%s) - failure_backoff_minutes * 60))" \
                  --arg paid "$([ "$workflow" = nba-prizepicks-full-slate.yml ] && echo true || echo false)" '
-                [.[] | select(.headBranch=="main" and
-                  ((.status != "completed") or
-                   ((.createdAt | fromdateiso8601) >= $cutoff and
-                    ($paid == "true" or .conclusion == "success"))))] | length')
+                [.[] | select(.headBranch=="main" and (
+                  .status != "completed" or
+                  ((.createdAt | fromdateiso8601) >= $cutoff and
+                   ($paid == "true" or .conclusion == "success")) or
+                  ($paid != "true" and .conclusion != "success" and
+                   (.updatedAt | fromdateiso8601) >= $failed_cutoff)
+                ))] | length')
             if [ "$recent" -gt 0 ]; then
-              echo "Skipping $workflow: active or successfully completed within cooldown (paid calls also hard-capped)"
+              echo "Skipping $workflow: active, successful cooldown, or failure backoff (paid calls hard-capped)"
               continue
             fi
             echo "Dispatching bounded recovery: $workflow"
