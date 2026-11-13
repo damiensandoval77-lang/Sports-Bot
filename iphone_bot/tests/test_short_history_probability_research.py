@@ -8,7 +8,7 @@ NOW='2026-11-13T23:00:00+00:00'
 def row():
  return {'receipt_key':'test','candidate_model':MODEL,'player_id':'1','team':'AAA','game':'A @ B','start':'2026-11-14T00:00:00+00:00','stat':'PTS','line':10.,'market_updated':'2026-11-13T22:50:00+00:00','captured_at':NOW,'archived_at':NOW,'research_probability_over':.4,'research_probability_under':.5,'research_probability_push':.1,'primary_model_eligible':False,'official_grade_eligible':False,'calibrated':False,'historical_improvement_gate_passed':False}
 def final(actual=11.):
- return {**row(),'actual':actual,'grade_source':'NBA_CDN_FINAL','source_game_id':'0022600001'}
+ return {**row(),'actual':actual,'grade':'HIT','grade_source':'NBA_CDN_FINAL','source_game_id':'0022600001'}
 class Tests(unittest.TestCase):
  def test_integer_push(self):
   p=probability([10,4,2],np.zeros((1000,3)),10,0);np.testing.assert_equal(p,[0,0,1])
@@ -46,6 +46,11 @@ class Tests(unittest.TestCase):
  def test_unverified_final_ignored(self):
   a=merge(None,{'records':[row()]},NOW);f=final();f['grade_source']='CSV'
   self.assertEqual(settle(a,[f], '2026-11-14T03:00:00+00:00')['outcomes'],{})
+ def test_void_and_unsettled_ignored(self):
+  a=merge(None,{'records':[row()]},NOW)
+  for grade in ['VOID','DNP','UNSETTLED_RESEARCH',None]:
+   f=final();f['grade']=grade
+   self.assertEqual(settle(a,[f],'2026-11-14T03:00:00+00:00')['outcomes'],{})
  def test_pretip_final_ignored(self):
   a=merge(None,{'records':[row()]},NOW);self.assertEqual(settle(a,[final()],NOW)['outcomes'],{})
  def test_push_result(self):
