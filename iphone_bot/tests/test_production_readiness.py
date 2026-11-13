@@ -133,6 +133,13 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("PARTIAL_PRIZEPICKS_PROVIDER_COVERAGE",
                       r["components"]["prizepicks_lines"]["reasons"])
 
+    def test_live_fallback_completion_refreshes_readiness(self):
+        from pathlib import Path
+        workflow=(Path(__file__).resolve().parents[2]/".github/workflows/production_readiness.yml").read_text()
+        block=workflow.split("workflow_run:",1)[1].split("schedule:",1)[0]
+        self.assertIn("Backup NBA live player tracker observations (no sportsbook API)",block)
+        self.assertIn("Independent NBA player boxscores",block)
+
     def live_fallback_fixture(self):
         data=fixtures()
         data["nba_schedule.json"]["games"][0]["start"]="2026-11-09T16:00:00Z"
