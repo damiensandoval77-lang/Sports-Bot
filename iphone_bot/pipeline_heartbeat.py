@@ -25,7 +25,9 @@ def ts(value):
     except (ValueError,TypeError):return None
 def age(now,value):
     v=ts(value)
-    return (now-v).total_seconds()/60 if v else None
+    # A future observation is not fresh evidence. Let the existing missing-age
+    # branches report uncertainty/failure instead of a negative healthy age.
+    return (now-v).total_seconds()/60 if v and v<=now else None
 def check(name,status,detail,recovery_workflow="DEFAULT",**evidence):
     recovery = REPAIR.get(name) if recovery_workflow == "DEFAULT" else recovery_workflow
     return {"stage":name,"status":status,"detail":detail,"recovery_workflow":recovery,"evidence":evidence}
@@ -64,7 +66,8 @@ def evaluate(now,site,espn=None):
     p_at=ts(pp.get("generated_at"))
     s_at=ts(published.get("source_generated_at") or published.get("generated_at"))
     lag=(p_at-s_at).total_seconds()/60 if p_at and s_at else None
-    publish_bad=not s_at or (p_at is not None and lag is not None and lag>45)
+    publish_bad=(not s_at or s_at>now or (p_at is not None and
+                 (p_at>now or (lag is not None and lag>45))))
     out.append(check("lines_publish","FAIL" if publish_bad else "OK",
                      "Published line snapshot freshness",
                      provider_generated_at=pp.get("generated_at"),

@@ -15,6 +15,29 @@ def site(start=None,snapshot=None,ledger=None,model=None):
             "nba_scoreboard_independent.json":{},"nba_player_tracking_independent.json":{}}
 def stage(r,name):return next(x for x in r["stages"] if x["stage"]==name)
 class Heartbeat(unittest.TestCase):
+    def test_future_live_observations_do_not_count_as_fresh(self):
+        s=site(start=time(minutes=-30))
+        s["nba_scoreboard_independent.json"]={"generated_at":time(hours=24),
+            "games":[{"game":GAME,"game_state":"in"}]}
+        s["nba_player_tracking_independent.json"]={"captured_at":time(hours=24),
+            "games":[{"game":GAME,"observed_at":time(hours=24),"player_rows":[{"player":"A","PTS":12}]}]}
+        report=evaluate(NOW,s,{"events":[]})
+        self.assertEqual(stage(report,"live_scores")["status"],"FAIL")
+        self.assertEqual(stage(report,"live_players")["status"],"FAIL")
+        self.assertEqual(stage(report,"live_players")["evidence"]["stale_game_observations"],[GAME])
+
+    def test_future_lines_cannot_pass_publish_freshness(self):
+        for filename in ("prizepicks.json","prizepicks_site.json"):
+            s=site()
+            s[filename]["generated_at"]=time(hours=24)
+            self.assertEqual(stage(evaluate(NOW,s),"lines_publish")["status"],"FAIL")
+
+    def test_future_grading_report_cannot_confirm_zero_backlog(self):
+        s=site()
+        s["nightly_grade_health.json"]={"checked_at":time(hours=24),
+            "prizepicks_overdue":0,"ai_forecasts_ungraded":0}
+        self.assertEqual(stage(evaluate(NOW,s),"grading_report")["status"],"WARN")
+
     def test_old_published_lines_fail(self):
         self.assertEqual(stage(evaluate(NOW,site(snapshot=time(hours=-6))),"lines_publish")["status"],"FAIL")
     def test_missing_picks_three_hours_before_tip_fail(self):
