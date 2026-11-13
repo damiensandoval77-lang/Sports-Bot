@@ -12,6 +12,10 @@ on:
       - Publish lightweight verified PrizePicks AI comparisons
       - Backup NBA live player tracker observations (no sportsbook API)
       - Independent NBA player boxscores
+      - Independent NBA scoreboard refresh
+      - Refresh independent NBA PrizePicks full-slate lines
+      - Guarded new NBA AI all markets PTS REB AST PRA
+      - Publish lightweight PrizePicks site data and per-game coverage
     types: [completed]
     branches: [main]
   schedule:
@@ -47,7 +51,10 @@ concurrency:
 
 jobs:
   verify-readiness:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.name == 'Verify tonight NBA frozen lines predictions and grades' || (github.event.workflow_run.name == 'Publish lightweight verified PrizePicks AI comparisons' && github.event.workflow_run.conclusion == 'failure')
+    # Evaluate every trusted main source completion, including failure,
+    # timeout and cancellation. Never execute upstream code: checkout main.
+    # Dispatch remains conditional on actual degraded data and cooldowns.
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.event != 'pull_request')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:

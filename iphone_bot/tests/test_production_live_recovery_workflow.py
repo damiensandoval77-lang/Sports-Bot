@@ -54,10 +54,43 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
     def test_failed_comparison_publisher_reaches_bounded_recovery(self):
         text=(ROOT/".github/workflows/production_readiness.yml").read_text()
         condition=next(line.strip() for line in text.splitlines() if line.strip().startswith("if: github.event_name"))
-        self.assertIn("(github.event.workflow_run.name == 'Publish lightweight verified PrizePicks AI comparisons' && github.event.workflow_run.conclusion == 'failure')", condition)
+        self.assertNotIn("conclusion", condition)
+        self.assertIn("head_branch == 'main'", condition)
+        self.assertIn("head_repository.full_name == github.repository", condition)
+        self.assertIn("event != 'pull_request'", condition)
         self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=90", text)
         self.assertIn('(.status != "completed")', text)
         self.assertIn('($paid == "true" or .conclusion == "success")', text)
         self.assertIn('python -m iphone_bot.readiness_recovery', text)
+
+    def test_every_recovery_producer_completion_is_subscribed(self):
+        text=(ROOT/".github/workflows/production_readiness.yml").read_text()
+        subscribed=text.split("workflows:",1)[1].split("types:",1)[0]
+        for filename in ("nba-schedule.yml", "nba-no-line-daily-projections.yml",
+                         "nba-prizepicks-full-slate.yml", "nba-new-ai-all-markets.yml",
+                         "nba-prizepicks-site-publish.yml", "independent_scoreboard_refresh.yml",
+                         "independent_nba_player_boxscores.yml", "nba-live-tracker-backup.yml"):
+            with self.subTest(workflow=filename):
+                name=(ROOT/".github/workflows"/filename).read_text().splitlines()[0].removeprefix("name: ").strip()
+                self.assertIn("- "+name, subscribed)
+
+    def test_failed_source_events_reach_audit_but_untrusted_events_do_not(self):
+        text=(ROOT/".github/workflows/production_readiness.yml").read_text()
+        condition=next(line.strip()[4:] for line in text.splitlines() if line.strip().startswith("if: github.event_name"))
+        # Execute the exact workflow boolean expression against representative
+        # event values, not a separate copy of the routing logic.
+        for outcome in ("success", "failure", "timed_out", "cancelled"):
+            for branch,repo,event,expected in (("main","owner/repo","schedule",True),
+                    ("other","owner/repo","push",False),
+                    ("main","attacker/fork","push",False),
+                    ("main","owner/repo","pull_request",False)):
+                values={"github.event_name":"workflow_run", "github.event.workflow_run.head_branch":branch,
+                        "github.event.workflow_run.head_repository.full_name":repo,
+                        "github.event.workflow_run.event":event,
+                        "github.event.workflow_run.conclusion":outcome,"github.repository":"owner/repo"}
+                expression=condition
+                for key in sorted(values,key=len,reverse=True):
+                    expression=expression.replace(key,repr(values[key]))
+                self.assertEqual(eval(expression.replace("||"," or ").replace("&&"," and "),{"__builtins__":{}}),expected)
 
 if __name__=="__main__":unittest.main()
