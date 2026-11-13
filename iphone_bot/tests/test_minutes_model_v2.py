@@ -1,6 +1,6 @@
 """Research-only robust minutes forecasts: no future leakage or live changes."""
 import unittest
-from iphone_bot.minutes_model_v2 import forecast,backtest
+from iphone_bot.minutes_model_v2 import forecast,backtest,player_history
 
 
 def game(player,day,minutes,team="BOS"):
@@ -35,6 +35,20 @@ class MinutesModelV2Tests(unittest.TestCase):
         self.assertIsNone(forecast(rows,"2026-10-09","BOS")["expected_minutes"])
         rows.append(game(1,9,30))
         self.assertEqual(forecast(rows,"2026-10-10","BOS")["history_games"],8)
+
+    def test_conflicting_same_day_minutes_cannot_be_restored_by_later_duplicate(self):
+        # A repeated conflicting feed row must never turn an ambiguous
+        # player-day into a usable pregame observation.
+        stable=[game(1,d,30) for d in range(2,9)]
+        for duplicate_order in ((30,42,30),(42,30,42),(30,30,42,30)):
+            with self.subTest(duplicate_order=duplicate_order):
+                rows=[game(1,1,value) for value in duplicate_order]+stable
+                history=player_history(rows,"2026-10-09","BOS")
+                self.assertEqual(len(history),7)
+                self.assertNotIn("2026-10-01",[day for day,_ in history])
+                forecasted=forecast(rows,"2026-10-09","BOS")
+                self.assertEqual(forecasted["history_games"],7)
+                self.assertIsNone(forecasted["expected_minutes"])
 
     def test_holdout_is_on_disjoint_dates_and_same_games(self):
         # 10 dates, 15 unique player observations on each date. V2 can

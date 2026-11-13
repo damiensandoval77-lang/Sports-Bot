@@ -1,0 +1,75 @@
+name: Offline NBA research safety regressions
+on:
+  push:
+    branches: [main, 'research/**']
+    paths:
+      - 'iphone_bot/minutes_model_v2.py'
+      - 'iphone_bot/tests/test_minutes_model_v2.py'
+      - 'iphone_bot/fetch_official_injuries.py'
+      - 'iphone_bot/tests/test_research_upgrades.py'
+      - '.github/workflows/nba-schedule.yml'
+      - '.github/workflows/research-safety-ci.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/minutes_model_v2.py'
+      - 'iphone_bot/tests/test_minutes_model_v2.py'
+      - 'iphone_bot/fetch_official_injuries.py'
+      - 'iphone_bot/tests/test_research_upgrades.py'
+      - '.github/workflows/nba-schedule.yml'
+      - '.github/workflows/research-safety-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline_safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+      - name: Compile offline research and schedule parsers
+        run: python -m py_compile iphone_bot/minutes_model_v2.py iphone_bot/fetch_official_injuries.py iphone_bot/fetch_nba_schedule.py
+      - name: Validate minutes, dated injuries, and schedule parsing
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_minutes_model_v2.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_research_upgrades.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_nba_schedule.py' -v
+      - name: Verify published injury context and partial score slate are labeled
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from iphone_bot.fetch_official_injuries import TEAM_NAMES
+          schedule=json.load(open('docs/nba_schedule.json'))
+          assert schedule['status'] in (
+              'THIRD_PARTY_NBA_SCHEDULE_ONLY','PARTIAL_CACHED_SPORTSBOOK_SCHEDULE',
+              'PROVIDER_NBA_SCORES_PARTIAL_SLATE','SCHEDULE_UNAVAILABLE')
+          assert isinstance(schedule['coverage_complete'],bool)
+          if schedule['status'] in ('PARTIAL_CACHED_SPORTSBOOK_SCHEDULE',
+                                     'PROVIDER_NBA_SCORES_PARTIAL_SLATE'):
+              assert schedule['coverage_complete'] is False
+          if schedule['status']=='PROVIDER_NBA_SCORES_PARTIAL_SLATE':
+              assert schedule['source']=='The Odds API NBA scores'
+          assert schedule['has_sportsbook_props'] is False
+          assert schedule['has_verified_player_availability'] is False
+          assert len(schedule['games'])==schedule['total_games']
+          assert len({r['id'] for r in schedule['games']})==schedule['total_games']
+          assert all(r['date_eastern'] in schedule['dates_eastern'] for r in schedule['games'])
+          injury=json.load(open('docs/injury_context.json'))
+          if injury.get('injury_data_verified'):
+              assert injury['status']=='OFFICIAL_NBA_REPORT_VERIFIED'
+              assert injury['source_pdf'].startswith('https://ak-static.cms.nba.com/referee/injury/Injury-Report_')
+              assert datetime.fromisoformat(injury['report_issued_at']) <= datetime.fromisoformat(injury['generated_at'])
+              seen=set()
+              for row in injury['players']:
+                  assert row['team'] in TEAM_NAMES
+                  assert row['status'] in ('Out','Doubtful','Questionable','Probable','Available')
+                  assert row['game_date'] and row['player_id']
+                  datetime.fromisoformat(row['game_date'])
+                  key=(row['player_id'],row['team'],row['game_date'])
+                  assert key not in seen
+                  seen.add(key)
+          print('Offline schedule and injury provenance assertions: PASS')
+          PY
