@@ -19,3 +19,10 @@ test('board and saved picks use estimate sorting but tracker keeps team-position
  const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
  assert.match(html,/if\(state.mode==="tracker"\)return m.sortByTeamPosition\(data\);\s*return m.sortByHitEstimate\(data\);/);
 });
+test('verified selected-side probability outranks preview and sorting ignores legacy modelPct',()=>{
+ const p={...row('verified',.99),direction:'LESS',line:10.5,projection:8,captured:'2026-11-14T18:00:00Z'};
+ const factors=Object.fromEntries(['opponent_position_defense','projected_minutes','usage_opportunities','teammate_availability','depth_role','pace_possessions'].map(k=>[k,{source:'observed',observed_at:p.captured,baseline:10,matchup:11}]));
+ p.matchupEstimate={method:'PREGAME_MATCHUP_CONDITIONED_V1',research_only:false,opponent_aware_verified:true,model_id:'test',original_line:p.line,direction:p.direction,captured_at:p.captured,modeled_selected_probability:.7,factors};
+ assert.equal(m.displayedHitRate(p),.7);
+ assert.equal(m.sortByHitEstimate([p,row('preview',.8)]).map(x=>x.player).join(','),'preview,verified');
+});
