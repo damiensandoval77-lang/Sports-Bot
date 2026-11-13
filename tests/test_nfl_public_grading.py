@@ -92,6 +92,29 @@ class PublicNFLGradeTests(unittest.TestCase):
         self.assertIsNone(exact_fantasy_score({**player,"receiving_tds":1},scoring))
         self.assertIsNone(exact_fantasy_score({**player,"passing_yards":None},scoring))
 
+    def test_exact_evidence_survives_repeat_and_source_rotation(self):
+        original=bet(); original.update(p_more="0.58",p_less="0.32",p_push="0.10",
+                                       matchup_evidence='{"original":"bytes"}')
+        rows,_=collect_history([bet()],[original],schedule())
+        for field in ("p_more","p_less","p_push","matchup_evidence"):
+            self.assertEqual(rows[0][field],original[field])
+        repeated,_=collect_history(rows,[bet()],schedule())
+        self.assertEqual(repeated,rows)
+        rotated,_=collect_history(rows,[],schedule())
+        self.assertEqual(rotated,rows)
+        grades,_,_=grade_finals(rows,schedule(),box(),set())
+        self.assertEqual(grades[0]["matchup_evidence"],original["matchup_evidence"])
+
+    def test_conflicting_forecast_or_evidence_cannot_recertify_archive(self):
+        original=bet();original.update(p_more="0.58",matchup_evidence='{"original":true}')
+        for patch in ({"proj":"99"},{"p_more":"0.9"},{"matchup_evidence":"{}"}):
+            with self.assertRaisesRegex(ValueError,"NFL_FROZEN_"):
+                collect_history([original],[{**original,**patch}],schedule())
+        late={**original,"captured_at":"2026-11-15T18:00:00+00:00"}
+        rows,rejected=collect_history([original],[late],schedule())
+        self.assertEqual(len(rows),1);self.assertEqual(rejected,1)
+        self.assertEqual(rows[0]["matchup_evidence"],original["matchup_evidence"])
+
     def test_only_pregame_captures_are_archived(self):
         old=bet()
         late=bet(captured="2026-11-16T17:00:00+00:00")

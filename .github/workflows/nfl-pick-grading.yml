@@ -87,7 +87,8 @@ jobs:
             git add docs/nfl/data/frozen_pick_history_2026.csv \
                     docs/nfl/data/pp_graded_2026.csv \
                     docs/nfl/data/pp_grading_pending_2026.csv \
-                    docs/nfl/data/grading_health_2026.json
+                    docs/nfl/data/grading_health_2026.json \
+                    docs/nfl/data/active_frozen_2026.json
             if git diff --cached --quiet; then
               echo "NFL frozen grades unchanged; preserving stable Pages deployment"
               exit 0
