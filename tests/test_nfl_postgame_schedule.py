@@ -28,6 +28,11 @@ class PostgameScheduleTests(unittest.TestCase):
                 for name in ('nfl-boxscores-publish.yml', 'nfl-pick-grading.yml'):
                     self.assertTrue(any(scheduled(moment + dt.timedelta(minutes=i), self.expressions(name)) for i in range(61)), (game['game_id'], moment, name))
 
+    def test_pr_grading_isolated_without_changing_production_lock(self):
+        source=(ROOT / '.github/workflows/nfl-pick-grading.yml').read_text()
+        self.assertIn("github.event_name == 'pull_request' && format('nfl-public-frozen-grading-{0}', github.ref) || 'nfl-public-frozen-grading'",source)
+        self.assertIn('cancel-in-progress: false',source)
+
     def test_thursday_post_midnight_recovery(self):
         moment = dt.datetime(2026, 11, 13, 4, 35, tzinfo=dt.timezone.utc)
         self.assertTrue(due(self.schedule, moment))

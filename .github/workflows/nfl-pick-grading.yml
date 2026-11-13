@@ -38,7 +38,8 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: nfl-public-frozen-grading
+  # PR verification must not replace queued production grading, or vice versa.
+  group: ${{ github.event_name == 'pull_request' && format('nfl-public-frozen-grading-{0}', github.ref) || 'nfl-public-frozen-grading' }}
   cancel-in-progress: false
 jobs:
   due:
