@@ -141,6 +141,7 @@ jobs:
               nba-new-ai-all-markets.yml) cooldown_minutes=90 ;;
               independent_scoreboard_refresh.yml) cooldown_minutes=18 ;;
               independent_nba_player_boxscores.yml) cooldown_minutes=12 ;;
+              nba-live-tracker-backup.yml) cooldown_minutes=4 ;;
               *) cooldown_minutes=35 ;;
             esac
             # Compare with actual started runs, including in-progress.
