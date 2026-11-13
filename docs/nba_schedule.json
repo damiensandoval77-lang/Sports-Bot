@@ -1,7 +1,7 @@
 {
   "status": "THIRD_PARTY_NBA_SCHEDULE_ONLY",
-  "generated_at": "2026-11-13T04:14:00.195672+00:00",
-  "source": "sportsdataverse hoopR 2026-27 ESPN-sourced season schedule",
+  "generated_at": "2026-11-13T04:57:03.610562+00:00",
+  "source": "sportsdataverse hoopR 2026-27 ESPN-sourced season schedule + verified full-season fixture repair",
   "source_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-data/main/nba/schedules/parquet/nba_schedule_2027.parquet",
   "source_records_rejected": 0,
   "timezone": "America/New_York",
@@ -11,12 +11,12 @@
   ],
   "games": [
     {
-      "id": "401909977",
-      "game": "Detroit Pistons @ Washington Wizards",
-      "home": "Washington Wizards",
-      "away": "Detroit Pistons",
-      "home_abbreviation": "WAS",
-      "away_abbreviation": "DET",
+      "id": "401909976",
+      "game": "Toronto Raptors @ Philadelphia 76ers",
+      "home": "Philadelphia 76ers",
+      "away": "Toronto Raptors",
+      "home_abbreviation": "PHI",
+      "away_abbreviation": "TOR",
       "start": "2026-11-13T00:00:00+00:00",
       "date_eastern": "2026-11-12",
       "game_state": "pre",
@@ -27,12 +27,12 @@
       "status_detail": null
     },
     {
-      "id": "401909976",
-      "game": "Toronto Raptors @ Philadelphia 76ers",
-      "home": "Philadelphia 76ers",
-      "away": "Toronto Raptors",
-      "home_abbreviation": "PHI",
-      "away_abbreviation": "TOR",
+      "id": "401909977",
+      "game": "Detroit Pistons @ Washington Wizards",
+      "home": "Washington Wizards",
+      "away": "Detroit Pistons",
+      "home_abbreviation": "WAS",
+      "away_abbreviation": "DET",
       "start": "2026-11-13T00:00:00+00:00",
       "date_eastern": "2026-11-12",
       "game_state": "pre",
@@ -75,22 +75,6 @@
       "status_detail": null
     },
     {
-      "id": "401909297",
-      "game": "Milwaukee Bucks @ Orlando Magic",
-      "home": "Orlando Magic",
-      "away": "Milwaukee Bucks",
-      "home_abbreviation": "ORL",
-      "away_abbreviation": "MIL",
-      "start": "2026-11-14T00:00:00+00:00",
-      "date_eastern": "2026-11-13",
-      "game_state": "pre",
-      "home_score": null,
-      "away_score": null,
-      "clock": null,
-      "period": null,
-      "status_detail": null
-    },
-    {
       "id": "401909296",
       "game": "New York Knicks @ Indiana Pacers",
       "home": "Indiana Pacers",
@@ -107,13 +91,13 @@
       "status_detail": null
     },
     {
-      "id": "401909299",
-      "game": "Atlanta Hawks @ Chicago Bulls",
-      "home": "Chicago Bulls",
-      "away": "Atlanta Hawks",
-      "home_abbreviation": "CHI",
-      "away_abbreviation": "ATL",
-      "start": "2026-11-14T01:00:00+00:00",
+      "id": "401909297",
+      "game": "Milwaukee Bucks @ Orlando Magic",
+      "home": "Orlando Magic",
+      "away": "Milwaukee Bucks",
+      "home_abbreviation": "ORL",
+      "away_abbreviation": "MIL",
+      "start": "2026-11-14T00:00:00+00:00",
       "date_eastern": "2026-11-13",
       "game_state": "pre",
       "home_score": null,
@@ -129,6 +113,22 @@
       "away": "Cleveland Cavaliers",
       "home_abbreviation": "MIA",
       "away_abbreviation": "CLE",
+      "start": "2026-11-14T01:00:00+00:00",
+      "date_eastern": "2026-11-13",
+      "game_state": "pre",
+      "home_score": null,
+      "away_score": null,
+      "clock": null,
+      "period": null,
+      "status_detail": null
+    },
+    {
+      "id": "401909299",
+      "game": "Atlanta Hawks @ Chicago Bulls",
+      "home": "Chicago Bulls",
+      "away": "Atlanta Hawks",
+      "home_abbreviation": "CHI",
+      "away_abbreviation": "ATL",
       "start": "2026-11-14T01:00:00+00:00",
       "date_eastern": "2026-11-13",
       "game_state": "pre",
@@ -224,8 +224,8 @@
   "has_sportsbook_props": false,
   "has_verified_player_availability": false,
   "limitations": [
-    "Season schedule and dates only; neither player prop lines nor injuries",
-    "A season file cannot guarantee late postponements or last-minute time changes"
+    "Published fixture baseline restores known games; it is not a player-line, injury, or live boxscore source.",
+    "NBA Cup unassigned matches and revised tip times require later verification."
   ],
   "official_fixture_reconciliation": {
     "status": "NO_COUNT_REFERENCE",
@@ -234,5 +234,6 @@
     "official_daily_schedule_url": "https://www.nba.com/games?date=2026-11-09"
   },
   "season_baseline_status": "VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
-  "season_baseline_total": 1200
+  "season_baseline_total": 1200,
+  "baseline_recovered": 0
 }
