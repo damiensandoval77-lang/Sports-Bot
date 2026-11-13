@@ -41,7 +41,7 @@ def recover(report, *, now=None, command=gh):
         try:
             runs = json.loads(command(["run", "list", "--workflow", workflow,
                                       "--limit", "30", "--json",
-                                      "createdAt,status,conclusion,headBranch"]))
+                                      "createdAt,updatedAt,status,conclusion,headBranch"]))
             if not isinstance(runs, list):
                 raise ValueError("INVALID_RUN_INVENTORY")
             busy = False
@@ -53,14 +53,17 @@ def recover(report, *, now=None, command=gh):
                     continue
                 if run.get("status") != "completed":
                     raise ValueError("UNKNOWN_RUN_STATUS")
-                if run.get("conclusion") != "success":
-                    continue
-                created = dt.datetime.fromisoformat(run["createdAt"].replace("Z", "+00:00"))
+                failed = run.get("conclusion") != "success"
+                timestamp = run["updatedAt"] if failed else run["createdAt"]
+                created = dt.datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
                 if created.tzinfo is None or created > now:
                     raise ValueError("INVALID_RUN_TIMESTAMP")
-                busy |= (now - created).total_seconds() <= 1800
+                # Completion-triggered failures need a backoff too. Otherwise
+                # this independent heartbeat can bypass the readiness gate.
+                backoff = (900 if workflow == "nba-new-ai-all-markets.yml" else 300) if failed else 1800
+                busy |= (now - created).total_seconds() <= backoff
             if busy:
-                item.update(status="SKIPPED", reason="ACTIVE_OR_RECENT_SUCCESS")
+                item.update(status="SKIPPED", reason="ACTIVE_RECENT_SUCCESS_OR_FAILURE_BACKOFF")
                 continue
         except (RuntimeError, ValueError, TypeError, KeyError, AttributeError,
                 OSError, subprocess.SubprocessError) as exc:

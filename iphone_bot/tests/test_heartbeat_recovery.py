@@ -71,10 +71,10 @@ class Recovery(unittest.TestCase):
         self.assertEqual(calls, [])
         self.assertTrue(all(x["status"] == "BLOCKED" for x in result["recoveries"]))
 
-    def test_failed_runs_do_not_cool_down_and_duplicate_stage_dispatches_once(self):
+    def test_old_failed_runs_retry_and_duplicate_stage_dispatches_once(self):
         calls = []
         runs = [{"headBranch": "main", "status": "completed", "conclusion": "failure",
-                 "createdAt": NOW.isoformat()}]
+                 "createdAt": NOW.isoformat(), "updatedAt": (NOW-dt.timedelta(minutes=6)).isoformat()}]
         def command(args):
             calls.append(args)
             return json.dumps(runs) if args[0] == "run" else ""
@@ -114,6 +114,18 @@ class Recovery(unittest.TestCase):
         data = {"stages": [{"status": state, "recovery_workflow": A} for state in ["OK", "WARN"]]}
         self.assertEqual(recover(data, now=NOW, command=lambda args: self.fail("unexpected dispatch"))["recoveries"], [])
 
+
+class FailureBackoff(unittest.TestCase):
+    def test_failure_completion_backoff(self):
+        for workflow, minutes, expected in [(A, 4, 'SKIPPED'), (A, 6, 'DISPATCHED'),
+                ('nba-new-ai-all-markets.yml', 14, 'SKIPPED'), ('nba-new-ai-all-markets.yml', 16, 'DISPATCHED')]:
+            for conclusion in ['failure', 'cancelled', 'timed_out']:
+                runs=[dict(headBranch='main', status='completed', conclusion=conclusion,
+                           createdAt=(NOW-dt.timedelta(hours=1)).isoformat(),
+                           updatedAt=(NOW-dt.timedelta(minutes=minutes)).isoformat())]
+                def command(args): return json.dumps(runs) if args[0]=='run' else ''
+                result=recover(report(workflow), now=NOW, command=command)
+                self.assertEqual(result['recoveries'][0]['status'],expected)
 
 if __name__ == "__main__":
     unittest.main()
