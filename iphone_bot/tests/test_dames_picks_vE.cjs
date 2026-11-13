@@ -826,3 +826,13 @@ test("Visible direction labels use Over/Under without mutating stored provider d
  assert(!html.includes('escapeText(p.direction||"PASS")'));
  assert(!html.includes('escapeText(p.direction||"NO AI")'));
 });
+
+test("game-detail NBA player teams normalize provider aliases without changing observations",()=>{
+ const now=Date.parse("2026-11-13T00:17:00Z");
+ const teams={WSH:"WAS",NY:"NYK",GS:"GSW",NO:"NOP",SA:"SAS",UTAH:"UTA"};
+ const games=m.liveGames({captured_at:"2026-11-13T00:17:00Z",games:[{
+ event_id:"test",game:"Detroit Pistons @ Washington Wizards",state:"in",
+ player_rows:Object.keys(teams).map(team=>({player:team,team,PTS:7,REB:2,AST:3,PRA:12}))
+ }]},null,now);
+ for(const row of games[0].players){assert.equal(row.team,teams[row.player]);assert.equal(row.stats.PRA,12);}
+});

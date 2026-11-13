@@ -495,7 +495,7 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
    result.push({sport:"NBA",gameId:g.event_id||g.game,game:g.game,observedAt:g.observed_at||nbaFeed.captured_at,
     state:!isCurrent&&state==="in"?"stale":state,sourceState:state,fresh:isCurrent,
     statusText:isCurrent?(g.shortDetail||g.displayClock||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
-    players:players.map(p=>({player:p.player,team:p.team,stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
+    players:players.map(p=>({player:p.player,team:nbaTeamCode(p.team),stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
     away:g.game.split(" @ ")[0]||"",home:g.game.split(" @ ")[1]||""});
   }
  }
@@ -631,4 +631,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-short-history-research-20261112-r19";
+globalThis.__damesRunningAssets["feeds.js"]="dp-live-team-alias-20261113-r20";
