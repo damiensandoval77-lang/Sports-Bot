@@ -6,6 +6,7 @@ on:
   # Reevaluate the published readiness report after real source recovery.
   workflow_run:
     workflows:
+      - Publish full NBA daily schedule (independent of sportsbook)
       - Verify tonight NBA frozen lines predictions and grades
       - Publish daily NBA AI player projections without paid prop lines
       - Publish lightweight verified PrizePicks AI comparisons
@@ -19,6 +20,8 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/production_readiness.py'
+      - 'iphone_bot/readiness_recovery.py'
+      - 'iphone_bot/tests/test_readiness_recovery.py'
       - 'iphone_bot/tests/test_production_readiness.py'
       - 'iphone_bot/tests/test_production_live_recovery_workflow.py'
       - 'docs/tonight_capture_gradeability.json'
@@ -28,6 +31,8 @@ on:
   pull_request:
     paths:
       - 'iphone_bot/production_readiness.py'
+      - 'iphone_bot/readiness_recovery.py'
+      - 'iphone_bot/tests/test_readiness_recovery.py'
       - 'iphone_bot/tests/test_production_readiness.py'
       - '.github/workflows/production_readiness.yml'
 
@@ -37,7 +42,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: nba-production-readiness
+  group: nba-production-readiness-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
   cancel-in-progress: false
 
 jobs:
