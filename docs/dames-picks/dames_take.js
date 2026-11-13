@@ -159,4 +159,4 @@ root.DamesTake={POOL,tierFor,support,damesTake,forSlate};
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["dames_take.js"]="dp-open-tab-update-20261113-r23";
+globalThis.__damesRunningAssets["dames_take.js"]="dp-nfl-matchup-evidence-20261113-r24";

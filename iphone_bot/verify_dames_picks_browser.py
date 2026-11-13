@@ -52,6 +52,16 @@ def check():
                 page.locator(".pick").first.click()
                 page.locator("#detail:not(.hidden)").wait_for()
                 assert page.locator("#detail-content .hero").count()==1,"NFL player detail did not render"
+                # UI-only fixture: actual hosted outputs are verified separately.
+                page.evaluate("""() => {state.picked={...state.picked,matchupPreview:{
+                    rate:0.61,asOf:state.picked.captured,sport:'NFL',
+                    method:'NFL_MATCHUP_RESIDUAL_V1',calibrated:false}};renderDetail();}""")
+                assert '~61%' in page.locator('#detail-content .hero').inner_text()
+                assert 'NFL ensemble estimate' in page.locator('#detail-content .hero').inner_text()
+                assert 'Uncalibrated research probability' in page.locator('#detail-content .hero').inner_text()
+                page.evaluate("() => {delete state.picked.matchupPreview;renderDetail();}")
+                assert 'MATCHUP HIT ESTIMATE UNAVAILABLE' in page.locator('#detail-content .hero').inner_text()
+
                 page.locator("#back").click()
                 page.locator('[data-view="live"]').click()
                 page.locator('[data-league="NBA"]').click()
