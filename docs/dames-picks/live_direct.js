@@ -178,23 +178,24 @@ async function fetchNFL(schedule,opts={}){
  const iso=new Date(now).toISOString(),base='https://site.api.espn.com/apis/site/v2/sports/football/nfl';
  const games=(schedule?.games||[]).filter(g=>stamp(g.kickoff_utc)<=now+4*3600000&&stamp(g.kickoff_utc)>=now-20*3600000);
  if(!games.length)return null;
- const board=await getJSON(base+'/scoreboard',fetchImpl,opts.timeoutMs||12000),out=[];
- for(const e of board.events||[]){
+ const board=await getJSON(base+'/scoreboard',fetchImpl,opts.timeoutMs||12000);
+ const out=await Promise.all((board.events||[]).map(async e=>{
   const sides=nflSides(e),state=e.status?.type?.state;
-  if(!['pre','in','post'].includes(state)||!/^\d+$/.test(String(e.id)))continue;
+  if(!['pre','in','post'].includes(state)||!/^\d+$/.test(String(e.id)))return null;
   const matches=games.filter(g=>nflTeam(g.away)===sides.away&&nflTeam(g.home)===sides.home&&Math.abs(stamp(g.kickoff_utc)-stamp(e.date))<=60000);
-  if(matches.length!==1)continue;
+  if(matches.length!==1)return null;
   const g=matches[0],scores=scoresOf(e.competitions?.[0]?.competitors);
-  if(scores.away===null||scores.home===null)continue;
+  if(scores.away===null||scores.home===null)return null;
   let players=[];
   if(state==='in'||state==='post')try{
    const s=await getJSON(base+'/summary?event='+e.id,fetchImpl,opts.timeoutMs||12000),ss=nflSides({competitions:s.header?.competitions});
-   if(String(s.header?.id||s.header?.competitions?.[0]?.id)!==String(e.id)||ss.away!==sides.away||ss.home!==sides.home)continue;
+   if(String(s.header?.id||s.header?.competitions?.[0]?.id)!==String(e.id)||ss.away!==sides.away||ss.home!==sides.home)return null;
    players=nflPlayers(s,sides.away,sides.home);
-  }catch(_){continue; /* Keep last verified snapshot when summary fetch is blocked. */}
-  out.push({game_id:g.game_id,espn_event_id:String(e.id),status:state,status_text:e.status?.type?.shortDetail||state,period:e.status?.period,clock:e.status?.displayClock,away:sides.away,home:sides.home,away_score:scores.away,home_score:scores.home,players,observed_at:iso});
- }
- return out.length?{season:2026,status:'ok',source:'espn_browser_direct',checked_at:iso,games:out}:null;
+  }catch(_){return null; /* Keep last verified snapshot when summary fetch is blocked. */}
+  return {game_id:g.game_id,espn_event_id:String(e.id),status:state,status_text:e.status?.type?.shortDetail||state,period:e.status?.period,clock:e.status?.displayClock,away:sides.away,home:sides.home,away_score:scores.away,home_score:scores.home,players,observed_at:iso};
+ }));
+ const found=out.filter(Boolean);
+ return found.length?{season:2026,status:'ok',source:'espn_browser_direct',checked_at:iso,games:found}:null;
 }
 function mergeNFL(snapshot,direct,now=Date.now()){
  const games=new Map();
