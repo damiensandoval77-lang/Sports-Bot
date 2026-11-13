@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000"><meta name="dames-release" content="dp-nfl-training-support-20261113-r30"><title>Dame's Picks · NBA + NFL</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000000"><meta name="dames-release" content="dp-nfl-browser-live-20261113-r31"><title>Dame's Picks · NBA + NFL</title>
 <style>
 :root{--lime:#c5fa29;--pink:#fa70b5;--mint:#72efc3;--violet:#bb9dff;--ink:#000;--panel:#111;--grey:#bababa;--line:#414141;font-family:system-ui,-apple-system,Arial,sans-serif;color:#fafafa;background:#000;color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;background:#000}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}.app{max-width:560px;margin:0 auto;padding:30px 21px 115px;min-height:100vh}.tiny{font-size:11px;color:var(--grey)}.muted{color:#b6b6b6}.line{border:1px solid var(--line)}.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:26px}.head .date{font-size:13px;font-weight:650;color:#bbb}.brand{font-size:35px;letter-spacing:-1.9px;line-height:1.15;font-weight:1000;margin:8px 0}.marker{display:inline-block;background:var(--lime);color:#050505;padding:1px 8px 4px;border-radius:12px;transform:rotate(-2deg)}.corner{background:transparent;border:2px solid white;border-radius:16px;height:45px;width:45px;font-size:22px;box-shadow:5px 5px 0 var(--pink)}.selector{display:flex;gap:10px;margin-bottom:22px}.selector button{width:50%;background:#000;border:2px solid #343434;border-radius:15px;padding:14px;font-weight:950}.selector button.active{background:var(--lime);border-color:#fff;color:#050505;box-shadow:4px 4px 0 white}
@@ -20,7 +20,7 @@
  <div class="metrics"><div class="metric"><div class="metric-label">GRADED W–L</div><div class="metric-value" id="wl">—</div></div><div class="metric"><div class="metric-label">HIT RATE</div><div class="metric-value" id="rate">—</div></div><div class="metric"><div class="metric-label">GAMES</div><div class="metric-value" id="games">—</div></div></div>
  <div id="coverage" class="coverage" role="status" hidden></div>
  <div class="section"><h2 id="section-title">Top picks</h2><span class="flag">REAL BOT DATA</span></div><input class="search" id="query" placeholder="Search players or teams" aria-label="Search players">
- <details id="diagnostics" class="stamp" style="display:none;margin:10px 0 16px" aria-label="Developer diagnostics"><summary>Diagnostics</summary><div id="status" class="stamp" aria-live="polite"></div><div class="stamp" style="margin:10px 0"><span id="app-build">App build: dp-nfl-training-support-20261113-r30</span> · <button id="verify-app" type="button" style="background:transparent;border:1px solid #aaa;border-radius:8px;padding:5px 9px;color:#fafafa;font-size:12px">Check this phone</button><span id="verify-result" role="status" aria-live="polite"></span></div></details><div class="cards" id="cards"></div><section id="provisional-short-history" aria-label="Provisional short-history baselines" hidden></section><section id="trained-short-history" aria-label="Short-history trained research model" hidden></section>
+ <details id="diagnostics" class="stamp" style="display:none;margin:10px 0 16px" aria-label="Developer diagnostics"><summary>Diagnostics</summary><div id="status" class="stamp" aria-live="polite"></div><div class="stamp" style="margin:10px 0"><span id="app-build">App build: dp-nfl-browser-live-20261113-r31</span> · <button id="verify-app" type="button" style="background:transparent;border:1px solid #aaa;border-radius:8px;padding:5px 9px;color:#fafafa;font-size:12px">Check this phone</button><span id="verify-result" role="status" aria-live="polite"></span></div></details><div class="cards" id="cards"></div><section id="provisional-short-history" aria-label="Provisional short-history baselines" hidden></section><section id="trained-short-history" aria-label="Short-history trained research model" hidden></section>
 </div>
 <div id="detail" class="hidden"><div class="detail-tools"><button class="back" id="back" aria-label="Back">‹</button><span class="flag">SAVED BOT DATA</span><button class="corner" id="bookmark" aria-label="Save pick">♧</button></div>
  <h1 id="player" class="detail-title"></h1><div id="matchup" class="muted"></div><div id="markets" class="tabstrip"></div><div id="detail-content"></div>
@@ -31,7 +31,7 @@
 <button data-view="tracker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M5 17V9m7 8V4m7 13v-6"/></svg>Tracker</button>
 <button data-view="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18l-7-4-7 4z"/></svg>Saved</button>
 </nav>
-<script src="feeds.js?bundle=dp-nfl-training-support-20261113-r30"></script><script src="live_direct.js?bundle=dp-nfl-training-support-20261113-r30"></script><script src="dames_take.js?bundle=dp-nfl-training-support-20261113-r30"></script><script src="provisional.js?bundle=dp-nfl-training-support-20261113-r30"></script><script src="short_history.js?bundle=dp-nfl-training-support-20261113-r30"></script><script>
+<script src="feeds.js?bundle=dp-nfl-browser-live-20261113-r31"></script><script src="live_direct.js?bundle=dp-nfl-browser-live-20261113-r31"></script><script src="dames_take.js?bundle=dp-nfl-browser-live-20261113-r31"></script><script src="provisional.js?bundle=dp-nfl-browser-live-20261113-r31"></script><script src="short_history.js?bundle=dp-nfl-browser-live-20261113-r31"></script><script>
 "use strict";
 const $=id=>document.getElementById(id),m=window.DamesPicksModel,L=window.DamesPicksLive;
 // Diagnostic view is deliberately opt-in and not advertised on public board.
@@ -131,7 +131,7 @@ async function refresh(){
   nflSchedule:schedule.status==="fulfilled"?schedule.value:null,
   nbaScores:nbaScores.status==="fulfilled"?nbaScores.value:null};
  const nb=L.mergeFeeds(m.preferredNBALiveFeed(state.raw.nbaLive,state.raw.independentPlayers),state.direct?.feed);
- const nf=state.raw.nflLive;
+ const nf=L.mergeNFL(state.raw.nflLive,state.directNFL);
  state.liveGames=m.gameCatalog(nb,nf,state.raw.nbaSchedule,state.raw.nflSchedule,Date.now(),L.mergeScores(state.raw.nbaScores,state.direct?.board));
  state.nba=m.attachLive(state.nba,nb,nf);
  state.nbaScheduleData=nbaSchedule.status==="fulfilled"?nbaSchedule.value:null;
@@ -317,18 +317,18 @@ setInterval(()=>{if(!document.hidden)refresh().catch(()=>{})},120000);
 /* 30-second free browser-direct ESPN fallback. Never changes stored model
    predictions or finals. Avoid polling when backgrounded or no live slate. */
 function liveWindowOpen(now=Date.now()){
- return (state.liveGames||[]).some(g=>g.sport==="NBA"&&(
+ return (state.liveGames||[]).some(g=>["NBA","NFL"].includes(g.sport)&&(
    g.state==="in"||g.state==="stale"||
    (g.state!=="final"&&Number.isFinite(timestamp(g.start))&&
     timestamp(g.start)<=now&&now-timestamp(g.start)<5*3600000)))||
-  (state.nba||[]).some(p=>p.grade==="PENDING"&&timestamp(p.start)<=now&&
+  [...(state.nba||[]),...(state.nfl||[])].some(p=>p.grade==="PENDING"&&timestamp(p.start)<=now&&
     now-timestamp(p.start)<5*3600000);
 }
 function applyLive(){
  if(!state.raw)return;
  const now=Date.now();
  const nb=L.mergeFeeds(m.preferredNBALiveFeed(state.raw.nbaLive,state.raw.independentPlayers,now),state.direct?.feed,now);
- const nf=state.raw.nflLive;
+ const nf=L.mergeNFL(state.raw.nflLive,state.directNFL);
  state.liveGames=m.gameCatalog(nb,nf,state.raw.nbaSchedule,state.raw.nflSchedule,now,
    L.mergeScores(state.raw.nbaScores,state.direct?.board,now));
  state.nba=m.attachLive(state.nba,nb,nf,now);
@@ -343,8 +343,9 @@ async function liveTick(force=false){
  if(document.hidden||state.liveBusy||(!force&&!liveWindowOpen()))return;
  state.liveBusy=true;
  try{
-  const [direct,raw]=await Promise.all([
+  const [direct,nflDirect,raw]=await Promise.all([
    L.fetchNBA().catch(()=>null),
+   L.fetchNFL(state.raw?.nflSchedule).catch(()=>null),
    Promise.allSettled([
      getJSON("live_player_tracking.json"),
      getJSON("nba_scoreboard_independent.json"),
@@ -352,6 +353,7 @@ async function liveTick(force=false){
    ])
   ]);
   let changed=false;
+  if(nflDirect){state.directNFL=L.mergeNFL(state.directNFL,nflDirect);changed=true;}
   if(direct){
    state.direct=direct;
    state.directAt=Date.now();
