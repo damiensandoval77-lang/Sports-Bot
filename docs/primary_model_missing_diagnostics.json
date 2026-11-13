@@ -1,13 +1,13 @@
 {
   "status": "PRIMARY_STANDARD_CAPTURE_INCOMPLETE",
-  "checked_at": "2026-11-13T01:36:00.272322+00:00",
+  "checked_at": "2026-11-13T01:36:38.854917+00:00",
   "game_date_eastern": "2026-11-12",
-  "verified_standard_quotes": 327,
+  "verified_standard_quotes": 330,
   "original_primary_frozen_quotes": 312,
-  "unmatched_exact_standard_thresholds": 20,
+  "unmatched_exact_standard_thresholds": 23,
   "missing_by_cause": {
-    "MOVED_ORIGINAL_STANDARD_THRESHOLD": 5,
-    "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 15
+    "MOVED_ORIGINAL_STANDARD_THRESHOLD": 7,
+    "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET": 16
   },
   "details": [
     {
@@ -96,6 +96,18 @@
     },
     {
       "game": "Charlotte Hornets @ Phoenix Suns",
+      "player": "Devin Booker",
+      "team": "PHX",
+      "stat": "PRA",
+      "standard_line": 33.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
+    },
+    {
+      "game": "Charlotte Hornets @ Phoenix Suns",
       "player": "Jordan Goodwin",
       "team": "PHX",
       "stat": "PRA",
@@ -129,6 +141,30 @@
       "separate_research_receipt": true,
       "original_primary_frozen_market": false,
       "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Charlotte Hornets @ Phoenix Suns",
+      "player": "Luke Kennard",
+      "team": "PHX",
+      "stat": "PTS",
+      "standard_line": 6.5,
+      "reason": "NO_VALIDATED_PRIMARY_MODEL_FOR_MARKET",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": false,
+      "safe_action": "INVESTIGATE_MISSING_PRETIP_MODEL_OR_FEATURES"
+    },
+    {
+      "game": "Charlotte Hornets @ Phoenix Suns",
+      "player": "Naz Reid",
+      "team": "CHA",
+      "stat": "PRA",
+      "standard_line": 30.5,
+      "reason": "MOVED_ORIGINAL_STANDARD_THRESHOLD",
+      "new_live_model_available": false,
+      "separate_research_receipt": false,
+      "original_primary_frozen_market": true,
+      "safe_action": "PRESERVE_ORIGINAL_FROZEN_LINE_AND_RESEARCH_VERSION"
     },
     {
       "game": "Dallas Mavericks @ Minnesota Timberwolves",
