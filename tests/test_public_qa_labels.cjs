@@ -3,7 +3,7 @@ const ctx={Date,Intl};vm.createContext(ctx);vm.runInContext(fs.readFileSync('doc
 const m=ctx.DamesPicksModel;
 const quote=(team,game)=>({tier:'standard',more_tier:'standard',less_tier:'standard',is_demo:false,stat:'PTS',line:10.5,player:'Test',team,game,observed_at:'2026-11-13T10:00:00Z',starts_at:'2026-11-14T00:00:00Z'});
 test('archive opponents use exact own team on either matchup side',()=>{
- for(const [team,game,expected] of [['CLE','Cleveland Cavaliers @ Miami Heat','Miami Heat'],['MIA','Cleveland Cavaliers @ Miami Heat','Cleveland Cavaliers'],['NY','NYK @ CLE','CLE'],['XYZ','CLE @ MIA','Opponent unavailable']]){
+ for(const [team,game,expected] of [['CLE','Cleveland Cavaliers @ Miami Heat','Miami Heat'],['MIA','Cleveland Cavaliers @ Miami Heat','Cleveland Cavaliers'],['NY','NYK @ CLE','CLE'],['XYZ','CLE @ MIA','Opponent unavailable'],['LAC','LA Clippers @ Phoenix Suns','Phoenix Suns']]){
  const row=m.includeArchivedStandard([],{quotes:[quote(team,game)]})[0];assert.equal(row.opponent,expected);assert.equal(row.projection,null);assert.equal(row.quoteOnly,true);
  }
 });
