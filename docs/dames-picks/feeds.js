@@ -297,7 +297,7 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
   now-stamp(g.observed_at||nbaFeed.captured_at)>=-120000&&
   now-stamp(g.observed_at||nbaFeed.captured_at)<20*60000
  ).map(g=>[g.game,g]));
- const nflGames=new Map((nflFresh?nflFeed.games:[]).filter(g=>g.status==="in").map(g=>[g.game_id,g]));
+ const nflGames=new Map((nflFresh?nflFeed.games:[]).filter(g=>g.status==="in"&&Number.isFinite(stamp(g.observed_at||nflFeed.checked_at))&&now-stamp(g.observed_at||nflFeed.checked_at)>=-120000&&now-stamp(g.observed_at||nflFeed.checked_at)<20*60000).map(g=>[g.game_id,g]));
  return rows.map(p=>{
   if(p.sport==="NBA"){
    const game=nbaGames.get(p.game);
@@ -312,7 +312,7 @@ function attachLive(rows,nbaFeed,nflFeed,now=Date.now()){
   if(hits.length!==1||!p.target)return {...p,live:null};
   const actual=n(hits[0].stats?.[p.target]);
   return {...p,live:actual===null?null:{actual,pace:livePace(actual,"NFL",game.period,game.clock),gameStatus:game.status_text||"In progress",
-   period:game.period,observedAt:nflFeed.checked_at,source:"ESPN player snapshot"}};
+   period:game.period,observedAt:game.observed_at||nflFeed.checked_at,source:"ESPN player snapshot"}};
  });
 }
 /* Observed NBA game logs strictly before the pick's Eastern game date.
@@ -734,4 +734,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-training-support-20261113-r30";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-browser-live-20261113-r31";

@@ -9,6 +9,7 @@ on:
       - 'iphone_bot/verify_provisional_panel_browser.py'
       - 'iphone_bot/tests/test_dames_picks_vE.cjs'
       - 'tests/test_live_slate.cjs'
+      - 'tests/test_nfl_browser_live.cjs'
       - 'tests/test_live_pace_sort.cjs'
       - 'tests/test_pick_hit_sort.cjs'
       - 'tests/test_nfl_matchup_evidence.cjs'
@@ -28,6 +29,7 @@ on:
       - 'iphone_bot/verify_provisional_panel_browser.py'
       - 'iphone_bot/tests/test_dames_picks_vE.cjs'
       - 'tests/test_live_slate.cjs'
+      - 'tests/test_nfl_browser_live.cjs'
       - 'tests/test_live_pace_sort.cjs'
       - 'tests/test_pick_hit_sort.cjs'
       - 'tests/test_nfl_matchup_evidence.cjs'
@@ -46,7 +48,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify NBA/NFL saved market integration
-        run: node --test tests/test_pick_hit_sort.cjs tests/test_nfl_matchup_evidence.cjs tests/test_open_tab_release.cjs tests/test_live_pace_sort.cjs tests/test_live_slate.cjs iphone_bot/tests/test_short_history_panel.cjs iphone_bot/tests/test_provisional_panel.cjs iphone_bot/tests/test_dames_picks_vE.cjs iphone_bot/tests/test_dames_take.cjs iphone_bot/tests/test_line_history.cjs iphone_bot/tests/test_live_direct.cjs
+        run: node --test tests/test_nfl_browser_live.cjs tests/test_pick_hit_sort.cjs tests/test_nfl_matchup_evidence.cjs tests/test_open_tab_release.cjs tests/test_live_pace_sort.cjs tests/test_live_slate.cjs iphone_bot/tests/test_short_history_panel.cjs iphone_bot/tests/test_provisional_panel.cjs iphone_bot/tests/test_dames_picks_vE.cjs iphone_bot/tests/test_dames_take.cjs iphone_bot/tests/test_line_history.cjs iphone_bot/tests/test_live_direct.cjs
       - name: Validate JavaScript for mobile dashboard
         run: |
           node --check docs/dames-picks/feeds.js
