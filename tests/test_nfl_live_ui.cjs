@@ -4,7 +4,8 @@
 const { chromium } = require('playwright');
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
-const feeds = require('../docs/dames-picks/feeds.js');
+require('../docs/dames-picks/feeds.js');
+const feeds = globalThis.DamesPicksModel;
 const url = process.env.NFL_UI_URL || 'http://127.0.0.1:8765/nfl/';
 const output = process.env.NFL_SCREENSHOT_DIR || 'nfl-ui-artifacts';
 fs.mkdirSync(output,{recursive:true});
@@ -15,7 +16,7 @@ async function verify(browser,name,viewport){
   const response=await page.goto(url,{waitUntil:'domcontentloaded'});
   assert(response&&response.ok(),'HTTP response unavailable');
   await page.waitForURL('**/dames-picks/**');
-  await page.waitForFunction(()=>document.querySelector('#status')?.textContent.includes('Checked'),{timeout:45000});
+  await page.waitForFunction(()=>document.querySelector('#status')?.textContent.includes('Checked'),null,{timeout:45000});
   const base=new URL('../nfl/data/',page.url()).href;
   const get=async path=>{const r=await page.request.get(base+path);assert(r.ok(),path+' unavailable');return r;};
   const manifest=await (await get('latest_2026.json')).json();
