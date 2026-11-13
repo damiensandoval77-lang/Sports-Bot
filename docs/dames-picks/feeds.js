@@ -612,7 +612,7 @@ function attachNBAFinals(games,cache){
   const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(g.start));
   const day=["year","month","day"].map(k=>parts.find(p=>p.type===k)?.value).join("-");
   const away=nbaTeamCode(g.awayCode||g.away),home=nbaTeamCode(g.homeCode||g.home);
-  const candidates=rows.filter(p=>p.date===day&&p.final_confirmed===true&&
+  const candidates=rows.filter(p=>p.date===day&&p.final_confirmed===true&&p.dnp_final_verified!==true&&n(p.MIN)>0&&
    ["NBA_CDN_FINAL","ESPN_FINAL"].includes(p.source)&&p.source_game_id&&
    ((nbaTeamCode(p.team)===away&&nbaTeamCode(p.opponent)===home)||(nbaTeamCode(p.team)===home&&nbaTeamCode(p.opponent)===away)));
   if(new Set(candidates.map(p=>p.source+"|"+p.source_game_id)).size!==1)return g;

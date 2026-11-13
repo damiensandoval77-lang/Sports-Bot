@@ -14,3 +14,5 @@ console.log('Verified final display: exact day/teams, provenance, zero, DNP, con
 const score=JSON.parse(fs.readFileSync("docs/nba_scoreboard_independent.json")),schedule=JSON.parse(fs.readFileSync("docs/nba_schedule.json"));
 const catalog=m.attachNBAFinals(m.gameCatalog(null,null,schedule,null,Date.parse(score.generated_at),score),real);
 assert(catalog.some(g=>g.finalBoxscore&&g.players.some(p=>p.player==="Cade Cunningham")),"Schedule full-name identity must preserve abbreviations");
+
+assert.equal(attach([row,{...row,player:"Inactive",source:"ESPN_FINAL",source_game_id:"espn",MIN:null,dnp_final_verified:true}]).players.length,1,"DNP evidence from alternate official provider cannot suppress played boxscore");
