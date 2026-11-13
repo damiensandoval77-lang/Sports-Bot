@@ -780,4 +780,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-bounded-feeds-20261113-r37";
+globalThis.__damesRunningAssets["feeds.js"]="dp-under-detail-20261113-r38";
