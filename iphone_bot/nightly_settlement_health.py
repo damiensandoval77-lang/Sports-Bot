@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 from collections import Counter
 
 from iphone_bot.nightly_grade_date_audit import audit, eastern_date
+from iphone_bot.reconcile_grading_production import select_dated_report
 
 ROOT=Path(__file__).resolve().parents[1]
 ET=ZoneInfo("America/New_York")
@@ -94,17 +95,24 @@ def health(now,paper,pp,form=None,archive=None,summary=None,grace_hours=12,ai_gr
         "notice":"Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
     }
 
+def select_nightly_ai_report(now, load):
+    day=(now.astimezone(ET).date()-dt.timedelta(days=1)).isoformat()
+    return select_dated_report(day, [load("docs/"+name) for name in (
+        "ai_forecast_grade_status.json", "ai_forecast_today_grade_status.json",
+        "ai_forecast_grade_status_"+day+".json")])
+
 def main():
     def load(path):
         p=ROOT/path
         return json.loads(p.read_text()) if p.exists() else {}
-    report=health(dt.datetime.now(dt.timezone.utc),
+    now=dt.datetime.now(dt.timezone.utc)
+    report=health(now,
                   load("docs/paper_pick_ledger.json"),
                   load("docs/prizepicks_research_ledger.json"),
                   load("docs/current_form.json"),
                   load("docs/ai_no_line_pregame_archive.json"),
                   load("docs/prizepicks_research_results.json"),
-                  ai_grades=load("docs/ai_forecast_grade_status.json"))
+                  ai_grades=select_nightly_ai_report(now,load))
     OUTPUT.parent.mkdir(parents=True,exist_ok=True)
     OUTPUT.write_text(json.dumps(report,indent=2)+"\n")
     print("NIGHTLY GRADE HEALTH:",json.dumps(report,sort_keys=True))
