@@ -2,6 +2,12 @@ name: Phase 1 feed health audit
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "iphone_bot/health_audit.py"
+      - "iphone_bot/tests/test_health_audit.py"
+      - ".github/workflows/phase1_feed_health.yml"
   schedule:
     - cron: "12,42 * * * *"
   pull_request:
@@ -36,4 +42,14 @@ jobs:
         run: python iphone_bot/slate_matchup_audit.py
       - name: Check published feeds for stale or missing game coverage
         if: github.event_name != 'pull_request'
-        run: python iphone_bot/health_audit.py
+        run: |
+          mkdir -p out
+          python iphone_bot/health_audit.py --output out/feed-health.json
+      - name: Retain feed-health evidence even when unhealthy
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: feed-health-${{ github.run_id }}
+          path: out/feed-health.json
+          if-no-files-found: error
+          retention-days: 30
