@@ -144,6 +144,11 @@ test("NFL missing grades cannot inherit NBA hit-rate stats",()=>{
  const s=m.summarize([], {standard_settled:0,standard_wins:0,pending_picks:0},Date.now(),"NFL");
  assert.equal(s.hitRate,null);assert.equal(s.graded,0);
 });
+test("NFL pending total excludes historical demon/goblin records during health rollout",()=>{
+ const rows=[{grade:"PENDING",frozenSettlementArchive:true,pendingReason:"boxscore_not_yet_published"}];
+ assert.equal(m.summarize(rows,{pending_picks:631},Date.now(),"NFL").pending,1);
+ assert.equal(m.summarize(rows,{pending_picks:631,standard_pending_picks:74},Date.now(),"NFL").pending,74);
+});
 test("Production source feeds keep expected real stat keys and health flags",()=>{
  const liveNBA=JSON.parse(fs.readFileSync("docs/live_player_tracking.json","utf8"));
  const liveNFL=JSON.parse(fs.readFileSync("docs/nfl/data/live_2026.json","utf8"));
@@ -377,8 +382,10 @@ test("Production NFL grades in immutable archive all join Tracker, including old
  assert.ok(rows.some(p=>p.frozenSettlementArchive===true&&p.captured==="2026-11-09T19:58:51.614124+00:00"&&p.player==="Ray Davis"&&p.grade==="GRADED"),
    "Historic Ray Davis standard prop not retained after latest snapshot rolled");
  const pendingCards=rows.filter(p=>p.grade==="PENDING"&&p.frozenSettlementArchive===true&&p.pendingReason);
- assert.equal(pendingCards.length,health.pending_picks,
-   "Every published NFL pending record must be represented by a pending reason, without inventing missing players");
+ const standardPending=pending.filter(p=>p.odds_type==="standard");
+ assert.equal(pendingCards.length,standardPending.length,
+   "Every published standard NFL pending record must be represented by a pending reason, without inventing missing players");
+ if(health.standard_pending_picks!==undefined)assert.equal(pendingCards.length,health.standard_pending_picks);
  console.log("NFL standard outcomes rendered",directional.length,"wins",winners,"pending",rows.filter(p=>p.pendingReason).length);
 });
 test("Source-mismatched final prop is never attached as a real grade",()=>{

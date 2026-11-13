@@ -403,6 +403,13 @@ def historic_snapshot(ref):
         if issue:raise ValueError(issue)
     return rows,manifest
 
+def pending_counts(pending):
+    standard=[p for p in pending if p.get("odds_type")=="standard"]
+    return {"standard_pending_picks":len(standard),
+            "alternative_tier_pending_excluded":sum(p.get("odds_type") in ("demon","goblin") for p in pending),
+            "standard_pending_reasons":{reason:sum(p["grade_status"]==reason for p in standard)
+                for reason in sorted({p["grade_status"] for p in standard})}}
+
 def run(root=ROOT,recovery_ref=None):
     schedule_data=json.loads((Path(root)/"schedule_2026.json").read_text(encoding="utf-8"))
     if schedule_data.get("game_count")!=272:
@@ -461,6 +468,7 @@ def run(root=ROOT,recovery_ref=None):
              "expected_final_picks":expected,"graded_picks":genuine_grades,
              "void_picks":voids,
              "pending_picks":len(pending),
+             **pending_counts(pending),
              "pushes":sum(x["result"]=="Push" for x in graded),
              "official_grading_scope":"FROZEN_STANDARD_LINE_ONLY",
              "standard_graded_picks_including_pushes":len(official_standard),
