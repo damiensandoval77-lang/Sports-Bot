@@ -6,6 +6,8 @@ on:
       - 'tests/test_push_with_retry.py'
       - 'scripts/nfl_postgame_due.py'
       - 'tests/test_nfl_postgame_schedule.py'
+      - 'scripts/export_nfl_espn_finals.py'
+      - 'tests/test_nfl_espn_finals.py'
       - '.github/workflows/nfl-boxscores-publish.yml'
       - '.github/workflows/nfl-pick-grading.yml'
   push:
@@ -17,6 +19,8 @@ on:
       - 'tests/test_nfl_postgame_schedule.py'
       - 'tests/test_nfl_boxscore_display.cjs'
       - 'scripts/export_nfl_boxscores.py'
+      - 'scripts/export_nfl_espn_finals.py'
+      - 'tests/test_nfl_espn_finals.py'
       - '.github/workflows/nfl-boxscores-publish.yml'
       - 'tests/test_nfl_boxscores.py'
       - 'tests/test_nfl_reconciliation.py'
@@ -81,6 +85,8 @@ jobs:
       - name: Verify schedule-to-boxscore reconciliation regression tests
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s tests -p 'test_nfl_reconciliation.py' -v
+      - name: Verify strict partial final-source safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_espn_finals.py' -v
       - name: Refresh the verified full-season schedule and final scores
         if: github.event_name != 'pull_request'
         run: python scripts/export_nfl_schedule.py
@@ -89,6 +95,11 @@ jobs:
         id: final_export
         continue-on-error: true
         run: python scripts/export_nfl_boxscores.py
+      - name: Supplement missing finals with exact verified ESPN observations
+        if: github.event_name != 'pull_request'
+        id: final_supplement
+        continue-on-error: true
+        run: python scripts/export_nfl_espn_finals.py
       - name: Audit every finalized game even if nflverse export failed
         if: github.event_name != 'pull_request'
         run: python scripts/reconcile_nfl_boxscores.py
@@ -104,7 +115,7 @@ jobs:
             python scripts/push_with_retry.py
           fi
       - name: Keep the workflow visibly failed if data export failed
-        if: steps.final_export.outcome == 'failure'
+        if: steps.final_export.outcome == 'failure' || steps.final_supplement.outcome == 'failure'
         run: |
           echo "::error::NFL boxscore source refresh failed. Previous verified results are preserved and reconciliation was run."
           exit 1

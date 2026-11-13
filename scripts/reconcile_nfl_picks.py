@@ -167,6 +167,22 @@ def verified_boxscores(schedule,boxroot=ROOT/"boxscores"):
                 problems.add(gid)
                 continue
             boxes[gid]={p["player_id"]:p for p in players}
+    supplement=Path(boxroot)/"espn_verified_finals.json"
+    if supplement.exists():
+        from export_nfl_espn_finals import validate_stored
+        extra=json.loads(supplement.read_text())
+        if extra.get("season")!=2026: raise ValueError("Wrong supplement season")
+        official=set(boxes)
+        seen=set()
+        for game in extra.get("games",[]):
+            gid=game.get("game_id")
+            if gid in official: continue  # Full nflverse publication always wins.
+            try:
+                if gid in seen: raise ValueError("Duplicate final supplement")
+                seen.add(gid)
+                validate_stored(game,schedule.get(gid))
+                boxes[gid]={p["player_id"]:p for p in game["players"]}
+            except (ValueError,KeyError,TypeError): problems.add(gid)
     # An invalid source never counts as a verified outcome.
     for gid in problems:boxes.pop(gid,None)
     return boxes,problems
