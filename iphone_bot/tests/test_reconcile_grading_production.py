@@ -30,6 +30,27 @@ def dataset():
 def audit(data=None,checked_at=NOW):
     return reconcile(*(data or dataset()),game_date=DAY,checked_at=checked_at)
 class ReconciliationTests(unittest.TestCase):
+    def test_rolling_feed_restores_only_original_committed_historical_rows(self):
+        import tempfile,subprocess,json
+        from pathlib import Path
+        from datetime import datetime,timezone
+        from unittest.mock import patch
+        from iphone_bot.reconcile_grading_production import recover_historical_archive
+        original=dataset()[0];current={**original,"predictions":[]}
+        def git(*args,**kwargs):
+            if args[0][1]=="rev-list":return "a"*40+"\n"
+            if args[0][1]=="show":return json.dumps(original)
+            raise AssertionError(args)
+        now=datetime(2026,11,13,5,tzinfo=timezone.utc)
+        with patch("subprocess.check_output",side_effect=git):
+            recovered=recover_historical_archive(DAY,current,now)
+        self.assertEqual(recovered["predictions"],original["predictions"])
+        self.assertEqual(recovered["historical_capture_source_commit"],"a"*40)
+        self.assertEqual(current["predictions"],[])
+        with patch("subprocess.check_output",side_effect=subprocess.CalledProcessError(1,"git")):
+            self.assertEqual(recover_historical_archive(DAY,current,now),current)
+        self.assertEqual(recover_historical_archive("2026-11-12",current,now),current)
+
     def test_midnight_report_selection_preserves_original_counts(self):
         from iphone_bot.reconcile_grading_production import select_dated_report
         stale={"game_date_eastern":"2026-11-11","graded":808}
