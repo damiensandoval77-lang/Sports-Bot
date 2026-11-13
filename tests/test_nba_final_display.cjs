@@ -10,3 +10,7 @@ assert.equal(m.attachNBAFinals([{...g,state:'in'}],{rows:[row]})[0].players.leng
 const real=JSON.parse(fs.readFileSync('docs/verified_final_player_cache.json'));
 const final= m.attachNBAFinals([g],real)[0];assert(final.players.length>10);assert(final.players.some(p=>p.player==='Cade Cunningham'));
 console.log('Verified final display: exact day/teams, provenance, zero, DNP, conflicts and production DET/WAS cache pass');
+
+const score=JSON.parse(fs.readFileSync("docs/nba_scoreboard_independent.json")),schedule=JSON.parse(fs.readFileSync("docs/nba_schedule.json"));
+const catalog=m.attachNBAFinals(m.gameCatalog(null,null,schedule,null,Date.parse(score.generated_at),score),real);
+assert(catalog.some(g=>g.finalBoxscore&&g.players.some(p=>p.player==="Cade Cunningham")),"Schedule full-name identity must preserve abbreviations");

@@ -611,7 +611,7 @@ function attachNBAFinals(games,cache){
   if(g.sport!=="NBA"||g.state!=="final"||!Number.isFinite(stamp(g.start)))return g;
   const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(g.start));
   const day=["year","month","day"].map(k=>parts.find(p=>p.type===k)?.value).join("-");
-  const away=nbaTeamCode(g.away),home=nbaTeamCode(g.home);
+  const away=nbaTeamCode(g.awayCode||g.away),home=nbaTeamCode(g.homeCode||g.home);
   const candidates=rows.filter(p=>p.date===day&&p.final_confirmed===true&&
    ["NBA_CDN_FINAL","ESPN_FINAL"].includes(p.source)&&p.source_game_id&&
    ((nbaTeamCode(p.team)===away&&nbaTeamCode(p.opponent)===home)||(nbaTeamCode(p.team)===home&&nbaTeamCode(p.opponent)===away)));
@@ -636,10 +636,10 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
    if(nbaDates.length && !nbaDates.includes(g.date_eastern))continue;
    const id="NBA|"+g.id;
    const existing=result.get(id)||observed.find(x=>x.sport==="NBA"&&x.game===g.game);
-   if(existing){existing.start=g.start;continue;}
+   if(existing){existing.start=g.start;existing.awayCode=g.away_abbreviation;existing.homeCode=g.home_abbreviation;continue;}
    const start=stamp(g.start);
    result.set(id,{sport:"NBA",gameId:g.id,game:g.game,away:g.away||"",home:g.home||"",
-    start:g.start,observedAt:null,state:start<=now?"unknown":"scheduled",
+    awayCode:g.away_abbreviation,homeCode:g.home_abbreviation,start:g.start,observedAt:null,state:start<=now?"unknown":"scheduled",
     sourceState:"schedule",fresh:false,source:"Independent NBA schedule",
     statusText:start<=now?"Started or finished · live status unavailable":"Scheduled · no live player data",
     players:[],awayScore:null,homeScore:null});
