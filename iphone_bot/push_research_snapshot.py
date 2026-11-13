@@ -1,11 +1,11 @@
 """Retry a prepared research-only commit across unrelated main updates.
 
 Never force-push or replay inference across changed inputs. The caller must
-recompute after a nonzero result. Only the two research output files may change.
+recompute after a nonzero result. Only the research output files may change.
 """
 import subprocess
 
-OUTPUTS={'docs/short_history_model.json','docs/short_history_model_validation.json'}
+OUTPUTS={'docs/short_history_model.json','docs/short_history_model_validation.json','docs/short_history_prospective_archive.json'}
 INPUTS={'docs/current_form.json','docs/prizepicks.json','docs/prizepicks_model_input.json',
         'docs/lagged_matchup_all_market_ledger.json','docs/injury_context.json',
         'docs/underdog_nba_injury_alerts.json','docs/free_nba_injury_watch.json'}
