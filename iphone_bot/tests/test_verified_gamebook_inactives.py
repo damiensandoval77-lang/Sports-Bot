@@ -13,7 +13,9 @@ class OfficialGamebookTests(unittest.TestCase):
         actuals = json.loads((root / 'verified_final_player_cache.json').read_text())['rows']
         archive = json.loads((root / 'ai_no_line_pregame_archive.json').read_text())['predictions']
         old = json.loads((root / 'ai_forecast_actual_ledger.json').read_text())['records']
-        evidence = load_gamebook_inactives(actuals)
+        # Exercise reviewed fallback independently of later explicit DNP cache additions.
+        played_actuals = [r for r in actuals if r.get('dnp_final_verified') is not True]
+        evidence = load_gamebook_inactives(played_actuals)
         recovered = [r for r in evidence if r['date'] == '2026-11-11']
         self.assertEqual(len(recovered), 24)
         self.assertTrue(all(r['dnp_final_verified'] and r.get('PTS') is None for r in recovered))
@@ -31,7 +33,7 @@ class OfficialGamebookTests(unittest.TestCase):
     def test_nov12_reviewed_final_gamebooks_preserve_null_actuals(self):
         root = Path(__file__).resolve().parents[2] / 'docs'
         actuals = json.loads((root / 'verified_final_player_cache.json').read_text())['rows']
-        evidence = [r for r in load_gamebook_inactives(actuals) if r['date'] == '2026-11-12']
+        evidence = [r for r in load_gamebook_inactives([a for a in actuals if a.get('dnp_final_verified') is not True]) if r['date'] == '2026-11-12']
         self.assertEqual({(r['player'], r['team']) for r in evidence}, {
             ('Scottie Barnes', 'TOR'), ('Trayce Jackson-Davis', 'TOR'),
             ('Adem Bona', 'PHI'), ('LeBron James', 'PHI'), ('Ebuka Okorie', 'DET')})
