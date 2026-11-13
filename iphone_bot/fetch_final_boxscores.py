@@ -32,7 +32,7 @@ NBA_SCHEDULE_ALT="https://cdn.nba.com/static/json/staticData/scheduleLeagueV2_1.
 ESPN_SCORE="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard"
 ESPN_BOX="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary"
 
-ALIASES={"GS":"GSW","GSW":"GSW","NY":"NYK","NYK":"NYK",
+ALIASES={"WSH":"WAS","WAS":"WAS","GS":"GSW","GSW":"GSW","NY":"NYK","NYK":"NYK",
          "NO":"NOP","NOR":"NOP","NOP":"NOP","SA":"SAS","SAS":"SAS",
          "UTAH":"UTA","UTA":"UTA","PHO":"PHX","PHX":"PHX",
          "BKN":"BKN","BRK":"BKN","CHA":"CHA","CHO":"CHA"}
