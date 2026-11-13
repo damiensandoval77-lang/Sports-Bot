@@ -2,6 +2,8 @@ name: NFL frozen-pick grading and accuracy ledger
 on:
   pull_request:
     paths:
+      - 'scripts/audit_nfl_prospective_calibration.py'
+      - 'tests/test_nfl_prospective_calibration.py'
       - 'scripts/verified_nfl_gamebook.py'
       - 'tests/test_nfl_gamebook.py'
       - 'scripts/export_nfl_espn_finals.py'
@@ -11,6 +13,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/audit_nfl_prospective_calibration.py'
+      - 'tests/test_nfl_prospective_calibration.py'
       - 'scripts/verified_nfl_gamebook.py'
       - 'tests/test_nfl_gamebook.py'
       - 'scripts/export_nfl_espn_finals.py'
@@ -80,6 +84,8 @@ jobs:
       - name: Run deterministic public NFL grading unit tests
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+      - name: Verify prospective real-line calibration safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_prospective_calibration.py' -v
       - name: Verify complete official gamebook safeguards
         run: python -m unittest discover -s tests -p 'test_nfl_gamebook.py' -v
       - name: Attempt independent snap-count zero-target recovery
@@ -92,6 +98,8 @@ jobs:
         run: git fetch origin 7d787f218c9d5667536a391257f873126f42476f
       - name: Reconcile captured pregame lines with verified final player stats
         run: python scripts/reconcile_nfl_picks.py --recover-snapshot-ref 7d787f218c9d5667536a391257f873126f42476f
+      - name: Measure frozen pregame real-line probability performance
+        run: python scripts/audit_nfl_prospective_calibration.py
       - name: Check grading coverage, including pending results
         run: |
           python - <<'PY'
@@ -123,6 +131,7 @@ jobs:
                     docs/nfl/data/pp_graded_2026.csv \
                     docs/nfl/data/pp_grading_pending_2026.csv \
                     docs/nfl/data/grading_health_2026.json \
+                    docs/nfl/data/prospective_calibration_2026.json \
                     docs/nfl/data/active_frozen_2026.json \
                     docs/nfl/data/original_evidence_recovery_2026.json
             if git diff --cached --quiet; then
@@ -135,6 +144,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             python scripts/reconcile_nfl_picks.py --recover-snapshot-ref 7d787f218c9d5667536a391257f873126f42476f
+            python scripts/audit_nfl_prospective_calibration.py
           done
           echo "::error::Could not publish NFL grading after three safe retries"
           exit 1
