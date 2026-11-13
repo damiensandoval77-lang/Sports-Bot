@@ -26,6 +26,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -33,6 +35,13 @@ jobs:
         run: |
           pip install playwright==1.48.0
           python -m playwright install --with-deps chromium
+      - name: Wait for exact native Pages release before phone verification
+        id: deployment
+        run: |
+          set +e
+          python scripts/verify_legacy_pages_release.py out/deployment-convergence.json
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
       - name: Verify real deployed iPhone-size page and published ledger
         id: verify
         run: |
@@ -48,5 +57,5 @@ jobs:
           path: out/
           retention-days: 90
       - name: Fail visibly if phone-facing release is incomplete
-        if: steps.verify.outputs.code != '0'
+        if: always() && (steps.deployment.outputs.code != '0' || steps.verify.outputs.code != '0')
         run: exit 1
