@@ -156,7 +156,12 @@ function nflMatchupPreview(p,start){
  return {rate:selected,asOf:p.captured_at,method:x.method,calibrated:false,
   sport:"NFL",pushRate:push,opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
 }
-function nfl(chunks,schedule){
+function nflProviderEventVerified(p,start){
+ let x;try{x=JSON.parse(p.matchup_evidence||"null")}catch(_){return false}
+ return !!(x&&typeof x.provider_game_id==="string"&&x.provider_game_id.trim()&&
+   x.provider_team===p.team&&Number.isFinite(stamp(start))&&stamp(x.provider_start_time)===stamp(start));
+}
+function nfl(chunks,schedule,now=Date.now()){
  const games=new Map((schedule?.games||[]).map(g=>[g.game_id,g]));
  const found=new Map();
  for(const p of chunks.flat()){
@@ -164,6 +169,9 @@ function nfl(chunks,schedule){
   if(!game||p.odds_type!=="standard"||n(p.line)===null||n(p.proj)===null||
    !p.player||!p.player_id||!p.stat||!["More","Less"].includes(p.pick)||
    !(stamp(p.captured_at)<stamp(game.kickoff_utc)))continue;
+  // Future markets require actual provider event attribution, never a name-only
+  // join to both upcoming weeks. Keep already-started immutable history intact.
+  if(stamp(game.kickoff_utc)>now&&!nflProviderEventVerified(p,game.kickoff_utc))continue;
   const prob=n(p.p_more),direction=p.pick==="More"?"MORE":"LESS";
   const chance=prob!==null&&prob>=0&&prob<=1?(direction==="MORE"?prob:1-prob):null;
   let logs=[];try{logs=JSON.parse(p.season_game_log||"[]")}catch(_){}
@@ -689,7 +697,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -716,4 +724,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-archive-evidence-20261113-r27";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-provider-event-20261113-r28";
