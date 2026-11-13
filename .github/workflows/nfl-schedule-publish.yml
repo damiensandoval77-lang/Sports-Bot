@@ -11,7 +11,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: nfl-schedule-publish
+  group: nfl-schedule-and-finals-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
   cancel-in-progress: false
 jobs:
   publish:
@@ -19,6 +19,8 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'

@@ -70,6 +70,22 @@ class PublishRaceTests(unittest.TestCase):
             publish(attempts=3, run=rejected_run)
         self.assertEqual(sum(c[1] == "push" for c in calls), 3)
 
+    def test_shared_schedule_writers_serialize_and_checkout_current_main(self):
+        # A retry cannot safely merge two generated one-line schedules. The
+        # production writer contract must prevent that same-file race.
+        root = Path(__file__).resolve().parents[1]
+        workflows = [root / ".github/workflows" / name for name in
+                     ("nfl-boxscores-publish.yml", "nfl-schedule-publish.yml")]
+        groups = []
+        for workflow in workflows:
+            text = workflow.read_text()
+            groups.append(next(line.strip() for line in text.splitlines() if line.strip().startswith("group:")))
+            self.assertIn("cancel-in-progress: false", text)
+            production = text.split("  boxscores:" if "boxscores-publish" in workflow.name else "  publish:",1)[1]
+            self.assertIn("ref:", production)
+            self.assertIn("main", production.split("ref:",1)[1].splitlines()[0])
+        self.assertEqual(groups[0], groups[1])
+
 
 if __name__ == "__main__":
     unittest.main()
