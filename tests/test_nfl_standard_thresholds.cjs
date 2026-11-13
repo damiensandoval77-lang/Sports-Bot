@@ -12,3 +12,5 @@ test('finished game display remains one frozen card',()=>a.equal(m.displayCurren
 test('line-specific evidence remains untouched',()=>{const x=row(7,{matchupPreview:{rate:.54,pushRate:.145}}),y=row(6.5,{matchupPreview:{rate:.54,pushRate:0}});const out=m.displayCurrentPicks([x,y],now);a.equal(out[0],y);a.equal(out[1],x);a.equal(out[1].matchupPreview.pushRate,.145)});
 
 test('explicit goblin or demon never overrides a standard card',()=>a.deepEqual(m.displayCurrentPicks([row(6.5),row(3,{marketTier:'goblin'}),row(10,{marketTier:'demon',captured:'2026-11-13T05:59:00Z'})],now).map(x=>x.line),[6.5]));
+
+test("detail tabs expose the exact threshold alongside escaped market name",()=>{const html=require("node:fs").readFileSync(require("node:path").join(__dirname,"../docs/dames-picks/index.html"),"utf8");a.ok(html.includes("escapeText(x.stat)+' · '+fmt(x.line)"));});
