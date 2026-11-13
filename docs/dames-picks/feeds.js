@@ -109,6 +109,32 @@ function nba(ledger,form){
   };
  });
 }
+/* Fresh NFL evidence is exported with its original pregame probability. Old
+   rows without evidence remain unavailable; never infer it from hit history. */
+function nflMatchupPreview(p,start){
+ let x;try{x=JSON.parse(p.matchup_evidence||"null")}catch(_){return null}
+ if(!x||x.schema!=="NFL_OPPONENT_FEATURES_V1"||
+    !["NFL_MATCHUP_RESIDUAL_V1","NFL_MATCHUP_POISSON_V1"].includes(x.method)||
+    x.calibrated!==false||x.research_only!==true||
+    !/^[a-f0-9]{64}$/.test(x.artifact_sha256||""))return null;
+ const direction=p.pick==="More"?"MORE":p.pick==="Less"?"LESS":null;
+ for(const k of ["player_id","game_id","team","opponent","target"])
+  if(!p[k]||x[k]!==p[k])return null;
+ const captured=stamp(p.captured_at),observed=stamp(x.observed_at),tip=stamp(start);
+ if(!Number.isFinite(captured)||!Number.isFinite(observed)||!Number.isFinite(tip)||
+    observed>captured||captured>=tip||stamp(x.captured_at)!==captured||
+    x.direction!==direction||n(x.original_line)!==n(p.line))return null;
+ const more=n(x.modeled_more_probability),selected=n(x.selected_probability),original=n(p.p_more);
+ if(more===null||selected===null||more<0||more>1||selected<0||selected>1||
+    original===null||Math.abs(more-original)>1e-8||
+    Math.abs(selected-(direction==="MORE"?more:1-more))>1e-8)return null;
+ const features=x.opponent_features,used=x.model_feature_names;
+ if(!features||typeof features!=="object"||Array.isArray(features)||!Array.isArray(used)||
+    !Object.keys(features).length||Object.entries(features).some(([k,v])=>
+      !/^OPP_ALLOW_(REC_YDS|RUSH_YDS|REC|FPTS)_L6$/.test(k)||!used.includes(k)||n(v)===null||n(v)<0))return null;
+ return {rate:selected,asOf:p.captured_at,method:x.method,calibrated:false,
+  sport:"NFL",opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
+}
 function nfl(chunks,schedule){
  const games=new Map((schedule?.games||[]).map(g=>[g.game_id,g]));
  const found=new Map();
@@ -126,6 +152,7 @@ function nfl(chunks,schedule){
    source:"PrizePicks",line:n(p.line),projection:n(p.proj),direction,chance,
    chanceSource:"NFL model estimate; not a calibrated hit probability",
    chanceMethod:"NFL_FROZEN_MODEL",chanceCalibrated:false,
+   matchupPreview:nflMatchupPreview(p,game.kickoff_utc),
    opponentAwareVerified:false,
    captured:p.captured_at,grade:"PENDING",actual:null,hit:null,gradeSource:null,
    form:{season:n(p.season_avg),l5:null,l10:null,games:n(p.season_games),
@@ -641,7 +668,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -668,4 +695,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-open-tab-update-20261113-r23";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-matchup-evidence-20261113-r24";
