@@ -270,7 +270,7 @@ function renderGameDetail(){
   '<div class="box-row"><span>'+escapeText(g.away)+'</span><strong>'+scoreText(g.awayScore)+'</strong></div><div class="box-row"><span>'+escapeText(g.home)+'</span><strong>'+scoreText(g.homeScore)+'</strong></div>':
   '<div class="note">Verified score unavailable in this published game feed.</div>';
  $("detail-content").innerHTML='<section class="box"><h2>Scoreboard</h2>'+scoreboard+
- '<div class="note">'+escapeText(g.state==="scheduled"?"Scheduled game — live stats begin after play starts":g.finalBoxscore?"Verified final boxscore":g.fresh?"Current observed game snapshot":"Historical or stale snapshot — not live now")+
+ '<div class="note">'+escapeText(g.state==="scheduled"&&timestamp(g.start)>Date.now()?"Scheduled game — live stats begin after play starts":g.finalBoxscore?"Verified final boxscore":g.fresh?"Current observed game snapshot":"Historical or stale snapshot — not live now")+
  ' · '+escapeText(g.statusText)+'. Boxscore stats are observations; settlement grades come from the frozen pick ledger.</div></section>'+
  '<section class="box"><h2>Saved pregame standard lines ('+related.length+')</h2><p class="note">'+modeled.length+' frozen AI forecasts · '+archived.length+' verified saved quotes without AI. Quote-only lines are never graded as model picks.</p>'+
  (watched?'<div class="cards">'+watched+'</div>':'<p class="note">No verified pregame standard quotes were archived for this game. Its scoreboard and box score remain visible.</p>')+'</section>'+

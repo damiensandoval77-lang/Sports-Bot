@@ -14,3 +14,8 @@ test('scheduled display is not described as stale; tracker not mislabeled today'
  assert.ok(html.includes("g.start?' · Starts '"));
  const script=html.split('<script>').at(-1).split('</script>')[0];new vm.Script(script);
 });
+
+test('old pregame snapshots cannot claim game has not begun',()=>{
+ const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
+ assert.ok(html.includes('g.state==="scheduled"&&timestamp(g.start)>Date.now()?"Scheduled game'));
+});
