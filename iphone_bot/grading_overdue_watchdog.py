@@ -49,9 +49,13 @@ def assess(schedule,archive,ledger,now=None):
     # Persist overdue checks for every game with an archived pretip AI
     # forecast, even after it ages out of the ordinary 48h game window.
     # Otherwise a missing final quietly becomes a false green two days later.
-    archived_games={p.get("game") for p in archive.get("predictions",[])
-                    if isinstance(p,dict) and p.get("is_pregame_prediction") is True
-                    and p.get("line") is None and p.get("game")}
+    archived_games={}
+    for p in archive.get("predictions",[]):
+        if (isinstance(p,dict) and p.get("is_pregame_prediction") is True
+                and p.get("line") is None and p.get("game")):
+            tip=timestamp(p.get("start"))
+            if tip:
+                archived_games.setdefault(p["game"],set()).add(tip)
     scoped={}
     for g in schedule.get("games",[]):
         if not isinstance(g,dict) or not g.get("game") or not g.get("date_eastern"):
@@ -59,20 +63,27 @@ def assess(schedule,archive,ledger,now=None):
         start=timestamp(g.get("start"))
         if not start or start>now-MAX_DELAY:
             continue
-        if (now-start).total_seconds()>2*86400 and g["game"] not in archived_games:
+        has_archive=any(abs((start-tip).total_seconds())<=1800
+                        for tip in archived_games.get(g["game"],()))
+        if (now-start).total_seconds()>2*86400 and not has_archive:
             continue
         if start.astimezone(ET).date().isoformat()!=g["date_eastern"]:
             continue
-        scoped[g["game"]]=g
+        # Teams meet repeatedly throughout the season. Names alone neither
+        # identify the archived meeting nor preserve separate overdue games.
+        scoped[(g["game"],start)]=g
     forecast={}
     for p in archive.get("predictions",[]):
-        if (not isinstance(p,dict) or p.get("game") not in scoped or
+        if (not isinstance(p,dict) or
             p.get("is_pregame_prediction") is not True or p.get("line") is not None or
             p.get("stat") not in ("PTS","REB","AST","PRA")):
             continue
         captured=timestamp(p.get("captured_at"));tip=timestamp(p.get("start"))
-        g=scoped[p["game"]]
-        if not captured or not tip or not captured<tip or abs((tip-timestamp(g["start"])).total_seconds())>1800:
+        if not captured or not tip or not captured<tip:
+            continue
+        matches=[key for key in scoped if key[0]==p.get("game")
+                 and abs((tip-key[1]).total_seconds())<=1800]
+        if len(matches)!=1:
             continue
         k=identity(p)
         if k in forecast and forecast[k]!=p:
@@ -82,8 +93,9 @@ def assess(schedule,archive,ledger,now=None):
     report={"status":"NO_OVERDUE_PENDING","checked_at":now.isoformat(),
             "threshold_minutes":int(MAX_DELAY.total_seconds()/60),"games":[],"issues":[],
             "schedule_source":schedule["status"],"note":"Persistent season schedule preserves games after rolling schedule resets. Overdue age is not proof of completion; only verified final player rows settle grades."}
-    for game,g in sorted(scoped.items()):
-        selected=[p for p in forecast.values() if p is not None and p["game"]==game]
+    for (game,start),g in sorted(scoped.items()):
+        selected=[p for p in forecast.values() if p is not None and p["game"]==game
+                  and abs((timestamp(p["start"])-start).total_seconds())<=1800]
         if not selected:
             report["issues"].append(game+": NO_SAVED_PREGAME_AI_FORECASTS")
         unresolved=[p for p in selected if identity(p) not in finals]
