@@ -31,7 +31,9 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: nfl-final-boxscores
+  # Both workflows write schedule_2026.json. Serialize the writers, then
+  # check out current main so queued runs cannot regenerate stale timestamps.
+  group: nfl-schedule-and-finals-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
   cancel-in-progress: false
 jobs:
   due:
@@ -61,6 +63,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
