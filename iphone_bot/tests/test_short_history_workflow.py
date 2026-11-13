@@ -27,7 +27,7 @@ class IsolatedResearchWorkflowTests(unittest.TestCase):
         self.assertIn('python -m iphone_bot.fetch_current_form',step['run'])
         self.assertIn('python -m iphone_bot.build_prizepicks_model_input',step['run'])
         adds=[x.strip() for x in step['run'].splitlines() if x.strip().startswith('git add')]
-        self.assertEqual(adds,['git add docs/short_history_model.json','git add docs/short_history_model_validation.json'])
+        self.assertEqual(adds,['git add docs/short_history_model.json','git add docs/short_history_prospective_archive.json','git add docs/short_history_model_validation.json'])
     def test_reproduction_is_pinned_and_no_paid_source_called(self):
         text='\n'.join(x.get('run','') for x in self.job['steps'])
         self.assertIn('scikit-learn==1.8.0',text)

@@ -8,6 +8,8 @@ on:
       - 'iphone_bot/provisional_short_history.py'
       - 'iphone_bot/short_history_candidate.py'
       - 'iphone_bot/short_history_inference.py'
+      - 'iphone_bot/short_history_archive.py'
+      - 'iphone_bot/tests/test_short_history_archive.py'
       - 'iphone_bot/tests/test_short_history_candidate.py'
       - 'iphone_bot/tests/test_short_history_inference.py'
       - 'iphone_bot/tests/test_short_history_workflow.py'
@@ -50,6 +52,8 @@ on:
       - 'iphone_bot/provisional_short_history.py'
       - 'iphone_bot/short_history_candidate.py'
       - 'iphone_bot/short_history_inference.py'
+      - 'iphone_bot/short_history_archive.py'
+      - 'iphone_bot/tests/test_short_history_archive.py'
       - 'iphone_bot/tests/test_short_history_candidate.py'
       - 'iphone_bot/tests/test_short_history_inference.py'
       - 'iphone_bot/tests/test_short_history_workflow.py'
@@ -442,6 +446,7 @@ jobs:
           python -m unittest iphone_bot.tests.test_push_research_snapshot -v
           python -m unittest discover -s iphone_bot/tests -p 'test_short_history_candidate.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_short_history_inference.py' -v
+          python -m unittest iphone_bot.tests.test_short_history_archive -v
       - name: Reproduce separately gated research model from pinned historical sources
         id: train
         continue-on-error: true
@@ -465,7 +470,9 @@ jobs:
               rc=1
               python -m iphone_bot.short_history_inference --model-dir "$RUNNER_TEMP/short-history-model" --output docs/short_history_model.json --blocked SOURCE_OR_TRAINING_FAILED || true
             fi
+            python -m iphone_bot.short_history_archive
             git add docs/short_history_model.json
+            git add docs/short_history_prospective_archive.json
             if [ "$TRAIN_OUTCOME" = success ]; then
               cp "$RUNNER_TEMP/short-history-model/validation.json" docs/short_history_model_validation.json
               git add docs/short_history_model_validation.json
