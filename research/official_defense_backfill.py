@@ -53,7 +53,20 @@ def planned_games(schedule, now, limit=MAX_GAMES, lookback_days=MAX_LOOKBACK_DAY
             continue
     return [key for _,key in sorted(matched,reverse=True)[:limit]]
 
-def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAMES):
+def cached_schedule_ids(snapshot, targets, now):
+    """Discovery hints only; every box must independently attest its identity."""
+    if not isinstance(snapshot, dict) or snapshot.get("source_url") not in (NBA_SCHEDULE, NBA_SCHEDULE_ALT):
+        return {}
+    try:
+        captured=datetime.fromisoformat(snapshot["captured_at"].replace("Z","+00:00"))
+        if captured.tzinfo is None or captured > now:
+            return {}
+        return verified_schedule_ids(snapshot, set(targets))
+    except (ValueError,TypeError,KeyError):
+        return {}
+
+def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAMES,
+            schedule_snapshot=None):
     targets=planned_games(season,now,limit)
     # Baseline schedule ESPN IDs are discovery hints ONLY. The summary must
     # independently verify completed status and exact event, teams and date.
@@ -74,6 +87,9 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
             if official:break
         except (OSError,ValueError,KeyError,TypeError) as err:
             schedule_error=type(err).__name__
+    saved_ids=cached_schedule_ids(schedule_snapshot, targets, now)
+    recovered_ids={key:gid for key,gid in saved_ids.items() if key not in official}
+    official.update(recovered_ids)
     retrieved=[]
     errors=Counter()
     provider_games=Counter()
@@ -157,6 +173,7 @@ def collect(season, existing_cache, *, now, request=request_json, limit=MAX_GAME
             "season_schedule_source":season["source_url"],
             "requested_games":len(targets),
             "official_ids_found":len(official),
+            "official_ids_from_saved_discovery":len(recovered_ids),
             "verified_espn_id_hints":sum(bool(v) for v in hints.values()),
             "espn_http_circuit_open":circuit_open,
             "provider_outage_detected":circuit_open,
@@ -178,8 +195,11 @@ def main():
     p.add_argument("--limit",type=int,default=MAX_GAMES)
     a=p.parse_args()
     now=datetime.now(timezone.utc)
+    snapshot_path=Path(__file__).resolve().parent/"data/official_nba_schedule_hints_2026_27.json"
+    snapshot=json.loads(snapshot_path.read_text()) if snapshot_path.exists() else None
     result=collect(json.loads(Path(a.schedule).read_text()),
-                   json.loads(Path(a.prior).read_text()),now=now,limit=a.limit)
+                   json.loads(Path(a.prior).read_text()),now=now,limit=a.limit,
+                   schedule_snapshot=snapshot)
     Path(a.output).write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print(json.dumps({k:result.get(k) for k in (
         "status","requested_games","official_ids_found","verified_new_games",

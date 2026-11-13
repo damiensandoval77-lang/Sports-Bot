@@ -3,12 +3,14 @@ on:
   pull_request:
     paths:
       - 'research/official_defense_backfill.py'
+      - 'research/data/official_nba_schedule_hints_2026_27.json'
       - 'research/tests/test_official_defense_backfill.py'
       - '.github/workflows/research-official-defense-history.yml'
   push:
     branches: [main]
     paths:
       - 'research/official_defense_backfill.py'
+      - 'research/data/official_nba_schedule_hints_2026_27.json'
       - 'research/tests/test_official_defense_backfill.py'
       - '.github/workflows/research-official-defense-history.yml'
   workflow_dispatch:

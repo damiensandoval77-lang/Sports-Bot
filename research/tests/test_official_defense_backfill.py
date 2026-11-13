@@ -34,6 +34,39 @@ def fetch(url):
     return final_box()
 
 class OfficialBackfillTests(unittest.TestCase):
+    def test_saved_official_ids_recover_blocked_schedule_but_verify_live_box(self):
+        from iphone_bot.fetch_final_boxscores import NBA_SCHEDULE
+        snapshot={**official(),"source_url":NBA_SCHEDULE,"captured_at":NOW.isoformat()}
+        def request(url):
+            if "scheduleLeague" in url:raise OSError("schedule blocked")
+            return final_box()
+        result=collect(season(),{"version":1,"rows":[]},now=NOW,request=request,
+                       schedule_snapshot=snapshot)
+        self.assertEqual(result["official_ids_from_saved_discovery"],1)
+        self.assertEqual(result["verified_new_games"],1)
+        self.assertEqual(result["schedule_lookup_error"],"OSError")
+        self.assertFalse(result["production_approved"])
+
+    def test_saved_hint_cannot_override_mismatched_final_box(self):
+        from iphone_bot.fetch_final_boxscores import NBA_SCHEDULE
+        snapshot={**official(),"source_url":NBA_SCHEDULE,"captured_at":NOW.isoformat()}
+        def request(url):
+            if "scheduleLeague" in url:raise OSError("schedule blocked")
+            return final_box(away="LAL")
+        result=collect(season(),{"version":1,"rows":[]},now=NOW,request=request,
+                       schedule_snapshot=snapshot)
+        self.assertEqual(result["verified_new_games"],0)
+
+    def test_future_or_untrusted_discovery_cache_ignored(self):
+        from research.official_defense_backfill import cached_schedule_ids
+        from iphone_bot.fetch_final_boxscores import NBA_SCHEDULE
+        snapshot={**official(),"source_url":NBA_SCHEDULE,"captured_at":NOW.isoformat()}
+        targets=planned_games(season(),NOW)
+        for changes in [{"source_url":"https://example.com"},
+                        {"captured_at":(NOW+timedelta(seconds=1)).isoformat()},
+                        {"captured_at":"2026-11-11T04:00:00"}]:
+            self.assertEqual(cached_schedule_ids({**snapshot,**changes},targets,NOW),{})
+
     def test_official_inactive_players_preserve_verified_final_box(self):
         def request(url):
             if "scheduleLeague" in url:return official()
