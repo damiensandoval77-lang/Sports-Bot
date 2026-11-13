@@ -2,7 +2,7 @@ import unittest
 from copy import deepcopy
 from unittest.mock import patch
 import numpy as np
-from iphone_bot.short_history_probability_research import probability,merge,settle,capture,MODEL,STATUS
+from iphone_bot.short_history_probability_research import probability,merge,settle,settle_boxscores,settle_pending,capture,MODEL,STATUS
 
 NOW='2026-11-13T23:00:00+00:00'
 def row():
@@ -24,6 +24,9 @@ class Tests(unittest.TestCase):
  def test_first_wins(self):
   a=merge(None,{'records':[row()]},NOW);b=row();b['research_probability_over']=.5;b['research_probability_under']=.4
   self.assertEqual(merge(a,{'records':[b]},NOW)['records'],a['records'])
+ def test_repeat_archive_is_byte_stable(self):
+  a=merge(None,{'records':[row()]},NOW)
+  self.assertEqual(merge(a,{'records':[row()]},'2026-11-13T23:01:00+00:00'),a)
  def test_posttip_rejected(self):
   with self.assertRaises(ValueError):merge(None,{'records':[row()]},'2026-11-14T00:00:00+00:00')
  def test_stale_rejected(self):
@@ -79,4 +82,38 @@ class CaptureTests(unittest.TestCase):
  def test_old_quote_rejected_despite_new_capture(self):
   r=row();r['market_updated']='2026-11-13T22:29:59+00:00'
   with self.assertRaises(ValueError):merge(None,{'records':[r]},NOW)
+class DirectFinalTests(unittest.TestCase):
+ def archive(self):
+  r={**row(),'player':'Example Player','opponent':'BBB'}
+  return merge(None,{'records':[r]},NOW)
+ def box(self):
+  return {'player':'Example Player','team':'AAA','opponent':'BBB','date':'2026-11-13','PTS':11.,'REB':3.,'AST':1.,'PRA':15.,'MIN':20.,'source':'NBA_CDN_FINAL','source_game_id':'0022600001','final_confirmed':True}
+ def test_direct_final_without_old_ai_forecast(self):
+  a=self.archive();b=settle_boxscores(a,[self.box()],'2026-11-14T03:00:00+00:00')
+  self.assertEqual(b['outcomes']['test']['actual'],11.);self.assertEqual(a['records'],b['records'])
+ def test_wrong_date_team_opponent_name_rejected(self):
+  for key,value in [('date','2026-11-12'),('team','BBB'),('opponent','CCC'),('player','Different Player'),('final_confirmed',False),('source','CSV'),('MIN',0)]:
+   b=self.box();b[key]=value
+   self.assertEqual(settle_boxscores(self.archive(),[b],'2026-11-14T03:00:00+00:00')['outcomes'],{})
+ def test_conflicting_direct_box_withheld(self):
+  b=self.box();c={**b,'PTS':12.}
+  self.assertEqual(settle_boxscores(self.archive(),[b,c],'2026-11-14T03:00:00+00:00')['outcomes'],{})
+ def test_explicit_dnp_void_not_zero(self):
+  b={k:v for k,v in self.box().items() if k not in ['PTS','REB','AST','PRA','MIN']};b.update(dnp_final_verified=True,dnp_reason='INACTIVE')
+  o=settle_boxscores(self.archive(),[b],'2026-11-14T03:00:00+00:00')['outcomes']['test']
+  self.assertIsNone(o['actual']);self.assertEqual(o['result'],'VOID_DNP')
+ def test_dnp_contradictory_stats_withheld(self):
+  b=self.box();b.update(dnp_final_verified=True,dnp_reason='INACTIVE')
+  self.assertEqual(settle_boxscores(self.archive(),[b],'2026-11-14T03:00:00+00:00')['outcomes'],{})
+ def test_pending_uses_research_receipts_not_primary_archive(self):
+  with patch('iphone_bot.fetch_final_boxscores.gather',return_value=([self.box()],{'status':'FINAL_BOXSCORES_FOUND'})) as g:
+   a=settle_pending(self.archive(),'2026-11-14T03:00:00+00:00')
+   self.assertEqual(g.call_args.args[0],[{'status':'PENDING','event_start':row()['start'],'game':'A @ B'}])
+   self.assertEqual(a['outcomes']['test']['result'],'OVER')
+class OutcomeRepeatTests(unittest.TestCase):
+ def test_no_op_check_preserves_timestamp(self):
+  a=merge(None,{'records':[row()]},NOW)
+  with patch('iphone_bot.fetch_final_boxscores.gather',return_value=([],{'status':'NO_ELIGIBLE_PENDING_MATCHUPS','pending_matchups':0})):
+   a=settle_pending(a,NOW)
+   self.assertEqual(settle_pending(a,'2026-11-13T23:01:00+00:00'),a)
 if __name__=='__main__':unittest.main()
