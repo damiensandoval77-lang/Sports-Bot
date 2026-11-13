@@ -238,7 +238,7 @@ jobs:
           fi
       - name: Save production incident report artifact
         if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: production-readiness-${{ github.run_id }}
           path: docs/production_readiness.json
