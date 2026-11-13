@@ -185,6 +185,22 @@ class IndependentScoreboardTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             nba_live_scoreboard([DAY],requester=fail)
 
+    def test_http_success_with_rejected_rows_tries_second_live_source(self):
+        visited=[]
+        decisions=iter([False,True])
+        def response(url):
+            visited.append(url)
+            return {"scoreboard":{"games":[]}}
+        result=nba_live_scoreboard([DAY],requester=response,
+                                  validate_rows=lambda rows:next(decisions))
+        self.assertEqual(visited,list(NBA_LIVE_URLS))
+        self.assertIn('mediaops S3',result['source'])
+
+    def test_both_http_successes_with_stale_rows_fail_closed(self):
+        with self.assertRaises(RuntimeError):
+            nba_live_scoreboard([DAY],requester=lambda url:{'scoreboard':{'games':[]}},
+                               validate_rows=lambda rows:False)
+
 
     def test_cached_dated_schedule_cannot_be_called_live(self):
         baseline={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],
