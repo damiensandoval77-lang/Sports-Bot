@@ -51,7 +51,7 @@ const timestamp=t=>{const n=Date.parse(t);return Number.isFinite(n)?n:0};
    background data commits. GitHub raw source is the same public repo content,
    fetched read-only, never an odds API or guessed game observation. */
 const RAW_LIVE_BASE="https://raw.githubusercontent.com/damiensandoval77-lang/Sports-Bot/main/docs/";
-const RAW_LIVE_FILES=new Set(["verified_final_player_cache.json","nfl/data/live_2026.json","live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json"]);
+const RAW_LIVE_FILES=new Set(["nfl/data/live_2026.json","verified_final_player_cache.json","live_player_tracking.json","nba_scoreboard_independent.json","nba_player_tracking_independent.json"]);
 const liveStamp=o=>Date.parse(o?.captured_at||o?.generated_at||o?.checked_at||"");
 const validLiveJSON=(p,o)=>{
  if(p==="verified_final_player_cache.json")return o?.version===1&&Array.isArray(o.rows);
