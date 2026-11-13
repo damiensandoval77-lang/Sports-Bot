@@ -1,0 +1,48 @@
+{
+  "status": "HISTORICAL_JOINT_MINUTES_OPPORTUNITY_RESEARCH",
+  "generated_at": "2026-11-12T00:03:29.086439+00:00",
+  "holdout_season": "2025-26",
+  "evaluated": {
+    "MIN": {
+      "paired_games": 21734,
+      "distinct_game_dates": 149,
+      "baseline_mae": 4.9081,
+      "challenger_mae": 5.0375,
+      "challenger_minus_baseline_mae": 0.1294,
+      "candidate_better_individual_games": 9665,
+      "baseline_better_individual_games": 12065
+    },
+    "AST": {
+      "paired_games": 20861,
+      "distinct_game_dates": 149,
+      "baseline_mae": 1.4474,
+      "challenger_mae": 1.4304,
+      "challenger_minus_baseline_mae": -0.017,
+      "candidate_better_individual_games": 11298,
+      "baseline_better_individual_games": 9537
+    },
+    "REB": {
+      "paired_games": 20861,
+      "distinct_game_dates": 149,
+      "baseline_mae": 2.025,
+      "challenger_mae": 2.0034,
+      "challenger_minus_baseline_mae": -0.0217,
+      "candidate_better_individual_games": 11408,
+      "baseline_better_individual_games": 9446
+    }
+  },
+  "team_lineup_availability": "COMPLETE_PLAYER_GAME_PRESENCE_OBSERVED",
+  "target_game_official_out_status": "NOT_IN_ARCHIVE_NO_TEAMMATE_INJURY_CLAIMS",
+  "tracking_source": "NOT_CONNECTED_BOX_SCORE_AST_REB_RATE_PROXIES_ONLY",
+  "historical_prop_line_hit_rates": null,
+  "production_model_changed": false,
+  "limitations": [
+    "Same-date outcomes excluded for each athlete",
+    "Min V3 lineup adjustment off without independently verified pretip injury labels",
+    "AST/REB opportunity backtest uses observed totals per minute, not genuine tracked chances",
+    "No 2025-26 sportsbook prop lines provided, so only stat prediction MAE is measured",
+    "Historical retrospective backtest does not substitute for prospective frozen grading"
+  ],
+  "validated_archival_rows": 104588,
+  "source_rejections": {}
+}

@@ -1,0 +1,58 @@
+name: Verify live Dame's Picks layout
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7,27,47 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-dames-picks-public.yml'
+permissions:
+  contents: read
+jobs:
+  live-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify intended source layout
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('docs/dames-picks/index.html').read_text()
+          p=s.index('<h2>Dame’s projection</h2>')
+          t=s.index('<strong>Dame’s Take</strong>')
+          g=s.index('<h2>Last games</h2>')
+          assert p<t<g, 'Source has wrong projection / take / last-games order'
+          print('PASS: checked-in source layout')
+          PY
+      - name: Verify actual GitHub Pages response is updated
+        env:
+          PUBLIC_URL: https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/
+        run: |
+          python - <<'PY'
+          import os,time,urllib.request,urllib.error
+          url=os.environ['PUBLIC_URL']
+          last=''
+          for attempt in range(6):
+              try:
+                  req=urllib.request.Request(
+                      url+'?layout_verify='+str(int(time.time()))+'-'+str(attempt),
+                      headers={'Cache-Control':'no-cache','Pragma':'no-cache','User-Agent':'Sports-Bot-Dames-Picks-Layout-Check'})
+                  with urllib.request.urlopen(req,timeout=18) as res:
+                      html=res.read().decode('utf-8')
+                      assert res.status==200
+                  p=html.index('<h2>Dame’s projection</h2>')
+                  t=html.index('<strong>Dame’s Take</strong>')
+                  g=html.index('<h2>Last games</h2>')
+                  assert p<t<g, 'Published page still has the old layout'
+                  assert html.count('<strong>Dame’s Take</strong>')==1, 'Take is duplicated or missing'
+                  print('PASS: live public Dame\'s Picks has projection -> take -> last games')
+                  break
+              except (urllib.error.URLError,ValueError,AssertionError,UnicodeError) as e:
+                  last=str(e)
+                  print(f'Attempt {attempt+1}/6: {last}')
+                  if attempt==5:
+                      raise SystemExit('FAIL: Public deployment unverified: '+last)
+                  time.sleep(15)
+          PY

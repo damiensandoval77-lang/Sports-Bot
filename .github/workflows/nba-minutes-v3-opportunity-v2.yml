@@ -1,0 +1,68 @@
+name: Joint Minutes V3 and AST-REB Opportunity V2 historical backtest
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/minutes_v3_research.py'
+      - 'iphone_bot/shot_profile_research.py'
+      - 'iphone_bot/opportunity_v2_research.py'
+      - 'iphone_bot/minutes_opportunity_joint_backtest.py'
+      - 'iphone_bot/tests/test_minutes_opportunity_v3v2.py'
+      - '.github/workflows/nba-minutes-v3-opportunity-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-joint-minutes-opportunity-research
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test both new pretip models, no forward look and truthful tracking labels
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/minutes_v3_research.py iphone_bot/opportunity_v2_research.py iphone_bot/minutes_opportunity_joint_backtest.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_minutes_opportunity_v3v2.py' -v
+      - name: Install public four-season historical data dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests
+      - name: Collect verified completed historical player box scores
+        run: python -u iphone_bot/download_archived_nba.py
+      - name: Run same-game paired 2025-26 statistical error backtest
+        run: python -u iphone_bot/minutes_opportunity_joint_backtest.py
+      - name: Validate historical report, not prop hit-rate or licensed tracking claims
+        run: |
+          python - <<'PY'
+          import json
+          q=json.load(open('docs/minutes_v3_opportunity_v2_backtest.json'))
+          assert q['production_model_changed'] is False
+          assert q['historical_prop_line_hit_rates'] is None
+          assert q['tracking_source']=='NOT_CONNECTED_BOX_SCORE_AST_REB_RATE_PROXIES_ONLY'
+          for stat in ('MIN','AST','REB'):
+            assert q['evaluated'][stat]['paired_games']>=1000
+            assert q['evaluated'][stat]['distinct_game_dates']>=30
+          print('Verified',q['evaluated'])
+          PY
+      - name: Publish compact research report only
+        run: |
+          set -euo pipefail
+          cp docs/minutes_v3_opportunity_v2_backtest.json "$RUNNER_TEMP/joint-report.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/joint-report.json" docs/minutes_v3_opportunity_v2_backtest.json
+            git add docs/minutes_v3_opportunity_v2_backtest.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish completed historical Minutes V3 and Opportunity V2 paired research'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

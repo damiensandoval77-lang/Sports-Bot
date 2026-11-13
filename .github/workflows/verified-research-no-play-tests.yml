@@ -1,0 +1,28 @@
+name: Verify source-linked NBA research no-play exclusions
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/verified_research_no_play.py'
+      - 'iphone_bot/assist_v2_shadow_capture.py'
+      - 'iphone_bot/minutes_scenario_validation.py'
+      - 'iphone_bot/tests/test_verified_research_no_play.py'
+      - 'docs/verified_research_dnps_2026-11-06_07.json'
+      - '.github/workflows/verified-research-no-play-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact no-play exclusion and original research integrity
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_research_no_play.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_minutes_scenario_validation.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_assist_v2_shadow_capture.py' -v
+          python -m py_compile iphone_bot/verified_research_no_play.py iphone_bot/assist_v2_shadow_capture.py iphone_bot/minutes_scenario_validation.py

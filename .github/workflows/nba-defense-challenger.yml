@@ -29,6 +29,8 @@ jobs:
           python -u iphone_bot/train_provisional.py
           python -u iphone_bot/train_defense_shadow.py
       - name: Fetch current-season completed player games
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       - name: Audit archived pregame sportsbook quotes with no paid API calls
         run: python -u iphone_bot/audit_archived_real_lines.py

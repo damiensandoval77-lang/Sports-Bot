@@ -1,0 +1,93 @@
+name: Started NBA matchup live tracker, pace and iPhone fallback (offline)
+on:
+  pull_request:
+    paths:
+      - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - 'iphone_bot/preserve_no_line_forecasts.py'
+      - 'iphone_bot/publish_live_tracker_feed.py'
+      - '.replit'
+      - 'iphone_bot/live_tracker_service.py'
+      - 'iphone_bot/tests/test_live_tracker_service.py'
+      - 'iphone_bot/tests/test_live_prop_tracker.cjs'
+      - 'iphone_bot/tests/test_publish_live_tracker_feed.py'
+      - '.github/workflows/nba-live-tracker-v2-tests.yml'
+      - '.github/workflows/nba-live-tracker-backup.yml'
+  push:
+    branches: ['main', 'fix/20261107-started-game-live-pace-tracker-v2']
+    paths:
+      - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'iphone_bot/live_tracker_service.py'
+      - 'iphone_bot/tests/test_live_tracker_service.py'
+      - 'Dockerfile.live-tracker'
+      - 'docs/live_tracker_config.json'
+      - 'iphone_bot/publish_live_tracker_feed.py'
+      - 'iphone_bot/tests/test_live_prop_tracker.cjs'
+      - 'iphone_bot/tests/test_publish_live_tracker_feed.py'
+      - '.github/workflows/nba-live-tracker-v2-tests.yml'
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run real-time pace and frozen research regression tests
+        run: |
+          node --check docs/live-prop-tracker.js
+          node --test iphone_bot/tests/test_live_prop_tracker.cjs
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_live_tracker_service.py' -v
+          python - <<'PY'
+          import tomllib,pathlib
+          r=tomllib.loads(pathlib.Path('.replit').read_text())
+          assert r['run']=='python -m iphone_bot.live_tracker_service'
+          assert r['ports'][0]['localPort']==8080
+          print('Replit backend startup configured')
+          PY
+      - name: Assert unified iPhone live tracker uses 30-second ESPN data and safe fallback
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          landing=Path('docs/index.html').read_text()
+          html=Path('docs/dames-picks/index.html').read_text()
+          live=Path('docs/dames-picks/live_direct.js').read_text()
+          model=Path('docs/dames-picks/feeds.js').read_text()
+          assert 'url=./dames-picks/' in landing
+          assert 'async function liveTick(force=false)' in html
+          assert 'setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000)' in html
+          assert 'L.fetchNBA().catch(()=>null)' in html
+          assert 'getJSON("nba_scoreboard_independent.json")' in html
+          assert 'getJSON("nba_player_tracking_independent.json")' in html
+          assert 'getJSON("live_player_tracking.json")' in html
+          assert 'next>before' in html, 'Older live observation must never replace newer data'
+          assert 'Never replace an actual observation with invented stats' in html
+          assert 'if(quoteArchive.status==="fulfilled")state.nba=m.includeArchivedStandard' in html
+          assert 'projection:null,direction:null,chance:null' in model
+          assert 'root.DamesPicksLive=' in live
+          scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
+          assert scripts, 'Active app script missing'
+          Path('/tmp/live-tracker-v2.js').write_text(scripts[-1])
+          print('Unified iPhone app refreshes ESPN live totals every 30s, preserves newer snapshots and separates quote-only records')
+          PY
+          node --check /tmp/live-tracker-v2.js
+          node --check docs/dames-picks/live_direct.js
+      - name: Confirm no paid sportsbook requests and no post-tip capture changes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('iphone_bot/publish_live_tracker_feed.py').read_text()
+          assert 'ODDS_API_KEY' not in source
+          assert 'PRIZEPICKS_API_KEY' not in source
+          assert 'not_ai_predictions' in source
+          assert 'status' in source
+          assert 'captured_at' in source
+          print('Live observed player totals are separate from frozen pregame research')
+          PY

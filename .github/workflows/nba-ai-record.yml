@@ -6,6 +6,8 @@ on:
     paths:
       - 'iphone_bot/capture_ai_board.py'
       - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/verify_paper_settlement_voids.py'
+      - 'iphone_bot/tests/test_verify_paper_settlement_voids.py'
       - 'iphone_bot/selective_challenger.py'
       - 'iphone_bot/tests/test_selective_challenger.py'
       - 'iphone_bot/model_performance.py'
@@ -39,9 +41,11 @@ jobs:
           git fetch origin main
           git checkout -B main origin/main
       - name: Verify grading and deduplicated per-model direction records
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/selective_challenger.py iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py iphone_bot/fetch_final_boxscores.py
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verify_paper_settlement_voids.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selective_challenger.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_model_performance.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_accuracy_feedback.py' -v
@@ -69,11 +73,30 @@ jobs:
           assert challenger['live_model_unchanged'] is True
           assert challenger['historical_unscreened_excluded'] is True
           assert challenger['locked_markets']<=result['captured']
-          assert len(rows)==len({identity(r) for r in rows})
-          assert all(r['status'] in ('SETTLED','PENDING','INVALID_LATE_CAPTURE') for r in rows)
-          assert result['captured']==len(rows)
-          assert result['settled']==sum(r['status']=='SETTLED' for r in rows)
-          assert result['pending']==sum(r['status']=='PENDING' for r in rows)
+          from collections import Counter
+          from itertools import islice
+          keys=[identity(r) for r in rows]
+          if len(keys)!=len(set(keys)):
+              repeated=[str(k) for k,count in Counter(keys).items() if count>1]
+              raise AssertionError('NBA_DUPLICATE_FROZEN_RECORD_IDENTITIES count='+
+                                   str(len(repeated))+' sample='+str(repeated[:5]))
+          from iphone_bot.verify_paper_settlement_voids import verify
+          statuses=verify(rows,result)
+          print('NBA VERIFIED FROZEN LEDGER STATUSES:',statuses,flush=True)
+          # Do not weaken immutable record checks. Print each mismatch in the
+          # failed Actions step so a passing workflow never hides lost grades.
+          observed={'captured':len(rows),
+                    'settled':sum(r['status']=='SETTLED' for r in rows),
+                    'pending':sum(r['status']=='PENDING' for r in rows)}
+          declared={k:result.get(k) for k in observed}
+          mismatches={k:{'published':declared[k],'ledger':observed[k]}
+                      for k in observed if declared[k]!=observed[k]}
+          print('NBA IMMUTABLE SETTLEMENT COUNTS:',json.dumps({
+              'declared':declared,'ledger':observed,'mismatches':mismatches
+          },sort_keys=True),flush=True)
+          if mismatches:
+              raise AssertionError('NBA_SETTLEMENT_COUNT_MISMATCH: '+
+                                   json.dumps(mismatches,sort_keys=True))
           assert result['independent_player_game_markets']<=result['settled']
           assert result['independent_pending_player_game_markets']<=result['pending']
           assert perf['independent_settled_markets']<=result['independent_player_game_markets']

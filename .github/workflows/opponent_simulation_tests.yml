@@ -1,0 +1,49 @@
+name: Opponent-conditioned 20K simulation regression (no provider credits)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/combined_simulation.py'
+      - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/tests/test_combined_simulation.py'
+      - 'docs/index.html'
+      - '.github/workflows/opponent_simulation_tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/combined_simulation.py'
+      - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/tests/test_combined_simulation.py'
+      - '.github/workflows/opponent_simulation_tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simulation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install only lightweight simulation dependency
+        run: pip install 'numpy>=1.26,<3'
+      - name: Check actual opponent-conditioned Monte Carlo outcomes
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_combined_simulation.py' -v
+      - name: Ensure production model passes opponent's historical allowed stats
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          model=Path('iphone_bot/compare_live_models.py').read_text()
+          sim=Path('iphone_bot/combined_simulation.py').read_text()
+          assert 'opponent=opponent,' in model
+          assert 'defense_history=[v[target] for day,v in opp_games' in model
+          assert 'opponent_defense=row["opponent_defense"]' in model
+          assert 'if day<upcoming_date and target in v' in model
+          assert 'mean_shift_applied":False' in sim
+          print('Verified real historical pregame team-defense source, no double-counted mean, without treating legacy simulation copy as the active app contract')
+          PY
+      - name: Validate current public probability provenance
+        run: |
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs

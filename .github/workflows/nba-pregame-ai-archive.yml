@@ -1,0 +1,56 @@
+name: Preserve last genuine NBA pregame AI predictions
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/ai_comparisons.json'
+      - 'iphone_bot/archive_pregame_ai_board.py'
+      - 'iphone_bot/tests/test_archive_pregame_ai_board.py'
+      - '.github/workflows/nba-pregame-ai-archive.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-pregame-ai-archive
+  cancel-in-progress: false
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check archive chronology and non-fabrication
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/archive_pregame_ai_board.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v
+      - name: Recover latest immutable same-Eastern-day pregame predictions
+        run: python -u iphone_bot/archive_pregame_ai_board.py
+      - name: Preserve a lossless dated immutable pregame archive for future research
+        run: |
+          python -u iphone_bot/research_archive_persistence.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
+      - name: Publish archive without live lines or sportsbook API requests
+        run: |
+          set -euo pipefail
+          if [ ! -f docs/ai_pregame_archive.json ]; then
+            echo 'No valid same-day pretip archive'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/ai_pregame_archive.json docs/research_history
+          if git diff --cached --quiet; then echo 'Archive unchanged'; exit 0; fi
+          git commit -m 'Retain real frozen NBA pregame prediction snapshot (not live)'
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1

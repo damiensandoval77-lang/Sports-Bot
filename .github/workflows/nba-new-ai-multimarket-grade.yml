@@ -1,0 +1,80 @@
+name: Grade frozen new AI PTS REB AST PRA (no provider credits)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'iphone_bot/multimarket_forecast_ledger.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_multimarket_forecast_ledger.py'
+      - '.github/workflows/nba-new-ai-multimarket-grade.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/multimarket_forecast_ledger.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
+      - 'docs/ai_forecast_actual_ledger.json'
+      - '.github/workflows/nba-new-ai-multimarket-grade.yml'
+  schedule:
+    # Check every 20 minutes during NBA game and postgame hours (UTC).
+    # The final player ledger may publish before the next morning's batch.
+    - cron: '07,27,47 0-10 * * *'
+    # Daytime catch-up after verified final sources recover.
+    - cron: '17 12,15,18,21 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-new-ai-final-settlement
+  cancel-in-progress: false
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify first pretip snapshot stays immutable
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
+      - name: Test ESPN final DNP rules
+        if: github.event_name == 'pull_request'
+        run: python -m unittest iphone_bot.tests.test_espn_injury_void -v
+      - name: Void only confirmed ESPN final nonparticipants on official injury list
+        if: github.event_name != 'pull_request'
+        run: |
+          python -m iphone_bot.espn_injury_void
+          cp docs/espn_injury_void_ledger.json "$RUNNER_TEMP/espn-voids.json"
+      - name: Grade only frozen new-model forecasts against verified final NBA boxes
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.multimarket_forecast_ledger
+      - name: Publish independent grade record without touching old AI
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          cp docs/lagged_matchup_all_market_ledger.json "$RUNNER_TEMP/new-ai-ledger.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Single writer of ESPN injury void evidence; preserve concurrent grades.
+            cp "$RUNNER_TEMP/espn-voids.json" docs/espn_injury_void_ledger.json
+            # Merge any original locks and verified grades published while this job ran.
+            python -m iphone_bot.merge_new_ai_publishing \
+              --current docs/lagged_matchup_all_market_ledger.json \
+              --incoming "$RUNNER_TEMP/new-ai-ledger.json" \
+              --finals docs/ai_forecast_actual_ledger.json \
+              --output docs/lagged_matchup_all_market_ledger.json
+            git add docs/lagged_matchup_all_market_ledger.json docs/espn_injury_void_ledger.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Grade frozen four-market New AI forecasts from actual NBA final stats'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

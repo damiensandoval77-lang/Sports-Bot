@@ -1,0 +1,65 @@
+name: NBA pretip per-game forecast freeze and comparison watchdog
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/nba_schedule.json'
+      - 'docs/ai_projection_fallback.json'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - 'docs/ai_prizepicks_quick_join_health.json'
+      - 'iphone_bot/pregame_coverage_watchdog.py'
+      - '.github/workflows/pregame_coverage_watchdog.yml'
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/pregame_coverage_watchdog.py'
+      - 'iphone_bot/tests/test_pregame_coverage_watchdog.py'
+      - '.github/workflows/pregame_coverage_watchdog.yml'
+permissions:
+  contents: write
+concurrency:
+  group: pregame-coverage-watchdog
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test official slate, pretip immutability, and missing game detection
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_pregame_coverage_watchdog.py' -v
+      - name: Audit all today's actual scheduled games without using paid APIs
+        id: audit
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python -u -m iphone_bot.pregame_coverage_watchdog
+      - name: Persist snapshot and failed game names without masking alerts
+        if: always() && github.event_name != 'pull_request' && steps.audit.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          cp docs/pregame_coverage_watchdog.json "$RUNNER_TEMP/pregame_coverage_watchdog.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/pregame_coverage_watchdog.json" docs/pregame_coverage_watchdog.json
+            git add docs/pregame_coverage_watchdog.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Record NBA pretip game-by-game snapshot coverage'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Fail visibly if any matchup is approaching tipoff without frozen predictions
+        if: always() && github.event_name != 'pull_request' && steps.audit.outcome == 'failure'
+        run: |
+          echo "::error::Pretip capture coverage is at risk; inspect docs/pregame_coverage_watchdog.json"
+          exit 1

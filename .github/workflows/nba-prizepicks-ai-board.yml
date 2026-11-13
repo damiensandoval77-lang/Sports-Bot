@@ -1,0 +1,142 @@
+name: Train NBA AI against verified current PrizePicks pick'em lines (no sportsbook API)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/build_prizepicks_model_input.py'
+      - 'docs/prizepicks_model_input.json'
+      - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/combined_simulation.py'
+      - 'iphone_bot/reliability_screen.py'
+      - 'iphone_bot/edge_readiness.py'
+      - 'iphone_bot/preliminary_edge.py'
+      - 'iphone_bot/tracking_opportunity_features.py'
+      - 'iphone_bot/opportunity_shadow_models.py'
+      - 'iphone_bot/enrich_current_shooting.py'
+      - 'iphone_bot/tests/test_enrich_current_shooting.py'
+      - 'iphone_bot/tests/test_opportunity_shadow_models.py'
+      - 'iphone_bot/tests/test_tracking_opportunity_features.py'
+      - 'iphone_bot/sportsbook_consensus.py'
+      - 'iphone_bot/tests/test_preliminary_edge.py'
+      - 'iphone_bot/tests/test_edge_readiness.py'
+      - 'iphone_bot/tests/test_reliability_screen.py'
+      - 'iphone_bot/tests/test_combined_simulation.py'
+      - 'iphone_bot/tests/test_build_prizepicks_model_input.py'
+      - '.github/workflows/nba-prizepicks-ai-board.yml'
+  schedule:
+    # Fallback after each bounded 16:28, 21:28, 23:28 UTC PrizePicks refresh.
+    # Dispatch from site publisher remains the primary fast path.
+    - cron: '08 1,17,19,21,23,0 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prizepicks-ai-only
+  cancel-in-progress: false
+jobs:
+  ai_board:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check genuine, fresh NBA pick'em lines
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_build_prizepicks_model_input.py' -v
+          python -m iphone_bot.build_prizepicks_model_input
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          board=json.loads(Path("docs/prizepicks_model_input.json").read_text())
+          assert board["status"]=="FRESH_AUTHENTIC_PRIZEPICKS_LINES"
+          assert board["is_live"] is True
+          assert len(board["picks"])>0
+          assert board["source"]=="AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS"
+          assert board["real_american_odds_provided"] is False
+          assert all(x["odds"] is None for x in board["picks"])
+          print("Verified PrizePicks eligible sides:",len(board["picks"]),
+                "games:",board["upcoming_games"])
+          PY
+      - name: Install existing trained NBA model dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2" "joblib>=1.3,<2"
+      - name: Validate combined-model 20k research simulator
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p "test_combined_simulation.py" -v
+      - name: Validate pregame reliability screening
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p "test_reliability_screen.py" -v
+      - name: Validate edge-readiness safeguards
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_edge_readiness.py' -v
+      - name: Validate existing-grade preliminary edge comparisons
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_preliminary_edge.py' -v
+      - name: Validate pregame tracking opportunity feature ingestion
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunity_features.py' -v
+      - name: Validate assist and rebound opportunity shadow simulations
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_shadow_models.py' -v
+      - name: Train original historical model and separate opponent shadow
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u -m src.sports.nba.features
+          python -u iphone_bot/train_provisional.py
+          python -u iphone_bot/train_defense_shadow.py
+      - name: Refresh real current-season history and official availability
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -u iphone_bot/fetch_current_form.py
+          pip install "pypdf>=5,<7"
+          python -u iphone_bot/fetch_official_injuries.py
+      - name: Validate and import current NBA player shooting rates for research only
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_enrich_current_shooting.py' -v
+          python -u iphone_bot/enrich_current_shooting.py
+      - name: Compare frozen trained NBA forecasts to authentic PrizePicks lines only
+        env:
+          NBA_AI_ODDS_INPUT: prizepicks_model_input.json
+          NBA_AI_OUTPUT: ai_prizepicks_comparisons.json
+          PYTHONPATH: ${{ github.workspace }}/iphone_bot:${{ github.workspace }}
+        run: |
+          python -m py_compile iphone_bot/compare_live_models.py
+          python -u iphone_bot/compare_live_models.py
+          python - <<'PY'
+          import json,datetime
+          p=json.load(open("docs/ai_prizepicks_comparisons.json"))
+          assert p["status"]=="EXPERIMENTAL_NON_CALIBRATED"
+          assert p["verified_current_matchups"] is True
+          assert p["is_prizepicks"] is True
+          assert p["no_sportsbook_prices"] is True
+          assert p["ev_verified"] is False
+          assert p["experimental_ev_available"] is False
+          assert p["comparison_rows_published"]==len(p["comparisons"])
+          assert all(x["line_type"]=="PRIZEPICKS_PICKEM_LINE" and
+                     x["book_quotes"]==[] and x["line_book_count"]==0
+                     for x in p["comparisons"])
+          assert all(datetime.datetime.fromisoformat(x["start"].replace("Z","+00:00"))>
+                     datetime.datetime.now(datetime.timezone.utc)
+                     for x in p["comparisons"])
+          print("Validated actual PrizePicks AI comparisons:",len(p["comparisons"]))
+          PY
+      - name: Publish separate pick'em model output, never overwrite sportsbook predictions or grades
+        run: |
+          set -euo pipefail
+          cp docs/ai_prizepicks_comparisons.json "$RUNNER_TEMP/ai-prizepicks.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/ai-prizepicks.json" docs/ai_prizepicks_comparisons.json
+            git add docs/ai_prizepicks_comparisons.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish actual PrizePicks-only NBA AI comparisons (no made-up prices)'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-11-12T00:03:50.776567+00:00",
+  "status": "HISTORICAL_SHOOTING_SHADOW_RESEARCH_ONLY",
+  "method": "SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
+  "historical_holdout": {
+    "n": 21734,
+    "games_dates": 149,
+    "baseline_mae": 4.8298,
+    "candidate_mae": 4.7663,
+    "blended_mae": 4.7987,
+    "opponent_adjusted": 21734,
+    "baseline_graded": 0,
+    "baseline_wins": 0,
+    "baseline_hit_rate": null,
+    "candidate_graded": 0,
+    "candidate_wins": 0,
+    "candidate_hit_rate": null,
+    "blended_graded": 0,
+    "blended_wins": 0,
+    "blended_hit_rate": null,
+    "old_shot_profile_mae": 4.7469,
+    "same_minutes_no_opponent_mae": 4.7615,
+    "opponent_factor_mae_change": 0.0048
+  },
+  "saved_combined_comparison": {
+    "metrics": {
+      "n": 87,
+      "games_dates": 2,
+      "baseline_mae": 4.8506,
+      "candidate_mae": 4.8147,
+      "blended_mae": 4.775,
+      "opponent_adjusted": 0,
+      "baseline_graded": 87,
+      "baseline_wins": 43,
+      "baseline_hit_rate": 0.4943,
+      "candidate_graded": 87,
+      "candidate_wins": 46,
+      "candidate_hit_rate": 0.5287,
+      "blended_graded": 87,
+      "blended_wins": 42,
+      "blended_hit_rate": 0.4828
+    },
+    "exclusions": {
+      "INSUFFICIENT_PRIOR_SHOOTING": 77
+    },
+    "retrospective_post_hoc": true,
+    "prediction_source": "EXISTING_IMMUTABLE_COMBINED_AI_PRETIP_PROJECTIONS"
+  },
+  "holdout_season": "2025-26",
+  "production_applied": false,
+  "simulated_hit_rates_changed": false,
+  "calibrated_probability": false,
+  "caveats": [
+    "Historic new challenger is retrospective, not prespecified at prediction time.",
+    "Baselines are paired on identical rows; no postgame feature leakage.",
+    "Opponent factor is lagged team shot conversion, not individual defender matchup.",
+    "Injury and on/off shifts require separately verified pretip data.",
+    "Real-data improvement required before any future live promotion."
+  ]
+}

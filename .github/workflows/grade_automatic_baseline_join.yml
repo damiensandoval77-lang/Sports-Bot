@@ -1,0 +1,70 @@
+name: Grade immutable baseline NBA quote-paired forecasts from verified finals
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '14,44 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/frozen_baseline_pregame_line_ledger.json'
+      - 'docs/ai_forecast_actual_ledger.json'
+      - 'iphone_bot/grade_frozen_baseline_join.py'
+      - '.github/workflows/grade_automatic_baseline_join.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/grade_frozen_baseline_join.py'
+      - 'iphone_bot/tests/test_grade_frozen_baseline_join.py'
+      - '.github/workflows/grade_automatic_baseline_join.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-frozen-baseline-pregame-grade
+  cancel-in-progress: false
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test finals-only verified grading and no fake wagers
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_baseline_join.py' -v
+          python -m py_compile iphone_bot/grade_frozen_baseline_join.py
+      - name: Reconcile immutable snapshots against latest NBA and ESPN verified final data
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if [ ! -f docs/frozen_baseline_pregame_line_ledger.json ]; then
+              echo "No prospective baseline records saved yet; cannot claim grades"
+              exit 0
+            fi
+            python - <<'PY'
+          import json
+          from pathlib import Path
+          from iphone_bot.grade_frozen_baseline_join import grade
+          source=json.loads(Path("docs/frozen_baseline_pregame_line_ledger.json").read_text())
+          finals=json.loads(Path("docs/ai_forecast_actual_ledger.json").read_text())
+          result=grade(source,finals)
+          Path("docs/frozen_baseline_pregame_line_grades.json").write_text(
+              json.dumps(result,indent=2,ensure_ascii=False)+"\n")
+          print("Baseline verifiable grades",result["verified_final_grades"],
+                "pending",result["pending"],"original",result["total_original_records"])
+          PY
+            git add docs/frozen_baseline_pregame_line_grades.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Grade frozen baseline NBA quotes against independently verified finals'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Verified baseline grade report could not publish"
+          exit 1

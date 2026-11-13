@@ -1,19 +1,9 @@
 name: Refresh NBA game scores using existing authorized odds provider
+# Paid Odds API score polling is deliberately manual only.
+# Live scores use the existing independent no-credit ESPN/NBA sources.
+# Never re-enable schedule/push without explicit cost and uptime review.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/fetch_odds_scores.py'
-      - 'iphone_bot/fetch_game_moneylines.py'
-      - 'iphone_bot/tests/test_fetch_game_moneylines.py'
-      - 'iphone_bot/tests/test_fetch_odds_scores.py'
-      - '.github/workflows/nba-scores.yml'
-  schedule:
-    # Every 15 minutes during the main NBA evening window in UTC.
-    # Provider requests have a cost (~2 credits); manual runs are available
-    # outside these hours. GitHub Actions cron can be delayed.
-    - cron: '3,18,33,48 23,0,1,2,3,4,5 * * *'
 permissions:
   contents: write
 concurrency:
@@ -29,6 +19,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate NBA game score identity and parser
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/fetch_odds_scores.py iphone_bot/fetch_game_moneylines.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_odds_scores.py' -v
@@ -54,10 +45,13 @@ jobs:
               print('Games:',data['total_games'],'scored:',
                   sum(g['away_score'] is not None for g in data['games']))
           PY
+      - name: Preserve timestamped original scored schedule without any extra API calls
+        run: python -u iphone_bot/preserve_research_inputs.py schedule
       - name: Publish scores and source status
         run: |
           git fetch origin main
           git add docs/nba_schedule.json docs/nba_schedule_status.json
+          if [ -d docs/research_inputs/schedule ]; then git add docs/research_inputs/schedule/; fi
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

@@ -1,6 +1,6 @@
 import unittest
 from iphone_bot.opportunity_backtest import (
-    histories,opportunity,candidate,evaluate,describe)
+    histories,opportunity,candidate,stability_candidate,evaluate,describe)
 
 def history(player="7",team="BOS"):
     result=[]
@@ -69,6 +69,19 @@ class OpportunityBacktestTests(unittest.TestCase):
         out=opportunity(games,"2026-11-06","BOS")
         self.assertIsNone(out["expected_fga"])
         self.assertEqual(out["usage_fga_ratio_clamped"],1.0)
+
+    def test_stability_candidate_shrinks_volatile_minutes_without_lookahead(self):
+        stable=stability_candidate(20,40,{"last5_minutes_volatility":2})
+        volatile=stability_candidate(20,40,{"last5_minutes_volatility":12})
+        self.assertEqual(stable,23)
+        self.assertGreater(volatile,20)
+        self.assertLess(volatile,stable)
+        self.assertIsNone(stability_candidate(20,40,{}))
+        self.assertIsNone(stability_candidate(None,40,{"last5_minutes_volatility":9}))
+        out=opportunity(history(),"2026-11-06","BOS")
+        self.assertIn("last5_minutes_volatility",out)
+        self.assertAlmostEqual(out["raw_stat_projections"]["PRA"],
+            sum(out["raw_stat_projections"][m] for m in ("PTS","REB","AST")),places=3)
 
     def test_direction_and_mae(self):
         d=describe([{"baseline":20.0,"candidate":21.0,

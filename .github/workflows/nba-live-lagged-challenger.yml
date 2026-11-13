@@ -1,0 +1,111 @@
+name: Guarded live NBA points challenger (independent sidecar)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/points_hit_probability.py'
+      - 'iphone_bot/tests/test_points_hit_probability.py'
+      - 'docs/lagged-challenger-board.js'
+      - 'iphone_bot/lagged_matchup_points_ledger.py'
+      - 'iphone_bot/tests/test_live_lagged_matchup_sidecar.py'
+      - 'iphone_bot/lagged_matchup_training.py'
+      - '.github/workflows/nba-live-lagged-challenger.yml'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/live_lagged_matchup_sidecar.py'
+      - '.github/workflows/nba-live-lagged-challenger.yml'
+  schedule:
+    - cron: '20 0,17,20,22,23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-live-lagged-challenger
+  cancel-in-progress: false
+jobs:
+  guarded-points-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing data and model dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn joblib
+      - name: Test strict live score and source matching
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_live_lagged_matchup_sidecar.py' -v
+      - name: Verify 20,000-draw per-line hit chance simulation
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_points_hit_probability.py' -v
+      - name: Test pretip immutable forecast ledger
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_lagged_matchup_points_ledger.py' -v
+      - name: Build model using older seasons only
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u iphone_bot/lagged_matchup_training.py
+      - name: Crosscheck current player game logs with separate box source
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -u iphone_bot/fetch_current_form.py
+          python -u iphone_bot/enrich_current_shooting.py
+      - name: Join only existing authentic PrizePicks provider lines
+        run: python -m iphone_bot.build_prizepicks_model_input
+      - name: Generate independent new-model points forecasts
+        run: python -u iphone_bot/live_lagged_matchup_sidecar.py
+      - name: Validate no live board overwrite or fabricated confidence
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/lagged_matchup_live_points.json'))
+          assert r['status']=='LIVE_POINTS_CHALLENGER_UNCALIBRATED'
+          assert r['points_only'] is True
+          assert r['market_line_policy']=='STANDARD_ONLY_BOTH_SIDES_VERIFIED_NO_ALTERNATES'
+          assert r['live_model_replaced'] is False
+          assert r['production_grades_modified'] is False
+          assert r['probabilities_validated'] is False
+          assert r['published_projections']>0, 'No verified points previews: do not erase previously published data'
+          assert all(x['stat']=='PTS' and x['real_prizepicks_line'] and
+                     x['calibrated_probability'] is None and x['production_replaced'] is False
+                     and x['pickem_tier']=='standard'
+                     and x['standard_line_two_sided_verified'] is True
+                     and x['estimated_hit_chance']['draws']==20000
+                     and x['estimated_hit_chance']['calibrated'] is False
+                     and 0<=x['estimated_hit_chance']['estimated_over_probability']<=1
+                     and 0<=x['estimated_hit_chance']['estimated_under_probability']<=1
+                     for x in r['predictions'])
+          print('Guarded live points challenger:',r['published_projections'],'cards')
+          PY
+      - name: Freeze original research predictions and grade verified completed games
+        run: python -u iphone_bot/lagged_matchup_points_ledger.py
+      - name: Preserve report as auditable run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-lagged-points-challenger
+          path: |
+            docs/lagged_matchup_live_points.json
+            docs/lagged_matchup_points_ledger.json
+          retention-days: 21
+      - name: Publish new research sidecar only from default branch
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          cp docs/lagged_matchup_live_points.json "$RUNNER_TEMP/live-challenger.json"
+          cp docs/lagged_matchup_points_ledger.json "$RUNNER_TEMP/points-ledger.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/live-challenger.json" docs/lagged_matchup_live_points.json
+            cp "$RUNNER_TEMP/points-ledger.json" docs/lagged_matchup_points_ledger.json
+            git add docs/lagged_matchup_live_points.json docs/lagged_matchup_points_ledger.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish distinct uncalibrated new-model points challenger snapshot'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

@@ -1,0 +1,74 @@
+name: Verify pregame rebound challenger before research scoring
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/rebound_shadow_v1.py'
+      - 'iphone_bot/tests/test_rebound_shadow_v1.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
+      - '.github/workflows/nba-rebound-shadow-validation.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-rebound-shadow-validation
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and run full REB prospective integrity tests
+        id: checks
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m py_compile iphone_bot/rebound_shadow_v1.py iphone_bot/projection_upgrade_research.py 2>&1 | tee "$RUNNER_TEMP/reb-test.log"
+          for name in test_rebound_shadow_v1.py test_projection_upgrade_research.py; do
+            python -m unittest discover -s iphone_bot/tests -p "$name" -v 2>&1 | tee -a "$RUNNER_TEMP/reb-test.log" || exit 1
+          done
+      - name: Commit only test status, no performance claims
+        if: always()
+        env:
+          OUTCOME: ${{ steps.checks.outcome }}
+        run: |
+          python - <<'PY'
+          import os,json,datetime
+          from pathlib import Path
+          log=Path(os.environ["RUNNER_TEMP"])/"reb-test.log"
+          lines=log.read_text(errors="replace").splitlines() if log.exists() else []
+          errors=[x.strip()[:180] for x in lines if x.startswith((
+            "FAIL:","ERROR:","AssertionError:","NameError:",
+            "TypeError:","SyntaxError:","ImportError:",
+            "ValueError:","ModuleNotFoundError:","FAILED (","Ran "))]
+          state={"generated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                 "status":"PASSED" if os.environ.get("OUTCOME")=="success" else "FAILED",
+                 "tests":"REBOUND_SHADOW_V1_AND_FULL_PROJECTION_RESEARCH",
+                 "diagnostics":errors[-25:],"live_model_changed":False,
+                 "prospective_rebound_gain_verified":False}
+          Path("docs/rebound_shadow_validation_status.json").write_text(json.dumps(state,indent=2)+"\n")
+          print(json.dumps(state))
+          PY
+          cp docs/rebound_shadow_validation_status.json "$RUNNER_TEMP/reb-validation.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/reb-validation.json" docs/rebound_shadow_validation_status.json
+            git add docs/rebound_shadow_validation_status.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Report future-only rebound challenger CI status'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Require tests passing
+        if: steps.checks.outcome != 'success'
+        run: exit 1

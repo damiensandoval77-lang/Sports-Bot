@@ -1,0 +1,65 @@
+name: Grade immutable standard-line AI research receipts (credit free)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '16,46 0-11 * * *'
+    - cron: '26 14,18,22 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/grade_standard_quote_ai_research.py'
+      - 'iphone_bot/tests/test_grade_standard_quote_ai_research.py'
+      - 'iphone_bot/archive_standard_quote_ai_research.py'
+      - 'iphone_bot/tests/test_archive_standard_quote_ai_research.py'
+      - '.github/workflows/grade-standard-quote-ai-research.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/grade_standard_quote_ai_research.py'
+      - 'iphone_bot/tests/test_grade_standard_quote_ai_research.py'
+      - 'iphone_bot/archive_standard_quote_ai_research.py'
+      - 'iphone_bot/tests/test_archive_standard_quote_ai_research.py'
+      - '.github/workflows/grade-standard-quote-ai-research.yml'
+permissions:
+  contents: write
+concurrency:
+  group: standard-quote-ai-research-grade
+  cancel-in-progress: false
+jobs:
+  grade-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact final-stat identity, line-only grades and immutable inputs
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/grade_standard_quote_ai_research.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_grade_standard_quote_ai_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_standard_quote_ai_research.py' -v
+      - name: Score saved research without querying sportsbooks
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Re-apply verified final rows to the latest immutable quote archive.
+            # This resolves concurrent pregame capture and postgame grading safely.
+            python -m iphone_bot.grade_standard_quote_ai_research
+            git add docs/standard_quote_ai_research_archive.json
+            if git diff --cached --quiet; then
+              echo "No newly verified research results"
+              exit 0
+            fi
+            git commit -m 'Grade separate frozen standard-line research using verified NBA finals'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Could not publish research results after safe retries"
+          exit 1

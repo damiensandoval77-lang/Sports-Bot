@@ -1,0 +1,97 @@
+name: Independent NBA scoreboard refresh
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "iphone_bot/refresh_independent_scoreboard.py"
+      - "iphone_bot/merge_scoreboard_snapshot.py"
+      - "iphone_bot/official_game_id_index.py"
+      - "docs/nba_schedule.json"
+      - "docs/verified_official_nba_fixtures.json"
+      - ".github/workflows/independent_scoreboard_refresh.yml"
+  schedule:
+    - cron: "8,28,48 * * * *"
+  pull_request:
+    paths:
+      - "iphone_bot/refresh_independent_scoreboard.py"
+      - "iphone_bot/merge_scoreboard_snapshot.py"
+      - "iphone_bot/tests/test_independent_scoreboard.py"
+      - "iphone_bot/tests/test_merge_scoreboard_snapshot.py"
+      - "iphone_bot/tests/test_official_game_id_index.py"
+      - "iphone_bot/tests/test_scoreboard_failure_workflow.py"
+      - ".github/workflows/independent_scoreboard_refresh.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: independent-scoreboard-refresh
+  cancel-in-progress: false
+
+jobs:
+  scoreboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test scoreboard refresh logic
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_independent_scoreboard.py' -v
+      - name: Prove newer live scores replace stale snapshots without erasing verified scores
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_merge_scoreboard_snapshot.py' -v
+      - name: Verify official game ID index and immutable source checks
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p "test_official_game_id_index.py" -v
+      - name: Test scoreboard workflow failure handling
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_scoreboard_failure_workflow.py' -v
+      - name: Refresh third-party public NBA scores without odds credits
+        id: refresh
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python -m iphone_bot.refresh_independent_scoreboard
+      - name: Commit latest scoreboard observation or honest failure status
+        if: always() && github.event_name != 'pull_request' && steps.refresh.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          cp docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
+          cp docs/official_nba_game_ids.json "$RUNNER_TEMP/official_nba_game_ids.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.merge_scoreboard_snapshot \
+              docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
+            # Merge saved official IDs by exact matchup. Conflicting IDs are
+            # excluded rather than silently changing a verified identity.
+            python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from iphone_bot.official_game_id_index import merge_entries,read_index
+          current=Path("docs/official_nba_game_ids.json")
+          incoming=Path(os.environ["RUNNER_TEMP"])/"official_nba_game_ids.json"
+          rows=merge_entries(read_index(current),read_index(incoming))
+          current.write_text(json.dumps({"version":1,"games":rows},indent=2)+"\n")
+          PY
+            git add docs/nba_scoreboard_independent.json docs/official_nba_game_ids.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "Update NBA scoreboard and durable official game IDs"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent scoreboard publish; safely retrying ($attempt/5)"
+          done
+          echo "::error::Could not publish independently verified NBA scores/IDs after safe retries"
+          exit 1
+      - name: Fail workflow if provider refresh failed
+        if: always() && github.event_name != 'pull_request' && steps.refresh.outcome == 'failure'
+        run: |
+          echo "::error::NBA scoreboard refresh failed; inspect committed docs/nba_scoreboard_independent.json"
+          exit 1

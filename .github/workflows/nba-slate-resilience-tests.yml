@@ -1,0 +1,43 @@
+name: NBA Slate Resilience Tests (no odds API calls)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/archive_pregame_ai_board.py'
+      - 'iphone_bot/fetch_props.py'
+      - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/tests/test_archive_pregame_ai_board.py'
+      - 'iphone_bot/tests/test_fetch_props.py'
+      - 'iphone_bot/tests/test_paid_odds_disabled.py'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'docs/index.html'
+      - '.github/workflows/nba-slate-resilience-tests.yml'
+  push:
+    branches: ['fix/20261107-empty-board-and-slate-visibility']
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test zero-provider-event preservation and genuine pretip recovery
+        run: |
+          python -m py_compile iphone_bot/fetch_props.py iphone_bot/compare_live_models.py iphone_bot/archive_pregame_ai_board.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_paid_odds_disabled.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v
+      - name: Validate canonical unified app redirect preserves deep links
+        run: |
+          node --test iphone_bot/tests/test_root_redirect.cjs
+      - name: Validate no sportsbook credentials or fabricated real-time odds
+        run: |
+          python - <<'PY'
+          from iphone_bot.archive_pregame_ai_board import choose
+          from datetime import datetime,timezone
+          assert choose([],datetime.now(timezone.utc)) is None
+          print('No provider calls, no predictions reconstructed from actuals')
+          PY

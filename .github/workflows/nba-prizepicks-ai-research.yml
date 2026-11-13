@@ -1,0 +1,85 @@
+name: Research AI projections for independent PrizePicks NBA lines
+on:
+  workflow_dispatch:
+  schedule:
+    # Recovery if a site-publish dispatch was missed; no provider credits used.
+    - cron: '12 17,0 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks_site.json'
+      - 'iphone_bot/prizepicks_ai_research.py'
+      - 'iphone_bot/tests/test_prizepicks_ai_research.py'
+      - '.github/workflows/nba-prizepicks-ai-research.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prizepicks-trained-research
+  cancel-in-progress: false
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 36
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install training and prediction dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2" "joblib>=1.3,<2"
+      - name: Prove price-less model output cannot invent picks or confidence
+        run: |
+          python -m py_compile iphone_bot/prizepicks_ai_research.py
+          PYTHONPATH=iphone_bot python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_ai_research.py' -v
+      - name: Recreate pre-current-season NBA trained regressions and heldout checks
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u -m src.sports.nba.features
+          python -u iphone_bot/train_provisional.py
+          python -u iphone_bot/train_defense_shadow.py
+      - name: Fetch current-season NBA logs for prospective inference
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Predict authentic upcoming PrizePicks markets without sportsbook odds
+        run: python -u iphone_bot/prizepicks_ai_research.py
+      - name: Save only new research-only model predictions
+        run: |
+          set -euo pipefail
+          if [ ! -f docs/prizepicks_ai_research.json ]; then
+            echo 'No eligible upcoming matched PrizePicks AI research markets'
+            exit 0
+          fi
+          python - <<'PY'
+          import json
+          x=json.load(open('docs/prizepicks_ai_research.json'))
+          assert x['status']=='PRIZEPICKS_AI_RESEARCH_ONLY_NOT_SPORTSBOOK_ODDS'
+          assert x['confidence_calibrated'] is False
+          assert x['sportsbook_american_odds_available'] is False
+          assert x['paper_pick_ledger_modified'] is False
+          assert x['comparison_count']==len(x['comparisons'])
+          assert all(x['generated_at']<r['start'] for r in x['comparisons'])
+          print('Genuine upcoming PrizePicks AI comparisons:',x['comparison_count'])
+          PY
+          cp docs/prizepicks_ai_research.json "$RUNNER_TEMP/validated-prizepicks-ai.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Retraining modifies local inputs. Keep the validated artifact
+          # outside the working tree, then start from the newest main each
+          # attempt; never rebase a dirty working tree or lose concurrent data.
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/validated-prizepicks-ai.json" docs/prizepicks_ai_research.json
+            git add docs/prizepicks_ai_research.json
+            if git diff --cached --quiet; then echo 'Latest AI research already published'; exit 0; fi
+            git commit -m 'Freeze pretip PrizePicks independent AI model research'
+            if git push origin HEAD:main; then
+              echo 'Authentic PrizePicks AI research published'
+              exit 0
+            fi
+            echo 'Concurrent update, safely retrying from newest main' "$attempt"
+          done
+          exit 1

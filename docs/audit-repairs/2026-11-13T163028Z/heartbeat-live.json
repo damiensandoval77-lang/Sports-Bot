@@ -1,0 +1,136 @@
+{
+  "checked_at": "2026-11-13T16:40:04.675026+00:00",
+  "overall": "WARN",
+  "site": "https://damiensandoval77-lang.github.io/Sports-Bot",
+  "stages": [
+    {
+      "stage": "schedule",
+      "status": "OK",
+      "detail": "Published official season schedule",
+      "recovery_workflow": null,
+      "evidence": {
+        "schedule_status": "THIRD_PARTY_NBA_SCHEDULE_ONLY",
+        "games": 14,
+        "coverage_complete": true
+      }
+    },
+    {
+      "stage": "lines_publish",
+      "status": "OK",
+      "detail": "Published line snapshot freshness",
+      "recovery_workflow": "nba-prizepicks-site-publish.yml",
+      "evidence": {
+        "provider_generated_at": "2026-11-13T15:52:28.330292+00:00",
+        "published_at": "2026-11-13T15:52:28.330292+00:00",
+        "lag_minutes": 0.0
+      }
+    },
+    {
+      "stage": "lines_fresh",
+      "status": "OK",
+      "detail": "Source line age; paid provider refresh is alert-only",
+      "recovery_workflow": null,
+      "evidence": {
+        "age_minutes": 47.60574556666666,
+        "upcoming": 0
+      }
+    },
+    {
+      "stage": "lines_coverage",
+      "status": "OK",
+      "detail": "Upcoming fixtures without verified saved standard lines",
+      "recovery_workflow": null,
+      "evidence": {
+        "missing": [],
+        "within_90m": [],
+        "provider_status": "fresh",
+        "partial_board": false
+      }
+    },
+    {
+      "stage": "picks_frozen",
+      "status": "OK",
+      "detail": "Saved forecasts missing for verified standard-line games",
+      "recovery_workflow": null,
+      "evidence": {
+        "missing": [],
+        "ledger_available": true,
+        "too_late_to_capture": [],
+        "model_after_lines": true,
+        "excluded_by_game": {}
+      }
+    },
+    {
+      "stage": "next_slate",
+      "status": "WARN",
+      "detail": "Next-slate line/forecast source readiness",
+      "recovery_workflow": null,
+      "evidence": {
+        "reported_status": "NOT_READY",
+        "target_date_eastern": "2026-11-14",
+        "missing_lines": [
+          "Denver Nuggets @ New Orleans Pelicans",
+          "Dallas Mavericks @ Cleveland Cavaliers",
+          "Brooklyn Nets @ Memphis Grizzlies",
+          "Chicago Bulls @ Minnesota Timberwolves",
+          "Detroit Pistons @ Miami Heat"
+        ]
+      }
+    },
+    {
+      "stage": "live_scores",
+      "status": "OK",
+      "detail": "Live scoreboard coverage",
+      "recovery_workflow": null,
+      "evidence": {
+        "live": [],
+        "age_minutes": 26.032030566666666,
+        "missing": [],
+        "espn_available": true
+      }
+    },
+    {
+      "stage": "live_players",
+      "status": "OK",
+      "detail": "Live player-box coverage",
+      "recovery_workflow": null,
+      "evidence": {
+        "age_minutes": null,
+        "missing": [],
+        "stale_game_observations": [],
+        "espn_available": true
+      }
+    },
+    {
+      "stage": "prizepicks_grade_backlog",
+      "status": "OK",
+      "detail": "Original standard PrizePicks research settlement",
+      "recovery_workflow": null,
+      "evidence": {
+        "overdue": 0,
+        "games": {}
+      }
+    },
+    {
+      "stage": "ai_grade_backlog",
+      "status": "OK",
+      "detail": "Original AI-only pregame forecast settlement",
+      "recovery_workflow": null,
+      "evidence": {
+        "ungraded": 0,
+        "recorded": 388,
+        "graded": 332
+      }
+    },
+    {
+      "stage": "settlement",
+      "status": "OK",
+      "detail": "Unsettled authentic pretip picks >8h after tip",
+      "recovery_workflow": null,
+      "evidence": {
+        "count": 0,
+        "games": []
+      }
+    }
+  ]
+}

@@ -32,6 +32,15 @@ LEDGER=ROOT/"docs/paper_pick_ledger.json"
 OUTPUT=ROOT/"data/nba/current/cbs_final_boxscores.json"
 STATUS=ROOT/"docs/cbs_final_boxscores_status.json"
 ROOT_URL="https://www.cbssports.com/nba/gametracker/boxscore/"
+# CBS uses shorter game URL codes than standard NBA tricode identifiers.
+CBS_URL_TEAMS={"NYK":"NY","GSW":"GS"}
+
+def cbs_boxscore_url(date,away,home,view="boxscore"):
+    if view not in ("boxscore","live"):raise ValueError("Unsupported CBS game view")
+    a=CBS_URL_TEAMS.get(away,away)
+    h=CBS_URL_TEAMS.get(home,home)
+    return f"https://www.cbssports.com/nba/gametracker/{view}/NBA_{date.replace('-','')}_{a}%40{h}/"
+
 
 def keyname(s):
     ascii_name=unicodedata.normalize("NFKD",str(s or "")).casefold()
@@ -62,8 +71,10 @@ def parse_final(html,date,away,home,records):
     # "FINAL" elsewhere on the site (recaps, sidebars) must not cause
     # an in-progress matchup to be graded. It must appear between the
     # away/home scorestrip identities, as CBS formats its game header.
-    result_pattern=(r"\b"+re.escape(away)+r"\b.{0,200}\bFINAL\b.{0,200}\b"+
-                    re.escape(home)+r"\b")
+    header_away=CBS_URL_TEAMS.get(away,away)
+    header_home=CBS_URL_TEAMS.get(home,home)
+    result_pattern=(r"\b"+re.escape(header_away)+r"\b.{0,200}\bFINAL\b.{0,200}\b"+
+                    re.escape(header_home)+r"\b")
     if not re.search(result_pattern,text,re.I):return []
     # CBS includes both full team names near game box score and date.
     names={abbr:full for full,abbr in TEAM_ABBREVIATIONS.items()}
@@ -138,14 +149,20 @@ def collect(records,now=None,request=fetch_html):
         "matched_player_lines":0,"failures":[]}
     results=[]
     for date,away,home in sorted(pending):
-        url=ROOT_URL+f"NBA_{date.replace('-','')}_{away}%40{home}/"
-        try:
-            parsed=parse_final(request(url),date,away,home,records)
-            if not parsed:continue
-            results.extend(parsed)
-            report["finished_matchups"]+=1
-        except (ValueError,TypeError,OSError,RuntimeError,TimeoutError) as exc:
-            report["failures"].append(f"{date} {away}@{home}: {str(exc)[:150]}")
+        # The CBS /boxscore page sometimes retains an early-quarter snapshot
+        # after the separate /live game page has reached FINAL.
+        # Both routes must independently pass parse_final's terminal-status
+        # and multi-player identity checks; never trust cached live scores.
+        for view in ("boxscore","live"):
+            url=cbs_boxscore_url(date,away,home,view=view)
+            try:
+                parsed=parse_final(request(url),date,away,home,records)
+                if not parsed:continue
+                results.extend(parsed)
+                report["finished_matchups"]+=1
+                break
+            except (ValueError,TypeError,OSError,RuntimeError,TimeoutError) as exc:
+                report["failures"].append(f"{date} {away}@{home} {view}: {str(exc)[:150]}")
     report["matched_player_lines"]=len(results)
     report["status"]="VERIFIED_FINAL_CBS_MATCHUPS" if results else "NO_VERIFIED_FINAL_CBS_MATCHUPS"
     return results,report

@@ -1,0 +1,88 @@
+name: Refresh independent NBA PrizePicks full-slate lines
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/preserve_research_inputs.py'
+      - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_preserve_research_inputs.py'
+      - '.github/workflows/nba-prizepicks-full-slate.yml'
+  push:
+    branches: ['main']
+    paths:
+      - 'docs/prizepicks_manual_refresh_request.json'
+  schedule:
+    # Six bounded windows across the afternoon and pretip period (UTC).\n    # The prior five-hour gap guaranteed stale lines after 90 minutes.\n    # Each run may use up to four compact pages (up to 40 provider credits).\n    # At most six scheduled runs/day (240-credit possible scheduled ceiling).\n    # Provider 429 responses stop reads; actual top-up balance is not inferred.
+    # Uses proven top-up access even if the monthly remaining-credit header is zero.
+    - cron: '28 0,16,18,20,22,23 * * *'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: nba-independent-prizepicks-feed
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate collector import and syntax before a paid source read
+        if: github.event_name != 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
+          python - <<'PY'
+          import subprocess,sys
+          p=subprocess.run([sys.executable,'-c',
+            "import sys;sys.path.insert(0,'iphone_bot');import fetch_prizepicks;assert fetch_prizepicks.expected_opponents"],
+            capture_output=True,text=True)
+          assert p.returncode==0,p.stderr
+          PY
+      - name: Test strict pregame event, team, market and source matching
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
+      - name: Fetch bounded, cursor-paged actual NBA PrizePicks board
+        if: github.event_name != 'pull_request'
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+          # Explicit daily refresh: ignore stale zero-monthly-credit header
+          # and pre-existing snapshot cooldown; provider 429 still stops reads.
+          PRIZEPICKS_FORCE_REFRESH: '1'
+        run: python -u iphone_bot/fetch_prizepicks.py
+      - name: Archive original independent pick'em lines and tiers
+        if: github.event_name != 'pull_request'
+        run: python -u iphone_bot/preserve_research_inputs.py prizepicks
+      - name: Save real PrizePicks observations without modifying sportsbook odds
+        if: github.event_name != 'pull_request'
+        id: publish
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/prizepicks.json
+          if [ -f docs/prizepicks_refresh_health.json ]; then git add docs/prizepicks_refresh_health.json; fi
+          if [ -f docs/prizepicks_topup_probe.json ]; then git add docs/prizepicks_topup_probe.json; fi
+          if [ -d docs/research_inputs/prizepicks ]; then
+            git add docs/research_inputs/prizepicks/
+          fi
+          if git diff --cached --quiet; then echo 'No newly eligible real lines'; exit 0; fi
+          git commit -m 'Update authentic independent NBA PrizePicks full-slate lines'
+          for attempt in 1 2 3 4 5 6; do
+            if git push origin HEAD:main; then echo 'changed=true' >> "$GITHUB_OUTPUT"; exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
+      - name: Immediately publish lines to site after authenticated provider update
+        if: github.event_name != 'pull_request' && steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-prizepicks-site-publish.yml --ref main

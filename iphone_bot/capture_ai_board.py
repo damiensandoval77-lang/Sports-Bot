@@ -11,6 +11,12 @@ try:
 except ImportError:
     from paper_pick_pipeline import LEDGER,RESULTS,ROOT,snapshot,summary,utc
 
+try:
+    from .quote_capture_coverage import verify as verify_quote_coverage
+except ImportError:
+    from quote_capture_coverage import verify as verify_quote_coverage
+
+COVERAGE=ROOT/"docs/pregame_quote_capture_coverage.json"
 COMPARISONS=ROOT/"docs/ai_comparisons.json"
 CURRENT_FORM=ROOT/"docs/current_form.json"
 
@@ -36,7 +42,10 @@ def capture(current,existing,now=None):
 def main():
     current=json.loads(COMPARISONS.read_text())
     existing=json.loads(LEDGER.read_text()).get("records",[]) if LEDGER.exists() else []
-    locked=capture(current,existing)
+    capture_time=datetime.now(timezone.utc).isoformat()
+    locked=capture(current,existing,capture_time)
+    quote_report=verify_quote_coverage(current.get("comparisons",[]),locked,capture_time)
+    COVERAGE.write_text(json.dumps(quote_report,indent=2)+"\n")
     added=len(locked)-len(existing)
     LEDGER.write_text(json.dumps({"version":1,"records":locked},indent=2)+"\n")
     form=json.loads(CURRENT_FORM.read_text()) if CURRENT_FORM.exists() else None
@@ -45,7 +54,8 @@ def main():
         "existing":len(existing),"new":added,"total":len(locked),
         "pending":sum(x["status"]=="PENDING" for x in locked),
         "settled_preserved":sum(x["status"]=="SETTLED" for x in locked),
-        "generated_at":current["generated_at"]}),flush=True)
+        "generated_at":current["generated_at"],
+        "quote_eligibility":quote_report["eligibility_by_reason"]}),flush=True)
 
 
 if __name__=="__main__":main()

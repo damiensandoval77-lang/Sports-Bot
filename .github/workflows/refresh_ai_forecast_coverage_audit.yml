@@ -1,0 +1,63 @@
+name: Refresh immutable NBA AI grading coverage for merged Dame's Picks
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10,40 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/audit_ai_forecast_coverage.py'
+      - 'iphone_bot/tests/test_audit_ai_forecast_coverage.py'
+      - '.github/workflows/refresh_ai_forecast_coverage_audit.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/audit_ai_forecast_coverage.py'
+      - 'iphone_bot/tests/test_audit_ai_forecast_coverage.py'
+      - '.github/workflows/refresh_ai_forecast_coverage_audit.yml'
+permissions:
+  contents: write
+concurrency:
+  group: immutable-nba-forecast-coverage-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate frozen pretip audit never changes grades
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_audit_ai_forecast_coverage.py' -v
+      - name: Reconcile permanent verified finals and exclusions for each saved date
+        id: audit
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python -m iphone_bot.audit_ai_forecast_coverage
+      - name: Publish current no-cost grading audit
+        if: github.event_name != 'pull_request' && steps.audit.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3 4 5 6; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Recompute from freshly fetched permanent ledgers each retry.
+            # Never overwrite a newer grade ledger with a stale summary.
+            python -m iphone_bot.audit_ai_forecast_coverage
+            git add docs/ai_forecast_coverage_audit.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Refresh immutable archived NBA forecast grade coverage'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Fail when immutable grade reconciliation is inconsistent
+        if: always() && github.event_name != 'pull_request' && steps.audit.outcome == 'failure'
+        run: |
+          echo "::error::Permanent AI grades and daily reports disagree. Coverage not republished."
+          exit 1

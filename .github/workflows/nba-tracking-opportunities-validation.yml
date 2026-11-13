@@ -1,0 +1,73 @@
+name: Validate authorized NBA tracking chance research without live model changes
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/tracking_opportunities_v1.py'
+      - 'iphone_bot/import_tracking_export.py'
+      - 'iphone_bot/tests/test_import_tracking_export.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_tracking_opportunities_v1.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
+      - '.github/workflows/nba-tracking-opportunities-validation.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-tracking-opportunities-tests
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test tracked chances, data cutoffs, snapshot integrity and exact-line grading
+        id: test
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m py_compile iphone_bot/tracking_opportunities_v1.py iphone_bot/projection_upgrade_research.py 2>&1 | tee "$RUNNER_TEMP/tracking-check.log"
+          for suite in test_tracking_opportunities_v1.py test_import_tracking_export.py test_projection_upgrade_research.py; do
+            python -m unittest discover -s iphone_bot/tests -p "$suite" -v 2>&1 | tee -a "$RUNNER_TEMP/tracking-check.log" || exit 1
+          done
+      - name: Publish diagnostics only, not tracking game rows
+        if: always()
+        env:
+          RESULT: ${{ steps.test.outcome }}
+        run: |
+          python - <<'PY'
+          import datetime,json,os
+          from pathlib import Path
+          fp=Path(os.environ["RUNNER_TEMP"])/"tracking-check.log"
+          lines=fp.read_text(errors="replace").splitlines() if fp.exists() else []
+          fail=[x.strip()[:220] for x in lines if x.startswith(("FAIL:","ERROR:","AssertionError:",
+            "NameError:","TypeError:","SyntaxError:","ImportError:","ValueError:","FAILED (","Ran "))]
+          status={"generated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           "status":"PASSED" if os.environ["RESULT"]=="success" else "FAILED",
+           "diagnostics":fail[-20:],"real_authorized_tracking_feed_connected":False,
+           "live_projections_modified":False,"profitability_proven":False}
+          Path("docs/tracking_opportunities_validation_status.json").write_text(json.dumps(status,indent=2)+"\n")
+          print(json.dumps(status))
+          PY
+          cp docs/tracking_opportunities_validation_status.json "$RUNNER_TEMP/tracking-result.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/tracking-result.json" docs/tracking_opportunities_validation_status.json
+            git add docs/tracking_opportunities_validation_status.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish opportunity-tracking research validation (no provider data)'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Require test success
+        if: steps.test.outcome != 'success'
+        run: exit 1

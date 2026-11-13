@@ -1,0 +1,29 @@
+name: Verify persistent pretip PrizePicks line archive
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/archive_prizepicks_pregame_lines.py'
+      - 'iphone_bot/tests/test_archive_prizepicks_pregame_lines.py'
+      - 'docs/prizepicks_pregame_line_archive.json'
+      - '.github/workflows/test_pregame_line_archive.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/archive_prizepicks_pregame_lines.py'
+      - 'iphone_bot/tests/test_archive_prizepicks_pregame_lines.py'
+      - '.github/workflows/test_pregame_line_archive.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prevent post-tip fabrication and loss of verified historical lines
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_prizepicks_pregame_lines.py' -v
+          python -m py_compile iphone_bot/archive_prizepicks_pregame_lines.py

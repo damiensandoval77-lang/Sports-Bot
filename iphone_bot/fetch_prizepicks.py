@@ -14,13 +14,34 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+try:
+    from iphone_bot.paper_pick_pipeline import expected_opponents, TEAM_ABBREVIATIONS
+except ModuleNotFoundError:
+    from paper_pick_pipeline import expected_opponents, TEAM_ABBREVIATIONS
+
 ROOT=Path(__file__).resolve().parents[1]
 DEST=ROOT/"docs/prizepicks.json"
 BASE="https://prizepicksapi.com/api/v1/projections"
 STAT={"points":"PTS","rebounds":"REB","assists":"AST",
       "pts+rebs+asts":"PRA","pts+reb+ast":"PRA","points rebounds assists":"PRA",
       "points+rebounds+assists":"PRA","pts reb ast":"PRA"}
-MAX_PAGES=3  # Limit free-plan API requests; a partial result is clearly labeled.
+MAX_PAGES=4  # 4 compact pages, up to 4,000 offers; capped at <=40 new-plan credits.
+PAGE_SIZE=1000
+MAX_TARGETED_READS=3  # At most three additional narrow reads, only inside 24h of tipoff.
+TARGETED_PAGE_SIZE=200
+
+def standard_query(*, cursor=None, search=None, limit=PAGE_SIZE):
+    """Server-side filter means paid pages are spent on needed standard offers.
+    Pagination remains bounded and may still be partial; never claim the
+    unrestricted Demon/Goblin board was fully retrieved.
+    """
+    if not 1<=limit<=PAGE_SIZE:
+        raise ValueError("Invalid bounded compact page size")
+    params={"league":"NBA","status":"active","tier":"standard",
+            "view":"compact","limit":limit}
+    if cursor:params["cursor"]=cursor
+    if search:params["search"]=search
+    return params
 
 def timeparse(value):
     try:
@@ -53,13 +74,15 @@ def clean(row,now,verified_live=False):
     event=row.get("event",{})
     market=row.get("market",{})
     if isinstance(player,str):player={"name":player,"team":row.get("team")}
+    if player is None:player={"name":row.get("player_name"),"team":row.get("team")}
     if not isinstance(player,dict):return None
     if not isinstance(event,dict):event={}
-    if not isinstance(market,dict):market={"stat":row.get("stat"),"period":row.get("period")}
+    if not isinstance(market,dict):market={"stat":row.get("stat") or market,"period":row.get("period")}
     stat=STAT.get(str(market.get("stat") or row.get("stat") or "").lower().strip())
     period=str(market.get("period") or row.get("period") or "").strip().lower()
+    if stat is None:return None  # Reject unsupported or undefined markets before mapping posted lines.
     if period not in ("full game","full_game","fullgame"):return None
-    raw_starts=event.get("starts_at") or row.get("event_starts_at")
+    raw_starts=event.get("starts_at") or row.get("event_starts_at") or row.get("starts_at")
     starts=timeparse(raw_starts)
     observed=timeparse(row.get("observed_at"))
     if not observed or observed>now+dt.timedelta(minutes=10):return None
@@ -75,9 +98,22 @@ def clean(row,now,verified_live=False):
     selections=row.get("selections")
     if not isinstance(selections,list):
         selections=[]
-        for side in ("more","less"):
-            if row.get(side+"_available") is True:
-                selections.append({"side":side,"available":True,"tier":row.get(side+"_tier")})
+        # Compact authenticated board uses sides[] and a top-level tier.
+        # Explicit strings represent available sides; source still supplies
+        # the real tier instead of inventing American betting odds.
+        if isinstance(row.get("sides"),list):
+            for entry in row["sides"]:
+                if isinstance(entry,str):
+                    selections.append({"side":entry,"available":True,"tier":row.get("tier")})
+                elif isinstance(entry,dict):
+                    selections.append({
+                        "side":entry.get("side") or entry.get("name"),
+                        "available":entry.get("available",True),
+                        "tier":entry.get("tier") or row.get("tier")})
+        else:
+            for side in ("more","less"):
+                if row.get(side+"_available") is True:
+                    selections.append({"side":side,"available":True,"tier":row.get(side+"_tier")})
     picks={}
     for sel in selections:
         if not isinstance(sel,dict) or sel.get("available") is not True:continue
@@ -104,7 +140,6 @@ def match(offer,comparison,now=None):
     start=timeparse(comparison.get("start"))
     other=timeparse(offer.get("starts_at"))
     if not start or start<=(now or dt.datetime.now(dt.timezone.utc)):return False
-    from iphone_bot.paper_pick_pipeline import expected_opponents
     verified=expected_opponents(comparison.get("game"),offer["team"])
     if not verified:return False
     if offer["opponent"] and offer["opponent"] not in verified:return False
@@ -121,7 +156,7 @@ def rejection_hint(row,now,verified_live=False):
     if row.get("is_demo") is True or (row.get("is_demo") is None and not verified_live):return "missing_real_provenance"
     if row.get("status")!="active" or str(row.get("league","")).upper()!="NBA":return "inactive_or_not_nba"
     event=row.get("event") if isinstance(row.get("event"),dict) else {}
-    start=timeparse(event.get("starts_at") or row.get("event_starts_at"))
+    start=timeparse(event.get("starts_at") or row.get("event_starts_at") or row.get("starts_at"))
     if start and start<=now:return "game_already_started"
     observed=timeparse(row.get("observed_at"))
     if observed is None:return "missing_observed_time"
@@ -137,7 +172,7 @@ def rejection_hint(row,now,verified_live=False):
     if not start and not (event.get("opponent") or row.get("opponent")):return "missing_game_time_and_opponent"
     return "invalid_or_unavailable_selection"
 
-def publish(raw_pages,comparisons,now=None):
+def publish(raw_pages,comparisons,now=None,schedule=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     offers=[]
     raw_count=0
@@ -148,7 +183,7 @@ def publish(raw_pages,comparisons,now=None):
     for page in raw_pages:
         meta=page.get("meta",{})
         if meta.get("mode")!="live":raise ValueError("Refuse demo or unknown mode")
-        if meta.get("source_status") in ("failed","stale","partial"):
+        if meta.get("source_status") in ("failed","stale"):
             raise ValueError("Provider source is not fresh")
         statuses.append(meta.get("source_status","unknown"))
         cursors.append(meta.get("next_cursor"))
@@ -160,6 +195,52 @@ def publish(raw_pages,comparisons,now=None):
             if cleaned:offers.append(cleaned)
             else:rejection_reasons[rejection_hint(row,now,verified_live=True)]+=1
     distinct={o["id"]:o for o in offers if o["id"]}
+    # Collect genuine PrizePicks lines independently of the priced sportsbook
+    # AI board, which may be empty when The Odds API credits run out.
+    schedule_games=(schedule or {}).get("games",[])
+    board_offers=[]
+    ambiguous=0
+    assignment_reasons=Counter()
+    for original in distinct.values():
+        item=dict(original)
+        possibilities=[]
+        same_team=0
+        opponent_valid=0
+        time_valid=0
+        for game in schedule_games:
+            try:
+                start=timeparse(game.get("start"))
+                if not start or start<=now:continue
+                opponents=expected_opponents(game.get("game"),item["team"])
+                if not opponents:continue
+                same_team+=1
+                if item["opponent"] and item["opponent"] not in opponents:continue
+                opponent_valid+=1
+                stated=timeparse(item.get("starts_at"))
+                if stated and abs((start-stated).total_seconds())>30*60:continue
+                time_valid+=1
+                if not item["opponent"] and not stated:continue
+                possibilities.append(game)
+            except (TypeError,ValueError,KeyError):continue
+        if len(possibilities)==1:
+            game=possibilities[0]
+            item["game"]=game["game"]
+            item["starts_at"]=item["starts_at"] or game["start"]
+            item["event_start_source"]="provider" if original["starts_at"] else "verified_internal_schedule"
+            board_offers.append(item)
+        elif len(possibilities)>1:
+            ambiguous+=1
+            assignment_reasons["ambiguous_multiple_games"]+=1
+        elif not item["opponent"] and not item["starts_at"]:
+            assignment_reasons["missing_opponent_and_tipoff"]+=1
+        elif same_team==0:
+            assignment_reasons["team_not_in_future_schedule"]+=1
+        elif opponent_valid==0:
+            assignment_reasons["opponent_mismatch"]+=1
+        elif time_valid==0:
+            assignment_reasons["tipoff_time_mismatch"]+=1
+        else:
+            assignment_reasons["no_unique_verified_fixture"]+=1
     matched=[]
     unmatched=0
     for comparison in comparisons:
@@ -177,16 +258,24 @@ def publish(raw_pages,comparisons,now=None):
                 difference=round(projection-o["line"],2) if projection is not None else None,
                 ai_direction="MORE" if projection is not None and projection>o["line"] else
                              "LESS" if projection is not None and projection<o["line"] else "NO LEAN"))
-    return {"status":"LIVE_THIRD_PARTY_PRIZEPICKS_LINES" if matched else "LIVE_NO_MATCHED_PRIZEPICKS_LINES",
+    status=("LIVE_THIRD_PARTY_PRIZEPICKS_LINES" if matched or board_offers
+            else "LIVE_NO_MATCHED_PRIZEPICKS_LINES")
+    return {"status":status,
         "source":"Independent prizepicksapi.com (not affiliated with PrizePicks)",
         "source_url":"https://prizepicksapi.com/docs",
         "generated_at":now.isoformat(),
-        "provider_status":statuses[0] if statuses else "unknown",
+        "provider_status":"partial" if "partial" in statuses else statuses[0] if statuses else "unknown",
         "pages_read":len(raw_pages),"partial_board":bool(cursors and cursors[-1]),
         "raw_rows_read":raw_count,"eligible_upcoming_offers":len(distinct),
         "filtered_out_reasons":dict(sorted(rejection_reasons.items())),
         "match_method":"EXACT_PLAYER_TEAM_STAT_AND_VERIFIED_SCHEDULE_OR_30_MIN_TIPOFF",
         "matched_count":len(matched),"unmatched_ai_comparisons":unmatched,
+        "independent_board_count":len(board_offers),
+        "games_with_independent_lines":len({o["game"] for o in board_offers}),
+        "unassigned_or_ambiguous_events":len(distinct)-len(board_offers),
+        "ambiguous_event_matches":ambiguous,
+        "unassigned_reason_counts":dict(sorted(assignment_reasons.items())),
+        "board_offers":board_offers,
         "offers":matched,
         "notice":"Read-only third-party observations. May lag the app. FanDuel odds and EV are separate; PrizePicks pick'em lines are NOT American-odds quotes."}
 
@@ -196,7 +285,96 @@ def read_url(url,key):
         "Accept":"application/json",
         "X-User-Request":"Read NBA PrizePicks lines for Sports-Bot dashboard comparison"})
     with urllib.request.urlopen(req,timeout=30) as reply:
-        return json.load(reply)
+        data=json.load(reply)
+        if isinstance(data,dict):
+            # Provider-reported credit accounting only; never publish keys.
+            for header,field in (("X-Credits-Cost","charged_credits"),
+                                ("X-Credits-Remaining","remaining_credits"),
+                                ("X-Usage-Unit","usage_unit")):
+                value=reply.headers.get(header)
+                if value is not None:
+                    data.setdefault("_client_credit_usage",{})[field]=str(value)[:45]
+        return data
+
+def quota_guard(saved,health,now,topup=None):
+    """Protect the monthly allowance while recognizing separately funded top-ups.
+
+    A newly successful authenticated probe can verify manual replenishment.
+    Old 429 retry hints are not proof the user's account is still exhausted
+    after a verified later provider check. Monthly rollover may also restore
+    credits. Unknown evidence fails closed on confirmed depletion.
+    """
+    checked=timeparse(health.get("checked_at"))
+    old=timeparse(saved.get("generated_at"))
+    recovered=(health.get("status")=="API_ACCESS_CONFIRMED"
+               and checked is not None and old is not None and checked>old)
+    remaining=saved.get("remaining_provider_credits")
+    # An HTTP 200 charged read proves the vendor is accepting account
+    # requests despite a zero monthly header. It does not disclose the
+    # remaining purchased top-up balance. Budget: MAX_PAGES=4 at no more than
+    # the published 10-credit compact-page cost, no more often than 6h.
+    # Stop when the vendor itself rejects the paid request with HTTP 429.
+    # Require a *newer* one-shot authenticated successful read and only
+    # authorize the immediately following bounded full-slate refresh.
+    proof=topup if isinstance(topup,dict) else {}
+    confirmed=timeparse(proof.get("checked_at"))
+    topup_access=(proof.get("status")=="LIVE_READ_SUCCEEDED"
+        and proof.get("http_status")==200 and proof.get("provider_mode")=="live"
+        and proof.get("provider_source_status")=="fresh"
+        and isinstance(proof.get("returned_rows"),int)
+        and proof["returned_rows"]>0
+        and isinstance(proof.get("request_cost"),int)
+        and 0<proof["request_cost"]<=10
+        and confirmed is not None and confirmed<=now
+        and 0<=(now-confirmed).total_seconds()<36*3600)
+    # Avoid exhausting finite purchased credits by rebuilding the full board
+    # after every unrelated repository commit or twice within one slate.
+    if (topup_access and old and 0<=(now-old).total_seconds()<6*3600
+        and saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"):
+        return "TOPUP_REFRESH_COOLDOWN_PRESERVE"
+    if (saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
+        and remaining is not None and str(remaining).isdigit()
+        and int(remaining)<=0):
+        if old and (now.year,now.month)!=(old.year,old.month):
+            return "MONTH_ROLLOVER_RECHECK_ALLOWED"
+        return ("REPLENISHED_ACCESS_CONFIRMED" if recovered else
+                "TOPUP_PAID_READ_CONFIRMED" if topup_access else
+                "ZERO_PROVIDER_CREDITS_PRESERVE")
+    if saved.get("status")=="PROVIDER_RATE_LIMITED" and saved.get("provider_error_code")=="MONTHLY_QUOTA_EXCEEDED":
+        if recovered:return "REPLENISHED_ACCESS_CONFIRMED"
+        if topup_access:return "TOPUP_PAID_READ_CONFIRMED"
+        if old and (now.year,now.month)!=(old.year,old.month):
+            return "MONTH_ROLLOVER_RECHECK_ALLOWED"
+        return "QUOTA_LOCKED_PRESERVE"
+    return "REQUEST_ALLOWED"
+
+def targeted_team_searches(schedule, board, now, limit=MAX_TARGETED_READS):
+    """Select urgent uncovered matchups for narrowly filtered paid reads.
+
+    Only schedule-confirmed games tipping within 24h are eligible. Never
+    pretend the partial four-page board proves that later games have no lines.
+    Each selected team is queried once; the provider may still return no data.
+    """
+    if not isinstance(schedule,dict) or not isinstance(board,dict):return []
+    observed={str(row.get("game")) for row in board.get("board_offers",[])
+              if isinstance(row,dict) and row.get("game")}
+    missing=[]
+    seen=set()
+    for game in schedule.get("games",[]):
+        if not isinstance(game,dict):continue
+        name=game.get("game")
+        start=timeparse(game.get("start"))
+        if not isinstance(name,str) or name in observed or not start:continue
+        seconds=(start-now).total_seconds()
+        if not 0<seconds<=24*3600:continue
+        teams=name.split(" @ ")
+        if len(teams)!=2:continue
+        for team in teams:
+            code=TEAM_ABBREVIATIONS.get(team.strip())
+            if not code or code in seen:continue
+            seen.add(code)
+            missing.append((seconds,code))
+    return [code for _,code in sorted(missing)[:max(0,int(limit))]]
 
 def main():
     key=os.environ.get("PRIZEPICKS_API_KEY","").strip()
@@ -207,40 +385,64 @@ def main():
         DEST.write_text(json.dumps(out,indent=2)+"\n")
         print("PrizePicks API key missing; publishing NOT_CONFIGURED status, no vendor request.",flush=True)
         return
-    # Do not re-spend API calls during a confirmed monthly quota lockout.
-    # An explicit workflow_dispatch can opt in after the account is upgraded.
     if DEST.exists() and os.environ.get("PRIZEPICKS_FORCE_REFRESH")!="1":
+        # Monthly credit header may read zero while separately purchased
+        # top-up credits are available. A single billed compact read is the
+        # only reliable proof; do not treat zero monthly credits as a hard lock.
         try:
-            old=json.loads(DEST.read_text())
-            if old.get("status")=="PROVIDER_RATE_LIMITED" and old.get("provider_error_code")=="MONTHLY_QUOTA_EXCEEDED":
-                previous=timeparse(old.get("generated_at"))
-                wait=int(old.get("retry_after_seconds") or 0)
-                if previous and 0<wait and dt.datetime.now(dt.timezone.utc)<previous+dt.timedelta(seconds=wait):
-                    print("Monthly PrizePicks API quota previously exhausted; skipping provider call until reset.",flush=True)
-                    return
-        except (ValueError,TypeError,KeyError):
-            pass
+            saved_check=json.loads(DEST.read_text())
+            topup_path=ROOT/"docs/prizepicks_topup_probe.json"
+            proof=json.loads(topup_path.read_text()) if topup_path.exists() else {}
+            verified=timeparse(proof.get("checked_at"))
+            now_check=dt.datetime.now(dt.timezone.utc)
+            old_monthly=saved_check.get("remaining_provider_credits")
+            if (str(old_monthly)=="0" and
+                (verified is None or (now_check-verified).total_seconds()>36*3600)):
+                from probe_prizepicks_topup import probe
+                new_proof=probe(key)
+                topup_path.write_text(json.dumps(new_proof,indent=2)+"\n")
+                print("Top-up probe:",new_proof.get("status"),
+                      "HTTP:",new_proof.get("http_status"),
+                      "charged:",new_proof.get("request_cost"),
+                      "(the exhausted monthly balance may exclude purchased top-ups)")
+        except (OSError,ValueError,TypeError,ImportError) as error:
+            print("Top-up probe unavailable:",type(error).__name__)
+
+        try:
+            saved=json.loads(DEST.read_text())
+            health_path=ROOT/"docs/prizepicks_connection_health.json"
+            health=json.loads(health_path.read_text()) if health_path.exists() else {}
+            topup_path=ROOT/"docs/prizepicks_topup_probe.json"
+            topup=json.loads(topup_path.read_text()) if topup_path.exists() else {}
+            decision=quota_guard(saved,health,dt.datetime.now(dt.timezone.utc),topup=topup)
+            if decision in ("ZERO_PROVIDER_CREDITS_PRESERVE","QUOTA_LOCKED_PRESERVE","TOPUP_REFRESH_COOLDOWN_PRESERVE"):
+                print("PrizePicks quota guard:",decision,
+                      "- zero API calls; authentic last-observed board preserved.",
+                      flush=True)
+                return
+        except (ValueError,TypeError,KeyError,FileNotFoundError):
+            print("Quota status could not be inspected; authentic file retained.",flush=True)
+            return
     comp=json.loads((ROOT/"docs/ai_comparisons.json").read_text())
     if comp.get("status")!="EXPERIMENTAL_NON_CALIBRATED":
         raise ValueError("AI comparison source invalid")
-    # Search only players we can actually compare, rather than consuming
-    # monthly credits on 3,000 unrelated rows from the ID-ordered board.
-    # The full JSON shape retains event/selection context missing in compact.
-    names=[]
-    for comparison in comp["comparisons"]:
-        name=str(comparison.get("player","")).strip()
-        if name and name not in names:names.append(name)
-        if len(names)>=3:break
+    # Use cursor pagination over all active NBA offers, not a 3-player sample.
     pages=[]
     requested=[]
+    cursor=None
+    seen_cursors=set()
     try:
-        for name in names:
-            url=BASE+"?"+urllib.parse.urlencode({
-                "league":"NBA","status":"active","search":name,"limit":200})
-            page=read_url(url,key)
-            if not isinstance(page,dict):raise ValueError("Invalid response")
+        for index in range(MAX_PAGES):
+            params=standard_query(cursor=cursor)
+            page=read_url(BASE+"?"+urllib.parse.urlencode(params),key)
+            if not isinstance(page,dict) or not isinstance(page.get("meta"),dict):
+                raise ValueError("Invalid authenticated PrizePicks page")
             pages.append(page)
-            requested.append(name)
+            requested.append(index+1)
+            cursor=page["meta"].get("next_cursor")
+            if not cursor:break
+            if cursor in seen_cursors:raise ValueError("Repeated PrizePicks page cursor")
+            seen_cursors.add(cursor)
     except urllib.error.HTTPError as err:
         # Do not retry 429: it can signal monthly credits, not just a minute.
         if err.code!=429:raise
@@ -257,13 +459,137 @@ def main():
              "retry_after_seconds":retry_after if retry_after and str(retry_after).isdigit() else None,
              "pages_read":len(pages),
              "notice":"Independent PrizePicks provider returned 429; no live lines displayed. Check plan quota or Retry-After. FanDuel remains separate."}
+        if DEST.exists():
+            try:
+                saved=json.loads(DEST.read_text())
+                if saved.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES" and saved.get("board_offers"):
+                    print("Independent PrizePicks rate limited:",out["provider_error_code"],
+                          "- preserving the last verified snapshot, never publishing stale offers as fresh.",flush=True)
+                    return
+            except (OSError,ValueError,TypeError):pass
         DEST.write_text(json.dumps(out,indent=2)+"\n")
         print("Independent PrizePicks rate limited:",out["provider_error_code"],
               "retry after:",out["retry_after_seconds"],flush=True)
         return
-    out=publish(pages,comp["comparisons"])
-    out["searched_player_count"]=len(requested)
-    out["searched_players"]=requested
+    schedule_path=ROOT/"docs/nba_schedule.json"
+    schedule=json.loads(schedule_path.read_text()) if schedule_path.exists() else {}
+    # GitHub-hosted NBA/ESPN schedule endpoints can fail independently while
+    # authenticated PrizePicks returns 4,000 real upcoming player props.
+    # Recover only exact fixture identities/time from an EARLIER VERIFIED
+    # authentic PrizePicks event archive, never its expired player lines.
+    valid_now=dt.datetime.now(dt.timezone.utc)
+    known_events=ROOT/"docs/prizepicks_model_input.json"
+    previous=json.loads(known_events.read_text()) if known_events.exists() else {}
+    old_observation=timeparse(previous.get("source_generated_at"))
+    independent=(previous.get("source")=="AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS"
+        and old_observation and 0<=(valid_now-old_observation).total_seconds()<=36*3600)
+    fixture_keys={(x.get("game"),str(x.get("start"))) for x in schedule.get("games",[])
+                  if isinstance(x,dict)}
+    if independent:
+        appended=[]
+        for event in previous.get("events_covered",[]):
+            if not isinstance(event,dict):continue
+            game=event.get("game")
+            start=timeparse(event.get("start"))
+            if not game or not start or not valid_now<start<valid_now+dt.timedelta(hours=30):
+                continue
+            if not expected_opponents(game,"BOS") and not any(
+                expected_opponents(game,t) for t in ("ATL","BKN","CHA","CHI","CLE",
+                "DAL","DEN","DET","GSW","HOU","IND","LAC","LAL","MEM","MIA",
+                "MIL","MIN","NOP","NYK","OKC","ORL","PHI","PHX","POR",
+                "SAC","SAS","TOR","UTA","WAS")):
+                continue
+            canonical=(game,start.isoformat())
+            if canonical in fixture_keys:continue
+            appended.append({"game":game,"start":start.isoformat(),
+                "game_state":"pre","fixture_source":
+                "PRIOR_VERIFIED_PRIZEPICKS_EVENT_TIME_NOT_STALE_LINE"})
+            fixture_keys.add(canonical)
+        if appended:
+            schedule={**schedule,"games":list(schedule.get("games",[]))+appended,
+                "coverage_complete":False}
+            print("Recovered exact verified provider matchup times:",len(appended),
+                  "from prior authentic fixture archive; not reusing old lines")
+    # Prefer a few near-tipoff teams missing from the truncated 4-page
+    # board. Search is a documented vendor-side team/player filter, not a
+    # workaround for authentication or payment. Do not spend credits for
+    # games over 24 hours away or rerun the entire source again.
+    full_board_partial=bool(cursor)
+    baseline=publish(pages,[],schedule=schedule)
+    targeted_queries=(targeted_team_searches(schedule,baseline,valid_now)
+                      if full_board_partial else [])
+    targeted_attempts=[]
+    for code in targeted_queries:
+        try:
+            query=standard_query(search=code,limit=TARGETED_PAGE_SIZE)
+            target=read_url(BASE+"?"+urllib.parse.urlencode(query),key)
+            if not isinstance(target,dict) or not isinstance(target.get("meta"),dict):
+                raise ValueError("Malformed targeted PrizePicks page")
+            if target["meta"].get("mode")!="live" or target["meta"].get("source_status") in ("failed","stale"):
+                raise ValueError("Unverified targeted source")
+            pages.append(target)
+            requested.append("search:"+code)
+            targeted_attempts.append({"team":code,"status":"RETURNED",
+                                      "rows":len(target.get("data",[]))
+                                      if isinstance(target.get("data"),list) else None,
+                                      "partial":bool(target["meta"].get("next_cursor"))})
+        except urllib.error.HTTPError as err:
+            targeted_attempts.append({"team":code,"status":"HTTP_ERROR",
+                                      "http_status":err.code})
+            # Provider quota enforcement is authoritative: never retry 429.
+            if err.code in (402,403,429):break
+        except (ValueError,TypeError,urllib.error.URLError,TimeoutError):
+            targeted_attempts.append({"team":code,"status":"INVALID_OR_UNAVAILABLE"})
+    out=publish(pages,comp["comparisons"],schedule=schedule)
+    out["partial_board"]=out["partial_board"] or full_board_partial
+    out["targeted_team_queries"]=targeted_attempts
+    out["targeted_reads_attempted"]=len(targeted_attempts)
+    usage=[p.get("_client_credit_usage",{}) for p in pages]
+    out["total_provider_charged_credits"]=sum(int(x["charged_credits"]) for x in usage
+        if str(x.get("charged_credits","")).isdigit())
+    out["remaining_provider_credits"]=next((int(x["remaining_credits"]) for x in reversed(usage)
+        if str(x.get("remaining_credits","")).isdigit()),None)
+    out["provider_usage_units"]=sorted(set(x.get("usage_unit") for x in usage if x.get("usage_unit")))
+    out["page_size_requested"]=PAGE_SIZE
+    out["page_view"]="compact"
+    out["max_pages_budget"]=MAX_PAGES
+    out["source_query"]="NBA_ACTIVE_STANDARD_TIER_CURSOR_PAGED"
+    out["board_coverage_scope"]="NBA_ACTIVE_STANDARD_TIER_ONLY"
+    out["complete_provider_board"]=not out["partial_board"] and out["provider_status"]=="fresh"
+    out["pages_requested"]=len(requested)
+    # Always record the actual paid API outcome, even if it supplied no
+    # authentic upcoming rows. Do not mask a failed refresh as successful.
+    health_path=ROOT/"docs/prizepicks_refresh_health.json"
+    diagnostic={"checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+        "status":"FRESH_LINES_PUBLISHED" if out["independent_board_count"]>0 else
+                 "PAID_READ_NO_FRESH_USABLE_OFFERS",
+        "api_requests_made":len(requested),
+        "provider_pages_read":out["pages_read"],
+        "provider_status":out["provider_status"],
+        "raw_rows":out["raw_rows_read"],
+        "eligible_upcoming_offers":out["eligible_upcoming_offers"],
+        "matched_upcoming_offers":out["independent_board_count"],
+        "rejected_by_reason":out["filtered_out_reasons"],
+        "unassigned_or_ambiguous_events":out["unassigned_or_ambiguous_events"],
+        "unassigned_reason_counts":out["unassigned_reason_counts"],
+        "credits_reported_charged":out["total_provider_charged_credits"],
+        "monthly_credits_header":out["remaining_provider_credits"],
+        "topup_balance_not_exposed_by_monthly_header":True,
+        "targeted_team_queries":out["targeted_team_queries"],
+        "targeted_reads_attempted":out["targeted_reads_attempted"],
+        "source_board_remains_partial":out["partial_board"],
+        "stale_quotes_published_as_current":False}
+    health_path.write_text(json.dumps(diagnostic,indent=2)+"\n")
+    print("PrizePicks authenticated paid-read result:",
+          diagnostic["status"],"requests:",len(requested),
+          "returned:",diagnostic["raw_rows"],
+          "verified upcoming:",diagnostic["eligible_upcoming_offers"],
+          "rejections:",diagnostic["rejected_by_reason"],
+          "charged:",diagnostic["credits_reported_charged"],
+          flush=True)
+    if out["independent_board_count"]==0 and out["matched_count"]==0 and DEST.exists():
+        print("No fresh eligible PrizePicks events; preserving previous feed as stale.",flush=True)
+        return
     DEST.write_text(json.dumps(out,indent=2)+"\n")
     print("PrizePicks matched observations:",out["matched_count"],
           "raw rows:",out["raw_rows_read"],"eligible:",out["eligible_upcoming_offers"],

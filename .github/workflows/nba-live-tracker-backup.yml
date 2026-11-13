@@ -1,0 +1,100 @@
+name: Backup NBA live player tracker observations (no sportsbook API)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/publish_live_tracker_feed.py'
+      - 'iphone_bot/tests/test_publish_live_tracker_feed.py'
+      - 'iphone_bot/final_transition_grade_trigger.py'
+      - 'iphone_bot/tests/test_final_transition_grade_trigger.py'
+      - '.github/workflows/nba-live-tracker-backup.yml'
+  schedule:
+    # Attempt every 5 minutes during NBA Eastern evenings, independent of
+    # browser's 45-second direct ESPN refresh. GitHub scheduling is best-effort;
+    # the site always displays the verified observation time.
+    - cron: '*/5 0-9,22-23 * * *'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: nba-live-tracker-backup
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate real game and player boxscore identities
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_final_transition_grade_trigger.py' -v
+          python -m py_compile iphone_bot/publish_live_tracker_feed.py
+      - name: Collect currently verified ESPN player totals, not sportsbook lines
+        run: python -u iphone_bot/publish_live_tracker_feed.py
+      - name: Publish fresh, time-stamped observed totals without overwriting original picks
+        id: publish
+        run: |
+          set -euo pipefail
+          if [ ! -f docs/live_player_tracking.json ]; then
+            echo 'No verified game boxscores: keep prior snapshot as stale'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            # Only publish the output of the current verified capture. Never
+            # merge or reissue an old prediction based on a post-tip score.
+            git checkout -B main origin/main
+            python -u iphone_bot/publish_live_tracker_feed.py
+            git add docs/live_player_tracking.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Refresh observed live NBA player tracker fallback'
+            if git push origin HEAD:main; then echo 'changed=true' >> "$GITHUB_OUTPUT"; exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Wake verified-final grader immediately on newly completed games
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git show HEAD^:docs/live_player_tracking.json > "$RUNNER_TEMP/previous-live-player-tracking.json" || echo '{}' > "$RUNNER_TEMP/previous-live-player-tracking.json"
+          if python -m iphone_bot.final_transition_grade_trigger \
+              --current docs/live_player_tracking.json \
+              --previous "$RUNNER_TEMP/previous-live-player-tracking.json"; then
+            # This signal is NOT a result or final player stat. The independent
+            # grade workflow still requires a separately verified final box.
+            gh workflow run grade_frozen_ai_forecasts.yml --ref main
+          fi
+      - name: Assert every active ESPN game has fresh verified player totals
+        run: |
+          python - <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path('docs/live_player_tracking.json')
+          if not p.exists():
+              print("LIVE DATA UNAVAILABLE: no published snapshot")
+              sys.exit(1)
+          data=json.loads(p.read_text())
+          coverage=data.get("coverage")
+          if not isinstance(coverage,dict):
+              print("LIVE COVERAGE UNKNOWN: report missing")
+              sys.exit(1)
+          missing=coverage.get("missing_fresh_matchups",[])
+          print("ACTIVE LIVE GAMES:",len(coverage.get("active_matchups",[])))
+          print("VERIFIED FRESH:",len(coverage.get("fresh_active_matchups",[])))
+          print("MISSING FRESH:",missing)
+          if missing:
+              print("LIVE COVERAGE PARTIAL: publishing available observations but marking run failed")
+              sys.exit(1)
+          PY

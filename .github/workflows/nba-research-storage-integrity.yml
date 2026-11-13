@@ -1,0 +1,66 @@
+name: Audit saved NBA games, predictions, quotes and research evidence
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/ai_pregame_archive.json'
+      - 'docs/paper_pick_ledger.json'
+      - 'docs/projection_upgrade_status.json'
+      - 'docs/research_live/**'
+      - 'docs/research_history/**'
+      - 'docs/research_inputs/**'
+      - 'iphone_bot/research_storage_integrity.py'
+      - 'iphone_bot/prospective_research_gate.py'
+      - 'iphone_bot/tests/test_durable_research_storage.py'
+      - '.github/workflows/nba-research-storage-integrity.yml'
+  schedule:
+    - cron: '17 3,12 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-research-integrity
+  cancel-in-progress: false
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify paper capture, original pretip archives and real live data integrity
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/research_storage_integrity.py iphone_bot/research_archive_persistence.py iphone_bot/capture_live_research.py iphone_bot/preserve_research_inputs.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v
+      - name: Compare real sportsbook paper ledger and exact archived offers
+        run: python -u iphone_bot/research_storage_integrity.py
+      - name: Publish no-cost evidence coverage report
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Multiple different research writers may commit the same minute.
+          # On conflicts reload the latest MAIN data and regenerate the audit;
+          # never force-push or overwrite newly saved quotes/checkpoints.
+          for attempt in 1 2 3 4 5 6 7 8; do
+            git fetch origin main
+            git checkout -B main origin/main
+            python -u iphone_bot/research_storage_integrity.py
+            git add docs/research_storage_integrity.json
+            if git diff --cached --quiet; then echo 'Audit already current'; exit 0; fi
+            git commit -m 'Report NBA research persistence, saved quotes and missing evidence'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent research writer, regenerating audit from latest main: $attempt"
+            sleep 2
+          done
+          echo 'Could not publish integrity report safely after 8 retries'
+          exit 1

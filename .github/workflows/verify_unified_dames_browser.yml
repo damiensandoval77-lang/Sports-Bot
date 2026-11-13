@@ -1,0 +1,80 @@
+name: Verify public unified Dame's Picks NBA + NFL browser
+on:
+  workflow_dispatch:
+  # Bot-generated JSON commits do not start push workflows. Verify the
+  # real merged phone UI after each public comparison publish instead.
+  workflow_run:
+    workflows:
+      - Publish lightweight verified PrizePicks AI comparisons
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: '26 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/dames-picks/index.html'
+      - '.github/workflows/verify_unified_dames_browser.yml'
+      - 'docs/dames-picks/feeds.js'
+      - 'docs/dames-picks/dames_take.js'
+      - 'iphone_bot/verify_unified_dames_browser.py'
+      - 'iphone_bot/tests/test_verify_unified_dames_browser.py'
+      - '.github/workflows/verify_unified_dames_browser.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/verify_unified_dames_browser.py'
+      - 'iphone_bot/tests/test_verify_unified_dames_browser.py'
+      - '.github/workflows/verify_unified_dames_browser.yml'
+permissions:
+  contents: write
+concurrency:
+  group: unified-dames-picks-browser
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify merged-only NBA and NFL browser contract offline
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/verify_unified_dames_browser.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_verify_unified_dames_browser.py' -v
+      - name: Install Chromium for public merged app canary
+        if: github.event_name != 'pull_request'
+        run: |
+          python -m pip install --disable-pip-version-check 'playwright==1.56.0'
+          python -m playwright install --with-deps chromium
+      - name: Independently load actual merged NBA + NFL app in phone browser
+        id: probe
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python -m iphone_bot.verify_unified_dames_browser
+      - name: Publish both-sport public browser result even on degradation
+        if: always() && github.event_name != 'pull_request' && steps.probe.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          cp docs/dames-picks/browser_readiness.json "$RUNNER_TEMP/browser_readiness.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/browser_readiness.json" docs/dames-picks/browser_readiness.json
+            git add docs/dames-picks/browser_readiness.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Record public merged NBA and NFL browser readiness'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Fail if unified app browser does not render both sports
+        if: always() && github.event_name != 'pull_request' && steps.probe.outcome == 'failure'
+        run: |
+          echo "::error::Merged NBA+NFL app browser check failed. Inspect docs/dames-picks/browser_readiness.json"
+          exit 1

@@ -1,0 +1,301 @@
+{
+  "repair": {
+    "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/425",
+    "number": 425,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": false,
+    "body": "Heartbeat and readiness workflows can dispatch Actions and write repository issues/statuses while loading mutable external action tags. Pin checkout, Python setup and artifact upload to commit revisions and add a regression that rejects unpinned external actions in both controllers.\n\nValidation: 97 local heartbeat/readiness/recovery and critical-contract tests passed. Existing capture failures remain visible; no model eligibility, paid-provider boundary or grading behavior is relaxed.",
+    "title": "Pin privileged heartbeat and readiness dependencies",
+    "base": "main",
+    "base_sha": "e955b5afc6329c5fe3f4adb47734f49233b13070",
+    "head": "repair/pin-health-controllers-20261113-1825",
+    "head_sha": "016c5de73f52e8b1bb1089538b83248478aa3ccb",
+    "head_repo_id": 1447638888,
+    "head_repo_full_name": "damiensandoval77-lang/Sports-Bot",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "damiensandoval77-lang",
+      "name": "damiensandoval77-lang",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/353112119?v=4",
+      "id": 353112119
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-13T18:27:33Z",
+    "updated_at": "2026-11-13T18:27:33Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 1,
+    "changed_files": 3,
+    "additions": 14,
+    "deletions": 5,
+    "display_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/425",
+    "display_title": "Pin privileged heartbeat and readiness dependencies"
+  },
+  "head_sha": "2e22e4f327e20b84866fc111dfb3bca2c9401afe",
+  "merge": {
+    "sha": "666a88ea6661ff163cd95714bdc00f4f2b6c8c6b",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "ci": [
+    {
+      "id": 132084730940,
+      "name": "pipeline-contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43483190592/job/132084730940"
+    },
+    {
+      "id": 132084729233,
+      "name": "heartbeat",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43483190251/job/132084729233"
+    },
+    {
+      "id": 132084728855,
+      "name": "verify-readiness",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43483190156/job/132084728855"
+    },
+    {
+      "id": 132084728209,
+      "name": "recovery-regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43483190097/job/132084728209"
+    }
+  ],
+  "production": [
+    {
+      "run_id": 43483508923,
+      "jobs": {
+        "jobs": [
+          {
+            "id": 132085806318,
+            "name": "heartbeat",
+            "status": "completed",
+            "conclusion": "failure",
+            "run_id": 43483508923,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Test heartbeat state classification",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 4
+              },
+              {
+                "name": "Run deployed-site monitoring",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Retry failed free stages without suppressing recovery after failures",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Wake bounded readiness controller if its independent schedule is late",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Save evidence",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Publish source-grounded status in the Actions run summary",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 9
+              },
+              {
+                "name": "Open or close one GitHub alert per failing stage",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 10
+              },
+              {
+                "name": "Surface unresolved failures",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 11
+              },
+              {
+                "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 21
+              },
+              {
+                "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 22
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 23
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "run_id": 43483508534,
+      "jobs": {
+        "jobs": [
+          {
+            "id": 132085804744,
+            "name": "verify-readiness",
+            "status": "completed",
+            "conclusion": "failure",
+            "run_id": 43483508534,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Run fail-closed production data quality tests",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 4
+              },
+              {
+                "name": "Recover independent scoreboard before readiness evaluation",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Recover authentic live NBA player totals before verifying readiness",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Evaluate actual published NBA input freshness and coverage",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 7
+              },
+              {
+                "name": "Publish actual status even when feeds are broken",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 8
+              },
+              {
+                "name": "Route degraded components to bounded automatic recovery",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 9
+              },
+              {
+                "name": "Open or resolve recurring production incident automatically",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 10
+              },
+              {
+                "name": "Save production incident report artifact",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 11
+              },
+              {
+                "name": "Fail visibly when bot is not ready for reliable picks",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 12
+              },
+              {
+                "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+                "status": "completed",
+                "conclusion": "skipped",
+                "number": 23
+              },
+              {
+                "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 24
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 25
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "automation": {
+    "enabled": true,
+    "schedule": "FREQ=HOURLY;INTERVAL=2",
+    "delivery_confirmed": false
+  },
+  "failed_attempts": [
+    {
+      "sha": "016c5de73f52e8b1bb1089538b83248478aa3ccb",
+      "runs": [
+        43482835081,
+        43482834856
+      ],
+      "cause": "New regression caught remaining mutable readiness upload-artifact reference; fixed before merge."
+    }
+  ]
+}

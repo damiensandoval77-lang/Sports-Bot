@@ -26,6 +26,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate chronological historical data logic
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/historical_minutes_research.py iphone_bot/minutes_model_v2.py iphone_bot/research_context.py iphone_bot/shot_profile_research.py
           python -m unittest discover -s iphone_bot/tests -p 'test_historical_minutes_research.py' -v

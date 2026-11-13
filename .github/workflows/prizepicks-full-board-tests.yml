@@ -1,0 +1,80 @@
+name: PrizePicks NBA full board and UI validation (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_prizepicks_targeted_search.py'
+      - 'iphone_bot/tests/test_prizepicks_coverage_diagnostics.py'
+      - 'iphone_bot/publish_prizepicks_site.py'
+      - 'iphone_bot/tests/test_prizepicks_health_publication.py'
+      - 'iphone_bot/tests/test_prizepicks_per_date_coverage.py'
+      - 'iphone_bot/preserve_research_inputs.py'
+      - 'iphone_bot/tests/test_preserve_research_inputs.py'
+      - 'docs/index.html'
+      - '.github/workflows/nba-prizepicks-full-slate.yml'
+      - '.github/workflows/nba-ai-comparisons.yml'
+      - '.github/workflows/prizepicks-full-board-tests.yml'
+  push:
+    branches: ['main','fix/20261107-full-prizepicks-slate']
+    paths:
+      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/publish_prizepicks_site.py'
+      - 'iphone_bot/tests/test_prizepicks_per_date_coverage.py'
+      - '.github/workflows/prizepicks-full-board-tests.yml'
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test authentic PrizePicks full board and research storage
+        run: |
+          python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_targeted_search.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_coverage_diagnostics.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_health_publication.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_per_date_coverage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
+      - name: Validate current unified app preserves genuine unmodeled standard PrizePicks lines
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          landing=Path('docs/index.html').read_text()
+          active=Path('docs/dames-picks/index.html').read_text()
+          model=Path('docs/dames-picks/feeds.js').read_text()
+          assert 'url=./dames-picks/' in landing
+          assert 'function includeArchivedStandard(rows,archive)' in model
+          assert 'projection:null,direction:null,chance:null' in model
+          assert 'quoteOnly:true' in model
+          assert 'm.includeArchivedStandard(state.nba,quoteArchive.value)' in active
+          assert 'p.quoteOnly?"NO AI"' in active
+          assert '<div class="stampband over-under-footer">' in active, 'Mobile footer must stay over/under-only'
+          scripts=re.findall(r'<script>(.*?)</script>',active,re.S)
+          assert scripts, 'Active site script missing'
+          Path('/tmp/pp-board.js').write_text(scripts[-1])
+          print('Active NBA board preserves observed standard lines without claiming fake AI')
+          PY
+          node --check /tmp/pp-board.js
+          node --check docs/dames-picks/feeds.js
+      - name: Confirm no duplicate paid PrizePicks requests in AI workflows
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          old=Path('.github/workflows/nba-ai-comparisons.yml').read_text()
+          new=Path('.github/workflows/nba-prizepicks-full-slate.yml').read_text()
+          assert 'python -u iphone_bot/fetch_prizepicks.py' not in old
+          assert 'python -u iphone_bot/fetch_prizepicks.py' in new
+          assert 'PRIZEPICKS_API_KEY' in new
+          assert "- cron: '28 0,16,18,20,22,23 * * *'" in new, 'Bounded pretip refresh coverage missing'
+          assert 'MAX_PAGES=4' in Path('iphone_bot/fetch_prizepicks.py').read_text()
+          print('PrizePicks dedicated workflow only, no duplicate API pulls')
+          PY

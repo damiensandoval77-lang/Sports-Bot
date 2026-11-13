@@ -50,6 +50,29 @@ def summarize(rows,min_markets=MIN_TOTAL_MARKETS,min_dates=MIN_GAME_DATES):
             "INSUFFICIENT_MULTIDAY_VALIDATION",
         "tested_positive_edge":False}
 
+def direction_error(rows):
+    """Fixed, descriptive OVER/UNDER segments for each frozen market.
+
+    Never select a side using these same outcomes. Only future complete
+    game-date holdouts can establish whether a direction filter generalizes.
+    """
+    data={}
+    for side in ("OVER","UNDER"):
+        cohort=[r for r in rows if r["side"]==side]
+        result=summarize(cohort,MIN_MARKET_MARKETS,MIN_MARKET_DATES)
+        n=len(cohort)
+        result.update({
+            "mean_signed_error_projection_minus_actual":
+                round(sum(r["projection"]-r["actual"] for r in cohort)/n,3) if n else None,
+            "mean_absolute_error":
+                round(sum(abs(r["projection"]-r["actual"]) for r in cohort)/n,3) if n else None,
+            "average_frozen_line_edge":
+                round(sum(r["edge"] for r in cohort)/n,3) if n else None,
+            "validated_selection_filter":False
+        })
+        data[side]=result
+    return data
+
 def analyze(records):
     observations=[]
     missing=defaultdict(int)
@@ -73,6 +96,7 @@ def analyze(records):
                "game":r.get("game"),"player":r.get("player"),
                "player_id":str(r.get("player_id")),"market":stat,
                "side":side,"edge":abs(projection-line),
+               "actual":actual,"projection":projection,
                "won":int((actual>line)==(side=="OVER")),
                "source":r.get("settlement_source")})
         except (KeyError,TypeError,ValueError):
@@ -82,6 +106,7 @@ def analyze(records):
     for m in MARKETS:
         subset=[o for o in observations if o["market"]==m]
         stat=summarize(subset,MIN_MARKET_MARKETS,MIN_MARKET_DATES)
+        stat["by_direction"]=direction_error(subset)
         stat["edge_bands"]=[]
         for lo,hi in EDGE_BINS:
             group=[x for x in subset if lo<=x["edge"]<hi]
@@ -96,6 +121,7 @@ def analyze(records):
         "production_probability_unchanged":True,
         "recommended_real_money_plays":0,
         "overall":overall,"by_market":bymarket,
+        "overall_by_direction":direction_error(observations),
         "excluded":dict(missing),
         "requirements":{"minimum_total_markets":MIN_TOTAL_MARKETS,
           "minimum_total_game_dates":MIN_GAME_DATES,
@@ -105,6 +131,7 @@ def analyze(records):
           "All edge thresholds are fixed in code BEFORE later evaluation, not fitted to these outcomes.",
           "Even meeting sample thresholds is not a claim of a verified betting edge.",
           "The per-market groups are not independent: same players, same games and PRA overlap.",
+          "OVER/UNDER splits describe frozen historical behavior; neither side is a validated future selection filter.",
           "Must hold out full later game dates for true calibration, uncertainty and profitability.",
           "Historical market prices and sportsbook payouts can differ from PrizePicks.",
           "This diagnostic never changes the baseline AI or recommends money wagers."]}

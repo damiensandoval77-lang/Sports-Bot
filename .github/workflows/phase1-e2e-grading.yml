@@ -1,0 +1,24 @@
+name: Phase 1 end-to-end grading acceptance (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/tests/test_phase1_e2e_grading.py'
+      - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/settlement_merge.py'
+      - '.github/workflows/phase1-e2e-grading.yml'
+      - '.github/workflows/nba-postgame-settlement.yml'
+permissions:
+  contents: read
+jobs:
+  grading-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify immutable pick capture, authentic final-only grading, and safe merge
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_phase1_e2e_grading.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v

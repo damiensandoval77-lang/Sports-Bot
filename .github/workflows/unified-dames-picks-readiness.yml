@@ -1,0 +1,77 @@
+name: Unified Dame's Picks NBA + NFL integrity
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Verify tonight NBA frozen lines predictions and grades"]
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: '14,44 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/dames-picks/index.html'
+      - 'docs/dames-picks/feeds.js'
+      - 'docs/dames-picks/dames_take.js'
+      - 'iphone_bot/unified_dames_readiness.py'
+      - 'iphone_bot/tests/test_unified_dames_readiness.py'
+      - '.github/workflows/unified-dames-picks-readiness.yml'
+  pull_request:
+    paths:
+      - 'docs/dames-picks/index.html'
+      - 'docs/index.html'
+      - 'docs/nfl/index.html'
+      - 'iphone_bot/unified_dames_readiness.py'
+      - 'iphone_bot/tests/test_unified_dames_readiness.py'
+      - '.github/workflows/unified-dames-picks-readiness.yml'
+permissions:
+  contents: write
+concurrency:
+  group: unified-dames-picks-readiness
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check combined NBA and NFL feed handoffs and retired redirects
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_unified_dames_readiness.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_latest_report_publication.py' -v
+      - name: Produce honest unified integrity result
+        id: integrity
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python -m iphone_bot.unified_dames_readiness
+      - name: Publish both-sport integrity report without losing failures
+        if: always() && github.event_name != 'pull_request' && steps.integrity.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          test -f docs/dames-picks/unified_readiness.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3 4 5 6; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Always recompute AFTER updating the checkout. A pre-reset
+            # report can be older than a new capture/model/grade commit.
+            rc=0
+            python -m iphone_bot.unified_dames_readiness || rc=$?
+            git add docs/dames-picks/unified_readiness.json
+            if git diff --cached --quiet; then exit "$rc"; fi
+            git commit -m 'Record unified NBA and NFL app integrity'
+            if git push origin HEAD:main; then exit "$rc"; fi
+          done
+          exit 1
+      - name: Fail if either sport or unified entry point is degraded
+        if: always() && github.event_name != 'pull_request' && steps.integrity.outcome == 'failure'
+        run: |
+          echo "::error::Unified Dame's Picks integrity DEGRADED; inspect docs/dames-picks/unified_readiness.json"
+          exit 1

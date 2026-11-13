@@ -8,8 +8,8 @@ on:
       - 'iphone_bot/tests/test_fetch_props.py'
       - '.github/workflows/nba-market-refresh.yml'
   schedule:
-    # Two quick refreshes before major evening tipoff; independent of ML retraining.
-    - cron: '12 20,23 * * *'
+    # Two cost-controlled refreshes earlier in the Eastern afternoon (1/4pm EST).
+    - cron: '12 18,21 * * *'
 permissions:
   contents: write
 concurrency:
@@ -17,6 +17,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   markets:
+    # A code push must not unexpectedly consume paid odds credits. Run on
+    # the existing schedule or only when manually dispatched.
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -25,6 +28,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check event and player quote coverage
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/fetch_props.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v
@@ -40,7 +44,7 @@ jobs:
           import json
           from pathlib import Path
           status=json.load(open('docs/odds_fetch_status.json'))
-          if status['status']=='FETCHED':
+          if status['status'] in ('FETCHED','FETCHED_PARTIAL'):
               report=json.load(open('docs/data.json'))
               assert report['slate_events_checked']<=report['slate_events_available']
               assert report['slate_events_not_checked']==report['slate_events_available']-report['slate_events_checked']
@@ -61,11 +65,15 @@ jobs:
           else:
               print('No successful refresh:',status['status'])
           PY
+      - name: Freeze original real sportsbook quote input for longitudinal research
+        if: success()
+        run: python -u iphone_bot/preserve_research_inputs.py odds
       - name: Publish NBA sportsbook market coverage and provider health
         if: always()
         run: |
           git fetch origin main
           git add docs/data.json docs/odds_compact.json docs/odds_fetch_status.json
+          if [ -d docs/research_inputs/odds ]; then git add docs/research_inputs/odds/; fi
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

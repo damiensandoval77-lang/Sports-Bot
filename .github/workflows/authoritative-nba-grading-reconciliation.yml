@@ -1,0 +1,114 @@
+name: Authoritative NBA nightly grading reconciliation - fail closed
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '12 10,12,14,16,18,22 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/reconcile_grading_production.py'
+      - 'iphone_bot/tests/test_reconcile_grading_production.py'
+      - 'docs/ai_forecast_actual_ledger.json'
+      - 'docs/verified_final_player_cache.json'
+      - 'docs/lagged_matchup_all_market_ledger.json'
+      - 'docs/ai_forecast_grade_status.json'
+      - 'docs/dames-picks/published_pick_settlement.json'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - '.github/workflows/authoritative-nba-grading-reconciliation.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/reconcile_grading_production.py'
+      - 'iphone_bot/tests/test_reconcile_grading_production.py'
+      - '.github/workflows/authoritative-nba-grading-reconciliation.yml'
+permissions:
+  contents: write
+concurrency:
+  group: authoritative-nba-grading-reconciliation
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test quote identity, final provenance and report drift
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_grading_production.py' -v
+      - name: Reconcile November 10 incident and most recent Eastern night
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          python -m iphone_bot.published_pick_settlement || test "$?" -eq 2
+          python - <<'PY'
+          import datetime as dt
+          from zoneinfo import ZoneInfo
+          from pathlib import Path
+          from iphone_bot.reconcile_grading_production import main
+          import sys
+          yesterday=(dt.datetime.now(dt.timezone.utc).astimezone(
+            ZoneInfo("America/New_York")).date()-dt.timedelta(days=1)).isoformat()
+          for day in sorted(set(("2026-11-10",yesterday))):
+              sys.argv=["reconcile","--date",day,
+                        "--output","docs/production_grading_reconciliation_"+day+".json"]
+              main()
+          Path("docs/production_grading_reconciliation.json").write_bytes(
+              Path("docs/production_grading_reconciliation_"+yesterday+".json").read_bytes())
+          PY
+      - name: Retain unresolved evidence even when workflow fails
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-nightly-grading-reconciliation
+          path: docs/production_grading_reconciliation*.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish trustworthy red or green report from freshest main
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.published_pick_settlement || test "$?" -eq 2
+            python - <<'PY'
+          import datetime as dt
+          from zoneinfo import ZoneInfo
+          from pathlib import Path
+          from iphone_bot.reconcile_grading_production import main
+          import sys
+          yesterday=(dt.datetime.now(dt.timezone.utc).astimezone(
+            ZoneInfo("America/New_York")).date()-dt.timedelta(days=1)).isoformat()
+          for day in sorted(set(("2026-11-10",yesterday))):
+              sys.argv=["reconcile","--date",day,
+                        "--output","docs/production_grading_reconciliation_"+day+".json"]
+              main()
+          Path("docs/production_grading_reconciliation.json").write_bytes(
+              Path("docs/production_grading_reconciliation_"+yesterday+".json").read_bytes())
+          PY
+            git add docs/production_grading_reconciliation*.json docs/ai_forecast_grade_status_*.json docs/dames-picks/published_pick_settlement.json
+            if git diff --cached --quiet; then break; fi
+            git commit -m 'Publish independent NBA grading reconciliations including blockers'
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 5 ]; then exit 1; fi
+          done
+      - name: Fail when any audited night is not fully reconciled
+        if: github.event_name != 'pull_request'
+        run: |
+          python - <<'PY'
+          import json,glob
+          failed=[]
+          for path in glob.glob('docs/production_grading_reconciliation_*.json'):
+              x=json.load(open(path))
+              print(path,x['status'],x['ai_only'],x['standard_line'],x['blockers'])
+              if x['status']!='READY':failed.append(path)
+          if failed:
+              raise SystemExit('PRODUCTION_GRADING_NOT_COMPLETE: '+', '.join(failed))
+          PY

@@ -1,0 +1,47 @@
+name: Prospective NBA Research Coverage Guards (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/prospective_research_gate.py'
+      - 'iphone_bot/quote_capture_coverage.py'
+      - 'iphone_bot/capture_ai_board.py'
+      - 'iphone_bot/tests/test_quote_capture_coverage.py'
+      - 'iphone_bot/tests/test_prospective_research_gate.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/research_storage_integrity.py'
+      - 'iphone_bot/tests/test_durable_research_storage.py'
+      - '.github/workflows/nba-research-prospective-capture-tests.yml'
+  push:
+    branches: ['fix/20261107-forward-research-coverage-gates']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate mandatory diagnostics and historical no-backfill rules
+        run: |
+          python -m py_compile iphone_bot/prospective_research_gate.py iphone_bot/projection_upgrade_research.py iphone_bot/research_storage_integrity.py iphone_bot/quote_capture_coverage.py iphone_bot/capture_ai_board.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_quote_capture_coverage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
+      - name: Audit existing immutable NBA pretip source records
+        run: |
+          python -u iphone_bot/research_storage_integrity.py
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/research_storage_integrity.json'))
+          assert not r['paper_invariant_errors']
+          assert not r['archive']['archive_only_offers_eligible_for_retroactive_grading']
+          m=r['archive']['archived_offer_mismatch_categories']
+          assert sum(m.values())==r['archive']['archived_offers_not_found_in_paper']
+          print('Archive-only genuine quote keys:',m)
+          print('Prospectively missing older diagnostics:',r['research_diagnostics'])
+          print('Saved paper quotes:',r['saved_paper_quotes'])
+          PY

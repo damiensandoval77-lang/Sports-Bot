@@ -1,0 +1,125 @@
+name: Free NBA official injury changes and AI refresh
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/free_official_nba_injury_watch.py'
+      - 'iphone_bot/tests/test_free_official_nba_injury_watch.py'
+      - 'iphone_bot/new_ai_injury_context.py'
+      - '.github/workflows/nba-free-official-injury-watch.yml'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/free_official_nba_injury_watch.py'
+      - 'iphone_bot/tests/test_free_official_nba_injury_watch.py'
+      - '.github/workflows/nba-free-official-injury-watch.yml'
+  schedule:
+    # Best effort: official NBA reports are published approximately every
+    # 15 minutes; poll at 5-minute intervals without any X subscription.
+    - cron: '*/5 0-5,16-23 * * *'
+    # Keep the six-hour freshness contract outside the game-night window too.
+    - cron: '17 6-15 * * *'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: free-official-nba-injury
+  cancel-in-progress: false
+jobs:
+  free-official-refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Parse official published NBA injury PDF
+        if: github.event_name != 'pull_request'
+        run: python -m pip install --disable-pip-version-check 'pypdf>=5,<7'
+      - name: Validate official transitions and no paid provider requirement
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
+      - name: Fetch NBA official injury report with ESPN as informational fallback
+        if: github.event_name != 'pull_request'
+        run: python -u iphone_bot/fetch_official_injuries.py
+      - name: Publish only verified newer official report and trigger new four-market AI on changed status
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cp docs/injury_context.json "$RUNNER_TEMP/fetched-nba-injury.json"
+          if [ "$(python - "$RUNNER_TEMP/fetched-nba-injury.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          print('yes' if x.get('status')=='OFFICIAL_NBA_REPORT_VERIFIED' and x.get('injury_data_verified') is True else 'no')
+          PY
+          )" != yes ]; then
+            echo 'No new confirmed official report; leave latest verified feed intact'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            # On first installation compare the fetched report against the
+            # ALREADY published official injury context. This catches today's
+            # genuine QUESTIONABLE -> OUT changes on the first run.
+            if [ ! -f docs/free_nba_injury_watch.json ]; then
+              python - <<'PY'
+          import json
+          from pathlib import Path
+          old=Path('docs/injury_context.json')
+          if old.exists():
+            source=json.loads(old.read_text())
+            if source.get('status')=='OFFICIAL_NBA_REPORT_VERIFIED':
+              Path('docs/free_nba_injury_watch.json').write_text(json.dumps({
+                'report':source,'events':[]}))
+          PY
+            fi
+            cp "$RUNNER_TEMP/fetched-nba-injury.json" docs/injury_context.json
+            python -u iphone_bot/free_official_nba_injury_watch.py
+            python - "$RUNNER_TEMP/dispatch-needed" <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path('docs/free_nba_injury_watch.json')
+          result=json.loads(p.read_text()) if p.exists() else {}
+          is_changed=bool(result.get('new_changes'))
+          # A newer verified report must also unblock isolated research feeds
+          # even if no player changed status. Never weaken their age gate.
+          for name in ('short_history_model.json','provisional_short_history.json'):
+            feed=Path('docs')/name
+            if feed.exists() and json.loads(feed.read_text()).get('blocker') == 'INJURY_CONTEXT_UNVERIFIED_OR_STALE':
+              is_changed=True
+          Path(sys.argv[1]).write_text('yes' if is_changed else 'no')
+          print('Official NBA player status transitions:',len(result.get('new_changes',[])))
+          PY
+            if [ -n "$(git status --porcelain -- docs/free_nba_injury_watch.json)" ]; then
+              git add docs/injury_context.json docs/free_nba_injury_watch.json
+            else
+              echo 'No newer verified official injury report'
+              exit 0
+            fi
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish no-cost official NBA injury updates and status transitions'
+            if git push origin HEAD:main; then
+              if [ "$(cat "$RUNNER_TEMP/dispatch-needed")" = yes ]; then
+                echo 'Dispatching four-market injury-aware AI reprojection'
+                gh run list --repo "$GITHUB_REPOSITORY" --workflow nba-new-ai-all-markets.yml --branch main --limit 20 --json status > "$RUNNER_TEMP/model-runs.json"
+                if python -c "import json,sys; sys.exit(0 if any(r['status'] in ('queued','pending','in_progress','waiting','requested') for r in json.load(open(sys.argv[1]))) else 1)" "$RUNNER_TEMP/model-runs.json"; then
+                  echo 'Model refresh already active; no duplicate dispatch'
+                else
+                  gh workflow run nba-new-ai-all-markets.yml --repo "$GITHUB_REPOSITORY" --ref main
+                fi
+              fi
+              exit 0
+            fi
+          done
+          echo 'Concurrent report update could not be reconciled'
+          exit 1

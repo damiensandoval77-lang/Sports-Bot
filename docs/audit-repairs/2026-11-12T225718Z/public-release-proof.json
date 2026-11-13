@@ -1,0 +1,61 @@
+{
+  "expected_release": "dp-short-history-research-20261112-r19",
+  "served_release": "dp-short-history-research-20261112-r19",
+  "checks": [
+    {
+      "name": "release_id_matches_main",
+      "pass": true
+    },
+    {
+      "name": "release_manifest_exact_match",
+      "pass": true
+    },
+    {
+      "name": "served_asset_index.html",
+      "pass": true,
+      "expected": "0ba2406358f89928bc6979932c5d301d90dc00be",
+      "actual": "0ba2406358f89928bc6979932c5d301d90dc00be"
+    },
+    {
+      "name": "served_asset_feeds.js",
+      "pass": true,
+      "expected": "4eee5e4721f0f03ce4ccffdb16f2430769c6fa31",
+      "actual": "4eee5e4721f0f03ce4ccffdb16f2430769c6fa31"
+    },
+    {
+      "name": "served_asset_live_direct.js",
+      "pass": true,
+      "expected": "3e878d8948d0842a45ec61533d320af32f482d91",
+      "actual": "3e878d8948d0842a45ec61533d320af32f482d91"
+    },
+    {
+      "name": "served_asset_dames_take.js",
+      "pass": true,
+      "expected": "503844112adad99bda01c4d2e9ef2452c7cc8d70",
+      "actual": "503844112adad99bda01c4d2e9ef2452c7cc8d70"
+    },
+    {
+      "name": "served_asset_provisional.js",
+      "pass": true,
+      "expected": "040951a76691c12155da6860bf245239f7ce95f3",
+      "actual": "040951a76691c12155da6860bf245239f7ce95f3"
+    },
+    {
+      "name": "served_asset_short_history.js",
+      "pass": true,
+      "expected": "e3359952b5d50544e61cf08424b468dd56318994",
+      "actual": "e3359952b5d50544e61cf08424b468dd56318994"
+    },
+    {
+      "name": "all_pinned_assets_listed",
+      "pass": true
+    }
+  ],
+  "status": "PASS",
+  "attempt": 1,
+  "elapsed_seconds": 21.883,
+  "retry_budget_seconds": 360,
+  "checked_at": "2026-11-12T23:47:36.039286+00:00",
+  "source_mode": "legacy_branch",
+  "note": "Verifies native Pages deployment; does NOT claim GitHub Actions deploy-pages was run."
+}

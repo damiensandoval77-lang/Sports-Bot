@@ -170,6 +170,10 @@ def compact_for_dashboard(report,max_pairs_per_event=140):
 
 
 def main():
+    if os.environ.get("SPORTS_BOT_ENABLE_PAID_ODDS") != "1":
+        save_status("PAID_ODDS_POLLING_DISABLED", note="Explicit paid-provider opt-in required; authentic prior quotes preserved and may be stale.")
+        print("Paid odds polling disabled; preserving prior observations.")
+        return
     key = os.environ.get("ODDS_API_KEY", "").strip()
     if not key:
         save_status("MISSING_ODDS_API_KEY")
@@ -184,6 +188,15 @@ def main():
         upcoming = [e for e in events if now <
             dt.datetime.fromisoformat(e["commence_time"].replace("Z","+00:00")) <= cutoff]
         upcoming.sort(key=lambda e: e["commence_time"])
+        if not upcoming:
+            # A late-night /events call often lists no future fixtures because
+            # every game has tipped. This does NOT invalidate pregame captures.
+            # Do not erase the last authentic quote snapshot with an empty one.
+            save_status("NO_UPCOMING_EVENTS_PRESERVED",
+                        available_events=0,checked_events=0,
+                        note="All provider fixtures may have tipped; old quote file preserved and must be shown as stale.")
+            print("Provider has no future events: preserving prior authentic prop snapshots.",flush=True)
+            return
         picks = []
         remaining = start_credits
         inspected = 0
@@ -196,6 +209,21 @@ def main():
         except (TypeError,ValueError):
             credits=None
         slots=min(MAX_EVENTS,len(upcoming))
+        if credits is not None and credits<=MIN_REMAINING_CREDITS:
+            # /events can list a full slate while prop requests are blocked
+            # by our reserve. Do not call paid event endpoints, do not publish
+            # empty odds as if the slate had no real lines.
+            save_status("CREDITS_BELOW_RESERVE_PRESERVED",
+                        available_events=len(upcoming),checked_events=0,
+                        skipped_events=len(upcoming),
+                        remaining_credits=credits,
+                        minimum_reserved_credits=MIN_REMAINING_CREDITS,
+                        reason="NO_PROP_REQUESTS_WITHIN_CREDIT_RESERVE",
+                        note="No prop endpoints called; prior authentic odds feed preserved but may be stale.")
+            print("ODDS PROP COVERAGE BLOCKED: provider listed",len(upcoming),
+                  "upcoming events but only",credits,"credits remain;",
+                  "reserve",MIN_REMAINING_CREDITS,flush=True)
+            return
         if credits is None:
             selected_markets=MARKETS
         else:
@@ -205,7 +233,7 @@ def main():
               len(selected_markets),"markets per event;",
               "credits remaining:",start_credits,flush=True)
         for event in upcoming[:MAX_EVENTS]:
-            if remaining is not None and int(remaining) < MIN_REMAINING_CREDITS:
+            if remaining is not None and int(remaining) <= MIN_REMAINING_CREDITS:
                 print('Stopping early to preserve Odds API credits.', flush=True)
                 break
             inspected += 1
@@ -237,14 +265,33 @@ def main():
             "remaining_provider_credits":int(remaining) if remaining is not None else None,
             "disclaimer": "Live sportsbook odds, NOT PrizePicks lines. No AI projections or win probabilities yet. Verify all lines before use.",
             "picks": picks[:MAX_EVENTS * MAX_OUTCOMES_PER_EVENT]}
+        if not picks:
+            stopped_for_credits=(remaining is not None and int(remaining)<=MIN_REMAINING_CREDITS)
+            save_status("CREDITS_BELOW_RESERVE_PRESERVED" if stopped_for_credits and not inspected
+                        else "NO_TWO_SIDED_PLAYER_PROPS_PRESERVED",
+                        available_events=len(upcoming),checked_events=inspected,
+                        skipped_events=len(upcoming)-inspected,
+                        remaining_credits=remaining,
+                        minimum_reserved_credits=MIN_REMAINING_CREDITS,
+                        reason=("INSUFFICIENT_CREDITS_FOR_FULL_SLATE" if stopped_for_credits
+                                else "PROVIDER_RETURNED_NO_COMPLETE_PAIRS"),
+                        note="No completed real Over/Under pairs available. Last verified snapshot was not replaced.")
+            print("No two-sided real player props returned; preserving prior published snapshots.",flush=True)
+            return
         OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         compact=compact_for_dashboard(result)
         COMPACT.write_text(json.dumps(compact,separators=(",",":"))+"\n",encoding="utf-8")
         print("Compact dashboard:",len(compact["picks"]),"rows from",len(compact["events_covered"]),"events",flush=True)
-        save_status("FETCHED",available_events=len(upcoming),
-                    checked_events=inspected,remaining_credits=remaining,
+        save_status("FETCHED_PARTIAL" if inspected<len(upcoming)
+                    else "FETCHED",available_events=len(upcoming),
+                    checked_events=inspected,
+                    skipped_events=len(upcoming)-inspected,
+                    remaining_credits=remaining,
+                    minimum_reserved_credits=MIN_REMAINING_CREDITS,
                     outcome_rows=len(picks),
-                    coverage=result["coverage_warning"])
+                    coverage=result["coverage_warning"],
+                    reason="INSUFFICIENT_CREDITS_OR_EVENT_CAP" if inspected<len(upcoming)
+                           else "ALL_PROVIDER_EVENTS_CHECKED")
         print(f"Published {len(result['picks'])} sportsbook outcomes from {inspected} events. Remaining credits: {remaining}")
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError, KeyError) as exc:
         # Preserve last successful dashboard rather than overwriting it with sample data.

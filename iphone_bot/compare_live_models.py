@@ -1,7 +1,7 @@
 """Experimental trained-model comparisons with VERIFIED current NBA market identities.
 
 No claim of calibrated betting odds, EV, injury adjustments or PrizePicks lines.
-Only show upcoming two-sided sportsbook markets where the player roster team
+Only show upcoming verified market identities where the player roster team
 matches one of the game's teams. Training feature gaps are flagged.
 """
 import json
@@ -17,22 +17,32 @@ import pandas as pd
 from matchup_context import team_allowances, defense_context, minutes_context
 from defense_training import COLS
 from experimental_probability import probability_sides, METHOD
+from combined_simulation import simulate_combined_hit_rate, METHOD as COMBINED_SIM_METHOD
+from reliability_screen import research_screen
+from edge_readiness import evaluate_edge
+from preliminary_edge import preliminary_edge
+from tracking_opportunity_features import load_tracking,pregame_features
+from opportunity_shadow_models import forecast_opportunity,backtest_opportunity
 from sportsbook_consensus import consensus_markets
 from hypothetical_ev import hypothetical_quote_analysis
 from combined_projection import combine_projections
 from projection_explanation import explain_projection
 from research_context import minutes_estimate,positional_allowance,teammate_on_off,injury_minutes_research,minutes_walkforward_backtest
 from minutes_model_v2 import forecast as minutes_v2_forecast,backtest as minutes_v2_backtest
+from minutes_v3_research import forecast as minutes_v3_forecast,team_context as verified_team_context
+from opportunity_v2_research import forecast as opportunity_v2_forecast
 from minutes_early_season_research import forecast as early_minutes_forecast,backtest as early_minutes_backtest
 from shot_profile_research import predict_attempts as shot_attempt_profile
+from shooting_efficiency_v1 import forecast as shooting_efficiency_v1,opponent_defense_index
 from season_average_research import season_candidate
+from injury_projection_adjustment import teammate_minutes_ratio,opponent_defense_ratio,reproject
 
 ROOT=Path(__file__).resolve().parents[1]
 GAMES=ROOT/"data/nba/current/current_games.json"
 FORM=ROOT/"docs/current_form.json"
 ODDS=ROOT/"docs"/os.environ.get("NBA_AI_ODDS_INPUT","data.json")
 MODELS=ROOT/"models/nba/provisional"
-OUTPUT=ROOT/"docs/ai_comparisons.json"
+OUTPUT=ROOT/"docs"/os.environ.get("NBA_AI_OUTPUT","ai_comparisons.json")
 INJURIES=ROOT/"docs/injury_context.json"
 MARKETS={"Points":"PTS","Rebounds":"REB","Assists":"AST","Points Rebounds Assists":"PRA"}
 TEAM={
@@ -107,7 +117,8 @@ def main():
     market_time=utc(odds["updated_at"])
     if (now-form_time).total_seconds()>48*3600 or (now-market_time).total_seconds()>6*3600:
         raise SystemExit("Refusing to publish comparisons from stale player stats or market feed")
-    if not odds.get("is_live"):raise ValueError("Sportsbook feed not live")
+    prizepicks_mode=odds.get("source")=="AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS"
+    if not odds.get("is_live"):raise ValueError("Verified market feed not live")
     roster={}
     for player in form["players"]:
         identity=key(player["player"])
@@ -116,9 +127,26 @@ def main():
     all_games=json.loads(GAMES.read_text())
     for r in all_games:
         by_id.setdefault(str(r["id"]),{})[r["date"]]=r
+    def materially_active_out(player_id,game_date):
+        """Only absences with observed sizeable recent same-team minutes.
+
+        Do not infer playing time from a name, status alone, or an unlisted
+        athlete. Target-day statistics are strictly excluded.
+        """
+        people=[g for g in by_id.get(str(player_id),{}).values()
+                if str(g.get("date",""))<game_date]
+        people.sort(key=lambda g:g["date"])
+        minutes=[]
+        for g in people[-5:]:
+            try:
+                n=float(g.get("MIN"))
+                if np.isfinite(n) and 0<n<=60:minutes.append(n)
+            except (ValueError,TypeError):continue
+        return len(minutes)>=3 and float(np.mean(minutes))>=22
     raw_markets={}
     skipped={"not_upcoming":0,"team_mismatch":0,"player_ambiguous":0,"insufficient_stats":0,
-             "unsupported_market":0,"stale_market_quote":0}
+             "unsupported_market":0,"stale_market_quote":0,
+             "officially_out":0,"officially_doubtful":0}
     for r in odds.get("picks",[]):
         stat=MARKETS.get(r.get("stat"))
         if not stat:
@@ -141,6 +169,17 @@ def main():
         person=people[0]
         if not pair or person["team"] not in pair:
             skipped["team_mismatch"]+=1;continue
+        # Official, game-specific unavailability removes a player before the
+        # model can produce normal picks/probabilities for someone ruled out.
+        # An unlisted player is NOT interpreted as available.
+        eastern_day=start.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+        official=(official_by_event.get((str(person["player_id"]),eastern_day))
+                  if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" and report_fresh else None)
+        status=str(official.get("status","")).upper() if official and official.get("team")==person["team"] else ""
+        if status=="OUT":
+            skipped["officially_out"]+=1;continue
+        if status=="DOUBTFUL":
+            skipped["officially_doubtful"]+=1;continue
         side=r.get("direction")
         if side not in ("More","Less"):continue
         game_date=start.astimezone(ZoneInfo("America/New_York")).date()
@@ -158,10 +197,25 @@ def main():
            "sample_games":len(history),"last_game":history[-1]["date"]})
         market["over_odds" if side=="More" else "under_odds"]=r.get("odds")
     paired=[v for v in raw_markets.values() if isinstance(v["over_odds"],int) and isinstance(v["under_odds"],int)]
-    # The model projection remains independent. Evaluate it against the
-    # median of independent real sportsbook prop lines instead of selecting
-    # whichever book appears first. Preserve all source quotes for inspection.
-    valid=consensus_markets(paired)
+    if prizepicks_mode:
+        # PrizePicks is pick'em; no sportsbook prices exist. Use actual
+        # separately observed pick'em lines, never fake bookmaker quote pairs.
+        valid=[]
+        for r in raw_markets.values():
+            item=dict(r)
+            item.update({"line_book_count":0,"line_type":"PRIZEPICKS_PICKEM_LINE",
+                "sportsbook":"PRIZEPICKS_PICKEM_NOT_SPORTSBOOK",
+                "book_quotes":[],"line_range":[item["line"],item["line"]],
+                "over_odds":None,"under_odds":None})
+            valid.append(item)
+    else:
+        # Real paired sportsbook quotes use median consensus.
+        valid=consensus_markets(paired)
+    # Zero valid pregame markets is not a valid replacement for a previously
+    # populated full-slate board. Fail rather than publishing empty predictions.
+    # The archived last-known-good pregame board stays available separately.
+    if not valid:
+        raise SystemExit("ZERO_VERIFIED_PREGAME_MARKETS: preserving prior published AI board; no invented picks")
     print("Matched paired sportsbook quotes:",len(paired),
           "unique consensus markets:",len(valid),
           "markets with 2+ bookmakers:",sum(v["line_book_count"]>=2 for v in valid),flush=True)
@@ -177,6 +231,9 @@ def main():
             shadow_models[stat]=joblib.load(file)
             if shadow_models[stat].get("status")!="SHADOW_ONLY_NOT_CALIBRATED":
                 raise ValueError("Unrecognized opponent shadow model provenance")
+    tracking_rows,tracking_coverage=load_tracking()
+    shooting_defense=opponent_defense_index(all_games)
+    team_games_for_v3=verified_team_context(all_games)
     for row in valid:
         target=row["stat"];model=models[target]
         features=model["features"];fill=model["fill_values"]
@@ -219,12 +276,17 @@ def main():
             row["shadow_status"]="SHADOW_MODEL_NOT_TRAINED"
         history=sorted(by_id.get(str(row["player_id"]),{}).values(),key=lambda x:x["date"])
         history=[g for g in history if g["date"]<upcoming_date]
+        row["tracking_opportunity_research"]=pregame_features(
+            tracking_rows,row["player_id"],row["team"],upcoming_date)
         row["minutes_context"]=minutes_context(history)
         row["minutes_research"]=minutes_estimate(history,upcoming_date)
         row["minutes_v2_research"]=minutes_v2_forecast(
             history,upcoming_date,row["team"])
         row["minutes_early_season_research"]=early_minutes_forecast(
             history,upcoming_date,row["team"])
+        row["tracking_opportunity_shadow"]=forecast_opportunity(
+            tracking_rows,row["player_id"],row["team"],upcoming_date,history,
+            row["minutes_v2_research"].get("expected_minutes"))
         row["shot_profile_research"]=shot_attempt_profile(
             history,upcoming_date,row["team"],
             row["minutes_v2_research"].get("expected_minutes"))
@@ -258,7 +320,8 @@ def main():
             team_out=[p for (player_id,game_date),p in official_by_event.items()
                 if game_date==upcoming_date and p.get("team")==row["team"]
                 and str(p.get("status","")).upper()=="OUT"
-                and player_id!=str(row["player_id"])]
+                and player_id!=str(row["player_id"])
+                and materially_active_out(player_id,upcoming_date)]
             for teammate in team_out[:8]:
                 observed=teammate_on_off(history,all_games,upcoming_date,teammate["player_id"],target)
                 if observed:
@@ -270,6 +333,17 @@ def main():
         row["injury_minutes_research"]=injury_minutes_research(
             history,all_games,upcoming_date,row["team"],
             team_out if official_report else [])
+        row["official_out_teammates"]=[{"player":p["player"],"player_id":str(p["player_id"])}
+                                      for p in team_out] if official_report else []
+        row["official_out_opponents"]=[{"player":p["player"],"player_id":str(p["player_id"])}
+                                      for (pid,day),p in official_by_event.items()
+                                      if day==upcoming_date and p.get("team")==opponent
+                                      and str(p.get("status","")).upper()=="OUT"
+                                      and materially_active_out(pid,upcoming_date)] if official_report else []
+        row["injury_scenario_projection"]=None
+        row["injury_scenario_applied_to_combined"]=False
+        row["injury_context_requires_reprojection"]=bool(
+            row["official_out_teammates"] or row["official_out_opponents"])
         row["defense_in_model"]=False
         row["projection"]=round(projection,1)
         # Build a combined median from UNROUNDED original and shadow forecasts.
@@ -278,6 +352,74 @@ def main():
         combined=combine_projections(projection,
             row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None)
         row["combined_projection"]=round(combined["projection"],1)
+        row["preinjury_original_projection"]=round(projection,1)
+        row["preinjury_shadow_projection"]=row["shadow_projection"]
+        row["preinjury_combined_projection"]=round(combined["projection"],1)
+        row["injury_reprojection_status"]="NO_OFFICIAL_OUT_IN_MATCHUP"
+        if row["injury_context_requires_reprojection"]:
+            team_factor=teammate_minutes_ratio(
+                row["injury_minutes_research"],len(row["official_out_teammates"]))
+            defensive_factor=opponent_defense_ratio(
+                defense_cache[upcoming_date],opponent,
+                [p["player_id"] for p in row["official_out_opponents"]],
+                all_games,upcoming_date,target)
+            update=reproject(projection,
+                row["shadow_projection"] if row["shadow_status"]=="RESEARCH_SHADOW_ONLY" else None,
+                team_factor,defensive_factor)
+            if update is None:
+                row["injury_reprojection_status"]="INSUFFICIENT_VERIFIED_PRIOR_ON_OFF_EVIDENCE"
+            else:
+                projection=update["original"]
+                row["projection"]=round(projection,1)
+                if update["opponent"] is not None:
+                    row["shadow_projection"]=round(update["opponent"],1)
+                    row["shadow_difference"]=round(update["opponent"]-row["line"],1)
+                combined=combine_projections(projection,update["opponent"])
+                row["combined_projection"]=round(combined["projection"],1)
+                row["injury_reprojection_status"]="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"
+                row["injury_reprojection_factor"]=update["factor"]
+                row["injury_scenario_applied_to_combined"]=True
+                row["lineup_research_adjustment_applied"]=True
+        # Bounded conditional estimate, only when a GAME-DATE official OUT
+        # report and strictly past teammate minute split both exist. Keep the
+        # original model/pick frozen for honest historical grading.
+        scenario=row["injury_minutes_research"]
+        baseline_min=scenario.get("baseline_minutes")
+        scenario_min=scenario.get("scenario_minutes")
+        if row["injury_reprojection_status"]=="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT":
+            row["injury_scenario_projection"]=row["combined_projection"]
+            row["injury_scenario_ratio_capped"]=row["injury_reprojection_factor"]
+            row["injury_scenario_source"]="ACTUAL_APPLIED_BOUNDED_OFFICIAL_OUT_REPROJECTION"
+        if row["injury_context_requires_reprojection"]:
+            row["injury_projection_warning"]=(
+                "REPROJECTED_FROM_OFFICIAL_OUT_WITH_HISTORICAL_SPLITS"
+                if row["injury_reprojection_status"]=="REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT"
+                else "NO_SUPPORTED_REPROJECTION_DO_NOT_SHOW_OLD_PICK")
+
+        # Freeze shadow against the FINAL same-snapshot Combined AI, including
+        # any separately verified official injury projection adjustment.
+        row["shooting_efficiency_v1"] = (shooting_efficiency_v1(
+            history,upcoming_date,row["team"],opponent,
+            expected_minutes=row["minutes_v2_research"].get("expected_minutes"),
+            defense_index=shooting_defense,
+            combined_baseline=combined["projection"])
+            if target=="PTS" else {
+                "status":"POINTS_ONLY_RESEARCH_SHADOW",
+                "model":"SHOOTING_EFFICIENCY_OPPONENT_SHADOW_V1",
+                "projection":None,"production_applied":False})
+        # Both challengers share the SAME pretip Minutes V3 context.
+        # Official OUT teammate IDs are independently dated; do not infer.
+        row["minutes_v3_research"]=minutes_v3_forecast(
+            history,upcoming_date,row["team"],player_id=row["player_id"],
+            verified_out_ids=[x["player_id"] for x in row["official_out_teammates"]],
+            team_games=team_games_for_v3,pretip_injury_verified=official_report)
+        row["opportunity_v2_research"]=opportunity_v2_forecast(
+            history,upcoming_date,row["team"],player_id=row["player_id"],
+            baseline_by_stat={target:combined["projection"]} if target in ("AST","REB") else {},
+            minutes=row["minutes_v3_research"],tracking=tracking_rows,
+            team_games=team_games_for_v3,
+            verified_out_ids=[x["player_id"] for x in row["official_out_teammates"]],
+            pretip_injury_verified=official_report)
         row["season_average_challenger"]=season_candidate(
             history,upcoming_date,row["team"],target,combined["projection"])
         row["season_feature_method"]="RECENCY_WEIGHTED_SEASON_EMA_SPAN_30_ALREADY_IN_TRAINED_AI"
@@ -313,6 +455,19 @@ def main():
             row["estimated_probability_side"]=direction
             row["estimated_selected_probability"]=round(max(frequency["over"],frequency["under"]),4)
             row["probability_method"]=METHOD
+        # Research-only 20k simulation for the actual COMBINED card direction.
+        # Original-model residuals are a proxy, not combined-model calibration.
+        row["combined_simulation"] = None
+        if ("experimental_residuals" in model and
+            model.get("residual_calibration",{}).get("real_market_calibrated") is False):
+            row["combined_simulation"] = simulate_combined_hit_rate(
+                row["combined_projection"], row["line"], model["experimental_residuals"],
+                (row["player_id"], row["stat"], row["start"], row["line"],
+                 row["combined_projection"], opponent, COMBINED_SIM_METHOD),
+                opponent=opponent,
+                defense_history=[v[target] for day,v in opp_games
+                                 if day<upcoming_date and target in v][-10:],
+                opponent_defense=row["opponent_defense"])
         row["ev_status"]="UNAVAILABLE_NO_VALIDATED_PROBABILITY"
         row["experimental_ev_available"]=False
         row["experimental_best_quote"]=None
@@ -337,42 +492,112 @@ def main():
                 row["experimental_best_quote"]=max(options,key=lambda item:item["hypothetical_ev_pct"])
                 row["experimental_ev_available"]=True
                 row["ev_status"]="HYPOTHETICAL_ONLY_UNCALIBRATED_PROBABILITIES"
+        # Freeze exact historical feature values used by the trained model.
+        # Never substitute the separate minutes research forecast for MIN_L5.
+        relevant=("MIN_L5","MIN_L10","MIN_Season","PTS_L5","PTS_L10",
+                  "PTS_Season","REB_L5","REB_L10","REB_Season",
+                  "AST_L5","AST_L10","AST_Season","DAYS_REST",
+                  "IS_HOME","IS_B2B")
+        row["model_feature_audit"]={
+            "method":"EXACT_INPUT_TO_ORIGINAL_TRAINED_MODEL_PREGAME",
+            "features":{k:round(float(input_data[k]),4) for k in relevant
+                        if k in input_data and np.isfinite(float(input_data[k]))},
+            "sample_games":row["sample_games"],
+            "last_observed_game_date":row["last_game"],
+            "minutes_research_not_applied_to_live":True}
         row["missing_features"]=[name for name in features if name not in row["features"]]
         del row["features"]
+    # Never show an unchanged ordinary pick when official absences
+    # materially change the lineup and there is insufficient historical
+    # evidence to recalculate it. Keep prior pregame snapshots untouched.
+    # Use only already-settled, pregame-locked grades published before tipoff.
+    # A missing or malformed report must not block normal player projections.
+    historical_paper={}
+    try:
+        report_file=ROOT/"docs/paper_results.json"
+        if report_file.exists():
+            historical_paper=json.loads(report_file.read_text())
+    except (OSError,ValueError,TypeError):
+        historical_paper={}
+    eligible=[]
+    for r in valid:
+        if r.get("injury_reprojection_status")=="INSUFFICIENT_VERIFIED_PRIOR_ON_OFF_EVIDENCE":
+            skipped["injury_reprojection_unavailable"]=skipped.get("injury_reprojection_unavailable",0)+1
+            continue
+        r["reliability_screen"] = research_screen(r)
+        # Current simulations use uncalibrated original-model residuals.
+        # Regardless of apparent EV, do not mark sportsbook or pick'em picks +EV.
+        # Keep this explicit readiness status with every frozen pregame row.
+        r["edge_assessment"] = evaluate_edge(
+            model_probability=None, lower_probability=None,
+            calibration={"model":"combined","verified":False,
+                         "independent_outcomes":0,"distinct_event_dates":0},
+            quote=None, side=r.get("combined_direction"), line=r.get("line"),
+            wager_type="prizepicks" if prizepicks_mode else "sportsbook")
+        r["preliminary_edge"] = preliminary_edge(
+            r,historical_paper,now=now,prizepicks=prizepicks_mode)
+        eligible.append(r)
+    valid=eligible
+    # Put directional research leans first; PASS means genuine blockers.
+    # Within each group rank by combined simulation, not original-model odds.
+    # No ranking here is a verified betting strategy.
     valid.sort(key=lambda r:(
-        r["estimated_selected_probability"] is not None,
-        r["estimated_selected_probability"] if r["estimated_selected_probability"] is not None else -1,
-        abs(r["difference"])),reverse=True)
+        r["reliability_screen"]["status"]=="MODEL_LEAN",
+        r["preliminary_edge"]["status"]=="PROVISIONAL_POSITIVE_EV",
+        r["preliminary_edge"]["net_ev_pct"] if r["preliminary_edge"]["net_ev_pct"] is not None else -999,
+        r["preliminary_edge"]["probability"]["probability"] if r["preliminary_edge"]["probability"] else -1,
+        r["combined_simulation"]["selected_hit_rate"] if r["combined_simulation"] and r["combined_simulation"]["selected_hit_rate"] is not None else -1,
+        abs(r["combined_difference"])),reverse=True)
     output={"generated_at":now.isoformat(),"last_form_update":form["updated_at"],
        "last_odds_update":odds["updated_at"],"status":"EXPERIMENTAL_NON_CALIBRATED",
-       "verified_current_matchups":True,"is_prizepicks":False,
+       "verified_current_matchups":True,"is_prizepicks":prizepicks_mode,
        "odds_input_file":ODDS.name,
        "games_with_ai_props":len({r["game"] for r in valid}),
        "injury_data_verified":report_fresh and injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED",
        "injury_context_source":injury_feed.get("status") if report_fresh else "UNAVAILABLE",
        "official_injury_report_url":injury_feed.get("source_pdf") if injury_feed.get("status")=="OFFICIAL_NBA_REPORT_VERIFIED" else None,
-       "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":False,
-       "injury_minutes_research_status":"DESCRIPTIVE_ONLY_NOT_APPLIED",
+       "opponent_defense_applied_to_model":False,"lineup_research_adjustments_applied":any(r.get("injury_scenario_applied_to_combined") for r in valid),
+       "injury_minutes_research_status":("BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS"
+            if any(r.get("injury_scenario_applied_to_combined") for r in valid)
+            else "NO_SUPPORTED_OFFICIAL_OUT_REPROJECTION_APPLIED"),
        "minutes_baseline_validation":minutes_walkforward_backtest(all_games),
        "minutes_v2_validation":minutes_v2_backtest(all_games),
        "minutes_early_season_validation":early_minutes_backtest(all_games),
        "minutes_early_season_applied_to_live_model":False,
        "minutes_v2_applied_to_live_model":False,
+       "minutes_v3_research_only":True,
+       "opportunity_v2_research_only":True,
+       "minutes_v3_opportunity_v2_production_applied":False,
        "shot_profile_applied_to_live_model":False,
+       "shooting_efficiency_v1_research_only":True,
+       "shooting_efficiency_v1_applied_to_live_model":False,
        "opponent_shadow_available":bool(shadow_models),"shadow_is_primary":False,
-       "line_aggregation_method":"MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
+       "line_aggregation_method":"AUTHENTIC_PRIZEPICKS_PICKEM_LINES" if prizepicks_mode else "MEDIAN_OF_DISTINCT_TWO_SIDED_BOOKMAKERS",
        "markets_with_multiple_books":sum(v["line_book_count"]>=2 for v in valid),
+       "preliminary_edge_ranking_enabled":True,
+       "provisional_positive_ev_count":sum(r["preliminary_edge"]["status"]=="PROVISIONAL_POSITIVE_EV" for r in valid),
+       "preliminary_edge_method":"TWO_DATE_ORIGINAL_GRADED_ERROR_SHRUNK_COMBINED_SIM_RESEARCH_V1",
+       "preliminary_edge_verified":False,
+       "tracking_opportunity_coverage":tracking_coverage,
+       "tracking_opportunity_backtest":backtest_opportunity(
+           tracking_rows,all_games) if tracking_coverage["status"]=="AVAILABLE_FOR_RESEARCH"
+           else {"method":"TRACKING_OPPORTUNITY_SHADOW_V1","status":"SOURCE_NOT_CONNECTED",
+                 "production_applied":False},
+       "tracking_opportunity_research_only":True,
+       "tracking_opportunity_applied_to_model":False,
        "experimental_probability_ranking":True,
        "experimental_probability_method":METHOD,
        "real_market_probabilities_calibrated":False,
-       "experimental_ev_available":True,
+       "experimental_ev_available":False if prizepicks_mode else True,
        "combined_projection_enabled":True,
        "combined_projection_validated":False,
        "combined_projection_method":"TWO_MODEL_MEDIAN_EQUAL_WEIGHT_RESEARCH_ONLY",
        "ev_verified":False,
-       "ev_method":"PRICE_SPECIFIC_HYPOTHETICAL_EV_NOT_VALIDATED",
-       "disclaimer":"Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability requires game-day verification, and research-only positional defense and minutes estimates do not change picks. Opponent-aware shadow is separate and research-only. The combined displayed projection is a two-model median (average) where a valid shadow forecast exists, falling back to original otherwise. Probabilities and EV still describe the ORIGINAL model only, not the combined projection; they are uncalibrated and cannot establish profitable picks.",
+       "ev_method":"NO_SPORTSBOOK_PRICES_PICKEM_ONLY" if prizepicks_mode else "PRICE_SPECIFIC_HYPOTHETICAL_EV_NOT_VALIDATED",
+       "disclaimer":("Authentic independent PrizePicks pick'em lines only, NOT sportsbook odds; no American odds, no EV, no validated win probability. Historical trained AI forecasts are unchanged. Game-day availability and lines must be independently checked." if prizepicks_mode else "Sportsbook reference lines use the median across distinct bookmakers where 2+ actual two-sided quotes exist, otherwise clearly labeled single-book fallback. Sportsbooks do NOT train or determine the player projection. Original historical-model predictions remain primary. Experimental model-side probabilities derive from past out-of-time box-score prediction errors, NOT verified sportsbook or PrizePicks win rates. Ranks can be inaccurate on real-market prop lines; player availability requires game-day verification, and research-only positional defense and minutes estimates do not change picks. Opponent-aware shadow is separate and research-only. The combined displayed projection is a two-model median (average) where a valid shadow forecast exists, falling back to original otherwise. Probabilities and EV still describe the ORIGINAL model only, not the combined projection; they are uncalibrated and cannot establish profitable picks."),
        "comparisons":valid,"skipped":skipped,
+       "no_sportsbook_prices":prizepicks_mode,
+       "no_validated_win_probability":True,
        "comparison_rows_published":len(valid),
        "comparison_rows_truncated":0}
     OUTPUT.write_text(json.dumps(output,indent=2)+"\n")

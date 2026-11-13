@@ -1,0 +1,13 @@
+# Import this repository as a Replit Python app to host the verified NBA live feed.
+# This runs the real Python HTTP service, NOT the static dashboard.
+run = "python -m iphone_bot.live_tracker_service"
+entrypoint = "iphone_bot/live_tracker_service.py"
+modules = ["python-3.11"]
+
+[[ports]]
+localPort = 8080
+externalPort = 80
+
+[env]
+LIVE_POLL_SECONDS = "35"
+LIVE_CORS_ORIGIN = "https://damiensandoval77-lang.github.io"

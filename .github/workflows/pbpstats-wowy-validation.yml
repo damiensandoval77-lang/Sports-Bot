@@ -1,0 +1,82 @@
+name: Validate PBP Stats WOWY adapter and full offline pipeline
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/pbpstats_wowy_adapter.py'
+      - 'iphone_bot/pbpstats_game_coverage.py'
+      - 'iphone_bot/tests/test_pbpstats_game_coverage.py'
+      - 'iphone_bot/assemble_pbpstats_wowy.py'
+      - 'iphone_bot/import_authorized_onoff.py'
+      - 'iphone_bot/lineup_onoff_research.py'
+      - 'iphone_bot/pbpstats_request_plan.py'
+      - 'iphone_bot/tests/test_pbpstats_wowy_adapter.py'
+      - 'iphone_bot/tests/test_assemble_pbpstats_wowy.py'
+      - 'iphone_bot/tests/test_import_authorized_onoff.py'
+      - 'iphone_bot/tests/test_lineup_onoff_research.py'
+      - '.github/workflows/pbpstats-wowy-validation.yml'
+permissions:
+  contents: write
+concurrency:
+  group: pbpstats-wowy-validation
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run all offline source-mapping and research tests
+        id: tests
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m compileall -q iphone_bot/pbpstats_request_plan.py iphone_bot/pbpstats_wowy_adapter.py iphone_bot/lineup_onoff_research.py iphone_bot/import_authorized_onoff.py iphone_bot/assemble_pbpstats_wowy.py 2>&1 | tee "$RUNNER_TEMP/wowy-tests.log"
+          for name in test_pbpstats_request_plan.py test_pbpstats_wowy_adapter.py test_pbpstats_game_coverage.py test_import_authorized_onoff.py test_lineup_onoff_research.py test_assemble_pbpstats_wowy.py; do
+            python -m unittest discover -s iphone_bot/tests -p "$name" -v 2>&1 | tee -a "$RUNNER_TEMP/wowy-tests.log" || exit 1
+          done
+      - name: Publish status only, never source data
+        if: always()
+        env:
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+        run: |
+          python - <<'PY'
+          import os,json,datetime
+          from pathlib import Path
+          log=Path(os.environ["RUNNER_TEMP"])/"wowy-tests.log"
+          lines=log.read_text(errors="replace").splitlines() if log.exists() else []
+          failure_lines=[x.strip()[:240] for x in lines
+              if x.startswith(("FAIL:","ERROR:","AssertionError:","NameError:","TypeError:",
+                               "SyntaxError:","ImportError:","ValueError:","ModuleNotFoundError:",
+                               "FAILED (","Ran "))]
+          status={"generated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           "status":"PASSED" if os.environ.get("TEST_OUTCOME")=="success" else "FAILED",
+           "tests":"SIX_OFFLINE_PBPSTATS_WOWY_MODULES",
+           "failure_diagnostics":failure_lines[-24:],
+           "real_provider_samples_verified":False,
+           "licensed_ingestion_enabled":False}
+          open("docs/pbpstats_wowy_validation_status.json","w").write(json.dumps(status,indent=2)+"\n")
+          print(json.dumps(status))
+          PY
+          cp docs/pbpstats_wowy_validation_status.json "$RUNNER_TEMP/pbp-wowy-validation.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/pbp-wowy-validation.json" docs/pbpstats_wowy_validation_status.json
+            git add docs/pbpstats_wowy_validation_status.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish PBP Stats offline WOWY test status'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Fail job if tests failed
+        if: steps.tests.outcome != 'success'
+        run: exit 1

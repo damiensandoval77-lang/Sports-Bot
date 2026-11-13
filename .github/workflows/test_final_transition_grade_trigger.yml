@@ -1,0 +1,29 @@
+name: Test final-only NBA grade wake-up
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/final_transition_grade_trigger.py'
+      - 'iphone_bot/tests/test_final_transition_grade_trigger.py'
+      - '.github/workflows/nba-live-tracker-backup.yml'
+      - '.github/workflows/test_final_transition_grade_trigger.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/final_transition_grade_trigger.py'
+      - 'iphone_bot/tests/test_final_transition_grade_trigger.py'
+      - '.github/workflows/test_final_transition_grade_trigger.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify one-shot transitions never fabricate grades or trigger from stale data
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_final_transition_grade_trigger.py' -v
+          python -m py_compile iphone_bot/final_transition_grade_trigger.py

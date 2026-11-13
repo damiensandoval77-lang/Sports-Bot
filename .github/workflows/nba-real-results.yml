@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/nba-real-results.yml'
       - 'iphone_bot/paper_pick_pipeline.py'
+      - 'iphone_bot/grade_quality_scorecard.py'
+      - 'iphone_bot/tests/test_grade_quality_scorecard.py'
       - 'iphone_bot/tests/test_paper_pick_pipeline.py'
       - 'iphone_bot/model_performance.py'
       - 'iphone_bot/accuracy_feedback.py'
@@ -18,6 +20,10 @@ on:
       - 'iphone_bot/tests/test_research_upgrades.py'
       - 'iphone_bot/tests/test_model_performance.py'
       - 'iphone_bot/fetch_current_form.py'
+      - 'iphone_bot/minutes_scenario_validation.py'
+      - 'iphone_bot/verified_research_no_play.py'
+      - 'iphone_bot/tests/test_verified_research_no_play.py'
+      - 'docs/verified_research_dnps_2026-11-06_07.json'
       - 'iphone_bot/tests/test_pipeline_health.py'
   schedule:
     - cron: '37 12,18 * * *'
@@ -49,20 +55,31 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p "test_accuracy_feedback.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paired_model_comparison.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_minutes_scenario_validation.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_verified_research_no_play.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_minutes_model_v2.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v
           python -m unittest discover -s iphone_bot/tests -p "test_probability_audit.py" -v
+          python -m unittest discover -s iphone_bot/tests -p "test_grade_quality_scorecard.py" -v
           python - <<'PY'
           from pathlib import Path
-          html=Path('docs/index.html').read_text()
-          assert 'tab-results' in html
-          assert 'minutes-v2-validation' in html
-          assert 'chronological-accuracy-feedback' in html
-          Path('/tmp/sports-bot-live-results.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          html=Path('docs/dames-picks/index.html').read_text()
+          assert 'NBA + NFL' in html
+          assert 'data-league="NBA"' in html and 'data-league="NFL"' in html
+          assert 'data-view="tracker"' in html
+          # Root index is intentionally a redirect; do not assert obsolete
+          # tabs or extract its redirect JS as the production application.
+          assert 'dames-picks/' in Path('docs/index.html').read_text()
+          assert '<script>' in html and '</script>' in html
+          Path('/tmp/sports-bot-live-results.js').write_text(
+              html.split('<script>',1)[1].split('</script>',1)[0])
           PY
           node --check /tmp/sports-bot-live-results.js
+          node --check docs/dames-picks/feeds.js
+          node --check docs/dames-picks/dames_take.js
       - name: Refresh completed real NBA player game logs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       - name: Publish minutes V2 research from completed games
         run: python -u iphone_bot/publish_minutes_v2.py
@@ -72,6 +89,8 @@ jobs:
           python -u iphone_bot/fetch_official_injuries.py
       - name: Settle previously locked predictions from actual completed games
         run: python -u iphone_bot/paper_pick_pipeline.py
+      - name: Publish honest grading and confidence audit from frozen forecasts
+        run: python -u iphone_bot/grade_quality_scorecard.py
       - name: Settle frozen injury-aware minutes research (no paid calls)
         run: python -u iphone_bot/minutes_scenario_validation.py
       - name: Verify no predictions were retroactively changed
@@ -83,7 +102,7 @@ jobs:
           report=json.load(open('docs/paper_results.json'))
           assert len(data)==len({identity(x) for x in data})
           assert all(x['paper_only'] is True for x in data)
-          assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in data)
+          assert all(x['status'] in ('PENDING','SETTLED','VOID_DNP','INVALID_LATE_CAPTURE') for x in data)
           minutes_v2=json.load(open('docs/minutes_v2_validation.json'))
           assert minutes_v2['live_model_unchanged'] is True
           assert minutes_v2['production_adjustment_applied'] is False
@@ -117,7 +136,7 @@ jobs:
           PY
       - name: Publish finished real-game paper grades
         run: |
-          git add docs/injury_context.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json docs/minutes_v2_validation.json
+          git add docs/injury_context.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/injury_minutes_ledger.json docs/injury_minutes_results.json docs/minutes_v2_validation.json docs/grade_quality_scorecard.json
           if git diff --cached --quiet; then echo "No new grades"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

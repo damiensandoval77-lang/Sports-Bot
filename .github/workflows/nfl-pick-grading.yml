@@ -1,0 +1,150 @@
+name: NFL frozen-pick grading and accuracy ledger
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_nfl_prospective_calibration.py'
+      - 'tests/test_nfl_prospective_calibration.py'
+      - 'scripts/verified_nfl_gamebook.py'
+      - 'tests/test_nfl_gamebook.py'
+      - 'scripts/export_nfl_espn_finals.py'
+      - 'scripts/reconcile_nfl_picks.py'
+      - 'tests/test_nfl_public_grading.py'
+      - '.github/workflows/nfl-pick-grading.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_nfl_prospective_calibration.py'
+      - 'tests/test_nfl_prospective_calibration.py'
+      - 'scripts/verified_nfl_gamebook.py'
+      - 'tests/test_nfl_gamebook.py'
+      - 'scripts/export_nfl_espn_finals.py'
+      - 'scripts/reconcile_nfl_picks.py'
+      - 'tests/test_nfl_public_grading.py'
+      - '.github/workflows/nfl-pick-grading.yml'
+      - 'docs/nfl/data/latest_2026*.csv'
+      - 'docs/nfl/data/latest_2026.json'
+      - 'docs/nfl/data/boxscores/week_*.json'
+      - 'docs/nfl/data/boxscores/manifest.json'
+      - 'docs/nfl/data/boxscores/espn_verified_finals.json'
+      - 'docs/nfl/data/boxscores/verified_gamebook_*.json'
+      - 'docs/nfl/data/verified_inactives_2026.json'
+      - 'docs/nfl/data/verified_zero_snap_stats_2026.json'
+      - 'docs/nfl/data/verified_full_scoring_2026_09_BUF_MIN.json'
+      - 'docs/nfl/data/verified_supplemental_snaps_2026.json'
+      - 'scripts/recover_nfl_zero_stat_snaps.py'
+  workflow_dispatch:
+  # GitHub Actions commits made with GITHUB_TOKEN do not fire downstream
+  # push workflows. Listen for the completed upstream publishers directly.
+  workflow_run:
+    workflows:
+      - 'Publish verified NFL final boxscores'
+      - 'Sync private NFL lines for public grading'
+    types: [completed]
+  schedule:
+    - cron: '45 5,11,17,23 * 1,2,9-12 *'
+    # Game and postgame fallback checks if upstream workflow_run is delayed.
+    - cron: '15,45 * * 1,2,9-12 *'
+permissions:
+  contents: write
+concurrency:
+  # PR verification must not replace queued production grading, or vice versa.
+  group: ${{ github.event_name == 'pull_request' && format('nfl-public-frozen-grading-{0}', github.ref) || 'nfl-public-frozen-grading' }}
+  cancel-in-progress: false
+jobs:
+  due:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.window.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify postgame window safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_postgame_schedule.py' -v
+      - id: window
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" = "schedule" ] && [ "${{ github.event.schedule }}" != "45 5,11,17,23 * 1,2,9-12 *" ]; then
+            echo "run=$(python scripts/nfl_postgame_due.py)" >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          fi
+  verify-grade-publish:
+    needs: due
+    if: needs.due.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run deterministic public NFL grading unit tests
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+      - name: Verify prospective real-line calibration safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_prospective_calibration.py' -v
+      - name: Verify complete official gamebook safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_gamebook.py' -v
+      - name: Attempt independent snap-count zero-target recovery
+        continue-on-error: true
+        # A source outage must not discard already published grades.
+        run: |
+          pip install --disable-pip-version-check pandas pyarrow
+          python scripts/recover_nfl_zero_stat_snaps.py
+      - name: Fetch immutable original evidence for one-time archive recovery
+        run: git fetch origin 7d787f218c9d5667536a391257f873126f42476f
+      - name: Reconcile captured pregame lines with verified final player stats
+        run: python scripts/reconcile_nfl_picks.py --recover-snapshot-ref 7d787f218c9d5667536a391257f873126f42476f
+      - name: Measure frozen pregame real-line probability performance
+        run: python scripts/audit_nfl_prospective_calibration.py
+      - name: Check grading coverage, including pending results
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("docs/nfl/data/grading_health_2026.json")
+          r=json.loads(p.read_text())
+          assert r["expected_final_picks"] == r["graded_picks"]+r["pending_picks"]+r.get("void_picks",0)
+          assert r["frozen_final_pick_candidates"] == r["expected_final_picks"]
+          assert r["standard_wins"] <= r["standard_settled"]
+          assert r["official_grading_scope"] == "FROZEN_STANDARD_LINE_ONLY"
+          assert r["standard_graded_picks_including_pushes"] >= r["standard_settled"]
+          assert r["alternative_tier_historical_grades_excluded"] + r["standard_graded_picks_including_pushes"] == r["graded_picks"]
+          assert r["final_games_with_frozen_picks"] == 0 or r["expected_final_picks"] > 0, "Completed NFL games with frozen props cannot publish zero eligible records"
+          print("2026 frozen grading:",r["graded_picks"],"graded,",
+                r["pending_picks"],"pending,",r.get("void_picks",0),"verified voids,",
+                r["archived_pregame_lines"],"frozen pregame lines")
+          PY
+      - name: Commit only changed grading and frozen history files
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name nfl-grading-publisher
+          git config user.email actions@users.noreply.github.com
+          for attempt in 1 2 3; do
+            git add docs/nfl/data/verified_zero_snap_stats_2026.json 2>/dev/null || true
+            git add docs/nfl/data/frozen_pick_history_2026.csv \
+                    docs/nfl/data/pp_graded_2026.csv \
+                    docs/nfl/data/pp_grading_pending_2026.csv \
+                    docs/nfl/data/grading_health_2026.json \
+                    docs/nfl/data/prospective_calibration_2026.json \
+                    docs/nfl/data/active_frozen_2026.json \
+                    docs/nfl/data/original_evidence_recovery_2026.json
+            if git diff --cached --quiet; then
+              echo "NFL frozen grades unchanged; preserving stable Pages deployment"
+              exit 0
+            fi
+            git commit -m "Reconcile and grade archived NFL pregame predictions"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent Sports-Bot commit detected; refresh and recompute on new main"
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/reconcile_nfl_picks.py --recover-snapshot-ref 7d787f218c9d5667536a391257f873126f42476f
+            python scripts/audit_nfl_prospective_calibration.py
+          done
+          echo "::error::Could not publish NFL grading after three safe retries"
+          exit 1

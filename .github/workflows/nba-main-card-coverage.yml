@@ -1,0 +1,45 @@
+name: NBA main board eight-game card coverage and injury display gate
+on:
+  pull_request:
+    paths:
+      - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'iphone_bot/tests/test_live_prop_tracker.cjs'
+      - 'iphone_bot/tests/test_restored_main_card_coverage.cjs'
+      - 'iphone_bot/tests/test_quick_prizepicks_join.cjs'
+      - '.github/workflows/nba-main-card-coverage.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/index.html'
+      - 'iphone_bot/tests/test_restored_main_card_coverage.cjs'
+      - 'iphone_bot/tests/test_quick_prizepicks_join.cjs'
+      - '.github/workflows/nba-main-card-coverage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test live standard PrizePicks card coverage and isolated injury updates
+        run: |
+          node --test iphone_bot/tests/test_restored_main_card_coverage.cjs
+          node --test iphone_bot/tests/test_quick_prizepicks_join.cjs
+          node --test iphone_bot/tests/test_live_prop_tracker.cjs
+      - name: Verify dashboard JavaScript parsing
+        run: |
+          node - <<'JS'
+          const fs=require('fs'),vm=require('vm');
+          const html=fs.readFileSync('docs/index.html','utf8');
+          const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+          for(const [i,script] of scripts.entries()){
+            if(script.trim())new vm.Script(script,{filename:'dashboard-inline-'+i+'.js'});
+          }
+          console.log('Dashboard parsed inline scripts:',scripts.length);
+          JS

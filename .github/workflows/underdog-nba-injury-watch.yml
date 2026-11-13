@@ -1,0 +1,67 @@
+name: Monitor authenticated Underdog NBA OUT reports
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/underdog_nba_alerts.py'
+      - 'iphone_bot/new_ai_injury_context.py'
+      - 'iphone_bot/tests/test_underdog_injury_watch.py'
+      - '.github/workflows/underdog-nba-injury-watch.yml'
+  # Optional, on-demand only. The free official NBA monitor runs automatically.
+permissions:
+  contents: write
+concurrency:
+  group: underdog-nba-injury-watch
+  cancel-in-progress: false
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run authoritative identity, timestamp and lineup scenario tests
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
+          python -m py_compile iphone_bot/underdog_nba_alerts.py iphone_bot/new_ai_injury_context.py
+      - name: Read recent posts directly from authenticated UnderdogNBA X API
+        env:
+          UNDERDOG_X_BEARER_TOKEN: ${{ secrets.UNDERDOG_X_BEARER_TOKEN }}
+        run: python -u iphone_bot/underdog_nba_alerts.py
+      - name: Publish changed alerts; trigger trained AI via its own push workflow
+        run: |
+          set -euo pipefail
+          cp docs/underdog_nba_injury_alerts.json "$RUNNER_TEMP/injury-alerts.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            python - "$RUNNER_TEMP/injury-alerts.json" <<'PY'
+          import json,sys
+          from pathlib import Path
+          target=Path('docs/underdog_nba_injury_alerts.json')
+          new=json.loads(Path(sys.argv[1]).read_text())
+          old=json.loads(target.read_text()) if target.exists() else {}
+          # A new polling timestamp alone is NOT an injury change; avoid
+          # unnecessary training/quotes and credits.
+          if old.get('status')==new.get('status') and old.get('alerts')==new.get('alerts'):
+              sys.exit()
+          target.write_text(json.dumps(new,indent=2)+'\n')
+          print('Injury alert change:',len(new.get('alerts',[])),'accepted')
+          PY
+            git add docs/underdog_nba_injury_alerts.json
+            if git diff --cached --quiet; then
+              echo 'No new verified UnderdogNBA update; keep new AI unchanged'
+              exit 0
+            fi
+            git commit -m 'Publish new authenticated Underdog NBA injury status alerts'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

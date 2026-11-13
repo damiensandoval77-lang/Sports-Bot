@@ -5,6 +5,9 @@ on:
     paths:
       - 'iphone_bot/assist_v2_*.py'
       - 'iphone_bot/tests/test_assist_v2_*.py'
+      - 'iphone_bot/verified_research_no_play.py'
+      - 'iphone_bot/tests/test_verified_research_no_play.py'
+      - 'docs/verified_research_dnps_2026-11-06_07.json'
       - '.github/workflows/assist-v2-shadow.yml'
   workflow_dispatch:
   schedule:
@@ -32,12 +35,30 @@ jobs:
         run: |
           python -m py_compile iphone_bot/assist_v2_research.py iphone_bot/assist_v2_shadow_capture.py
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_v2_*.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_research_no_play.py' -v
+      # A current-form outage must not prevent settling historical snapshots.
       - name: Load current player form for strictly prior game logs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        id: refresh_form
+        continue-on-error: true
         run: python -u iphone_bot/fetch_current_form.py
+      # Board staleness is expected outside a pregame capture window.
+      # Capture and grading are separate obligations: even if capture fails,
+      # retain historical shadow records and grade verified finals.
       - name: Lock research-only pretip projections from fresh verified board
+        id: capture_shadow
+        continue-on-error: true
         run: python -u -m iphone_bot.assist_v2_shadow_capture --mode capture
-      - name: Grade only verified final player box scores
+      - name: Grade previously locked predictions using verified final sources
         run: python -u -m iphone_bot.assist_v2_shadow_capture --mode settle
+      - name: Report capture-side source failures without blocking settlement
+        run: |
+          echo "Current player form outcome: ${{ steps.refresh_form.outcome }}"
+          echo "New pretip capture outcome: ${{ steps.capture_shadow.outcome }}"
+          if [ "${{ steps.refresh_form.outcome }}" = "failure" ] || [ "${{ steps.capture_shadow.outcome }}" = "failure" ]; then
+            echo "::warning::Assist V2 pregame inputs unavailable. Existing saved predictions were still sent through verified final grading."
+          fi
       - name: Assert research isolation and independent scoring
         run: |
           python - <<'PY'
@@ -47,11 +68,19 @@ jobs:
           r=json.load(open('docs/assist_v2_shadow_results.json'))
           assert len(p)==len({identity(x) for x in p}), 'Duplicate market snapshots'
           assert all(x['model']=='ASSIST_V2_SHADOW_RESEARCH' and x['production_applied'] is False for x in p)
-          assert all(x['status'] in ('PENDING','SETTLED','INVALID_LATE_CAPTURE') for x in p)
+          assert all(x['status'] in ('PENDING','SETTLED','VOID_DNP','INVALID_LATE_CAPTURE') for x in p)
           assert all(utc(x['captured_at'])<utc(x['event_start']) for x in p if x['status']!='INVALID_LATE_CAPTURE')
           assert r['research_only'] is True and r['prospective_pretip_locked'] is True
-          assert r['captured']==len(p) and r['settled']+r['pending']<=len(p)
+          assert r['captured']==len(p) and r['settled']+r['pending']+r.get('verified_no_play_voids',0)==len(p)
+          paired=r['paired_comparison']
+          assert paired['paired_direction_markets']<=r['independent_settled_markets']
+          assert paired['paired_v2_wins']<=paired['paired_direction_markets']
+          assert paired['v2_only_correct']+paired['baseline_only_correct']+paired['both_correct']+paired['both_wrong']==paired['paired_direction_markets']
+          assert paired['promotion_eligible'] is False
           print('Independent settled Assist V2 markets:',r['independent_settled_markets'])
+          print('Same-market paired comparisons:',paired['paired_direction_markets'],
+                'V2 wins:',paired['paired_v2_wins'],
+                'baseline wins:',paired['paired_baseline_wins'])
           PY
       - name: Commit only the research ledger and scoring summary
         run: |

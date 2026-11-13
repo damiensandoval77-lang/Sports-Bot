@@ -1,0 +1,34 @@
+name: Phase 1 deployable live service smoke (offline)
+on:
+  pull_request:
+    paths:
+      - '.replit'
+      - 'iphone_bot/live_tracker_service.py'
+      - 'iphone_bot/publish_live_tracker_feed.py'
+      - 'iphone_bot/tests/test_live_tracker_service.py'
+      - '.github/workflows/phase1-live-service-replit.yml'
+permissions:
+  contents: read
+jobs:
+  live-service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify Replit startup config and no-external-data tracker tests
+        run: |
+          python - <<'PY'
+          import pathlib,tomllib
+          x=tomllib.loads(pathlib.Path('.replit').read_text())
+          assert x['run']=='python -m iphone_bot.live_tracker_service'
+          assert x['entrypoint']=='iphone_bot/live_tracker_service.py'
+          assert x['ports'][0]['localPort']==8080
+          assert x['env']['LIVE_CORS_ORIGIN']=='https://damiensandoval77-lang.github.io'
+          print('Replit HTTP entrypoint and browser origin configured')
+          PY
+          python -m py_compile iphone_bot/live_tracker_service.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_live_tracker_service.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v

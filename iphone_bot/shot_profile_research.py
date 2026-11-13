@@ -170,8 +170,16 @@ def load_history(path=ARCHIVE):
             candidate={k:number(raw[k]) for k in FIELDS}
             if any(v is None for v in candidate.values()):
                 rejected["invalid_numbers"]+=1;continue
-            entry={**candidate,"id":raw["PLAYER_ID"],"game_id":raw["GAME_ID"],
-                   "team":raw["TEAM_ABBREVIATION"],"date":day,"season":season}
+            # Historical matchup is a schedule descriptor, not a postgame statistic.
+            matchup=str(raw.get("MATCHUP") or "")
+            opponent=(matchup.split()[-1] if (" vs. " in matchup or " @ " in matchup)
+                      else None)
+            if opponent and len(opponent)!=3:opponent=None
+            # AST and REB are observed archived totals, not tracking chances.
+            entry={**candidate,"AST":number(raw.get("AST")),"REB":number(raw.get("REB")),
+                   "id":raw["PLAYER_ID"],"game_id":raw["GAME_ID"],
+                   "team":raw["TEAM_ABBREVIATION"],"opponent":opponent,
+                   "date":day,"season":season}
             if not normalized(entry,require_makes=True):
                 rejected["invalid_box_score"]+=1;continue
             if ident in seen:

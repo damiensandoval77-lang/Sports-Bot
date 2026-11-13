@@ -33,6 +33,23 @@ class MissedGames(unittest.TestCase):
         self.assertEqual(match["diagnosis"],
                          "PARTIALLY_SETTLED_MISSING_PLAYER_BOXES_OR_DNP")
 
+    def test_nightly_accuracy_ignores_alternate_quotes(self):
+        winner=record(status="SETTLED")
+        winner.update({"result":"WIN","captured_at":"2026-11-06T22:00:00Z"})
+        alternate=dict(winner,bookmaker="Other",line=25.5,
+                       result="LOSS",captured_at="2026-11-06T22:05:00Z")
+        loser=record(status="SETTLED")
+        loser.update({"player_id":"10","result":"LOSS"})
+        outstanding=record()
+        outstanding["player_id"]="11"
+        night=inspect([winner,alternate,loser,outstanding],
+                      now="2026-11-07T06:00:00Z")["nightly_grading"][0]
+        self.assertEqual(night["captured_independent_markets"],3)
+        self.assertEqual(night["graded_independent_markets"],2)
+        self.assertEqual(night["pending_independent_markets"],1)
+        self.assertEqual((night["wins"],night["losses"]),(1,1))
+        self.assertEqual(night["hit_rate_ex_push"],0.5)
+
     def test_empty_ledger_has_no_fake_historical_games(self):
         report=inspect([],now="2026-11-07T06:00:00Z")
         self.assertEqual(report["celtics_matchups"],[])

@@ -5,12 +5,41 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/compare_live_models.py'
+      - 'iphone_bot/enrich_current_shooting.py'
+      - 'iphone_bot/tests/test_enrich_current_shooting.py'
+      - 'docs/odds_compact.json'
+      - 'iphone_bot/injury_projection_adjustment.py'
+      - 'iphone_bot/tests/test_injury_projection_adjustment.py'
       - 'iphone_bot/tests/test_player_name_matching.py'
       - 'iphone_bot/market_coverage_audit.py'
       - 'iphone_bot/tests/test_market_coverage_audit.py'
       - 'iphone_bot/capture_ai_board.py'
       - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/prospective_research_gate.py'
+      - 'iphone_bot/tests/test_prospective_research_gate.py'
+      - 'iphone_bot/quote_capture_coverage.py'
+      - 'iphone_bot/tests/test_quote_capture_coverage.py'
       - 'iphone_bot/opportunity_backtest.py'
+      - 'iphone_bot/opponent_context_v2.py'
+      - 'iphone_bot/rebound_shadow_v1.py'
+      - 'iphone_bot/tracking_opportunities_v1.py'
+      - 'iphone_bot/import_tracking_export.py'
+      - 'iphone_bot/tests/test_import_tracking_export.py'
+      - 'iphone_bot/tests/test_tracking_opportunities_v1.py'
+      - 'iphone_bot/tests/test_rebound_shadow_v1.py'
+      - 'iphone_bot/lineup_onoff_research.py'
+      - 'iphone_bot/import_authorized_onoff.py'
+      - 'iphone_bot/pbpstats_request_plan.py'
+      - 'iphone_bot/pbpstats_wowy_adapter.py'
+      - 'iphone_bot/pbpstats_game_coverage.py'
+      - 'iphone_bot/tests/test_pbpstats_game_coverage.py'
+      - 'iphone_bot/assemble_pbpstats_wowy.py'
+      - 'iphone_bot/tests/test_assemble_pbpstats_wowy.py'
+      - 'iphone_bot/tests/test_pbpstats_wowy_adapter.py'
+      - 'iphone_bot/tests/test_pbpstats_request_plan.py'
+      - 'iphone_bot/tests/test_import_authorized_onoff.py'
+      - 'iphone_bot/tests/test_lineup_onoff_research.py'
+      - 'iphone_bot/tests/test_opponent_context_v2.py'
       - 'iphone_bot/tests/test_opportunity_backtest.py'
       - 'iphone_bot/tests/test_projection_upgrade_research.py'
       - 'iphone_bot/tests/test_capture_ai_board.py'
@@ -18,7 +47,9 @@ on:
   schedule:
     # Market-refresh job runs at :12. This job reads its published compact feed
     # and NEVER consumes additional sportsbook API credits.
-    - cron: '41 20,23 * * *'
+    # Re-evaluate the published market feed near Eastern evening tipoffs
+    # after official NBA availability reports update. No new sportsbook call.
+    - cron: '41 0,18,21,23 * * *'
 permissions:
   contents: write
 concurrency:
@@ -34,10 +65,23 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test immutable pregame captures and paper settlement
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_quote_capture_coverage.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_opponent_context_v2.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_rebound_shadow_v1.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunities_v1.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_import_tracking_export.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_lineup_onoff_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_import_authorized_onoff.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_request_plan.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_wowy_adapter.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_game_coverage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_assemble_pbpstats_wowy.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v
       - name: Confirm actual current market coverage and quote freshness
@@ -66,10 +110,26 @@ jobs:
       - name: Train original opponent-aware model for same combined projection
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Download verified current-season NBA player games
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
+      - name: Refresh official NBA injury statuses before producing AI projections
+        run: |
+          python -m pip install --disable-pip-version-check "pypdf>=5,<7"
+          python -u iphone_bot/fetch_official_injuries.py
+      - name: Validate and import current NBA player shooting rates for research only
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_enrich_current_shooting.py' -v
+          python -u iphone_bot/enrich_current_shooting.py
+      - name: Validate injury-updated projections for official OUT players
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/injury_projection_adjustment.py iphone_bot/compare_live_models.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_injury_projection_adjustment.py' -v
       - name: Check Unicode player identity matching across sportsbook and NBA roster
         env:
           PYTHONPATH: ${{ github.workspace }}/iphone_bot:${{ github.workspace }}
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_player_name_matching.py' -v
       - name: Preserve the exact original trained-model projection and probability pipeline
         env:
@@ -114,6 +174,14 @@ jobs:
           PY
       - name: Freeze every eligible AI comparison before scheduled tipoff
         run: python -u iphone_bot/capture_ai_board.py
+      - name: Verify no eligible bookmaker quote was silently dropped
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('docs/pregame_quote_capture_coverage.json'))
+          assert x['eligible_quote_missing_from_ledger']==0
+          print('Every real quote accounted for:',x['eligibility_by_reason'])
+          PY
       - name: Lock opportunity, official injury, V4 shadow and 20k calibration research
         run: |
           python -u iphone_bot/projection_upgrade_research.py
@@ -124,7 +192,11 @@ jobs:
           assert r["live_simulated_hit_percentages_unchanged"] is True
           assert r["defender_v4"]["v4_live_applied"] is False
           assert all(x["changes_live_probabilities"] is False for x in r["simulation_audit"].values())
-          print("Pregame opportunity and V4 research locked:",r["locked_samples"])
+          gate=r["prospective_capture_integrity"]
+          assert gate["all_new_rows_have_three_diagnostics"],'New research diagnostics not frozen'
+          assert gate["new_research_rows"]==r["new_samples"],'Unexpected research capture count'
+          print("Pregame opportunity and V4 research locked:",r["locked_samples"],
+                "new fully diagnosed rows:",gate["new_research_rows"])
           PY
       - name: Verify frozen pregame model snapshots exist
         run: |
@@ -143,7 +215,7 @@ jobs:
       - name: Publish AI board and immutable pregame paper records immediately
         run: |
           git fetch origin main
-          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json docs/ai_market_coverage.json
+          git add docs/ai_comparisons.json docs/current_form.json docs/paper_pick_ledger.json docs/paper_results.json docs/projection_upgrade_ledger.json docs/projection_upgrade_status.json docs/ai_market_coverage.json docs/pregame_quote_capture_coverage.json
           if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

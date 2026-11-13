@@ -1,0 +1,42 @@
+name: Verify PrizePicks API credits once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/verify_prizepicks_credits.py'
+      - '.github/workflows/verify-prizepicks-credits.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: prizepicks-credit-check-once
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm one authenticated PrizePicks NBA response
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+        run: python -u iphone_bot/verify_prizepicks_credits.py
+      - name: Publish safe connectivity status
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/prizepicks_connection_health.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record secret-safe PrizePicks API connectivity result'
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1

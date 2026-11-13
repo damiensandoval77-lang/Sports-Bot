@@ -11,6 +11,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 try:
+    from .verified_research_no_play import exclude_pending
+except ImportError:
+    from verified_research_no_play import exclude_pending
+try:
     from .paper_pick_pipeline import expected_opponents
 except ImportError:
     from paper_pick_pipeline import expected_opponents
@@ -132,7 +136,7 @@ def settle(rows,completed_games,now=None):
         except (TypeError,ValueError,KeyError):
             pass
         output.append(record)
-    return output
+    return exclude_pending(output,now=now,minutes_only=True)
 
 
 def report(rows,now=None):
@@ -140,6 +144,7 @@ def report(rows,now=None):
     now=utc(now) if now else datetime.now(timezone.utc)
     done=[r for r in rows if r.get("status")=="SETTLED"]
     pending=[r for r in rows if r.get("status")=="PENDING"]
+    verified_dnp=[r for r in rows if r.get("status")=="EXCLUDED_VERIFIED_DNP"]
     before=after=ties=0
     for r in done:
         if r["scenario_abs_error"]<r["baseline_abs_error"]:after+=1
@@ -151,6 +156,8 @@ def report(rows,now=None):
     return {
         "generated_at":now.isoformat(),"status":"PREGAME_LOCKED_INJURY_MINUTES_RESEARCH",
         "captured":len(rows),"pending":len(pending),"settled":n,
+        "verified_dnp_exclusions":len(verified_dnp),
+        "accounted_for":n+len(verified_dnp),
         "pending_over_48_hours":sum((now-utc(r["event_start"])).total_seconds()>=48*3600 for r in pending),
         "same_game_comparison":{
             "observations":n,"baseline_mae":round(baseline,3) if n else None,
@@ -163,7 +170,7 @@ def report(rows,now=None):
             "Comparisons use exact same player-game outcomes with both forecasts saved before tipoff.",
             "Teammate OUT designations were recorded before tipoff from a date-matched official NBA report.",
             "Historical with/without teammate differences are observational, not causal.",
-            "Missing player minutes, including DNP, remain ungraded; do not infer actual minutes.",
+            "Only explicitly verified final-game DNPs are excluded; other missing minutes remain ungraded.",
             "Small samples and correlated same-team games cannot establish predictive improvement.",
             "Research findings do not alter any live points/rebounds/assists predictions."
         ]

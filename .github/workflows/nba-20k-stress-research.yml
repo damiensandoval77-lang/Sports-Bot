@@ -1,0 +1,42 @@
+name: NBA 20K Stress Research Tests (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/stress_test_20k_research.py'
+      - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/tests/test_stress_test_20k_research.py'
+      - 'iphone_bot/tests/test_projection_upgrade_research.py'
+      - '.github/workflows/nba-20k-stress-research.yml'
+  push:
+    branches: ['research/20261107-20k-stress-v1']
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile stress and shadow modules
+        run: python -m py_compile iphone_bot/stress_test_20k_research.py iphone_bot/projection_upgrade_research.py
+      - name: Test 20K simulation integrity and full research integration
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_stress_test_20k_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+      - name: Verify no production probability, selection, or calibration changes
+        run: |
+          python - <<'PY'
+          from iphone_bot.stress_test_20k_research import DRAWS, SCENARIOS
+          from iphone_bot.projection_upgrade_research import stress_research_report
+          assert DRAWS == 20_000
+          assert len(SCENARIOS) == 6
+          status=stress_research_report([],[])
+          assert status['calibrated_probability'] is False
+          assert status['live_probabilities_changed'] is False
+          assert status['live_picks_changed'] is False
+          assert status['performance_improvement_established'] is False
+          print('Validated 20K conditional stress research, offline only')
+          PY

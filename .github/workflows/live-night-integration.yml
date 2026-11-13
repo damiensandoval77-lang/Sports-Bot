@@ -1,0 +1,38 @@
+name: Live-night deployed ESPN integration (read-only)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5,35 0-6,23 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/integration_live_night.cjs'
+      - 'tests/test_live_night_integration.cjs'
+      - '.github/workflows/live-night-integration.yml'
+  pull_request:
+    paths:
+      - 'scripts/integration_live_night.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
+      - 'tests/test_live_night_integration.cjs'
+      - '.github/workflows/live-night-integration.yml'
+permissions:
+  contents: read
+concurrency:
+  group: live-night-integration
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate live source without paid provider access
+        run: node --test iphone_bot/tests/test_live_direct.cjs tests/test_live_night_integration.cjs
+      - name: Run public deployed app against real ESPN
+        if: github.event_name != 'pull_request'
+        run: node scripts/integration_live_night.cjs

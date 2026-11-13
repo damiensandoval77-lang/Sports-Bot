@@ -1,0 +1,16 @@
+const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+const ctx={Intl,Date,setTimeout,clearTimeout,AbortController};vm.createContext(ctx);vm.runInContext(fs.readFileSync('docs/dames-picks/live_direct.js','utf8'),ctx);const L=ctx.DamesPicksLive;
+const now=Date.parse('2026-11-13T02:45:00Z'),iso=new Date(now).toISOString();
+const schedule={games:[{game_id:'2026_10_WAS_NYG',away:'WAS',home:'NYG',kickoff_utc:'2026-11-13T01:15:00Z'}]};
+const sides=[{homeAway:'away',team:{abbreviation:'WSH'},score:'3'},{homeAway:'home',team:{abbreviation:'NYG'},score:'7'}];
+const event={id:'123',date:'2026-11-13T01:15:00Z',competitions:[{competitors:sides}],status:{type:{state:'in',shortDetail:'2nd'},period:2,displayClock:'2:35'}};
+const summary={header:{id:'123',competitions:[{competitors:sides}]},boxscore:{players:[{team:{abbreviation:'WSH'},statistics:[{name:'passing',labels:['C/ATT','YDS'],athletes:[{athlete:{id:'1',displayName:'Jayden Daniels'},stats:['7/10','61']}]}]}]}};
+const fetcher=(e=event,s=summary)=>async u=>({ok:true,json:async()=>u.includes('/summary')?s:{events:[e]}});
+test('browser NFL maps exact event/team and real passing totals',async()=>{const x=await L.fetchNFL(schedule,{now,fetch:fetcher()});assert.equal(x.games[0].away,'WAS');assert.equal(x.games[0].players[0].stats.PASS_YDS,61);assert.equal(x.games[0].players[0].stats.PASS_CMP,7);assert.equal(x.games[0].game_id,'2026_10_WAS_NYG')});
+test('rejects another week even for same opponents',async()=>{assert.equal(await L.fetchNFL(schedule,{now,fetch:fetcher({...event,date:'2026-11-20T01:15:00Z'})}),null)});
+test('rejects mismatched summary event',async()=>{assert.equal(await L.fetchNFL(schedule,{now,fetch:fetcher(event,{...summary,header:{...summary.header,id:'999'}})}),null)});
+test('CORS/offline does not destroy snapshot fallback',async()=>{await assert.rejects(L.fetchNFL(schedule,{now,fetch:async()=>{throw Error('CORS')}}));const x={status:'ok',checked_at:iso,games:[{game_id:'x',players:[{}]}]};assert.equal(L.mergeNFL(x,null,now).games[0].players.length,1)});
+test('newest observation wins and stale game is not freshened by another',()=>{const old={status:'ok',checked_at:new Date(now-60000).toISOString(),games:[{game_id:'x',away_score:3}]},fresh={status:'ok',checked_at:iso,games:[{game_id:'x',away_score:7},{game_id:'stale',observed_at:new Date(now-25*60000).toISOString()}]};assert.equal(L.mergeNFL(fresh,old,now).games[0].away_score,7);assert.equal(L.mergeNFL(old,fresh,now).games.length,1)});
+test('NFL-only live slate activates existing30second tick',()=>{const s=fs.readFileSync('docs/dames-picks/index.html','utf8');assert.ok(s.includes('["NBA","NFL"].includes(g.sport)'));assert.ok(s.includes('L.fetchNFL(state.raw?.nflSchedule)'));assert.ok(s.includes('L.mergeNFL(state.raw.nflLive,state.directNFL)'))});
+
+test('published NFL raw fallback bypasses Pages delay and polls on live tick',()=>{const s=fs.readFileSync('docs/dames-picks/index.html','utf8');assert.ok(s.includes('new Set(["nfl/data/live_2026.json"'));assert.ok(s.includes('const fields=["nbaLive","nbaScores","independentPlayers","nflLive"]'));assert.ok(s.includes('o?.checked_at'));});

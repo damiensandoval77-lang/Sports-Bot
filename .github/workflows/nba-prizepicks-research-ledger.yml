@@ -1,0 +1,128 @@
+name: Freeze and grade authentic pregame PrizePicks AI research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks_ai_research.json'
+      - 'docs/prizepicks_pregame_line_archive.json'
+      - 'iphone_bot/prizepicks_research_ledger.py'
+      - 'docs/prizepicks_pregame_line_archive.json'
+      - 'iphone_bot/recover_prizepicks_final_games.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
+      - 'iphone_bot/verified_nov9_nonparticipants.py'
+      - 'iphone_bot/tests/test_verified_nov9_nonparticipants.py'
+      - 'docs/confirmed_nonparticipants_2026-11-09.json'
+      - 'iphone_bot/tests/test_prizepicks_final_recovery.py'
+      - 'iphone_bot/verified_prizepicks_inactives.py'
+      - 'iphone_bot/tests/test_verified_prizepicks_inactives.py'
+      - 'docs/verified_prizepicks_inactive_2026-11-08.json'
+      - 'iphone_bot/tests/test_prizepicks_research_ledger.py'
+      - '.github/workflows/nba-prizepicks-research-ledger.yml'
+  schedule:
+    - cron: '27 * * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/prizepicks_research_ledger.py'
+      - 'iphone_bot/recover_prizepicks_final_games.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
+      - 'iphone_bot/verified_nov9_nonparticipants.py'
+      - 'iphone_bot/tests/test_verified_nov9_nonparticipants.py'
+      - 'docs/confirmed_nonparticipants_2026-11-09.json'
+      - 'iphone_bot/tests/test_prizepicks_final_recovery.py'
+      - 'iphone_bot/verified_prizepicks_inactives.py'
+      - 'iphone_bot/tests/test_verified_prizepicks_inactives.py'
+      - 'docs/verified_prizepicks_inactive_2026-11-08.json'
+      - '.github/workflows/nba-prizepicks-research-ledger.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-prizepicks-research-ledger
+  cancel-in-progress: false
+jobs:
+  research_grades:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify immutable pretip forecast and final-matchup integrity
+        # Run pure contract tests only during PRs; scheduled grading needs the
+        # actual validated source/ledger checks, not stale source-text tests.
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_gamebook_inactives.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_research_ledger.py' -v
+          python -m py_compile iphone_bot/prizepicks_research_ledger.py
+          python - <<'PY'
+          import json
+          from iphone_bot.prizepicks_research_ledger import summarize
+          report=summarize({"records":[]})
+          assert report["official_grading_scope"]=="VERIFIED_PRETIP_STANDARD_LINES_ONLY"
+          assert report["independent_by_market"]["PTS"]["graded"]==0
+          assert report["by_market"]["PTS"]["line_hit_rate"] is None
+          PY
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_final_recovery.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_nov9_nonparticipants.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
+      - name: Read most recent completed NBA player games
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -u iphone_bot/fetch_current_form.py || echo 'Completed-game CSV unavailable; preserve pending, never invent outcomes'
+          mkdir -p "$RUNNER_TEMP/current"
+          if [ -f data/nba/current/current_games.json ]; then
+            cp data/nba/current/current_games.json "$RUNNER_TEMP/current/current_games.json"
+          fi
+      - name: Recover independently verified finals for pending PrizePicks games
+        if: github.event_name != 'pull_request'
+        run: |
+          python -u -m iphone_bot.recover_prizepicks_final_games || echo 'Official final provider not available; do not invent grades'
+          if [ -f data/nba/current/prizepicks_verified_final_games.json ]; then
+            cp data/nba/current/prizepicks_verified_final_games.json "$RUNNER_TEMP/current/prizepicks_verified_final_games.json"
+          fi
+          if [ -f docs/prizepicks_final_recovery_status.json ]; then
+            cp docs/prizepicks_final_recovery_status.json "$RUNNER_TEMP/current/prizepicks_final_recovery_status.json"
+          fi
+      - name: Preserve new pretip snapshots and grade only verified observed games
+        if: github.event_name != 'pull_request'
+        run: python -u -m iphone_bot.prizepicks_research_ledger
+      - name: Publish safely on latest branch without losing prior snapshots
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if [ -f "$RUNNER_TEMP/current/current_games.json" ]; then
+              mkdir -p data/nba/current
+              cp "$RUNNER_TEMP/current/current_games.json" data/nba/current/current_games.json
+            fi
+            if [ -f "$RUNNER_TEMP/current/prizepicks_verified_final_games.json" ]; then
+              cp "$RUNNER_TEMP/current/prizepicks_verified_final_games.json" data/nba/current/prizepicks_verified_final_games.json
+            fi
+            if [ -f "$RUNNER_TEMP/current/prizepicks_final_recovery_status.json" ]; then
+              cp "$RUNNER_TEMP/current/prizepicks_final_recovery_status.json" docs/prizepicks_final_recovery_status.json
+            fi
+            python -u -m iphone_bot.prizepicks_research_ledger
+            git add docs/prizepicks_research_ledger.json docs/prizepicks_research_results.json
+            if [ -f docs/prizepicks_final_recovery_status.json ]; then
+              git add docs/prizepicks_final_recovery_status.json
+            fi
+            if git diff --cached --quiet; then echo 'Research snapshots and grades current'; exit 0; fi
+            git commit -m 'Preserve and grade immutable pretip PrizePicks AI research snapshots'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo 'Concurrent publisher prevented safe update'
+          exit 1

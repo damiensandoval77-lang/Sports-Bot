@@ -1,0 +1,38 @@
+name: Phase 1 end-to-end eight-game reliability check
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/end_to_end_readiness.py'
+      - '.github/workflows/end_to_end_readiness.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '13,33,53 * * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/end_to_end_readiness.py'
+      - 'iphone_bot/tests/test_end_to_end_readiness.py'
+      - '.github/workflows/end_to_end_readiness.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test fail-closed coverage and grading checks (no API requests)
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_end_to_end_readiness.py' -v
+      - name: Audit real committed snapshots (no sportsbook credits)
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.end_to_end_readiness
+      - name: Retain evidence even when a real capture gap keeps the gate red
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: end-to-end-readiness-${{ github.run_id }}
+          path: out/end-to-end-readiness.json
+          if-no-files-found: error

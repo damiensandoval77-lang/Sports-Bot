@@ -90,6 +90,42 @@ class FinalBoxscoreTests(unittest.TestCase):
         not_done={**event,"status":{"type":{"completed":False}}}
         self.assertEqual(espn_final_events({"events":[not_done]}),[])
 
+    def test_espn_explicit_final_dnp_is_preserved_and_never_zero(self):
+        event={"id":"4000123","date":"2026-11-13T03:00:00Z",
+            "status":{"type":{"completed":True}},
+            "competitions":[{"competitors":[
+                {"homeAway":"away","team":{"abbreviation":"BOS"}},
+                {"homeAway":"home","team":{"abbreviation":"MIA"}}]}]}
+        summary={"header":{"id":"4000123","competitions":[{}]},
+                 "boxscore":{"players":[{"team":{"abbreviation":"BOS"},
+                    "statistics":[{"names":[],
+                    "athletes":[{"athlete":{"displayName":"Did Not Play"},
+                       "didNotPlay":True,"reason":"Coach's Decision","stats":[]}]}]}]}}
+        rows=espn_boxscore_rows(event,summary)
+        self.assertEqual(len(rows),1)
+        self.assertEqual(rows[0]["source"],"ESPN_FINAL")
+        self.assertTrue(rows[0]["dnp_final_verified"])
+        self.assertEqual(rows[0]["player"],"Did Not Play")
+        self.assertNotIn("PTS",rows[0])
+        self.assertNotIn("MIN",rows[0])
+
+    def test_espn_missing_or_contradictory_dnp_is_not_inferred(self):
+        event={"id":"4000123","date":"2026-11-13T03:00:00Z",
+            "status":{"type":{"completed":True}},
+            "competitions":[{"competitors":[
+                {"homeAway":"away","team":{"abbreviation":"BOS"}},
+                {"homeAway":"home","team":{"abbreviation":"MIA"}}]}]}
+        def extract(athlete,names):
+            return espn_boxscore_rows(event,{"boxscore":{"players":[
+                {"team":{"abbreviation":"BOS"},"statistics":[{"names":names,"athletes":[athlete]}]}
+            ]}})
+        base={"athlete":{"displayName":"Missing Player"},"didNotPlay":True,"stats":[]}
+        self.assertEqual(extract(base,[]),[])
+        self.assertEqual(extract({**base,"reason":"DNP","didNotPlay":False},[]),[])
+        self.assertEqual(extract({**base,"reason":"DNP","didNotPlay":True,
+                                  "stats":["12:00","0","0","0"]},
+                                 ["MIN","REB","AST","PTS"]),[])
+
     def test_pending_full_team_name_maps_to_abbreviations_and_both_provider_paths(self):
         locked=snapshot([market()],"2026-11-13T00:00:00Z")
         now=__import__("datetime").datetime.fromisoformat("2026-11-13T06:20:00+00:00")

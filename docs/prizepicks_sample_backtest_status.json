@@ -1,0 +1,32 @@
+{
+  "status": "SMALL_FREE_SAMPLE_RESEARCH_ONLY",
+  "generated_at": "2026-11-08T21:44:06Z",
+  "source": "Authenticated PrizePicks Free labeled NBA sample and confirmed prior game logs",
+  "training_rows": 19,
+  "game_log_rows": 20,
+  "usable_market_rows": 1,
+  "distinct_game_dates": 1,
+  "exclusions": {
+    "UNSUPPORTED_MARKET": 14,
+    "INSUFFICIENT_CONFIRMED_PRIOR_GAMES": 4
+  },
+  "baseline": {
+    "graded": 1,
+    "wins": 0,
+    "losses": 1,
+    "hit_rate": 0,
+    "mae": 3.25
+  },
+  "rate_candidate": {
+    "graded": 1,
+    "wins": 0,
+    "losses": 1,
+    "hit_rate": 0,
+    "mae": 3.25
+  },
+  "validated_edge": false,
+  "live_model_changed": false,
+  "code": "iphone_bot/prizepicks_sample_backtest.py",
+  "ci_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42526656508",
+  "notice": "Research from one usable prop only; do not generalize hit rate or claim improved prediction performance."
+}

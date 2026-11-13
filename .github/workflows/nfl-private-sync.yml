@@ -1,0 +1,101 @@
+name: Sync private NFL lines for public grading
+on:
+  pull_request:
+    paths:
+      - 'scripts/check_nfl_pregame_coverage.cjs'
+      - 'tests/test_nfl_pregame_coverage.cjs'
+      - 'scripts/sync_private_nfl_snapshot.py'
+      - 'tests/test_nfl_private_sync.py'
+      - 'scripts/audit_nfl_reliability.py'
+      - 'tests/test_nfl_reliability.py'
+      - 'scripts/reconcile_nfl_picks.py'
+      - 'tests/test_nfl_public_grading.py'
+      - '.github/workflows/nfl-private-sync.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/check_nfl_pregame_coverage.cjs'
+      - 'tests/test_nfl_pregame_coverage.cjs'
+      - 'scripts/sync_private_nfl_snapshot.py'
+      - 'tests/test_nfl_private_sync.py'
+      - 'scripts/audit_nfl_reliability.py'
+      - 'tests/test_nfl_reliability.py'
+      - '.github/workflows/nfl-private-sync.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '15 6,12,18,0 * 1,2,9-12 *'
+    # All game days, including Thursday, Saturday and international kickoffs.
+    # Private scanner captures first; this relay validates before publishing.
+    - cron: '7,22,37,52 0-5,12-23 * 1,2,9-12 *'
+permissions:
+  contents: write
+concurrency:
+  group: nfl-private-public-sync
+  cancel-in-progress: false
+jobs:
+  validated-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify sync data-integrity safeguards
+        if: github.event_name == 'pull_request'
+        run: |
+          node --test tests/test_nfl_pregame_coverage.cjs tests/test_nfl_provider_event.cjs tests/test_nfl_training_support.cjs
+          python -m unittest discover -s tests -p 'test_nfl_private_sync.py' -v
+          python -m unittest discover -s tests -p 'test_nfl_reliability.py' -v
+          python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+      - name: Copy verified private NFL snapshots, never reveal the token
+        if: github.event_name != 'pull_request'
+        env:
+          NFL_PRIVATE_READ_TOKEN: ${{ secrets.NFL_PRIVATE_READ_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if python scripts/sync_private_nfl_snapshot.py && node scripts/check_nfl_pregame_coverage.cjs; then exit 0; fi
+            if [ "$attempt" -lt 3 ]; then sleep 60; fi
+          done
+          echo "::error::Pregame NFL coverage failed after three fresh-source checks; prior public snapshot retained."
+          exit 1
+      - name: Archive newly synced pregame picks and reconcile final stats
+        if: github.event_name != 'pull_request'
+        run: python scripts/reconcile_nfl_picks.py
+      - name: Audit published schedule, chunk integrity and grading consistency
+        if: github.event_name != 'pull_request'
+        run: python scripts/audit_nfl_reliability.py
+      - name: Commit only verified changed lines and graded research results
+        if: github.event_name != 'pull_request'
+        env:
+          NFL_PRIVATE_READ_TOKEN: ${{ secrets.NFL_PRIVATE_READ_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name nfl-private-sync
+          git config user.email actions@users.noreply.github.com
+          for attempt in 1 2 3; do
+            git add docs/nfl/data/latest_2026.json docs/nfl/data/latest_2026_*.csv \
+                    docs/nfl/data/frozen_pick_history_2026.csv \
+                    docs/nfl/data/pp_graded_2026.csv \
+                    docs/nfl/data/pp_grading_pending_2026.csv \
+                    docs/nfl/data/grading_health_2026.json \
+                    docs/nfl/data/active_frozen_2026.json
+            if git diff --cached --quiet; then
+              echo "Public NFL snapshot and verified grading are unchanged"
+              exit 0
+            fi
+            git commit -m "Sync verified NFL frozen predictions for grading"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "NBA/Pages updated main concurrently; recomputing against current state"
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/sync_private_nfl_snapshot.py
+            node scripts/check_nfl_pregame_coverage.cjs
+            python scripts/reconcile_nfl_picks.py
+            python scripts/audit_nfl_reliability.py
+          done
+          echo "::error::Could not complete atomic NFL private-public sync"
+          exit 1

@@ -55,10 +55,11 @@ def inspect(records,boxscores=None,now=None):
         unique={(str(r["player_id"]),r["market"]) for r in rows}
         settled=[r for r in rows if r.get("status")=="SETTLED"]
         pending=[r for r in rows if r.get("status")=="PENDING"]
+        voids=[r for r in rows if r.get("status")=="VOID_DNP"]
         pregame=[r for r in rows if utc(r["captured_at"])<utc(r["event_start"])]
         age=(now-start).total_seconds()/3600
         if not pending:
-            reason="FULLY_SETTLED_VERIFIED_GAME"
+            reason="FULLY_ACCOUNTED_WITH_VERIFIED_DNP_VOIDS" if voids else "FULLY_SETTLED_VERIFIED_GAME"
         elif settled:
             reason="PARTIALLY_SETTLED_MISSING_PLAYER_BOXES_OR_DNP"
         elif age<3:
@@ -74,11 +75,53 @@ def inspect(records,boxscores=None,now=None):
           "bookmaker_captures":len(rows),
           "unique_player_stat_markets":len(unique),
           "pregame_captures":len(pregame),
-          "settled":len(settled),"pending":len(pending),
+          "settled":len(settled),"pending":len(pending),"void_dnp":len(voids),
           "pending_unique_players":len({str(r["player_id"]) for r in pending}),
+          "unresolved_players":[{"player":name,"player_id":ident,
+              "markets":sorted({r["market"] for r in pending
+                      if str(r["player_id"])==ident}),
+              "quote_count":sum(str(r["player_id"])==ident for r in pending)}
+              for ident,name in sorted({(str(r["player_id"]),str(r.get("player","")))
+                  for r in pending})],
           "hours_since_scheduled_tipoff":round(age,2),
           "available_player_boxscore_rows":len(boxes),
           "diagnosis":reason})
+    # Independent night-level grading: choose one fixed earliest pregame
+    # quote per player, event and stat. Never inflate accuracy with alt lines.
+    nights=defaultdict(list)
+    for row in records:
+        try:
+            start=utc(row["event_start"])
+            if utc(row["captured_at"])>=start:continue
+            day=start.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+            nights[day].append(row)
+        except (ValueError,TypeError,KeyError):continue
+    nightly=[]
+    for day,items in sorted(nights.items()):
+        selected={}
+        for item in sorted(items,key=lambda r:utc(r["captured_at"])):
+            key=(utc(item["event_start"]).isoformat(),str(item["player_id"]),
+                 str(item.get("team")),str(item["market"]))
+            if key not in selected:selected[key]=item
+        picks=list(selected.values())
+        graded=[r for r in picks if r.get("status")=="SETTLED"
+                and r.get("result") in ("WIN","LOSS","PUSH")]
+        wins=sum(r["result"]=="WIN" for r in graded)
+        losses=sum(r["result"]=="LOSS" for r in graded)
+        pushes=sum(r["result"]=="PUSH" for r in graded)
+        pending=sum(r.get("status")=="PENDING" for r in picks)
+        void=sum(r.get("status")=="VOID_DNP" for r in picks)
+        nightly.append({"date_eastern":day,
+          "captured_independent_markets":len(picks),
+          "graded_independent_markets":len(graded),
+          "pending_independent_markets":pending,
+          "void_dnp_independent_markets":void,
+          "invalid_or_ungraded_independent_markets":len(picks)-len(graded)-pending-void,
+          "wins":wins,"losses":losses,"pushes":pushes,
+          "hit_rate_ex_push":round(wins/(wins+losses),4) if wins+losses else None,
+          "grading_coverage_pct":round(100*len(graded)/len(picks),2) if picks else None,
+          "accounted_coverage_pct":round(100*(len(graded)+void)/len(picks),2) if picks else None,
+          "matchups_with_captures":sum(x["game_date_eastern"]==day for x in result)})
     dates=sorted({g["game_date_eastern"] for g in result})
     return {"generated_at":now.isoformat(),
       "status":"IMMUTABLE_PREGAME_COVERAGE_AND_SETTLEMENT_DIAGNOSTIC",
@@ -88,7 +131,8 @@ def inspect(records,boxscores=None,now=None):
       "unique_matchups_with_captures":len(result),
       "celtics_matchups":[g for g in result if "Boston Celtics" in g["matchup"]],
       "historical_warning":"Games missing from the immutable ledger cannot be added as pregame predictions after tipoff.",
-      "matchups":result}
+      "matchups":result,
+      "nightly_grading":nightly}
 
 
 def main():

@@ -1,0 +1,37 @@
+name: NFL postgame reconciliation tests
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/reconcile_nfl_boxscores.py'
+      - 'tests/test_nfl_reconciliation.py'
+      - 'scripts/export_nfl_boxscores.py'
+      - '.github/workflows/nfl-boxscores-publish.yml'
+      - '.github/workflows/nfl-reconciliation-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reliability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test all final-game reconciliation failure modes
+        run: python -m unittest discover -s tests -p 'test_nfl_reconciliation.py' -v
+      - name: Verify published 2026 final games without fetching live data
+        run: python scripts/reconcile_nfl_boxscores.py
+      - name: Confirm reconciliation report is meaningful
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          health=json.loads(Path("docs/nfl/data/boxscores/health.json").read_text())
+          assert health["scheduled_games"]==272
+          assert health["final_games"]>=100
+          assert health["verified_games"]+health["pending_games"]==health["final_games"]
+          print(health["verified_games"],"verified finals;",health["pending_games"],"retry candidates")
+          PY

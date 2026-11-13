@@ -1,0 +1,50 @@
+name: Season-separated lagged matchup research training
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/lagged_matchup_training.py'
+      - 'iphone_bot/tests/test_lagged_matchup_training.py'
+      - '.github/workflows/nba-lagged-matchup-training.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  train-and-evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing history and ML dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests scikit-learn
+      - name: Guard feature time and missing-data handling
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_lagged_matchup_training.py' -v
+      - name: Obtain archived completed NBA player-game observations
+        run: python -u iphone_bot/download_archived_nba.py
+      - name: Train from earlier seasons and evaluate later season
+        run: python -u iphone_bot/lagged_matchup_training.py
+      - name: Verify honest year-separated results and no production effects
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('docs/lagged_opportunity_matchup_training.json'))
+          assert x['training_seasons']==['2022-23','2023-24']
+          assert x['validation_season']=='2024-25'
+          assert x['diagnostic_seen_season']=='2025-26'
+          assert x['validation']['n']>2000
+          assert x['diagnostic']['n']>2000
+          assert x['production_modified'] is False
+          assert x['automatic_promotion'] is False
+          assert x['no_live_predictions'] is True
+          print('Verified separated-year test:',x['validation'])
+          print('Previously inspected diagnostic:',x['diagnostic'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lagged-matchup-training-report
+          path: |
+            docs/lagged_opportunity_matchup_training.json
+            models/nba/research/lagged_matchup_2022_24.joblib
+          retention-days: 14

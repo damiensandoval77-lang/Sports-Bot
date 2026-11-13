@@ -1,0 +1,73 @@
+name: Reconcile official NBA games before picks
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/reconcile_official_nba_schedule.py'
+      - 'docs/verified_official_nba_fixtures.json'
+      - '.github/workflows/official_nba_fixture_reconciliation.yml'
+  schedule:
+    - cron: '12,32,52 * * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/reconcile_official_nba_schedule.py'
+      - 'iphone_bot/tests/test_reconcile_official_nba_schedule.py'
+      - 'docs/verified_official_nba_fixtures.json'
+      - '.github/workflows/official_nba_fixture_reconciliation.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: official-nba-schedule-reconciliation
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify official NBA identity, date, count and no duplicates
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_official_nba_schedule.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v
+      - name: Apply official NBA matchup reconciliation and fail closed on count disagreement
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.reconcile_official_nba_schedule
+      - name: Publish actual complete NBA schedule safely across concurrent jobs
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.reconcile_official_nba_schedule
+            git add docs/nba_schedule.json docs/nba_schedule_status.json
+            if git diff --cached --quiet; then
+              echo 'No missing official NBA fixtures'
+              exit 0
+            fi
+            git commit -m 'Recover officially verified NBA missing scheduled game'
+            if git push origin HEAD:main; then
+              echo 'Official NBA slate published'
+              exit 0
+            fi
+          done
+          exit 1
+      - name: Explicitly refresh scoreboard after checking official NBA fixtures
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run independent_scoreboard_refresh.yml --ref main

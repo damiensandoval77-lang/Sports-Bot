@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-07T13:02:07.034757+00:00",
+  "generated_at": "2026-11-13T22:31:53.955388+00:00",
   "status": "RESEARCH_AUDIT_ONLY_NO_FRESH_PREGAME_BOARD",
   "capture_notice": "Board must be captured within 45 minutes of generation",
-  "locked_samples": 310,
+  "locked_samples": 448,
   "new_samples": 0,
   "features_covered": {},
-  "settled_independent_paper_markets": 273,
+  "settled_independent_paper_markets": 592,
   "injury_context": "VERIFIED_SAME_GAME_OFFICIAL_REPORT_ONLY",
   "lineup_confirmations_automated": false,
   "teammate_splits": "OBSERVATIONAL_AND_SAMPLE_GATED",
@@ -17,165 +17,1743 @@
     "v4_live_applied": false
   },
   "injury_opportunity": {
-    "status": "AWAITING_AT_LEAST_30_SETTLED_VERIFIED_INJURY_SCENARIOS",
+    "status": "DESCRIPTIVE_LOCKED_INJURY_SCENARIO_COMPARISON",
     "overall": {
-      "paired_observations": 0,
-      "baseline_mae": null,
-      "injury_candidate_mae": null
+      "paired_observations": 112,
+      "baseline_mae": 4.6813,
+      "injury_candidate_mae": 4.7093
     },
     "by_market": {
       "PTS": {
-        "paired_observations": 0,
-        "baseline_mae": null,
-        "injury_candidate_mae": null
+        "paired_observations": 34,
+        "baseline_mae": 5.9176,
+        "injury_candidate_mae": 5.9366
       },
       "REB": {
-        "paired_observations": 0,
-        "baseline_mae": null,
-        "injury_candidate_mae": null
+        "paired_observations": 27,
+        "baseline_mae": 2.2259,
+        "injury_candidate_mae": 2.1749
       },
       "AST": {
-        "paired_observations": 0,
-        "baseline_mae": null,
-        "injury_candidate_mae": null
+        "paired_observations": 19,
+        "baseline_mae": 1.7632,
+        "injury_candidate_mae": 1.7447
       },
       "PRA": {
-        "paired_observations": 0,
-        "baseline_mae": null,
-        "injury_candidate_mae": null
+        "paired_observations": 32,
+        "baseline_mae": 7.1719,
+        "injury_candidate_mae": 7.3038
       }
     },
     "no_live_adjustment": true,
     "injury_causality_established": false
   },
   "opportunity_shadow": {
-    "status": "AWAITING_PRETIP_LOCKED_SHADOW_AND_SETTLED_GAMES",
+    "status": "PREGAME_SHADOW_DESCRIPTIVE_ONLY",
+    "overall": {
+      "paired_markets": 319,
+      "stability_shadow_paired_markets": 0,
+      "stability_shadow_mae": null,
+      "stability_shadow_same_line_eligible": 0,
+      "stability_shadow_correct_directions": 0,
+      "stability_shadow_same_line_hit_rate": null,
+      "distinct_game_dates": 1,
+      "baseline_mae": 3.875,
+      "opportunity_mae": 3.834,
+      "baseline_correct_directions": 104,
+      "opportunity_correct_directions": 110,
+      "same_line_direction_eligible": 225,
+      "same_line_distinct_game_dates": 1,
+      "baseline_same_line_hit_rate": 0.4622,
+      "opportunity_same_line_hit_rate": 0.4889,
+      "shadow_only_correct": 14,
+      "baseline_only_correct": 8,
+      "exact_line_matched_final_markets": 225,
+      "line_mismatched_final_markets": 94
+    },
+    "by_market": {
+      "PTS": {
+        "paired_markets": 89,
+        "stability_shadow_paired_markets": 0,
+        "stability_shadow_mae": null,
+        "stability_shadow_same_line_eligible": 0,
+        "stability_shadow_correct_directions": 0,
+        "stability_shadow_same_line_hit_rate": null,
+        "distinct_game_dates": 1,
+        "baseline_mae": 4.951,
+        "opportunity_mae": 4.919,
+        "baseline_correct_directions": 23,
+        "opportunity_correct_directions": 24,
+        "same_line_direction_eligible": 54,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.4259,
+        "opportunity_same_line_hit_rate": 0.4444,
+        "shadow_only_correct": 4,
+        "baseline_only_correct": 3,
+        "exact_line_matched_final_markets": 54,
+        "line_mismatched_final_markets": 35
+      },
+      "REB": {
+        "paired_markets": 87,
+        "stability_shadow_paired_markets": 0,
+        "stability_shadow_mae": null,
+        "stability_shadow_same_line_eligible": 0,
+        "stability_shadow_correct_directions": 0,
+        "stability_shadow_same_line_hit_rate": null,
+        "distinct_game_dates": 1,
+        "baseline_mae": 2.107,
+        "opportunity_mae": 2.037,
+        "baseline_correct_directions": 26,
+        "opportunity_correct_directions": 31,
+        "same_line_direction_eligible": 67,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.3881,
+        "opportunity_same_line_hit_rate": 0.4627,
+        "shadow_only_correct": 6,
+        "baseline_only_correct": 1,
+        "exact_line_matched_final_markets": 67,
+        "line_mismatched_final_markets": 20
+      },
+      "AST": {
+        "paired_markets": 71,
+        "stability_shadow_paired_markets": 0,
+        "stability_shadow_mae": null,
+        "stability_shadow_same_line_eligible": 0,
+        "stability_shadow_correct_directions": 0,
+        "stability_shadow_same_line_hit_rate": null,
+        "distinct_game_dates": 1,
+        "baseline_mae": 1.928,
+        "opportunity_mae": 1.889,
+        "baseline_correct_directions": 32,
+        "opportunity_correct_directions": 33,
+        "same_line_direction_eligible": 62,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.5161,
+        "opportunity_same_line_hit_rate": 0.5323,
+        "shadow_only_correct": 3,
+        "baseline_only_correct": 2,
+        "exact_line_matched_final_markets": 62,
+        "line_mismatched_final_markets": 9
+      },
+      "PRA": {
+        "paired_markets": 72,
+        "stability_shadow_paired_markets": 0,
+        "stability_shadow_mae": null,
+        "stability_shadow_same_line_eligible": 0,
+        "stability_shadow_correct_directions": 0,
+        "stability_shadow_same_line_hit_rate": null,
+        "distinct_game_dates": 1,
+        "baseline_mae": 6.6,
+        "opportunity_mae": 6.583,
+        "baseline_correct_directions": 23,
+        "opportunity_correct_directions": 22,
+        "same_line_direction_eligible": 42,
+        "same_line_distinct_game_dates": 1,
+        "baseline_same_line_hit_rate": 0.5476,
+        "opportunity_same_line_hit_rate": 0.5238,
+        "shadow_only_correct": 1,
+        "baseline_only_correct": 2,
+        "exact_line_matched_final_markets": 42,
+        "line_mismatched_final_markets": 30
+      }
+    },
+    "capture_coverage": {
+      "captured_candidate_markets": 331,
+      "settled_quote_line_mismatch": 94
+    },
+    "pending_by_market": {
+      "PTS": 3,
+      "REB": 3,
+      "AST": 3,
+      "PRA": 3
+    },
+    "same_line_required_for_direction_scoring": true,
+    "stability_challenger_research_only": true,
+    "mae_uses_same_player_verified_final_stat_only": true,
+    "not_validated_by_future_game_dates": true,
+    "live_applied": false,
+    "eligible_for_live_promotion": false
+  },
+  "opponent_v2_shadow": {
+    "status": "PREGAME_OPPONENT_V2_RESEARCH_ONLY",
     "overall": {
       "paired_markets": 0,
+      "distinct_game_dates": 0,
       "baseline_mae": null,
-      "opportunity_mae": null,
-      "baseline_correct_directions": 0,
-      "opportunity_correct_directions": 0
+      "v2_mae": null,
+      "exact_line_direction_eligible": 0,
+      "baseline_direction_wins": 0,
+      "v2_direction_wins": 0,
+      "baseline_hit_rate": null,
+      "v2_hit_rate": null,
+      "v2_only_correct": 0,
+      "baseline_only_correct": 0
     },
     "by_market": {
       "PTS": {
         "paired_markets": 0,
+        "distinct_game_dates": 0,
         "baseline_mae": null,
-        "opportunity_mae": null,
-        "baseline_correct_directions": 0,
-        "opportunity_correct_directions": 0
+        "v2_mae": null,
+        "exact_line_direction_eligible": 0,
+        "baseline_direction_wins": 0,
+        "v2_direction_wins": 0,
+        "baseline_hit_rate": null,
+        "v2_hit_rate": null,
+        "v2_only_correct": 0,
+        "baseline_only_correct": 0
       },
       "REB": {
         "paired_markets": 0,
+        "distinct_game_dates": 0,
         "baseline_mae": null,
-        "opportunity_mae": null,
-        "baseline_correct_directions": 0,
-        "opportunity_correct_directions": 0
+        "v2_mae": null,
+        "exact_line_direction_eligible": 0,
+        "baseline_direction_wins": 0,
+        "v2_direction_wins": 0,
+        "baseline_hit_rate": null,
+        "v2_hit_rate": null,
+        "v2_only_correct": 0,
+        "baseline_only_correct": 0
       },
       "AST": {
         "paired_markets": 0,
+        "distinct_game_dates": 0,
         "baseline_mae": null,
-        "opportunity_mae": null,
-        "baseline_correct_directions": 0,
-        "opportunity_correct_directions": 0
+        "v2_mae": null,
+        "exact_line_direction_eligible": 0,
+        "baseline_direction_wins": 0,
+        "v2_direction_wins": 0,
+        "baseline_hit_rate": null,
+        "v2_hit_rate": null,
+        "v2_only_correct": 0,
+        "baseline_only_correct": 0
       },
       "PRA": {
         "paired_markets": 0,
+        "distinct_game_dates": 0,
         "baseline_mae": null,
-        "opportunity_mae": null,
-        "baseline_correct_directions": 0,
-        "opportunity_correct_directions": 0
+        "v2_mae": null,
+        "exact_line_direction_eligible": 0,
+        "baseline_direction_wins": 0,
+        "v2_direction_wins": 0,
+        "baseline_hit_rate": null,
+        "v2_hit_rate": null,
+        "v2_only_correct": 0,
+        "baseline_only_correct": 0
       }
     },
+    "pending_by_market": {
+      "PTS": 0,
+      "REB": 0,
+      "AST": 0,
+      "PRA": 0
+    },
+    "same_line_only": true,
+    "prospective_validation_required": true,
+    "live_model_unchanged": true,
+    "eligible_for_production": false
+  },
+  "rebound_shadow_v1": {
+    "status": "FROZEN_PREGAME_REBOUND_V1_RESEARCH_ONLY",
+    "paired_markets": 0,
+    "distinct_game_dates": 0,
+    "same_frozen_line_eligible": 0,
+    "baseline_wins": 0,
+    "shadow_wins": 0,
+    "baseline_hit_rate": null,
+    "shadow_hit_rate": null,
+    "baseline_mae": null,
+    "shadow_mae": null,
+    "captured_statuses": {},
+    "pending": 0,
+    "validated_for_live": false,
+    "live_model_unchanged": true,
+    "requires_more_distinct_game_dates": true
+  },
+  "tracking_opportunity_shadow": {
+    "status": "TRACKING_CHANCES_PRETIP_SHADOW_ONLY",
+    "by_market": {
+      "AST": {
+        "paired_markets": 0,
+        "exact_line_eligible": 0,
+        "distinct_game_dates": 0,
+        "baseline_mae": null,
+        "tracking_mae": null,
+        "baseline_wins": 0,
+        "tracking_wins": 0,
+        "baseline_hit_rate": null,
+        "tracking_hit_rate": null
+      },
+      "REB": {
+        "paired_markets": 0,
+        "exact_line_eligible": 0,
+        "distinct_game_dates": 0,
+        "baseline_mae": null,
+        "tracking_mae": null,
+        "baseline_wins": 0,
+        "tracking_wins": 0,
+        "baseline_hit_rate": null,
+        "tracking_hit_rate": null
+      }
+    },
+    "overall": {
+      "paired_markets": 0,
+      "exact_line_eligible": 0,
+      "distinct_game_dates": 0,
+      "baseline_mae": null,
+      "tracking_mae": null,
+      "baseline_wins": 0,
+      "tracking_wins": 0,
+      "baseline_hit_rate": null,
+      "tracking_hit_rate": null
+    },
+    "coverage_statuses": {
+      "LEGACY_NO_TRACKING_CAPTURE": 164
+    },
+    "source_rights_required": true,
+    "production_applied": false,
+    "eligible_for_production": false
+  },
+  "licensed_onoff_shadow": {
+    "status": "PRETIP_LICENSED_WOWY_SHADOW_RESEARCH_ONLY",
+    "overall": {
+      "paired_markets": 0,
+      "distinct_game_dates": 0,
+      "baseline_mae": null,
+      "licensed_onoff_mae": null,
+      "exact_line_eligible": 0,
+      "baseline_correct": 0,
+      "licensed_onoff_correct": 0,
+      "baseline_hit_rate": null,
+      "licensed_onoff_hit_rate": null
+    },
+    "by_market": {
+      "PTS": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "baseline_mae": null,
+        "licensed_onoff_mae": null,
+        "exact_line_eligible": 0,
+        "baseline_correct": 0,
+        "licensed_onoff_correct": 0,
+        "baseline_hit_rate": null,
+        "licensed_onoff_hit_rate": null
+      },
+      "REB": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "baseline_mae": null,
+        "licensed_onoff_mae": null,
+        "exact_line_eligible": 0,
+        "baseline_correct": 0,
+        "licensed_onoff_correct": 0,
+        "baseline_hit_rate": null,
+        "licensed_onoff_hit_rate": null
+      },
+      "AST": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "baseline_mae": null,
+        "licensed_onoff_mae": null,
+        "exact_line_eligible": 0,
+        "baseline_correct": 0,
+        "licensed_onoff_correct": 0,
+        "baseline_hit_rate": null,
+        "licensed_onoff_hit_rate": null
+      },
+      "PRA": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "baseline_mae": null,
+        "licensed_onoff_mae": null,
+        "exact_line_eligible": 0,
+        "baseline_correct": 0,
+        "licensed_onoff_correct": 0,
+        "baseline_hit_rate": null,
+        "licensed_onoff_hit_rate": null
+      }
+    },
+    "captured_by_status": {},
+    "pending_by_market": {
+      "PTS": 0,
+      "REB": 0,
+      "AST": 0,
+      "PRA": 0
+    },
+    "same_frozen_line_required": true,
+    "live_model_unchanged": true,
+    "eligible_for_production": false
+  },
+  "sanity_shadow_v1": {
+    "status": "UNVALIDATED_PREGAME_SANITY_SHADOW",
+    "captured_independent_markets": 0,
+    "captured_by_status": {},
+    "pending_by_status": {},
+    "overall": {
+      "paired_markets": 0,
+      "distinct_game_dates": 0,
+      "shadow_mae": null,
+      "combined_mae": null
+    },
+    "adjusted_only": {
+      "paired_markets": 0,
+      "distinct_game_dates": 0,
+      "shadow_mae": null,
+      "combined_mae": null
+    },
+    "by_market": {
+      "PTS": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      },
+      "REB": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      },
+      "AST": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      },
+      "PRA": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      }
+    },
+    "adjusted_by_market": {
+      "PTS": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      },
+      "REB": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      },
+      "AST": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      },
+      "PRA": {
+        "paired_markets": 0,
+        "distinct_game_dates": 0,
+        "shadow_mae": null,
+        "combined_mae": null
+      }
+    },
+    "excluded_uncertain_by_status": {},
+    "prospective_validation_needed": true,
     "live_applied": false,
-    "eligible_for_live_promotion": false
+    "accuracy_gain_established": false
+  },
+  "stress_test_20k_v1": {
+    "status": "PRETIP_CONDITIONAL_STRESS_DESCRIPTIVE_ONLY",
+    "capture_statuses": {},
+    "warnings": {},
+    "independent_stress_tested_markets": 0,
+    "fragile_high_confidence_flags": 0,
+    "paired_settled_stress_markets": 0,
+    "paired_settled_fragile_flags": 0,
+    "simulation_draws_per_scenario": 20000,
+    "calibrated_probability": false,
+    "live_probabilities_changed": false,
+    "live_picks_changed": false,
+    "performance_improvement_established": false
+  },
+  "model_disagreement_v1": {
+    "status": "UNVALIDATED_MODEL_DISAGREEMENT_RESEARCH",
+    "captured_by_status": {},
+    "flag_counts": {},
+    "pending_by_status": {},
+    "flagged_settled": {
+      "paired_markets": 0,
+      "distinct_utc_game_dates": 0,
+      "combined_mae": null
+    },
+    "unflagged_settled": {
+      "paired_markets": 0,
+      "distinct_utc_game_dates": 0,
+      "combined_mae": null
+    },
+    "research_only": true,
+    "live_picks_changed": false,
+    "live_probabilities_changed": false,
+    "model_improvement_established": false
+  },
+  "unified_reliability_v1": {
+    "method": "PREGAME_UNIFIED_RESEARCH_FLAGS_V1",
+    "status": "DESCRIPTIVE_PREGAME_RELIABILITY_RESEARCH_ONLY",
+    "generated_at": "2026-11-13T22:31:53.955388+00:00",
+    "independent_research_markets": 331,
+    "classification_counts": {
+      "INSUFFICIENT_RESEARCH_COVERAGE": 331
+    },
+    "data_availability": {
+      "sanity_shadow_v1_missing": 331,
+      "stress_test_20k_v1_missing": 331,
+      "model_disagreement_v1_missing": 331
+    },
+    "reasons_by_code": {
+      "MISSING_FROZEN_MODEL_DISAGREEMENT_V1": 331,
+      "MISSING_FROZEN_SANITY_SHADOW_V1": 331,
+      "MISSING_FROZEN_STRESS_TEST_20K_V1": 331
+    },
+    "excluded_records": {
+      "duplicate_capture": 117
+    },
+    "recent_markets": [
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "203081",
+        "team": "POR",
+        "market": "REB",
+        "player": "Damian Lillard",
+        "combined_projection": 3.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "203081",
+        "team": "POR",
+        "market": "PTS",
+        "player": "Damian Lillard",
+        "combined_projection": 21.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "203081",
+        "team": "POR",
+        "market": "PRA",
+        "player": "Damian Lillard",
+        "combined_projection": 29.1,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "203081",
+        "team": "POR",
+        "market": "AST",
+        "player": "Damian Lillard",
+        "combined_projection": 5.1,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "201950",
+        "team": "POR",
+        "market": "REB",
+        "player": "Jrue Holiday",
+        "combined_projection": 4.1,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "201950",
+        "team": "POR",
+        "market": "PTS",
+        "player": "Jrue Holiday",
+        "combined_projection": 10.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "201950",
+        "team": "POR",
+        "market": "PRA",
+        "player": "Jrue Holiday",
+        "combined_projection": 18.4,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "201950",
+        "team": "POR",
+        "market": "AST",
+        "player": "Jrue Holiday",
+        "combined_projection": 3.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642844",
+        "team": "SAS",
+        "market": "REB",
+        "player": "Dylan Harper",
+        "combined_projection": 5.8,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642844",
+        "team": "SAS",
+        "market": "PTS",
+        "player": "Dylan Harper",
+        "combined_projection": 18.7,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642844",
+        "team": "SAS",
+        "market": "PRA",
+        "player": "Dylan Harper",
+        "combined_projection": 29.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642844",
+        "team": "SAS",
+        "market": "AST",
+        "player": "Dylan Harper",
+        "combined_projection": 4.8,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642270",
+        "team": "POR",
+        "market": "REB",
+        "player": "Donovan Clingan",
+        "combined_projection": 9.0,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642270",
+        "team": "POR",
+        "market": "PTS",
+        "player": "Donovan Clingan",
+        "combined_projection": 12.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642270",
+        "team": "POR",
+        "market": "PRA",
+        "player": "Donovan Clingan",
+        "combined_projection": 23.1,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642270",
+        "team": "POR",
+        "market": "AST",
+        "player": "Donovan Clingan",
+        "combined_projection": 1.9,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642264",
+        "team": "SAS",
+        "market": "REB",
+        "player": "Stephon Castle",
+        "combined_projection": 6.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642264",
+        "team": "SAS",
+        "market": "PTS",
+        "player": "Stephon Castle",
+        "combined_projection": 18.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642264",
+        "team": "SAS",
+        "market": "PRA",
+        "player": "Stephon Castle",
+        "combined_projection": 28.4,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1642264",
+        "team": "SAS",
+        "market": "AST",
+        "player": "Stephon Castle",
+        "combined_projection": 3.8,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641739",
+        "team": "POR",
+        "market": "REB",
+        "player": "Toumani Camara",
+        "combined_projection": 3.1,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641739",
+        "team": "POR",
+        "market": "PTS",
+        "player": "Toumani Camara",
+        "combined_projection": 14.6,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641739",
+        "team": "POR",
+        "market": "PRA",
+        "player": "Toumani Camara",
+        "combined_projection": 20.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641739",
+        "team": "POR",
+        "market": "AST",
+        "player": "Toumani Camara",
+        "combined_projection": 2.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641705",
+        "team": "SAS",
+        "market": "REB",
+        "player": "Victor Wembanyama",
+        "combined_projection": 11.9,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641705",
+        "team": "SAS",
+        "market": "PTS",
+        "player": "Victor Wembanyama",
+        "combined_projection": 22.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641705",
+        "team": "SAS",
+        "market": "PRA",
+        "player": "Victor Wembanyama",
+        "combined_projection": 36.8,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1641705",
+        "team": "SAS",
+        "market": "AST",
+        "player": "Victor Wembanyama",
+        "combined_projection": 3.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630703",
+        "team": "POR",
+        "market": "REB",
+        "player": "Scoot Henderson",
+        "combined_projection": 2.4,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630703",
+        "team": "POR",
+        "market": "PTS",
+        "player": "Scoot Henderson",
+        "combined_projection": 11.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630703",
+        "team": "POR",
+        "market": "PRA",
+        "player": "Scoot Henderson",
+        "combined_projection": 15.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630703",
+        "team": "POR",
+        "market": "AST",
+        "player": "Scoot Henderson",
+        "combined_projection": 1.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630577",
+        "team": "SAS",
+        "market": "REB",
+        "player": "Julian Champagnie",
+        "combined_projection": 3.6,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630577",
+        "team": "SAS",
+        "market": "PTS",
+        "player": "Julian Champagnie",
+        "combined_projection": 8.6,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630170",
+        "team": "SAS",
+        "market": "REB",
+        "player": "Devin Vassell",
+        "combined_projection": 3.7,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630170",
+        "team": "SAS",
+        "market": "PTS",
+        "player": "Devin Vassell",
+        "combined_projection": 11.1,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630170",
+        "team": "SAS",
+        "market": "PRA",
+        "player": "Devin Vassell",
+        "combined_projection": 17.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630170",
+        "team": "SAS",
+        "market": "AST",
+        "player": "Devin Vassell",
+        "combined_projection": 2.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630166",
+        "team": "POR",
+        "market": "REB",
+        "player": "Deni Avdija",
+        "combined_projection": 7.9,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630166",
+        "team": "POR",
+        "market": "PTS",
+        "player": "Deni Avdija",
+        "combined_projection": 20.4,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630166",
+        "team": "POR",
+        "market": "PRA",
+        "player": "Deni Avdija",
+        "combined_projection": 34.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1630166",
+        "team": "POR",
+        "market": "AST",
+        "player": "Deni Avdija",
+        "combined_projection": 5.9,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1629640",
+        "team": "SAS",
+        "market": "PTS",
+        "player": "Keldon Johnson",
+        "combined_projection": 9.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1628368",
+        "team": "SAS",
+        "market": "REB",
+        "player": "De'Aaron Fox",
+        "combined_projection": 5.0,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1628368",
+        "team": "SAS",
+        "market": "PTS",
+        "player": "De'Aaron Fox",
+        "combined_projection": 13.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1628368",
+        "team": "SAS",
+        "market": "PRA",
+        "player": "De'Aaron Fox",
+        "combined_projection": 23.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T03:00:00+00:00",
+        "player_id": "1628368",
+        "team": "SAS",
+        "market": "AST",
+        "player": "De'Aaron Fox",
+        "combined_projection": 5.5,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "203935",
+        "team": "HOU",
+        "market": "REB",
+        "player": "Marcus Smart",
+        "combined_projection": 2.6,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "203935",
+        "team": "HOU",
+        "market": "PTS",
+        "player": "Marcus Smart",
+        "combined_projection": 10.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "201142",
+        "team": "HOU",
+        "market": "REB",
+        "player": "Kevin Durant",
+        "combined_projection": 5.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "201142",
+        "team": "HOU",
+        "market": "PTS",
+        "player": "Kevin Durant",
+        "combined_projection": 23.4,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "201142",
+        "team": "HOU",
+        "market": "PRA",
+        "player": "Kevin Durant",
+        "combined_projection": 33.8,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "201142",
+        "team": "HOU",
+        "market": "AST",
+        "player": "Kevin Durant",
+        "combined_projection": 3.4,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "1642863",
+        "team": "PHX",
+        "market": "REB",
+        "player": "Khaman Maluach",
+        "combined_projection": 6.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "1642863",
+        "team": "PHX",
+        "market": "PTS",
+        "player": "Khaman Maluach",
+        "combined_projection": 7.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "1642345",
+        "team": "PHX",
+        "market": "REB",
+        "player": "Oso Ighodaro",
+        "combined_projection": 5.0,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "1642345",
+        "team": "PHX",
+        "market": "PTS",
+        "player": "Oso Ighodaro",
+        "combined_projection": 7.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "1642345",
+        "team": "PHX",
+        "market": "PRA",
+        "player": "Oso Ighodaro",
+        "combined_projection": 15.8,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "1642345",
+        "team": "PHX",
+        "market": "AST",
+        "player": "Oso Ighodaro",
+        "combined_projection": 3.2,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      },
+      {
+        "event_start": "2026-11-08T02:10:00+00:00",
+        "player_id": "1642263",
+        "team": "HOU",
+        "market": "REB",
+        "player": "Reed Sheppard",
+        "combined_projection": 2.3,
+        "classification": "INSUFFICIENT_RESEARCH_COVERAGE",
+        "reasons": [
+          "MISSING_FROZEN_MODEL_DISAGREEMENT_V1",
+          "MISSING_FROZEN_SANITY_SHADOW_V1",
+          "MISSING_FROZEN_STRESS_TEST_20K_V1"
+        ],
+        "data_available": {
+          "sanity_shadow_v1": false,
+          "stress_test_20k_v1": false,
+          "model_disagreement_v1": false
+        }
+      }
+    ],
+    "confidence_proxy_quote_coverage": {
+      "valid_pregame_quote_snapshots": 1786,
+      "settled_quote_snapshots_with_frozen_proxy": 1745,
+      "unit": "bookmaker_quote_snapshots_not_independent_market_outcomes",
+      "confidence_calibrated": false
+    },
+    "unverified_clean_does_not_mean_safe": true,
+    "no_bet_recommendations": true,
+    "no_live_picks_changed": true,
+    "no_live_probabilities_changed": true,
+    "no_accuracy_improvement_claimed": true
   },
   "selection_gate_shadow": {
     "status": "PRETIP_ABSTENTION_RESEARCH_ONLY",
     "selected": {
-      "markets": 0,
-      "wins": 0,
-      "losses": 0,
-      "hit_rate": null,
-      "distinct_game_dates": 0
+      "markets": 134,
+      "wins": 65,
+      "losses": 69,
+      "hit_rate": 0.4851,
+      "distinct_game_dates": 1
     },
     "abstained": {
-      "markets": 0,
-      "wins": 0,
-      "losses": 0,
-      "hit_rate": null,
-      "distinct_game_dates": 0
+      "markets": 91,
+      "wins": 39,
+      "losses": 52,
+      "hit_rate": 0.4286,
+      "distinct_game_dates": 1
     },
     "all_evaluated": {
-      "markets": 0,
-      "wins": 0,
-      "losses": 0,
-      "hit_rate": null,
-      "distinct_game_dates": 0
+      "markets": 225,
+      "wins": 104,
+      "losses": 121,
+      "hit_rate": 0.4622,
+      "distinct_game_dates": 1
     },
     "by_market": {
       "PTS": {
         "selected": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 34,
+          "wins": 13,
+          "losses": 21,
+          "hit_rate": 0.3824,
+          "distinct_game_dates": 1
         },
         "abstained": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 20,
+          "wins": 10,
+          "losses": 10,
+          "hit_rate": 0.5,
+          "distinct_game_dates": 1
         }
       },
       "REB": {
         "selected": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 39,
+          "wins": 16,
+          "losses": 23,
+          "hit_rate": 0.4103,
+          "distinct_game_dates": 1
         },
         "abstained": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 28,
+          "wins": 10,
+          "losses": 18,
+          "hit_rate": 0.3571,
+          "distinct_game_dates": 1
         }
       },
       "AST": {
         "selected": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 38,
+          "wins": 22,
+          "losses": 16,
+          "hit_rate": 0.5789,
+          "distinct_game_dates": 1
         },
         "abstained": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 24,
+          "wins": 10,
+          "losses": 14,
+          "hit_rate": 0.4167,
+          "distinct_game_dates": 1
         }
       },
       "PRA": {
         "selected": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 23,
+          "wins": 14,
+          "losses": 9,
+          "hit_rate": 0.6087,
+          "distinct_game_dates": 1
         },
         "abstained": {
-          "markets": 0,
-          "wins": 0,
-          "losses": 0,
-          "hit_rate": null,
-          "distinct_game_dates": 0
+          "markets": 19,
+          "wins": 9,
+          "losses": 10,
+          "hit_rate": 0.4737,
+          "distinct_game_dates": 1
         }
       }
     },
@@ -186,12 +1764,12 @@
   },
   "assist_shadow_v1": {
     "status": "PREGAME_LOCKED_ASSIST_SHADOW_RESEARCH_ONLY",
-    "paired_assist_markets": 0,
-    "distinct_game_dates": 0,
-    "baseline_mae": null,
-    "shadow_mae": null,
-    "baseline_correct_direction": 0,
-    "shadow_correct_direction": 0,
+    "paired_assist_markets": 42,
+    "distinct_game_dates": 1,
+    "baseline_mae": 1.893,
+    "shadow_mae": 1.886,
+    "baseline_correct_direction": 25,
+    "shadow_correct_direction": 24,
     "prospectively_ready_for_review": false,
     "promoted": false,
     "production_probabilities_changed": false,
@@ -200,7 +1778,7 @@
   "simulation_audit": {
     "PTS": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 75,
+      "completed_independent_markets": 164,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,
@@ -210,7 +1788,7 @@
     },
     "REB": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 71,
+      "completed_independent_markets": 158,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,
@@ -220,7 +1798,7 @@
     },
     "AST": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 61,
+      "completed_independent_markets": 132,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,
@@ -230,7 +1808,7 @@
     },
     "PRA": {
       "status": "AWAITING_AT_LEAST_1000_PRIOR_SETTLED_GAMES_AND_30_LATER_TESTS",
-      "completed_independent_markets": 66,
+      "completed_independent_markets": 138,
       "evaluated_later_markets": 0,
       "simulation_count": 20000,
       "brier_score": null,

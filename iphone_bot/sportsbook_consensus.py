@@ -43,7 +43,8 @@ def consensus_markets(valid):
             "line_range":[min(values),max(values)],
             "sportsbook":"Consensus ("+str(count)+" books)" if count>=2 else selected[0]["sportsbook"],
             "book_quotes":[{"name":q["sportsbook"],"line":float(q["line"]),
-                            "over":q["over_odds"],"under":q["under_odds"]}
+                            "over":q["over_odds"],"under":q["under_odds"],
+                            "updated_at":q.get("market_updated")}
                            for q in selected],
             "over_odds":None if count>=2 else selected[0]["over_odds"],
             "under_odds":None if count>=2 else selected[0]["under_odds"],

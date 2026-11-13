@@ -1,0 +1,45 @@
+name: One-time PBP Stats current-season game-level overlap audit
+on:
+  # Deliberately manual-only: do not repeatedly poll public third-party
+  # endpoints on every code change or commit without confirmed rate limits.
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pbpstats-onoff-one-time
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile single pair metadata-only overlap audit
+        if: github.event_name == 'pull_request'
+        run: python -m py_compile iphone_bot/probe_pbpstats_game_coverage.py
+      - name: Check overlap timestamp edge-case tests
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_game_coverage.py' -v
+      - name: Validate public current-season teammate ON-OFF stints
+        run: python -m iphone_bot.probe_pbpstats_game_coverage
+      - name: Publish derived coverage diagnostics without raw player stats
+        run: |
+          set -euo pipefail
+          cp docs/pbpstats_onoff_coverage_probe.json "$RUNNER_TEMP/coverage.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/coverage.json" docs/pbpstats_onoff_coverage_probe.json
+            git add docs/pbpstats_onoff_coverage_probe.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish one-time ON/OFF court-overlap consistency audit'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

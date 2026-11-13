@@ -53,6 +53,13 @@ def number(value):
     except (ValueError,TypeError):
         return None
 
+LOG_GAMES=20
+
+def compact(value):
+    return int(value) if float(value).is_integer() else round(value,2)
+
+LOG_FIELDS=["date","opponent","PTS","REB","AST","PRA","MIN"]
+
 def main():
     listing=json.loads(fetch(API))
     versions=[]
@@ -107,8 +114,17 @@ def main():
         if previous and (previous["PTS"],previous["REB"],previous["AST"])!=(pts,reb,ast):
             raise ValueError(f"Conflicting duplicate for player id {ident} on {date}")
         by_player[ident][date]=game
+        # The published source already contains the full opportunity box.
+        # Keep its independently observable fields locally for model recovery.
+        # Never fill absent source numbers with synthetic zeros.
+        game["FGM"]=number(row.get("FGM"))
         game["FGA"]=number(row.get("FGA"))
+        game["FG3M"]=number(row.get("3PM"))
         game["FG3A"]=number(row.get("3PA"))
+        game["FTM"]=number(row.get("FTM"))
+        game["FTA"]=number(row.get("FTA"))
+        game["OREB"]=number(row.get("Off Reb"))
+        game["DREB"]=number(row.get("Def Reb"))
         game["TOV"]=number(row.get("Turnovers"))
         game["position"]=str(row.get("Pos","")).strip()
         local_games.append(game)
@@ -124,7 +140,9 @@ def main():
             continue
         recent=games[-1]
         result={"player":recent["player"],"player_id":ident,"team":recent["team"],
-                "latest_game":recent["date"],"games":len(games),"metrics":{}}
+                "latest_game":recent["date"],"games":len(games),"metrics":{},
+                "log":[[g["date"],g["opponent"]]+[compact(g[k]) for k in ("PTS","REB","AST","PRA","MIN")]
+                       for g in games[-LOG_GAMES:]]}
         for stat in ("PTS","REB","AST","PRA","MIN"):
             values=[g[stat] for g in games]
             result["metrics"][stat]={
@@ -149,10 +167,11 @@ def main():
         "source":"Public NBA player-game CSV published by xtheredshirtx/fanduel-player-data",
         "source_url":"https://github.com/xtheredshirtx/fanduel-player-data/tree/main/NBA/csv",
         "is_ai":False,"is_prizepicks":False,
+        "log_fields":LOG_FIELDS,"log_games":LOG_GAMES,
         "disclaimer":"Observed completed-game statistics only. Public third-party data may lag official NBA corrections. L5/L10 need five/ten games. Not AI projections, PrizePicks lines, or calibrated betting probabilities.",
         "players":players}
     OUT.parent.mkdir(parents=True,exist_ok=True)
-    OUT.write_text(json.dumps(payload,indent=2)+"\n")
+    OUT.write_text(json.dumps(payload,separators=(",",":"))+"\n")
     print(f"Published {len(players)} players from {total} current-season player-games; latest game {latest}; rejected {rejected}",flush=True)
 
 if __name__=="__main__":

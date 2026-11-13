@@ -27,12 +27,13 @@ STATUS=ROOT/"docs/final_boxscores_status.json"
 ET=ZoneInfo("America/New_York")
 NBA_SCOREBOARD="https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json"
 NBA_BOX="https://cdn.nba.com/static/json/liveData/boxscore/boxscore_{}.json"
+NBA_BOX_ALT="https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_{}.json"
 NBA_SCHEDULE="https://cdn.nba.com/static/json/staticData/scheduleLeagueV2.json"
 NBA_SCHEDULE_ALT="https://cdn.nba.com/static/json/staticData/scheduleLeagueV2_1.json"
 ESPN_SCORE="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard"
 ESPN_BOX="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary"
 
-ALIASES={"GS":"GSW","GSW":"GSW","NY":"NYK","NYK":"NYK",
+ALIASES={"WSH":"WAS","WAS":"WAS","GS":"GSW","GSW":"GSW","NY":"NYK","NYK":"NYK",
          "NO":"NOP","NOR":"NOP","NOP":"NOP","SA":"SAS","SAS":"SAS",
          "UTAH":"UTA","UTA":"UTA","PHO":"PHX","PHX":"PHX",
          "BKN":"BKN","BRK":"BKN","CHA":"CHA","CHO":"CHA"}
@@ -54,14 +55,29 @@ def local_date(value):
     return date.astimezone(ET).date().isoformat()
 
 
-def request_json(url,timeout=12):
+def _request_json(url,timeout=12):
+    host=urllib.parse.urlsplit(url).hostname or ""
+    referer="https://www.espn.com/" if host.endswith(".espn.com") else "https://www.nba.com/"
     headers={"User-Agent":"Mozilla/5.0 (compatible; SportsBotBoxscoreAudit/1.0)",
-             "Accept":"application/json","Referer":"https://www.nba.com/"}
+             "Accept":"application/json","Referer":referer}
     req=urllib.request.Request(url,headers=headers)
     with urllib.request.urlopen(req,timeout=timeout) as resp:
         data=json.load(resp)
     if not isinstance(data,dict):raise ValueError("response not object")
     return data
+
+
+def request_json(url,timeout=12):
+    try:
+        return _request_json(url,timeout)
+    except (OSError,ValueError):
+        # The official CDN sometimes returns 403 while its NBA media-ops
+        # origin serves the same final box. Identity/date/final checks below
+        # still apply; this is never a fallback to guessed player statistics.
+        match=re.fullmatch(r"https://cdn\.nba\.com/static/json/liveData/boxscore/boxscore_(\d{10})\.json",url)
+        if not match:
+            raise
+        return _request_json(NBA_BOX_ALT.format(match.group(1)),timeout)
 
 
 def number(value):
@@ -101,6 +117,17 @@ def box_player(name,team_code,opponent,date,pts,reb,ast,mins,source,game_id):
             "source":source,"final_confirmed":True,"source_game_id":str(game_id)}
 
 
+def verified_dnp_player(name,team_code,opponent,date,reason,source,game_id):
+    """Explicit no-play from confirmed final box, never inferred from missing CSV."""
+    if not (name and team_code in ABBREV and opponent in ABBREV
+            and team_code!=opponent and isinstance(reason,str) and reason.strip()):
+        return None
+    return {"player":str(name).strip(),"team":team_code,"opponent":opponent,
+            "date":date,"source":source,"final_confirmed":True,
+            "source_game_id":str(game_id),"dnp_final_verified":True,
+            "dnp_reason":reason.strip()[:160]}
+
+
 def nba_scoreboard_games(payload):
     games=payload.get("scoreboard",{}).get("games",[])
     if not isinstance(games,list):raise ValueError("bad NBA scoreboard")
@@ -124,13 +151,34 @@ def nba_boxscore_rows(score_event,box):
     rows=[]
     for side,tcode,opp in ((a,away,home),(h,home,away)):
         for player in side.get("players",[]):
-            stats=player.get("statistics",{})
+            stats=player.get("statistics")
+            name=player.get("name") or " ".join(
+                str(player.get(v) or "").strip()
+                for v in ("firstName","familyName")).strip()
+            # A source-explicit inactive entry may have no statistics object.
+            # Never mistake a missing row or absent numerical stats for a DNP.
+            explicit_dnp=(player.get("played") in (False,0,"0") and (
+                player.get("notPlayingReason") or
+                str(player.get("status","")).upper() in ("INACTIVE","DNP","NOT_PLAYING")))
+            if explicit_dnp:
+                numbers=stats if isinstance(stats,dict) else {}
+                # Contradictory minutes/points are not safe to exclude.
+                activity=("points","reboundsTotal","assists","blocks","steals",
+                          "turnovers","fieldGoalsAttempted","freeThrowsAttempted")
+                if (any(numbers.get(field) not in (None,"") and number(numbers[field])!=0
+                        for field in activity) or
+                    any(numbers.get(field) not in (None,"") and minutes(numbers[field])!=0
+                        for field in ("minutes","minutesCalculated"))):
+                    continue
+                dnp=verified_dnp_player(name,tcode,opp,day,
+                      str(player.get("notPlayingReason") or player.get("status")),
+                      "NBA_CDN_FINAL",game_id)
+                if dnp:rows.append(dnp)
+                continue
             if not isinstance(stats,dict):continue
-            row=box_player(player.get("name") or
-                  " ".join(str(player.get(v) or "").strip()
-                    for v in ("firstName","familyName")).strip(),
-                  tcode,opp,day,stats.get("points"),stats.get("reboundsTotal"),
-                  stats.get("assists"),stats.get("minutes") or stats.get("minutesCalculated"),
+            row=box_player(name,tcode,opp,day,stats.get("points"),
+                  stats.get("reboundsTotal"),stats.get("assists"),
+                  stats.get("minutes") or stats.get("minutesCalculated"),
                   "NBA_CDN_FINAL",game_id)
             if row:rows.append(row)
     return rows
@@ -176,17 +224,88 @@ def espn_boxscore_rows(event,summary):
             labels=table.get("names",[])
             if not isinstance(labels,list):continue
             keys={str(label).upper():i for i,label in enumerate(labels)}
-            if not {"PTS","REB","AST","MIN"}.issubset(keys):continue
             for entry in table.get("athletes",[]):
+                if not isinstance(entry,dict):continue
+                player=entry.get("athlete") or {}
+                if not isinstance(player,dict):continue
                 values=entry.get("stats") or []
-                if not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):continue
-                player=entry.get("athlete",{})
+                # Explicit finalized ESPN DNP only: never treat missing numeric
+                # stats, empty arrays, or a roster omission as proof of absence.
+                reason=entry.get("reason") or entry.get("notPlayingReason")
+                played_minutes=(minutes(values[keys["MIN"]])
+                                if isinstance(values,list) and "MIN" in keys and keys["MIN"]<len(values) else None)
+                if entry.get("didNotPlay") is True:
+                    # Require an explicit final-game reason; a blank or
+                    # contradictory DNP flag is not settlement evidence.
+                    if (isinstance(reason,str) and reason.strip() and
+                        not (played_minutes is not None and played_minutes>0)):
+                        row=verified_dnp_player(player.get("displayName"),code,opp,day,
+                                                reason,"ESPN_FINAL",event_id)
+                        if row:rows.append(row)
+                    continue
+                if not isinstance(values,list) or not {"PTS","REB","AST","MIN"}.issubset(keys) or not all(keys[k]<len(values) for k in ("PTS","REB","AST","MIN")):
+                    continue
                 row=box_player(player.get("displayName"),code,opp,day,
                                values[keys["PTS"]],values[keys["REB"]],
                                values[keys["AST"]],values[keys["MIN"]],
                                "ESPN_FINAL",event_id)
                 if row:rows.append(row)
     return rows
+
+
+def verified_espn_schedule_hints(payload):
+    """Use saved ESPN schedule IDs only for lookup, NEVER as final-game proof."""
+    result={}
+    if payload.get("status")!="THIRD_PARTY_NBA_SCHEDULE_ONLY":
+        return result
+    for g in payload.get("games",[]):
+        if not isinstance(g,dict) or not str(g.get("id","")).isdigit():
+            continue
+        try:
+            day=local_date(g["start"])
+            away=team(g["away_abbreviation"])
+            home=team(g["home_abbreviation"])
+            if g.get("date_eastern")!=day or not away or not home or away==home:
+                continue
+            k=(day,away,home)
+            if k in result and result[k]!=str(g["id"]):
+                result.pop(k,None)
+                continue
+            result[k]=str(g["id"])
+        except (KeyError,ValueError,TypeError):
+            continue
+    return result
+
+
+def verified_direct_espn_summary(event_id,matchup_key,summary):
+    """Only an independently COMPLETED ESPN game summary is final evidence.
+
+    Exact event ID, tip date, home and away teams must all match. A stale or
+    in-progress server-side live tracking snapshot can never create grades.
+    """
+    day,away,home=matchup_key
+    header=summary.get("header") or {}
+    if str(header.get("id"))!=str(event_id):
+        raise ValueError("Direct ESPN event ID mismatch")
+    comps=header.get("competitions") or []
+    if len(comps)!=1 or not isinstance(comps[0],dict):
+        raise ValueError("Missing unambiguous ESPN game competition")
+    comp=comps[0]
+    status=comp.get("status") or {}
+    typ=status.get("type") or {}
+    if typ.get("completed") is not True or typ.get("state") not in (None,"post"):
+        return []
+    teams={r.get("homeAway"):team((r.get("team") or {}).get("abbreviation"))
+           for r in comp.get("competitors",[]) if isinstance(r,dict)}
+    if teams.get("away")!=away or teams.get("home")!=home:
+        raise ValueError("Direct ESPN final matchup mismatch")
+    timestamp=comp.get("date") or comp.get("startDate")
+    if not timestamp or local_date(timestamp)!=day:
+        raise ValueError("Direct ESPN final game-date mismatch")
+    event={"id":str(event_id),"date":timestamp,
+           "status":{"type":{"completed":True}},
+           "competitions":[{"competitors":comp["competitors"]}]}
+    return espn_boxscore_rows(event,summary)
 
 
 def verified_schedule_ids(payload,pending):
@@ -252,7 +371,9 @@ def pending_games(records,now=None):
             start=dt.datetime.fromisoformat(r["event_start"].replace("Z","+00:00"))
             if start.tzinfo is None:continue
             age=(current-start).total_seconds()
-            if age<2*3600 or age>4*86400:continue
+            # Retry every historical pending game, not just the last four days.
+            # Settlement still requires an independently verified final box score.
+            if age<75*60:continue
             day=local_date(r["event_start"])
             pair=r["game"].split(" @ ")
             if len(pair)!=2:continue
@@ -268,7 +389,8 @@ def pending_games(records,now=None):
     return games
 
 
-def gather(records,now=None,request=request_json):
+def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_games=None,
+           supplemental_espn_dnp_names=None):
     pending=pending_games(records,now)
     days={key[0] for key in pending}
     # By team abbreviation and event day, never by a similar player's name.
@@ -301,14 +423,56 @@ def gather(records,now=None,request=request_json):
                 report["errors"].append("NBA boxscore unavailable: "+str(exc)[:140])
     except (ValueError,KeyError,TypeError,OSError) as exc:
         report["errors"].append("NBA scoreboard unavailable: "+str(exc)[:140])
+    # Use previously observed official liveData NBA IDs before expensive
+    # season schedule rediscovery. These IDs are only lookup hints: the
+    # returned official box must STILL attest FINAL, date, teams, and game ID.
+    pending_ids={}
+    if known_game_ids:
+        from iphone_bot.official_game_id_index import matching_ids
+        pending_ids=matching_ids(known_game_ids,pending-nba_complete)
+        report["cached_official_id_candidates"]=len(pending_ids)
+        for key,gid in pending_ids.items():
+            if key in nba_complete:continue
+            try:
+                rows=final_schedule_boxscore(gid,key,request)
+                if not rows:continue
+                from_nba.extend(rows)
+                nba_complete.add(key)
+                report["final_nba_games"]+=1
+                report["final_cached_id_nba_games"]=report.get("final_cached_id_nba_games",0)+1
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                report["errors"].append("Cached official ID boxscore unavailable: "+str(exc)[:130])
+    # The app's saved schedule already includes ESPN event IDs for every
+    # matchup. Bypass unreliable daily scoreboard if necessary: the fetched
+    # summary itself MUST prove final status and exact ID/date/team identity.
+    espn_complete=set()
+    if known_espn_games:
+        for key in sorted(pending-nba_complete):
+            event_id=known_espn_games.get(key)
+            if not event_id or not str(event_id).isdigit():
+                continue
+            try:
+                summary=request(ESPN_BOX+"?"+urllib.parse.urlencode({"event":str(event_id)}))
+                rows=verified_direct_espn_summary(event_id,key,summary)
+                if not rows:continue
+                from_espn.extend(rows)
+                espn_complete.add(key)
+                report["final_espn_games"]+=1
+                report["direct_espn_final_games"]=report.get("direct_espn_final_games",0)+1
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                report["errors"].append("Direct ESPN final unavailable: "+str(exc)[:140])
     # The live NBA scoreboard can time out on hosted runners or roll over to
     # the next day. Discover historical IDs from the official season schedule,
     # then read each actual final (gameStatus=3) NBA player boxscore.
-    remaining={k for k in pending if k not in nba_complete}
-    if remaining:
+    remaining=pending-nba_complete-espn_complete
+    # Do not redownload gigantic season schedules for matchups whose exact
+    # official NBA ID was already safely recorded (the box itself checks FINAL).
+    # Reusing the same known game ID is the correct recovery path.
+    season_id_unknown=remaining-set(pending_ids)
+    if season_id_unknown:
         for endpoint in (NBA_SCHEDULE,NBA_SCHEDULE_ALT):
             try:
-                candidates=verified_schedule_ids(request(endpoint),remaining)
+                candidates=verified_schedule_ids(request(endpoint),season_id_unknown)
                 for key,gid in candidates.items():
                     if key in nba_complete:continue
                     try:
@@ -323,9 +487,64 @@ def gather(records,now=None,request=request_json):
                 break
             except (OSError,ValueError,KeyError,TypeError) as exc:
                 report["errors"].append("NBA schedule unavailable: "+str(exc)[:130])
+    # SECONDARY DNP RECOVERY: An official NBA final often lists only played
+    # athletes. A "complete game" does not establish whether every requested
+    # forecasted player participated. For any genuinely unlisted original
+    # player, independently check an ESPN COMPLETED final summary for an
+    # explicit didNotPlay+reason. Never infer a DNP from absence or a blank
+    # stat field, and never substitute ESPN scores into an NBA played row.
+    if known_espn_games and supplemental_espn_dnp_names:
+        from iphone_bot.paper_pick_pipeline import strict_player_name
+        for key in sorted(nba_complete):
+            requests=supplemental_espn_dnp_names.get(key) or set()
+            if not requests:
+                continue
+            day,away,home=key
+            published={
+                (strict_player_name(r.get("player")),r.get("team"))
+                for r in from_nba
+                if r.get("date")==day and
+                (r.get("team"),r.get("opponent")) in ((away,home),(home,away))
+            }
+            absent=set(requests)-published
+            if not absent:
+                continue
+            espn_id=known_espn_games.get(key)
+            if not espn_id or not str(espn_id).isdigit():
+                report["secondary_espn_dnp_no_verified_game_hint"] = (
+                    report.get("secondary_espn_dnp_no_verified_game_hint",0)+len(absent))
+                continue
+            try:
+                summary=request(ESPN_BOX+"?"+urllib.parse.urlencode({"event":str(espn_id)}))
+                verified=verified_direct_espn_summary(espn_id,key,summary)
+                recovered=[r for r in verified
+                           if r.get("dnp_final_verified") is True
+                           and r.get("final_confirmed") is True
+                           and r.get("source")=="ESPN_FINAL"
+                           and r.get("dnp_reason")
+                           and (strict_player_name(r.get("player")),r.get("team")) in absent]
+                # DNP rows must not be contradicted by a final played row from
+                # the same ESPN response, even when NBA didn't list the name.
+                played={(strict_player_name(r.get("player")),r.get("team"))
+                        for r in verified if r.get("dnp_final_verified") is not True}
+                recovered=[r for r in recovered
+                           if (strict_player_name(r.get("player")),r.get("team")) not in played]
+                if recovered:
+                    from_espn.extend(recovered)
+                    report["secondary_verified_explicit_dnp_players"] = (
+                        report.get("secondary_verified_explicit_dnp_players",0)+len(recovered))
+                remaining=absent-{(strict_player_name(r.get("player")),r.get("team"))
+                                 for r in recovered}
+                report["secondary_dnp_still_unverified"] = (
+                    report.get("secondary_dnp_still_unverified",0)+len(remaining))
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                report["errors"].append("Secondary ESPN explicit DNP unverified: "+str(exc)[:140])
+                report["secondary_dnp_still_unverified"] = (
+                    report.get("secondary_dnp_still_unverified",0)+len(absent))
+
     # ESPN is a fallback for missed games (e.g. NBA daily scoreboard has rolled).
     for date in sorted(days):
-        if all(key in nba_complete for key in pending if key[0]==date):continue
+        if all(key in nba_complete|espn_complete for key in pending if key[0]==date):continue
         try:
             board=request(ESPN_SCORE+"?"+urllib.parse.urlencode({"dates":date.replace("-",""),"limit":100}))
             for event in espn_final_events(board):
@@ -334,7 +553,7 @@ def gather(records,now=None,request=request_json):
                            for c in event["competitions"][0]["competitors"]}
                     ateam,hteam=teams.get("away"),teams.get("home")
                     key=(local_date(event["date"]),ateam,hteam)
-                    if key in nba_complete or key not in pending:continue
+                    if key in nba_complete or key in espn_complete or key not in pending:continue
                     rows=espn_boxscore_rows(event,request(ESPN_BOX+"?"+urllib.parse.urlencode({"event":str(event["id"])})))
                     if not rows:continue
                     from_espn.extend(rows)

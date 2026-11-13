@@ -1,0 +1,110 @@
+name: NBA full-game lifecycle and next-slate readiness gate
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Publish lightweight PrizePicks site data and per-game coverage
+      - Guarded new NBA AI all markets PTS REB AST PRA
+    types: [completed]
+    branches: [main]
+  schedule:
+    # Multiple pretip checkpoints. GitHub cron is best-effort, not guaranteed.
+    - cron: '11 17,19,21,23 * * *'
+    # Follow each bounded provider window after its 28-minute intake + 46-minute publish.
+    - cron: '51 0,16,18,20,22,23 * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/tests/test_nba_full_game_lifecycle.cjs'
+      - 'iphone_bot/tests/test_nba_full_game_lifecycle_grading.py'
+      - 'iphone_bot/pregame_lifecycle_readiness.py'
+      - 'iphone_bot/tests/test_pregame_lifecycle_readiness.py'
+      - 'docs/live-prop-tracker.js'
+      - 'iphone_bot/grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/verify_live_pregame_line_browser.py'
+      - '.github/workflows/nba-full-game-lifecycle.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/tests/test_nba_full_game_lifecycle.cjs'
+      - 'iphone_bot/tests/test_nba_full_game_lifecycle_grading.py'
+      - 'iphone_bot/pregame_lifecycle_readiness.py'
+      - 'iphone_bot/tests/test_pregame_lifecycle_readiness.py'
+      - '.github/workflows/nba-full-game-lifecycle.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-full-lifecycle-readiness
+  cancel-in-progress: false
+jobs:
+  offline-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Simulate eight-game capture, outage, tipoff, tracking and final settlement
+        if: github.event_name == 'pull_request'
+        run: |
+          node --test iphone_bot/tests/test_nba_full_game_lifecycle.cjs
+          node --test iphone_bot/tests/test_live_prop_tracker.cjs
+          python -m unittest discover -s iphone_bot/tests -p 'test_nba_full_game_lifecycle_grading.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pregame_lifecycle_readiness.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_prizepicks_pregame_lines.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
+          python -m py_compile iphone_bot/verify_live_pregame_line_browser.py
+      - name: Confirm mobile page and live tracker parse
+        run: |
+          node --check docs/live-prop-tracker.js
+          node - <<'JS'
+          const vm=require('vm'),fs=require('fs');
+          const html=fs.readFileSync('docs/index.html','utf8');
+          for(const [i,s] of [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].entries())
+            if(s[1].trim())new vm.Script(s[1],{filename:'inline-'+i+'.js'});
+          JS
+  source-readiness:
+    needs: offline-gate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Assess the next actual NBA game date, not last night's tests
+        id: preflight
+        continue-on-error: true
+        run: python -m iphone_bot.pregame_lifecycle_readiness
+      - name: Publish truthful readiness status, including missing lines
+        if: always() && steps.preflight.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Recompute after every refetch: a queued run must not publish a
+            # stale receipt over newly captured source quotes or forecasts.
+            rm -f docs/pregame_lifecycle_readiness.json
+            python -m iphone_bot.pregame_lifecycle_readiness || true
+            python -c "import json; r=json.load(open('docs/pregame_lifecycle_readiness.json')); assert r.get('status') in ('READY','NOT_READY')"
+            git add docs/pregame_lifecycle_readiness.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Record objective next NBA slate preflight status'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Block green readiness when the next slate is missing saved sources
+        if: always() && steps.preflight.outcome != 'skipped'
+        run: |
+          python -c "import json,sys; sys.exit(0 if json.load(open('docs/pregame_lifecycle_readiness.json'))['status']=='READY' else 1)" && exit 0
+          echo "::error::NEXT NBA SLATE NOT READY. Verify archived provider quotes, frozen projections and source completeness in docs/pregame_lifecycle_readiness.json"
+          exit 1

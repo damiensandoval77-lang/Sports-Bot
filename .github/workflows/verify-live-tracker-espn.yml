@@ -1,0 +1,32 @@
+name: Verify deployed NBA live tracker and ESPN player stats
+on:
+  pull_request:
+    paths:
+      - 'docs/index.html'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
+      - 'iphone_bot/smoke_espn_live_prop_tracker.py'
+      - '.github/workflows/verify-live-tracker-espn.yml'
+  push:
+    branches: ['fix/20261107-live-tracker-resume-smoke']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify active unified app truthfulness, pretip eligibility and live updates
+        run: |
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs
+          node --test iphone_bot/tests/test_live_direct.cjs
+
+      - name: Live ESPN NBA player stats endpoint verification (read-only)
+        run: python -u iphone_bot/smoke_espn_live_prop_tracker.py

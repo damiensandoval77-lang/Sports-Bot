@@ -1,0 +1,35 @@
+name: Inspect PrizePicks compact field shape once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/inspect_prizepicks_compact_schema.py'
+      - '.github/workflows/inspect-prizepicks-compact.yml'
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect three real compact rows (no key or player identity output)
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+        run: python -u iphone_bot/inspect_prizepicks_compact_schema.py
+      - name: Save public-safe field schema
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/prizepicks_compact_schema.json
+          git commit -m 'Record sanitized PrizePicks compact response field layout'
+          for n in 1 2 3 4; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1

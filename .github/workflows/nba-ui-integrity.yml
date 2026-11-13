@@ -1,0 +1,28 @@
+name: Validate NBA dashboard against false probability confidence
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/index.html'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
+      - '.github/workflows/nba-ui-integrity.yml'
+permissions:
+  contents: read
+jobs:
+  validate_ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify active unified app truthfulness, pretip eligibility and live updates
+        run: |
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs
+          node --test iphone_bot/tests/test_live_direct.cjs

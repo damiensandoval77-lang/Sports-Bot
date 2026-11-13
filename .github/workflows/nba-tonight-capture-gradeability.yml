@@ -1,0 +1,91 @@
+name: Verify tonight NBA frozen lines predictions and grades
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Guarded new NBA AI all markets PTS REB AST PRA
+      - Publish lightweight PrizePicks site data and per-game coverage
+    types: [completed]
+    branches: [main]
+  schedule:
+    # Every 30 minutes from afternoon pregame through overnight settlement (UTC).\n    # This is credit-free and catches changed archives after provider refreshes.
+    - cron: '17,47 0-6,16-23 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks_pregame_line_archive.json'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - 'docs/lagged_matchup_all_market_ledger.json'
+      - 'docs/ai_forecast_actual_ledger.json'
+      - 'iphone_bot/tonight_capture_gradeability.py'
+      - 'iphone_bot/current_primary_coverage.py'
+      - 'iphone_bot/tests/test_current_primary_coverage.py'
+      - 'iphone_bot/audit_primary_model_missing.py'
+      - 'iphone_bot/tests/test_audit_primary_model_missing.py'
+      - '.github/workflows/nba-tonight-capture-gradeability.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/tonight_capture_gradeability.py'
+      - 'iphone_bot/current_primary_coverage.py'
+      - 'iphone_bot/tests/test_current_primary_coverage.py'
+      - 'iphone_bot/tests/test_tonight_capture_gradeability.py'
+      - 'iphone_bot/merge_new_ai_publishing.py'
+      - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
+      - '.github/workflows/nba-tonight-capture-gradeability.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-tonight-capture-gradeability
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate capture and no-destructive-merge regression tests
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_tonight_capture_gradeability.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_current_primary_coverage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_audit_primary_model_missing.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_latest_report_publication.py' -v
+      - name: Reconcile every scheduled game against saved quote and prediction artifacts
+        if: github.event_name != 'pull_request'
+        id: capture
+        continue-on-error: true
+        run: |
+          python -m iphone_bot.audit_primary_model_missing
+          python -m iphone_bot.tonight_capture_gradeability
+      - name: Publish audit even if missing frozen games
+        if: always() && github.event_name != 'pull_request' && steps.capture.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Reconcile the actual latest saved lines and immutable models
+            # after fetch; never publish an old snapshot over a new freeze.
+            python -m iphone_bot.audit_primary_model_missing
+            rc=0
+            python -m iphone_bot.tonight_capture_gradeability || rc=$?
+            git add docs/tonight_capture_gradeability.json docs/primary_model_missing_diagnostics.json
+            if git diff --cached --quiet; then exit "$rc"; fi
+            git commit -m 'Record honest per-game NBA capture and grading health'
+            if git push origin HEAD:main; then exit "$rc"; fi
+          done
+          echo "::error::Could not publish per-game capture health after retries"
+          exit 1
+      - name: Fail visibly if genuine source lines lack frozen models
+        if: always() && github.event_name != 'pull_request' && steps.capture.outcome == 'failure'
+        run: |
+          echo "::error::CAPTURE INCOMPLETE: some games are missing saved lines, saved AI, or frozen line-backed models. Review docs/tonight_capture_gradeability.json"
+          exit 1

@@ -1,0 +1,60 @@
+name: Phase 1 feed health audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "iphone_bot/health_audit.py"
+      - "iphone_bot/tests/test_health_audit.py"
+      - ".github/workflows/phase1_feed_health.yml"
+  schedule:
+    - cron: "12,42 * * * *"
+  pull_request:
+    paths:
+      - "scripts/e2e_live_site.py"
+      - "scripts/mobile_board_health.py"
+      - "tests/test_mobile_board_health.py"
+      - "iphone_bot/health_audit.py"
+      - "iphone_bot/slate_matchup_audit.py"
+      - "iphone_bot/tests/test_slate_matchup_audit.py"
+      - "docs/nba_schedule.json"
+      - "iphone_bot/tests/test_health_audit.py"
+      - "docs/data.json"
+      - "docs/live_player_tracking.json"
+      - ".github/workflows/phase1_feed_health.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  feed-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - name: Test empty-board failure outside near-tip window
+        run: python -m unittest discover -s tests -p test_mobile_board_health.py -v
+      - name: Run health audit unit tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_health_audit.py' -v
+      - name: Test independent matchup coverage
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_slate_matchup_audit.py' -v
+      - name: Print exact uncovered NBA matchups
+        if: github.event_name != 'pull_request'
+        run: python iphone_bot/slate_matchup_audit.py
+      - name: Check published feeds for stale or missing game coverage
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p out
+          python iphone_bot/health_audit.py --output out/feed-health.json
+      - name: Retain feed-health evidence even when unhealthy
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: feed-health-${{ github.run_id }}
+          path: out/feed-health.json
+          if-no-files-found: error
+          retention-days: 30

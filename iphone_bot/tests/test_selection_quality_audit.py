@@ -41,6 +41,36 @@ class SelectionQualityTests(unittest.TestCase):
         self.assertFalse(x["overall"]["sample_threshold_met"])
         self.assertLess(wilson_lower(100,100),1)
         self.assertEqual(x["status"],"RESEARCH_ONLY_NO_VALIDATED_BETTING_EDGE")
+    def test_all_four_markets_report_over_under_error_without_optimizing(self):
+        examples=[]
+        for market in ("PTS","REB","AST","PRA"):
+            examples.append(record(player=market+"o",market=market,
+                                   actual=10,line=5.5,projection=7))
+            examples.append(record(player=market+"u",market=market,
+                                   actual=4,line=5.5,projection=3))
+        out=analyze(examples)
+        for market in ("PTS","REB","AST","PRA"):
+            sides=out["by_market"][market]["by_direction"]
+            self.assertEqual(sides["OVER"]["independent_markets"],1)
+            self.assertEqual(sides["UNDER"]["independent_markets"],1)
+            self.assertEqual(sides["OVER"]["wins"],1)
+            self.assertEqual(sides["UNDER"]["wins"],1)
+            self.assertEqual(sides["OVER"]["mean_signed_error_projection_minus_actual"],-3)
+            self.assertEqual(sides["UNDER"]["mean_signed_error_projection_minus_actual"],-1)
+            self.assertFalse(sides["OVER"]["validated_selection_filter"])
+            self.assertFalse(sides["UNDER"]["sample_threshold_met"])
+        self.assertEqual(out["overall_by_direction"]["OVER"]["independent_markets"],4)
+        self.assertEqual(out["overall_by_direction"]["UNDER"]["independent_markets"],4)
+
+    def test_no_data_does_not_invent_direction_accuracy(self):
+        x=analyze([])
+        for direction in ("OVER","UNDER"):
+            r=x["overall_by_direction"][direction]
+            self.assertEqual(r["independent_markets"],0)
+            self.assertIsNone(r["hit_rate"])
+            self.assertIsNone(r["mean_absolute_error"])
+            self.assertFalse(r["validated_selection_filter"])
+
     def test_unchanged_production_forecasts(self):
         x=record()
         copy=dict(x)

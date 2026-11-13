@@ -10,6 +10,9 @@ __pycache__/
 data/nba/raw/
 data/nba/processed/
 data/nba/projections/
+# Provider-licensed private lineup exports and permission manifests
+data/nba/private/
+
 
 # Model binaries (regenerate with train.py)
 models/nba/*.json
@@ -56,3 +59,10 @@ scratch/
 # Analysis docs (generated artifacts)
 docs/ANALYSIS.md
 docs/FIXES.md
+
+# Local provider keys and one-time authenticated exports
+.env.*
+!.env.example
+*.secrets
+*.secret
+artifacts/prizepicks_rest_setup/

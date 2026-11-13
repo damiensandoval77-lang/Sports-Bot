@@ -1,0 +1,58 @@
+name: NBA Live Matchup Tracker (offline)
+on:
+  pull_request:
+    paths:
+      - 'docs/index.html'
+      - 'docs/live-prop-tracker.js'
+      - 'iphone_bot/tests/test_live_prop_tracker.cjs'
+      - '.github/workflows/nba-live-matchup-tracker-tests.yml'
+  push:
+    branches: ['feature/20261107-live-matchup-prop-tracker']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test frozen model picks against live and final ESPN boxscore fixtures
+        run: |
+          node --check docs/live-prop-tracker.js
+          node --test iphone_bot/tests/test_live_prop_tracker.cjs
+      - name: Verify active combined iPhone game tracker and immutable projections
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          redirect=Path('docs/index.html').read_text()
+          app=Path('docs/dames-picks/index.html').read_text()
+          live=Path('docs/dames-picks/live_direct.js').read_text()
+          model=Path('docs/dames-picks/feeds.js').read_text()
+          assert 'url=./dames-picks/' in redirect
+          assert 'data-view="tracker"' in app
+          assert 'data-game=' in app and 'renderGameDetail()' in app
+          assert 'L.fetchNBA()' in app
+          assert 'getJSON("live_player_tracking.json")' in app
+          assert 'setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000)' in app
+          assert 'next>before' in app
+          assert 'summary?event=' in live
+          assert 'projection:null,direction:null,chance:null' in model
+          assert 'isFrozenForecast' in Path('docs/live-prop-tracker.js').read_text()
+          scripts=re.findall(r'<script>(.*?)</script>',app,re.S)
+          assert scripts
+          Path('/tmp/nba-game-click-inline.js').write_text(scripts[-1])
+          print('Current unified iPhone view has game drill-down, 30s ESPN live refresh, and quote-only without fake projections')
+          PY
+          node --check /tmp/nba-game-click-inline.js
+          node --check docs/dames-picks/live_direct.js
+      - name: No sportsbook API calls or rewritten pregame projections
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          js=Path('docs/live-prop-tracker.js').read_text()
+          assert 'ODDS_API_KEY' not in js
+          assert 'fetch(' not in js
+          assert 'summary?event=' in Path('docs/dames-picks/live_direct.js').read_text()
+          print('ESPN read-only box score, existing immutable AI forecast.')
+          PY

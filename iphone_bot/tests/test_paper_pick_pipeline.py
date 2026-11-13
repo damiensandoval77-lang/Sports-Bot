@@ -29,6 +29,42 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(outcome["DraftKings"]["paper_profit_units"],100/115,places=5)
         self.assertEqual(summary(graded)["settled"],2)
         self.assertEqual(summary(graded)["independent_player_game_markets"],1)
+    def test_minutes_v3_and_opportunity_v2_are_originally_frozen(self):
+        m=self.market()
+        m["stat"]="AST"
+        m["minutes_v3_research"]={
+           "status":"PREGAME_MINUTES_V3_RESEARCH",
+           "expected_minutes":31.2,"last_prior_date":"2026-11-11",
+           "production_applied":False}
+        m["opportunity_v2_research"]={"markets":{"AST":{
+           "status":"PREGAME_OPPORTUNITY_V2_RESEARCH",
+           "projection":7.1,"last_prior_game":"2026-11-11",
+           "source_kind":"BOX_SCORE_RATE_PROXY"}}}
+        saved=snapshot([m],"2026-11-12T18:00:00Z")
+        self.assertEqual(len(saved),2)
+        self.assertEqual(saved[0]["minutes_v3_research"]["expected_minutes"],31.2)
+        self.assertEqual(saved[0]["opportunity_v2_research"]["markets"]["AST"]["projection"],7.1)
+        m["minutes_v3_research"]["expected_minutes"]=100
+        m["opportunity_v2_research"]["markets"]["AST"]["projection"]=100
+        again=snapshot([m],"2026-11-12T18:10:00Z",saved)
+        self.assertEqual(again[0]["minutes_v3_research"]["expected_minutes"],31.2)
+        self.assertEqual(again[0]["opportunity_v2_research"]["markets"]["AST"]["projection"],7.1)
+
+    def test_shooting_v1_shadow_is_frozen_and_immutable(self):
+        m=self.market()
+        m["shooting_efficiency_v1"]={
+            "status":"PREGAME_SHOOTING_SHADOW_RESEARCH",
+            "projection":24.5,"blended_projection":23.8,
+            "last_prior_game":"2026-11-11",
+            "production_applied":False}
+        stored=snapshot([m],"2026-11-12T18:00:00Z")
+        self.assertEqual(len(stored),2)
+        self.assertEqual(stored[0]["shooting_efficiency_v1"]["projection"],24.5)
+        m["shooting_efficiency_v1"]["projection"]=100
+        self.assertEqual(stored[0]["shooting_efficiency_v1"]["projection"],24.5)
+        again=snapshot([m],"2026-11-12T19:00:00Z",stored)
+        self.assertEqual(again[0]["shooting_efficiency_v1"]["projection"],24.5)
+
     def test_verified_third_party_final_settles_celtics_only(self):
         from pathlib import Path
         verified=Path(__file__).resolve().parents[2]/"docs/verified_postgame_boxscores.json"
@@ -57,6 +93,22 @@ class PaperPipelineTests(unittest.TestCase):
         self.assertTrue(all(r["status"]=="SETTLED" for r in graded))
         not_final={**game,"final_confirmed":False}
         waiting=settle(picks,[not_final],"2026-11-13T02:45:00Z")
+        self.assertTrue(all(r["status"]=="PENDING" for r in waiting))
+
+    def test_official_final_explicit_dnp_is_void_not_loss(self):
+        picks=snapshot([self.market()],"2026-11-12T20:00:00Z")
+        dnp={"player":"Sample Player","team":"BOS","opponent":"MIA",
+             "date":"2026-11-12","source":"NBA_CDN_FINAL",
+             "source_game_id":"0022600030","final_confirmed":True,
+             "dnp_final_verified":True,"dnp_reason":"INACTIVE"}
+        void=settle(picks,[dnp],"2026-11-13T03:00:00Z")
+        self.assertTrue(all(r["status"]=="VOID_DNP" for r in void))
+        self.assertTrue(all(r["result"]=="VOID" for r in void))
+        report=summary(void)
+        self.assertEqual(report["void_dnp"],2)
+        self.assertEqual(report["settled"],0)
+        self.assertIsNone(report["win_rate_ex_push"])
+        waiting=settle(picks,[dnp],"2026-11-13T01:30:00Z")
         self.assertTrue(all(r["status"]=="PENDING" for r in waiting))
 
     def test_independent_pending_and_combined_record_excludes_duplicate_books(self):

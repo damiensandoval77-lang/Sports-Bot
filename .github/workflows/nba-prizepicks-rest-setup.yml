@@ -1,0 +1,89 @@
+name: PrizePicks authenticated REST onboarding and NBA model sample
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: nba-prizepicks-rest-onboarding
+  cancel-in-progress: false
+jobs:
+  rest_setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate integration script
+        run: python -m py_compile iphone_bot/prizepicks_rest_onboarding.py
+      - name: Complete onboarding and fetch bounded NBA model training sample
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+          PRIZEPICKS_SETUP_OUTPUT: artifacts/prizepicks_rest_setup
+        run: |
+          python -u iphone_bot/prizepicks_rest_onboarding.py
+      - name: Backtest sample against strictly earlier confirmed NBA game logs
+        if: success()
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_sample_backtest.py' -v
+          if [ -f artifacts/prizepicks_rest_setup/nba_training_sample.csv ] && [ -f artifacts/prizepicks_rest_setup/nba_prior_game_logs.csv ]; then
+            python -m iphone_bot.prizepicks_sample_backtest \
+              artifacts/prizepicks_rest_setup/nba_training_sample.csv \
+              artifacts/prizepicks_rest_setup/nba_prior_game_logs.csv \
+              artifacts/prizepicks_rest_setup
+          else
+            echo 'No matching vendor samples; backtest unavailable, do not fabricate'
+          fi
+      - name: Save authentic provider sample as private workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prizepicks-nba-model-sample
+          path: artifacts/prizepicks_rest_setup/
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Publish key-free setup health for the project
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ ! -f artifacts/prizepicks_rest_setup/setup_status.json ]; then
+            echo 'No setup response was recorded'
+            exit 0
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          src=json.loads(Path('artifacts/prizepicks_rest_setup/setup_status.json').read_text())
+          public={k:src.get(k) for k in ('status','checked_at','provider',
+              'onboarding_http','onboarding_status','coverage_http',
+              'coverage','training_http','training_rows','training_meta',
+              'game_logs_http','game_log_rows','earlier_game_join','observed_at',
+              'remaining_credits','plan_limit','error_type')}
+          audit=Path('artifacts/prizepicks_rest_setup/backtest_report.json')
+          if audit.is_file():
+            q=json.loads(audit.read_text())
+            public['historical_backtest']={k:q.get(k) for k in (
+              'status','training_rows','game_log_rows','usable_market_rows',
+              'distinct_game_dates','exclusions','baseline','rate_candidate',
+              'verified_edge','live_model_changed','limitation')}
+          Path('docs/prizepicks_rest_setup_status.json').write_text(
+              json.dumps(public,indent=2)+'\n')
+          print('Setup status:',public['status'],'training:',public['training_rows'],
+              'logs:',public['game_log_rows'])
+          PY
+          cp docs/prizepicks_rest_setup_status.json "$RUNNER_TEMP/prizepicks-rest-status.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/prizepicks-rest-status.json" docs/prizepicks_rest_setup_status.json
+            git add docs/prizepicks_rest_setup_status.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Record PrizePicks REST onboarding and NBA sample coverage without credentials'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

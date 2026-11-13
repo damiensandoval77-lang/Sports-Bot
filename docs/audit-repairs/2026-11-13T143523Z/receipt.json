@@ -1,0 +1,1421 @@
+{
+  "status": "PARTIAL",
+  "started_at": "2026-11-13T14:35:23Z",
+  "pinned_main": "f6b6822c70b082fc2f5a0e3882a894264d7e2984",
+  "new_code_defects_discovered": 0,
+  "code_changes": [],
+  "operational_recovery": {
+    "failed_run": 43437100813,
+    "failed_job": 131924936260,
+    "cause": "PUBLIC_PROVIDER_SNAPSHOT_STALE in 13:50 report; newer provider snapshot subsequently available",
+    "action": "Reran free public verifier without paid collection",
+    "retry_job": 131950362195,
+    "ci_status": "success",
+    "public_status": "VERIFIED_READY",
+    "public_receipt": {
+      "browser_render_verified": false,
+      "checked_at": "2026-11-13T14:37:49.888975+00:00",
+      "html_handoff_present": true,
+      "matched_by_game": {
+        "Atlanta Hawks @ Chicago Bulls": 31,
+        "Cleveland Cavaliers @ Miami Heat": 40,
+        "Golden State Warriors @ San Antonio Spurs": 45,
+        "Memphis Grizzlies @ New Orleans Pelicans": 43,
+        "Milwaukee Bucks @ Orlando Magic": 34,
+        "New York Knicks @ Indiana Pacers": 40,
+        "Oklahoma City Thunder @ LA Clippers": 45,
+        "Portland Trail Blazers @ Sacramento Kings": 43,
+        "Utah Jazz @ Houston Rockets": 34
+      },
+      "matched_offers": 355,
+      "note": "Public HTML and JSON readiness, not a browser screenshot, wager or calibrated betting accuracy.",
+      "provider_partial": false,
+      "reasons": [],
+      "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/",
+      "status": "READY"
+    }
+  },
+  "inventory": {
+    "refs": 834,
+    "heads": 418,
+    "historical_pr_tips": 416,
+    "open_prs": [
+      {
+        "pr": 307,
+        "conflict": true
+      },
+      {
+        "pr": 272,
+        "conflict": false
+      },
+      {
+        "pr": 249,
+        "conflict": true
+      },
+      {
+        "pr": 135,
+        "conflict": true
+      },
+      {
+        "pr": 132,
+        "conflict": false
+      },
+      {
+        "pr": 72,
+        "conflict": false
+      },
+      {
+        "pr": 3,
+        "conflict": true
+      }
+    ],
+    "workflow_definitions": 174,
+    "runtime_sampled": 67,
+    "runtime_unsampled": 107,
+    "sampled_runs": 600
+  },
+  "static_audit": {
+    "files": 1184,
+    "errors": 0,
+    "warnings": 45,
+    "mutable_action_references": 402
+  },
+  "tests": {
+    "NFL_live_schedule_guard": 31,
+    "heartbeat_recovery_public_monitor": 42
+  },
+  "capture": {
+    "checked_at": "2026-11-13T13:59:20.711683+00:00",
+    "game_date_eastern": "2026-11-13",
+    "status": "CAPTURE_INCOMPLETE",
+    "games": [
+      {
+        "game": "Milwaukee Bucks @ Orlando Magic",
+        "start": "2026-11-14T00:00:00+00:00",
+        "source_quotes": 56,
+        "standard_source_quotes": 56,
+        "standard_unique_markets": 56,
+        "standard_markets_without_frozen_model": 4,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 4,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 4,
+        "unique_provider_player_stat_markets": 40,
+        "frozen_ai_only": 92,
+        "frozen_line_backed": 52,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 52,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "New York Knicks @ Indiana Pacers",
+        "start": "2026-11-14T00:00:00+00:00",
+        "source_quotes": 63,
+        "standard_source_quotes": 63,
+        "standard_unique_markets": 63,
+        "standard_markets_without_frozen_model": 8,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 8,
+        "missing_primary_with_separate_research_receipt": 8,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 45,
+        "frozen_ai_only": 104,
+        "frozen_line_backed": 55,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 55,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Atlanta Hawks @ Chicago Bulls",
+        "start": "2026-11-14T01:00:00+00:00",
+        "source_quotes": 60,
+        "standard_source_quotes": 60,
+        "standard_unique_markets": 60,
+        "standard_markets_without_frozen_model": 2,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 2,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 2,
+        "unique_provider_player_stat_markets": 36,
+        "frozen_ai_only": 100,
+        "frozen_line_backed": 58,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 58,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Cleveland Cavaliers @ Miami Heat",
+        "start": "2026-11-14T01:00:00+00:00",
+        "source_quotes": 55,
+        "standard_source_quotes": 55,
+        "standard_unique_markets": 55,
+        "standard_markets_without_frozen_model": 3,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 3,
+        "missing_primary_with_separate_research_receipt": 3,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 42,
+        "frozen_ai_only": 104,
+        "frozen_line_backed": 53,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 53,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Memphis Grizzlies @ New Orleans Pelicans",
+        "start": "2026-11-14T01:00:00+00:00",
+        "source_quotes": 61,
+        "standard_source_quotes": 61,
+        "standard_unique_markets": 61,
+        "standard_markets_without_frozen_model": 0,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 0,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 47,
+        "frozen_ai_only": 100,
+        "frozen_line_backed": 61,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 61,
+        "issues": []
+      },
+      {
+        "game": "Utah Jazz @ Houston Rockets",
+        "start": "2026-11-14T01:30:00+00:00",
+        "source_quotes": 50,
+        "standard_source_quotes": 50,
+        "standard_unique_markets": 50,
+        "standard_markets_without_frozen_model": 0,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 0,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 35,
+        "frozen_ai_only": 104,
+        "frozen_line_backed": 51,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 51,
+        "issues": []
+      },
+      {
+        "game": "Golden State Warriors @ San Antonio Spurs",
+        "start": "2026-11-14T02:30:00+00:00",
+        "source_quotes": 73,
+        "standard_source_quotes": 73,
+        "standard_unique_markets": 73,
+        "standard_markets_without_frozen_model": 0,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 0,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 47,
+        "frozen_ai_only": 108,
+        "frozen_line_backed": 74,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 74,
+        "issues": []
+      },
+      {
+        "game": "Portland Trail Blazers @ Sacramento Kings",
+        "start": "2026-11-14T03:00:00+00:00",
+        "source_quotes": 65,
+        "standard_source_quotes": 65,
+        "standard_unique_markets": 65,
+        "standard_markets_without_frozen_model": 5,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 5,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 5,
+        "unique_provider_player_stat_markets": 47,
+        "frozen_ai_only": 96,
+        "frozen_line_backed": 60,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 60,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Oklahoma City Thunder @ LA Clippers",
+        "start": "2026-11-14T03:30:00+00:00",
+        "source_quotes": 79,
+        "standard_source_quotes": 79,
+        "standard_unique_markets": 79,
+        "standard_markets_without_frozen_model": 3,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 3,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 3,
+        "unique_provider_player_stat_markets": 55,
+        "frozen_ai_only": 96,
+        "frozen_line_backed": 76,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 76,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      }
+    ],
+    "issues": [
+      "Milwaukee Bucks @ Orlando Magic: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "New York Knicks @ Indiana Pacers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Atlanta Hawks @ Chicago Bulls: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Cleveland Cavaliers @ Miami Heat: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Portland Trail Blazers @ Sacramento Kings: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Oklahoma City Thunder @ LA Clippers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+    ],
+    "note": "Provider quotes, AI-only forecasts, line-backed frozen predictions and final grades are separate. Missing records never fabricated.",
+    "summary": {
+      "schedule_games": 9,
+      "games_with_saved_source_quotes": 9,
+      "games_with_frozen_ai": 9,
+      "games_with_line_backed_models": 9,
+      "total_quotes": 562,
+      "total_standard_source_quotes": 562,
+      "total_standard_markets_without_frozen_model": 25,
+      "total_price_moves_from_original_frozen_line": 0,
+      "total_player_stat_markets_never_primary_frozen": 25,
+      "total_missing_primary_with_separate_research_receipt": 11,
+      "total_missing_primary_without_any_ai_receipt": 14,
+      "total_ai_only": 904,
+      "total_line_backed": 540,
+      "total_line_backed_graded": 0,
+      "total_ai_only_graded": 0
+    },
+    "current_upcoming_coverage": {
+      "status": "INCOMPLETE",
+      "checked_at": "2026-11-13T13:59:20.711683+00:00",
+      "source_generated_at": "2026-11-13T13:58:08.807816+00:00",
+      "verified_current_offers": 365,
+      "matched_primary_offers": 350,
+      "missing_primary_offers": 15,
+      "games": [
+        {
+          "game": "Atlanta Hawks @ Chicago Bulls",
+          "start": "2026-11-14T01:00:00+00:00",
+          "verified_current_offers": 32,
+          "matched_primary_offers": 31,
+          "missing_primary_offers": 1,
+          "missing": [
+            {
+              "player": "Patrick Williams",
+              "team": "CHI",
+              "stat": "PTS",
+              "line": 8.5
+            }
+          ]
+        },
+        {
+          "game": "Cleveland Cavaliers @ Miami Heat",
+          "start": "2026-11-14T01:00:00+00:00",
+          "verified_current_offers": 40,
+          "matched_primary_offers": 38,
+          "missing_primary_offers": 2,
+          "missing": [
+            {
+              "player": "Jaylon Tyson",
+              "team": "CLE",
+              "stat": "PTS",
+              "line": 11.5
+            },
+            {
+              "player": "Jaylon Tyson",
+              "team": "CLE",
+              "stat": "PRA",
+              "line": 19.5
+            }
+          ]
+        },
+        {
+          "game": "Golden State Warriors @ San Antonio Spurs",
+          "start": "2026-11-14T02:30:00+00:00",
+          "verified_current_offers": 45,
+          "matched_primary_offers": 45,
+          "missing_primary_offers": 0,
+          "missing": []
+        },
+        {
+          "game": "Memphis Grizzlies @ New Orleans Pelicans",
+          "start": "2026-11-14T01:00:00+00:00",
+          "verified_current_offers": 43,
+          "matched_primary_offers": 43,
+          "missing_primary_offers": 0,
+          "missing": []
+        },
+        {
+          "game": "Milwaukee Bucks @ Orlando Magic",
+          "start": "2026-11-14T00:00:00+00:00",
+          "verified_current_offers": 38,
+          "matched_primary_offers": 34,
+          "missing_primary_offers": 4,
+          "missing": [
+            {
+              "player": "Jalen Suggs",
+              "team": "ORL",
+              "stat": "REB",
+              "line": 3.5
+            },
+            {
+              "player": "Jalen Suggs",
+              "team": "ORL",
+              "stat": "PRA",
+              "line": 18.5
+            },
+            {
+              "player": "Jalen Suggs",
+              "team": "ORL",
+              "stat": "PTS",
+              "line": 10.5
+            },
+            {
+              "player": "Jalen Suggs",
+              "team": "ORL",
+              "stat": "AST",
+              "line": 4.0
+            }
+          ]
+        },
+        {
+          "game": "New York Knicks @ Indiana Pacers",
+          "start": "2026-11-14T00:00:00+00:00",
+          "verified_current_offers": 40,
+          "matched_primary_offers": 37,
+          "missing_primary_offers": 3,
+          "missing": [
+            {
+              "player": "Ivica Zubac",
+              "team": "IND",
+              "stat": "PTS",
+              "line": 12.5
+            },
+            {
+              "player": "Ivica Zubac",
+              "team": "IND",
+              "stat": "REB",
+              "line": 10.0
+            },
+            {
+              "player": "Ivica Zubac",
+              "team": "IND",
+              "stat": "PRA",
+              "line": 25.5
+            }
+          ]
+        },
+        {
+          "game": "Oklahoma City Thunder @ LA Clippers",
+          "start": "2026-11-14T03:30:00+00:00",
+          "verified_current_offers": 47,
+          "matched_primary_offers": 45,
+          "missing_primary_offers": 2,
+          "missing": [
+            {
+              "player": "Max Strus",
+              "team": "LAC",
+              "stat": "PRA",
+              "line": 15.5
+            },
+            {
+              "player": "Max Strus",
+              "team": "LAC",
+              "stat": "PTS",
+              "line": 9.5
+            }
+          ]
+        },
+        {
+          "game": "Portland Trail Blazers @ Sacramento Kings",
+          "start": "2026-11-14T03:00:00+00:00",
+          "verified_current_offers": 46,
+          "matched_primary_offers": 43,
+          "missing_primary_offers": 3,
+          "missing": [
+            {
+              "player": "Keegan Murray",
+              "team": "SAC",
+              "stat": "REB",
+              "line": 3.5
+            },
+            {
+              "player": "Keegan Murray",
+              "team": "SAC",
+              "stat": "PRA",
+              "line": 15.5
+            },
+            {
+              "player": "Keegan Murray",
+              "team": "SAC",
+              "stat": "PTS",
+              "line": 10.5
+            }
+          ]
+        },
+        {
+          "game": "Utah Jazz @ Houston Rockets",
+          "start": "2026-11-14T01:30:00+00:00",
+          "verified_current_offers": 34,
+          "matched_primary_offers": 34,
+          "missing_primary_offers": 0,
+          "missing": []
+        }
+      ],
+      "issues": [],
+      "scope": "CURRENT_UPCOMING_STANDARD_OFFERS_ONLY",
+      "research_and_provisional_count_as_primary": false
+    }
+  },
+  "production_readiness": {
+    "checked_at": "2026-11-13T14:25:50.560441+00:00",
+    "game_date_eastern": "2026-11-13",
+    "status": "DEGRADED",
+    "ready_for_trustworthy_picks": false,
+    "readiness_is_not_model_accuracy": true,
+    "today_schedule_games": 9,
+    "upcoming_games": 9,
+    "started_not_marked_final": 0,
+    "next_tip_at": "2026-11-14T00:00:00+00:00",
+    "components": {
+      "schedule": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 1.8
+      },
+      "season_calendar": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 51.5
+      },
+      "ai_forecasts": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 1.8
+      },
+      "prizepicks_lines": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 27.7
+      },
+      "pregame_capture": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 26.5
+      },
+      "unmodeled_provider_market_coverage": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
+        ],
+        "age_minutes": 26.5
+      },
+      "current_primary_model_coverage": {
+        "state": "DEGRADED",
+        "required": true,
+        "reasons": [
+          "CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL",
+          "CURRENT_STANDARD_MODEL_COVERAGE_INCOMPLETE"
+        ],
+        "age_minutes": 26.5
+      },
+      "published_pick_settlement": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 27.3
+      },
+      "published_pick_cards": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
+          "PUBLISHED_PICK_BOARD_STALE",
+          "NO_PROVIDER_EVENTS_CHECKED",
+          "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
+        ],
+        "age_minutes": 8073.6
+      },
+      "prizepicks_research_cards": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT"
+        ],
+        "age_minutes": 27.1
+      },
+      "public_browser": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 27.0
+      },
+      "scoreboard": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 1.3
+      },
+      "live_player_stats": {
+        "state": "READY",
+        "required": false,
+        "reasons": [],
+        "age_minutes": null
+      },
+      "nightly_grades": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 29.6
+      }
+    },
+    "blocking_components": [],
+    "degraded_components": [
+      "current_primary_model_coverage"
+    ],
+    "required_checks": 10,
+    "passing_required_checks": 9,
+    "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
+  },
+  "nba_grading": {
+    "checked_at": "2026-11-13T13:56:12.609422+00:00",
+    "game_date_eastern": "2026-11-12",
+    "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+    "grace_hours_from_scheduled_start": 12,
+    "prizepicks_saved": 327,
+    "prizepicks_settled": 318,
+    "prizepicks_void": 9,
+    "prizepicks_pending": 0,
+    "prizepicks_overdue": 0,
+    "prizepicks_overdue_games": {},
+    "paper_saved": 0,
+    "paper_pending": 0,
+    "paper_overdue": 0,
+    "unpriced_forecasts_separate": 388,
+    "prizepicks_scope_status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+    "ai_forecast_accuracy_status": "AI_PRETIP_FORECASTS_GRADED",
+    "ai_forecasts_recorded": 388,
+    "ai_forecasts_graded": 332,
+    "ai_forecasts_ungraded": 0,
+    "ai_forecasts_verified_dnp_excluded": 56,
+    "ai_forecasts_accounted_for": 388,
+    "ai_forecasts_fully_accounted_for": true,
+    "ai_forecasts_fully_graded": false,
+    "overall_grading_status": "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR",
+    "capture_missing": false,
+    "complete_slate_not_guaranteed": true,
+    "notice": "Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
+  },
+  "nfl_grading": {
+    "alternative_tier_historical_grades_excluded": 932,
+    "alternative_tier_pending_excluded": 4,
+    "archived_pregame_lines": 66654,
+    "expected_final_picks": 1087,
+    "final_games_with_frozen_picks": 2,
+    "frozen_final_pick_candidates": 1087,
+    "graded_picks": 1067,
+    "invalid_boxscore_games": [],
+    "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+    "pending_picks": 4,
+    "pending_reasons": {
+      "player_not_in_verified_boxscore": 4
+    },
+    "pushes": 3,
+    "rejected_non_pregame_or_invalid_lines": 0,
+    "season": 2026,
+    "source_snapshot_status": "verified",
+    "standard_graded_picks_including_pushes": 135,
+    "standard_hit_rate": 39.39,
+    "standard_pending_picks": 0,
+    "standard_pending_reasons": {},
+    "standard_settled": 132,
+    "standard_wins": 52,
+    "void_picks": 16
+  },
+  "primary_ledger": {
+    "rows": 1650,
+    "graded": 1075,
+    "verified_DNP": 35,
+    "pending_future_games": 540
+  },
+  "season_calendar": {
+    "NBA": 1200,
+    "NFL": 272
+  },
+  "release_verification": {
+    "attempts": 1,
+    "expected_release": "dp-public-qa-labels-20261113-r36",
+    "local_files": {
+      "dames_take.js": "9e676f5eaa8f1d6352a02f0f7664e8128e61e6c472d3049c11210f788dd32f47",
+      "feeds.js": "4519c2048b9b7bba3ffd48bb854246c397c51866e22a279aea81a731dcc09c87",
+      "index.html": "ac35f6e3fc82aa3b5629a99bf6e5b01b54844593b270fae3ee98c02c6c84fa9d",
+      "live_direct.js": "730dd9755fe2392c5713cae9b82ffea062e469f12b85ade4b08e7be8a31c535e",
+      "provisional.js": "51835715732fc9b559a7b76c36925f2d9d574c0a6caf9ae4f857b0ec35aaa96e",
+      "release.json": "a0bb856f31b61b8d61001ff3efc9e1cf7257e2a3b4eb8daa0e8b74ece8a5320d",
+      "short_history.js": "cd74577c401e2993453a137d2d2f2d77da44ec9d41a6cca2060bd3250ca0a07a"
+    },
+    "mode": "PUBLIC_HTTP_BYTE_FOR_BYTE_CHECK",
+    "public_files": {
+      "dames_take.js": "9e676f5eaa8f1d6352a02f0f7664e8128e61e6c472d3049c11210f788dd32f47",
+      "feeds.js": "4519c2048b9b7bba3ffd48bb854246c397c51866e22a279aea81a731dcc09c87",
+      "folder-root.html": "ac35f6e3fc82aa3b5629a99bf6e5b01b54844593b270fae3ee98c02c6c84fa9d",
+      "index.html": "ac35f6e3fc82aa3b5629a99bf6e5b01b54844593b270fae3ee98c02c6c84fa9d",
+      "live_direct.js": "730dd9755fe2392c5713cae9b82ffea062e469f12b85ade4b08e7be8a31c535e",
+      "provisional.js": "51835715732fc9b559a7b76c36925f2d9d574c0a6caf9ae4f857b0ec35aaa96e",
+      "release.json": "a0bb856f31b61b8d61001ff3efc9e1cf7257e2a3b4eb8daa0e8b74ece8a5320d",
+      "short_history.js": "cd74577c401e2993453a137d2d2f2d77da44ec9d41a6cca2060bd3250ca0a07a"
+    },
+    "public_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "reasons": [],
+    "state": "DEPLOYED_BYTES_VERIFIED"
+  },
+  "failed_runs": [
+    {
+      "id": 43443882095,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43443882095",
+      "created_at": "2026-11-13T14:33:45Z"
+    },
+    {
+      "id": 43442401345,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43442401345",
+      "created_at": "2026-11-13T14:24:22Z"
+    },
+    {
+      "id": 43441489854,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43441489854",
+      "created_at": "2026-11-13T14:18:32Z"
+    },
+    {
+      "id": 43440809756,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43440809756",
+      "created_at": "2026-11-13T14:14:15Z"
+    },
+    {
+      "id": 43440688194,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43440688194",
+      "created_at": "2026-11-13T14:13:31Z"
+    },
+    {
+      "id": 43440001074,
+      "path": ".github/workflows/pipeline-heartbeat.yml",
+      "name": "Pipeline heartbeat - deployed lines picks live and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43440001074",
+      "created_at": "2026-11-13T14:09:05Z"
+    },
+    {
+      "id": 43438457131,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43438457131",
+      "created_at": "2026-11-13T13:59:07Z"
+    },
+    {
+      "id": 43438387935,
+      "path": ".github/workflows/end_to_end_readiness.yml",
+      "name": "Phase 1 end-to-end eight-game reliability check",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43438387935",
+      "created_at": "2026-11-13T13:58:38Z"
+    },
+    {
+      "id": 43438362423,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43438362423",
+      "created_at": "2026-11-13T13:58:27Z"
+    },
+    {
+      "id": 43438330994,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43438330994",
+      "created_at": "2026-11-13T13:58:14Z"
+    },
+    {
+      "id": 43438290933,
+      "path": ".github/workflows/publish_live_pp_ai_join.yml",
+      "name": "Publish lightweight verified PrizePicks AI comparisons",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43438290933",
+      "created_at": "2026-11-13T13:57:58Z"
+    },
+    {
+      "id": 43438177185,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43438177185",
+      "created_at": "2026-11-13T13:57:09Z"
+    },
+    {
+      "id": 43437822673,
+      "path": ".github/workflows/phase1_feed_health.yml",
+      "name": "Phase 1 feed health audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43437822673",
+      "created_at": "2026-11-13T13:54:45Z"
+    },
+    {
+      "id": 43437100813,
+      "path": ".github/workflows/verify_public_dashboard.yml",
+      "name": "Verify public Sports-Bot dashboard deployment and real JSON",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43437100813",
+      "created_at": "2026-11-13T13:49:57Z"
+    },
+    {
+      "id": 43436469809,
+      "path": ".github/workflows/cross-domain-reliability-audit.yml",
+      "name": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43436469809",
+      "created_at": "2026-11-13T13:45:39Z"
+    },
+    {
+      "id": 43436306019,
+      "path": ".github/workflows/dames-picks-app-release-gate.yml",
+      "name": "Dame's Picks unified NBA + NFL app release gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43436306019",
+      "created_at": "2026-11-13T13:44:35Z"
+    },
+    {
+      "id": 43434972540,
+      "path": ".github/workflows/full-repository-audit.yml",
+      "name": "Full repository static and workflow architecture audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43434972540",
+      "created_at": "2026-11-13T13:35:26Z"
+    },
+    {
+      "id": 43432197768,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43432197768",
+      "created_at": "2026-11-13T13:16:04Z"
+    },
+    {
+      "id": 43430484229,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43430484229",
+      "created_at": "2026-11-13T13:04:23Z"
+    },
+    {
+      "id": 43430195049,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43430195049",
+      "created_at": "2026-11-13T13:02:20Z"
+    },
+    {
+      "id": 43427781481,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427781481",
+      "created_at": "2026-11-13T12:44:52Z"
+    },
+    {
+      "id": 43427779357,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427779357",
+      "created_at": "2026-11-13T12:44:51Z"
+    },
+    {
+      "id": 43427575448,
+      "path": ".github/workflows/end_to_end_readiness.yml",
+      "name": "Phase 1 end-to-end eight-game reliability check",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427575448",
+      "created_at": "2026-11-13T12:43:22Z"
+    },
+    {
+      "id": 43427480720,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427480720",
+      "created_at": "2026-11-13T12:42:41Z"
+    },
+    {
+      "id": 43427446919,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427446919",
+      "created_at": "2026-11-13T12:42:26Z"
+    },
+    {
+      "id": 43427274964,
+      "path": ".github/workflows/live-site-e2e.yml",
+      "name": "Live deployed Dame's Picks iPhone browser E2E",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427274964",
+      "created_at": "2026-11-13T12:41:12Z"
+    },
+    {
+      "id": 43427067677,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427067677",
+      "created_at": "2026-11-13T12:39:44Z"
+    },
+    {
+      "id": 43427067627,
+      "path": ".github/workflows/verify-public-board-diagnostics.yml",
+      "name": "Verify clean public mobile board and opt-in diagnostics",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427067627",
+      "created_at": "2026-11-13T12:39:44Z"
+    },
+    {
+      "id": 43427067515,
+      "path": ".github/workflows/live-site-e2e.yml",
+      "name": "Live deployed Dame's Picks iPhone browser E2E",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427067515",
+      "created_at": "2026-11-13T12:39:44Z"
+    },
+    {
+      "id": 43427067487,
+      "path": ".github/workflows/verify-public-dames-release.yml",
+      "name": "Verify PUBLIC Dame's Picks release matches main",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43427067487",
+      "created_at": "2026-11-13T12:39:44Z"
+    },
+    {
+      "id": 43426936792,
+      "path": ".github/workflows/phase1_feed_health.yml",
+      "name": "Phase 1 feed health audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426936792",
+      "created_at": "2026-11-13T12:38:47Z"
+    },
+    {
+      "id": 43426839837,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426839837",
+      "created_at": "2026-11-13T12:38:06Z"
+    },
+    {
+      "id": 43426839811,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426839811",
+      "created_at": "2026-11-13T12:38:06Z"
+    },
+    {
+      "id": 43426792646,
+      "path": ".github/workflows/nba-full-game-lifecycle.yml",
+      "name": "NBA full-game lifecycle and next-slate readiness gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426792646",
+      "created_at": "2026-11-13T12:37:47Z"
+    },
+    {
+      "id": 43426792635,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426792635",
+      "created_at": "2026-11-13T12:37:47Z"
+    },
+    {
+      "id": 43426649899,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426649899",
+      "created_at": "2026-11-13T12:36:46Z"
+    },
+    {
+      "id": 43426552601,
+      "path": ".github/workflows/nba-new-ai-all-markets.yml",
+      "name": "Guarded new NBA AI all markets PTS REB AST PRA",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426552601",
+      "created_at": "2026-11-13T12:36:05Z"
+    },
+    {
+      "id": 43425781481,
+      "path": ".github/workflows/cross-domain-reliability-audit.yml",
+      "name": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43425781481",
+      "created_at": "2026-11-13T12:30:46Z"
+    },
+    {
+      "id": 43425509299,
+      "path": ".github/workflows/dames-picks-app-release-gate.yml",
+      "name": "Dame's Picks unified NBA + NFL app release gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43425509299",
+      "created_at": "2026-11-13T12:28:55Z"
+    },
+    {
+      "id": 43421702876,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43421702876",
+      "created_at": "2026-11-13T12:01:28Z"
+    },
+    {
+      "id": 43421022785,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43421022785",
+      "created_at": "2026-11-13T11:56:21Z"
+    },
+    {
+      "id": 43420929316,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43420929316",
+      "created_at": "2026-11-13T11:55:37Z"
+    },
+    {
+      "id": 43420844119,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43420844119",
+      "created_at": "2026-11-13T11:55:00Z"
+    },
+    {
+      "id": 43420825528,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43420825528",
+      "created_at": "2026-11-13T11:54:51Z"
+    },
+    {
+      "id": 43420720546,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43420720546",
+      "created_at": "2026-11-13T11:54:04Z"
+    },
+    {
+      "id": 43418980920,
+      "path": ".github/workflows/publish_live_pp_ai_join.yml",
+      "name": "Publish lightweight verified PrizePicks AI comparisons",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43418980920",
+      "created_at": "2026-11-13T11:40:47Z"
+    },
+    {
+      "id": 43418956926,
+      "path": ".github/workflows/end_to_end_readiness.yml",
+      "name": "Phase 1 end-to-end eight-game reliability check",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43418956926",
+      "created_at": "2026-11-13T11:40:36Z"
+    },
+    {
+      "id": 43418507135,
+      "path": ".github/workflows/phase1_feed_health.yml",
+      "name": "Phase 1 feed health audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43418507135",
+      "created_at": "2026-11-13T11:37:06Z"
+    },
+    {
+      "id": 43417323710,
+      "path": ".github/workflows/cross-domain-reliability-audit.yml",
+      "name": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43417323710",
+      "created_at": "2026-11-13T11:28:20Z"
+    },
+    {
+      "id": 43417227846,
+      "path": ".github/workflows/dames-picks-app-release-gate.yml",
+      "name": "Dame's Picks unified NBA + NFL app release gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43417227846",
+      "created_at": "2026-11-13T11:27:35Z"
+    },
+    {
+      "id": 43416005709,
+      "path": ".github/workflows/full-repository-audit.yml",
+      "name": "Full repository static and workflow architecture audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43416005709",
+      "created_at": "2026-11-13T11:18:31Z"
+    },
+    {
+      "id": 43414497599,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43414497599",
+      "created_at": "2026-11-13T11:07:29Z"
+    },
+    {
+      "id": 43413291457,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43413291457",
+      "created_at": "2026-11-13T10:58:42Z"
+    },
+    {
+      "id": 43413175279,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43413175279",
+      "created_at": "2026-11-13T10:57:48Z"
+    },
+    {
+      "id": 43411428879,
+      "path": ".github/workflows/end_to_end_readiness.yml",
+      "name": "Phase 1 end-to-end eight-game reliability check",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43411428879",
+      "created_at": "2026-11-13T10:44:36Z"
+    },
+    {
+      "id": 43411164236,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43411164236",
+      "created_at": "2026-11-13T10:42:35Z"
+    },
+    {
+      "id": 43411077374,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43411077374",
+      "created_at": "2026-11-13T10:41:55Z"
+    },
+    {
+      "id": 43410833799,
+      "path": ".github/workflows/phase1_feed_health.yml",
+      "name": "Phase 1 feed health audit",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43410833799",
+      "created_at": "2026-11-13T10:40:05Z"
+    },
+    {
+      "id": 43410265216,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43410265216",
+      "created_at": "2026-11-13T10:35:40Z"
+    },
+    {
+      "id": 43410265142,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43410265142",
+      "created_at": "2026-11-13T10:35:40Z"
+    },
+    {
+      "id": 43410228704,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43410228704",
+      "created_at": "2026-11-13T10:35:24Z"
+    },
+    {
+      "id": 43410228665,
+      "path": ".github/workflows/nba-full-game-lifecycle.yml",
+      "name": "NBA full-game lifecycle and next-slate readiness gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43410228665",
+      "created_at": "2026-11-13T10:35:24Z"
+    },
+    {
+      "id": 43410074468,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43410074468",
+      "created_at": "2026-11-13T10:34:16Z"
+    },
+    {
+      "id": 43409818182,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43409818182",
+      "created_at": "2026-11-13T10:32:20Z"
+    },
+    {
+      "id": 43409736258,
+      "path": ".github/workflows/cross-domain-reliability-audit.yml",
+      "name": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43409736258",
+      "created_at": "2026-11-13T10:31:41Z"
+    },
+    {
+      "id": 43409504560,
+      "path": ".github/workflows/dames-picks-app-release-gate.yml",
+      "name": "Dame's Picks unified NBA + NFL app release gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43409504560",
+      "created_at": "2026-11-13T10:30:00Z"
+    },
+    {
+      "id": 43406583608,
+      "path": ".github/workflows/unified-dames-picks-readiness.yml",
+      "name": "Unified Dame's Picks NBA + NFL integrity",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43406583608",
+      "created_at": "2026-11-13T10:06:34Z"
+    },
+    {
+      "id": 43405678076,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43405678076",
+      "created_at": "2026-11-13T09:59:55Z"
+    },
+    {
+      "id": 43405524252,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43405524252",
+      "created_at": "2026-11-13T09:58:38Z"
+    },
+    {
+      "id": 43405409110,
+      "path": ".github/workflows/production_readiness.yml",
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43405409110",
+      "created_at": "2026-11-13T09:57:40Z"
+    },
+    {
+      "id": 43405397635,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43405397635",
+      "created_at": "2026-11-13T09:57:34Z"
+    },
+    {
+      "id": 43405358534,
+      "path": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43405358534",
+      "created_at": "2026-11-13T09:57:14Z"
+    },
+    {
+      "id": 43405309521,
+      "path": ".github/workflows/nba-new-ai-all-markets.yml",
+      "name": "Guarded new NBA AI all markets PTS REB AST PRA",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43405309521",
+      "created_at": "2026-11-13T09:56:49Z"
+    },
+    {
+      "id": 43403684810,
+      "path": ".github/workflows/end_to_end_readiness.yml",
+      "name": "Phase 1 end-to-end eight-game reliability check",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43403684810",
+      "created_at": "2026-11-13T09:43:25Z"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "NBA_PRIMARY_COVERAGE",
+      "severity": "HIGH",
+      "current_offers": 365,
+      "matched": 350,
+      "missing": 15,
+      "archived_unmodeled_thresholds": 25,
+      "root_cause": "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY for all 15 per published primary model diagnostics",
+      "workaround": "Seven short-history research estimates remain separate; four markets fail validation, four withheld for injury in research feed; not promoted to primary",
+      "status": "UNRESOLVED"
+    },
+    {
+      "id": "PAGES_CANCELLATIONS",
+      "severity": "HIGH",
+      "status": "UNRESOLVED",
+      "blocker": "No authenticated Pages settings mutation capability",
+      "required_action": "Repository Settings > Pages > Source GitHub Actions, then verify controlled deployment"
+    },
+    {
+      "id": "HISTORICAL_EVIDENCE",
+      "severity": "HIGH",
+      "status": "UNRECOVERED",
+      "blocker": "Missing original pretip evidence cannot be reconstructed honestly after games"
+    }
+  ],
+  "scope_exceptions": [
+    "107 workflows without runtime evidence in sampled runs",
+    "Historical refs compared for ancestry but not all built or semantically validated",
+    "Old conflicting PRs not blindly merged",
+    "Deleted unreachable branches undiscoverable",
+    "No new Underdog coverage or active-game 30-second correctness demonstrated",
+    "402 mutable action refs remain; no comprehensive supply-chain repair"
+  ],
+  "safety": {
+    "paid_calls": 0,
+    "secret_changes": 0,
+    "fabricated_pretip_records": 0,
+    "replit_used": false
+  },
+  "new_primary_forecasts_recovered": 0,
+  "new_grades_recovered": 0,
+  "notification_requested": true,
+  "notification_delivery_confirmed": false,
+  "phone": {
+    "run": 43443318577,
+    "job": 131950637074,
+    "checked_at": "2026-11-13T14:39:04Z",
+    "cards": 377,
+    "status": "PASS",
+    "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43443318577/artifacts/14047702228",
+    "scope": "390px Chromium; not physical iPhone/WebKit; no active game"
+  },
+  "ended_at": "2026-11-13T14:39:41.616919+00:00",
+  "duration_seconds": 259,
+  "counts": {
+    "new_code_defects": 0,
+    "code_repairs": 0,
+    "operational_monitor_recoveries": 1,
+    "public_recoveries_verified": 1
+  }
+}

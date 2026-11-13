@@ -1,0 +1,44 @@
+name: PrizePicks NBA collector (manual and quota guarded)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "iphone_bot/collect_prizepicks_board.py"
+      - "iphone_bot/tests/test_prizepicks_collector.py"
+      - ".github/workflows/prizepicks_nba_collector.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate authenticated NBA board parser without making requests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_collector.py' -v
+      - name: Capture one paginated provider page if configured
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+          PP_MAX_PAGES: "1"
+          PP_OUTPUT: "./prizepicks_private_snapshot.json"
+        run: |
+          if [ -z "$PRIZEPICKS_API_KEY" ]; then
+            echo "::notice::Missing PRIZEPICKS_API_KEY GitHub secret; skipping live provider call"
+            exit 0
+          fi
+          python -m iphone_bot.collect_prizepicks_board
+      - name: Save provider result as workflow artifact, never commit public docs
+        if: always() && github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prizepicks-nba-internal-snapshot
+          path: prizepicks_private_snapshot.json
+          if-no-files-found: ignore
+          retention-days: 1

@@ -1,0 +1,56 @@
+name: Automatically lock verified NBA pretip lines with saved baseline AI
+on:
+  workflow_dispatch:
+  schedule:
+    # Source-free backup. Locks only records still before tipoff.
+    - cron: '10,40 0-5,16-23 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks_pregame_line_archive.json'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - 'iphone_bot/freeze_baseline_pregame_quotes.py'
+      - '.github/workflows/freeze_baseline_pregame_quotes.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/freeze_baseline_pregame_quotes.py'
+      - 'iphone_bot/tests/test_freeze_baseline_pregame_quotes.py'
+      - '.github/workflows/freeze_baseline_pregame_quotes.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-frozen-baseline-pregame-capture
+  cancel-in-progress: false
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test no fabricated posttip capture or overwritten line
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/freeze_baseline_pregame_quotes.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_freeze_baseline_pregame_quotes.py' -v
+      - name: Preserve only authenticated baseline pretip joins
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.freeze_baseline_pregame_quotes
+            git add docs/frozen_baseline_pregame_line_ledger.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Lock prospective authentic baseline NBA pregame quote and forecast pairs'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Unable to persist frozen baseline predictions after retries"
+          exit 1

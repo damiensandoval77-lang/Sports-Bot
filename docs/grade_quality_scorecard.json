@@ -1,0 +1,81 @@
+{
+  "status": "NO_VALIDATED_PROFITABLE_EDGE",
+  "generated_at": "2026-11-13T19:33:45.814805+00:00",
+  "source_generated_at": "2026-11-13T19:33:45.675005+00:00",
+  "independent_game_dates": 2,
+  "minimum_future_game_dates_to_assess_new_changes": 6,
+  "all_model_directions": {
+    "n": 592,
+    "wins": 282,
+    "losses": 310,
+    "hit_rate": 0.4764,
+    "paper_roi_per_priced_unit": -0.1338
+  },
+  "by_market": [
+    {
+      "market": "PTS",
+      "graded": 164,
+      "wins": 84,
+      "losses": 80,
+      "hit_rate": 0.5122,
+      "mae": 5.117,
+      "paper_roi_per_priced_unit": -0.0533,
+      "priced": 164
+    },
+    {
+      "market": "REB",
+      "graded": 158,
+      "wins": 69,
+      "losses": 89,
+      "hit_rate": 0.4367,
+      "mae": 2.043,
+      "paper_roi_per_priced_unit": -0.2301,
+      "priced": 158
+    },
+    {
+      "market": "AST",
+      "graded": 132,
+      "wins": 62,
+      "losses": 70,
+      "hit_rate": 0.4697,
+      "mae": 1.858,
+      "paper_roi_per_priced_unit": -0.1549,
+      "priced": 132
+    },
+    {
+      "market": "PRA",
+      "graded": 138,
+      "wins": 67,
+      "losses": 71,
+      "hit_rate": 0.4855,
+      "mae": 6.876,
+      "paper_roi_per_priced_unit": -0.0982,
+      "priced": 135
+    }
+  ],
+  "original_probability_audit": {
+    "sample_size": 318,
+    "mean_predicted": 0.6268,
+    "realized_hit_rate": 0.4528,
+    "calibration_gap": -0.174,
+    "sufficient_for_recalibration": false
+  },
+  "prospective_selective_research": {
+    "n": 45,
+    "wins": 27,
+    "losses": 18,
+    "hit_rate": 0.6,
+    "validated": false,
+    "cannot_be_assumed_profitable": true
+  },
+  "main_board_probability_usable": false,
+  "main_board_ev_usable": false,
+  "live_selection_edge_validated": false,
+  "recommendation": "ABSTAIN_FROM_CALLING_RAW_MODEL_LEANS_BETTING_PICKS",
+  "limitations": [
+    "Only two distinct completed game dates; player props are correlated.",
+    "Original residual probability sample is not Combined AI confidence.",
+    "Selective screener is early prospective research, not an approved production betting edge.",
+    "No settled historical records or projection snapshots were changed."
+  ]
+}

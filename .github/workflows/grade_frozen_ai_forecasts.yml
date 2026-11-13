@@ -1,0 +1,142 @@
+name: Grade frozen pretip AI forecasts against verified NBA finals
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '38 * * * *'
+    # Faster free-source final checks during US evening game windows (UTC).
+    - cron: '08,28,48 0-9 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/merge_ai_actual_publishing.py'
+      - 'iphone_bot/tests/test_merge_ai_actual_publishing.py'
+      - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
+      - 'iphone_bot/recover_prizepicks_final_games.py'
+      - 'iphone_bot/tests/test_final_boxscores.py'
+      - 'iphone_bot/tests/test_direct_espn_final_recovery.py'
+      - 'iphone_bot/verified_final_cache.py'
+      - 'iphone_bot/verified_boxscore_dnps.py'
+      - 'iphone_bot/verified_nba_official_dnps.py'
+      - 'iphone_bot/verified_nov9_nonparticipants.py'
+      - 'iphone_bot/tests/test_verified_nov9_nonparticipants.py'
+      - 'docs/confirmed_nonparticipants_2026-11-09.json'
+      - 'iphone_bot/tests/test_verified_nba_official_dnps.py'
+      - 'docs/verified_nba_dnp_2026-11-09.json'
+      - 'iphone_bot/verified_pretip_trade.py'
+      - 'iphone_bot/tests/test_verified_pretip_trade.py'
+      - 'docs/verified_pretip_trade_2026-11-08.json'
+      - 'iphone_bot/tests/test_verified_boxscore_dnps.py'
+      - 'docs/verified_boxscore_dnps_2026-11-08.json'
+      - 'iphone_bot/tests/test_verified_final_cache.py'
+      - '.github/workflows/grade_frozen_ai_forecasts.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/fetch_final_boxscores.py'
+      - 'iphone_bot/verified_gamebook_inactives.py'
+      - 'docs/verified_gamebook_inactives.json'
+      - 'iphone_bot/tests/test_verified_gamebook_inactives.py'
+      - 'iphone_bot/recover_prizepicks_final_games.py'
+      - 'iphone_bot/archived_espn_game_ids.py'
+      - 'iphone_bot/tests/test_archived_espn_game_ids.py'
+      - 'iphone_bot/tests/test_fetch_final_boxscores.py'
+      - 'iphone_bot/tests/test_direct_espn_final_recovery.py'
+      - 'iphone_bot/grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/tests/test_grade_frozen_ai_forecasts.py'
+      - 'iphone_bot/verified_prizepicks_inactives.py'
+      - 'docs/verified_prizepicks_inactive_2026-11-08.json'
+      - 'docs/verified_ai_inactives_2026-11-08.json'
+      - '.github/workflows/grade_frozen_ai_forecasts.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: frozen-ai-forecast-grades
+  cancel-in-progress: false
+
+jobs:
+  grade-ai:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate immutable pretip and final-player identity safeguards
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_gamebook_inactives.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_ai_actual_publishing.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_final_boxscores.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_direct_espn_final_recovery.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_archived_espn_game_ids.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_final_boxscores.py' -v
+          python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py iphone_bot/verified_final_cache.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_final_cache.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_boxscore_dnps.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_nba_official_dnps.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_nov9_nonparticipants.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_verified_pretip_trade.py' -v
+      - name: Grade frozen actual AI forecasts independently of PrizePicks
+        if: github.event_name != 'pull_request'
+        id: grade
+        continue-on-error: true
+        run: python -u -m iphone_bot.grade_frozen_ai_forecasts
+      - name: Preserve recovered grades and diagnostics safely after branch updates
+        if: always() && github.event_name != 'pull_request' && steps.grade.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp docs/ai_forecast_actual_ledger.json "$RUNNER_TEMP/ai_forecast_actual_ledger.json"
+          cp docs/ai_forecast_grade_status.json "$RUNNER_TEMP/ai_forecast_grade_status.json"
+          cp docs/ai_forecast_today_grade_status.json "$RUNNER_TEMP/ai_forecast_today_grade_status.json"
+          cp docs/verified_final_player_cache.json "$RUNNER_TEMP/verified_final_player_cache.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.merge_ai_actual_publishing \
+              --current docs/ai_forecast_actual_ledger.json \
+              --incoming "$RUNNER_TEMP/ai_forecast_actual_ledger.json" \
+              --output docs/ai_forecast_actual_ledger.json
+            # Merge source-linked immutable final rows across concurrent publisher commits.
+            # Conflicting source observations are excluded, never silently overwritten.
+            python - <<'PY'
+          import os
+          from pathlib import Path
+          from iphone_bot.verified_final_cache import read_cache, write_cache
+          current=Path("docs/verified_final_player_cache.json")
+          incoming=Path(os.environ["RUNNER_TEMP"])/"verified_final_player_cache.json"
+          write_cache(current,read_cache(current),read_cache(incoming))
+          PY
+            cp "$RUNNER_TEMP/ai_forecast_grade_status.json" docs/ai_forecast_grade_status.json
+            cp "$RUNNER_TEMP/ai_forecast_today_grade_status.json" docs/ai_forecast_today_grade_status.json
+            git add docs/ai_forecast_actual_ledger.json docs/ai_forecast_grade_status.json docs/ai_forecast_today_grade_status.json docs/verified_final_player_cache.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Grade original locked NBA AI forecasts against verified final player results'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Concurrent publisher prevented safe AI grade updates"
+          exit 1
+      - name: Regrade frozen line-backed New AI markets using newly verified finals
+        if: github.event_name != 'pull_request' && steps.grade.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-new-ai-multimarket-grade.yml --ref main
+      - name: Surface errors instead of silently calling a night graded
+        if: always() && github.event_name != 'pull_request' && steps.grade.outcome == 'failure'
+        run: |
+          echo "::error::Frozen AI forecast grader failed; no outcomes may be inferred"
+          exit 1

@@ -1,0 +1,152 @@
+name: Publish lightweight PrizePicks site data and per-game coverage
+on:
+  workflow_dispatch:
+  schedule:
+    # Recovery run even when the upstream job did not dispatch this workflow.
+    # Backup publish 18 minutes after each 00:28/16:28/18:28/20:28/22:28/23:28 UTC ingestion.
+    - cron: '46 0,16,18,20,22,23 * * *'
+  pull_request:
+    paths:
+      - '.github/workflows/nba-prizepicks-site-publish.yml'
+      - 'iphone_bot/tests/test_model_dispatch_recovery.py'
+      - 'iphone_bot/model_dispatch_recovery.py'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/prizepicks.json'
+      - 'iphone_bot/publish_prizepicks_site.py'
+      - 'iphone_bot/model_dispatch_recovery.py'
+      - 'iphone_bot/build_prizepicks_model_input.py'
+      - 'iphone_bot/tests/test_build_prizepicks_model_input.py'
+      - 'iphone_bot/tests/test_publish_prizepicks_site.py'
+      - 'iphone_bot/tests/test_prizepicks_per_date_coverage.py'
+      - 'iphone_bot/validate_prizepicks_publish.py'
+      - 'iphone_bot/archive_prizepicks_pregame_lines.py'
+      - 'iphone_bot/tests/test_archive_prizepicks_pregame_lines.py'
+      - 'iphone_bot/tests/test_validate_prizepicks_publish.py'
+      - '.github/workflows/nba-prizepicks-site-publish.yml'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: nba-prizepicks-site-data
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Test the PR's changes, but always use main for production data writes.
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test genuine NBA PrizePicks site snapshot and date-safe coverage
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/publish_prizepicks_site.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_prizepicks_site.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_per_date_coverage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_build_prizepicks_model_input.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_validate_prizepicks_publish.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_archive_prizepicks_pregame_lines.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_model_dispatch_recovery.py' -v
+      - name: Build small read-only PrizePicks board and coverage
+        if: github.event_name != 'pull_request'
+        run: python -u iphone_bot/publish_prizepicks_site.py
+      - name: Build distinct authentic pick'em-only line comparison input
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.build_prizepicks_model_input
+      - name: Reject incomplete or unverified provider-to-site handoff before commit
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.validate_prizepicks_publish
+      - name: Retain independently verified pretip PrizePicks lines across provider refreshes
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.archive_prizepicks_pregame_lines
+      - name: Publish no-cost website research status
+        id: publish
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ ! -f docs/prizepicks_site.json ]; then
+            echo 'No eligible live PrizePicks board to publish'
+            exit 0
+          fi
+          git add docs/prizepicks_site.json docs/prizepicks_status.json docs/prizepicks_model_input.json docs/prizepicks_pregame_line_archive.json
+          if git diff --cached --quiet; then echo 'PrizePicks site status unchanged'; exit 0; fi
+          git commit -m 'Publish compact real PrizePicks NBA lines and slate coverage'
+          for attempt in 1 2 3 4 5 6; do
+            if git push origin HEAD:main; then echo 'changed=true' >> "$GITHUB_OUTPUT"; exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
+      - name: Reconcile pregame archive and grading health after saved quotes change
+        # GitHub Actions token commits do not trigger downstream push workflows.
+        # Explicitly hand off committed immutable quotes to the no-cost audit.
+        if: github.event_name != 'pull_request' && steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-tonight-capture-gradeability.yml --ref main
+      - name: Generate actual player AI projections immediately from new authentic lines
+        if: github.event_name != 'pull_request' && steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-prizepicks-ai-board.yml --ref main
+      - name: Recover missing frozen models even when provider lines are unchanged
+        # An earlier model run can fail after source publishing succeeded.
+        # Source unchanged MUST NOT suppress its next free pretip recovery.
+        # This never calls the paid PrizePicks collector.
+        if: github.event_name != 'pull_request' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Only ask for another pretip run if an official future game exists.
+          if ! python - <<'PY'
+          import datetime as dt,json,sys
+          from pathlib import Path
+          schedule=json.loads(Path('docs/nba_schedule.json').read_text())
+          now=dt.datetime.now(dt.timezone.utc)
+          future=any(
+              now<dt.datetime.fromisoformat(str(g['start']).replace('Z','+00:00'))<=now+dt.timedelta(hours=24)
+              for g in schedule.get('games',[]) if isinstance(g,dict) and g.get('start')
+          )
+          print('Upcoming 24h NBA fixture available:',future)
+          sys.exit(0 if future else 1)
+          PY
+          then
+            echo 'No future NBA fixtures; skip guarded model recovery'
+            exit 0
+          fi
+          # An older active run may already have read its source. Queue a
+          # successor for a newer snapshot instead of losing its offers.
+          # Existing cancel-in-progress:false serializes those model runs;
+          # a queued successor covering this source prevents duplicates.
+          recent=$(gh run list --workflow nba-new-ai-all-markets.yml --limit 30 --json createdAt,headBranch,status,conclusion |
+            python -m iphone_bot.model_dispatch_recovery --source docs/prizepicks_model_input.json)
+          if [ "$recent" -gt 0 ]; then
+            echo 'An active or recent successful model run already covers this provider snapshot'
+            exit 0
+          fi
+          gh workflow run nba-new-ai-all-markets.yml --ref main
+          echo 'Dispatched credit-free primary pretip model recovery'
+      - name: Freeze separate PrizePicks research predictions when new lines appear
+        if: github.event_name != 'pull_request' && steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run nba-prizepicks-ai-research.yml --ref main
+      - name: Recover AI-versus-line research even when saved provider snapshot is unchanged
+        # The provider's 40-credit refresh is NOT called here. If the previous
+        # quick-join publisher failed after a successful site snapshot, replay
+        # its zero-cost snapshot join instead of waiting for another paid fetch.
+        # This also handles unchanged data whose downstream dispatch was lost.
+        if: github.event_name != 'pull_request' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish_live_pp_ai_join.yml --ref main

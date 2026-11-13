@@ -1,0 +1,16 @@
+name: Retired legacy external tracker check (not a production health gate)
+# Replit hosting was replaced by the unified GitHub Pages app and direct ESPN.
+# Keep this manual entry explicit so old links cannot poll the retired service.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  retired-not-production-health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Identify the active deployment and mobile checks without network calls
+        run: |
+          echo 'RETIRED: this workflow makes no production-health claim.'
+          echo 'Current checks: verify_public_dashboard.yml and live-site-e2e.yml.'
+          echo 'No legacy hosted service or paid provider is contacted.'

@@ -1,0 +1,113 @@
+name: Publish daily NBA AI player projections without paid prop lines
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/daily_projection_fallback.py'
+      - 'iphone_bot/preserve_no_line_forecasts.py'
+      - 'iphone_bot/projection_delivery_health.py'
+      - 'iphone_bot/pra_coherence_challenger.py'
+      - 'iphone_bot/tests/test_pra_coherence_challenger.py'
+      - 'iphone_bot/tests/test_projection_delivery_health.py'
+      - 'iphone_bot/tests/test_preserve_no_line_forecasts.py'
+      - 'iphone_bot/fetch_hoopr_nba_schedule.py'
+      - 'iphone_bot/tests/test_fetch_hoopr_official_reconcile.py'
+      - 'iphone_bot/reconcile_official_nba_schedule.py'
+      - 'docs/verified_official_nba_fixtures.json'
+      - 'iphone_bot/tests/test_daily_projection_fallback.py'
+      - '.github/workflows/nba-no-line-daily-projections.yml'
+  schedule:
+    # Every two hours during Eastern late morning/evening, including weekends.
+    - cron: '17 13,15,17,19,21,23,1 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-no-line-daily-projections
+  cancel-in-progress: false
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install trained AI and source dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2" "joblib>=1.3,<2"
+      - name: Verify trained projection fallback never invents props or market confidence
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/daily_projection_fallback.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_daily_projection_fallback.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_official_nba_schedule.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_hoopr_official_reconcile.py' -v
+      - name: Train existing preseason AI models on the established historical archive
+        run: |
+          python -u iphone_bot/download_archived_nba.py
+          python -u -m src.sports.nba.features
+          python -u iphone_bot/train_provisional.py
+      - name: Refresh genuine current-date NBA fixture schedule with verified season data
+        run: |
+          python -u iphone_bot/fetch_hoopr_nba_schedule.py || NBA_SCHEDULE_SOURCE_MODE=auto python -u iphone_bot/fetch_nba_schedule.py
+          python -u -m iphone_bot.reconcile_official_nba_schedule
+      - name: Refresh confirmed player games and shooting statistics
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -u iphone_bot/fetch_current_form.py
+          python -u iphone_bot/enrich_current_shooting.py
+      - name: Generate real model estimates even without bookmaker or PrizePicks lines
+        run: python -u iphone_bot/daily_projection_fallback.py
+      - name: Protect immutable price-free pregame forecasts
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_no_line_forecasts.py' -v
+          python -u iphone_bot/preserve_no_line_forecasts.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_delivery_health.py' -v
+          python -u iphone_bot/projection_delivery_health.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_pra_coherence_challenger.py' -v
+          python -u iphone_bot/pra_coherence_challenger.py
+      - name: Verify all estimates are event-specific and price-independent
+        run: |
+          python - <<'PY'
+          import json,datetime
+          d=json.load(open('docs/ai_projection_fallback.json'))
+          assert d['status'] in ('PREGAME_PROJECTIONS_NO_LINES',
+              'NO_UPCOMING_VERIFIED_SCHEDULE','NO_ELIGIBLE_PLAYER_PROJECTIONS',
+              'SCHEDULE_STALE','PLAYER_HISTORY_STALE')
+          for x in d.get('predictions',[]):
+              assert x['line'] is None and x['direction'] is None
+              assert x['calibrated_probability'] is None
+              assert x['latest_prior_game']<x['start'][:10]
+          print('No-cost daily AI:',d['status'],
+              'forecast rows:',len(d.get('predictions',[])))
+          PY
+      - name: Publish newest no-cost AI prediction results and fixture diagnostics
+        run: |
+          set -euo pipefail
+          cp docs/ai_projection_fallback.json "$RUNNER_TEMP/no-line-ai.json"
+          cp docs/ai_no_line_pregame_archive.json "$RUNNER_TEMP/no-line-archive.json"
+          cp docs/nba_schedule.json "$RUNNER_TEMP/nba-schedule.json"
+          cp docs/nba_schedule_status.json "$RUNNER_TEMP/nba-schedule-status.json"
+          cp docs/current_form.json "$RUNNER_TEMP/nba-form.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/no-line-ai.json" docs/ai_projection_fallback.json
+            ADDITIONAL_PREGAME_ARCHIVE="$RUNNER_TEMP/no-line-archive.json" python -u iphone_bot/preserve_no_line_forecasts.py
+            cp "$RUNNER_TEMP/nba-schedule.json" docs/nba_schedule.json
+            cp "$RUNNER_TEMP/nba-schedule-status.json" docs/nba_schedule_status.json
+            cp "$RUNNER_TEMP/nba-form.json" docs/current_form.json
+            python -u iphone_bot/projection_delivery_health.py
+            python -u iphone_bot/pra_coherence_challenger.py
+            git add docs/pra_coherence_shadow.json docs/ai_projection_fallback.json docs/projection_delivery_health.json docs/ai_no_line_pregame_archive.json docs/nba_schedule.json docs/nba_schedule_status.json docs/current_form.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish fresh NBA pregame player model projections without paid prop lines'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

@@ -1,0 +1,83 @@
+name: Independent NBA player boxscores
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "iphone_bot/refresh_nba_player_boxscores.py"
+      - "iphone_bot/merge_nba_player_boxscore_publish.py"
+      - "iphone_bot/tests/test_merge_nba_player_boxscore_publish.py"
+      - ".github/workflows/independent_nba_player_boxscores.yml"
+  schedule:
+    - cron: "6,21,36,51 * * * *"
+  pull_request:
+    paths:
+      - "iphone_bot/merge_nba_player_boxscore_publish.py"
+      - "iphone_bot/tests/test_merge_nba_player_boxscore_publish.py"
+      - "iphone_bot/refresh_nba_player_boxscores.py"
+      - "iphone_bot/tests/test_nba_player_boxscores.py"
+      - "docs/index.html"
+      - ".github/workflows/independent_nba_player_boxscores.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: independent-nba-player-boxscores
+  cancel-in-progress: false
+
+jobs:
+  player-boxscores:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate player boxscore source and failure handling
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_nba_player_boxscores.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_merge_nba_player_boxscore_publish.py' -v
+      - name: Refresh observed NBA player totals without paid odds API calls
+        id: refresh
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python -m iphone_bot.refresh_nba_player_boxscores
+      - name: Safely publish only verified player observations with concurrent writer retries
+        if: github.event_name != 'pull_request' && steps.refresh.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp docs/nba_player_tracking_independent.json "$RUNNER_TEMP/nba_player_tracking_independent.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.merge_nba_player_boxscore_publish \
+              --current docs/nba_player_tracking_independent.json \
+              --incoming "$RUNNER_TEMP/nba_player_tracking_independent.json"
+            git add docs/nba_player_tracking_independent.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "Safely refresh independently observed NBA player totals"
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo "::error::Concurrent publishers prevented player tracking persistence after five attempts"
+          exit 1
+      - name: Fail visibly on partial live data after preserving verified rows
+        if: github.event_name != 'pull_request' && steps.refresh.outcome == 'success'
+        run: |
+          python - <<'PY'
+          import json,sys
+          d=json.load(open('docs/nba_player_tracking_independent.json'))
+          if d.get('status')=='PARTIAL_NBA_PLAYER_BOXSCORES':
+              print('::error::Saved authentic partial NBA player totals; other started games remain without verified stats')
+              sys.exit(1)
+          PY
+      - name: Fail visibly when independent player data unavailable
+        if: always() && github.event_name != 'pull_request' && steps.refresh.outcome == 'failure'
+        run: |
+          echo "::error::Independent NBA player boxscore fetch unavailable or partial"
+          exit 1

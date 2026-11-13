@@ -1,0 +1,44 @@
+name: Capture sourced NBA pregame context for research
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'research/capture_pregame_evidence.py'
+      - 'research/minutes_forecast_research.py'
+      - 'research/tests/test_minutes_forecast_research.py'
+      - 'research/tests/test_capture_pregame_evidence.py'
+      - '.github/workflows/research-pregame-evidence.yml'
+  schedule:
+    - cron: '20 0,17,19,21,23 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: research-pregame-evidence
+  cancel-in-progress: true
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 'Regression checks: no posttip, future injury, invented minutes or missing provenance'
+        run: python -m unittest discover -s research/tests -p 'test_capture_pregame_evidence.py' -v
+      - name: Capture real pretip source-linked research evidence
+        run: python -m research.capture_pregame_evidence --output pregame-evidence-research.json
+      - name: Test pregame minutes forecasts and chronological validation
+        run: python -m unittest discover -s research/tests -p 'test_minutes_forecast_research.py' -v
+      - name: Build time-ordered minutes backtest and linked future research predictions
+        run: python -m research.minutes_forecast_research --output minutes-forecast-research.json
+      - name: Save immutable workflow run artifact, not live bets
+        uses: actions/upload-artifact@v4
+        with:
+          name: pregame-evidence-research
+          path: |
+            pregame-evidence-research.json
+            minutes-forecast-research.json
+          retention-days: 30
+          if-no-files-found: error

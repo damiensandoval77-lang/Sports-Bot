@@ -1,0 +1,87 @@
+name: Dame's Picks integrated Version E CI
+on:
+  pull_request:
+    paths:
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_provisional_panel.cjs'
+      - 'iphone_bot/tests/test_short_history_panel.cjs'
+      - 'iphone_bot/verify_short_history_browser.py'
+      - 'iphone_bot/verify_provisional_panel_browser.py'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'tests/test_live_slate.cjs'
+      - 'tests/test_nfl_browser_live.cjs'
+      - 'tests/test_live_pace_sort.cjs'
+      - 'tests/test_pick_hit_sort.cjs'
+      - 'tests/test_nfl_matchup_evidence.cjs'
+      - 'tests/test_open_tab_release.cjs'
+      - 'tests/test_feed_deadlines.cjs'
+      - 'iphone_bot/tests/test_dames_take.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
+      - 'iphone_bot/tests/test_line_history.cjs'
+      - 'iphone_bot/verify_dames_picks_browser.py'
+      - '.github/workflows/dames-picks-version-e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_provisional_panel.cjs'
+      - 'iphone_bot/tests/test_short_history_panel.cjs'
+      - 'iphone_bot/verify_short_history_browser.py'
+      - 'iphone_bot/verify_provisional_panel_browser.py'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'tests/test_live_slate.cjs'
+      - 'tests/test_nfl_browser_live.cjs'
+      - 'tests/test_live_pace_sort.cjs'
+      - 'tests/test_pick_hit_sort.cjs'
+      - 'tests/test_nfl_matchup_evidence.cjs'
+      - 'tests/test_open_tab_release.cjs'
+      - 'tests/test_feed_deadlines.cjs'
+      - 'iphone_bot/tests/test_dames_take.cjs'
+      - 'iphone_bot/verify_dames_picks_browser.py'
+      - '.github/workflows/dames-picks-version-e.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Verify NBA/NFL saved market integration
+        run: node --test tests/test_nba_final_display.cjs tests/test_nfl_boxscore_display.cjs tests/test_nfl_browser_live.cjs tests/test_pick_hit_sort.cjs tests/test_nfl_matchup_evidence.cjs tests/test_open_tab_release.cjs tests/test_live_pace_sort.cjs tests/test_live_slate.cjs iphone_bot/tests/test_short_history_panel.cjs iphone_bot/tests/test_provisional_panel.cjs iphone_bot/tests/test_dames_picks_vE.cjs iphone_bot/tests/test_dames_take.cjs iphone_bot/tests/test_line_history.cjs iphone_bot/tests/test_live_direct.cjs
+      - name: Validate JavaScript for mobile dashboard
+        run: |
+          node --check docs/dames-picks/feeds.js
+          node --check docs/dames-picks/live_direct.js
+          node --check docs/dames-picks/dames_take.js
+          node --check docs/dames-picks/provisional.js
+          node --check docs/dames-picks/short_history.js
+          node - <<'JS'
+          const fs=require('node:fs'),vm=require('node:vm');
+          const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
+          for(const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))
+            if(match[1].trim())new vm.Script(match[1]);
+          JS
+
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+      - name: Install independent Chromium
+        run: |
+          pip install 'playwright==1.56.0'
+          python -m playwright install --with-deps chromium
+      - name: Verify provisional panel isolation and unavailable behavior on mobile
+        run: python -m iphone_bot.verify_provisional_panel_browser
+      - name: Verify trained short-history isolation and unavailable refresh on mobile
+        run: python -m iphone_bot.verify_short_history_browser
+      - name: Verify actual iPhone-width NBA and NFL DOM, details and exceptions
+        run: python -m iphone_bot.verify_dames_picks_browser
+      - name: Verify stalled feed requests cannot hang the board
+        run: node --test tests/test_feed_deadlines.cjs

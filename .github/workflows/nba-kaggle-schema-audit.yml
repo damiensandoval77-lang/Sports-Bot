@@ -1,0 +1,44 @@
+name: Inspect Kaggle NBA archive files before model ingestion
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/inspect_kaggle_nba_archive.py'
+      - '.github/workflows/nba-kaggle-schema-audit.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-kaggle-schema-inspection
+  cancel-in-progress: false
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate schema inspector
+        run: python -m py_compile iphone_bot/inspect_kaggle_nba_archive.py
+      - name: Download bounded public Kaggle archive and inspect column headers
+        run: python -u iphone_bot/inspect_kaggle_nba_archive.py
+      - name: Publish schema inventory without raw dataset or live model change
+        run: |
+          set -euo pipefail
+          cp docs/kaggle_nba_stats_schema_audit.json "$RUNNER_TEMP/kaggle-schema.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/kaggle-schema.json" docs/kaggle_nba_stats_schema_audit.json
+            git add docs/kaggle_nba_stats_schema_audit.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish verified Kaggle NBA archive CSV column inventory'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

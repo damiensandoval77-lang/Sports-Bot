@@ -1,0 +1,38 @@
+name: Publish complete NFL season schedule
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/export_nfl_schedule.py'
+      - '.github/workflows/nfl-schedule-publish.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '45 12 * 9-12,1 *'
+permissions:
+  contents: write
+concurrency:
+  group: nfl-schedule-and-finals-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Export and verify all 272 NFL games
+        run: python scripts/export_nfl_schedule.py
+      - name: Commit validated schedule when changed
+        shell: bash
+        run: |
+          git config user.name nfl-schedule-publisher
+          git config user.email actions@users.noreply.github.com
+          git add docs/nfl/data/schedule_2026.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh independent 2026 NFL season schedule"
+            python scripts/push_with_retry.py
+          fi

@@ -4,6 +4,19 @@ on:
     branches: [main]
     paths:
       - 'docs/index.html'
+      - 'docs/ai_no_line_pregame_archive.json'
+      - 'docs/ai_projection_fallback.json'
+      - 'docs/ai_prizepicks_quick_join_health.json'
+      - 'docs/ai_prizepicks_quick_join.json'
+      - 'iphone_bot/tests/test_projection_delivery_smoke.py'
+      - 'iphone_bot/tests/test_quick_prizepicks_join.cjs'
+      - 'iphone_bot/verify_deployed_dashboard.py'
+      - 'iphone_bot/tests/test_verify_deployed_dashboard.py'
+      - '.github/workflows/dashboard-ui-check.yml'
+  pull_request:
+    paths:
+      - 'docs/index.html'
+      - 'iphone_bot/tests/test_quick_prizepicks_join.cjs'
       - '.github/workflows/dashboard-ui-check.yml'
   workflow_dispatch:
 permissions:
@@ -14,100 +27,80 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
-      - name: Check JavaScript and horizontal game strip
+      - name: Verify real AI forecasts render without a sportsbook quote
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_projection_delivery_smoke.py' -v
+      - name: Offline tests for the independent public deployment probe
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_verify_deployed_dashboard.py' -v
+      - name: Verify fresh authentic PrizePicks line + AI direction fallback
+        run: node --test iphone_bot/tests/test_quick_prizepicks_join.cjs
+      - name: Check unified NBA and NFL navigation, game drill-down, and JavaScript syntax
         run: |
           python - <<'PY'
           from pathlib import Path
-          html=Path('docs/index.html').read_text()
-          for feature in (
-              'id="game-strip"', 'id="game-strip-count"',
-              'id="game-strip-note"', 'class="game-strip"',
-              'scroll-snap-type:x proximity',
-              'function renderGameStrip()', 'function setGameFilter(game)',
-              'aria-pressed', 'renderSchedulePlayers();',
-              'renderAI();', 'renderOdds();',
-              'tile-scoreboard', 'tile-team-logo', 'tile-team-score',
-              'away_score', 'home_score', 'refreshScoresOnly',
-              'setInterval(refreshScoresOnly,45000)',
-              'game_moneylines.json', 'tile-moneyline',
-              'VERIFIED_PREGAME_NBA_MONEYLINES'):
-              assert feature in html, f'Missing dashboard feature: {feature}'
-          assert html.index('id="game-strip"')<html.index('class="summary dashboard-summary"')
-          assert '--bg:#070707' in html
-          assert '<meta name="theme-color" content="#080808">' in html
-          for hidden in ('#slate-coverage','#full-nba-slate','#schedule-players',
-                         '.schedule-roster-control','#game-strip-note'):
-              assert hidden in html, f'Missing clutter-hiding rule: {hidden}'
-          assert 'id="ai-board"' in html and 'id="odds-board"' in html
-          assert 'model-chance' in html, 'Do not remove simulated hit percentage cards'
-          for calibration_id in ('prob-audit-summary','prob-audit-bins','prob-audit-sample'):
-              assert ('id="'+calibration_id+'"') in html, f'Missing calibration UI {calibration_id}'
-          assert 'function renderProbabilityAudit()' in html
-          assert 'renderProbabilityAudit();' in html
-          assert 'function chance(p)' in html, 'Live experimental probability display must not disappear'
-          assert '/^\\\\d+$/' not in html, 'Double-escaped score pattern would suppress ESPN live scores'
-          assert '/^\\d+$/' in html, 'Scoreboard must accept integer score strings'
-
-
-          script=html.split('<script>',1)[1].split('</script>',1)[0]
-          Path('/tmp/sports-bot-game-strip.js').write_text(script)
-          print('Game strip and filters verified')
+          import re
+          landing=Path("docs/index.html").read_text()
+          html=Path("docs/dames-picks/index.html").read_text()
+          model=Path("docs/dames-picks/feeds.js").read_text()
+          live=Path("docs/dames-picks/live_direct.js").read_text()
+          assert 'url=./dames-picks/' in landing
+          assert 'data-league="NBA"' in html and 'data-league="NFL"' in html
+          assert 'data-view="tracker"' in html and 'data-view="saved"' in html
+          assert 'data-game=' in html and 'renderGameDetail()' in html
+          assert 'id="coverage"' in html
+          assert 'No saved picks yet for ' in model
+          assert 'quoteOnly:true' in model and 'projection:null,direction:null,chance:null' in model
+          assert 'L.fetchNBA().catch(()=>null)' in html
+          assert 'setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000)' in html
+          assert 'getJSON("nba_scoreboard_independent.json")' in html
+          assert 'root.DamesPicksLive=' in live
+          scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
+          assert scripts, "Active inline application script missing"
+          Path("/tmp/dames-picks-ui.js").write_text(scripts[-1])
+          print("Unified NBA/NFL navigation and date-safe coverage indicators present")
           PY
-          node --check /tmp/sports-bot-game-strip.js
-      - name: Regression test actual browser scoreboard score parsing
+          node --check /tmp/dames-picks-ui.js
+          node --check docs/dames-picks/live_direct.js
+          node --check docs/dames-picks/feeds.js
+      - name: Regression-test integer ESPN scores and non-destructive live merging
         run: |
           node <<'JS'
-          const fs=require('node:fs');
-          const script=fs.readFileSync('/tmp/sports-bot-game-strip.js','utf8');
-          const from=script.indexOf('async function browserScoreboard(day){');
-          const to=script.indexOf('function hasVerifiedPair(',from);
-          if(from<0||to<0)throw Error('Browser scoreboard parser unavailable');
-          const event={id:'espn-live-1',date:'2026-11-07T00:30:00Z',
-            status:{type:{state:'in',shortDetail:'Q3 8:32'},period:3,displayClock:'8:32'},
-            competitions:[{competitors:[
-              {homeAway:'away',score:'87',team:{displayName:'Boston Celtics',abbreviation:'BOS'}},
-              {homeAway:'home',score:'53',team:{displayName:'Charlotte Hornets',abbreviation:'CHA'}}
-            ]}]};
-          const fetchMock=async()=>({ok:true,json:async()=>({events:[event]})});
-          const browserScoreboard=new Function('fetch',script.slice(from,to)+
-            ';return browserScoreboard;')(fetchMock);
-          browserScoreboard('2026-11-06').then(rows=>{
-            if(rows.length!==1||rows[0].away_score!==87||rows[0].home_score!==53||
-                rows[0].game_state!=='in'||rows[0].period!==3){
-              throw Error('Real numeric live score strings were not parsed');
-            }
-            console.log('ESPN browser numeric score regression: PASS');
-          }).catch(error=>{console.error(error);process.exitCode=1;});
+          const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
+          const ctx={Intl,Date};vm.createContext(ctx);
+          vm.runInContext(fs.readFileSync("docs/dames-picks/live_direct.js","utf8"),ctx);
+          const L=ctx.DamesPicksLive,now=Date.parse("2026-11-07T00:47:00Z");
+          const game={game:"Boston Celtics @ Charlotte Hornets",game_state:"in",away_score:42,home_score:20};
+          const snapshot={is_live_score_source:true,generated_at:"2026-11-07T00:42:00Z",games:[game]};
+          const stale={is_live_score_source:true,generated_at:"2026-11-07T00:40:00Z",games:[{...game,away_score:10,home_score:8}]};
+          const preserved=L.mergeScores(snapshot,stale,now);
+          assert.equal(preserved.games[0].away_score,42);
+          assert.equal(preserved.games[0].home_score,20);
+          const unscored={is_live_score_source:true,generated_at:"2026-11-07T00:44:00Z",
+             games:[{...game,game_state:"pre",away_score:null,home_score:null}]};
+          const kept=L.mergeScores(snapshot,unscored,now);
+          assert.equal(kept.games[0].away_score,42);
+          assert.equal(kept.games[0].home_score,20);
+          const newest={is_live_score_source:true,generated_at:"2026-11-07T00:46:00Z",
+             games:[{...game,away_score:51,home_score:44}]};
+          const latest=L.mergeScores(snapshot,newest,now);
+          assert.equal(latest.games[0].away_score,51);
+          assert.equal(latest.games[0].home_score,44);
+          console.log("Verified live score newer-valid-wins, stale/unscored cannot overwrite");
           JS
-      - name: Regression test scoreboard survives unscored ESPN schedule
+      - name: Regression-test ESPN player box totals with DNP excluded
         run: |
           node <<'JS'
-          const fs=require('node:fs');
-          const script=fs.readFileSync('/tmp/sports-bot-game-strip.js','utf8');
-          const from=script.indexOf('function hasVerifiedPair(');
-          const to=script.indexOf('async function refreshScoresOnly()',from);
-          if(from<0||to<0)throw Error('Score merge helper missing');
-          const {mergeScoreSchedules}=new Function(
-            script.slice(from,to)+';return {mergeScoreSchedules};')();
-          const game={id:'nba1',game:'Boston Celtics @ Charlotte Hornets',
-            away:'Boston Celtics',home:'Charlotte Hornets',
-            date_eastern:'2026-11-06',start:'2026-11-07T00:11:00Z',
-            game_state:'in',away_score:42,home_score:20,
-            score_updated_at:'2026-11-07T00:42:06Z'};
-          const verified={generated_at:'2026-11-07T00:42:11Z',
-            games:[game],coverage_complete:false};
-          const unscored={generated_at:'2026-11-07T00:44:00Z',
-            games:[{...game,id:'espn2',away_score:null,home_score:null,
-              score_updated_at:null,game_state:'pre'}],coverage_complete:true};
-          const retained=mergeScoreSchedules(verified,unscored);
-          if(retained.games.length!==1 || retained.games[0].away_score!==42 ||
-             retained.games[0].home_score!==20 ||
-             retained.games[0].game_state!=='in')throw Error('Verified scores lost');
-          const updated={generated_at:'2026-11-07T00:46:00Z',
-            games:[{...game,away_score:51,home_score:44,
-              score_updated_at:'2026-11-07T00:45:00Z'}]};
-          const latest=mergeScoreSchedules(retained,updated);
-          if(latest.games[0].away_score!==51||latest.games[0].home_score!==44)
-            throw Error('Newer valid score did not win');
-          console.log('Score merge regression: PASS');
+          const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
+          const ctx={Intl,Date};vm.createContext(ctx);
+          vm.runInContext(fs.readFileSync("docs/dames-picks/live_direct.js","utf8"),ctx);
+          const team={team:{abbreviation:"BOS"},statistics:[{labels:["MIN","PTS","REB","AST"],
+             athletes:[{athlete:{id:"1",displayName:"Real Player"},stats:["34","35","5","7"]},
+                       {athlete:{id:"2",displayName:"DNP Player"},didNotPlay:true,stats:[]}]}]};
+          const rows=ctx.DamesPicksLive.playerRows({boxscore:{players:[team]}});
+          assert.equal(rows.length,1);
+          assert.equal(rows[0].player,"Real Player");
+          assert.equal(rows[0].PTS,35);
+          assert.equal(rows[0].REB,5);
+          assert.equal(rows[0].AST,7);
+          assert.equal(rows[0].PRA,47);
+          console.log("Observed ESPN boxscore numbers only; DNP excluded");
           JS

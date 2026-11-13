@@ -1,0 +1,60 @@
+name: Audit immutable NBA forecast grading completeness
+on:
+  workflow_dispatch:
+  schedule:
+    # Independent read-only reconciliation, even if the grader fails.
+    - cron: '23,53 0-12 * * *'
+  pull_request:
+    paths:
+      - 'iphone_bot/audit_ai_forecast_coverage.py'
+      - 'iphone_bot/tests/test_audit_ai_forecast_coverage.py'
+      - '.github/workflows/audit-ai-forecast-coverage.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/audit_ai_forecast_coverage.py'
+      - 'iphone_bot/tests/test_audit_ai_forecast_coverage.py'
+      - '.github/workflows/audit-ai-forecast-coverage.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-independent-ai-grading-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify immutable forecast reconciliation contracts
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_audit_ai_forecast_coverage.py' -v
+          python -m py_compile iphone_bot/audit_ai_forecast_coverage.py
+      - name: Independently compare archive, final ledger, and daily reports
+        if: github.event_name != 'pull_request'
+        run: python -m iphone_bot.audit_ai_forecast_coverage
+      - name: Publish durable per-day backlog with source safeguard
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          cp docs/ai_forecast_coverage_audit.json "$RUNNER_TEMP/ai_forecast_coverage_audit.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Reconcile from the newest committed ledger, never overwrite
+            # health with stale numbers from an older concurrent run.
+            python -m iphone_bot.audit_ai_forecast_coverage
+            git add docs/ai_forecast_coverage_audit.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Audit archived NBA AI forecasts against verified finals'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

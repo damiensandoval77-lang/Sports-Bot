@@ -1,0 +1,61 @@
+name: Grade frozen new-model NBA points forecasts (no provider credits)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/lagged_matchup_points_ledger.py'
+      - '.github/workflows/nba-new-model-points-grading.yml'
+  schedule:
+    # After historical game settlement workflows; also recheck every morning.
+    - cron: '32 8,10,12 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-live-lagged-challenger
+  cancel-in-progress: false
+jobs:
+  grade-frozen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test immutable pretip model captures and verified final-only grading
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_lagged_matchup_points_ledger.py' -v
+      - name: Grade frozen points snapshots from saved official final ledger
+        run: python -m iphone_bot.lagged_matchup_points_ledger
+      - name: Validate no retroactive modification or betting-edge claims
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('docs/lagged_matchup_points_ledger.json'))
+          assert p['status']=='IMMUTABLE_PREGAME_NEW_MODEL_POINTS'
+          assert p['legacy_grade_modified'] is False
+          assert p['no_retroactive_prediction_recalculation'] is True
+          assert p['betting_edge_validated'] is False
+          assert p['recorded']==p['graded']+p['pending']
+          print('New model ledger:',p['recorded'],'records;',
+                p['graded'],'graded;',p['pending'],'pending')
+          PY
+      - name: Commit only new model research ledger without altering original grades
+        run: |
+          set -euo pipefail
+          cp docs/lagged_matchup_points_ledger.json "$RUNNER_TEMP/points-ledger.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/points-ledger.json" docs/lagged_matchup_points_ledger.json
+            git add docs/lagged_matchup_points_ledger.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Grade original new-model points projections against verified final NBA boxes'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

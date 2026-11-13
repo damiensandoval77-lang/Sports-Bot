@@ -1,0 +1,21 @@
+name: Reliability guardrails tests
+on:
+  push:
+    paths:
+      - 'iphone_bot/reliability_guardrails.py'
+      - 'iphone_bot/tests/test_reliability_guardrails.py'
+      - '.github/workflows/reliability_guardrails.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/reliability_guardrails.py'
+      - 'iphone_bot/tests/test_reliability_guardrails.py'
+      - '.github/workflows/reliability_guardrails.yml'
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s iphone_bot/tests -p 'test_reliability_guardrails.py' -v

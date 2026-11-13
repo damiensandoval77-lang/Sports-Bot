@@ -1,0 +1,107 @@
+{
+  "status": "ONE_TIME_THREE_PAIR_PUBLIC_SOURCE_RESEARCH_ONLY",
+  "checked_at": "2026-11-08T03:40:04.583559+00:00",
+  "raw_stats_saved": false,
+  "licensed_use_verified": false,
+  "historical_cutoff": "2026-11-06",
+  "pairs": [
+    {
+      "checked_at": "2026-11-08T03:40:04.583601+00:00",
+      "season": "2026-27",
+      "cutoff": "2026-11-06",
+      "sample_player_id": "1628973",
+      "sample_teammate_id": "1628404",
+      "purpose": "BOUNDED_INJURY_PAIR_GAME_LEVEL_COVERAGE_VALIDATION",
+      "raw_player_stats_published": false,
+      "automatic_ingestion_enabled": false,
+      "license_asserted": false,
+      "time_schema": {
+        "target": {
+          "game_count": 8,
+          "interval_count": 1097,
+          "min_start": 0,
+          "max_start": 2877,
+          "min_end": 6,
+          "max_end": 2880,
+          "invalid_range_count": 1,
+          "example_ranges": [
+            {
+              "start": 1226,
+              "end": 1226,
+              "duration": 0
+            }
+          ]
+        },
+        "teammate": {
+          "game_count": 8,
+          "interval_count": 887,
+          "min_start": 0,
+          "max_start": 2877,
+          "min_end": 6,
+          "max_end": 2880,
+          "invalid_range_count": 1,
+          "example_ranges": [
+            {
+              "start": 1017,
+              "end": 1017,
+              "duration": 0
+            }
+          ]
+        }
+      },
+      "game_level_coverage": {
+        "status": "GAME_LEVEL_ON_OFF_EXPOSURE_VERIFIED",
+        "with_games": 7,
+        "without_games": 7,
+        "with_minutes": 205.1333,
+        "without_minutes": 66.5667,
+        "meets_model_sample_threshold": false
+      },
+      "provider_minutes_comparison": {
+        "with": {
+          "target_entity_unique": true,
+          "provider_minutes": 206.4767,
+          "independent_minutes": 205.1333,
+          "minute_difference": 1.3434,
+          "minutes_reconcile": true
+        },
+        "without": {
+          "target_entity_unique": true,
+          "provider_minutes": 66.17,
+          "independent_minutes": 66.5667,
+          "minute_difference": 0.3967,
+          "minutes_reconcile": true
+        }
+      },
+      "status": "RECONCILED"
+    },
+    {
+      "checked_at": "2026-11-08T03:40:06.839462+00:00",
+      "season": "2026-27",
+      "cutoff": "2026-11-06",
+      "sample_player_id": "1630532",
+      "sample_teammate_id": "1631094",
+      "purpose": "BOUNDED_INJURY_PAIR_GAME_LEVEL_COVERAGE_VALIDATION",
+      "raw_player_stats_published": false,
+      "automatic_ingestion_enabled": false,
+      "license_asserted": false,
+      "status": "NOT_VALIDATED",
+      "error_type": "HTTPError",
+      "error_summary": null
+    },
+    {
+      "checked_at": "2026-11-08T03:40:07.731622+00:00",
+      "season": "2026-27",
+      "cutoff": "2026-11-06",
+      "sample_player_id": "1629027",
+      "sample_teammate_id": "203076",
+      "purpose": "BOUNDED_INJURY_PAIR_GAME_LEVEL_COVERAGE_VALIDATION",
+      "raw_player_stats_published": false,
+      "automatic_ingestion_enabled": false,
+      "license_asserted": false,
+      "status": "NOT_VALIDATED",
+      "error_type": "HTTPError",
+      "error_summary": null
+    }
+  ]
+}

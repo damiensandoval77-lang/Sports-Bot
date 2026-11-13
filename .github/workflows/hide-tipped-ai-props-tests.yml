@@ -1,0 +1,24 @@
+name: Hide tipped-off AI props (offline UI tests)
+on:
+  pull_request:
+    paths:
+      - 'docs/index.html'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
+      - '.github/workflows/hide-tipped-ai-props-tests.yml'
+  push:
+    branches: ['fix/20261107-hide-tipped-ai-props']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify active unified app truthfulness, pretip eligibility and live updates
+        run: |
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs
+          node --test iphone_bot/tests/test_live_direct.cjs

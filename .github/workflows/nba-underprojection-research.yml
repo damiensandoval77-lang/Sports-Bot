@@ -1,0 +1,42 @@
+name: NBA Underprojection Research Audit (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/underprojection_research.py'
+      - 'iphone_bot/tests/test_underprojection_research.py'
+      - '.github/workflows/nba-underprojection-research.yml'
+  push:
+    branches: ['research/20261107-underprojection-root-cause']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate signed forecast errors, source integrity and chronology
+        run: |
+          python -m py_compile iphone_bot/underprojection_research.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_underprojection_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_projection_error_analysis.py' -v
+      - name: Read existing pregame ledger and generate research-only artifact
+        run: |
+          python -u iphone_bot/underprojection_research.py
+          python - <<'PY'
+          import json
+          result=json.load(open('docs/underprojection_research.json'))
+          c=result['conclusions']
+          assert c['live_predictions_changed'] is False
+          assert c['live_probabilities_changed'] is False
+          assert c['ready_for_global_correction'] is False
+          print('Signed error audit markets',result['independent_markets'],
+                'event dates',result['distinct_event_dates'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: underprojection-research-preview
+          path: docs/underprojection_research.json
+          retention-days: 7

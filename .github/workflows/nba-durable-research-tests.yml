@@ -1,0 +1,58 @@
+name: Validate NBA Research Storage Integrity (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/research_archive_persistence.py'
+      - 'iphone_bot/research_storage_integrity.py'
+      - 'iphone_bot/capture_live_research.py'
+      - 'iphone_bot/preserve_research_inputs.py'
+      - 'iphone_bot/tests/test_preserve_research_inputs.py'
+      - 'iphone_bot/tests/test_durable_research_storage.py'
+      - '.github/workflows/nba-pregame-ai-archive.yml'
+      - '.github/workflows/nba-live-research-checkpoints.yml'
+      - '.github/workflows/nba-research-storage-integrity.yml'
+      - '.github/workflows/nba-durable-research-tests.yml'
+  push:
+    branches: ['research/20261107-durable-research-preservation']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test immutable archival data and in-game capture
+        run: |
+          python -m py_compile iphone_bot/research_archive_persistence.py iphone_bot/research_storage_integrity.py iphone_bot/capture_live_research.py iphone_bot/preserve_research_inputs.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
+      - name: Audit actual pretip paper ledger and archived offers
+        run: |
+          python -u iphone_bot/research_storage_integrity.py
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/research_storage_integrity.json'))
+          assert r['saved_paper_quotes']>=0
+          assert not r['paper_invariant_errors']
+          assert r['no_changes_to_saved_picks_or_live_probabilities']
+          print('Existing saved paper quotes',r['saved_paper_quotes'])
+          print('Archive original rows',r['archive']['archived_comparison_rows'])
+          print('Unmatched archived book offers',r['archive']['archived_offers_not_found_in_paper'])
+          print('Missing prospective research diagnostics',r['research_diagnostics'])
+          PY
+      - name: Validate lossless saving of actual current dated archive
+        run: |
+          python -u iphone_bot/research_archive_persistence.py
+          find docs/research_history -type f -name '*.json.gz' -print
+          python -u iphone_bot/preserve_research_inputs.py schedule
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-research-storage-integrity-and-history
+          path: |
+            docs/research_storage_integrity.json
+            docs/research_history/
+          retention-days: 14

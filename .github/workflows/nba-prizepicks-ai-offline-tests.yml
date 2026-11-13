@@ -1,0 +1,38 @@
+name: Verify PrizePicks-only NBA AI research (offline)
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/prizepicks_ai_research.py'
+      - 'iphone_bot/tests/test_prizepicks_ai_research.py'
+      - '.github/workflows/nba-prizepicks-ai-research.yml'
+      - '.github/workflows/nba-prizepicks-ai-offline-tests.yml'
+  push:
+    branches: ['research/20261107-prizepicks-ai-independent']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install small local inference dependencies
+        run: pip install numpy pandas scikit-learn joblib
+      - name: Verify real source matching and accurate model outputs
+        run: |
+          python -m py_compile iphone_bot/prizepicks_ai_research.py
+          PYTHONPATH=iphone_bot python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_ai_research.py' -v
+      - name: Verify prospective-only outputs
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          code=Path('iphone_bot/prizepicks_ai_research.py').read_text()
+          assert 'no_calibrated_hit_percentage' in code
+          assert 'no_verified_ev' in code
+          assert 'start<=now' in code
+          assert 'PRIZEPICKS_AI_RESEARCH_ONLY_NOT_SPORTSBOOK_ODDS' in code
+          print('Prospective research gates and no fabricated hit percentages verified')
+          PY

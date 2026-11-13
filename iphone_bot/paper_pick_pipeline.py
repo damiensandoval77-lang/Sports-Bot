@@ -6,6 +6,7 @@ game/player identity. Settlement NEVER re-runs a model or selects a side after
 observing game results. No money is wagered or assumed.
 """
 import json
+import copy
 import math
 import re
 import unicodedata
@@ -128,7 +129,22 @@ def snapshot(comparisons,generated_at,existing=None):
                     original_projection,market.get("shadow_projection"),chosen_projection),
                 "research_minutes_risk_v1":minutes_risk(market.get("minutes_research"),
                     market.get("minutes_v2_research"),market.get("injury_status")),
-                "season_average_challenger":market.get("season_average_challenger")}
+                "season_average_challenger":market.get("season_average_challenger"),
+                # Immutable pretip Shooting V1 shadow for prospective grading.
+                # Never recompute this field using postgame outcomes.
+                "shooting_efficiency_v1":copy.deepcopy(
+                    market.get("shooting_efficiency_v1"))
+                    if market.get("stat")=="PTS" else None,
+                "minutes_v3_research":copy.deepcopy(
+                    market.get("minutes_v3_research")),
+                "opportunity_v2_research":copy.deepcopy(
+                    market.get("opportunity_v2_research"))
+                    if market.get("stat") in ("AST","REB") else None,
+                "model_feature_audit":copy.deepcopy(market.get("model_feature_audit")),
+                "frozen_minutes_research":copy.deepcopy(market.get("minutes_research")),
+                "frozen_minutes_v2_research":copy.deepcopy(market.get("minutes_v2_research")),
+                "frozen_injury_status":market.get("injury_status"),
+                "forensic_data_collected_pregame":True}
             ident=identity(record)
             if ident not in seen:
                 rows.append(record)
@@ -174,6 +190,20 @@ def settle(rows,completed_games,now=None):
         direct=[g for g in by_name.get((strict_player_name(r["player"]),gameday),[])
                 if g.get("team")==r["team"] and g.get("opponent") in opponents
                 and g.get("final_confirmed") is True]
+        dnp_direct=[g for g in direct if g.get("dnp_final_verified") is True]
+        playable_direct=[g for g in direct if not g.get("dnp_final_verified")]
+        if dnp_direct and playable_direct:
+            # Contradictory providers cannot be used to grade or void.
+            result.append(r);continue
+        if len(dnp_direct)==1 and age>=2*3600:
+            evidence=dnp_direct[0]
+            r.update({"status":"VOID_DNP","result":"VOID",
+                      "void_reason":evidence.get("dnp_reason","Verified no-play"),
+                      "void_source_url":"https://www.nba.com/game/"+
+                        str(evidence.get("source_game_id","")),
+                      "void_recorded_at":now.isoformat()})
+            result.append(r);continue
+        direct=playable_direct
         # Multiple providers can observe the same final game.
         # Identical pts/reb/ast are corroboration, not ambiguity.
         # Conflicting providers must not be graded arbitrarily.
@@ -224,7 +254,7 @@ def settle(rows,completed_games,now=None):
         r.update({"status":"SETTLED","settled_at":now.isoformat(),
                   "settlement_source":game.get("source","HISTORICAL_CSV_COMPLETED_GAME"),
                   "source_game_id":game.get("source_game_id"),
-                  "actual":actual,"result":"PUSH" if outcome=="PUSH" else ("WIN" if outcome==r["side"] else "LOSS"),
+                  "actual":actual,"actual_minutes":round(minutes,4),"result":"PUSH" if outcome=="PUSH" else ("WIN" if outcome==r["side"] else "LOSS"),
                   "paper_profit_units":round(profit,6)})
         result.append(r)
     return result
@@ -291,6 +321,7 @@ def summary(rows,now=None,source=None):
        "model":"PROVISIONAL_ORIGINAL",
        "method":METHOD,"real_money_wagered":False,
        "captured":len(rows),"pending":len(pending),"settled":len(settled),
+       "void_dnp":sum(r.get("status")=="VOID_DNP" for r in rows),
        "performance":compute_performance(rows),
        "selective_challenger":selective_evaluate(rows),
        "season_average_research":season_average_report(rows),
@@ -481,6 +512,11 @@ def main():
     if cbs_path.exists():
         completed.extend(json.loads(cbs_path.read_text()))
     rows=settle(rows,completed)
+    try:
+        from .dnp_settlement import apply_verified_dnp,load_fixture
+    except ImportError:
+        from dnp_settlement import apply_verified_dnp,load_fixture
+    rows=apply_verified_dnp(rows,load_fixture())
     LEDGER.write_text(json.dumps({"version":1,"records":rows},indent=2)+"\n")
     source_path=ROOT/"docs/current_form.json"
     source=json.loads(source_path.read_text()) if source_path.exists() else None

@@ -124,6 +124,11 @@ def write_status(status,**details):
 
 
 def main():
+    if os.environ.get("SPORTS_BOT_ENABLE_PAID_ODDS") != "1":
+        write_status("PAID_ODDS_POLLING_DISABLED", coverage_complete=False,
+                     note="No paid score call; existing ESPN/NBA schedule preserved.")
+        print("Paid score polling disabled; preserving existing schedule.",flush=True)
+        return
     key=os.environ.get("ODDS_API_KEY","").strip()
     if not key:
         write_status("MISSING_ODDS_API_KEY",coverage_complete=False)

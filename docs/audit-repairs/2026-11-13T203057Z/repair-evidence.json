@@ -1,0 +1,186 @@
+{
+  "merge": {
+    "sha": "cd6bed804d99c761fa743eec92760bc831050c66",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "head": "a0b1f51144eac7d3d777219f4070f6cc58fe3f43",
+  "ci": [
+    {
+      "name": "pipeline-contracts",
+      "conclusion": "success",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43502744449/job/132152528077"
+    },
+    {
+      "name": "feed-health",
+      "conclusion": "success",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43502744379/job/132152470360"
+    }
+  ],
+  "health_jobs": {
+    "jobs": [
+      {
+        "id": 132153610939,
+        "name": "feed-health",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 43503079373,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Test empty-board failure outside near-tip window",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run health audit unit tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Test independent matchup coverage",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Print exact uncovered NBA matchups",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Check published feeds for stale or missing game coverage",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 8
+          },
+          {
+            "name": "Retain feed-health evidence even when unhealthy",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      }
+    ]
+  },
+  "phone_jobs": {
+    "jobs": [
+      {
+        "id": 132153611080,
+        "name": "deployed-iphone",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 43503079393,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Install browser dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Wait for exact native Pages release before phone verification",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Verify real deployed iPhone-size page and published ledger",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Preserve rendered phone screenshot and report",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Fail visibly if phone-facing release is incomplete",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 8
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          }
+        ]
+      }
+    ]
+  }
+}

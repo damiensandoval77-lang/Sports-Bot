@@ -1,0 +1,121 @@
+name: Publish verified NFL final boxscores
+on:
+  pull_request:
+    paths:
+      - 'scripts/push_with_retry.py'
+      - 'tests/test_push_with_retry.py'
+      - 'scripts/nfl_postgame_due.py'
+      - 'tests/test_nfl_postgame_schedule.py'
+      - 'scripts/export_nfl_espn_finals.py'
+      - 'tests/test_nfl_espn_finals.py'
+      - '.github/workflows/nfl-boxscores-publish.yml'
+      - '.github/workflows/nfl-pick-grading.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/push_with_retry.py'
+      - 'tests/test_push_with_retry.py'
+      - 'scripts/nfl_postgame_due.py'
+      - 'tests/test_nfl_postgame_schedule.py'
+      - 'tests/test_nfl_boxscore_display.cjs'
+      - 'scripts/export_nfl_boxscores.py'
+      - 'scripts/export_nfl_espn_finals.py'
+      - 'tests/test_nfl_espn_finals.py'
+      - '.github/workflows/nfl-boxscores-publish.yml'
+      - 'tests/test_nfl_boxscores.py'
+      - 'tests/test_nfl_reconciliation.py'
+      - 'scripts/reconcile_nfl_boxscores.py'
+  workflow_dispatch:
+  schedule:
+    # Calendar-derived guard covers every fixture, including Thursday finals
+    # after midnight Friday and international/holiday games.
+    - cron: '5,35 * * 9-12,1-2 *'
+    # Keep background retries for delayed final-stat sources beyond 12 hours.
+    - cron: '35 3,9,13,17,21 * 9-12,1-2 *'
+permissions:
+  contents: write
+concurrency:
+  # Both workflows write schedule_2026.json. Serialize the writers, then
+  # check out current main so queued runs cannot regenerate stale timestamps.
+  group: nfl-schedule-and-finals-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: false
+jobs:
+  due:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.window.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify postgame window safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_postgame_schedule.py' -v
+      - id: window
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" = "schedule" ] && [ "${{ github.event.schedule }}" != "35 3,9,13,17,21 * 9-12,1-2 *" ]; then
+            echo "run=$(python scripts/nfl_postgame_due.py)" >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          fi
+  boxscores:
+    needs: due
+    if: needs.due.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install parquet reader
+        run: pip install pandas pyarrow
+      - name: Verify player-name rendering in all boxscore categories
+        run: node tests/test_nfl_boxscore_display.cjs
+      - name: Verify concurrent publisher recovery without overwrites
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s tests -p 'test_push_with_retry.py' -v
+      - name: Run export data-integrity tests
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s tests -p 'test_nfl_boxscores.py' -v
+      - name: Verify schedule-to-boxscore reconciliation regression tests
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s tests -p 'test_nfl_reconciliation.py' -v
+      - name: Verify strict partial final-source safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_espn_finals.py' -v
+      - name: Refresh the verified full-season schedule and final scores
+        if: github.event_name != 'pull_request'
+        run: python scripts/export_nfl_schedule.py
+      - name: Export finalized player stats without risking last-good data
+        if: github.event_name != 'pull_request'
+        id: final_export
+        continue-on-error: true
+        run: python scripts/export_nfl_boxscores.py
+      - name: Supplement missing finals with exact verified ESPN observations
+        if: github.event_name != 'pull_request'
+        id: final_supplement
+        continue-on-error: true
+        run: python scripts/export_nfl_espn_finals.py
+      - name: Audit every finalized game even if nflverse export failed
+        if: github.event_name != 'pull_request'
+        run: python scripts/reconcile_nfl_boxscores.py
+      - name: Commit verified records
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          git config user.name nfl-boxscore-publisher
+          git config user.email actions@users.noreply.github.com
+          git add docs/nfl/data/boxscores/ docs/nfl/data/schedule_2026.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh verified NFL final box scores"
+            python scripts/push_with_retry.py
+          fi
+      - name: Keep the workflow visibly failed if data export failed
+        if: steps.final_export.outcome == 'failure' || steps.final_supplement.outcome == 'failure'
+        run: |
+          echo "::error::NFL boxscore source refresh failed. Previous verified results are preserved and reconciliation was run."
+          exit 1

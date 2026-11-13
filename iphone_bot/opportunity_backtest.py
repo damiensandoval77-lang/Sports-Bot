@@ -19,7 +19,7 @@ import math
 from collections import defaultdict
 from datetime import datetime,timezone
 from pathlib import Path
-from statistics import mean
+from statistics import mean,pstdev
 
 try:
     from .minutes_model_v2 import forecast as minutes_v2
@@ -108,6 +108,7 @@ def opportunity(history,target_date,team):
         "expected_minutes":round(mins,3),
         "mins_method":method,"expected_fga":expected_fga,
         "usage_fga_ratio_clamped":round(factor,4),
+        "last5_minutes_volatility":round(pstdev([g["MIN"] for g in past[-5:]]),3),
         "raw_stat_projections":{k:round(v,4) for k,v in raw.items()},
         "prior_latest_game_date":past[-1]["date"]}
 
@@ -117,6 +118,20 @@ def candidate(base,raw):
     prediction=base+BLEND*(raw-base)
     span=max(1,base)*MAX_DELTA_PCT
     return max(0,round(min(base+span,max(base-span,prediction)),4))
+
+def stability_candidate(base,raw,context):
+    """Separate pretip challenger: shrink opportunity shift on volatile minutes.
+
+    Fixed ex-ante heuristic, NOT an empirically calibrated probability. Fewer
+    minutes of reliable rotation history should mean less trust in a large
+    opportunity adjustment. Original opportunity candidate stays unchanged.
+    """
+    basic=candidate(base,raw)
+    if basic is None:return None
+    volatility=safe(context.get("last5_minutes_volatility")) if isinstance(context,dict) else None
+    if volatility is None:return None
+    exposure=max(.4,1-min(.6,max(0.,(volatility-3.)/12.)))
+    return round(max(0.,base+exposure*(basic-base)),4)
 
 def describe(rows):
     n=len(rows)

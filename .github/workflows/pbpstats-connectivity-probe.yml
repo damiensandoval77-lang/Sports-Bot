@@ -1,0 +1,46 @@
+name: Verify public PBP Stats API reachability (metadata only)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/probe_pbpstats_access.py'
+      - 'iphone_bot/tests/test_probe_pbpstats_access.py'
+      - '.github/workflows/pbpstats-connectivity-probe.yml'
+permissions:
+  contents: write
+concurrency:
+  group: pbpstats-connectivity
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test data-free schema parser before network probe
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_probe_pbpstats_access.py' -v
+      - name: Test PBP Stats public endpoint once, only metadata saved
+        run: python -u iphone_bot/probe_pbpstats_access.py
+      - name: Publish provider connectivity status without ingesting stats
+        run: |
+          set -euo pipefail
+          cp docs/pbpstats_access_status.json "$RUNNER_TEMP/pbpstats-access.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/pbpstats-access.json" docs/pbpstats_access_status.json
+            git add docs/pbpstats_access_status.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish PBP Stats connectivity diagnostic (no player data)'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

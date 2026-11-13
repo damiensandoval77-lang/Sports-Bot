@@ -1,0 +1,26 @@
+name: Phase 1 data integrity
+on:
+  pull_request:
+    paths:
+      - 'iphone_bot/phase1_integrity_gate.py'
+      - 'iphone_bot/tests/test_phase1_integrity_gate.py'
+      - 'docs/paper_results.json'
+      - '.github/workflows/phase1_data_integrity.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */3 * * *'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check pregame and settlement invariants
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_phase1_integrity_gate.py' -v
+      - name: Validate most recently published results
+        run: python -m iphone_bot.phase1_integrity_gate docs/paper_results.json

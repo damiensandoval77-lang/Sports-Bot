@@ -1,0 +1,60 @@
+name: Refresh NBA AI projections after official injury changes (no paid odds)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/refresh_injury_projections.py'
+      - 'iphone_bot/injury_projection_adjustment.py'
+      - 'iphone_bot/tests/test_refresh_injury_projections.py'
+      - '.github/workflows/nba-fast-injury-reprojection.yml'
+  schedule:
+    # Every 20 minutes around Eastern afternoon/evening and overnight games.
+    # Best-effort GitHub schedule; new status must be verified from official NBA report.
+    - cron: '*/20 0-5,17-23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: nba-injury-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 19
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PDF parser for official NBA published report
+        run: python -m pip install --disable-pip-version-check "pypdf>=5,<7"
+      - name: Test rapid injury re-projection without sportsbook or model retraining
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/refresh_injury_projections.py iphone_bot/injury_projection_adjustment.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_injury_projection_adjustment.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_refresh_injury_projections.py' -v
+      - name: Refresh latest verified official NBA statuses
+        run: python -u iphone_bot/fetch_official_injuries.py
+      - name: Update upcoming pregame predictions without changing frozen historical picks
+        run: python -u iphone_bot/refresh_injury_projections.py
+      - name: Publish onto newest main and safely retry concurrent updates
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            # Previous local refresh produced modified JSON; discard it and
+            # recompute against the newest main before every publish attempt.
+            git reset --hard origin/main
+            python -u iphone_bot/fetch_official_injuries.py
+            python -u iphone_bot/refresh_injury_projections.py
+            git add docs/injury_context.json docs/ai_comparisons.json
+            if git diff --cached --quiet; then echo 'No official injury-based projection update'; exit 0; fi
+            git commit -m 'Refresh NBA injury-aware upcoming AI projections'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

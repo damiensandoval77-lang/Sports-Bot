@@ -4,7 +4,38 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/projection_upgrade_research.py'
+      - 'iphone_bot/prospective_research_gate.py'
+      - 'iphone_bot/tests/test_prospective_research_gate.py'
+      - 'iphone_bot/sanity_shadow_research.py'
+      - 'iphone_bot/stress_test_20k_research.py'
+      - 'iphone_bot/model_disagreement_research.py'
+      - 'iphone_bot/unified_reliability_research.py'
+      - 'iphone_bot/tests/test_unified_reliability_research.py'
+      - 'iphone_bot/tests/test_model_disagreement_research.py'
+      - 'iphone_bot/tests/test_stress_test_20k_research.py'
+      - 'iphone_bot/tests/test_sanity_shadow_research.py'
       - 'iphone_bot/opportunity_backtest.py'
+      - 'iphone_bot/opponent_context_v2.py'
+      - 'iphone_bot/rebound_shadow_v1.py'
+      - 'iphone_bot/tracking_opportunities_v1.py'
+      - 'iphone_bot/import_tracking_export.py'
+      - 'iphone_bot/tests/test_import_tracking_export.py'
+      - 'iphone_bot/tests/test_tracking_opportunities_v1.py'
+      - 'iphone_bot/tests/test_rebound_shadow_v1.py'
+      - 'iphone_bot/lineup_onoff_research.py'
+      - 'iphone_bot/import_authorized_onoff.py'
+      - 'iphone_bot/pbpstats_request_plan.py'
+      - 'iphone_bot/pbpstats_wowy_adapter.py'
+      - 'iphone_bot/pbpstats_game_coverage.py'
+      - 'iphone_bot/tests/test_pbpstats_game_coverage.py'
+      - 'iphone_bot/assemble_pbpstats_wowy.py'
+      - 'iphone_bot/tests/test_assemble_pbpstats_wowy.py'
+      - 'iphone_bot/tests/test_pbpstats_wowy_adapter.py'
+      - 'iphone_bot/tests/test_pbpstats_request_plan.py'
+      - 'iphone_bot/tests/test_import_authorized_onoff.py'
+      - 'iphone_bot/tests/test_lineup_onoff_research.py'
+      - 'docs/lineup_onoff_research.json'
+      - 'iphone_bot/tests/test_opponent_context_v2.py'
       - 'iphone_bot/selection_gate_shadow.py'
       - 'iphone_bot/assist_shadow_v1.py'
       - 'iphone_bot/tests/test_assist_shadow_v1.py'
@@ -14,7 +45,7 @@ on:
       - '.github/workflows/nba-projection-upgrade-research.yml'
   workflow_dispatch:
   workflow_run:
-    workflows: ["Publish trained NBA AI props for every available game"]
+    workflows: ["Publish trained NBA AI props for every available game", "Settle saved NBA props using verified final player box scores"]
     types: [completed]
   schedule:
     - cron: '17 12 * * *'
@@ -37,9 +68,24 @@ jobs:
           python-version: '3.11'
       - name: Verify pregame isolation, injury dates and calibration
         run: |
-          python -m py_compile iphone_bot/projection_upgrade_research.py
+          python -m py_compile iphone_bot/projection_upgrade_research.py iphone_bot/sanity_shadow_research.py iphone_bot/stress_test_20k_research.py iphone_bot/model_disagreement_research.py iphone_bot/unified_reliability_research.py
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_sanity_shadow_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_stress_test_20k_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_model_disagreement_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_unified_reliability_research.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_opponent_context_v2.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_rebound_shadow_v1.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunities_v1.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_import_tracking_export.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_lineup_onoff_research.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_import_authorized_onoff.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_request_plan.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_wowy_adapter.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_game_coverage.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_assemble_pbpstats_wowy.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_selection_gate_shadow.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_assist_shadow_v1.py' -v
           python - <<'PY'
@@ -54,9 +100,59 @@ jobs:
           python - <<'PY'
           import json
           r=json.load(open('docs/projection_upgrade_status.json'))
+          if r.get('new_samples',0):
+              assert r['prospective_capture_integrity']['all_new_rows_have_three_diagnostics'] is True
+              assert r['prospective_capture_integrity']['new_research_rows']==r['new_samples']
           assert r['live_combined_ai_unchanged'] is True
           assert r['live_simulated_hit_percentages_unchanged'] is True
           assert r['defender_v4']['v4_live_applied'] is False
+          assert r['sanity_shadow_v1']['accuracy_gain_established'] is False
+          assert r['sanity_shadow_v1']['live_applied'] is False
+          assert r['stress_test_20k_v1']['live_probabilities_changed'] is False
+          assert r['stress_test_20k_v1']['live_picks_changed'] is False
+          assert r['stress_test_20k_v1']['calibrated_probability'] is False
+          assert r['model_disagreement_v1']['live_picks_changed'] is False
+          assert r['model_disagreement_v1']['live_probabilities_changed'] is False
+          assert r['model_disagreement_v1']['model_improvement_established'] is False
+          assert r['unified_reliability_v1']['no_live_picks_changed'] is True
+          assert r['unified_reliability_v1']['no_live_probabilities_changed'] is True
+          assert r['unified_reliability_v1']['no_accuracy_improvement_claimed'] is True
+          assert r['unified_reliability_v1']['confidence_proxy_quote_coverage']['confidence_calibrated'] is False
+          wowy=r['licensed_onoff_shadow']
+          assert wowy['same_frozen_line_required'] is True
+          assert wowy['eligible_for_production'] is False
+          assert sum(wowy['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['paired_markets']
+          assert sum(wowy['by_market'][m]['exact_line_eligible'] for m in ('PTS','REB','AST','PRA'))==wowy['overall']['exact_line_eligible']
+          tracking=r['tracking_opportunity_shadow']
+          assert tracking['status']=='TRACKING_CHANCES_PRETIP_SHADOW_ONLY'
+          assert tracking['production_applied'] is False
+          assert tracking['eligible_for_production'] is False
+          assert sum(tracking['by_market'][m]['paired_markets'] for m in ('AST','REB'))==tracking['overall']['paired_markets']
+          assert sum(tracking['by_market'][m]['exact_line_eligible'] for m in ('AST','REB'))==tracking['overall']['exact_line_eligible']
+          rebound=r['rebound_shadow_v1']
+          assert rebound['status']=='FROZEN_PREGAME_REBOUND_V1_RESEARCH_ONLY'
+          assert rebound['validated_for_live'] is False
+          assert rebound['live_model_unchanged'] is True
+          assert rebound['same_frozen_line_eligible']<=rebound['paired_markets']
+          assert rebound['shadow_wins']<=rebound['same_frozen_line_eligible']
+          assert rebound['baseline_wins']<=rebound['same_frozen_line_eligible']
+          ov2=r['opponent_v2_shadow']
+          assert ov2['same_line_only'] is True and ov2['eligible_for_production'] is False
+          assert sum(ov2['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==ov2['overall']['paired_markets']
+          assert sum(ov2['by_market'][m]['exact_line_direction_eligible'] for m in ('PTS','REB','AST','PRA'))==ov2['overall']['exact_line_direction_eligible']
+          opp=r['opportunity_shadow']
+          assert opp['same_line_required_for_direction_scoring'] is True
+          assert opp['stability_challenger_research_only'] is True
+          assert opp['overall']['stability_shadow_paired_markets']<=opp['overall']['paired_markets']
+          assert opp['overall']['stability_shadow_same_line_eligible']<=opp['overall']['same_line_direction_eligible']
+          assert sum(opp['by_market'][m]['stability_shadow_paired_markets'] for m in ('PTS','REB','AST','PRA'))==opp['overall']['stability_shadow_paired_markets']
+          assert opp['mae_uses_same_player_verified_final_stat_only'] is True
+          assert opp['eligible_for_live_promotion'] is False
+          assert sum(opp['by_market'][m]['paired_markets'] for m in ('PTS','REB','AST','PRA'))==opp['overall']['paired_markets']
+          assert sum(opp['by_market'][m]['same_line_direction_eligible'] for m in ('PTS','REB','AST','PRA'))==opp['overall']['same_line_direction_eligible']
+          assert opp['overall']['same_line_direction_eligible']<=opp['overall']['exact_line_matched_final_markets']
+          assert opp['overall']['exact_line_matched_final_markets']+opp['overall']['line_mismatched_final_markets']==opp['overall']['paired_markets']
+          assert r['sanity_shadow_v1']['adjusted_only']['paired_markets'] <= r['sanity_shadow_v1']['overall']['paired_markets']
           assert all(v['changes_live_probabilities'] is False for v in r['simulation_audit'].values())
           print('Research records:',r['locked_samples'],'settled:',r['settled_independent_paper_markets'])
           PY

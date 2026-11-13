@@ -1,0 +1,81 @@
+name: Backtest Shooting Efficiency V1 vs historical and frozen Combined AI
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/shooting_efficiency_v1.py'
+      - 'iphone_bot/enrich_current_shooting.py'
+      - 'iphone_bot/tests/test_enrich_current_shooting.py'
+      - 'iphone_bot/shooting_efficiency_backtest.py'
+      - 'iphone_bot/shot_profile_research.py'
+      - 'iphone_bot/tests/test_shooting_efficiency_v1.py'
+      - '.github/workflows/nba-shooting-efficiency-v1.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nba-shooting-research-v1
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate shot-v1 independent formulas and chronological boundaries
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/shooting_efficiency_v1.py iphone_bot/shooting_efficiency_backtest.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_shooting_efficiency_v1.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_shot_profile_research.py' -v
+      - name: Install existing NBA historical data and model dependencies
+        run: pip install -r iphone_bot/requirements-training.txt pyarrow requests
+      - name: Read existing verified four-season historical game logs
+        run: python -u iphone_bot/download_archived_nba.py
+      - name: Retrieve completed current-season games for optional frozen Combined-AI comparison
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -u iphone_bot/fetch_current_form.py
+      - name: Validate and import current NBA player shooting rates for research only
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_enrich_current_shooting.py' -v
+          python -u iphone_bot/enrich_current_shooting.py
+      - name: Run paired historical holdout and saved pretip Combined-AI comparisons
+        run: python -u iphone_bot/shooting_efficiency_backtest.py
+      - name: Verify research-only and reject false improvements
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('docs/shooting_efficiency_v1_backtest.json'))
+          assert x['production_applied'] is False
+          assert x['simulated_hit_rates_changed'] is False
+          assert x['calibrated_probability'] is False
+          assert x['historical_holdout']['n']>1000
+          assert x['historical_holdout']['games_dates']>30
+          print('Paired historical shooting holdout:',x['historical_holdout'])
+          print('Paired frozen Combined forecast comparison:',x['saved_combined_comparison']['metrics'])
+          PY
+      - name: Publish research report only, never merge live AI projections
+        run: |
+          set -euo pipefail
+          cp docs/shooting_efficiency_v1_backtest.json "$RUNNER_TEMP/shooting-report.json"
+          cp docs/current_shooting_coverage.json "$RUNNER_TEMP/shooting-coverage.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/shooting-report.json" docs/shooting_efficiency_v1_backtest.json
+            cp "$RUNNER_TEMP/shooting-coverage.json" docs/current_shooting_coverage.json
+            git add docs/shooting_efficiency_v1_backtest.json docs/current_shooting_coverage.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish lagged shooting efficiency V1 historical and frozen AI paired evaluation'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

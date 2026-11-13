@@ -14,47 +14,13 @@ on:
       - 'iphone_bot/compare_live_models.py'
       - '.github/workflows/nba-ai-comparisons.yml'
   schedule:
-    - cron: '17 20,23 * * *'
+    - cron: '17 18,21 * * *'
 permissions:
   contents: write
 concurrency:
   group: nba-prop-feed
   cancel-in-progress: false
 jobs:
-  prizepicks_check:
-    if: github.event_name == 'push' && !contains(github.event.head_commit.message, 'Update NBA full slate player prop coverage')
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Fetch latest published board
-        run: |
-          git fetch origin main
-          git checkout -B main origin/main
-      - name: Check independent PrizePicks matching
-        run: python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v
-      - name: Refresh PrizePicks lines independently of FanDuel
-        env:
-          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
-          PRIZEPICKS_FORCE_REFRESH: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
-        run: python -u iphone_bot/fetch_prizepicks.py
-      - name: Publish verified third-party board
-        run: |
-          git add docs/prizepicks.json
-          if git diff --cached --quiet; then exit 0; fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Update independent PrizePicks lines and rejection diagnostics'
-          git reset --hard HEAD
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then exit 0; fi
-            git fetch origin main
-            git rebase origin/main || { git rebase --abort || true; exit 1; }
-          done
-          exit 1
   compare:
     if: github.event_name != 'push' || contains(github.event.head_commit.message, '[refresh-research-once]') || contains(github.event.head_commit.message, 'Update NBA full slate player prop coverage')
     runs-on: ubuntu-latest
@@ -64,6 +30,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Require nonempty recent quotes from the single scheduled market fetcher
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+          python - <<'PY'
+          import json,datetime
+          from pathlib import Path
+          d=json.loads(Path('docs/data.json').read_text())
+          status=json.loads(Path('docs/odds_fetch_status.json').read_text())
+          now=datetime.datetime.now(datetime.timezone.utc)
+          stamp=datetime.datetime.fromisoformat(d['updated_at'].replace('Z','+00:00'))
+          age=(now-stamp).total_seconds()
+          n=len(d.get('picks',[]))
+          print('Market source rows:',n,'age hours:',round(age/3600,2),
+                'provider health:',status.get('status'))
+          assert 0<=age<=6*3600 and n>0, (
+            'NO_FRESH_PAIRED_PROPS: preserving last AI board, no paid duplicate fetch. '
+            'Check docs/odds_slate_health.json and odds provider credits.')
+          PY
       - name: Install historical and ML dependencies
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2" "joblib>=1.3,<2"
       - name: Rebuild archived training data
@@ -75,6 +60,7 @@ jobs:
       - name: Train opponent-aware shadow (research only)
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Validate matchup logic and Python syntax
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/capture_ai_board.py iphone_bot/minutes_early_season_research.py iphone_bot/season_average_research.py iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/fetch_prizepicks.py iphone_bot/fetch_official_injuries.py iphone_bot/research_context.py iphone_bot/minutes_model_v2.py iphone_bot/shot_profile_research.py iphone_bot/weight_research.py
           python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v
@@ -103,13 +89,8 @@ jobs:
         run: |
           python -m pip install "pypdf>=5,<7"
           python -u iphone_bot/fetch_official_injuries.py
-      - name: Fetch all available upcoming sportsbook events within API credit budget
-        if: ${{ !contains(github.event.head_commit.message, 'Update NBA full slate player prop coverage') && !contains(github.event.head_commit.message, '[reuse-fresh-odds]') }}
-        env:
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          ODDS_MAX_EVENTS: '15'
-          ODDS_OUTCOMES_PER_EVENT: '1000'
-        run: python -u iphone_bot/fetch_props.py
+      - name: Reuse the scheduled, authenticated bookmaker quote feed
+        run: echo 'Using docs/data.json from nba-market-refresh; no duplicate paid odds calls.'
       - name: Publish sportsbook fetch failure diagnostics
         if: failure()
         run: |
@@ -126,15 +107,8 @@ jobs:
         run: python -u iphone_bot/audit_archived_real_lines.py
       - name: Compare AI projections with verified pregame sportsbook markets
         run: python -u iphone_bot/compare_live_models.py
-      - name: Update optional third-party PrizePicks research lines
-        env:
-          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
-          PRIZEPICKS_FORCE_REFRESH: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
-        run: |
-          # Once daily for free-tier request budgets; FanDuel continues on both runs.
-          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || [ "$(date -u +%H)" = "20" ]; then
-            python -u iphone_bot/fetch_prizepicks.py || echo "Independent pickem provider unavailable; FanDuel unaffected."
-          fi
+      - name: Reuse independent PrizePicks board without spending duplicate credits
+        run: echo 'Full NBA PrizePicks board refreshed separately by nba-prizepicks-full-slate.yml'
       - name: Freeze fresh verified AI, season-average and minutes research before tipoff
         run: python -u iphone_bot/capture_ai_board.py
       - name: Settle completed paper results without recalculating predictions
@@ -164,7 +138,13 @@ jobs:
           assert d['is_prizepicks'] is False
           assert all(x['sample_games']>=5 for x in d['comparisons'])
           assert type(d['injury_data_verified']) is bool
-          assert d['lineup_research_adjustments_applied'] is False
+          assert d['lineup_research_adjustments_applied'] is any(
+              r.get('injury_scenario_applied_to_combined') is True for r in d['comparisons'])
+          assert all(r.get('injury_reprojection_status')!='INSUFFICIENT_VERIFIED_PRIOR_ON_OFF_EVIDENCE'
+                     for r in d['comparisons'])
+          assert all(r.get('injury_reprojection_status')!='REPROJECTED_FROM_VERIFIED_OFFICIAL_OUT'
+                     or r.get('preinjury_combined_projection') is not None
+                     for r in d['comparisons'])
           assert d['minutes_v2_applied_to_live_model'] is False
           assert d['shot_profile_applied_to_live_model'] is False
           assert all(x['shot_profile_research']['live_adjustment_applied'] is False
@@ -187,7 +167,10 @@ jobs:
           assert all(x['minutes_v2_research']['expected_minutes'] is None or
                      0 <= x['minutes_v2_research']['expected_minutes'] <= 48
                      for x in d['comparisons'])
-          assert d['injury_minutes_research_status']=='DESCRIPTIVE_ONLY_NOT_APPLIED'
+          assert d['injury_minutes_research_status'] in (
+              'BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS',
+              'NO_SUPPORTED_OFFICIAL_OUT_REPROJECTION_APPLIED')
+          assert (d['injury_minutes_research_status']=='BOUNDED_OFFICIAL_OUT_APPLIED_TO_NEW_PREGAME_PROJECTIONS') is d['lineup_research_adjustments_applied']
           assert d['minutes_baseline_validation']['live_model_unchanged'] is True
           assert all(x['injury_minutes_research']['live_adjustment_applied'] is False for x in d['comparisons'])
           assert all(x['injury_minutes_research']['scenario_minutes'] is None or

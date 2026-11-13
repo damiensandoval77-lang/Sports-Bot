@@ -1,0 +1,40 @@
+name: Probe alternate full 2026-27 NBA schedule data source
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/probe_hoopr_schedule.py'
+      - '.github/workflows/nba-hoopr-schedule-probe.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install parquet reader without provider credentials
+        run: pip install pandas pyarrow
+      - name: Inspect file structure and team/date coverage
+        run: python -u iphone_bot/probe_hoopr_schedule.py
+      - name: Publish schema inventory
+        run: |
+          cp docs/nba_external_schedule_probe.json "$RUNNER_TEMP/external-schedule.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/external-schedule.json" docs/nba_external_schedule_probe.json
+            git add docs/nba_external_schedule_probe.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Inspect no-key regularly updated 2026-27 NBA schedule availability'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

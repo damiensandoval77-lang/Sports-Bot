@@ -1,0 +1,65 @@
+name: Dame's Picks unified NBA + NFL app release gate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7,37 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'iphone_bot/app_release_gate.py'
+      - 'iphone_bot/tests/test_app_release_gate.py'
+      - '.github/workflows/dames-picks-app-release-gate.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/app_release_gate.py'
+      - 'iphone_bot/tests/test_app_release_gate.py'
+      - '.github/workflows/dames-picks-app-release-gate.yml'
+permissions:
+  contents: write
+concurrency:
+  group: dames-picks-unified-release-gate
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || 'main' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prove fail-closed release gate and 72-hour streak logic
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m py_compile iphone_bot/app_release_gate.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_app_release_gate.py' -v
+      - name: Recompute and publish real combined release gate, even when degraded
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for n in 1 2 3 4 5 6; do
+            git fetch origin main
+            git reset --hard origin/main
+            # Re-evaluate after pulling latest reports, not before. Prevents
+            # old inputs and a stale streak being published over new evidence.
+            # These audits only read committed evidence: no network or dispatch.
+            # Recompute derived reports together so a resolved grade/calendar
+            # cannot remain blocked by an earlier cached audit snapshot.
+            for module in audit_ai_forecast_coverage production_readiness unified_dames_readiness; do
+              report_rc=0
+              python -m "iphone_bot.$module" || report_rc=$?
+              if [ "$report_rc" -ne 0 ] && [ "$report_rc" -ne 2 ]; then exit "$report_rc"; fi
+            done
+            rc=0
+            python -m iphone_bot.app_release_gate || rc=$?
+            git add docs/ai_forecast_coverage_audit.json docs/production_readiness.json docs/dames-picks/unified_readiness.json docs/dames-picks/app_release_gate.json
+            if git diff --cached --quiet; then exit "$rc"; fi
+            git commit -m 'Record combined NBA and NFL app release gate'
+            if git push origin HEAD:main; then exit "$rc"; fi
+          done
+          echo "::error::Could not publish merged app release verification"
+          exit 1

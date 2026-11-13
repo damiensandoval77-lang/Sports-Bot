@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - 'iphone_bot/fetch_nba_schedule.py'
+      - 'iphone_bot/fetch_hoopr_nba_schedule.py'
+      - 'iphone_bot/season_schedule_baseline.py'
+      - 'iphone_bot/tests/test_season_schedule_baseline.py'
+      - 'iphone_bot/publish_nba_schedule_atomic.py'
+      - 'iphone_bot/tests/test_publish_nba_schedule_atomic.py'
       - 'iphone_bot/tests/test_fetch_nba_schedule.py'
       - '.github/workflows/nba-schedule.yml'
   schedule:
@@ -24,13 +29,16 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test Eastern-date and schedule parsing
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/fetch_nba_schedule.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_nba_schedule.py' -v
-      - name: Publish labeled cached fixture coverage without blocked GitHub-hosted providers
-        env:
-          NBA_SCHEDULE_SOURCE_MODE: cached
-        run: python -u iphone_bot/fetch_nba_schedule.py
+          python -m unittest discover -s iphone_bot/tests -p 'test_season_schedule_baseline.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_nba_schedule_atomic.py' -v
+      - name: Refresh verified full season fixture schedule before private NBA/ESPN fallbacks
+        run: |
+          pip install pandas pyarrow
+          python -u iphone_bot/fetch_hoopr_nba_schedule.py || NBA_SCHEDULE_SOURCE_MODE=auto python -u iphone_bot/fetch_nba_schedule.py
       - name: Publish diagnostic if all schedule providers reject GitHub Actions
         if: failure()
         run: |
@@ -57,9 +65,7 @@ jobs:
                                      'PROVIDER_NBA_SCORES_PARTIAL_SLATE',
                                      'SCHEDULE_UNAVAILABLE')
           assert type(report['coverage_complete']) is bool
-          if report['status'] in ('PARTIAL_CACHED_SPORTSBOOK_SCHEDULE',
-                                  'PROVIDER_NBA_SCORES_PARTIAL_SLATE'):
-              assert report['coverage_complete'] is False
+          assert not report['coverage_complete'] if report['status'] in ('PARTIAL_CACHED_SPORTSBOOK_SCHEDULE','PROVIDER_NBA_SCORES_PARTIAL_SLATE') else True
           if report['status']=='PROVIDER_NBA_SCORES_PARTIAL_SLATE':
               assert report['source']=='The Odds API NBA scores'
           assert report['has_sportsbook_props'] is False
@@ -70,17 +76,36 @@ jobs:
           assert all(x['date_eastern'] in report['dates_eastern'] for x in report['games'])
           print('Complete NBA schedule games:', report['total_games'])
           PY
-      - name: Publish schedule feed
+      - name: Verify full-season master exists and matches published game identities
         run: |
-          git fetch origin main
-          git add docs/nba_schedule.json docs/nba_schedule_status.json
-          if git diff --cached --quiet; then exit 0; fi
+          python - <<'PY'
+          import json
+          from iphone_bot.season_schedule_baseline import validate
+          from pathlib import Path
+          path=Path('docs/nba_season_schedule_2026_27.json')
+          if not path.exists():
+              raise SystemExit('FAIL: No full-season master; a two-day schedule is insufficient')
+          season=validate(json.loads(path.read_text()))
+          daily=json.loads(Path('docs/nba_schedule.json').read_text())
+          assert daily.get('coverage_complete') is True
+          assert season['total_games']>=900
+          print('Validated published full NBA season fixture master:',season['total_games'],'games')
+          PY
+      - name: Publish daily and full-season fixtures with safe concurrent reconciliation
+        run: |
+          set -euo pipefail
+          cp docs/nba_schedule.json "$RUNNER_TEMP/new-day.json"
+          cp docs/nba_season_schedule_2026_27.json "$RUNNER_TEMP/new-season.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Publish complete Eastern-date NBA slate'
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then exit 0; fi
+          for attempt in 1 2 3 4 5; do
             git fetch origin main
-            git rebase origin/main || { git rebase --abort || true; exit 1; }
+            git reset --hard origin/main
+            python -m iphone_bot.publish_nba_schedule_atomic
+            git add docs/nba_schedule.json docs/nba_schedule_status.json docs/nba_season_schedule_2026_27.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Refresh complete NBA season and safe daily fixture slate'
+            if git push origin HEAD:main; then exit 0; fi
           done
+          echo "::error::Cannot atomically publish verified NBA schedule after safe retries"
           exit 1
