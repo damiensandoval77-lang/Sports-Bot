@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'docs/index.html'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
       - 'iphone_bot/smoke_espn_live_prop_tracker.py'
       - '.github/workflows/verify-live-tracker-espn.yml'
   push:
@@ -18,20 +22,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Check browser refresh on timer and iPhone foreground return
+      - name: Verify active unified app truthfulness, pretip eligibility and live updates
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          x=Path('docs/index.html').read_text()
-          assert 'setInterval(()=>{refreshScoresOnly().then(()=>refreshSelectedLiveTracker()).catch(()=>{});},45000);' in x
-          assert 'document.addEventListener("visibilitychange"' in x
-          assert 'window.addEventListener("focus"' in x
-          assert 'if(document.visibilityState==="hidden")return;' in x
-          assert 'refreshSelectedLiveTracker().catch(()=>{})' in x
-          Path('/tmp/live-tracker-inline.js').write_text(x.split('<script>',1)[1].split('</script>',1)[0])
-          print('45-second polling and immediate resume refresh verified')
-          PY
-          node --check /tmp/live-tracker-inline.js
-          node --test iphone_bot/tests/test_live_prop_tracker.cjs
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs
+          node --test iphone_bot/tests/test_live_direct.cjs
+
       - name: Live ESPN NBA player stats endpoint verification (read-only)
         run: python -u iphone_bot/smoke_espn_live_prop_tracker.py

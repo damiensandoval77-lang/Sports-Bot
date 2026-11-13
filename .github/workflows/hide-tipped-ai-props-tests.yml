@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'docs/index.html'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
       - '.github/workflows/hide-tipped-ai-props-tests.yml'
   push:
     branches: ['fix/20261107-hide-tipped-ai-props']
@@ -13,36 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check JavaScript and started-game filtering
+      - name: Verify active unified app truthfulness, pretip eligibility and live updates
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          source=Path('docs/index.html').read_text()
-          script=source.split('<script>',1)[1].split('</script>',1)[0]
-          Path('/tmp/nba-tipped-board.js').write_text(script)
-          assert 'compactPrizePicksDisplay(upcomingAIProps(ai))' in script
-          assert 'const filtered=board.filter' in script
-          assert 'const board=gameFilter?allBoard:todayBoard' in script
-          assert 'ai=aiFresh?upcomingAIProps(groupAI(a.value.comparisons)):[]' in script
-          assert 'const frozen=archive.value.comparisons.filter' in script
-          assert 'Date.parse(x.start)>Date.now()' in script
-          assert 'setInterval(()=>{refreshOverview();renderAI();renderPrizePicksBoard();},30000);' in script
-          assert 'const priced=upcomingAIProps(ai)' in script
-          print('Main AI cards, archive, counts and ongoing timer use upcoming-only forecasts.')
-          PY
-          node --check /tmp/nba-tipped-board.js
-          node - <<'JS'
-          const assert=require('node:assert/strict');
-          const fs=require('node:fs');
-          const src=fs.readFileSync('/tmp/nba-tipped-board.js','utf8');
-          const match=src.match(/function upcomingAIProps\(rows,now=Date\.now\(\)\)\{[\s\S]*?\n\}/);
-          assert(match,'Missing exact main-board cutoff helper');
-          const fn=new Function(match[0]+'; return upcomingAIProps;')();
-          const now=Date.parse('2026-11-07T23:00:00Z');
-          const future={start:'2026-11-08T01:00:00Z'};
-          const started={start:'2026-11-07T21:00:00Z'};
-          const tippedNow={start:'2026-11-07T23:00:00Z'};
-          assert.deepEqual(fn([future,started,tippedNow,{start:'invalid'}],now),[future]);
-          assert.deepEqual(fn([future],now+3*3600000),[]);
-          console.log('Started, exactly-at-tipoff and malformed games hidden; future games shown.');
-          JS
+          node --test iphone_bot/tests/test_root_redirect.cjs
+          node --test iphone_bot/tests/test_dames_picks_vE.cjs
+          node --test iphone_bot/tests/test_live_direct.cjs
