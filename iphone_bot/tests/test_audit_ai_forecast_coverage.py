@@ -63,11 +63,17 @@ class ForecastCoverageAuditTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[2]/"docs"
         def read(name):return json.loads((root/name).read_text())
         previous=read("ai_forecast_grade_status.json")
+        today=read("ai_forecast_today_grade_status.json")
+        # Reconcile this committed snapshot at its observation time. Running
+        # the same commit after another tipoff must not invent new eligibility
+        # in a historical test fixture; live audit still uses actual now.
+        snapshot_time=dt.datetime.fromisoformat(today["generated_at"].replace("Z","+00:00"))
+        self.assertIsNotNone(snapshot_time.tzinfo)
         out=audit(read("ai_no_line_pregame_archive.json"),
                   read("ai_forecast_actual_ledger.json"),
                   previous,
-                  read("ai_forecast_today_grade_status.json"),
-                  now=dt.datetime.now(dt.timezone.utc))
+                  today,
+                  now=snapshot_time)
         # The pregame archive rolls forward; 2026-11-09 will eventually
         # disappear. Never require one historical date to remain forever.
         self.assertTrue(out["days"], "No eligible saved forecasts to audit")
