@@ -104,6 +104,18 @@ def main():
             "document.documentElement.scrollWidth <= innerWidth + 1"),{"width":390})
         # Bound screenshot size even when hundreds of cards are present.
         page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=False)
+        under=page.locator('button.pick').filter(has=page.locator('.chip.under'))
+        if under.count():
+            under.first.click()
+            page.locator('#detail-content .lean.under').wait_for(timeout=10000)
+            under_color=page.locator('#detail-content .lean.under').evaluate(
+                "el => getComputedStyle(el).backgroundColor")
+            check("under_detail_is_red",under_color=="rgb(255, 107, 122)",{"color":under_color})
+            page.screenshot(path=str(OUT/"under-player-detail.png"))
+            page.locator('#back').click()
+        else:
+            report["checks"].append({"name":"under_detail_is_red","status":"SKIP",
+                                     "details":{"reason":"No authentic Under card available"}})
         detail_evidence=[]
         for sport in ("NBA","NFL"):
             page.locator('[data-view="tracker"]').click()
