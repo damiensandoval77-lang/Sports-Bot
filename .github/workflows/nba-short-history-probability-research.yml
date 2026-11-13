@@ -1,0 +1,61 @@
+name: NBA prospective short-history probability research
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Guarded new NBA AI all markets PTS REB AST PRA']
+    types: [completed]
+    branches: [main]
+  pull_request:
+    paths: ['iphone_bot/short_history_probability*', 'iphone_bot/tests/test_short_history_probability_research.py', '.github/workflows/nba-short-history-probability-research.yml']
+  push:
+    branches: [main]
+    paths: ['iphone_bot/short_history_probability*', 'iphone_bot/tests/test_short_history_probability_research.py', '.github/workflows/nba-short-history-probability-research.yml']
+permissions:
+  contents: read
+concurrency:
+  group: nba-short-history-probability-research-${{ github.event_name == 'pull_request' && github.ref || 'publish' }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.3 requests pyarrow
+      - run: python -m unittest discover -s iphone_bot/tests -p 'test_short_history*.py' -v
+  capture:
+    if: github.event_name != 'pull_request'
+    needs: test
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install numpy==2.3.5 pandas==2.2.3 scikit-learn==1.8.0 joblib==1.5.3 requests pyarrow
+      - name: Read genuine current game history
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m iphone_bot.fetch_current_form
+      - name: Capture failed-gate candidate for prospective research only
+        env:
+          OMP_NUM_THREADS: '2'
+        run: python -m iphone_bot.short_history_probability_research
+      - name: Publish only separate immutable research receipts
+        run: |
+          git add docs/short_history_probability_research.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Capture unvalidated short-history probability research only'
+          git restore docs/current_form.json
+          for attempt in 1 2 3; do
+            git pull --rebase origin main || exit 1
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 5))
+          done
+          exit 1
