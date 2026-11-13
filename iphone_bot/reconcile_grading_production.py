@@ -8,6 +8,7 @@ source-unverified row as graded. No network or paid sportsbook APIs.
 import argparse
 import json
 import math
+import subprocess
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -376,6 +377,24 @@ def select_dated_report(day, reports):
     matching=[r for r in reports if isinstance(r,dict) and r.get("game_date_eastern")==day]
     return max(matching,key=lambda r:str(r.get("generated_at", ""))) if matching else {}
 
+def recover_historical_archive(day, archive, now, root=ROOT):
+    """Read original Git bytes before a completed date left the rolling feed."""
+    if day >= (now.astimezone(ET).date()-timedelta(days=1)).isoformat():return archive
+    path="docs/ai_no_line_pregame_archive.json"
+    cutoff=(datetime.fromisoformat(day).replace(tzinfo=timezone.utc)+timedelta(days=2)).isoformat()
+    def git(*args):return subprocess.check_output(["git",*args],cwd=root,text=True,stderr=subprocess.DEVNULL)
+    try:
+        ref=git("rev-list","-1","--before="+cutoff,"HEAD","--",path).strip()
+        if not ref:return archive
+        original=json.loads(git("show",ref+":"+path))
+        def dated(row):return datetime.fromisoformat(row["start"].replace("Z","+00:00")).astimezone(ET).date().isoformat()==day
+        rows=[p for p in original.get("predictions",[]) if dated(p)]
+        if not rows or original.get("status")!=archive.get("status"):return archive
+        return {**archive,"predictions":[p for p in archive.get("predictions",[]) if not dated(p)]+rows,
+                "historical_capture_source_commit":ref,"historical_capture_source_path":path}
+    except (subprocess.CalledProcessError,ValueError,KeyError,TypeError):
+        return archive  # Existing independent count/provenance checks remain red.
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--date",required=True,help="Eastern game date YYYY-MM-DD")
@@ -393,6 +412,7 @@ def main():
         if path.exists():candidates.append(json.loads(path.read_text()))
     ai_status=select_dated_report(args.date,candidates)
     now=datetime.now(timezone.utc)
+    archive=recover_historical_archive(args.date,archive,now)
     if args.date < (now.astimezone(ET).date()-timedelta(days=1)).isoformat() and ai_status.get("game_date_eastern")!=args.date:
         ai_status=historical_status(args.date,archive,actuals,now)
         (ROOT/("docs/ai_forecast_grade_status_"+args.date+".json")).write_text(json.dumps(ai_status,indent=2)+"\n")
@@ -403,6 +423,9 @@ def main():
         final_cache=read("docs/verified_final_player_cache.json"),
         game_date=args.date,checked_at=datetime.now(timezone.utc).isoformat())
     path=Path(args.output)
+    if archive.get("historical_capture_source_commit"):
+        result["historical_capture_source_commit"]=archive["historical_capture_source_commit"]
+        result["historical_capture_source_path"]=archive["historical_capture_source_path"]
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
     print("AUTHORITATIVE_GRADING_RECONCILIATION",json.dumps({
