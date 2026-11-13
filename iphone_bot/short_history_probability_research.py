@@ -119,6 +119,8 @@ def merge(previous,feed,now=None):
         if any(type(v) not in (int,float) or not math.isfinite(v) or not 0<=v<=1 for v in p) or abs(sum(p)-1)>1e-9:raise ValueError('INVALID_PROBABILITIES')
         if row.get('candidate_model')!=MODEL or row.get('primary_model_eligible') is not False or row.get('official_grade_eligible') is not False or row.get('calibrated') is not False or row.get('historical_improvement_gate_passed') is not False:raise ValueError('INVALID_RESEARCH_LABEL')
         if row['receipt_key'] not in keys:output['records'].append(deepcopy(row));keys.add(row['receipt_key'])
+    if previous.get('count')==len(output['records']) and output['records']==previous['records']:
+        return output
     output.update(updated_at=now.isoformat(),count=len(output['records']),notice=NOTICE,primary_model_eligible=False,official_grade_eligible=False,calibrated=False)
     return output
 
@@ -127,23 +129,66 @@ def settle(archive,final_rows,now=None):
     now=stamp(now or datetime.now(timezone.utc));out=deepcopy(archive);out.setdefault('outcomes',{})
     candidates={}
     for row in final_rows:
-        if row.get('grade_source')!='NBA_CDN_FINAL' or not row.get('source_game_id') or row.get('grade') not in ('HIT','MISS','NO_LEAN','PUSH'):continue
+        if row.get('grade_source') not in ('NBA_CDN_FINAL','ESPN_FINAL') or not row.get('source_game_id') or row.get('grade') not in ('HIT','MISS','NO_LEAN','PUSH'):continue
         v=row.get('actual')
         if type(v) not in (int,float) or not math.isfinite(v) or v<0:continue
         key=(str(row.get('player_id')),row.get('team'),row.get('game'),row.get('start'),row.get('stat'))
-        candidates.setdefault(key,set()).add((float(v),row['source_game_id']))
+        candidates.setdefault(key,set()).add((float(v),row['source_game_id'],row['grade_source']))
     for row in out['records']:
         key=(str(row['player_id']),row['team'],row['game'],row['start'],row['stat'])
         values=candidates.get(key,set())
         if len(values)!=1 or now<=stamp(row['start']):continue
-        actual,game_id=next(iter(values));receipt=row['receipt_key']
-        value={'actual':actual,'source':'NBA_CDN_FINAL','source_game_id':game_id,
+        actual,game_id,source=next(iter(values));receipt=row['receipt_key']
+        value={'actual':actual,'source':source,'source_game_id':game_id,
                'observed_at':now.isoformat(),'result':'OVER' if actual>row['line'] else 'UNDER' if actual<row['line'] else 'PUSH'}
         if receipt not in out['outcomes']:out['outcomes'][receipt]=value
         elif out['outcomes'][receipt]['actual']!=actual:raise ValueError('CONFLICTING_FINAL_ACTUAL')
     return out
 
+def settle_boxscores(archive,boxes,now=None):
+    """Join exact normalized name/team/opponent/date from verified final parsers."""
+    from .live_multimarket_matchup import normalized_player_name,ET
+    now=stamp(now or datetime.now(timezone.utc));out=deepcopy(archive);out.setdefault('outcomes',{})
+    converted=[]
+    for receipt in out['records']:
+        if now<=stamp(receipt['start']):continue
+        day=stamp(receipt['start']).astimezone(ET).date().isoformat()
+        found=[b for b in boxes if b.get('final_confirmed') is True and b.get('source') in ('NBA_CDN_FINAL','ESPN_FINAL') and b.get('source_game_id') and
+               normalized_player_name(b.get('player'))==normalized_player_name(receipt['player']) and b.get('team')==receipt['team'] and b.get('opponent')==receipt['opponent'] and b.get('date')==day]
+        signatures={(b.get('source_game_id'),b.get('dnp_final_verified',False),b.get(receipt['stat']),b.get('MIN')) for b in found}
+        if len(signatures)!=1:continue
+        b=found[0];key=receipt['receipt_key']
+        if b.get('dnp_final_verified') is True and b.get('dnp_reason') and all(b.get(k) is None for k in ('PTS','REB','AST','PRA','MIN')):
+            value={'actual':None,'result':'VOID_DNP','source':b['source'],'source_game_id':b['source_game_id'],'reason':b['dnp_reason'],'observed_at':now.isoformat()}
+            if key in out['outcomes'] and out['outcomes'][key].get('result')!='VOID_DNP':raise ValueError('CONFLICTING_FINAL_DNP')
+            out['outcomes'].setdefault(key,value)
+        elif b.get('dnp_final_verified') is not True and type(b.get('MIN')) in (int,float) and 0<b['MIN']<=60:
+            if key in out['outcomes'] and out['outcomes'][key].get('result')=='VOID_DNP':raise ValueError('CONFLICTING_FINAL_PLAYED')
+            converted.append({**receipt,'actual':b.get(receipt['stat']),'grade':'NO_LEAN','grade_source':b['source'],'source_game_id':b['source_game_id']})
+    return settle(out,converted,now)
+
+def settle_pending(archive,now=None):
+    from .fetch_final_boxscores import gather
+    now=stamp(now or datetime.now(timezone.utc))
+    pending=[{'status':'PENDING','event_start':r['start'],'game':r['game']} for r in archive['records'] if r['receipt_key'] not in archive.get('outcomes',{})]
+    known_path=ROOT/'docs/official_nba_game_ids.json'
+    known=json.loads(known_path.read_text()) if known_path.exists() else None
+    boxes,report=gather(pending,now=now,known_game_ids=known)
+    output=settle_boxscores(archive,boxes,now)
+    prior_report={k:v for k,v in archive.get('last_outcome_check',{}).items() if k!='checked_at'}
+    if prior_report!=report or output.get('outcomes')!=archive.get('outcomes'):
+        output['last_outcome_check']={'checked_at':now.isoformat(),**report}
+    return output
+
 def main():
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--settle-only',action='store_true');args=parser.parse_args()
+    path=ROOT/'docs/short_history_probability_research.json'
+    if args.settle_only:
+        if not path.exists():return
+        output=settle_pending(json.loads(path.read_text()))
+        path.write_text(json.dumps(output,indent=2)+'\n')
+        print(json.dumps({'research_outcomes':len(output.get('outcomes',{})),'primary_eligible':False}));return
     import pandas as pd,requests
     from io import BytesIO
     def read(p):return json.loads((ROOT/p).read_text())
@@ -156,7 +201,7 @@ def main():
     feed=capture(records,read('docs/prizepicks_model_input.json'),pack,primary=read('docs/lagged_matchup_all_market_ledger.json'),injuries=read('docs/injury_context.json'),news=read('docs/underdog_nba_injury_alerts.json'),free_watch=read('docs/free_nba_injury_watch.json'))
     path=ROOT/'docs/short_history_probability_research.json'
     previous=json.loads(path.read_text()) if path.exists() else None
-    output=settle(merge(previous,feed),read('docs/standard_quote_ai_research_archive.json')['records'])
+    output=settle_pending(settle(merge(previous,feed),read('docs/standard_quote_ai_research_archive.json')['records']))
     output['last_capture_blocker']=feed.get('blocker');output['last_capture_count']=len(feed['records'])
     path.write_text(json.dumps(output,indent=2)+'\n')
     print(json.dumps({'records':output['count'],'new_feed':len(feed['records']),'outcomes':len(output['outcomes']),'blocker':feed.get('blocker'),'primary_eligible':False}))
