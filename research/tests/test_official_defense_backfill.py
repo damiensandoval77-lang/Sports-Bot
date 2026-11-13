@@ -34,6 +34,17 @@ def fetch(url):
     return final_box()
 
 class OfficialBackfillTests(unittest.TestCase):
+    def test_official_inactive_players_preserve_verified_final_box(self):
+        def request(url):
+            if "scheduleLeague" in url:return official()
+            x=final_box()
+            x["game"]["awayTeam"]["players"].append({
+                "name":"Inactive Player", "status":"INACTIVE", "notPlayingReason":"INACTIVE_INJURY"})
+            return x
+        result=collect(season(),{"version":1,"rows":[]},now=NOW,request=request)
+        self.assertEqual(result["verified_new_games"],1)
+        self.assertEqual(result["verified_combined_games"],1)
+
     def test_real_final_identity_and_reciprocal_rows(self):
         result=collect(season(),{"version":1,"rows":[]},now=NOW,request=fetch)
         self.assertEqual(result["verified_new_games"],1)
