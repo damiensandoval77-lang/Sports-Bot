@@ -154,7 +154,7 @@ function nflMatchupPreview(p,start){
     !Object.keys(features).length||Object.entries(features).some(([k,v])=>
       !/^OPP_ALLOW_(REC_YDS|RUSH_YDS|REC|FPTS)_L6$/.test(k)||!used.includes(k)||n(v)===null||n(v)<0))return null;
  return {rate:selected,asOf:p.captured_at,method:x.method,calibrated:false,
-  sport:"NFL",pushRate:push,opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
+  sport:"NFL",pushRate:push,playingTimeUncertain:x.eligibility_context?.playing_time_uncertain===true,opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
 }
 function nflRequiresProviderEvent(start){return stamp(start)>=Date.parse("2026-11-13T02:00:00Z")}
 function nflProviderEventVerified(p,start){
