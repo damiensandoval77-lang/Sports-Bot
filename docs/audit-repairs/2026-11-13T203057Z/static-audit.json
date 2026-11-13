@@ -1,0 +1,773 @@
+{
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "audited_ref": "2ff652e2c8e39f96566943a445137a37aa08859e",
+  "checked_at": "2026-11-13T20:31:28.209725+00:00",
+  "scope": "Every tracked Python, JS, JSON, shell and workflow YAML source file; static validation",
+  "counts": {
+    "tracked_files": 1253,
+    "extension:.yml": 174,
+    "extension:": 3,
+    "extension:.md": 26,
+    "extension:.live-tracker": 1,
+    "extension:.csv": 42,
+    "extension:.json": 266,
+    "json_parse_pass": 266,
+    "extension:.py": 571,
+    "python_ast_pass": 571,
+    "extension:.gz": 126,
+    "extension:.js": 7,
+    "node_syntax_pass": 38,
+    "extension:.html": 3,
+    "extension:.webmanifest": 1,
+    "extension:.txt": 2,
+    "extension:.cjs": 31,
+    "workflows_total": 174,
+    "workflow_jobs": 185,
+    "pr_workflows": 104,
+    "manually_dispatchable": 149,
+    "workflow_steps": 1173,
+    "actions_not_sha_pinned": 384,
+    "runtime_test_commands_unguarded_steps": 89,
+    "scheduled_workflows": 83,
+    "continue_on_error_steps": 36,
+    "workflow_push_steps": 94,
+    "workflow_run_triggers": 11
+  },
+  "workflow_names": {
+    ".github/workflows/assist-v2-research.yml": "Assist V2 research validation",
+    ".github/workflows/assist-v2-shadow.yml": "Assist V2 pregame shadow capture and verified settlement",
+    ".github/workflows/audit-ai-forecast-coverage.yml": "Audit immutable NBA forecast grading completeness",
+    ".github/workflows/authoritative-nba-grading-reconciliation.yml": "Authoritative NBA nightly grading reconciliation - fail closed",
+    ".github/workflows/confidence-readiness-research.yml": "Research Confidence Readiness (offline)",
+    ".github/workflows/cross-domain-reliability-audit.yml": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+    ".github/workflows/dames-picks-app-release-gate.yml": "Dame's Picks unified NBA + NFL app release gate",
+    ".github/workflows/dames-picks-recovery-regressions.yml": "Dame's Picks recovery regressions",
+    ".github/workflows/dames-picks-version-e.yml": "Dame's Picks integrated Version E CI",
+    ".github/workflows/dashboard-ui-check.yml": "Validate Sports-Bot dashboard navigation",
+    ".github/workflows/dunkapi-import-one-game.yml": "Import one DunkAPI historical NBA game",
+    ".github/workflows/dunkapi-probe.yml": "Probe DunkAPI historical NBA props",
+    ".github/workflows/end_to_end_readiness.yml": "Phase 1 end-to-end eight-game reliability check",
+    ".github/workflows/espn-live-json-resilience.yml": "ESPN live backup JSON resilience",
+    ".github/workflows/external_stats_snapshot_tests.yml": "External stats research snapshot validation (no provider calls)",
+    ".github/workflows/freeze_baseline_pregame_quotes.yml": "Automatically lock verified NBA pretip lines with saved baseline AI",
+    ".github/workflows/full-repository-audit.yml": "Full repository static and workflow architecture audit",
+    ".github/workflows/grade-standard-quote-ai-research.yml": "Grade immutable standard-line AI research receipts (credit free)",
+    ".github/workflows/grade_automatic_baseline_join.yml": "Grade immutable baseline NBA quote-paired forecasts from verified finals",
+    ".github/workflows/grade_frozen_ai_forecasts.yml": "Grade frozen pretip AI forecasts against verified NBA finals",
+    ".github/workflows/grade_frozen_baseline_join.yml": "Grade prospective frozen baseline PrizePicks markets with real finals",
+    ".github/workflows/hide-tipped-ai-props-tests.yml": "Hide tipped-off AI props (offline UI tests)",
+    ".github/workflows/independent_nba_player_boxscores.yml": "Independent NBA player boxscores",
+    ".github/workflows/independent_scoreboard_refresh.yml": "Independent NBA scoreboard refresh",
+    ".github/workflows/inspect-prizepicks-compact.yml": "Inspect PrizePicks compact field shape once",
+    ".github/workflows/live-night-integration.yml": "Live-night deployed ESPN integration (read-only)",
+    ".github/workflows/live-site-e2e.yml": "Live deployed Dame's Picks iPhone browser E2E",
+    ".github/workflows/model-disagreement-research.yml": "Model Disagreement Research Tests (offline)",
+    ".github/workflows/nba-20k-stress-research.yml": "NBA 20K Stress Research Tests (offline)",
+    ".github/workflows/nba-ai-comparisons.yml": "Update experimental AI sportsbook comparisons",
+    ".github/workflows/nba-ai-record.yml": "Settle immutable NBA AI record from completed box scores",
+    ".github/workflows/nba-assist-night-comparison.yml": "Publish actual assist model grades by Eastern game night",
+    ".github/workflows/nba-audit-real-props.yml": "Audit saved real NBA props (no API credits)",
+    ".github/workflows/nba-backtest-provisional.yml": "Backtest NBA model probabilities (synthetic lines)",
+    ".github/workflows/nba-backtest-real-market.yml": "Backtest NBA against recorded real sportsbook lines",
+    ".github/workflows/nba-build-dataset.yml": "Build NBA historical training dataset",
+    ".github/workflows/nba-consensus-test.yml": "Test sportsbook consensus without odds API calls",
+    ".github/workflows/nba-cross-market-coherence.yml": "NBA cross-market projection coherence audit",
+    ".github/workflows/nba-current-form.yml": "Update 2026-27 NBA player recent form",
+    ".github/workflows/nba-defender-rotation.yml": "Evaluate individual NBA defender rotation signals",
+    ".github/workflows/nba-defender-v3-research.yml": "NBA Defender Matchup V3 Research (no live model changes)",
+    ".github/workflows/nba-defense-challenger.yml": "Evaluate opponent-aware NBA challenger",
+    ".github/workflows/nba-durable-research-tests.yml": "Validate NBA Research Storage Integrity (offline)",
+    ".github/workflows/nba-expanded-matchup-holdout.yml": "Expanded NBA pregame matchup historical research",
+    ".github/workflows/nba-extreme-miss-forensics.yml": "Extreme NBA Miss Forensics (offline)",
+    ".github/workflows/nba-fast-injury-reprojection.yml": "Refresh NBA AI projections after official injury changes (no paid odds)",
+    ".github/workflows/nba-free-official-injury-watch.yml": "Free NBA official injury changes and AI refresh",
+    ".github/workflows/nba-full-game-lifecycle.yml": "NBA full-game lifecycle and next-slate readiness gate",
+    ".github/workflows/nba-grading-overdue.yml": "Detect overdue verified NBA finals and missing forecast grades",
+    ".github/workflows/nba-historical-minutes.yml": "Validate historical NBA minutes across seasons (research only)",
+    ".github/workflows/nba-hoopr-schedule-probe.yml": "Probe alternate full 2026-27 NBA schedule data source",
+    ".github/workflows/nba-injury-ai-recovery.yml": "NBA injury-to-AI self-recovery watchdog (free)",
+    ".github/workflows/nba-kaggle-file-list.yml": "List Kaggle NBA individual files without large download",
+    ".github/workflows/nba-kaggle-range-inspect.yml": "Inspect Kaggle NBA archive index by HTTPS byte range",
+    ".github/workflows/nba-kaggle-schema-audit.yml": "Inspect Kaggle NBA archive files before model ingestion",
+    ".github/workflows/nba-kaggle-source-audit.yml": "Audit public Kaggle NBA historical dataset coverage",
+    ".github/workflows/nba-lagged-matchup-training.yml": "Season-separated lagged matchup research training",
+    ".github/workflows/nba-live-lagged-challenger.yml": "Guarded live NBA points challenger (independent sidecar)",
+    ".github/workflows/nba-live-matchup-tracker-tests.yml": "NBA Live Matchup Tracker (offline)",
+    ".github/workflows/nba-live-research-checkpoints.yml": "Save live NBA player box score research checkpoints",
+    ".github/workflows/nba-live-tracker-backup.yml": "Backup NBA live player tracker observations (no sportsbook API)",
+    ".github/workflows/nba-live-tracker-external-verification.yml": "Retired legacy external tracker check (not a production health gate)",
+    ".github/workflows/nba-live-tracker-v2-tests.yml": "Started NBA matchup live tracker, pace and iPhone fallback (offline)",
+    ".github/workflows/nba-main-card-coverage.yml": "NBA main board eight-game card coverage and injury display gate",
+    ".github/workflows/nba-market-refresh.yml": "Refresh full-slate NBA sportsbook props (lightweight)",
+    ".github/workflows/nba-minutes-v3-opportunity-v2.yml": "Joint Minutes V3 and AST-REB Opportunity V2 historical backtest",
+    ".github/workflows/nba-model-readiness.yml": "NBA AI model readiness",
+    ".github/workflows/nba-moneylines.yml": "Refresh verified NBA sportsbook game moneylines",
+    ".github/workflows/nba-new-ai-all-markets.yml": "Guarded new NBA AI all markets PTS REB AST PRA",
+    ".github/workflows/nba-new-ai-multimarket-grade.yml": "Grade frozen new AI PTS REB AST PRA (no provider credits)",
+    ".github/workflows/nba-new-model-points-grading.yml": "Grade frozen new-model NBA points forecasts (no provider credits)",
+    ".github/workflows/nba-no-line-daily-projections.yml": "Publish daily NBA AI player projections without paid prop lines",
+    ".github/workflows/nba-odds-budget-coverage-tests.yml": "NBA Odds Budget and Full-Slate Coverage Tests (offline)",
+    ".github/workflows/nba-odds-current-balance.yml": "Verify current Odds API credits without paying for prop markets",
+    ".github/workflows/nba-offensive-involvement-holdout.yml": "Historical offensive involvement vs baseline (research only)",
+    ".github/workflows/nba-opportunity-shadow-tests.yml": "Validate assist/rebound opportunity models independent of live lines",
+    ".github/workflows/nba-position-defense.yml": "Evaluate defense versus NBA player position",
+    ".github/workflows/nba-postgame-settlement.yml": "Settle saved NBA props using verified final player box scores",
+    ".github/workflows/nba-pregame-ai-archive.yml": "Preserve last genuine NBA pregame AI predictions",
+    ".github/workflows/nba-prizepicks-ai-board.yml": "Train NBA AI against verified current PrizePicks pick'em lines (no sportsbook API)",
+    ".github/workflows/nba-prizepicks-ai-offline-tests.yml": "Verify PrizePicks-only NBA AI research (offline)",
+    ".github/workflows/nba-prizepicks-ai-research.yml": "Research AI projections for independent PrizePicks NBA lines",
+    ".github/workflows/nba-prizepicks-current-balance.yml": "Check funded independent PrizePicks API key and current quota",
+    ".github/workflows/nba-prizepicks-full-slate.yml": "Refresh independent NBA PrizePicks full-slate lines",
+    ".github/workflows/nba-prizepicks-research-ledger.yml": "Freeze and grade authentic pregame PrizePicks AI research",
+    ".github/workflows/nba-prizepicks-rest-setup.yml": "PrizePicks authenticated REST onboarding and NBA model sample",
+    ".github/workflows/nba-prizepicks-sample-backtest-tests.yml": "Validate historical PrizePicks sample joins and backtest",
+    ".github/workflows/nba-prizepicks-site-publish.yml": "Publish lightweight PrizePicks site data and per-game coverage",
+    ".github/workflows/nba-prizepicks-topup-verification.yml": "Verify funded PrizePicks top-up availability (single API page)",
+    ".github/workflows/nba-projection-upgrade-research.yml": "NBA Projection Upgrade Research Audit (research only)",
+    ".github/workflows/nba-props.yml": "Update NBA sportsbook props",
+    ".github/workflows/nba-publish-research.yml": "Publish experimental NBA model forecasts",
+    ".github/workflows/nba-published-pick-settlement.yml": "Verify and self-heal published NBA pick settlement",
+    ".github/workflows/nba-real-results.yml": "Grade actual completed NBA paper picks (no paid odds calls)",
+    ".github/workflows/nba-rebound-shadow-validation.yml": "Verify pregame rebound challenger before research scoring",
+    ".github/workflows/nba-research-prospective-capture-tests.yml": "Prospective NBA Research Coverage Guards (offline)",
+    ".github/workflows/nba-research-storage-integrity.yml": "Audit saved NBA games, predictions, quotes and research evidence",
+    ".github/workflows/nba-schedule.yml": "Publish full NBA daily schedule (independent of sportsbook)",
+    ".github/workflows/nba-scores.yml": "Refresh NBA game scores using existing authorized odds provider",
+    ".github/workflows/nba-season-horizon-audit.yml": "Verify full NBA season and upcoming 14-day fixture coverage",
+    ".github/workflows/nba-shooting-efficiency-v1.yml": "Backtest Shooting Efficiency V1 vs historical and frozen Combined AI",
+    ".github/workflows/nba-slate-coverage-health.yml": "Audit NBA slate versus verified sportsbook props (no API credits)",
+    ".github/workflows/nba-slate-resilience-tests.yml": "NBA Slate Resilience Tests (no odds API calls)",
+    ".github/workflows/nba-tonight-capture-gradeability.yml": "Verify tonight NBA frozen lines predictions and grades",
+    ".github/workflows/nba-tracking-coverage.yml": "Keep NBA tracking opportunity coverage transparent",
+    ".github/workflows/nba-tracking-opportunities-validation.yml": "Validate authorized NBA tracking chance research without live model changes",
+    ".github/workflows/nba-tracking-provider-access.yml": "Inspect NBA potential-assist and rebound-chance provider safely",
+    ".github/workflows/nba-train-provisional.yml": "Train NBA provisional prediction models",
+    ".github/workflows/nba-trained-ai-board.yml": "Publish trained NBA AI props for every available game",
+    ".github/workflows/nba-ui-integrity.yml": "Validate NBA dashboard against false probability confidence",
+    ".github/workflows/nba-underprojection-research.yml": "NBA Underprojection Research Audit (offline)",
+    ".github/workflows/nfl-boxscores-publish.yml": "Publish verified NFL final boxscores",
+    ".github/workflows/nfl-live-tracker.yml": "NFL live player-stat snapshots",
+    ".github/workflows/nfl-live-ui-qa.yml": "NFL production site and mobile visual QA",
+    ".github/workflows/nfl-pick-grading.yml": "NFL frozen-pick grading and accuracy ledger",
+    ".github/workflows/nfl-private-sync.yml": "Sync private NFL lines for public grading",
+    ".github/workflows/nfl-reconciliation-ci.yml": "NFL postgame reconciliation tests",
+    ".github/workflows/nfl-schedule-publish.yml": "Publish complete NFL season schedule",
+    ".github/workflows/nfl-ui-smoke.yml": "NFL player card UI smoke tests",
+    ".github/workflows/nightly_grade_date_audit.yml": "Phase 1 verify nightly paper grades by Eastern game date",
+    ".github/workflows/nightly_settlement_health.yml": "Verify overnight NBA grading completeness",
+    ".github/workflows/official_nba_fixture_reconciliation.yml": "Reconcile official NBA games before picks",
+    ".github/workflows/opponent_simulation_tests.yml": "Opponent-conditioned 20K simulation regression (no provider credits)",
+    ".github/workflows/pages-controlled.yml": "Controlled Sports-Bot GitHub Pages deployment",
+    ".github/workflows/pbpstats-connectivity-probe.yml": "Verify public PBP Stats API reachability (metadata only)",
+    ".github/workflows/pbpstats-current-season-probe.yml": "One-time 2026-27 PBP Stats historical ON-OFF availability (metadata only)",
+    ".github/workflows/pbpstats-onoff-coverage-probe.yml": "One-time PBP Stats current-season game-level overlap audit",
+    ".github/workflows/pbpstats-wowy-validation.yml": "Validate PBP Stats WOWY adapter and full offline pipeline",
+    ".github/workflows/phase1-e2e-grading.yml": "Phase 1 end-to-end grading acceptance (offline)",
+    ".github/workflows/phase1-free-recovery.yml": "Phase 1 credit-free source recovery coordinator",
+    ".github/workflows/phase1-live-service-replit.yml": "Phase 1 deployable live service smoke (offline)",
+    ".github/workflows/phase1_board_readiness.yml": "Phase 1 pregame board readiness",
+    ".github/workflows/phase1_dashboard_scoreboard.yml": "Phase 1 dashboard scoreboard integration",
+    ".github/workflows/phase1_data_integrity.yml": "Phase 1 data integrity",
+    ".github/workflows/phase1_feed_health.yml": "Phase 1 feed health audit",
+    ".github/workflows/phase1_real_pp_join.yml": "Phase 1 real PrizePicks and AI join regression",
+    ".github/workflows/pipeline-contracts.yml": "pipeline-contracts",
+    ".github/workflows/pipeline-heartbeat.yml": "Pipeline heartbeat - deployed lines picks live and grades",
+    ".github/workflows/pregame_coverage_watchdog.yml": "NBA pretip per-game forecast freeze and comparison watchdog",
+    ".github/workflows/prizepicks-full-board-tests.yml": "PrizePicks NBA full board and UI validation (offline)",
+    ".github/workflows/prizepicks_nba_collector.yml": "PrizePicks NBA collector (manual and quota guarded)",
+    ".github/workflows/production_readiness.yml": "NBA production readiness and stability gate",
+    ".github/workflows/publish_live_pp_ai_join.yml": "Publish lightweight verified PrizePicks AI comparisons",
+    ".github/workflows/readiness.yml": "NBA Bot Readiness Check",
+    ".github/workflows/refresh_ai_forecast_coverage_audit.yml": "Refresh immutable NBA AI grading coverage for merged Dame's Picks",
+    ".github/workflows/reliability_guardrails.yml": "Reliability guardrails tests",
+    ".github/workflows/research-current-position-defense.yml": "Prospective NBA listed-position defensive research",
+    ".github/workflows/research-defensive-rating-source.yml": "Verify current NBA team defensive rating source",
+    ".github/workflows/research-matchup-asof-audit.yml": "Audit matchup pretip feature provenance (research only)",
+    ".github/workflows/research-matchup-hit-estimate.yml": "Research matchup hit estimate (not production)",
+    ".github/workflows/research-matchup-prospective-calibration.yml": "Prospective matchup probability accuracy and calibration",
+    ".github/workflows/research-matchup-shadow-tests.yml": "Test analytical matchup shadow without sportsbook API",
+    ".github/workflows/research-official-defense-history.yml": "Research official NBA opponent-defense history backfill",
+    ".github/workflows/research-pregame-evidence.yml": "Capture sourced NBA pregame context for research",
+    ".github/workflows/sanity-shadow-grading-research.yml": "Sanity Shadow Grading Research (offline)",
+    ".github/workflows/sanity-shadow-v1-research.yml": "Sanity Shadow V1 Research (offline)",
+    ".github/workflows/test_final_transition_grade_trigger.yml": "Test final-only NBA grade wake-up",
+    ".github/workflows/test_hoopr_schedule_integrity.yml": "Protect verified NBA game counts from schedule overwrite",
+    ".github/workflows/test_pregame_line_archive.yml": "Verify persistent pretip PrizePicks line archive",
+    ".github/workflows/underdog-nba-injury-watch.yml": "Monitor authenticated Underdog NBA OUT reports",
+    ".github/workflows/underdog-xurl-connection-test.yml": "Diagnose Underdog NBA X API connection with xurl",
+    ".github/workflows/unified-dames-picks-readiness.yml": "Unified Dame's Picks NBA + NFL integrity",
+    ".github/workflows/unified-reliability-research.yml": "Unified NBA Reliability Research Tests",
+    ".github/workflows/verified-research-no-play-tests.yml": "Verify source-linked NBA research no-play exclusions",
+    ".github/workflows/verify-dames-picks-public.yml": "Verify live Dame's Picks layout",
+    ".github/workflows/verify-live-tracker-espn.yml": "Verify deployed NBA live tracker and ESPN player stats",
+    ".github/workflows/verify-prizepicks-credits.yml": "Verify PrizePicks API credits once",
+    ".github/workflows/verify-public-board-diagnostics.yml": "Verify clean public mobile board and opt-in diagnostics",
+    ".github/workflows/verify-public-dames-release.yml": "Verify PUBLIC Dame's Picks release matches main",
+    ".github/workflows/verify-public-matchup-preview.yml": "Verify real public mobile matchup estimates are visible",
+    ".github/workflows/verify_browser_dashboard.yml": "Verify rendered NBA PrizePicks AI cards in public mobile browser",
+    ".github/workflows/verify_live_pregame_line_browser.yml": "Check saved pregame lines in started NBA matchup cards",
+    ".github/workflows/verify_public_dashboard.yml": "Verify public Sports-Bot dashboard deployment and real JSON",
+    ".github/workflows/verify_unified_dames_browser.yml": "Verify public unified Dame's Picks NBA + NFL browser"
+  },
+  "workflow_edges": [
+    {
+      "from": ".github/workflows/full-repository-audit.yml",
+      "to": "phase1-free-recovery.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/grade_frozen_ai_forecasts.yml",
+      "to": "nba-new-ai-multimarket-grade.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": "pages build and deployment",
+      "to": ".github/workflows/live-site-e2e.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Controlled Sports-Bot GitHub Pages deployment",
+      "to": ".github/workflows/live-site-e2e.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": ".github/workflows/nba-free-official-injury-watch.yml",
+      "to": "nba-new-ai-all-markets.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": "Publish lightweight PrizePicks site data and per-game coverage",
+      "to": ".github/workflows/nba-full-game-lifecycle.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Guarded new NBA AI all markets PTS REB AST PRA",
+      "to": ".github/workflows/nba-full-game-lifecycle.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": ".github/workflows/nba-injury-ai-recovery.yml",
+      "to": "nba-new-ai-all-markets.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-live-tracker-backup.yml",
+      "to": "grade_frozen_ai_forecasts.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-new-ai-all-markets.yml",
+      "to": "nba-tonight-capture-gradeability.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-prizepicks-full-slate.yml",
+      "to": "nba-prizepicks-site-publish.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+      "to": "nba-tonight-capture-gradeability.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+      "to": "nba-prizepicks-ai-board.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+      "to": "nba-new-ai-all-markets.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+      "to": "nba-prizepicks-ai-research.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": ".github/workflows/nba-prizepicks-site-publish.yml",
+      "to": "publish_live_pp_ai_join.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": "Publish trained NBA AI props for every available game",
+      "to": ".github/workflows/nba-projection-upgrade-research.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Settle saved NBA props using verified final player box scores",
+      "to": ".github/workflows/nba-projection-upgrade-research.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Guarded new NBA AI all markets PTS REB AST PRA",
+      "to": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish lightweight PrizePicks site data and per-game coverage",
+      "to": ".github/workflows/nba-tonight-capture-gradeability.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish verified NFL final boxscores",
+      "to": ".github/workflows/nfl-pick-grading.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Sync private NFL lines for public grading",
+      "to": ".github/workflows/nfl-pick-grading.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Freeze and grade authentic pregame PrizePicks AI research",
+      "to": ".github/workflows/nightly_settlement_health.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Grade frozen pretip AI forecasts against verified NBA finals",
+      "to": ".github/workflows/nightly_settlement_health.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": ".github/workflows/official_nba_fixture_reconciliation.yml",
+      "to": "independent_scoreboard_refresh.yml",
+      "type": "dispatch"
+    },
+    {
+      "from": "Publish lightweight PrizePicks site data and per-game coverage",
+      "to": ".github/workflows/pipeline-heartbeat.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Guarded new NBA AI all markets PTS REB AST PRA",
+      "to": ".github/workflows/pipeline-heartbeat.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Independent NBA scoreboard refresh",
+      "to": ".github/workflows/pipeline-heartbeat.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Independent NBA player boxscores",
+      "to": ".github/workflows/pipeline-heartbeat.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Grade frozen new AI PTS REB AST PRA (no provider credits)",
+      "to": ".github/workflows/pipeline-heartbeat.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish full NBA daily schedule (independent of sportsbook)",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Verify tonight NBA frozen lines predictions and grades",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish daily NBA AI player projections without paid prop lines",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish lightweight verified PrizePicks AI comparisons",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Backup NBA live player tracker observations (no sportsbook API)",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Independent NBA player boxscores",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Independent NBA scoreboard refresh",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Refresh independent NBA PrizePicks full-slate lines",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Guarded new NBA AI all markets PTS REB AST PRA",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish lightweight PrizePicks site data and per-game coverage",
+      "to": ".github/workflows/production_readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Verify tonight NBA frozen lines predictions and grades",
+      "to": ".github/workflows/unified-dames-picks-readiness.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish lightweight verified PrizePicks AI comparisons",
+      "to": ".github/workflows/verify_public_dashboard.yml",
+      "type": "workflow_run"
+    },
+    {
+      "from": "Publish lightweight verified PrizePicks AI comparisons",
+      "to": ".github/workflows/verify_unified_dames_browser.yml",
+      "type": "workflow_run"
+    }
+  ],
+  "data_evidence": {
+    "docs/nightly_grade_health.json": {
+      "present": true,
+      "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "generated_at": null,
+      "checked_at": "2026-11-13T20:28:21.427669+00:00",
+      "release_id": null,
+      "failures": null,
+      "ai_forecasts_recorded": 388,
+      "ai_forecasts_ungraded": 0,
+      "ai_forecasts_graded": 332
+    },
+    "docs/tonight_capture_gradeability.json": {
+      "present": true,
+      "status": "CAPTURE_INCOMPLETE",
+      "generated_at": null,
+      "checked_at": "2026-11-13T20:20:52.890196+00:00",
+      "release_id": null,
+      "failures": [
+        "Milwaukee Bucks @ Orlando Magic: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "New York Knicks @ Indiana Pacers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Atlanta Hawks @ Chicago Bulls: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Cleveland Cavaliers @ Miami Heat: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Portland Trail Blazers @ Sacramento Kings: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Oklahoma City Thunder @ LA Clippers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+      ]
+    },
+    "docs/production_readiness.json": {
+      "present": true,
+      "status": "DEGRADED",
+      "generated_at": null,
+      "checked_at": "2026-11-13T20:14:52.182829+00:00",
+      "release_id": null,
+      "failures": null
+    },
+    "docs/pregame_lifecycle_readiness.json": {
+      "present": true,
+      "status": "NOT_READY",
+      "generated_at": "2026-11-13T20:00:17.954832+00:00",
+      "checked_at": null,
+      "release_id": null,
+      "failures": [
+        "SOME_SCHEDULED_GAMES_WITHOUT_SAVED_VERIFIED_LINES"
+      ]
+    },
+    "docs/lagged_matchup_live_all_markets.json": {
+      "present": true,
+      "status": "LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
+      "generated_at": "2026-11-13T20:20:26.588556+00:00",
+      "checked_at": null,
+      "release_id": null,
+      "failures": null
+    },
+    "docs/dames-picks/release.json": {
+      "present": true,
+      "status": null,
+      "generated_at": null,
+      "checked_at": null,
+      "release_id": "dp-public-qa-labels-20261113-r36",
+      "failures": null
+    },
+    "docs/dames-picks/unified_readiness.json": {
+      "present": true,
+      "status": "DEGRADED",
+      "generated_at": null,
+      "checked_at": "2026-11-13T20:08:23.668728+00:00",
+      "release_id": null,
+      "failures": null
+    }
+  },
+  "findings": [
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/assist-v2-research.yml",
+      "detail": "research: Syntax and unit tests"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/assist-v2-shadow.yml",
+      "detail": "shadow: Verify V2 research safety checks"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/confidence-readiness-research.yml",
+      "detail": "offline-tests: Test confidence audit and existing combined proxy validation"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/cross-domain-reliability-audit.yml",
+      "detail": "audit: Validate phase-aware checks never hide incomplete schedules"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+      "detail": "recovery-regressions: Test published browser coverage notification"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+      "detail": "recovery-regressions: Test evidence-based DNP exclusions"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+      "detail": "recovery-regressions: Test heartbeat freshness and missing capture"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/dames-picks-recovery-regressions.yml",
+      "detail": "recovery-regressions: Test frozen model ledger and grade preservation"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/dashboard-ui-check.yml",
+      "detail": "dashboard_ui: Verify real AI forecasts render without a sportsbook quote"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/dashboard-ui-check.yml",
+      "detail": "dashboard_ui: Offline tests for the independent public deployment probe"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/dashboard-ui-check.yml",
+      "detail": "dashboard_ui: Verify fresh authentic PrizePicks line + AI direction fallback"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/end_to_end_readiness.yml",
+      "detail": "verify: Test fail-closed coverage and grading checks (no API requests)"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/external_stats_snapshot_tests.yml",
+      "detail": "offline-snapshot-tests: Run offline snapshot contract tests"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/external_stats_snapshot_tests.yml",
+      "detail": "offline-snapshot-tests: Test point-in-time ID joins and leakage guards"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/external_stats_snapshot_tests.yml",
+      "detail": "offline-snapshot-tests: Test paired shadow evaluation and leakage safeguards"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/external_stats_snapshot_tests.yml",
+      "detail": "offline-snapshot-tests: Test prospective model promotion safeguards"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/external_stats_snapshot_tests.yml",
+      "detail": "offline-snapshot-tests: Validate expanded opponent, minutes and injury isolation"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/external_stats_snapshot_tests.yml",
+      "detail": "offline-snapshot-tests: Test verified official usage, injury and positional pretip gates"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/full-repository-audit.yml",
+      "detail": "static-audit: Test recovery outcome verification"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/live-night-integration.yml",
+      "detail": "check: Validate live source without paid provider access"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-consensus-test.yml",
+      "detail": "test: Verify consensus and paired bookmaker quotas"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-consensus-test.yml",
+      "detail": "test: Verify active unified app truthfulness, pretip eligibility and live updates"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-defender-rotation.yml",
+      "detail": "defender-research: Validate leakage controlled individual defender features"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-defense-challenger.yml",
+      "detail": "evaluate: Test prior-game-only defensive features"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-expanded-matchup-holdout.yml",
+      "detail": "test-and-backtest: Run matchup and injury-source isolation regression tests"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-injury-ai-recovery.yml",
+      "detail": "check-and-recover: Validate injury-to-model version and recovery decisions"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-lagged-matchup-training.yml",
+      "detail": "train-and-evaluate: Guard feature time and missing-data handling"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-main-card-coverage.yml",
+      "detail": "verify: Test live standard PrizePicks card coverage and isolated injury updates"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-new-ai-all-markets.yml",
+      "detail": "preserved-matchup-previews: Test exact archived preview identities and provenance"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-new-ai-all-markets.yml",
+      "detail": "provisional-baseline: Test isolated provisional cohort and safety guards"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-new-ai-all-markets.yml",
+      "detail": "short-history-research: Test chronological cohort and fail-closed inference"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-no-line-daily-projections.yml",
+      "detail": "predict: Protect immutable price-free pregame forecasts"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-offensive-involvement-holdout.yml",
+      "detail": "historical-research: Verify temporal and opportunity proxy contracts"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-opportunity-shadow-tests.yml",
+      "detail": "validation: Validate time-safe tracking history and paired assist/rebound models"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-position-defense.yml",
+      "detail": "position-research: Validate DvP feature construction"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-pregame-ai-archive.yml",
+      "detail": "archive: Preserve a lossless dated immutable pregame archive for future research"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-prizepicks-ai-board.yml",
+      "detail": "ai_board: Check genuine, fresh NBA pick'em lines"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-prizepicks-ai-board.yml",
+      "detail": "ai_board: Validate and import current NBA player shooting rates for research only"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-prizepicks-ai-research.yml",
+      "detail": "predict: Prove price-less model output cannot invent picks or confidence"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-prizepicks-rest-setup.yml",
+      "detail": "rest_setup: Backtest sample against strictly earlier confirmed NBA game logs"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-prizepicks-sample-backtest-tests.yml",
+      "detail": "validate: Validate historical join and backtest without any API calls"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-projection-upgrade-research.yml",
+      "detail": "projection_research: Verify pregame isolation, injury dates and calibration"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-real-results.yml",
+      "detail": "grade: Validate paper pick invariants and dashboard JavaScript"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-rebound-shadow-validation.yml",
+      "detail": "verify: Compile and run full REB prospective integrity tests"
+    },
+    {
+      "severity": "WARN",
+      "code": "PRODUCTION_UNIT_TEST_GATE",
+      "path": ".github/workflows/nba-shooting-efficiency-v1.yml",
+      "detail": "audit: Validate and import current NBA player shooting rates for research only"
+    }
+  ],
+  "errors": 0,
+  "warnings": 45
+}
