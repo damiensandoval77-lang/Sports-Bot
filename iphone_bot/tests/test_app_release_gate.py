@@ -15,7 +15,7 @@ def fixture():
         "nba_capture":{"checked_at":STAMP,"status":"CAPTURE_VERIFIED","summary":{"total_standard_markets_without_frozen_model":0}},
         "nba_grading":{"checked_at":STAMP,"status":"ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR",
                        "days":{"2026-11-09":{"pending":0,"captured":756,"accounted_for":756}}},
-        "nfl_grading":{"official_grading_scope":"FROZEN_STANDARD_LINE_ONLY","standard_settled":60,"pending_picks":0},
+        "nfl_grading":{"official_grading_scope":"FROZEN_STANDARD_LINE_ONLY","standard_settled":60,"pending_picks":0,"standard_pending_picks":0},
         "published_pick_settlement":{"checked_at":STAMP,"status":"READY",
                                      "counts":{"frozen_picks":120,"graded":30,"pending":90}}
     }
@@ -43,7 +43,7 @@ class AppReleaseGateTests(unittest.TestCase):
         r=evaluate(inp,NOW)
         self.assertFalse(r["checks_passing"])
         self.assertIn("nba_capture",r["blocking_checks"])
-    def test_unmodeled_raw_quotes_do_not_reclassify_saved_graded_picks(self):
+    def test_unmodeled_raw_quotes_block_full_app_certification(self):
         inp=fixture()
         inp["nba_capture"]={
             "checked_at":STAMP,"status":"CAPTURE_INCOMPLETE",
@@ -51,8 +51,8 @@ class AppReleaseGateTests(unittest.TestCase):
             "summary":{"schedule_games":1,"games_with_line_backed_models":1,
                        "total_standard_markets_without_frozen_model":139}}
         r=evaluate(inp,NOW)
-        self.assertTrue(r["checks_passing"],r["checks"])
-        self.assertEqual(r["status"],"MONITORING")
+        self.assertFalse(r["checks_passing"])
+        self.assertIn("PRIMARY_STANDARD_COVERAGE_INCOMPLETE",r["checks"]["nba_capture"]["issues"])
     def test_uncaptured_game_blocks_app_even_with_good_other_picks(self):
         inp=fixture()
         inp["nba_capture"]={
@@ -88,3 +88,12 @@ class AppReleaseGateTests(unittest.TestCase):
         self.assertIn("NFL_STANDARD_GRADE_SCOPE_INVALID",
                       evaluate(inp,NOW)["checks"]["nfl_grading"]["issues"])
 if __name__=="__main__":unittest.main()
+
+class StandardOnlyReleaseTests(unittest.TestCase):
+    def test_alternative_pending_does_not_block_complete_standard_scope(self):
+        inp=fixture();inp["nfl_grading"].update(pending_picks=4,standard_pending_picks=0)
+        self.assertEqual(evaluate(inp,NOW)["checks"]["nfl_grading"]["state"],"READY")
+    def test_unknown_or_invalid_standard_count_does_not_pass(self):
+        for value in [None,False,-1,"0",1]:
+            inp=fixture();inp["nfl_grading"]["standard_pending_picks"]=value
+            self.assertEqual(evaluate(inp,NOW)["checks"]["nfl_grading"]["state"],"DEGRADED")

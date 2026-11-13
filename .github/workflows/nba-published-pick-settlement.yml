@@ -32,6 +32,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test every saved pick can settle without retroactive inference
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/published_pick_settlement.py
           python -m unittest discover -s iphone_bot/tests -p 'test_published_pick_settlement.py' -v
@@ -76,8 +77,12 @@ jobs:
             exit 0
           fi
           cutoff=$(($(date -u +%s)-35*60))
-          recent=$(gh run list --workflow "$workflow" --limit 30 --json headBranch,createdAt |
-            jq --argjson cutoff "$cutoff" '[.[] | select(.headBranch=="main" and (.createdAt | fromdateiso8601)>=$cutoff)] | length')
+          # These graders are credit-free. A failed attempt is not evidence of
+          # settled picks and must not block the next genuine recovery.
+          recent=$(gh run list --workflow "$workflow" --limit 30 --json headBranch,createdAt,status,conclusion |
+            jq --argjson cutoff "$cutoff" '[.[] | select(.headBranch=="main" and
+              (.status != "completed" or
+               (.conclusion == "success" and (.createdAt | fromdateiso8601)>=$cutoff)))] | length')
           if [ "$recent" -gt 0 ]; then
             echo "Skipping duplicate $workflow: recently started"
             exit 0

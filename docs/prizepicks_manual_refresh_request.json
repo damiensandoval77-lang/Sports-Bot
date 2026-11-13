@@ -1,17 +1,17 @@
 {
-  "requested_at": "2026-11-10",
-  "requested_by": "user",
-  "purpose": "Refresh tonight's NBA standard PrizePicks lines using existing authenticated top-up-funded access even though monthly header reads zero; verify live publication and AI handoff.",
+  "requested_at": "2026-11-13T08:05:00Z",
+  "requested_by": "hourly-authorized-production-repair",
+  "purpose": "One bounded authentic NBA standard PrizePicks refresh after 06:34 UTC source expired and 90-minute paid cooldown elapsed; publish verified lines and model join. No sportsbook Odds API calls.",
   "max_pages": 4,
   "expected_compact_pages_cost_ceiling_credits": 40,
   "topup_credit_handling": "PRIZEPICKS_FORCE_REFRESH=1 on collector; allow vendor-authorized top-up, stop on HTTP 429 and do not infer purchased balance from X-Credits-Remaining: 0",
   "no_real_money_wagers": true,
-  "run_request": "2026-11-10-user-live-lines-topup-force-refresh-01",
+  "run_request": "2026-11-13-hourly-0757-source-recovery",
   "expected_checks": [
-    "authenticated provider response and charged credits",
-    "new genuine standard line observed_at timestamps",
-    "coverage for all six scheduled Nov 10 NBA matchups",
-    "stale/missing-game flags stay degraded rather than fabricate lines",
-    "site publisher and AI quick-join handoff"
+    "authenticated provider freshness and actual charged credits",
+    "current standard-only upcoming lines across nine Nov 13 NBA games when supplied",
+    "no stale or unverified lines labeled current",
+    "site publisher and exact primary-model joins",
+    "live Dame's Picks phone-width verification"
   ]
 }

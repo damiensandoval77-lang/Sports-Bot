@@ -1,6 +1,12 @@
 name: NBA full-game lifecycle and next-slate readiness gate
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Publish lightweight PrizePicks site data and per-game coverage
+      - Guarded new NBA AI all markets PTS REB AST PRA
+    types: [completed]
+    branches: [main]
   schedule:
     # Multiple pretip checkpoints. GitHub cron is best-effort, not guaranteed.
     - cron: '11 17,19,21,23 * * *'
@@ -42,6 +48,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Simulate eight-game capture, outage, tipoff, tracking and final settlement
+        if: github.event_name == 'pull_request'
         run: |
           node --test iphone_bot/tests/test_nba_full_game_lifecycle.cjs
           node --test iphone_bot/tests/test_live_prop_tracker.cjs
@@ -79,13 +86,16 @@ jobs:
         if: always() && steps.preflight.outcome != 'skipped'
         run: |
           set -euo pipefail
-          cp docs/pregame_lifecycle_readiness.json "$RUNNER_TEMP/pregame_lifecycle_readiness.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp "$RUNNER_TEMP/pregame_lifecycle_readiness.json" docs/pregame_lifecycle_readiness.json
+            # Recompute after every refetch: a queued run must not publish a
+            # stale receipt over newly captured source quotes or forecasts.
+            rm -f docs/pregame_lifecycle_readiness.json
+            python -m iphone_bot.pregame_lifecycle_readiness || true
+            python -c "import json; r=json.load(open('docs/pregame_lifecycle_readiness.json')); assert r.get('status') in ('READY','NOT_READY')"
             git add docs/pregame_lifecycle_readiness.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Record objective next NBA slate preflight status'
@@ -93,7 +103,8 @@ jobs:
           done
           exit 1
       - name: Block green readiness when the next slate is missing saved sources
-        if: always() && steps.preflight.outcome == 'failure'
+        if: always() && steps.preflight.outcome != 'skipped'
         run: |
+          python -c "import json,sys; sys.exit(0 if json.load(open('docs/pregame_lifecycle_readiness.json'))['status']=='READY' else 1)" && exit 0
           echo "::error::NEXT NBA SLATE NOT READY. Verify archived provider quotes, frozen projections and source completeness in docs/pregame_lifecycle_readiness.json"
           exit 1

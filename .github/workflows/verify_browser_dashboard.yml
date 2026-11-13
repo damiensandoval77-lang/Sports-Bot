@@ -8,7 +8,7 @@ on:
     branches: [main]
     paths:
       - 'docs/ai_prizepicks_quick_join_health.json'
-      - 'docs/index.html'
+      - 'docs/dames-picks/index.html'
       - 'iphone_bot/verify_browser_dashboard.py'
       - 'iphone_bot/tests/test_verify_browser_dashboard.py'
       - 'iphone_bot/reliability_guardrails.py'
@@ -38,6 +38,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test browser canary contract without accessing public network
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/verify_browser_dashboard.py
           python -m unittest discover -s iphone_bot/tests -p 'test_verify_browser_dashboard.py' -v
@@ -52,7 +53,7 @@ jobs:
         id: probe
         continue-on-error: true
         env:
-          SPORTS_BOT_PUBLIC_SITE_URL: ${{ vars.SPORTS_BOT_PUBLIC_SITE_URL || 'https://damiensandoval77-lang.github.io/Sports-Bot/' }}
+          SPORTS_BOT_PUBLIC_SITE_URL: ${{ vars.SPORTS_BOT_PUBLIC_SITE_URL || 'https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/' }}
         run: python -m iphone_bot.verify_browser_dashboard
       - name: Publish actual mobile browser render status, including failures
         if: always() && github.event_name != 'pull_request' && steps.probe.outcome != 'skipped'

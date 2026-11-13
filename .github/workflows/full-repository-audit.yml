@@ -1,0 +1,225 @@
+name: Full repository static and workflow architecture audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/verify_recovery_outcome.py'
+      - 'tests/test_verify_recovery_outcome.py'
+      - 'scripts/full_repository_audit.py'
+      - 'scripts/audit_branch_inventory.py'
+      - '.github/workflows/full-repository-audit.yml'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verify_recovery_outcome.py'
+      - 'tests/test_verify_recovery_outcome.py'
+      - 'scripts/full_repository_audit.py'
+      - 'scripts/audit_branch_inventory.py'
+      - '.github/workflows/full-repository-audit.yml'
+  schedule:
+    - cron: '28 */2 * * *'
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: full-repository-audit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  static-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install YAML parser
+        run: python -m pip install 'PyYAML>=6,<7'
+      - name: Test recovery outcome verification
+        run: python -m unittest discover -s tests -p 'test_verify_recovery_outcome.py' -v
+      - name: Audit every tracked source and all Actions workflows
+        id: audit
+        run: |
+          set +e
+          python scripts/full_repository_audit.py
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Preserve full evidence and architecture graph
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-repository-audit-${{ github.run_id }}
+          path: out/repo-audit/
+          retention-days: 90
+      - name: Fail if any source or workflow structurally invalid
+        if: steps.audit.outputs.code != '0'
+        run: exit 1
+
+  branch-inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify current and historical PR tips against the same main SHA
+        id: branches
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python scripts/audit_branch_inventory.py
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Retain complete per-branch evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-branch-inventory-${{ github.run_id }}
+          path: |
+            out/repo-audit/branch-inventory.json
+            out/repo-audit/branch-inventory.md
+          retention-days: 90
+      - name: Fail if any branch could not be verified
+        if: steps.branches.outputs.code != '0'
+        run: exit 1
+
+  publish-report:
+    name: Publish evidence and surface audit failures
+    if: always()
+    needs: [static-audit, branch-inventory, production-health]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Produce run summary even when an audit job fails
+        env:
+          STATIC_RESULT: ${{ needs.static-audit.result }}
+          BRANCH_RESULT: ${{ needs.branch-inventory.result }}
+          PROD_RESULT: ${{ needs.production-health.result }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          REF: ${{ github.sha }}
+        run: |
+          mkdir -p out
+          {
+            echo "## Full repository audit receipt"
+            echo ""
+            echo "- Run: https://github.com/$REPO/actions/runs/$RUN_ID"
+            echo "- Commit: $REF"
+            echo "- Static source/workflow audit: $STATIC_RESULT"
+            echo "- Complete branch/PR inventory: $BRANCH_RESULT"
+            echo "- Production health and free recovery: $PROD_RESULT (skipped on PR)"
+            echo "- Source evidence: download the audit and recovery artifacts attached to this workflow run."
+            echo ""
+            if [[ "$STATIC_RESULT" != "success" || "$BRANCH_RESULT" != "success" || ( "$EVENT_NAME" != "pull_request" && "$PROD_RESULT" != "success" ) ]]; then
+              echo "**PARTIAL / BLOCKED**: One or more audit or production health jobs failed. Credit-free recovery was attempted when eligible. The app is NOT verified healthy."
+            elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+              echo "**PASS (static and branch checks only)**: Production recovery and public-data checks are skipped on pull requests."
+            else
+              echo "**PASS (repository checks and published-data verification)**: Mobile UI interaction remains a separate check; see the production receipt for scope."
+            fi
+          } | tee out/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload persistent summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-summary-${{ github.run_id }}
+          path: out/summary.md
+          retention-days: 90
+      - name: Open or update a GitHub issue on audit failures
+        if: needs.static-audit.result != 'success' || needs.branch-inventory.result != 'success' || (github.event_name != 'pull_request' && needs.production-health.result != 'success')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_LINK: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STATIC_RESULT: ${{ needs.static-audit.result }}
+          BRANCH_RESULT: ${{ needs.branch-inventory.result }}
+        run: |
+          if [[ "$(gh api "repos/$GH_REPO" --jq .has_issues 2>/dev/null || echo false)" != "true" ]]; then
+            echo "::warning::GitHub Issues are disabled. Audit failure remains red and is preserved in workflow summary/artifacts."
+            echo "- Incident ticket unavailable: GitHub Issues disabled. Use run URL $RUN_LINK and uploaded audit summary." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          title="Automated full repository audit failure"
+          message="Audit run: $RUN_LINK
+          Static source/workflow audit: $STATIC_RESULT
+          Complete branch inventory: $BRANCH_RESULT
+          Production health: ${{ needs.production-health.result }}
+          This is an outstanding repair condition, not a completed fix. Check run artifacts and logs. Do not close until the underlying problem is repaired and a later run passes."
+          existing="$(gh issue list --repo "$GH_REPO" --state open --search "$title in:title" --json number,title --jq '.[] | select(.title=="Automated full repository audit failure") | .number' | head -n 1)"
+          if [[ -n "$existing" ]]; then
+            gh issue comment "$existing" --repo "$GH_REPO" --body "$message"
+          else
+            gh issue create --repo "$GH_REPO" --title "$title" --body "$message"
+          fi
+      - name: Fail the report job for incomplete audits
+        if: needs.static-audit.result != 'success' || needs.branch-inventory.result != 'success' || (github.event_name != 'pull_request' && needs.production-health.result != 'success')
+        run: exit 1
+
+  production-health:
+    name: Verify actual production health and invoke bounded free recovery
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Evaluate persisted live-readiness and overdue-grade evidence
+        id: health
+        continue-on-error: true
+        run: |
+          echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          python scripts/verify_recovery_outcome.py --local --output out/repo-audit/production-health.json
+      - name: Trigger existing credit-free recovery when the coordinator is overdue
+        if: always() && steps.health.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          recent="$(gh run list --workflow phase1-free-recovery.yml --limit 12 --json status,createdAt,headBranch |
+            jq '[.[] | select(.headBranch == "main" and
+              ((.status != "completed") or ((.createdAt | fromdateiso8601) >= (now - 2700))))] | length')"
+          if [ "$recent" -gt 0 ]; then
+            echo "Credit-free coordinator already active or recently executed; no duplicate dispatch" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            gh workflow run phase1-free-recovery.yml --ref main
+            echo "Dispatched credit-free source recovery; this run will independently verify refreshed public output" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Wait for same-run recovery and verify public data independently
+        if: always() && steps.health.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INITIAL_OUTCOME: ${{ steps.health.outcome }}
+          RECOVERY_STARTED: ${{ steps.health.outputs.started_at }}
+        run: |
+          args=()
+          if [ "$INITIAL_OUTCOME" != "success" ]; then
+            args+=(--not-before "$RECOVERY_STARTED")
+          fi
+          python scripts/verify_recovery_outcome.py --wait-seconds 480 "${args[@]}"
+      - name: Preserve production health and recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-health-audit-${{ github.run_id }}
+          path: |
+            out/repo-audit/production-health.json
+            out/repo-audit/recovery-verification.json
+          if-no-files-found: warn
+          retention-days: 90

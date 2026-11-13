@@ -1,6 +1,13 @@
 name: Refresh independent NBA PrizePicks full-slate lines
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/preserve_research_inputs.py'
+      - 'iphone_bot/tests/test_fetch_prizepicks.py'
+      - 'iphone_bot/tests/test_preserve_research_inputs.py'
+      - '.github/workflows/nba-prizepicks-full-slate.yml'
   push:
     branches: ['main']
     paths:
@@ -26,22 +33,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Test strict pregame event, team, market and source matching
+      - name: Validate collector import and syntax before a paid source read
+        if: github.event_name != 'pull_request'
         run: |
           python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
-          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
           python - <<'PY'
-          import runpy
-          # Verify direct-path standalone import without calling provider.
           import subprocess,sys
           p=subprocess.run([sys.executable,'-c',
             "import sys;sys.path.insert(0,'iphone_bot');import fetch_prizepicks;assert fetch_prizepicks.expected_opponents"],
             capture_output=True,text=True)
           assert p.returncode==0,p.stderr
-          print("Standalone script import path verified")
           PY
+      - name: Test strict pregame event, team, market and source matching
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
       - name: Fetch bounded, cursor-paged actual NBA PrizePicks board
+        if: github.event_name != 'pull_request'
         env:
           PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
           # Explicit daily refresh: ignore stale zero-monthly-credit header
@@ -49,8 +58,10 @@ jobs:
           PRIZEPICKS_FORCE_REFRESH: '1'
         run: python -u iphone_bot/fetch_prizepicks.py
       - name: Archive original independent pick'em lines and tiers
+        if: github.event_name != 'pull_request'
         run: python -u iphone_bot/preserve_research_inputs.py prizepicks
       - name: Save real PrizePicks observations without modifying sportsbook odds
+        if: github.event_name != 'pull_request'
         id: publish
         run: |
           set -euo pipefail
@@ -71,7 +82,7 @@ jobs:
           done
           exit 1
       - name: Immediately publish lines to site after authenticated provider update
-        if: steps.publish.outputs.changed == 'true'
+        if: github.event_name != 'pull_request' && steps.publish.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-site-publish.yml --ref main

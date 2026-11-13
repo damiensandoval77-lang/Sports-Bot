@@ -69,7 +69,12 @@ test("Real published NBA and NFL artifacts both produce nonempty integrated play
  const manifest=JSON.parse(fs.readFileSync(root+"nfl/data/latest_2026.json","utf8"));
  const schedule=JSON.parse(fs.readFileSync(root+"nfl/data/schedule_2026.json","utf8"));
  const parts=manifest.files.map(name=>m.csv(fs.readFileSync(root+"nfl/data/"+name,"utf8")));
- const b=m.nfl(parts,schedule);
+ const active=JSON.parse(fs.readFileSync(root+"nfl/data/active_frozen_2026.json","utf8"));
+ const b=m.nfl([active.records||[],...parts],schedule);
+ const raw=[...(active.records||[]),...parts.flat()];
+ for(const card of b.filter(x=>Date.parse(x.start)>Date.now())){
+  assert.ok(raw.some(p=>p.player_id===card.playerId&&p.game_id===card.gameId&&p.stat===card.stat&&Number(p.line)===card.line&&m.nflFutureEvidenceVerified(p,card.start)),"Future card requires actual provider event attribution");
+ }
  assert.ok(b.length>0,"Published NFL model yielded zero eligible standard player props");
  assert.ok(b.every(x=>x.player&&Number.isFinite(x.line)&&Number.isFinite(x.projection)));
  console.log("Live contract counts: NBA",a.length,"NFL",b.length);
@@ -138,6 +143,11 @@ test("NFL confirmed result joins only the exact original captured line",()=>{
 test("NFL missing grades cannot inherit NBA hit-rate stats",()=>{
  const s=m.summarize([], {standard_settled:0,standard_wins:0,pending_picks:0},Date.now(),"NFL");
  assert.equal(s.hitRate,null);assert.equal(s.graded,0);
+});
+test("NFL pending total excludes historical demon/goblin records during health rollout",()=>{
+ const rows=[{grade:"PENDING",frozenSettlementArchive:true,pendingReason:"boxscore_not_yet_published"}];
+ assert.equal(m.summarize(rows,{pending_picks:631},Date.now(),"NFL").pending,1);
+ assert.equal(m.summarize(rows,{pending_picks:631,standard_pending_picks:74},Date.now(),"NFL").pending,74);
 });
 test("Production source feeds keep expected real stat keys and health flags",()=>{
  const liveNBA=JSON.parse(fs.readFileSync("docs/live_player_tracking.json","utf8"));
@@ -284,14 +294,14 @@ test("Real published scoreboard game count is independent of model records",()=>
  const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
  assert.ok(page.includes("renderLiveGames()"));
  assert.ok(page.includes("function openGame(game)"));
- assert.ok(page.includes("No frozen props saved for this game. Its scoreboard and box score remain visible."));
+ assert.ok(page.includes("No verified pregame standard quotes were archived for this game. Its scoreboard and box score remain visible."));
 });
 
 test("Every game detail exposes original locked model, observed actual, ungraded state and full box score",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
  for(const text of ["FROZEN LINE","FROZEN PROJ","ACTUAL","LIVE · NOT GRADED",
  "Full published player box score","Scoreboard","data-prop","Actual unavailable",
- "No frozen props saved for this game"])assert.ok(html.includes(text),text);
+ "No verified pregame standard quotes were archived for this game"])assert.ok(html.includes(text),text);
  assert.ok(html.includes('g.sport==="NFL"?p.target:p.stat'),"NFL uses exact target stat");
  assert.ok(html.includes('normalize(x.player)===normalize(p.player)'),"Exact player-name guard");
  assert.ok(html.includes('matches.length!==1'),"Ambiguous matches not fabricated");
@@ -372,8 +382,10 @@ test("Production NFL grades in immutable archive all join Tracker, including old
  assert.ok(rows.some(p=>p.frozenSettlementArchive===true&&p.captured==="2026-11-09T19:58:51.614124+00:00"&&p.player==="Ray Davis"&&p.grade==="GRADED"),
    "Historic Ray Davis standard prop not retained after latest snapshot rolled");
  const pendingCards=rows.filter(p=>p.grade==="PENDING"&&p.frozenSettlementArchive===true&&p.pendingReason);
- assert.equal(pendingCards.length,health.pending_picks,
-   "Every published NFL pending record must be represented by a pending reason, without inventing missing players");
+ const standardPending=pending.filter(p=>p.odds_type==="standard");
+ assert.equal(pendingCards.length,standardPending.length,
+   "Every published standard NFL pending record must be represented by a pending reason, without inventing missing players");
+ if(health.standard_pending_picks!==undefined)assert.equal(pendingCards.length,health.standard_pending_picks);
  console.log("NFL standard outcomes rendered",directional.length,"wins",winners,"pending",rows.filter(p=>p.pendingReason).length);
 });
 test("Source-mismatched final prop is never attached as a real grade",()=>{
@@ -434,7 +446,7 @@ test("Merged dashboard shows independently verified pick-settlement health, not 
  assert.ok(html.includes('NBA published picks awaiting verified settlement'));
  assert.ok(html.includes('provider standard markets withheld from AI picks'));
  assert.ok(!html.includes('errors.push("NBA capture incomplete")'));
- assert.ok(html.includes('Official DNP verified · void'));
+ assert.ok(html.includes('DNP · VOID')); // verified exclusion remains in the card badge, not the OVER/UNDER footer
 });
 
 
@@ -482,7 +494,7 @@ test("Merged app loads separate official score and player feeds",()=>{
  assert.ok(html.includes('getJSON("nba_scoreboard_independent.json")'));
  assert.ok(html.includes('nbaScores:nbaScores.status==="fulfilled"?nbaScores.value:null'));
  assert.ok(html.includes('L.mergeScores(state.raw.nbaScores,state.direct?.board)'));
- assert.ok(html.includes('<script src="live_direct.js"></script>'));
+ assert.match(html, /<script src="live_direct[.]js[?]bundle=[^"]+"><[/]script>/);
 });
 
 
@@ -610,30 +622,229 @@ test("Latest saved line is keyed by player, game and stat, never merged with oth
  assert.equal(m.displayCurrentPicks([p,other],now).length,2);
 });
 
-test("Expanded game detail uses the SAME ESPN team aliases as live forecast cards",()=>{
+function verifiedMatchupEstimate(p){
+ const factors=Object.fromEntries(["opponent_position_defense","projected_minutes",
+ "usage_opportunities","teammate_availability","depth_role","pace_possessions"]
+ .map(name=>[name,{source:"pregame verified data",observed_at:"2026-11-10T18:00:00Z",
+ baseline:10,matchup:11}]));
+ return {method:"PREGAME_MATCHUP_CONDITIONED_V1",research_only:false,
+  opponent_aware_verified:true,model_id:"research-validated-v1",
+  original_line:p.line,direction:p.direction,
+  modeled_selected_probability:.73,captured_at:p.captured,factors};
+}
+test("HIT EST rejects generic historical residual model even with high odds",()=>{
+ const p={sport:"NBA",line:20.5,projection:24.3,direction:"MORE",quoteOnly:false,
+  chance:.97,chanceMethod:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
+  chanceDraws:20000,chanceCalibrated:false,
+  captured:"2026-11-10T20:00:00Z",start:"2026-11-11T01:00:00Z"};
+ assert.equal(m.hitEstimate(p),null);
+ const verified={...p,matchupEstimate:verifiedMatchupEstimate(p)};
+ assert.equal(m.hitEstimate(verified).rate,.73);
+ assert.equal(m.hitEstimate({...verified,form:{over:10,under:0}}).rate,.73);
+ assert.equal(m.hitEstimate({...verified,chance:.22}).rate,.73);
+});
+test("HIT EST requires matching original standard line, pick side and six pretip factors",()=>{
+ const p={sport:"NBA",line:21.5,projection:25,direction:"MORE",chance:.71,
+ captured:"2026-11-10T20:00:00Z",start:"2026-11-11T01:00:00Z"};
+ const x=verifiedMatchupEstimate(p);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:x}).rate,.73);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,original_line:25.5}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,direction:"LESS"}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,research_only:true}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,opponent_aware_verified:false}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,model_id:""}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,captured_at:"2026-11-10T21:00:00Z"}}),null);
+ assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,modeled_selected_probability:1.5}}),null);
+ for(const name of Object.keys(x.factors)){
+  const factors={...x.factors};delete factors[name];
+  assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,factors}}),null);
+  const future={...x.factors,[name]:{...x.factors[name],observed_at:"2026-11-10T21:00:00Z"}};
+  assert.equal(m.hitEstimate({...p,matchupEstimate:{...x,factors:future}}),null);
+ }
+});
+test("App shows model HIT EST, separates past games and does not misrepresent calibration",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
- assert.ok(html.includes('g.sport==="NBA"?m.nbaTeam(x.team)===m.nbaTeam(p.team):x.team===p.team'));
- assert.ok(html.includes('g.observedAt?" · Last snapshot "+when(g.observedAt):""'));
- assert.ok(!html.includes('g.sport+" · "+g.statusText+" · Last snapshot "+when(g.observedAt)'));
+ assert.ok(html.includes("<small>Hit est.</small>"));
+ assert.ok(html.includes("<label>HIT EST.</label>"));
+ assert.ok(html.includes("m.hitEstimate(p)"));
+ assert.ok(html.includes("Matchup-conditioned estimate for "));
+ assert.ok(html.includes("not a calibrated future probability.")||html.includes("Not yet calibrated"));
+ assert.ok(!html.includes("SIM EST."));
+ assert.ok(!html.includes("TEST · uncalibrated"));
+ assert.ok(!html.includes("RESEARCH · NOT CALIBRATED"));
+ assert.ok(!html.includes("Sim est."));
+ assert.ok(!html.includes("pct(p.chance)"));
+ assert.ok(!html.includes("history.hits+' hits across '"));
 });
 
-test("Current scheduled NBA matchups cannot disappear when no pick was modeled",()=>{
+
+test("Live player and scoreboard observations bypass delayed Pages using verified raw Github snapshots",()=>{
  const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
- assert.ok(html.includes('id="upcoming-slate"'));
- assert.ok(html.includes('g.date_eastern===date'));
- assert.ok(html.includes('timestamp(g.start)>now'));
- assert.ok(html.includes('No verified modeled picks available'));
- assert.ok(html.includes('Official schedule unavailable or incomplete — upcoming game coverage cannot be verified.'));
- assert.ok(html.includes('renderUpcomingSlate();'));
- assert.ok(html.includes('const schedule=state.raw?.nbaSchedule'));
- // Four known remaining late games on the November 10 ET slate
- // are present in the verified independent schedule.
- const schedule=JSON.parse(fs.readFileSync("docs/nba_schedule.json","utf8"));
- const at=Date.parse("2026-11-11T01:30:00Z");
- const expected=schedule.games.filter(g=>g.date_eastern==="2026-11-10"&&Date.parse(g.start)>at);
- assert.equal(expected.length,4);
- assert.deepEqual(expected.map(g=>g.game).sort(),[
-  "LA Clippers @ Phoenix Suns","Miami Heat @ Utah Jazz",
-  "Oklahoma City Thunder @ Portland Trail Blazers",
-  "Orlando Magic @ Sacramento Kings"].sort());
+ for(const name of ["live_player_tracking.json","nba_scoreboard_independent.json",
+                    "nba_player_tracking_independent.json"])
+   assert.ok(html.includes('"'+name+'"'));
+ assert.ok(html.includes("raw.githubusercontent.com/damiensandoval77-lang/Sports-Bot/main/docs/"));
+ assert.ok(html.includes("validLiveJSON"));
+ assert.ok(html.includes("liveStamp(candidate)"));
+ assert.ok(html.includes("next>before"));
+ assert.ok(html.includes("Promise.allSettled(["));
+ assert.ok(html.includes("if(changed)applyLive()"));
+ assert.ok(!html.includes("state.nba=predict("));
+});
+
+
+test("Matchup probability preview attaches to exact original standard line without modifying grades",()=>{
+ const original={...pt,start:"2026-11-12T02:30:00+00:00",
+   market_updated:"2026-11-11T18:00:00Z",captured_at:"2026-11-11T19:00:00Z",
+   grade:"PENDING"};
+ const cards=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[original]},null);
+ const row={player_id:"201939",team:"GSW",opponent:"NOP",stat:"PTS",
+    start:original.start,line:28.5,original_side:"MORE",
+    captured_at:"2026-11-11T21:00:00Z",listed_position:"PG",
+    matchup_projection:32.1,original_projection:31.391,
+    estimated_hit_chance:{method:"POSITION_V_POSITION_DEF_RATING_RESEARCH_ANALYTIC_V1",
+       modeled_selected_probability:.64,calibrated:false,research_only:true,
+       verified_betting_edge:false,opponent_aware_inputs_sourced:true,
+       opponent_adjustment_validated:false,
+       source_provenance:{position_observed_at:"2026-11-11T20:30:00Z",
+       player_observed_at:"2026-11-11T20:30:00Z",
+       rating_observed_at:"2026-11-11T20:30:00Z",
+       minutes_snapshot_at:"2026-11-11T20:30:00Z"}}};
+ const feed={status:"POSITION_MATCHUP_RESEARCH_ONLY_PROBABILITY",production_approved:false,
+   calibrated:false,captured_at:"2026-11-11T21:01:00Z",
+   presentation_policy:"EXPERIMENTAL_MATCHUP_PREVIEW_NOT_CERTIFIED_HIT_EST",
+   records:[row]};
+ const added=m.attachMatchupPreview(cards,feed,Date.parse("2026-11-11T21:05:00Z"));
+ assert.equal(added[0].matchupPreview.rate,.64);
+ assert.equal(added[0].matchupPreview.projection,32.1);
+ assert.equal(added[0].line,cards[0].line);
+ assert.equal(added[0].projection,cards[0].projection);
+ assert.equal(added[0].grade,cards[0].grade);
+ assert.equal(m.hitEstimate(added[0]),null);
+ assert.equal(added[0].position,"PG");
+ const wrongLine={...feed,records:[{...row,line:29.5}]};
+ assert.equal(m.attachMatchupPreview(cards,wrongLine,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
+ const futureSource={...feed,records:[{...row,estimated_hit_chance:{
+    ...row.estimated_hit_chance,source_provenance:{
+    ...row.estimated_hit_chance.source_provenance,rating_observed_at:"2026-11-11T23:00:00Z"}}}]};
+ assert.equal(m.attachMatchupPreview(cards,futureSource,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
+ const fakeCalibration={...feed,records:[{...row,estimated_hit_chance:{...row.estimated_hit_chance,calibrated:true}}]};
+ assert.equal(m.attachMatchupPreview(cards,fakeCalibration,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
+});
+test("Hit estimate displays only the percentage without a redundant label underneath",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(!html.includes("<small>Matchup model</small>"));
+ assert.ok(html.includes("Accuracy and probability calibration are being tracked prospectively"));
+ assert.ok(html.includes("getMatchupResearch()"));
+ assert.ok(html.includes("attachMatchupPreview"));
+ assert.ok(html.includes("RAW_LIVE_BASE+name"));
+ assert.ok(!html.includes("SIM EST."));
+ assert.ok(!html.includes("TEST · uncalibrated"));
+ assert.ok(!html.includes("RESEARCH · NOT CALIBRATED"));
+});
+
+
+test("Public board hides internal diagnostics; opt-in page retains full release verifier",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('<details id="diagnostics" class="stamp" style="display:none;'));
+ assert.ok(html.includes('<summary>Diagnostics</summary>'));
+ assert.ok(html.includes('new URLSearchParams(window.location.search).get("diagnostics")==="1"'));
+ assert.ok(html.includes('if(DIAGNOSTICS_ENABLED)$("diagnostics").style.display="block"'));
+ assert.ok(html.includes('id="verify-app"'));
+ assert.ok(html.includes('id="verify-result"'));
+ assert.ok(html.includes('id="status"'));
+ assert.ok(html.includes('$("verify-app").onclick=async()=>'));
+ // All health warnings and app identities are inside the hidden disclosure.
+ const diagnosticOpen=html.indexOf('<details id="diagnostics"');
+ const diagnosticClose=html.indexOf("</details>",diagnosticOpen);
+ for(const target of ['id="status"','id="app-build"','id="verify-app"','id="verify-result"']){
+   const offset=html.indexOf(target);
+   assert.ok(offset>diagnosticOpen&&offset<diagnosticClose,target+" leaked into public board");
+ }
+ assert.ok(html.indexOf('id="cards"')>diagnosticClose);
+ assert.ok(!html.includes('style="display:block" id="diagnostics"'));
+});
+
+test("Closed developer diagnostic disclosure hides all child controls on mobile",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes("#diagnostics:not([open]) > :not(summary){display:none!important}"));
+});
+
+test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
+ assert.ok(html.includes("const related=m.sortByTeamPosition(m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game))));"));
+ assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
+ assert.ok(html.includes('SAVED PRETIP LINE'));
+ assert.ok(html.includes('NO AI FORECAST'));
+ assert.ok(html.includes('Quote-only lines are never graded as model picks.'));
+ const archive=JSON.parse(fs.readFileSync("docs/prizepicks_pregame_line_archive.json","utf8"));
+ for(const game of ["Brooklyn Nets @ New Orleans Pelicans","Los Angeles Lakers @ Milwaukee Bucks","San Antonio Spurs @ Chicago Bulls"]){
+  assert.ok(archive.quotes.some(q=>q.game===game&&q.tier==="standard"&&Date.parse(q.observed_at)<Date.parse(q.starts_at)),game);
+ }
+});
+
+test("Unresolved injury baseline shows AI projection but does not claim an actionable hit confidence",()=>{
+ const baseline={...pt,injury_uncertainty_unresolved:true,
+   injury_reprojection_status:"BASELINE_WITH_UNRESOLVED_INJURY"};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[baseline]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].line,28.5);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].injuryUncertainty,true);
+ assert.match(got[0].chanceSource,/injury impact unresolved/);
+});
+
+test("Missing opponent defense outputs a baseline with no unsupported hit percentage",()=>{
+ const baseline={...pt,opponent_context_unavailable:true,prediction_quality:"NEUTRAL_OPPONENT_CONTEXT_FALLBACK"};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[baseline]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].opponentContextUnavailable,true);
+ assert.match(got[0].chanceSource,/opponent defensive sample unavailable/);
+});
+
+test("CSV-only complete history forecasts show a projection with unsupported hit confidence hidden",()=>{
+ const row={...pt,single_source_history:true};
+ const got=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[row]},{players:[]});
+ assert.equal(got.length,1);
+ assert.equal(got[0].projection,31.391);
+ assert.equal(got[0].chance,null);
+ assert.equal(got[0].singleSourceHistory,true);
+ assert.match(got[0].chanceSource,/not independently confirmed/);
+});
+
+test("Board footer contains only actual OVER UNDER historical split, no frozen status or dots",()=>{
+ const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(page.includes("function cardOverUnder(p)"));
+ assert.ok(page.includes('p.logs.filter(x=>Number.isFinite(Number(x.actual)))'));
+ assert.ok(page.includes("Number(x.actual)>Number(p.line)"));
+ assert.ok(page.includes("Number(x.actual)<Number(p.line)"));
+ assert.ok(page.includes('<div class="stampband over-under-footer">\'+cardOverUnder(p)+\'</div>'));
+ assert.ok(!page.includes('<span class="dots">●●●●●</span>'));
+ assert.ok(!page.includes('Frozen pregame forecast · awaiting final'));
+ assert.ok(page.includes('.hs-over{color:var(--lime)}'));
+ assert.ok(page.includes('.hs-under{color:var(--pink)}'));
+});
+
+test("Visible direction labels use Over/Under without mutating stored provider direction",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const fn=html.match(/function directionLabel\(value\)\{[^}]+\}/)[0];
+ const c={};vm.createContext(c);vm.runInContext(fn,c);
+ assert.equal(c.directionLabel("MORE"),"OVER");assert.equal(c.directionLabel("LESS"),"UNDER");
+ assert.equal(c.directionLabel(null),null);
+ assert(!html.includes('escapeText(p.direction||"PASS")'));
+ assert(!html.includes('escapeText(p.direction||"NO AI")'));
+});
+
+test("game-detail NBA player teams normalize provider aliases without changing observations",()=>{
+ const now=Date.parse("2026-11-13T00:17:00Z");
+ const teams={WSH:"WAS",NY:"NYK",GS:"GSW",NO:"NOP",SA:"SAS",UTAH:"UTA"};
+ const games=m.liveGames({captured_at:"2026-11-13T00:17:00Z",games:[{
+ event_id:"test",game:"Detroit Pistons @ Washington Wizards",state:"in",
+ player_rows:Object.keys(teams).map(team=>({player:team,team,PTS:7,REB:2,AST:3,PRA:12}))
+ }]},null,now);
+ for(const row of games[0].players){assert.equal(row.team,teams[row.player]);assert.equal(row.stats.PRA,12);}
 });

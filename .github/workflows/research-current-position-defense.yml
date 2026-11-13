@@ -1,0 +1,109 @@
+name: Prospective NBA listed-position defensive research
+on:
+  pull_request:
+    paths:
+      - 'research/position_defense_current_season.py'
+      - 'research/join_matchup_features.py'
+      - 'research/freeze_position_rating_quote_join.py'
+      - 'research/tests/test_freeze_position_rating_quote_join.py'
+      - 'research/opportunity_tempo_proxies.py'
+      - 'research/paired_positional_holdout.py'
+      - 'research/tests/test_paired_positional_holdout.py'
+      - 'research/tests/test_opportunity_tempo_proxies.py'
+      - 'research/tests/test_join_matchup_features.py'
+      - 'research/tests/test_position_defense_current_season.py'
+      - '.github/workflows/research-current-position-defense.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/position_defense_current_season.py'
+      - 'research/join_matchup_features.py'
+      - 'research/tests/test_join_matchup_features.py'
+      - 'research/tests/test_position_defense_current_season.py'
+      - '.github/workflows/research-current-position-defense.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '39 18 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: current-season-position-research
+  cancel-in-progress: false
+jobs:
+  source-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test reciprocal games, exact listed positions and chronological leakage
+        run: python -m unittest discover -s research/tests -p 'test_position_defense_current_season.py' -v
+      - name: Verify exact game, source-date, injury and minutes research joins
+        run: python -m unittest discover -s research/tests -p 'test_join_matchup_features.py' -v
+      - name: Test observed opportunity and activity proxies fail closed
+        run: python -m unittest discover -s research/tests -p 'test_opportunity_tempo_proxies.py' -v
+      - name: Test strictly chronological paired same-game positional holdout
+        run: python -m unittest discover -s research/tests -p 'test_paired_positional_holdout.py' -v
+      - name: Verify position, minutes and ratings were known before original standard quote
+        run: python -m unittest discover -s research/tests -p 'test_freeze_position_rating_quote_join.py' -v
+      - name: Download actual dated current-season game logs including source position labels
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m iphone_bot.fetch_current_form
+      - name: Build future opponent listed-position context without modifying predictions
+        if: github.event_name != 'pull_request'
+        run: python -m research.position_defense_current_season --output positional-defense-research.json
+      - name: Freeze actual source-linked future player and injury context
+        if: github.event_name != 'pull_request'
+        run: python -m research.capture_pregame_evidence --output pregame-evidence-research.json
+      - name: Forecast research minutes from that same frozen player source
+        if: github.event_name != 'pull_request'
+        run: python -m research.minutes_forecast_research --evidence pregame-evidence-research.json --output minutes-forecast-research.json
+      - name: Join exact opponent-position and projected-minutes research evidence
+        if: github.event_name != 'pull_request'
+        run: python -m research.join_matchup_features --evidence pregame-evidence-research.json --minutes minutes-forecast-research.json --position positional-defense-research.json --output joined-matchup-features-research.json
+      - name: Summarize research shot involvement and FGA plus TOV team activity
+        if: github.event_name != 'pull_request'
+        run: python -m research.opportunity_tempo_proxies --joined joined-matchup-features-research.json --output opportunity-tempo-research.json
+      - name: Evaluate same-player-game opponent positional adjustment against L5 baseline
+        if: github.event_name != 'pull_request'
+        run: python -m research.paired_positional_holdout --output paired-positional-holdout-research.json
+      - name: Capture sourced estimated 30-team defensive rating and pace
+        if: github.event_name != 'pull_request'
+        run: python -m research.source_def_rating_2026
+      - name: Associate only source-before-quote original standard markets with matchup data
+        if: github.event_name != 'pull_request'
+        run: python -m research.freeze_position_rating_quote_join --output position-rating-quote-research.json
+      - name: Enforce truthful provenance and read-only production status
+        if: github.event_name != 'pull_request'
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('positional-defense-research.json'))
+          assert x['source_kind']=='THIRD_PARTY_LISTED_POSITION_NOT_DEFENDER_ASSIGNMENT'
+          assert not x['actual_defender_assignments_available']
+          assert not x['production_hit_estimate_eligible']
+          assert x['reciprocal_completed_games']>0, 'NO_VERIFIED_RECIPROCAL_GAMES'
+          print('Current-season reciprocal completed games:',x['reciprocal_completed_games'])
+          print('Future listed-position records:',x['position_context_records'])
+          print('Source-linked role coverage:',x['position_context_with_samples'])
+          PY
+      - name: Upload source-linked snapshot without producing live changes
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prospective-positional-defense-context
+          path: |
+            positional-defense-research.json
+            pregame-evidence-research.json
+            minutes-forecast-research.json
+            joined-matchup-features-research.json
+            opportunity-tempo-research.json
+            paired-positional-holdout-research.json
+            defensive-rating-research.json
+            position-rating-quote-research.json
+          retention-days: 21
+          if-no-files-found: error

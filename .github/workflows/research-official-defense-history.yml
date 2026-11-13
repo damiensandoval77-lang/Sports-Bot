@@ -1,0 +1,71 @@
+name: Research official NBA opponent-defense history backfill
+on:
+  pull_request:
+    paths:
+      - 'research/official_defense_backfill.py'
+      - 'research/data/official_nba_schedule_hints_2026_27.json'
+      - 'research/tests/test_official_defense_backfill.py'
+      - '.github/workflows/research-official-defense-history.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/official_defense_backfill.py'
+      - 'research/data/official_nba_schedule_hints_2026_27.json'
+      - 'research/tests/test_official_defense_backfill.py'
+      - '.github/workflows/research-official-defense-history.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '47 14 * * *'
+permissions:
+  contents: read
+concurrency:
+  # Keep collectors serialized, but never queue offline PR tests behind them.
+  group: ${{ github.event_name == 'pull_request' && format('official-defense-research-pr-{0}', github.event.pull_request.number) || 'official-defense-research' }}
+  cancel-in-progress: false
+jobs:
+  backfill:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit test final identity, bounded fetches and scoreboard reconciliation
+        run: python -m unittest discover -s research/tests -p 'test_official_defense_backfill.py' -v
+      - name: Collect independently verified NBA CDN completed boxes without odds API
+        if: github.event_name != 'pull_request'
+        run: python -m research.official_defense_backfill --limit 90 --output official-defense-history-research.json
+      - name: Upload provider health evidence even if external source is unavailable
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-final-provider-health
+          path: official-defense-history-research.json
+          retention-days: 7
+          if-no-files-found: error
+      - name: Fail closed when official source produces no verified games
+        if: github.event_name != 'pull_request'
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('official-defense-history-research.json'))
+          assert x.get('production_approved') is False
+          if x.get('verified_new_games',0)==0:
+              raise SystemExit('NO_VERIFIED_NEW_FINALS; provider_outage='+str(x.get('provider_outage_detected'))+
+                '; see official-final-provider-health artifact')
+          print('Verified final games:',x['verified_new_games'])
+          PY
+      - name: Build separate team defense research context from verified history
+        if: github.event_name != 'pull_request'
+        run: python -m research.verified_team_defense_context --cache official-defense-history-research.json --output defense-history-context-research.json
+      - name: Retain research artifacts without any main-branch data commits
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-verified-defense-history
+          path: |
+            official-defense-history-research.json
+            defense-history-context-research.json
+          retention-days: 21
+          if-no-files-found: error

@@ -1,0 +1,80 @@
+name: Prospective matchup probability accuracy and calibration
+on:
+  pull_request:
+    paths:
+      - 'research/archive_matchup_forecasts.py'
+      - 'research/audit_prospective_matchup_calibration.py'
+      - 'research/tests/test_prospective_matchup_calibration.py'
+      - '.github/workflows/research-matchup-prospective-calibration.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/archive_matchup_forecasts.py'
+      - 'research/audit_prospective_matchup_calibration.py'
+      - 'research/tests/test_prospective_matchup_calibration.py'
+      - '.github/workflows/research-matchup-prospective-calibration.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '18 8,16,23 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: matchup-prospective-calibration
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run source, immutable forecast, final-score and calibration unit tests
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s research/tests -p 'test_prospective_matchup_calibration.py' -v
+      - name: Compute truthful prospective results or report absence of history
+        run: |
+          if [ ! -f docs/matchup_shadow_archive.json ]; then
+            echo "No archived prospective model samples yet. Not reporting calibration success."
+            exit 0
+          fi
+          python -m research.audit_prospective_matchup_calibration
+          python - <<'PY'
+          import json
+          r=json.load(open('docs/matchup_calibration_report.json'))
+          assert r['calibration_certified'] is False
+          assert r['line_policy']=='ORIGINAL_VERIFIED_STANDARD_ONLY_NO_DEMON_OR_GOBLIN'
+          print('Archived forecasts:',r['forecast_archive_count'])
+          print('Verified and paired finals:',r['paired_final_grades'])
+          print('Calibration gate blockers:',r['promotion_blockers'])
+          PY
+      - name: Publish audit on main only if source history exists
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          if [ ! -f docs/matchup_calibration_report.json ]; then exit 0; fi
+          cp docs/matchup_calibration_report.json "$RUNNER_TEMP/matchup-report.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if [ ! -f docs/matchup_shadow_archive.json ]; then
+              echo "Archive unavailable on main; do not publish imaginary results"
+              exit 0
+            fi
+            python -m research.audit_prospective_matchup_calibration
+            git add docs/matchup_calibration_report.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Audit strictly prospective matchup probabilities versus verified standard final grades'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1
+      - name: Upload audit report for independent review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matchup-prospective-calibration-audit
+          path: docs/matchup_calibration_report.json
+          if-no-files-found: warn
+          retention-days: 30

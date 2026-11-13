@@ -1,0 +1,54 @@
+name: Audit matchup pretip feature provenance (research only)
+on:
+  pull_request:
+    paths:
+      - 'research/matchup_asof_audit.py'
+      - 'research/position_rating_hit_candidate.py'
+      - 'research/tests/test_position_rating_hit_candidate.py'
+      - 'research/verified_team_defense_context.py'
+      - 'research/tests/test_verified_team_defense_context.py'
+      - 'research/capture_pregame_evidence.py'
+      - 'research/minutes_forecast_research.py'
+      - 'research/tests/test_minutes_forecast_research.py'
+      - 'research/tests/test_capture_pregame_evidence.py'
+      - 'research/tests/test_matchup_asof_audit.py'
+      - '.github/workflows/research-matchup-asof-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test simpler position-v-position with independent defensive rating
+        run: python -m unittest discover -s research/tests -p 'test_position_rating_hit_candidate.py' -v
+      - name: Verify leakage and missing-data guards
+        run: python -m unittest discover -s research/tests -p 'test_matchup_asof_audit.py' -v
+      - name: Test prospective source-linked capture guards
+        run: python -m unittest discover -s research/tests -p 'test_capture_pregame_evidence.py' -v
+      - name: Capture actual upcoming player context without modifying live picks
+        run: python -m research.capture_pregame_evidence --output pregame-evidence-research.json
+      - name: Test chronological minutes research before promotion
+        run: python -m unittest discover -s research/tests -p 'test_minutes_forecast_research.py' -v
+      - name: Run real-source research minutes backtest and prospective paper forecast
+        run: python -m research.minutes_forecast_research --output minutes-forecast-research.json
+      - name: Test official reciprocal finals and distinct team-versus-position meaning
+        run: python -m unittest discover -s research/tests -p 'test_verified_team_defense_context.py' -v
+      - name: Capture verified prior opponent TEAM defense, not positional defense
+        run: python -m research.verified_team_defense_context --output defense-evidence-research.json
+      - name: Audit actual frozen records without recalculating picks
+        run: python -m research.matchup_asof_audit --output matchup-evidence.json
+      - name: Publish read-only research evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: matchup-evidence-report
+          path: |
+            matchup-evidence.json
+            pregame-evidence-research.json
+            minutes-forecast-research.json
+            defense-evidence-research.json
+          retention-days: 7

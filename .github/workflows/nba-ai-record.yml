@@ -41,6 +41,7 @@ jobs:
           git fetch origin main
           git checkout -B main origin/main
       - name: Verify grading and deduplicated per-model direction records
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/selective_challenger.py iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py iphone_bot/fetch_final_boxscores.py
           python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v

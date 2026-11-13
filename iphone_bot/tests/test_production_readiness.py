@@ -27,6 +27,9 @@ def fixtures(now=NOW):
      "tonight_capture_gradeability.json":{
          "status":"CAPTURE_VERIFIED","checked_at":STAMP,
          "game_date_eastern":"2026-11-09",
+         "current_upcoming_coverage":{"status":"COMPLETE","missing_primary_offers":0,"issues":[],
+             "games":[{"game":GAME["game"],"start":GAME["start"],"verified_current_offers":3,
+                       "matched_primary_offers":3,"missing_primary_offers":0}]},
          "games":[{"game":GAME["game"],"issues":[]}],
          "summary":{"schedule_games":1,"games_with_saved_source_quotes":1,
                     "games_with_frozen_ai":1,"games_with_line_backed_models":1,
@@ -130,6 +133,45 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("PARTIAL_PRIZEPICKS_PROVIDER_COVERAGE",
                       r["components"]["prizepicks_lines"]["reasons"])
 
+    def test_live_fallback_completion_refreshes_readiness(self):
+        from pathlib import Path
+        workflow=(Path(__file__).resolve().parents[2]/".github/workflows/production_readiness.yml").read_text()
+        block=workflow.split("workflow_run:",1)[1].split("schedule:",1)[0]
+        self.assertIn("Backup NBA live player tracker observations (no sportsbook API)",block)
+        self.assertIn("Independent NBA player boxscores",block)
+
+    def live_fallback_fixture(self):
+        data=fixtures()
+        data["nba_schedule.json"]["games"][0]["start"]="2026-11-09T16:00:00Z"
+        data["live_player_tracking.json"]={"status":"OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
+            "date_eastern":"2026-11-09","captured_at":NOW.isoformat(),
+            "player_totals_are_observations":True,"games":[{"game":GAME["game"],
+            "state":"in","stale":False,"event_id":"123","observed_at":NOW.isoformat(),
+            "player_rows":[{"PTS":2}]}]}
+        return data
+
+    def test_verified_fresh_espn_fallback_covers_official_outage(self):
+        result=check(NOW,self.live_fallback_fixture())
+        self.assertEqual(result["components"]["live_player_stats"]["state"],"READY")
+
+    def test_fallback_rejects_stale_missing_wrong_day_or_unverified_rows(self):
+        mutations=[{"stale":True},{"player_rows":[]},{"event_id":"bad"},
+                   {"observed_at":"2026-11-09T17:54:00Z"},{"game":"Wrong @ Game"}]
+        for mutation in mutations:
+            data=self.live_fallback_fixture()
+            data["live_player_tracking.json"]["games"][0].update(mutation)
+            self.assertEqual(check(NOW,data)["components"]["live_player_stats"]["state"],"BLOCKED")
+        for mutation in [{"date_eastern":"2026-11-08"},{"captured_at":"2026-11-09T17:54:00Z"},
+                         {"player_totals_are_observations":False}]:
+            data=self.live_fallback_fixture();data["live_player_tracking.json"].update(mutation)
+            self.assertEqual(check(NOW,data)["components"]["live_player_stats"]["state"],"BLOCKED")
+
+    def test_scoreboard_team_alias_is_same_matchup(self):
+        data=fixtures()
+        data["nba_schedule.json"]["games"][0].update(away_abbreviation="WAS",home_abbreviation="DET")
+        data["nba_scoreboard_independent.json"]["games"][0].update(away_abbreviation="WSH",home_abbreviation="DET")
+        self.assertNotIn("SCOREBOARD_MISSING_SCHEDULED_MATCHUPS",check(NOW,data)["components"]["scoreboard"]["reasons"])
+
     def test_tipoff_requires_live_scores_and_player_stats(self):
         data=fixtures()
         data["nba_schedule.json"]["games"][0]["start"]="2026-11-09T16:00:00Z"
@@ -206,6 +248,20 @@ class StrictProductionReadinessTests(unittest.TestCase):
         self.assertIn("STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL",
                       result["components"]["unmodeled_provider_market_coverage"]["reasons"])
         self.assertEqual(result["components"]["pregame_capture"]["state"],"READY")
+
+    def test_current_missing_primary_remains_required_despite_research(self):
+        data=fixtures()
+        cur=data["tonight_capture_gradeability.json"]["current_upcoming_coverage"]
+        cur.update(status="INCOMPLETE",missing_primary_offers=1)
+        cur["games"][0].update(matched_primary_offers=2,missing_primary_offers=1)
+        result=check(NOW,data)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertTrue(result["components"]["current_primary_model_coverage"]["required"])
+        self.assertIn("CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL",result["components"]["current_primary_model_coverage"]["reasons"])
+
+    def test_absent_current_coverage_cannot_claim_ready(self):
+        data=fixtures();data["tonight_capture_gradeability.json"].pop("current_upcoming_coverage")
+        self.assertEqual(check(NOW,data)["components"]["current_primary_model_coverage"]["state"],"DEGRADED")
 
     def test_research_receipts_do_not_substitute_for_a_published_model(self):
         data=fixtures()

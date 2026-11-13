@@ -1,0 +1,912 @@
+{
+  "captured_at": "2026-11-13T17:11:42.126532+00:00",
+  "espn_http_circuit_open": false,
+  "failures": {},
+  "note": "Official final observations captured now. Never claim availability at historical pick capture; does not change grading, sportsbook lines, model outputs or live odds.",
+  "official_ids_found": 90,
+  "official_ids_from_saved_discovery": 90,
+  "production_approved": false,
+  "provider_outage_detected": false,
+  "requested_games": 90,
+  "retroactive_pregame_feature_claims": false,
+  "schedule_lookup_error": "TimeoutError",
+  "season_schedule_source": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-data/main/nba/schedules/parquet/nba_schedule_2027.parquet",
+  "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+  "status": "RESEARCH_OFFICIAL_NBA_FINAL_BOX_BACKFILL",
+  "verified_combined_games": 90,
+  "verified_espn_id_hints": 90,
+  "verified_games_by_provider": {
+    "NBA_CDN_FINAL": 90
+  },
+  "verified_new_games": 90,
+  "version": 1,
+  "row_count": 2107,
+  "run_id": 43468528082,
+  "artifact_url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43468528082/artifacts/14060179329",
+  "hosted_context": {
+    "blockers": {
+      "insufficient_verified_prior_defense_games": 2
+    },
+    "cache_publication_time_verified": false,
+    "captured_at": "2026-11-13T17:30:45.037703+00:00",
+    "future_game_count": 14,
+    "future_games": [
+      {
+        "away": "NYK",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909296",
+        "home": "IND",
+        "start": "2026-11-14T00:00:00+00:00",
+        "team_defense": {
+          "IND": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 25.0,
+              "PRA": 183.0,
+              "PTS": 110.2,
+              "REB": 47.8
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-07",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600160",
+              "0022600178",
+              "0022600189",
+              "0022600207",
+              "0022600217"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "NYK": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 22.2,
+              "PRA": 157.4,
+              "PTS": 98.4,
+              "REB": 36.8
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-07",
+              "2026-11-10",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600161",
+              "0022600177",
+              "0022600191",
+              "0022600211",
+              "0022600218"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "MIL",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909297",
+        "home": "ORL",
+        "start": "2026-11-14T00:00:00+00:00",
+        "team_defense": {
+          "MIL": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 24.6,
+              "PRA": 180.4,
+              "PTS": 109.2,
+              "REB": 46.6
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-08",
+              "2026-11-10",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600175",
+              "0022600030",
+              "0022600200",
+              "0022600211",
+              "0022600222"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "ORL": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 25.4,
+              "PRA": 170.2,
+              "PTS": 110.6,
+              "REB": 34.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-05",
+              "2026-11-07",
+              "2026-11-10",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600162",
+              "0022600187",
+              "0022600193",
+              "0022600215",
+              "0022600224"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "CLE",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909298",
+        "home": "MIA",
+        "start": "2026-11-14T01:00:00+00:00",
+        "team_defense": {
+          "CLE": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 26.8,
+              "PRA": 182.8,
+              "PTS": 111.8,
+              "REB": 44.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-07",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600180",
+              "0022600027",
+              "0022600191",
+              "0022600204",
+              "0022600218"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "MIA": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 31.4,
+              "PRA": 194.6,
+              "PTS": 118.2,
+              "REB": 45.0
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-05",
+              "2026-11-08",
+              "2026-11-10"
+            ],
+            "prior_game_ids": [
+              "0022600172",
+              "0022600186",
+              "0022600188",
+              "0022600202",
+              "0022600214"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "ATL",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909299",
+        "home": "CHI",
+        "start": "2026-11-14T01:00:00+00:00",
+        "team_defense": {
+          "ATL": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 26.8,
+              "PRA": 186.8,
+              "PTS": 117.2,
+              "REB": 42.8
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-07",
+              "2026-11-09"
+            ],
+            "prior_game_ids": [
+              "0022600160",
+              "0022600174",
+              "0022600025",
+              "0022600190",
+              "0022600203"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "CHI": {
+            "observed_games": 4,
+            "position_adjustment_verified": false,
+            "required_games": 5,
+            "status": "INSUFFICIENT_VERIFIED_PRIOR_GAMES"
+          }
+        }
+      },
+      {
+        "away": "MEM",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909300",
+        "home": "NOP",
+        "start": "2026-11-14T01:00:00+00:00",
+        "team_defense": {
+          "MEM": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 24.4,
+              "PRA": 175.0,
+              "PTS": 111.4,
+              "REB": 39.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600165",
+              "0022600178",
+              "0022600029",
+              "0022600206",
+              "0022600221"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "NOP": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 29.6,
+              "PRA": 204.8,
+              "PTS": 130.0,
+              "REB": 45.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-08",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600179",
+              "0022600031",
+              "0022600201",
+              "0022600210",
+              "0022600223"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "UTA",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909301",
+        "home": "HOU",
+        "start": "2026-11-14T01:30:00+00:00",
+        "team_defense": {
+          "HOU": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 23.8,
+              "PRA": 170.6,
+              "PTS": 104.0,
+              "REB": 42.8
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-07",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600167",
+              "0022600181",
+              "0022600194",
+              "0022600208",
+              "0022600225"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "UTA": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 21.4,
+              "PRA": 181.8,
+              "PTS": 114.8,
+              "REB": 45.6
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-08",
+              "2026-11-10",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600179",
+              "0022600028",
+              "0022600198",
+              "0022600214",
+              "0022600224"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "GSW",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909302",
+        "home": "SAS",
+        "start": "2026-11-14T02:30:00+00:00",
+        "team_defense": {
+          "GSW": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 26.2,
+              "PRA": 173.8,
+              "PTS": 106.8,
+              "REB": 40.8
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-05",
+              "2026-11-07",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600170",
+              "0022600188",
+              "0022600193",
+              "0022600210",
+              "0022600225"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "SAS": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 26.6,
+              "PRA": 174.0,
+              "PTS": 107.6,
+              "REB": 39.8
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-07",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600184",
+              "0022600033",
+              "0022600195",
+              "0022600209",
+              "0022600220"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "POR",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909303",
+        "home": "SAC",
+        "start": "2026-11-14T03:00:00+00:00",
+        "team_defense": {
+          "POR": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 22.2,
+              "PRA": 181.6,
+              "PTS": 115.8,
+              "REB": 43.6
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-07",
+              "2026-11-10",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600183",
+              "0022600032",
+              "0022600195",
+              "0022600216",
+              "0022600226"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "SAC": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 23.4,
+              "PRA": 176.2,
+              "PTS": 112.2,
+              "REB": 40.6
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-08",
+              "2026-11-10"
+            ],
+            "prior_game_ids": [
+              "0022600164",
+              "0022600185",
+              "0022600033",
+              "0022600202",
+              "0022600215"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "OKC",
+        "date_eastern": "2026-11-13",
+        "game_id": "401909304",
+        "home": "LAC",
+        "start": "2026-11-14T03:30:00+00:00",
+        "team_defense": {
+          "LAC": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 29.2,
+              "PRA": 194.6,
+              "PTS": 123.2,
+              "REB": 42.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-01",
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-08",
+              "2026-11-10"
+            ],
+            "prior_game_ids": [
+              "0022600156",
+              "0022600171",
+              "0022600186",
+              "0022600201",
+              "0022600213"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "OKC": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 20.8,
+              "PRA": 170.2,
+              "PTS": 105.8,
+              "REB": 43.6
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-07",
+              "2026-11-10",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600180",
+              "0022600029",
+              "0022600192",
+              "0022600216",
+              "0022600226"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "DEN",
+        "date_eastern": "2026-11-14",
+        "game_id": "401909980",
+        "home": "NOP",
+        "start": "2026-11-15T00:00:00+00:00",
+        "team_defense": {
+          "DEN": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 28.6,
+              "PRA": 183.0,
+              "PTS": 110.8,
+              "REB": 43.6
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-07",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600169",
+              "0022600182",
+              "0022600189",
+              "0022600208",
+              "0022600221"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "NOP": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 29.6,
+              "PRA": 204.8,
+              "PTS": 130.0,
+              "REB": 45.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-08",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600179",
+              "0022600031",
+              "0022600201",
+              "0022600210",
+              "0022600223"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "DAL",
+        "date_eastern": "2026-11-14",
+        "game_id": "401909981",
+        "home": "CLE",
+        "start": "2026-11-15T00:30:00+00:00",
+        "team_defense": {
+          "CLE": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 26.8,
+              "PRA": 182.8,
+              "PTS": 111.8,
+              "REB": 44.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-07",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600180",
+              "0022600027",
+              "0022600191",
+              "0022600204",
+              "0022600218"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "DAL": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 27.2,
+              "PRA": 181.0,
+              "PTS": 112.0,
+              "REB": 41.8
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-08",
+              "2026-11-09",
+              "2026-11-12"
+            ],
+            "prior_game_ids": [
+              "0022600184",
+              "0022600028",
+              "0022600199",
+              "0022600207",
+              "0022600229"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "DET",
+        "date_eastern": "2026-11-14",
+        "game_id": "401909982",
+        "home": "MIA",
+        "start": "2026-11-15T01:00:00+00:00",
+        "team_defense": {
+          "DET": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 22.0,
+              "PRA": 183.4,
+              "PTS": 115.0,
+              "REB": 46.4
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-08",
+              "2026-11-09",
+              "2026-11-12"
+            ],
+            "prior_game_ids": [
+              "0022600159",
+              "0022600173",
+              "0022600197",
+              "0022600205",
+              "0022600228"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "MIA": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 31.4,
+              "PRA": 194.6,
+              "PTS": 118.2,
+              "REB": 45.0
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-05",
+              "2026-11-08",
+              "2026-11-10"
+            ],
+            "prior_game_ids": [
+              "0022600172",
+              "0022600186",
+              "0022600188",
+              "0022600202",
+              "0022600214"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "BKN",
+        "date_eastern": "2026-11-14",
+        "game_id": "401909983",
+        "home": "MEM",
+        "start": "2026-11-15T01:00:00+00:00",
+        "team_defense": {
+          "BKN": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 25.0,
+              "PRA": 179.0,
+              "PTS": 114.4,
+              "REB": 39.6
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-07",
+              "2026-11-08",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600161",
+              "0022600176",
+              "0022600190",
+              "0022600199",
+              "0022600223"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          },
+          "MEM": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 24.4,
+              "PRA": 175.0,
+              "PTS": 111.4,
+              "REB": 39.2
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-09",
+              "2026-11-11"
+            ],
+            "prior_game_ids": [
+              "0022600165",
+              "0022600178",
+              "0022600029",
+              "0022600206",
+              "0022600221"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      },
+      {
+        "away": "CHI",
+        "date_eastern": "2026-11-14",
+        "game_id": "401909984",
+        "home": "MIN",
+        "start": "2026-11-15T01:00:00+00:00",
+        "team_defense": {
+          "CHI": {
+            "observed_games": 4,
+            "position_adjustment_verified": false,
+            "required_games": 5,
+            "status": "INSUFFICIENT_VERIFIED_PRIOR_GAMES"
+          },
+          "MIN": {
+            "individual_defender_verified": false,
+            "last5_team_totals_allowed": {
+              "AST": 23.6,
+              "PRA": 167.6,
+              "PTS": 102.0,
+              "REB": 42.0
+            },
+            "not_a_modeled_hit_estimate": true,
+            "position_adjustment_verified": false,
+            "prior_dates": [
+              "2026-11-02",
+              "2026-11-04",
+              "2026-11-06",
+              "2026-11-08",
+              "2026-11-12"
+            ],
+            "prior_game_ids": [
+              "0022600166",
+              "0022600181",
+              "0022600031",
+              "0022600198",
+              "0022600229"
+            ],
+            "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+            "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+            "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+          }
+        }
+      }
+    ],
+    "min_independent_prior_games": 5,
+    "note": "Team totals are not positional defense. Cache has no published_at; this research capture does not prove those games were available to an older pick. No opponent adjustment is promoted.",
+    "production_hit_estimate_eligible": false,
+    "rejected_final_games": {},
+    "retroactive_feature_backfill_allowed": false,
+    "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+    "source_cache_published_at": null,
+    "status": "RESEARCH_TEAM_DEFENSE_NO_POSITION",
+    "verified_final_games": 90
+  },
+  "additional_local_recovery": "official-defense-history-recovered.json.gz contains one additional verified CHI game (91 combined) and removes these two research context blockers; this extended cache is not promoted to production forecasts."
+}

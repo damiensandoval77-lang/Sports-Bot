@@ -1,6 +1,7 @@
 """No-credit forward NBA fixture coverage audit against the released season."""
 import datetime as dt
 import json
+import sys
 from pathlib import Path
 from iphone_bot.season_schedule_baseline import validate, ET
 ROOT=Path(__file__).resolve().parents[1]/"docs"
@@ -44,11 +45,27 @@ def audit(master,daily,now=None):
                          "games":[{"id":g["id"],"game":g["game"],"start":g["start"]} for g in published[d]]}
                         for d in days],
         "note":"Released fixtures only; unassigned NBA Cup matchups are not invented, and published tip times can change."}
+def repair_daily_window(master, daily, now=None):
+    """Restore calendar dates from verified fixtures, never sportsbook/player data."""
+    from iphone_bot.publish_nba_schedule_atomic import stage
+    now = now or dt.datetime.now(dt.timezone.utc)
+    report = audit(master, daily, now=now)
+    repairable = {"DAILY_DATE_NOT_PUBLISHED", "PUBLISHED_GAMES_MISSING_FROM_DAILY_SLATE"}
+    if not repairable.intersection(report.get("reason_codes", [])):
+        return daily
+    repaired, _ = stage(daily, master, daily, master, now=now)
+    return repaired
+
 def main():
     def load(file):
         try:return json.loads((ROOT/file).read_text())
         except(OSError,ValueError):return {}
-    result=audit(load("nba_season_schedule_2026_27.json"),load("nba_schedule.json"))
+    master=load("nba_season_schedule_2026_27.json")
+    daily=load("nba_schedule.json")
+    if "--repair-window" in sys.argv:
+        daily=repair_daily_window(master,daily)
+        (ROOT/"nba_schedule.json").write_text(json.dumps(daily,indent=2)+"\n")
+    result=audit(master,daily)
     (ROOT/"nba_schedule_horizon_audit.json").write_text(json.dumps(result,indent=2)+"\n")
     print("NBA SCHEDULE HORIZON:",result["status"],result["reason_codes"])
     if result["status"]!="READY":raise SystemExit(2)

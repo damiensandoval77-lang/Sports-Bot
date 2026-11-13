@@ -37,6 +37,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify official NBA identity, date, count and no duplicates
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_official_nba_schedule.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v

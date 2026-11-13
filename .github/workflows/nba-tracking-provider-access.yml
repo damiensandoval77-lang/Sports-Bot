@@ -24,6 +24,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate tracking metadata parser and fail-closed permissions
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_probe_tracking_provider.py' -v
       - name: Query a licensed provider only on explicit manual run
         if: github.event_name == 'workflow_dispatch'

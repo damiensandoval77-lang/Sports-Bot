@@ -90,7 +90,7 @@ class AlertsTests(unittest.TestCase):
              "2026-11-09",TIP,NOW,
              official("OUT","2026-11-09T22:15:00Z"),{},[],
              free_watch=free)
-        self.assertEqual(result["status"],"INJURY_MATCHUP_DATA_INSUFFICIENT")
+        self.assertEqual(result["status"],"BASELINE_WITH_UNRESOLVED_INJURY")
         self.assertEqual(result["affected"][0]["player_id"],"1630559")
 
     def test_free_official_watch_cannot_override_newer_available(self):
@@ -114,7 +114,9 @@ class AlertsTests(unittest.TestCase):
            TIP,NOW,official("OUT"),
            {"status":"UNDERDOGNBA_X_AUTHENTICATED_POLL",
             "verified_x_posts":True,"alerts":a},[])
-        self.assertEqual(x["status"],"INJURY_MATCHUP_DATA_INSUFFICIENT")
-        self.assertIsNone(x["factor"])
+        self.assertEqual(x["status"],"BASELINE_WITH_UNRESOLVED_INJURY")
+        self.assertEqual(x["factor"],1.0)
+        self.assertFalse(x["injury_adjusted"])
+        self.assertFalse(x["probability_actionable"])
 
 if __name__=="__main__":unittest.main()

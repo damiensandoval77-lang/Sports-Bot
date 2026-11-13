@@ -7,6 +7,19 @@ def snap(time,status="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",games=None):
                        "games":[] if games is None else games})
 
 class SafeBoxscorePublicationTests(unittest.TestCase):
+    def test_first_snapshot_rejects_malformed_games_before_publication(self):
+        malformed = [["bad"], [{"id":""}], [{"id":"1"},{"id":"1"}],
+                     [{"id":"1","player_rows":{}}]]
+        for games in malformed:
+            with self.subTest(games=games), self.assertRaises(ValueError):
+                merge(None,snap("2026-11-10T00:05:00Z",games=games))
+
+    def test_new_slate_rejects_malformed_game_rows(self):
+        previous=snap("2026-11-10T00:03:00Z",games=[{"id":"1"}])
+        incoming=json.loads(snap("2026-11-11T00:05:00Z",games=[{"id":"2","player_rows":{}}]))
+        incoming["date_eastern"]="2026-11-11"
+        with self.assertRaises(ValueError):merge(previous,json.dumps(incoming))
+
     def test_repairs_specific_trailing_literal_newline(self):
         prior=snap("2026-11-10T00:03:00Z",games=[{"id":"1"}])+r"\n"
         incoming=snap("2026-11-10T00:05:00Z",games=[{"id":"1"},{"id":"2"}])
@@ -25,111 +38,86 @@ class SafeBoxscorePublicationTests(unittest.TestCase):
         pre=snap("2026-11-10T00:07:00Z","WAITING_FOR_SCHEDULED_TIPOFF")
         self.assertEqual(len(merge(p,empty)["games"]),1)
         self.assertEqual(len(merge(p,pre)["games"]),1)
+    def test_partial_live_refresh_preserves_all_previous_game_rows(self):
+        previous=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","state":"in",
+             "observed_at":"2026-11-10T00:20:00Z",
+             "player_rows":[{"player":"A","PTS":10}]},
+            {"id":"2","game":"UTA @ MIA","state":"in",
+             "observed_at":"2026-11-10T00:20:00Z",
+             "player_rows":[{"player":"B","PTS":20}]}])
+        latest=snap("2026-11-10T00:25:00Z","PARTIAL_NBA_PLAYER_BOXSCORES",games=[
+            {"id":"1","game":"BOS @ NYK","state":"in",
+             "observed_at":"2026-11-10T00:25:00Z",
+             "player_rows":[{"player":"A","PTS":16}]}])
+        result=merge(previous,latest)
+        by_id={g["id"]:g for g in result["games"]}
+        self.assertEqual(len(result["games"]),2)
+        self.assertEqual(by_id["1"]["player_rows"][0]["PTS"],16)
+        self.assertEqual(by_id["2"]["player_rows"][0]["PTS"],20)
+        self.assertEqual(by_id["2"]["observed_at"],"2026-11-10T00:20:00Z")
+        self.assertEqual(result["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
+        self.assertFalse(result["coverage"]["complete"])
+        self.assertEqual(result["coverage"]["retained_prior_game_count"],1)
+
+    def test_older_game_observation_never_replaces_newer_stored_totals(self):
+        previous=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","state":"in",
+             "observed_at":"2026-11-10T00:20:00Z",
+             "player_rows":[{"PTS":19}]}])
+        newest=snap("2026-11-10T00:30:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","state":"in",
+             "observed_at":"2026-11-10T00:19:00Z",
+             "player_rows":[{"PTS":14}]}])
+        result=merge(previous,newest)
+        self.assertEqual(result["games"][0]["player_rows"][0]["PTS"],19)
+        self.assertEqual(result["coverage"]["retained_prior_game_count"],1)
+        self.assertEqual(result["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
+
+    def test_final_game_cannot_revert_to_in_progress(self):
+        previous=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","state":"post",
+             "observed_at":"2026-11-10T00:20:00Z",
+             "player_rows":[{"PTS":100}]}])
+        new=snap("2026-11-10T00:30:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","state":"in",
+             "observed_at":"2026-11-10T00:30:00Z",
+             "player_rows":[{"PTS":65}]}])
+        self.assertEqual(merge(previous,new)["games"][0]["player_rows"][0]["PTS"],100)
+
+    def test_same_matchup_with_different_official_game_id_fails_closed(self):
+        old=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","player_rows":[{"PTS":9}]}])
+        new=snap("2026-11-10T00:30:00Z",games=[
+            {"id":"2","game":"BOS @ NYK","player_rows":[{"PTS":11}]}])
+        with self.assertRaisesRegex(ValueError,"GAME_ID_MISMATCH"):
+            merge(old,new)
+
+    def test_same_id_with_different_matchup_fails_closed(self):
+        old=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","player_rows":[{"PTS":9}]}])
+        new=snap("2026-11-10T00:30:00Z",games=[
+            {"id":"1","game":"UTA @ MIA","player_rows":[{"PTS":11}]}])
+        with self.assertRaisesRegex(ValueError,"GAME_IDENTITY_CONFLICT"):
+            merge(old,new)
+
+    def test_empty_or_regressed_same_game_cannot_claim_complete(self):
+        old=snap("2026-11-10T00:20:00Z",games=[
+            {"id":"1","game":"BOS @ NYK","state":"post","player_rows":[{"PTS":100}]}])
+        for state,players in [("post",[]),("in",[{"PTS":65}])]:
+            new=json.loads(snap("2026-11-10T00:30:00Z",games=[
+                {"id":"1","game":"BOS @ NYK","state":state,"player_rows":players}]))
+            new["coverage"]={"complete":True}
+            result=merge(old,json.dumps(new))
+            self.assertEqual(result["games"][0]["player_rows"][0]["PTS"],100)
+            self.assertFalse(result["coverage"]["complete"])
+            self.assertEqual(result["coverage"]["retained_prior_game_count"],1)
+
     def test_incoming_json_requires_schema_and_utc(self):
         with self.assertRaisesRegex(ValueError,"INCOMING_TIMESTAMP_INVALID"):
             merge(None,json.dumps({"games":[],"captured_at":"invalid"}))
         with self.assertRaisesRegex(ValueError,"INVALID_SCHEMA"):
             merge(None,json.dumps({"captured_at":"2026-11-10T00:00:00Z"}))
-    def test_newer_partial_game_does_not_erase_other_verified_game(self):
-        old=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:10:00Z","date_eastern":"2026-11-10",
-          "coverage":{"observed_game_count":2,"active_or_final_count":2,"complete":True},
-          "games":[
-            {"id":"101","game":"Bucks @ Knicks","state":"in",
-             "observed_at":"2026-11-11T01:10:00Z","player_rows":[{"player":"A","PTS":14}]},
-            {"id":"102","game":"Celtics @ 76ers","state":"in",
-             "observed_at":"2026-11-11T01:10:00Z","player_rows":[{"player":"B","PTS":23}]}]})
-        new=json.dumps({"status":"PARTIAL_NBA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:15:00Z","date_eastern":"2026-11-10",
-          "coverage":{"observed_game_count":1,"active_or_final_count":2,"complete":False},
-          "games":[{"id":"101","game":"Bucks @ Knicks","state":"in",
-                    "observed_at":"2026-11-11T01:15:00Z",
-                    "player_rows":[{"player":"A","PTS":17}]}]})
-        result=merge(old,new)
-        self.assertEqual(len(result["games"]),2)
-        players={g["id"]:g["player_rows"][0]["PTS"] for g in result["games"]}
-        self.assertEqual(players,{"101":17,"102":23})
-        self.assertEqual(result["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
-        self.assertFalse(result["coverage"]["complete"])
-        self.assertEqual(result["preserved_prior_game_observations"],1)
-        self.assertEqual(result["games"][1]["observed_at"],"2026-11-11T01:10:00Z")
-
-    def test_older_game_observation_cannot_replace_newer_even_when_wrapper_is_new(self):
-        old=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:15:00Z","date_eastern":"2026-11-10",
-          "games":[{"id":"101","game":"Bucks @ Knicks","state":"in",
-            "observed_at":"2026-11-11T01:15:00Z",
-            "player_rows":[{"player":"A","PTS":17}]}]})
-        incoming=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:20:00Z","date_eastern":"2026-11-10",
-          "games":[{"id":"101","game":"Bucks @ Knicks","state":"in",
-            "observed_at":"2026-11-11T01:08:00Z",
-            "player_rows":[{"player":"A","PTS":4}]}]})
-        result=merge(old,incoming)
-        self.assertEqual(result["games"][0]["player_rows"][0]["PTS"],17)
-        self.assertEqual(result["games"][0]["observed_at"],"2026-11-11T01:15:00Z")
-        self.assertEqual(result["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
-
-    def test_partial_boxscore_without_players_never_zeros_existing_totals(self):
-        old=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:10:00Z","date_eastern":"2026-11-10",
-          "games":[{"id":"101","game":"Bucks @ Knicks","state":"in",
-            "observed_at":"2026-11-11T01:10:00Z",
-            "player_rows":[{"player":"A","PTS":19}]}]})
-        new=json.dumps({"status":"PARTIAL_NBA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:12:00Z","date_eastern":"2026-11-10",
-          "games":[{"id":"101","game":"Bucks @ Knicks","state":"in",
-            "observed_at":"2026-11-11T01:12:00Z","player_rows":[]}]})
-        r=merge(old,new)
-        self.assertEqual(r["games"][0]["player_rows"][0]["PTS"],19)
-        self.assertFalse(r["coverage"]["complete"])
-
-    def test_mismatched_same_game_id_fails_without_overwrite(self):
-        old=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:10:00Z","date_eastern":"2026-11-10",
-          "games":[{"id":"101","game":"Bucks @ Knicks","player_rows":[{"PTS":19}]}]})
-        new=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:15:00Z","date_eastern":"2026-11-10",
-          "games":[{"id":"101","game":"Celtics @ 76ers","player_rows":[{"PTS":23}]}]})
-        with self.assertRaisesRegex(ValueError,"GAME_IDENTITY_CONFLICT"):
-            merge(old,new)
-
-    def test_new_eastern_slate_does_not_import_yesterdays_players(self):
-        old=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-11T01:00:00Z","date_eastern":"2026-11-10",
-          "games":[{"id":"101","game":"Bucks @ Knicks","player_rows":[{"PTS":19}]}]})
-        new=json.dumps({"status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-          "captured_at":"2026-11-12T01:00:00Z","date_eastern":"2026-11-11",
-          "games":[{"id":"102","game":"Celtics @ 76ers","player_rows":[{"PTS":10}]}]})
-        result=merge(old,new)
-        self.assertEqual([g["id"] for g in result["games"]],["102"])
-
-    def test_real_published_multigame_snapshot_survives_single_game_refresh(self):
-        from pathlib import Path
-        from datetime import datetime,timedelta,timezone
-        file=Path(__file__).resolve().parents[2]/"docs/nba_player_tracking_independent.json"
-        old=json.loads(file.read_text())
-        games=[g for g in old.get("games",[]) if g.get("id") and g.get("game") and g.get("player_rows")]
-        if len(games)<2:
-            self.skipTest("Current published fixture has fewer than two verified games")
-        old["games"]=games[:2]
-        old["status"]="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"
-        old["coverage"]={"observed_game_count":2,"active_or_final_count":2,"complete":True}
-        now=datetime.fromisoformat(old["captured_at"].replace("Z","+00:00"))
-        candidate=json.loads(json.dumps(old))
-        candidate["status"]="PARTIAL_NBA_PLAYER_BOXSCORES"
-        candidate["captured_at"]=(now+timedelta(minutes=5)).isoformat()
-        candidate["games"]=candidate["games"][:1]
-        candidate["games"][0]["observed_at"]=candidate["captured_at"]
-        candidate["coverage"]={"observed_game_count":1,"active_or_final_count":2,"complete":False}
-        joined=merge(json.dumps(old),json.dumps(candidate))
-        self.assertEqual(len(joined["games"]),2)
-        missing_from_new=games[1]
-        preserved=next(g for g in joined["games"] if g["id"]==missing_from_new["id"])
-        self.assertEqual(preserved["player_rows"],missing_from_new["player_rows"])
-        self.assertEqual(preserved["observed_at"],missing_from_new["observed_at"])
-        self.assertEqual(joined["status"],"PARTIAL_NBA_PLAYER_BOXSCORES")
-
     def test_legacy_committed_file_only_has_known_repairable_suffix(self):
         from pathlib import Path
         src=Path(__file__).resolve().parents[2]/"docs/nba_player_tracking_independent.json"

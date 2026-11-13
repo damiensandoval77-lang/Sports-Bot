@@ -52,6 +52,16 @@ def check():
                 page.locator(".pick").first.click()
                 page.locator("#detail:not(.hidden)").wait_for()
                 assert page.locator("#detail-content .hero").count()==1,"NFL player detail did not render"
+                # UI-only fixture: actual hosted outputs are verified separately.
+                page.evaluate("""() => {state.picked={...state.picked,matchupPreview:{
+                    rate:0.61,asOf:state.picked.captured,sport:'NFL',
+                    method:'NFL_MATCHUP_RESIDUAL_V1',calibrated:false}};renderDetail();}""")
+                assert '~61%' in page.locator('#detail-content .hero').inner_text()
+                assert 'NFL ensemble estimate' in page.locator('#detail-content .hero').inner_text()
+                assert 'Uncalibrated research probability' in page.locator('#detail-content .hero').inner_text()
+                page.evaluate("() => {delete state.picked.matchupPreview;renderDetail();}")
+                assert 'MATCHUP HIT ESTIMATE UNAVAILABLE' in page.locator('#detail-content .hero').inner_text()
+
                 page.locator("#back").click()
                 page.locator('[data-view="live"]').click()
                 page.locator('[data-league="NBA"]').click()
@@ -59,7 +69,7 @@ def check():
                 assert nba_live_games>0,"Published NBA scoreboard games are missing from Live"
                 page.locator("[data-game]").first.click()
                 assert page.locator("#detail-content").get_by_text("Full published player box score",exact=False).count()>0
-                assert page.locator("#detail-content").get_by_text("Frozen pregame props",exact=False).count()>0
+                assert page.locator("#detail-content").get_by_text("Saved pregame standard lines",exact=False).count()>0
                 page.locator("#back").click()
                 page.locator('[data-league="NFL"]').click()
                 nfl_live_games=page.locator("[data-game]").count()

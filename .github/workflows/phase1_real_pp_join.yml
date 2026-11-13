@@ -3,12 +3,23 @@ name: Phase 1 real PrizePicks and AI join regression
 on:
   pull_request:
     paths:
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_dames_picks_vE.cjs'
+      - 'iphone_bot/tests/test_live_direct.cjs'
+      - 'iphone_bot/tests/test_root_redirect.cjs'
       - "docs/index.html"
       - "docs/prizepicks_site.json"
       - "docs/ai_projection_fallback.json"
       - "docs/current_form.json"
       - "iphone_bot/tests/test_real_prizepicks_pregame_join.cjs"
       - ".github/workflows/phase1_real_pp_join.yml"
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/phase1_real_pp_join.yml'
+      - 'docs/dames-picks/**'
+      - 'iphone_bot/tests/test_dashboard_scoreboard_integration.py'
+      - 'iphone_bot/tests/test_real_prizepicks_pregame_join.cjs'
   workflow_dispatch:
 
 permissions:
@@ -19,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

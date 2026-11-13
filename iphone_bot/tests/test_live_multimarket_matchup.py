@@ -3,12 +3,30 @@ import unittest
 import numpy as np
 try:
     from iphone_bot.multimarket_probability import simulate
-    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity
+    from iphone_bot.live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
 except ImportError:
     from multimarket_probability import simulate
-    from live_multimarket_matchup import select_standard,resolve_current_roster_identity
+    from live_multimarket_matchup import select_standard,resolve_current_roster_identity,per_game_diagnostics
 
 class MultimarketTests(unittest.TestCase):
+    def test_game_diagnostics_explain_withheld_quotes_without_inventing_picks(self):
+        game="Brooklyn Nets @ New Orleans Pelicans"
+        offer={"game":game,"player":"Observed Player","stat":"Points","direction":"More"}
+        report=per_game_diagnostics({"picks":[offer,offer]},[offer],[],{game:{"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED":1}})
+        self.assertEqual(report[game]["observed_provider_quote_rows"],2)
+        self.assertEqual(report[game]["verified_standard_offers"],1)
+        self.assertEqual(report[game]["frozen_forecasts"],0)
+        self.assertEqual(report[game]["excluded"],{"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED":1})
+
+    def test_game_diagnostics_keep_matchups_separate(self):
+        a="Los Angeles Lakers @ Milwaukee Bucks"
+        b="San Antonio Spurs @ Chicago Bulls"
+        offers=[{"game":a},{"game":b}]
+        report=per_game_diagnostics({"picks":offers},offers,[{"game":b}],{a:{"INJURY_AFFECTED_PROJECTION_WITHHELD":1}})
+        self.assertEqual(report[a]["frozen_forecasts"],0)
+        self.assertEqual(report[b]["frozen_forecasts"],1)
+        self.assertEqual(report[b]["excluded"],{})
+
     def test_pra_is_same_three_component_projections(self):
         samples=np.tile([[-5,-3,-2],[0,0,0],[5,3,2],[3,1,1]],(300,1))
         p={"PTS":20.,"REB":7.,"AST":6.}
@@ -41,6 +59,81 @@ class MultimarketTests(unittest.TestCase):
                          {"Points","Rebounds","Assists","Points Rebounds Assists"})
         self.assertTrue(all(r["line"]==20.5 for r in selected))
         self.assertEqual(excluded["NON_STANDARD_POINTS_TIER"],16)
+
+    def test_verified_christian_anderson_alias_resolves_exact_current_identity(self):
+        identity,reason=resolve_current_roster_identity(
+            "Christian Anderson Jr.","Charlotte Hornets @ Phoenix Suns",
+            {"christiananderson":{("1643515","CHA")}}, {"1643515":"CHA"})
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("1643515","CHA","PHX"))
+
+    def test_verified_alias_does_not_invent_missing_roster_or_override_id_team(self):
+        game="Charlotte Hornets @ Phoenix Suns"
+        for roster,latest in [
+            ({},{"1643515":"CHA"}),
+            ({"christiananderson":{("999","CHA")}},{"999":"CHA"}),
+            ({"christianandersonjr":{("999","CHA")}},{"999":"CHA"}),
+            ({"christiananderson":{("1643515","PHX")}},{"1643515":"PHX"}),
+            ({"christiananderson":{("1643515","CHA")}},{"1643515":"DAL"}),
+        ]:
+            with self.subTest(roster=roster,latest=latest):
+                identity,reason=resolve_current_roster_identity(
+                    "Christian Anderson Jr.",game,roster,latest)
+                self.assertIsNone(identity)
+                self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+        identity,reason=resolve_current_roster_identity(
+            "Christian Anderson Jr.","Dallas Mavericks @ Minnesota Timberwolves",
+            {"christiananderson":{("1643515","CHA")}},{"1643515":"CHA"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+
+    def test_verified_alias_fails_closed_on_canonical_or_exact_name_collision(self):
+        for roster in [
+            {"christiananderson":{("1643515","CHA"),("999","CHA")}},
+            {"christiananderson":{("1643515","CHA")},
+             "christianandersonjr":{("999","PHX")}},
+        ]:
+            identity,reason=resolve_current_roster_identity(
+                "Christian Anderson Jr.","Charlotte Hornets @ Phoenix Suns",
+                roster,{"1643515":"CHA","999":"PHX"})
+            self.assertIsNone(identity)
+            self.assertEqual(reason,"PLAYER_IDENTITY_NOT_UNIQUE")
+
+    def test_unverified_jr_suffix_is_not_generically_removed(self):
+        identity,reason=resolve_current_roster_identity(
+            "Example Jr.","Charlotte Hornets @ Phoenix Suns",
+            {"example":{("123","CHA")}},{"123":"CHA"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
+
+    def test_accented_surname_matches_same_verified_player_id(self):
+        roster={"alperensengun":{("1630578","HOU")}}
+        identity,reason=resolve_current_roster_identity(
+            "Alperen Şengün","Golden State Warriors @ Houston Rockets",
+            roster,{"1630578":"HOU"})
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("1630578","HOU","GSW"))
+
+    def test_jr_suffix_punctuation_matches_same_verified_player_id(self):
+        roster={"terrenceshannonjr":{("1630545","MIN")}}
+        identity,reason=resolve_current_roster_identity(
+            "Terrence Shannon Jr.","Dallas Mavericks @ Minnesota Timberwolves",
+            roster,{"1630545":"MIN"})
+        self.assertIsNone(reason)
+        self.assertEqual(identity,("1630545","MIN","DAL"))
+
+    def test_name_normalization_cannot_override_team_or_ambiguity(self):
+        roster={"alperensengun":{("1630578","HOU"),("42","GSW")}}
+        identity,reason=resolve_current_roster_identity(
+            "Alperen Şengün","Golden State Warriors @ Houston Rockets",
+            roster,{"1630578":"HOU","42":"GSW"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"PLAYER_IDENTITY_NOT_UNIQUE")
+        identity,reason=resolve_current_roster_identity(
+            "Alperen Şengün","Golden State Warriors @ Houston Rockets",
+            {"alperensengun":{("1630578","HOU")}},{"1630578":"SAS"})
+        self.assertIsNone(identity)
+        self.assertEqual(reason,"CURRENT_ROSTER_IDENTITY_NOT_VERIFIED")
 
     def test_traded_history_resolves_only_latest_verified_team_in_matchup(self):
         roster={"example":{("123","BOS"),("123","NYK")}}

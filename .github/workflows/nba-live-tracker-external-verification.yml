@@ -1,72 +1,16 @@
-name: Verify externally hosted NBA live tracker end to end
+name: Retired legacy external tracker check (not a production health gate)
+# Replit hosting was replaced by the unified GitHub Pages app and direct ESPN.
+# Keep this manual entry explicit so old links cannot poll the retired service.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/nba-live-tracker-external-verification.yml'
-      - 'docs/live_tracker_verification_request.json'
 permissions:
   contents: read
 jobs:
-  external-verification:
+  retired-not-production-health:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Independently probe public deployment and Pages via runner network
-        env:
-          SERVICE_BASE: https://squeaky-likely-locatorprogram--f296nyptrr.replit.app
-          PAGES_BASE: https://damiensandoval77-lang.github.io/Sports-Bot
-          PAGES_ORIGIN: https://damiensandoval77-lang.github.io
+      - name: Identify the active deployment and mobile checks without network calls
         run: |
-          python - <<'PY'
-          import os,json,urllib.request,urllib.error,datetime,time,traceback
-          service=os.environ['SERVICE_BASE']
-          pages=os.environ['PAGES_BASE']
-          origin=os.environ['PAGES_ORIGIN']
-          def probe(url):
-              try:
-                  req=urllib.request.Request(url,headers={'Origin':origin,'Cache-Control':'no-cache','User-Agent':'Sports-Bot-external-live-verification/1.0'})
-                  with urllib.request.urlopen(req,timeout=18) as response:
-                      raw=response.read(5_000_000)
-                      content_type=response.headers.get('Content-Type')
-                      cors=response.headers.get('Access-Control-Allow-Origin')
-                      print('HTTP',response.status,'URL',url,'TYPE',content_type,'CORS',cors,'BYTES',len(raw),flush=True)
-                      try:return {'status':response.status,'json':json.loads(raw),'cors':cors,'raw':raw}
-                      except Exception:return {'status':response.status,'raw':raw,'cors':cors}
-              except Exception as e:
-                  print('HTTP FAILURE',url,type(e).__name__,str(e),flush=True)
-                  return {'error':type(e).__name__+': '+str(e)}
-          health=probe(service+'/healthz')
-          feed=probe(service+'/live_player_tracking.json')
-          config=probe(pages+'/live_tracker_config.json')
-          dashboard=probe(pages+'/')
-          js=probe(pages+'/live-prop-tracker.js')
-          print('HEALTH',json.dumps(health.get('json',{}))[:3500])
-          print('FEED META',json.dumps({k:v for k,v in feed.get('json',{}).items() if k!='games'})[:3500])
-          print('FEED GAMES',len(feed.get('json',{}).get('games',[])))
-          print('CONFIG',json.dumps(config.get('json',{}))[:2000])
-          html=dashboard.get('raw',b'').decode('utf8','replace')
-          script=js.get('raw',b'').decode('utf8','replace')
-          print('DASHBOARD TRACKER COMPONENT',all(x in html for x in ('live-prop-tracker','live-prop-cards','live_tracker_config.json')))
-          print('TRACKER HELPER',all(x in script for x in ('matchDiagnostics','stats','PTS','REB','AST','PRA')))
-          assert health.get('status')==200 and health.get('json',{}).get('status')=='HEALTHY','Live host unhealthy'
-          assert feed.get('status')==200 and isinstance(feed.get('json',{}).get('games'),list),'Live feed not valid'
-          assert health.get('cors')==origin and feed.get('cors')==origin,'Live CORS not browser-usable'
-          assert config.get('status')==200 and dashboard.get('status')==200 and js.get('status')==200,'GitHub Pages unavailable'
-          assert config.get('json',{}).get('status')=='HOSTED_LIVE_SERVICE_ENABLED','Dashboard hosted feed not enabled'
-          assert config.get('json',{}).get('url')==service+'/live_player_tracking.json','Dashboard points to wrong feed'
-          assert 'live-prop-cards' in html and 'live_tracker_config.json' in html,'Dashboard lacks live player display'
-          # Test independent polling, not just a successful publish status.
-          t0=feed['json'].get('captured_at')
-          time.sleep(43)
-          health2=probe(service+'/healthz')
-          feed2=probe(service+'/live_player_tracking.json')
-          assert health2.get('status')==200 and health2.get('json',{}).get('status')=='HEALTHY','Second poll unhealthy'
-          assert feed2.get('status')==200 and feed2.get('json',{}).get('captured_at')!=t0,'Feed did not update across polling window'
-          print('VERIFIED TWO SUCCESSIVE POLLS AND PUBLIC DASHBOARD CONFIG')
-          PY
+          echo 'RETIRED: this workflow makes no production-health claim.'
+          echo 'Current checks: verify_public_dashboard.yml and live-site-e2e.yml.'
+          echo 'No legacy hosted service or paid provider is contacted.'

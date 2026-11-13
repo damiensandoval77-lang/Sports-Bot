@@ -295,9 +295,13 @@ test("frozen or AI-only market is not duplicated by quote-only tracker fallback"
  assert.equal(L.quoteOnlyLiveRows(a,game,[],Date.parse("2026-11-09T23:30:00Z")).length,0);
  assert.equal(L.quoteOnlyLiveRows(a,game,[],Date.parse("2026-11-10T00:30:00Z")).length,1);
 });
-test("line-only tracker does not turn a captured quote into an AI projection",()=>{
- const fs=require("node:fs"),html=fs.readFileSync("docs/index.html","utf8");
- assert.ok(html.includes("helper.quoteOnlyLiveRows("));
- assert.ok(html.includes('p.quote_only?"—"'));
- assert.ok(html.includes('p.quote_only?"OBSERVED PREGAME LINE · NO AI MODEL"'));
+test("combined app never turns a quote-only standard line into an AI projection",()=>{
+ const fs=require("node:fs");
+ const model=fs.readFileSync("docs/dames-picks/feeds.js","utf8");
+ const app=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(model.includes("function includeArchivedStandard(rows,archive)"));
+ assert.ok(model.includes("projection:null,direction:null,chance:null"));
+ assert.ok(model.includes("quoteOnly:true"));
+ assert.ok(app.includes('p.quoteOnly?"NO AI"'));
+ assert.ok(app.includes('p.quoteOnly?"NO AI"')); // quote-only identity remains labeled on card badge; footer is OVER/UNDER only
 });

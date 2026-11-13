@@ -1,4 +1,7 @@
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+import workflow_contract as W
 import unittest
 ROOT=Path(__file__).resolve().parents[2]
 SITE=(ROOT/".github/workflows/nba-prizepicks-site-publish.yml").read_text()
@@ -26,7 +29,7 @@ class PublicationHandoffTests(unittest.TestCase):
         self.assertIn("gh workflow run nba-prizepicks-ai-board.yml --ref main",SITE)
         self.assertIn("gh workflow run nba-new-ai-all-markets.yml --ref main",SITE)
         self.assertIn("gh workflow run publish_live_pp_ai_join.yml --ref main",SITE)
-        self.assertIn("if: steps.publish.outputs.changed == 'true'",SITE)
+        self.assertTrue(W.change_gated(W.condition("nba-prizepicks-site-publish.yml","Generate actual player AI projections immediately from new authentic lines")))
     def test_no_paid_provider_calls_in_join_workflow(self):
         self.assertNotIn("PRIZEPICKS_API_KEY",LIGHT)
         self.assertNotIn("fetch_prizepicks.py",LIGHT)

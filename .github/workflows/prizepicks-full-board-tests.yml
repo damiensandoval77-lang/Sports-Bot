@@ -43,20 +43,28 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_health_publication.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_per_date_coverage.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
-      - name: Validate site shows missing-sportsbook independent posted lines
+      - name: Validate current unified app preserves genuine unmodeled standard PrizePicks lines
         run: |
           python - <<'PY'
           from pathlib import Path
-          s=Path('docs/index.html').read_text()
-          assert 'id="pp-board"' in s and 'function renderPrizePicksBoard()' in s
-          assert 'board_offers' in s and 'ppBoardOffers' in s
-          assert 'Date.parse(o.starts_at)>Date.now()' in s
-          assert 'Independent third-party PrizePicks observation' in s
-          script=s.split('<script>',1)[1].split('</script>',1)[0]
-          Path('/tmp/pp-board.js').write_text(script)
-          print('Independent PrizePicks slate and market filters present')
+          import re
+          landing=Path('docs/index.html').read_text()
+          active=Path('docs/dames-picks/index.html').read_text()
+          model=Path('docs/dames-picks/feeds.js').read_text()
+          assert 'url=./dames-picks/' in landing
+          assert 'function includeArchivedStandard(rows,archive)' in model
+          assert 'projection:null,direction:null,chance:null' in model
+          assert 'quoteOnly:true' in model
+          assert 'm.includeArchivedStandard(state.nba,quoteArchive.value)' in active
+          assert 'p.quoteOnly?"NO AI"' in active
+          assert '<div class="stampband over-under-footer">' in active, 'Mobile footer must stay over/under-only'
+          scripts=re.findall(r'<script>(.*?)</script>',active,re.S)
+          assert scripts, 'Active site script missing'
+          Path('/tmp/pp-board.js').write_text(scripts[-1])
+          print('Active NBA board preserves observed standard lines without claiming fake AI')
           PY
           node --check /tmp/pp-board.js
+          node --check docs/dames-picks/feeds.js
       - name: Confirm no duplicate paid PrizePicks requests in AI workflows
         run: |
           python - <<'PY'

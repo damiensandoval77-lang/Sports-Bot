@@ -67,6 +67,13 @@ def current_games(local,validated_shooting):
             coverage["BOX_SCORE_DISAGREEMENT"]+=1;continue
         if abs(float(r.get("MIN",-999))-v["minutes"])>2.5:
             coverage["MINUTES_DISAGREEMENT"]+=1;continue
+        # CSV minutes are rounded; the crosschecked source can reveal a
+        # subminute cameo. All model inputs require at least one real minute
+        # (the CSV importer, CSV recovery and predict() share this boundary).
+        # Exclude just that row rather than poisoning otherwise sufficient
+        # history, and never round the observed duration up to qualify it.
+        if v["minutes"]<1:
+            coverage["BELOW_MODEL_MINIMUM_MINUTES"]+=1;continue
         enriched={**r,"season":"2026-27","FGA":v["fga"],
                   "FTA":v["fta"],"TOV":v["tov"],"OREB":v["oreb"],
                   "MIN":v["minutes"],"id":key[0]}
@@ -74,7 +81,7 @@ def current_games(local,validated_shooting):
         coverage["MATCHED"]+=1
     return rows,dict(coverage)
 
-def build_features(history,team,opponent,day,team_games):
+def build_features(history,team,opponent,day,team_games,*,neutral_defense_on_missing=False):
     recent=sorted((r for r in history if r.get("team")==team and r.get("date","")<day),
                   key=lambda r:r["date"])
     if len({r["date"] for r in recent})!=len(recent):
@@ -83,7 +90,15 @@ def build_features(history,team,opponent,day,team_games):
     if base is None:return None,"INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY"
     opp=defense_factor(team_games,team,opponent,day)
     if opp["status"]!="PRIOR_RECIPROCAL_TEAM_BOX_CONTEXT":
-        return None,"INSUFFICIENT_PRIOR_OPPONENT_PACE_DEFENSE"
+        if not neutral_defense_on_missing:
+            return None,"INSUFFICIENT_PRIOR_OPPONENT_PACE_DEFENSE"
+        # Neutral is a declared missing-feature fallback, NOT measured defense.
+        # The trained model may still estimate a descriptive baseline from verified
+        # prior player history, but no matchup-adjusted hit chance can be claimed.
+        opp={"pace_factor":1.0,"defense_factor":1.0}
+        defense_unavailable=True
+    else:
+        defense_unavailable=False
     volume=sum(r["FGA"]+.44*r["FTA"]+r["TOV"] for r in recent)
     if volume<=0:return None,"INVALID_OPPORTUNITY_DENOMINATOR"
     recent10=recent[-10:]
@@ -100,6 +115,7 @@ def build_features(history,team,opponent,day,team_games):
       "last3_minutes":mean(r["MIN"] for r in recent[-3:]),
       "last10_minutes":mean(r["MIN"] for r in recent10),
       "history_count":min(82,len(recent))}
+    f["opponent_context_unavailable"]=defense_unavailable
     if not all(math.isfinite(float(f[x])) for x in COLS):
         return None,"NONFINITE_LAGGED_FEATURE"
     return f,None

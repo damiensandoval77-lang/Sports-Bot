@@ -1,0 +1,41 @@
+name: Verify clean public mobile board and opt-in diagnostics
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/dames-picks/index.html'
+      - 'docs/dames-picks/release.json'
+      - 'iphone_bot/verify_public_diagnostics.py'
+      - '.github/workflows/verify-public-board-diagnostics.yml'
+  pull_request:
+    paths:
+      - 'iphone_bot/verify_public_diagnostics.py'
+      - '.github/workflows/verify-public-board-diagnostics.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '27 15 * * *'
+permissions:
+  contents: read
+jobs:
+  public-visibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public browser verifier
+        run: |
+          python -m pip install --disable-pip-version-check 'playwright==1.56.0'
+          python -m playwright install --with-deps chromium
+      - name: Test actual public mobile board, no internal labels, and opt-in release verification
+        run: python -m iphone_bot.verify_public_diagnostics
+      - name: Preserve public mobile proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-board-diagnostics-visibility
+          path: public-diagnostics-visibility.json
+          if-no-files-found: warn
+          retention-days: 21

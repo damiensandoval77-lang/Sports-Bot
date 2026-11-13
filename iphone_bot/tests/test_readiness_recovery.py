@@ -2,6 +2,19 @@ import unittest
 from iphone_bot.readiness_recovery import recovery_targets
 
 class RecoveryRoutingTests(unittest.TestCase):
+    def test_stale_schedule_and_forecast_route_to_free_collectors(self):
+        report={"status":"BLOCKED","upcoming_games":1,"components":{
+            "schedule":{"required":True,"state":"BLOCKED"},
+            "ai_forecasts":{"required":True,"state":"BLOCKED"}}}
+        self.assertEqual(recovery_targets(report),[
+            "nba-schedule.yml","nba-no-line-daily-projections.yml"])
+
+    def test_posttip_forecasts_not_recreated_but_schedule_recovers(self):
+        report={"status":"BLOCKED","upcoming_games":0,"components":{
+            "schedule":{"required":True,"state":"BLOCKED"},
+            "ai_forecasts":{"required":True,"state":"BLOCKED"}}}
+        self.assertEqual(recovery_targets(report),["nba-schedule.yml"])
+
     def test_ready_does_not_trigger_spend(self):
         self.assertEqual(recovery_targets({"status":"READY","components":{}}), [])
     def test_stale_lines_triggers_collector(self):
@@ -30,7 +43,8 @@ class RecoveryRoutingTests(unittest.TestCase):
                    "live_player_stats":{"required":True,"state":"BLOCKED"}}}
         self.assertEqual(recovery_targets(report),[
           "independent_scoreboard_refresh.yml",
-          "independent_nba_player_boxscores.yml"])
+          "independent_nba_player_boxscores.yml",
+          "nba-live-tracker-backup.yml"])
 
     def test_only_raw_provider_coverage_gap_does_not_trigger_paid_refresh(self):
         report={"status":"READY","components":{

@@ -3,12 +3,14 @@ on:
   pull_request:
     paths:
       - 'docs/nfl/**'
+      - 'docs/dames-picks/**'
       - 'tests/test_nfl_live_ui.cjs'
       - '.github/workflows/nfl-live-ui-qa.yml'
   push:
     branches: [main]
     paths:
       - 'docs/nfl/index.html'
+      - 'docs/dames-picks/**'
       - 'tests/test_nfl_live_ui.cjs'
       - '.github/workflows/nfl-live-ui-qa.yml'
   schedule:
@@ -29,6 +31,8 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium
+      - name: Test unified NFL adapter safety contracts
+        run: node --test tests/test_nfl_standard_thresholds.cjs tests/test_nfl_matchup_evidence.cjs tests/test_nfl_provider_event.cjs tests/test_nfl_training_support.cjs tests/test_nfl_boxscore_display.cjs tests/test_live_pace_sort.cjs tests/test_pick_hit_sort.cjs tests/test_nfl_browser_live.cjs
       - name: Test checked-in NFL dashboard on mobile and desktop
         env:
           NFL_UI_URL: http://127.0.0.1:8765/nfl/
@@ -37,6 +41,7 @@ jobs:
           python3 -m http.server 8765 --directory docs > /tmp/nfl-local-server.log 2>&1 &
           node tests/test_nfl_live_ui.cjs
       - name: Test deployed GitHub Pages dashboard
+        if: github.event_name != 'pull_request'
         env:
           NFL_UI_URL: https://damiensandoval77-lang.github.io/Sports-Bot/nfl/
           NFL_SCREENSHOT_DIR: nfl-ui-artifacts/production

@@ -1,0 +1,1372 @@
+{
+  "status": "PARTIAL",
+  "started_at": "2026-11-13T06:25:45Z",
+  "evidence_cutoff": "2026-11-13T06:32:35.092071+00:00",
+  "pinned_main_sha": "101b6284fcc727ed3280b59a082156fff994ae7e",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "permissions": {
+    "read": true,
+    "write_and_merge": true,
+    "coding_environment": true
+  },
+  "repairs": [
+    {
+      "id": "SEC-CI-PINS",
+      "severity": "MEDIUM",
+      "cause": "Mutable official action tags can change executing dependency code without repository review",
+      "before": 411,
+      "references_pinned": 9,
+      "remaining": 402,
+      "files": [
+        ".github/workflows/pipeline-contracts.yml",
+        ".github/workflows/dames-picks-version-e.yml",
+        ".github/workflows/phase1_feed_health.yml"
+      ],
+      "pins": {
+        "actions/checkout@v4": "11d5960a326750d5838078e36cf38b85af677262",
+        "actions/setup-python@v5": "a26af69be951a213d495a4c3e4e4022e16d87065",
+        "actions/setup-node@v4": "49933ea5288caeca8642d1e84afbd3f7d6820020"
+      },
+      "validation": "Official remote tag SHA resolution; YAML semantics unchanged; all four PR checks passed;146 UI tests passed",
+      "verification_scope": "CI executor supply-chain repair; static Pages does not execute these actions",
+      "pins_pr": 402,
+      "pins_head": "5a96c1018031a34aeb7f041af32dab569d0d372b",
+      "pins_merge": "ace8966a4edc9cc40dff61135a7213c3076a35bd",
+      "checks": [
+        {
+          "name": "browser",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43379010732/job/131732160357"
+        },
+        {
+          "name": "feed-health",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43379010842/job/131732160102"
+        },
+        {
+          "name": "verify",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43379010732/job/131732160085"
+        },
+        {
+          "name": "pipeline-contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43379010728/job/131732160006"
+        }
+      ],
+      "phone_retry": {
+        "run": 43378474300,
+        "prior_job": 131730467469,
+        "status": "pending",
+        "attempt": 2
+      }
+    }
+  ],
+  "rechecks": [
+    {
+      "id": "INTEGRATED-CI",
+      "failed_run": 43377643244,
+      "failed_job": 131727761380,
+      "cause": "Test used rotating daily schedule for yesterday fixture",
+      "current_result": "146 UI tests pass; deterministic fixture fix already present on pinned main; not a new repair credited here"
+    },
+    {
+      "id": "GRADING",
+      "result": "Public NFL standard pending0; NBA Nov12 AI388=332graded+56verifiedDNP; research327=318settled+9void,0pending"
+    }
+  ],
+  "inventory": {
+    "branches": 402,
+    "pr_tips": 400,
+    "refs": 802,
+    "static": {
+      "tracked_files": 1152,
+      "extension:.yml": 174,
+      "extension:": 3,
+      "extension:.md": 22,
+      "extension:.live-tracker": 1,
+      "extension:.csv": 42,
+      "extension:.json": 212,
+      "json_parse_pass": 212,
+      "extension:.py": 561,
+      "python_ast_pass": 561,
+      "extension:.js": 7,
+      "node_syntax_pass": 36,
+      "extension:.html": 3,
+      "extension:.webmanifest": 1,
+      "extension:.gz": 95,
+      "extension:.txt": 2,
+      "extension:.cjs": 29,
+      "workflows_total": 174,
+      "workflow_jobs": 185,
+      "pr_workflows": 103,
+      "manually_dispatchable": 149,
+      "workflow_steps": 1173,
+      "actions_not_sha_pinned": 411,
+      "runtime_test_commands_unguarded_steps": 85,
+      "scheduled_workflows": 83,
+      "continue_on_error_steps": 36,
+      "workflow_push_steps": 95,
+      "workflow_run_triggers": 10
+    },
+    "errors": 0,
+    "warnings": 45,
+    "run_rows": 600,
+    "unique_runs": 587,
+    "paths": 69,
+    "without_sampled_runtime": 106,
+    "run_conclusions": {
+      "in_progress": 1,
+      "success": 392,
+      "cancelled": 146,
+      "failure": 60,
+      "skipped": 1
+    }
+  },
+  "public_snapshots": {
+    "nfl__data__prospective_calibration_2026.json": {
+      "schema": "NFL_REAL_FROZEN_CALIBRATION_V1",
+      "calibrated": false,
+      "claim": "DESCRIPTIVE_ONLY_NOT_A_CALIBRATED_MODEL_OR_INDEPENDENT_WAGER_SAMPLE",
+      "probability_definition": "Selected-side unconditional win; pushes are non-wins in Brier, excluded only from settled hit rate.",
+      "limitations": [
+        "Correlated player markets within games; do not interpret row count as independent trials.",
+        "Legacy captures without complete pregame probability evidence are excluded.",
+        "No weights, thresholds, or probabilities are fitted from these results.",
+        "Role slices reflect only context captured before kickoff, never retrospective role assignments.",
+        "Legacy event/training support was not attested; cohorts remain separate from later repaired captures."
+      ],
+      "summary": {
+        "rows": 55,
+        "games": 1,
+        "players": 16,
+        "wins": 21,
+        "losses": 34,
+        "pushes": 0,
+        "settled_hit_rate": 0.38181818181818183,
+        "predicted_unconditional_win": 0.5993504674853943,
+        "observed_unconditional_win": 0.38181818181818183,
+        "brier_unconditional": 0.30572906293456226
+      },
+      "excluded": {
+        "no_probability_evidence": 80,
+        "not_graded": 2,
+        "not_standard": 946
+      },
+      "by": {
+        "game": {
+          "2026_10_WAS_NYG": {
+            "rows": 55,
+            "games": 1,
+            "players": 16,
+            "wins": 21,
+            "losses": 34,
+            "pushes": 0,
+            "settled_hit_rate": 0.38181818181818183,
+            "predicted_unconditional_win": 0.5993504674853943,
+            "observed_unconditional_win": 0.38181818181818183,
+            "brier_unconditional": 0.30572906293456226
+          }
+        },
+        "market": {
+          "FPTS": {
+            "rows": 10,
+            "games": 1,
+            "players": 10,
+            "wins": 4,
+            "losses": 6,
+            "pushes": 0,
+            "settled_hit_rate": 0.4,
+            "predicted_unconditional_win": 0.5553152323976069,
+            "observed_unconditional_win": 0.4,
+            "brier_unconditional": 0.286814964816286
+          },
+          "PASS_ATT": {
+            "rows": 1,
+            "games": 1,
+            "players": 1,
+            "wins": 0,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.0,
+            "predicted_unconditional_win": 0.6005917159763314,
+            "observed_unconditional_win": 0.0,
+            "brier_unconditional": 0.36071040929939435
+          },
+          "PASS_CMP": {
+            "rows": 1,
+            "games": 1,
+            "players": 1,
+            "wins": 1,
+            "losses": 0,
+            "pushes": 0,
+            "settled_hit_rate": 1.0,
+            "predicted_unconditional_win": 0.5887573964497042,
+            "observed_unconditional_win": 1.0,
+            "brier_unconditional": 0.1691204789748258
+          },
+          "PASS_INT": {
+            "rows": 1,
+            "games": 1,
+            "players": 1,
+            "wins": 0,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.0,
+            "predicted_unconditional_win": 0.5163254311653083,
+            "observed_unconditional_win": 0.0,
+            "brier_unconditional": 0.2665919508680415
+          },
+          "PASS_RUSH_YDS": {
+            "rows": 2,
+            "games": 1,
+            "players": 2,
+            "wins": 1,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5207100591715976,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.2624032771961766
+          },
+          "PASS_YDS": {
+            "rows": 2,
+            "games": 1,
+            "players": 2,
+            "wins": 1,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5769230769230769,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.21350793039459406
+          },
+          "REC": {
+            "rows": 4,
+            "games": 1,
+            "players": 4,
+            "wins": 2,
+            "losses": 2,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5921537651395472,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.2790455939643963
+          },
+          "REC_YDS": {
+            "rows": 14,
+            "games": 1,
+            "players": 14,
+            "wins": 6,
+            "losses": 8,
+            "pushes": 0,
+            "settled_hit_rate": 0.42857142857142855,
+            "predicted_unconditional_win": 0.5850447604002106,
+            "observed_unconditional_win": 0.42857142857142855,
+            "brier_unconditional": 0.2908599857380583
+          },
+          "RUSH_ATT": {
+            "rows": 4,
+            "games": 1,
+            "players": 4,
+            "wins": 0,
+            "losses": 4,
+            "pushes": 0,
+            "settled_hit_rate": 0.0,
+            "predicted_unconditional_win": 0.734073359073359,
+            "observed_unconditional_win": 0.0,
+            "brier_unconditional": 0.5464298758217678
+          },
+          "RUSH_REC_YDS": {
+            "rows": 4,
+            "games": 1,
+            "players": 4,
+            "wins": 1,
+            "losses": 3,
+            "pushes": 0,
+            "settled_hit_rate": 0.25,
+            "predicted_unconditional_win": 0.6038244353182752,
+            "observed_unconditional_win": 0.25,
+            "brier_unconditional": 0.36724122619313654
+          },
+          "RUSH_YDS": {
+            "rows": 6,
+            "games": 1,
+            "players": 6,
+            "wins": 2,
+            "losses": 4,
+            "pushes": 0,
+            "settled_hit_rate": 0.3333333333333333,
+            "predicted_unconditional_win": 0.6674710424710425,
+            "observed_unconditional_win": 0.3333333333333333,
+            "brier_unconditional": 0.3455550317278116
+          },
+          "TGT": {
+            "rows": 6,
+            "games": 1,
+            "players": 6,
+            "wins": 3,
+            "losses": 3,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5990872388976655,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.2137444640495635
+          }
+        },
+        "direction": {
+          "LESS": {
+            "rows": 30,
+            "games": 1,
+            "players": 9,
+            "wins": 10,
+            "losses": 20,
+            "pushes": 0,
+            "settled_hit_rate": 0.3333333333333333,
+            "predicted_unconditional_win": 0.5899101300665783,
+            "observed_unconditional_win": 0.3333333333333333,
+            "brier_unconditional": 0.30445224764323264
+          },
+          "MORE": {
+            "rows": 25,
+            "games": 1,
+            "players": 11,
+            "wins": 11,
+            "losses": 14,
+            "pushes": 0,
+            "settled_hit_rate": 0.44,
+            "predicted_unconditional_win": 0.6106788723879735,
+            "observed_unconditional_win": 0.44,
+            "brier_unconditional": 0.30726124128415805
+          }
+        },
+        "position": {
+          "QB": {
+            "rows": 9,
+            "games": 1,
+            "players": 2,
+            "wins": 4,
+            "losses": 5,
+            "pushes": 0,
+            "settled_hit_rate": 0.4444444444444444,
+            "predicted_unconditional_win": 0.5830517680339766,
+            "observed_unconditional_win": 0.4444444444444444,
+            "brier_unconditional": 0.24912229229554153
+          },
+          "RB": {
+            "rows": 21,
+            "games": 1,
+            "players": 4,
+            "wins": 5,
+            "losses": 16,
+            "pushes": 0,
+            "settled_hit_rate": 0.23809523809523808,
+            "predicted_unconditional_win": 0.6194125978329167,
+            "observed_unconditional_win": 0.23809523809523808,
+            "brier_unconditional": 0.36803827487722734
+          },
+          "TE": {
+            "rows": 7,
+            "games": 1,
+            "players": 3,
+            "wins": 5,
+            "losses": 2,
+            "pushes": 0,
+            "settled_hit_rate": 0.7142857142857143,
+            "predicted_unconditional_win": 0.5613855013117395,
+            "observed_unconditional_win": 0.7142857142857143,
+            "brier_unconditional": 0.2528201440187759
+          },
+          "WR": {
+            "rows": 18,
+            "games": 1,
+            "players": 7,
+            "wins": 7,
+            "losses": 11,
+            "pushes": 0,
+            "settled_hit_rate": 0.3888888888888889,
+            "predicted_unconditional_win": 0.5988581519843038,
+            "observed_unconditional_win": 0.3888888888888889,
+            "brier_unconditional": 0.28191405834376954
+          }
+        },
+        "role": {
+          "legacy_support_unknown": {
+            "rows": 55,
+            "games": 1,
+            "players": 16,
+            "wins": 21,
+            "losses": 34,
+            "pushes": 0,
+            "settled_hit_rate": 0.38181818181818183,
+            "predicted_unconditional_win": 0.5993504674853943,
+            "observed_unconditional_win": 0.38181818181818183,
+            "brier_unconditional": 0.30572906293456226
+          }
+        },
+        "artifact": {
+          "2371b94ef89fec08c1313cec1c35c374db5f35b683454b03cd75665ed03c8db1": {
+            "rows": 4,
+            "games": 1,
+            "players": 4,
+            "wins": 2,
+            "losses": 2,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5921537651395472,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.2790455939643963
+          },
+          "44b5ca18a547bf6c0d509a31ef945e1cd965779e3b77c93c337baec7ec684494": {
+            "rows": 2,
+            "games": 1,
+            "players": 2,
+            "wins": 1,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5207100591715976,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.2624032771961766
+          },
+          "709e157b91c6810e6b77938a799f4b9ea945b0fa855d729631a9f23be4ea3dc1": {
+            "rows": 14,
+            "games": 1,
+            "players": 14,
+            "wins": 6,
+            "losses": 8,
+            "pushes": 0,
+            "settled_hit_rate": 0.42857142857142855,
+            "predicted_unconditional_win": 0.5850447604002106,
+            "observed_unconditional_win": 0.42857142857142855,
+            "brier_unconditional": 0.2908599857380583
+          },
+          "794d10bdc4375ec1e6177463f46d682864b1ff3e3ee61e2b011358e40b0b82b5": {
+            "rows": 4,
+            "games": 1,
+            "players": 4,
+            "wins": 1,
+            "losses": 3,
+            "pushes": 0,
+            "settled_hit_rate": 0.25,
+            "predicted_unconditional_win": 0.6038244353182752,
+            "observed_unconditional_win": 0.25,
+            "brier_unconditional": 0.36724122619313654
+          },
+          "7b3cc88b884cabd7e03ca29db7361c29125eafaac0e9c29c1b92aa25559061c2": {
+            "rows": 1,
+            "games": 1,
+            "players": 1,
+            "wins": 1,
+            "losses": 0,
+            "pushes": 0,
+            "settled_hit_rate": 1.0,
+            "predicted_unconditional_win": 0.5887573964497042,
+            "observed_unconditional_win": 1.0,
+            "brier_unconditional": 0.1691204789748258
+          },
+          "85fc38286b11a8aedd0a38fd1299d28c48d9273e687ae4cfe1e4f8d909299025": {
+            "rows": 10,
+            "games": 1,
+            "players": 10,
+            "wins": 4,
+            "losses": 6,
+            "pushes": 0,
+            "settled_hit_rate": 0.4,
+            "predicted_unconditional_win": 0.5553152323976069,
+            "observed_unconditional_win": 0.4,
+            "brier_unconditional": 0.286814964816286
+          },
+          "896cd36acd6224ffff76f4a7dbafebd2bc2ad139d5fed9435f9fc441930a3f66": {
+            "rows": 1,
+            "games": 1,
+            "players": 1,
+            "wins": 0,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.0,
+            "predicted_unconditional_win": 0.6005917159763314,
+            "observed_unconditional_win": 0.0,
+            "brier_unconditional": 0.36071040929939435
+          },
+          "9773f4a838411421b810316231bd1c6e99ff1920d62bdc22b922c25915506a8f": {
+            "rows": 2,
+            "games": 1,
+            "players": 2,
+            "wins": 1,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5769230769230769,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.21350793039459406
+          },
+          "a20189e291e12641b6a777113aec17a083400b47e085939e26cdf4471029476e": {
+            "rows": 6,
+            "games": 1,
+            "players": 6,
+            "wins": 2,
+            "losses": 4,
+            "pushes": 0,
+            "settled_hit_rate": 0.3333333333333333,
+            "predicted_unconditional_win": 0.6674710424710425,
+            "observed_unconditional_win": 0.3333333333333333,
+            "brier_unconditional": 0.3455550317278116
+          },
+          "a4bb03b0263243fd0e18d187fa4803e362dc959d7e67b4fcb565c64a66a9da64": {
+            "rows": 4,
+            "games": 1,
+            "players": 4,
+            "wins": 0,
+            "losses": 4,
+            "pushes": 0,
+            "settled_hit_rate": 0.0,
+            "predicted_unconditional_win": 0.734073359073359,
+            "observed_unconditional_win": 0.0,
+            "brier_unconditional": 0.5464298758217678
+          },
+          "bdc8bccf90b9a7ae66d98360763750480fa5fd2c482fcb124a20183960bae4e4": {
+            "rows": 6,
+            "games": 1,
+            "players": 6,
+            "wins": 3,
+            "losses": 3,
+            "pushes": 0,
+            "settled_hit_rate": 0.5,
+            "predicted_unconditional_win": 0.5990872388976655,
+            "observed_unconditional_win": 0.5,
+            "brier_unconditional": 0.2137444640495635
+          },
+          "dfc1c306a6390de946795d07bf36732df3bb28ff5e00e061b91c0656fe8c1919": {
+            "rows": 1,
+            "games": 1,
+            "players": 1,
+            "wins": 0,
+            "losses": 1,
+            "pushes": 0,
+            "settled_hit_rate": 0.0,
+            "predicted_unconditional_win": 0.5163254311653083,
+            "observed_unconditional_win": 0.0,
+            "brier_unconditional": 0.2665919508680415
+          }
+        },
+        "evidence_cohort": {
+          "legacy_event_unattested/legacy_training_support_unknown": {
+            "rows": 55,
+            "games": 1,
+            "players": 16,
+            "wins": 21,
+            "losses": 34,
+            "pushes": 0,
+            "settled_hit_rate": 0.38181818181818183,
+            "predicted_unconditional_win": 0.5993504674853943,
+            "observed_unconditional_win": 0.38181818181818183,
+            "brier_unconditional": 0.30572906293456226
+          }
+        }
+      },
+      "bins": [
+        {
+          "lower": 0,
+          "upper": 0.5,
+          "rows": 0,
+          "games": 0,
+          "players": 0
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "rows": 33,
+          "games": 1,
+          "players": 13,
+          "wins": 13,
+          "losses": 20,
+          "pushes": 0,
+          "settled_hit_rate": 0.3939393939393939,
+          "predicted_unconditional_win": 0.5454297745478301,
+          "observed_unconditional_win": 0.3939393939393939,
+          "brier_unconditional": 0.26907365391478183
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "rows": 15,
+          "games": 1,
+          "players": 11,
+          "wins": 6,
+          "losses": 9,
+          "pushes": 0,
+          "settled_hit_rate": 0.4,
+          "predicted_unconditional_win": 0.6382186358037238,
+          "observed_unconditional_win": 0.4,
+          "brier_unconditional": 0.3073670240944873
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "rows": 5,
+          "games": 1,
+          "players": 5,
+          "wins": 2,
+          "losses": 3,
+          "pushes": 0,
+          "settled_hit_rate": 0.4,
+          "predicted_unconditional_win": 0.7460237149810609,
+          "observed_unconditional_win": 0.4,
+          "brier_unconditional": 0.3888870329448445
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "rows": 2,
+          "games": 1,
+          "players": 2,
+          "wins": 0,
+          "losses": 2,
+          "pushes": 0,
+          "settled_hit_rate": 0.0,
+          "predicted_unconditional_win": 0.8308475198285625,
+          "observed_unconditional_win": 0.0,
+          "brier_unconditional": 0.6903636780358
+        },
+        {
+          "lower": 0.9,
+          "upper": 1,
+          "rows": 0,
+          "games": 0,
+          "players": 0
+        }
+      ],
+      "source_sha256": "1617656cfc1b0c21b6b1f632df04199b42b0d359a74efacf361555c12d0504a3",
+      "schedule_sha256": "94748407c0be09474d4e0bcfd78d3c2e49f584e0db88e4b2e3686772151f8250"
+    },
+    "nightly_grade_health.json": {
+      "checked_at": "2026-11-13T05:59:17.475947+00:00",
+      "game_date_eastern": "2026-11-12",
+      "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "grace_hours_from_scheduled_start": 12,
+      "prizepicks_saved": 327,
+      "prizepicks_settled": 318,
+      "prizepicks_void": 9,
+      "prizepicks_pending": 0,
+      "prizepicks_overdue": 0,
+      "prizepicks_overdue_games": {},
+      "paper_saved": 0,
+      "paper_pending": 0,
+      "paper_overdue": 0,
+      "unpriced_forecasts_separate": 388,
+      "prizepicks_scope_status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "ai_forecast_accuracy_status": "AI_PRETIP_FORECASTS_GRADED",
+      "ai_forecasts_recorded": 388,
+      "ai_forecasts_graded": 332,
+      "ai_forecasts_ungraded": 0,
+      "ai_forecasts_verified_dnp_excluded": 56,
+      "ai_forecasts_accounted_for": 388,
+      "ai_forecasts_fully_accounted_for": true,
+      "ai_forecasts_fully_graded": false,
+      "overall_grading_status": "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR",
+      "capture_missing": false,
+      "complete_slate_not_guaranteed": true,
+      "notice": "Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
+    },
+    "dames-picks__app_release_gate.json": {
+      "checked_at": "2026-11-13T05:57:59.366866+00:00",
+      "status": "DEGRADED",
+      "checks_passing": false,
+      "release_certified": false,
+      "healthy_streak_started_at": null,
+      "healthy_streak_hours": 0.0,
+      "required_consecutive_hours": 72,
+      "blocking_checks": [
+        "unified_artifacts",
+        "nba_production",
+        "nba_capture"
+      ],
+      "checks": {
+        "unified_artifacts": {
+          "state": "DEGRADED",
+          "issues": [
+            "UNIFIED_APP_ARTIFACTS_NOT_READY",
+            "NBA_OR_NFL_ARTIFACTS_NOT_READY"
+          ]
+        },
+        "public_unified_browser": {
+          "state": "READY",
+          "issues": []
+        },
+        "nba_production": {
+          "state": "DEGRADED",
+          "issues": [
+            "NBA_PRODUCTION_NOT_READY",
+            "NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE"
+          ]
+        },
+        "nba_capture": {
+          "state": "DEGRADED",
+          "issues": [
+            "PRIMARY_STANDARD_COVERAGE_INCOMPLETE"
+          ]
+        },
+        "nba_grading": {
+          "state": "READY",
+          "issues": []
+        },
+        "published_pick_settlement": {
+          "state": "READY",
+          "issues": []
+        },
+        "nfl_grading": {
+          "state": "READY",
+          "issues": []
+        }
+      },
+      "scope": "UNIFIED_DAMES_PICKS_NBA_NFL_RELEASE_GATE",
+      "note": "72h sustained clean artifacts and observed public browser, pretip captures, frozen standard-only grading and current source gates; this does not prove predictive accuracy or zero downtime."
+    },
+    "dames-picks__release.json": {
+      "release_id": "dp-nfl-standard-thresholds-20261113-r34",
+      "ui": "hit-estimate",
+      "expected_labels": [
+        "HIT EST.",
+        "Hit est."
+      ],
+      "note": "Preserve simultaneous genuine NFL standard thresholds; collapse exact duplicates without choosing an arbitrary line.",
+      "asset_blob_sha1": {
+        "index.html": "eb432c863c9a07e9dca9d652a9ed106da327dc3c",
+        "feeds.js": "a50f00342ef80131d1855b89408831a575bc056c",
+        "live_direct.js": "dd7adb3286ffb925564512d8d138028b7ed65aec",
+        "dames_take.js": "8b66ad560d6acd8da952dc03ebbcd487507ac13a",
+        "provisional.js": "0d692a8a47f33926e8d0a9c393e16ad20a3848d2",
+        "short_history.js": "f1ae2f0c79af12dd9d095d3c74210793c210bffb"
+      },
+      "runtime_bundle_id": "dp-nfl-standard-thresholds-20261113-r34"
+    },
+    "nfl__data__grading_health_2026.json": {
+      "alternative_tier_historical_grades_excluded": 932,
+      "alternative_tier_pending_excluded": 4,
+      "archived_pregame_lines": 66654,
+      "expected_final_picks": 1087,
+      "final_games_with_frozen_picks": 2,
+      "frozen_final_pick_candidates": 1087,
+      "graded_picks": 1067,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 4,
+      "pending_reasons": {
+        "player_not_in_verified_boxscore": 4
+      },
+      "pushes": 3,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 135,
+      "standard_hit_rate": 39.39,
+      "standard_pending_picks": 0,
+      "standard_pending_reasons": {},
+      "standard_settled": 132,
+      "standard_wins": 52,
+      "void_picks": 16
+    },
+    "production_readiness.json": {
+      "checked_at": "2026-11-13T06:06:00.951455+00:00",
+      "game_date_eastern": "2026-11-13",
+      "status": "DEGRADED",
+      "ready_for_trustworthy_picks": false,
+      "readiness_is_not_model_accuracy": true,
+      "today_schedule_games": 9,
+      "upcoming_games": 9,
+      "started_not_marked_final": 0,
+      "next_tip_at": "2026-11-14T00:00:00+00:00",
+      "components": {
+        "schedule": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 41.3
+        },
+        "season_calendar": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 41.3
+        },
+        "ai_forecasts": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 112.0
+        },
+        "prizepicks_lines": {
+          "state": "DEGRADED",
+          "required": true,
+          "reasons": [
+            "STALE_SOURCE"
+          ],
+          "age_minutes": 63.8
+        },
+        "pregame_capture": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 23.4
+        },
+        "unmodeled_provider_market_coverage": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
+          ],
+          "age_minutes": 23.4
+        },
+        "current_primary_model_coverage": {
+          "state": "DEGRADED",
+          "required": true,
+          "reasons": [
+            "CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL",
+            "CURRENT_STANDARD_MODEL_COVERAGE_INCOMPLETE"
+          ],
+          "age_minutes": 23.4
+        },
+        "published_pick_settlement": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 37.4
+        },
+        "published_pick_cards": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
+            "PUBLISHED_PICK_BOARD_STALE",
+            "NO_PROVIDER_EVENTS_CHECKED",
+            "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
+          ],
+          "age_minutes": 7573.8
+        },
+        "prizepicks_research_cards": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT"
+          ],
+          "age_minutes": 6.0
+        },
+        "public_browser": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 5.2
+        },
+        "scoreboard": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 1.3
+        },
+        "live_player_stats": {
+          "state": "READY",
+          "required": false,
+          "reasons": [],
+          "age_minutes": null
+        },
+        "nightly_grades": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 6.7
+        }
+      },
+      "blocking_components": [],
+      "degraded_components": [
+        "prizepicks_lines",
+        "current_primary_model_coverage"
+      ],
+      "required_checks": 10,
+      "passing_required_checks": 8,
+      "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
+    },
+    "tonight_capture_gradeability.json": {
+      "checked_at": "2026-11-13T05:42:35.545215+00:00",
+      "game_date_eastern": "2026-11-13",
+      "status": "CAPTURE_INCOMPLETE",
+      "games": [
+        {
+          "game": "New York Knicks @ Indiana Pacers",
+          "start": "2026-11-14T00:00:00+00:00",
+          "source_quotes": 54,
+          "standard_source_quotes": 54,
+          "standard_unique_markets": 54,
+          "standard_markets_without_frozen_model": 5,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 5,
+          "missing_primary_with_separate_research_receipt": 5,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 43,
+          "frozen_ai_only": 104,
+          "frozen_line_backed": 49,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 49,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        },
+        {
+          "game": "Milwaukee Bucks @ Orlando Magic",
+          "start": "2026-11-14T00:00:00+00:00",
+          "source_quotes": 38,
+          "standard_source_quotes": 38,
+          "standard_unique_markets": 38,
+          "standard_markets_without_frozen_model": 3,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 3,
+          "missing_primary_with_separate_research_receipt": 0,
+          "missing_primary_without_any_ai_receipt": 3,
+          "unique_provider_player_stat_markets": 33,
+          "frozen_ai_only": 92,
+          "frozen_line_backed": 35,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 35,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        },
+        {
+          "game": "Cleveland Cavaliers @ Miami Heat",
+          "start": "2026-11-14T01:00:00+00:00",
+          "source_quotes": 44,
+          "standard_source_quotes": 44,
+          "standard_unique_markets": 44,
+          "standard_markets_without_frozen_model": 2,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 2,
+          "missing_primary_with_separate_research_receipt": 2,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 41,
+          "frozen_ai_only": 104,
+          "frozen_line_backed": 43,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 43,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        },
+        {
+          "game": "Atlanta Hawks @ Chicago Bulls",
+          "start": "2026-11-14T01:00:00+00:00",
+          "source_quotes": 35,
+          "standard_source_quotes": 35,
+          "standard_unique_markets": 35,
+          "standard_markets_without_frozen_model": 0,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 0,
+          "missing_primary_with_separate_research_receipt": 0,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 29,
+          "frozen_ai_only": 100,
+          "frozen_line_backed": 35,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 35,
+          "issues": []
+        },
+        {
+          "game": "Memphis Grizzlies @ New Orleans Pelicans",
+          "start": "2026-11-14T01:00:00+00:00",
+          "source_quotes": 40,
+          "standard_source_quotes": 40,
+          "standard_unique_markets": 40,
+          "standard_markets_without_frozen_model": 0,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 0,
+          "missing_primary_with_separate_research_receipt": 0,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 40,
+          "frozen_ai_only": 100,
+          "frozen_line_backed": 40,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 40,
+          "issues": []
+        },
+        {
+          "game": "Utah Jazz @ Houston Rockets",
+          "start": "2026-11-14T01:30:00+00:00",
+          "source_quotes": 33,
+          "standard_source_quotes": 33,
+          "standard_unique_markets": 33,
+          "standard_markets_without_frozen_model": 0,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 0,
+          "missing_primary_with_separate_research_receipt": 0,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 29,
+          "frozen_ai_only": 104,
+          "frozen_line_backed": 35,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 35,
+          "issues": []
+        },
+        {
+          "game": "Golden State Warriors @ San Antonio Spurs",
+          "start": "2026-11-14T02:30:00+00:00",
+          "source_quotes": 33,
+          "standard_source_quotes": 33,
+          "standard_unique_markets": 33,
+          "standard_markets_without_frozen_model": 0,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 0,
+          "missing_primary_with_separate_research_receipt": 0,
+          "missing_primary_without_any_ai_receipt": 0,
+          "unique_provider_player_stat_markets": 33,
+          "frozen_ai_only": 108,
+          "frozen_line_backed": 36,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 36,
+          "issues": []
+        },
+        {
+          "game": "Portland Trail Blazers @ Sacramento Kings",
+          "start": "2026-11-14T03:00:00+00:00",
+          "source_quotes": 39,
+          "standard_source_quotes": 39,
+          "standard_unique_markets": 39,
+          "standard_markets_without_frozen_model": 2,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 2,
+          "missing_primary_with_separate_research_receipt": 0,
+          "missing_primary_without_any_ai_receipt": 2,
+          "unique_provider_player_stat_markets": 39,
+          "frozen_ai_only": 96,
+          "frozen_line_backed": 37,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 37,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        },
+        {
+          "game": "Oklahoma City Thunder @ LA Clippers",
+          "start": "2026-11-14T03:30:00+00:00",
+          "source_quotes": 53,
+          "standard_source_quotes": 53,
+          "standard_unique_markets": 53,
+          "standard_markets_without_frozen_model": 3,
+          "standard_price_moves_from_original_frozen_line": 0,
+          "standard_player_stat_markets_never_primary_frozen": 3,
+          "missing_primary_with_separate_research_receipt": 0,
+          "missing_primary_without_any_ai_receipt": 3,
+          "unique_provider_player_stat_markets": 53,
+          "frozen_ai_only": 96,
+          "frozen_line_backed": 50,
+          "line_backed_graded": 0,
+          "ai_only_graded": 0,
+          "line_backed_pending": 50,
+          "issues": [
+            "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+          ]
+        }
+      ],
+      "issues": [
+        "New York Knicks @ Indiana Pacers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Milwaukee Bucks @ Orlando Magic: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Cleveland Cavaliers @ Miami Heat: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Portland Trail Blazers @ Sacramento Kings: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+        "Oklahoma City Thunder @ LA Clippers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+      ],
+      "note": "Provider quotes, AI-only forecasts, line-backed frozen predictions and final grades are separate. Missing records never fabricated.",
+      "summary": {
+        "schedule_games": 9,
+        "games_with_saved_source_quotes": 9,
+        "games_with_frozen_ai": 9,
+        "games_with_line_backed_models": 9,
+        "total_quotes": 369,
+        "total_standard_source_quotes": 369,
+        "total_standard_markets_without_frozen_model": 15,
+        "total_price_moves_from_original_frozen_line": 0,
+        "total_player_stat_markets_never_primary_frozen": 15,
+        "total_missing_primary_with_separate_research_receipt": 7,
+        "total_missing_primary_without_any_ai_receipt": 8,
+        "total_ai_only": 904,
+        "total_line_backed": 360,
+        "total_line_backed_graded": 0,
+        "total_ai_only_graded": 0
+      },
+      "current_upcoming_coverage": {
+        "status": "INCOMPLETE",
+        "checked_at": "2026-11-13T05:42:35.545215+00:00",
+        "source_generated_at": "2026-11-13T05:02:11.759187+00:00",
+        "verified_current_offers": 331,
+        "matched_primary_offers": 318,
+        "missing_primary_offers": 13,
+        "games": [
+          {
+            "game": "Atlanta Hawks @ Chicago Bulls",
+            "start": "2026-11-14T01:00:00+00:00",
+            "verified_current_offers": 28,
+            "matched_primary_offers": 28,
+            "missing_primary_offers": 0,
+            "missing": []
+          },
+          {
+            "game": "Cleveland Cavaliers @ Miami Heat",
+            "start": "2026-11-14T01:00:00+00:00",
+            "verified_current_offers": 39,
+            "matched_primary_offers": 37,
+            "missing_primary_offers": 2,
+            "missing": [
+              {
+                "player": "Jaylon Tyson",
+                "team": "CLE",
+                "stat": "PTS",
+                "line": 12.5
+              },
+              {
+                "player": "Jaylon Tyson",
+                "team": "CLE",
+                "stat": "PRA",
+                "line": 19.5
+              }
+            ]
+          },
+          {
+            "game": "Golden State Warriors @ San Antonio Spurs",
+            "start": "2026-11-14T02:30:00+00:00",
+            "verified_current_offers": 33,
+            "matched_primary_offers": 33,
+            "missing_primary_offers": 0,
+            "missing": []
+          },
+          {
+            "game": "Memphis Grizzlies @ New Orleans Pelicans",
+            "start": "2026-11-14T01:00:00+00:00",
+            "verified_current_offers": 40,
+            "matched_primary_offers": 40,
+            "missing_primary_offers": 0,
+            "missing": []
+          },
+          {
+            "game": "Milwaukee Bucks @ Orlando Magic",
+            "start": "2026-11-14T00:00:00+00:00",
+            "verified_current_offers": 31,
+            "matched_primary_offers": 28,
+            "missing_primary_offers": 3,
+            "missing": [
+              {
+                "player": "Jalen Suggs",
+                "team": "ORL",
+                "stat": "REB",
+                "line": 3.5
+              },
+              {
+                "player": "Jalen Suggs",
+                "team": "ORL",
+                "stat": "PRA",
+                "line": 18.5
+              },
+              {
+                "player": "Jalen Suggs",
+                "team": "ORL",
+                "stat": "PTS",
+                "line": 10.5
+              }
+            ]
+          },
+          {
+            "game": "New York Knicks @ Indiana Pacers",
+            "start": "2026-11-14T00:00:00+00:00",
+            "verified_current_offers": 40,
+            "matched_primary_offers": 37,
+            "missing_primary_offers": 3,
+            "missing": [
+              {
+                "player": "Ivica Zubac",
+                "team": "IND",
+                "stat": "PTS",
+                "line": 13.5
+              },
+              {
+                "player": "Ivica Zubac",
+                "team": "IND",
+                "stat": "REB",
+                "line": 10.5
+              },
+              {
+                "player": "Ivica Zubac",
+                "team": "IND",
+                "stat": "PRA",
+                "line": 23.5
+              }
+            ]
+          },
+          {
+            "game": "Oklahoma City Thunder @ LA Clippers",
+            "start": "2026-11-14T03:30:00+00:00",
+            "verified_current_offers": 53,
+            "matched_primary_offers": 50,
+            "missing_primary_offers": 3,
+            "missing": [
+              {
+                "player": "Max Strus",
+                "team": "LAC",
+                "stat": "REB",
+                "line": 3.5
+              },
+              {
+                "player": "Max Strus",
+                "team": "LAC",
+                "stat": "PRA",
+                "line": 15.5
+              },
+              {
+                "player": "Max Strus",
+                "team": "LAC",
+                "stat": "PTS",
+                "line": 9.5
+              }
+            ]
+          },
+          {
+            "game": "Portland Trail Blazers @ Sacramento Kings",
+            "start": "2026-11-14T03:00:00+00:00",
+            "verified_current_offers": 39,
+            "matched_primary_offers": 37,
+            "missing_primary_offers": 2,
+            "missing": [
+              {
+                "player": "Keegan Murray",
+                "team": "SAC",
+                "stat": "PRA",
+                "line": 16.5
+              },
+              {
+                "player": "Keegan Murray",
+                "team": "SAC",
+                "stat": "PTS",
+                "line": 11.5
+              }
+            ]
+          },
+          {
+            "game": "Utah Jazz @ Houston Rockets",
+            "start": "2026-11-14T01:30:00+00:00",
+            "verified_current_offers": 28,
+            "matched_primary_offers": 28,
+            "missing_primary_offers": 0,
+            "missing": []
+          }
+        ],
+        "issues": [],
+        "scope": "CURRENT_UPCOMING_STANDARD_OFFERS_ONLY",
+        "research_and_provisional_count_as_primary": false
+      }
+    }
+  },
+  "release_verification": {
+    "attempts": 1,
+    "expected_release": "dp-nfl-standard-thresholds-20261113-r34",
+    "local_files": {
+      "dames_take.js": "65984305323fc75c3df3ea5b2d34515eec52a2129adf6f22c97b68d58de943dc",
+      "feeds.js": "a45bf6a41eb4f12b5a86734557f940e311651c9bd57d888d23bbe47bf46e0d7d",
+      "index.html": "42e2dc02b526c69a0bc069536ba63e1a19c5f60a76651154738cbb205ccf93ca",
+      "live_direct.js": "9915ec8683bacfa0bada785b8309d387f0e1f54ff3271f61b42e4d8f16acf0bc",
+      "provisional.js": "77130a01dbf49d10311fce4c5a457c257add09ae312507ed2b257241880174ee",
+      "release.json": "5d9013dd91a1d0bafd2c803c88fb7d7a2040799fa9d1493d48abe652b0fee7de",
+      "short_history.js": "c7394042817a556d2747c89167e2cf2bf976978ff674f23510eb3e83e07a421f"
+    },
+    "mode": "PUBLIC_HTTP_BYTE_FOR_BYTE_CHECK",
+    "public_files": {
+      "dames_take.js": "7a4f7aef9471953de50fcdfd73974cd8daebc53d0e8be275ccd853a5d18de16b",
+      "feeds.js": "a45bf6a41eb4f12b5a86734557f940e311651c9bd57d888d23bbe47bf46e0d7d",
+      "folder-root.html": "e8eeddba8678a8be9071c2033242c59a9d59c3fdce3bb40050967960833325e0",
+      "index.html": "42e2dc02b526c69a0bc069536ba63e1a19c5f60a76651154738cbb205ccf93ca",
+      "live_direct.js": "da522a8484945c1071731b1f27e48641e3af4cd3d2690d9f3ad5dfab5c0dafbe",
+      "provisional.js": "c51a30cbc2cf1e53c2373a8bad5630a1fa4f6c3bd833e7d4dc2127b4d55868e9",
+      "release.json": "24f2672485c37d00554c95d8120ae9d023a3801ad9b7356d2227b7745efaee52",
+      "short_history.js": "266142dc9a5625350cac494adcdc9aa0790f0ed8de54ae6b87bc77ec1505dcf5"
+    },
+    "public_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "reasons": [
+      "live_direct.js: PUBLIC_FILE_DIFFERS_FROM_CHECKED_OUT_MAIN",
+      "dames_take.js: PUBLIC_FILE_DIFFERS_FROM_CHECKED_OUT_MAIN",
+      "provisional.js: PUBLIC_FILE_DIFFERS_FROM_CHECKED_OUT_MAIN",
+      "short_history.js: PUBLIC_FILE_DIFFERS_FROM_CHECKED_OUT_MAIN",
+      "release.json: PUBLIC_FILE_DIFFERS_FROM_CHECKED_OUT_MAIN",
+      "RELEASE_ID_MISMATCH",
+      "PUBLIC_FOLDER_ROOT_IS_STALE"
+    ],
+    "state": "BLOCKED"
+  },
+  "open_older_prs": [
+    307,
+    272,
+    249,
+    135,
+    132,
+    72,
+    3
+  ],
+  "unresolved": [
+    {
+      "id": "NBA_MODEL_INPUTS",
+      "severity": "HIGH",
+      "detail": "Public capture snapshot05:42UTC:13of331 current offers lack primary;15archived gaps among369thresholds;9/9games,904AI-only,360line-backed. Source generator13INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY; not repaired by weakening validation."
+    },
+    {
+      "id": "SOURCE_FRESHNESS",
+      "severity": "HIGH",
+      "detail": "Public readiness06:06UTC flags stale PrizePicks source05:02UTC and model gaps,8/10required. Authenticated refresh can spend provider credits; prohibited in this run; no refresh forced."
+    },
+    {
+      "id": "HISTORICAL_EVIDENCE",
+      "severity": "HIGH",
+      "detail": "Prior documented20missingNov12thresholds remain unreconstructed. No fabricated posttip forecasts."
+    },
+    {
+      "id": "NFL_CALIBRATION",
+      "severity": "HIGH",
+      "detail": "Descriptive public report55rows1game:21wins34losses,38.18%observed vs59.94%mean predicted; not calibrated, correlated sample,80withoutprobabilityevidenceexcluded. No retrospective tuning or accuracy certification."
+    },
+    {
+      "id": "PLATFORM",
+      "severity": "MEDIUM",
+      "detail": "Pages supersession cancellation churn and GitHub scheduling delay persist. Phone retry pending in platform queue; no success claimed without evidence."
+    },
+    {
+      "id": "SECURITY",
+      "severity": "MEDIUM",
+      "detail": "402actionreferences remain unpinned; main unprotected; administration unavailable for branch/Pages settings. Broad publisher edits could trigger billable provider refreshes and were not performed."
+    }
+  ],
+  "coverage_limits": [
+    "All174definitions inventoried,notalljobs executed",
+    "No fullsemantic certification of everyhistorical branch",
+    "IndependentUnderdogcoverage and everyhistorical date unverified",
+    "No newdependency advisory scan thisrun; previous scan is not countedagain",
+    "Static localbrowser network previously failed; hosteddeployed phone retryrequested",
+    "Current calibration does not establish prospective accuracy",
+    "No paidAPI,secretchanges,Replit,forcepush or fabricatedoutcomes"
+  ],
+  "notification": {
+    "suppress": false,
+    "delivery_confirmed": false
+  },
+  "phone_evidence": {
+    "prior_completed_at": "2026-11-13T06:25:16Z",
+    "result": "PASS",
+    "run": 43378474300,
+    "job": 131730467469,
+    "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43378474300/artifacts/14016205085",
+    "scope": "Independently inspected existing deployed check completed29seconds before run start; requested attempt2 remains platform pending, not claimed passed."
+  }
+}

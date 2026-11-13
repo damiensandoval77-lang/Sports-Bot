@@ -1,199 +1,97 @@
+"use strict";
 const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),vm=require("node:vm");
-const html=fs.readFileSync("docs/index.html","utf8");
-const now=Date.parse("2026-11-09T23:10:00Z");
-const game=(name,home,away,start="2026-11-10T00:00:00Z")=>({
-  game:name,home_abbreviation:home,away_abbreviation:away,
-  start,game_state:"pre",date_eastern:"2026-11-09"
-});
-const eight=[
- game("Cleveland Cavaliers @ Charlotte Hornets","CHA","CLE"),
- game("Los Angeles Lakers @ Atlanta Hawks","ATL","LAL"),
- game("Washington Wizards @ Detroit Pistons","DET","WAS"),
- game("Memphis Grizzlies @ Toronto Raptors","TOR","MEM"),
- game("Denver Nuggets @ Houston Rockets","HOU","DEN","2026-11-10T01:30:00Z"),
- game("Indiana Pacers @ Dallas Mavericks","DAL","IND"),
- game("San Antonio Spurs @ Phoenix Suns","PHX","SAS"),
- game("New Orleans Pelicans @ Golden State Warriors","GSW","NOP")
+const ctx={};vm.createContext(ctx);
+vm.runInContext(fs.readFileSync("docs/dames-picks/feeds.js","utf8"),ctx);
+const m=ctx.DamesPicksModel;
+const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+const redirect=fs.readFileSync("docs/index.html","utf8");
+const games=[
+ "Cleveland Cavaliers @ Charlotte Hornets",
+ "Los Angeles Lakers @ Atlanta Hawks",
+ "Washington Wizards @ Detroit Pistons",
+ "Memphis Grizzlies @ Toronto Raptors",
+ "Denver Nuggets @ Houston Rockets",
+ "Indiana Pacers @ Dallas Mavericks",
+ "San Antonio Spurs @ Phoenix Suns",
+ "New Orleans Pelicans @ Golden State Warriors",
 ];
-const norm=x=>String(x||"").normalize("NFKD").toLowerCase().replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
-function sourceFunction(name){
- const start=html.indexOf("function "+name+"(");
- assert.ok(start>=0,"Missing "+name);
- const end=html.indexOf("\nfunction ",start+9);
- assert.ok(end>start,"Missing next function boundary for "+name);
- return html.slice(start,end);
-}
-function setup(extra={}){
- const context={Date,Map,Set,Number,Math,String,Array,Boolean,norm,...extra};
- vm.createContext(context);
- for(const name of ["verifiedStandardLineCoverage","verifiedBoardStandardLineCoverage","injuryCardStatus","injuryPendingCard","safeLineOnly"])
-   vm.runInContext(sourceFunction(name),context);
- return context;
-}
-function offer(g,idx,side,line=20.5,tier="standard"){
- return {player:"Test Player "+idx,team:g.away_abbreviation,
-  stat:"Points",game:g.game,start:g.start,
-  market_updated:"2026-11-09T23:00:00Z",line,direction:side,pickem_tier:tier};
-}
-test("Eight scheduled games retain independently verified two-sided standard lines",()=>{
- const picks=eight.flatMap((g,i)=>[offer(g,i,"More"),offer(g,i,"Less"),
-    offer(g,i,"More",15.5,"goblin"),offer(g,i,"Less",30.5,"demon")]);
- const source={status:"FRESH_AUTHENTIC_PRIZEPICKS_LINES",source:"AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS",
-   is_live:true,updated_at:"2026-11-09T23:03:00Z",picks};
- const ctx=setup(),rows=ctx.verifiedStandardLineCoverage(source,{games:eight},now);
- assert.equal(rows.length,8);
- assert.equal(new Set(rows.map(x=>x.game)).size,8);
- assert.ok(rows.every(x=>x.line===20.5&&x.line_only&&x.projection===null&&x.estimated_hit_chance===null));
+const starts=games.map((_,i)=>i===4?"2026-11-10T01:30:00Z":"2026-11-10T00:00:00Z");
+const archiveFor=(g,i)=>({
+ id:"pp_"+i,player:"Player "+i,team:"CLE",game:g,stat:"PTS",line:20.5,
+ starts_at:starts[i],observed_at:"2026-11-09T23:00:00Z",
+ tier:"standard",more_tier:"standard",less_tier:"standard",is_demo:false
 });
-test("Conflicting standard thresholds, one-sided, and stale source fail closed",()=>{
- const g=eight[0],ctx=setup(),base={status:"FRESH_AUTHENTIC_PRIZEPICKS_LINES",
-  source:"AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS",is_live:true,
-  updated_at:"2026-11-09T23:03:00Z"};
- assert.equal(ctx.verifiedStandardLineCoverage({...base,picks:[offer(g,0,"More")]},{games:eight},now).length,0);
- assert.equal(ctx.verifiedStandardLineCoverage({...base,picks:[
-   offer(g,0,"More"),offer(g,0,"Less"),offer(g,0,"More",21.5)]},{games:eight},now).length,0);
- assert.equal(ctx.verifiedStandardLineCoverage({...base,updated_at:"2026-11-09T10:00:00Z",
-   picks:[offer(g,0,"More"),offer(g,0,"Less")]},{games:eight},now).length,0);
+const modelBase={player:"Stephen Curry",player_id:"201939",team:"GSW",
+ game:games[7],start:starts[7],stat:"PTS",line:28.5,projection:31.2,
+ market_updated:"2026-11-09T21:00:00Z",captured_at:"2026-11-09T22:00:00Z",
+ pickem_tier:"standard",standard_line_two_sided_verified:true,
+ research_only:true,production_replaced:false,grade:"PENDING",
+ estimated_hit_chance:{method:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",draws:20000,calibrated:false,modeled_direction:"More",modeled_selected_probability:.65}};
+test("combined app is the only linked dashboard",()=>{
+ assert.ok(redirect.includes("url=./dames-picks/"));
+ assert.ok(html.includes('Dame\'s Picks'));
 });
-test("Consecutive-night identical matchups retain today's exact standard quotes",()=>{
- const ctx=setup(),g=eight[0];
- const tomorrow={...g,start:"2026-11-11T00:00:00Z",date_eastern:"2026-11-10"};
- const fixtures={games:[g,tomorrow]};
- const feed={status:"FRESH_AUTHENTIC_PRIZEPICKS_LINES",
-  source:"AUTHENTIC_PRIZEPICKS_PICKEM_NO_ODDS",is_live:true,
-  updated_at:"2026-11-09T23:03:00Z",
-  picks:[offer(g,0,"More"),offer(g,0,"Less")]};
- const result=ctx.verifiedStandardLineCoverage(feed,fixtures,now);
- assert.equal(result.length,1,"Tomorrow's same matchup must not erase tonight's verified line");
- assert.equal(result[0].start,g.start);
- const item={id:"pp_123",player:"Test Player",team:g.away_abbreviation,
-  game:g.game,stat:"PTS",line:20.5,starts_at:g.start,
-  observed_at:"2026-11-09T23:05:00Z",more_tier:"standard",less_tier:"standard",
-  source:"independent_prizepicksapi_com",is_demo:false};
- const provider={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
-  source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:08:00Z",
-  board_offers:[item]};
- const fallback=ctx.verifiedBoardStandardLineCoverage(provider,fixtures,now);
- assert.equal(fallback.length,1,"Independent provider fallback must match same day");
- assert.equal(fallback[0].start,g.start);
+test("all eight games keep authentic original standard quotes without fake model data",()=>{
+ const result=m.includeArchivedStandard([],{quotes:games.map(archiveFor)});
+ assert.equal(result.length,8);
+ assert.equal(new Set(result.map(x=>x.game)).size,8);
+ assert.ok(result.every(x=>x.quoteOnly===true&&x.projection===null&&x.chance===null&&x.direction===null));
 });
-test("One official OUT affects only the correct game, not entire slate",()=>{
- const status={player:"Austin Reaves",team:"LAL",player_id:"1630559",
-    game_date:"2026-11-09",status:"OUT",official:true,
-    source:"OFFICIAL_NBA_REPORT",reported_at:"2026-11-09T23:00:00Z"};
- const context=setup({
-   officialInjuryFeed:{status:"OFFICIAL_NBA_REPORT_VERIFIED",injury_data_verified:true,
-     players:[status]},nbaSchedule:{games:eight},
-   validatedOutNews:()=>[],verifiedFreeOfficialOut:()=>[status],
-   easternGameDay:()=> "2026-11-09",
-   newModelForCard:()=>null
- });
- const reaves={player:"Austin Reaves",team:"LAL",game:eight[1].game,start:eight[1].start};
- const teammate={...reaves,player:"LeBron James"};
- const spurs={player:"Victor Wembanyama",team:"SAS",game:eight[6].game,start:eight[6].start};
- assert.equal(context.injuryCardStatus(reaves),"OUT");
- assert.equal(context.injuryCardStatus(teammate),"PENDING_INJURY_REMODEL");
- assert.equal(context.injuryCardStatus(spurs),"CLEAR");
+test("alternate, demo, posttip, and one-sided quotes do not become predictions",()=>{
+ const q=archiveFor(games[0],0);
+ const bad=[{...q,tier:"goblin"},{...q,tier:"demon"},{...q,is_demo:true},
+  {...q,less_tier:"goblin"},{...q,observed_at:"2026-11-10T01:00:00Z"},
+  {...q,stat:"NOT_A_MARKET"}];
+ assert.equal(m.includeArchivedStandard([],{quotes:bad}).length,0);
 });
-test("Affected card becomes real-line only with no fabricated projection/lean",()=>{
- const ctx=setup();
- const row=ctx.safeLineOnly({player:"LeBron James",line:24.5,projection:26.2,
-    combined_projection:25.8,estimated_hit_chance:{modeled_selected_probability:.7}},
-    "INJURY_REMODEL_PENDING");
- assert.equal(row.line,24.5);
- assert.equal(row.projection,null);
- assert.equal(row.combined_projection,null);
- assert.equal(row.estimated_hit_chance,null);
- assert.equal(row.line_only,true);
- assert.deepEqual(Array.from(row.books),[]);
- assert.deepEqual(Array.from(row.book_quotes),[]);
- assert.deepEqual(Array.from(row.alternative_lines),[24.5]);
- assert.ok(html.includes('const projected=p.line_only?NaN:'));
- assert.ok(html.includes('const side=p.line_only?"NO LEAN":primaryDirection(p);'));
+test("newest valid standard observation wins without duplicating the original market",()=>{
+ const q=archiveFor(games[0],0);
+ const latest={...q,observed_at:"2026-11-09T23:10:00Z"};
+ const result=m.includeArchivedStandard([],{quotes:[q,latest]});
+ assert.equal(result.length,1);
+ assert.equal(result[0].captured,latest.observed_at);
 });
-test("Verified line-only card returns safely before bookmaker-only details",()=>{
- const start=html.indexOf("const list=entries.slice(0,selectedGame?");
- const safe=html.indexOf("if(p.line_only){",start);
- const books=html.indexOf("p.books.length",start);
- assert.ok(start>0&&safe>start&&books>safe);
- const fast=html.slice(safe,books);
- assert.ok(fast.includes("return card;"));
- assert.ok(fast.includes('["FROZEN AI PROJECTION",prior?fmt(prior.projection):"—"'));
- assert.ok(fast.includes('["NEW AI CHANCE","—"'));
- assert.ok(fast.includes("injury-aware new AI pending"));
+test("existing line-backed model forecast suppresses duplicate quote-only record",()=>{
+ const quote=archiveFor(games[0],0);
+ const modeled={sport:"NBA",player:quote.player,team:quote.team,game:quote.game,stat:quote.stat,
+                start:quote.starts_at,line:quote.line,projection:23.5,quoteOnly:false};
+ const result=m.includeArchivedStandard([modeled],{quotes:[quote]});
+ assert.equal(result.length,1);
+ assert.equal(result[0].projection,23.5);
 });
-test("Frozen pretip Warriors market survives live model feed rotation without repricing",()=>{
- class FixedDate extends Date{static now(){return now}}
- const ctx=setup({Date:FixedDate,newMarketIndex:new Map(),frozenMarketIndex:new Map()});
- for(const name of ["newModelKey","frozenModelForCard","newModelForCard","refreshFrozenMarketIndex"])
-  vm.runInContext(sourceFunction(name),ctx);
- const p={player:"Stephen Curry",player_id:"201939",team:"GSW",
-  game:"New Orleans Pelicans @ Golden State Warriors",stat:"PTS",
-  start:"2026-11-10T03:00:00Z",line:28.5,projection:31.391,
-  captured_at:"2026-11-09T22:18:06Z",market_updated:"2026-11-09T21:06:16Z",
-  pickem_tier:"standard",standard_line_two_sided_verified:true,
-  research_only:true,production_replaced:false,grade:"PENDING",
-  estimated_hit_chance:{method:"JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-   draws:20000,calibrated:false,modeled_direction:"More",modeled_selected_probability:.6658}};
- ctx.frozenMarketIndex=ctx.refreshFrozenMarketIndex({status:"FROZEN_NEW_AI_ALL_MARKET",records:[p]});
- assert.equal(ctx.newModelForCard({...p,line:28.5}).projection,31.391);
- assert.equal(ctx.newModelForCard({...p,line:27.5}),null);
- assert.equal(ctx.frozenModelForCard({...p,line:27.5}).line,28.5);
- assert.ok(html.includes("No re-priced hit chance or new pick is being claimed."));
- assert.ok(html.includes('fetchJSON("lagged_matchup_all_market_ledger.json")'));
+test("separate dates of the same matchup keep independent snapshots",()=>{
+ const q=archiveFor(games[0],0);
+ const next={...q,id:"pp_next",starts_at:"2026-11-11T00:00:00Z",
+              observed_at:"2026-11-10T23:00:00Z"};
+ const result=m.includeArchivedStandard([],{quotes:[q,next]});
+ assert.equal(result.length,2);
+ assert.notEqual(result[0].start,result[1].start);
 });
-test("Opening missing-AI games does not force sportsbook when verified standard exists",()=>{
- assert.ok(html.includes('!standardLineCards.some(x=>x.game===game)'));
- assert.ok(html.includes('const quoteOnly=standardLineCards.filter('));
- assert.ok(html.includes('const liveStandardMode=standardLineCards.length>0;'));
+test("frozen model remains immutable when quote-only fallback is merged",()=>{
+ const original=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records:[modelBase]},null);
+ assert.equal(original.length,1);
+ const merged=m.includeArchivedStandard(original,{quotes:[archiveFor(games[0],0)]});
+ assert.equal(merged.length,2);
+ const curry=merged.find(x=>x.player==="Stephen Curry");
+ assert.equal(curry.line,28.5);
+ assert.equal(curry.projection,31.2);
+ assert.equal(curry.grade,"PENDING");
 });
-
-test("Provider-board backup rescues genuine upcoming standard line when derived feed is missing",()=>{
- const ctx=setup(),g=eight[4];
- const row={id:"pp_123",player:"Test Player",team:"DEN",game:g.game,stat:"PTS",
-  line:10.5,starts_at:g.start,observed_at:"2026-11-09T23:05:00Z",
-  more_tier:"standard",less_tier:"standard",source:"independent_prizepicksapi_com",is_demo:false};
- const provider={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
-  source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:08:00Z",
-  board_offers:[row]};
- const out=ctx.verifiedBoardStandardLineCoverage(provider,{games:eight},now);
- assert.equal(out.length,1);
- assert.equal(out[0].line,10.5);
- assert.equal(out[0].game,g.game);
- assert.equal(out[0].line_only,true);
- assert.equal(out[0].projection,null);
- assert.equal(out[0].estimated_hit_chance,null);
+test("verified final grades are not confused with pending and DNP",()=>{
+ const records=[
+ {...modelBase,grade:"GRADED",actual:35,direction_hit:true},
+ {...modelBase,stat:"REB",line:6.5,grade:"PENDING"},
+ {...modelBase,stat:"AST",line:4.5,grade:"EXCLUDED_VERIFIED_DNP",actual:null}
+ ];
+ const rows=m.nba({status:"FROZEN_NEW_AI_ALL_MARKET",records},null);
+ const summary=m.summarize(rows,null,Date.parse("2026-11-09T22:00:00Z"),"NBA");
+ assert.equal(summary.wins,1);
+ assert.equal(summary.losses,0);
+ assert.equal(summary.pending,1);
 });
-test("Provider-board fallback rejects stale, alternate, mismatched and started games",()=>{
- const ctx=setup(),g=eight[4],base={id:"pp_123",player:"Test Player",
-   team:"DEN",game:g.game,stat:"PTS",line:10.5,starts_at:g.start,
-   observed_at:"2026-11-09T23:05:00Z",more_tier:"standard",less_tier:"standard",
-   source:"independent_prizepicksapi_com",is_demo:false};
- const provider={status:"LIVE_THIRD_PARTY_PRIZEPICKS_LINES",
-   source:"independent_prizepicksapi_com",generated_at:"2026-11-09T23:08:00Z",
-   board_offers:[base]};
- const verify=(feed,at=now)=>ctx.verifiedBoardStandardLineCoverage(feed,{games:eight},at).length;
- assert.equal(verify({...provider,generated_at:"2026-11-09T20:00:00Z"}),0);
- assert.equal(verify({...provider,board_offers:[{...base,more_tier:"goblin"}]}),0);
- assert.equal(verify({...provider,board_offers:[{...base,team:"LAL"}]}),0);
- assert.equal(verify({...provider,board_offers:[{...base,source:"unverified"}]}),0);
- assert.equal(verify({...provider,board_offers:[{...base,observed_at:"2026-11-09T19:00:00Z"}]}),0);
- assert.equal(verify({...provider,board_offers:[base,{...base,id:"pp_124",line:11.5}]}),0);
- assert.equal(verify(provider,Date.parse("2026-11-10T02:00:00Z")),0);
-});
-test("Main NBA board merges independent verified provider standard-line fallback",()=>{
- assert.ok(html.includes("verifiedBoardStandardLineCoverage(pp.value"));
- assert.ok(html.includes("standardLineCards=[...canonical.values()]"));
- assert.ok(html.includes("const quoteOnly=standardLineCards.filter("));
-});
-
-test("Dashboard distinguishes historical independently settled PrizePicks markets from today's pending AI and New AI",()=>{
- assert.ok(html.includes('id="verified-grade-reconciliation"'));
- assert.ok(html.includes('function refreshGradeReconciliation('));
- assert.ok(html.includes('history.independent_settled_center_lines'));
- assert.ok(html.includes('ai_forecast_today_grade_status.json'));
- assert.ok(html.includes('lagged_matchup_all_market_ledger.json'));
- assert.ok(html.includes('frozen_baseline_pregame_line_grades.json'));
- assert.ok(html.includes('Pending is NOT a loss.'));
- assert.ok(html.includes('research only, not placed bets'));
+test("public interface identifies frozen, unmodeled, and DNP status without synthetic wins",()=>{
+ assert.ok(html.includes('p.quoteOnly?"NO AI"'));
+ assert.ok(html.includes('p.grade==="EXCLUDED_VERIFIED_DNP"'));
+ assert.ok(html.includes('class="stampband over-under-footer"')); // quote-only NO AI remains in badge; footer is history split only
+ assert.ok(html.includes('No sample data is substituted'));
 });

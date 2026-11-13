@@ -59,3 +59,22 @@ class DurableNewAiTests(unittest.TestCase):
   incoming={"status":"FROZEN_NEW_AI_ALL_MARKET","records":[late]}
   with self.assertRaises(ValueError):durable_merge(frozen(forecast()),incoming,{})
 if __name__=="__main__":unittest.main()
+
+class ConcurrentFirstFreezeTests(unittest.TestCase):
+ def test_distinct_pending_race_preserves_published_original_and_new_players(self):
+  p=forecast();later=forecast();later['captured_at']='2026-11-09T22:10:00Z';later['projection']=17.1
+  out=durable_merge(frozen(p),frozen(later,forecast(2)),{})
+  self.assertEqual(next(x for x in out['records'] if x['player_id']=='1'),frozen(p)['records'][0])
+  self.assertEqual(len(out['records']),2)
+  self.assertEqual(len(out['concurrent_refreezes_ignored']),1)
+ def test_late_arriving_earlier_observation_does_not_rewrite_published_original(self):
+  p=forecast();earlier=forecast();earlier['captured_at']='2026-11-09T22:01:00Z';earlier['projection']=17.1
+  out=durable_merge(frozen(p),frozen(earlier),{})
+  self.assertEqual(out['records'],frozen(p)['records'])
+ def test_distinct_pending_race_never_reverts_settlement(self):
+  p=forecast();old=merge(frozen(p),{},finished(p));later=forecast();later['captured_at']='2026-11-09T22:10:00Z';later['projection']=17.1
+  out=durable_merge(old,frozen(later,forecast(2)),{})
+  self.assertEqual(next(x for x in out['records'] if x['player_id']=='1'),old['records'][0])
+ def test_conflicting_settled_observation_still_rejected(self):
+  p=forecast();later=forecast();later['captured_at']='2026-11-09T22:10:00Z';later['projection']=17.1
+  with self.assertRaises(ValueError):durable_merge(frozen(p),merge(frozen(later),{},finished(later)),{})

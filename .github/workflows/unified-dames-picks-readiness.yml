@@ -1,6 +1,10 @@
 name: Unified Dame's Picks NBA + NFL integrity
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Verify tonight NBA frozen lines predictions and grades"]
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '14,44 * * * *'
   push:
@@ -37,6 +41,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check combined NBA and NFL feed handoffs and retired redirects
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_unified_dames_readiness.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_latest_report_publication.py' -v

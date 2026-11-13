@@ -17,6 +17,8 @@ on:
     # Best effort: official NBA reports are published approximately every
     # 15 minutes; poll at 5-minute intervals without any X subscription.
     - cron: '*/5 0-5,16-23 * * *'
+    # Keep the six-hour freshness contract outside the game-night window too.
+    - cron: '17 6-15 * * *'
 permissions:
   contents: write
   actions: write
@@ -38,6 +40,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: python -m pip install --disable-pip-version-check 'pypdf>=5,<7'
       - name: Validate official transitions and no paid provider requirement
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v
@@ -88,6 +91,12 @@ jobs:
           p=Path('docs/free_nba_injury_watch.json')
           result=json.loads(p.read_text()) if p.exists() else {}
           is_changed=bool(result.get('new_changes'))
+          # A newer verified report must also unblock isolated research feeds
+          # even if no player changed status. Never weaken their age gate.
+          for name in ('short_history_model.json','provisional_short_history.json'):
+            feed=Path('docs')/name
+            if feed.exists() and json.loads(feed.read_text()).get('blocker') == 'INJURY_CONTEXT_UNVERIFIED_OR_STALE':
+              is_changed=True
           Path(sys.argv[1]).write_text('yes' if is_changed else 'no')
           print('Official NBA player status transitions:',len(result.get('new_changes',[])))
           PY
@@ -102,7 +111,12 @@ jobs:
             if git push origin HEAD:main; then
               if [ "$(cat "$RUNNER_TEMP/dispatch-needed")" = yes ]; then
                 echo 'Dispatching four-market injury-aware AI reprojection'
-                gh workflow run nba-new-ai-all-markets.yml --repo "$GITHUB_REPOSITORY" --ref main
+                gh run list --repo "$GITHUB_REPOSITORY" --workflow nba-new-ai-all-markets.yml --branch main --limit 20 --json status > "$RUNNER_TEMP/model-runs.json"
+                if python -c "import json,sys; sys.exit(0 if any(r['status'] in ('queued','pending','in_progress','waiting','requested') for r in json.load(open(sys.argv[1]))) else 1)" "$RUNNER_TEMP/model-runs.json"; then
+                  echo 'Model refresh already active; no duplicate dispatch'
+                else
+                  gh workflow run nba-new-ai-all-markets.yml --repo "$GITHUB_REPOSITORY" --ref main
+                fi
               fi
               exit 0
             fi

@@ -11,6 +11,8 @@ import json
 import math
 import os
 import tempfile
+import subprocess
+import re
 from datetime import datetime,timezone
 from pathlib import Path
 
@@ -26,6 +28,8 @@ SUPPLEMENTAL_SNAPS=ROOT/"verified_supplemental_snaps_2026.json"
 FIELDS=["captured_at","season","week","game_id","player_id","player",
         "position","team","opponent","stat","target","line","odds_type",
         "proj","pick","model_pct"]
+EVIDENCE_FIELDS=["p_more","p_less","p_push","matchup_evidence"]
+FIELDS+=EVIDENCE_FIELDS
 KEY=["captured_at","game_id","player_id","target","odds_type","line"]
 MARKET={
  "PASS_YDS":"passing_yards","PASS_ATT":"attempts","PASS_CMP":"completions",
@@ -100,7 +104,18 @@ def collect_history(existing,snapshot,schedule):
             rejected+=1
             continue
         r=normalize(row)
-        rows[tuple(r[k] for k in KEY)]=r
+        key=tuple(r[k] for k in KEY)
+        prior=rows.get(key)
+        if prior:
+            # Evidence can be restored only from the exact same original
+            # snapshot identity AND unchanged frozen model values.
+            if any(prior[k]!=r[k] for k in FIELDS if k not in EVIDENCE_FIELDS):
+                raise ValueError("NFL_FROZEN_FORECAST_CONFLICT")
+            for field in EVIDENCE_FIELDS:
+                if prior[field] and r[field] and prior[field]!=r[field]:
+                    raise ValueError("NFL_FROZEN_EVIDENCE_CONFLICT")
+                r[field]=prior[field] or r[field]
+        rows[key]=r
     ordered=sorted(rows.values(),key=lambda r:(r["captured_at"],r["game_id"],r["player_id"],r["target"],r["odds_type"],float(r["line"])))
     return ordered,rejected
 
@@ -152,6 +167,24 @@ def verified_boxscores(schedule,boxroot=ROOT/"boxscores"):
                 problems.add(gid)
                 continue
             boxes[gid]={p["player_id"]:p for p in players}
+    supplement=Path(boxroot)/"espn_verified_finals.json"
+    if supplement.exists():
+        from export_nfl_espn_finals import validate_stored
+        extra=json.loads(supplement.read_text())
+        if extra.get("season")!=2026: raise ValueError("Wrong supplement season")
+        official=set(boxes)
+        seen=set()
+        for game in extra.get("games",[]):
+            gid=game.get("game_id")
+            if gid in official: continue  # Full nflverse publication always wins.
+            try:
+                if gid in seen: raise ValueError("Duplicate final supplement")
+                seen.add(gid)
+                validate_stored(game,schedule.get(gid))
+                boxes[gid]={p["player_id"]:p for p in game["players"]}
+            except (ValueError,KeyError,TypeError): problems.add(gid)
+    from verified_nfl_gamebook import supplement
+    supplement(boxroot,schedule,boxes)
     # An invalid source never counts as a verified outcome.
     for gid in problems:boxes.pop(gid,None)
     return boxes,problems
@@ -256,6 +289,9 @@ def verified_full_game_scoring(root=ROOT):
 
 def exact_fantasy_score(player,game_scoring):
     """PrizePicks offensive full-PPR, only when all components are proven."""
+    from verified_nfl_gamebook import REVIEWED_SHA
+    if player.get("verified_gamebook_sha256")==REVIEWED_SHA:
+        return number(player.get("verified_prizepicks_full_ppr"))
     if not game_scoring or player.get("team") not in ("BUF","MIN"):
         return None
     game_id=str(player.get("player_id") or "")
@@ -371,7 +407,31 @@ def write_json_if_changed(path,object):
     os.replace(name,file)
     return True
 
-def run(root=ROOT):
+def historic_snapshot(ref):
+    if not re.fullmatch(r"[0-9a-f]{40}",ref):
+        raise ValueError("NFL recovery requires exact immutable commit")
+    def read(name):
+        return subprocess.check_output(["git","show",f"{ref}:docs/nfl/data/{name}"])
+    manifest=json.loads(read("latest_2026.json"))
+    with tempfile.TemporaryDirectory(prefix="nfl-original-recovery-") as folder:
+        path=Path(folder)
+        (path/"latest_2026.json").write_text(json.dumps(manifest))
+        for name in manifest.get("files",[]):
+            if not isinstance(name,str) or not re.fullmatch(r"latest_2026_[0-9]{2}\.csv",name):
+                raise ValueError("Invalid historical snapshot filename")
+            (path/name).write_bytes(read(name))
+        rows,issue=read_published_snapshot(path)
+        if issue:raise ValueError(issue)
+    return rows,manifest
+
+def pending_counts(pending):
+    standard=[p for p in pending if p.get("odds_type")=="standard"]
+    return {"standard_pending_picks":len(standard),
+            "alternative_tier_pending_excluded":sum(p.get("odds_type") in ("demon","goblin") for p in pending),
+            "standard_pending_reasons":{reason:sum(p["grade_status"]==reason for p in standard)
+                for reason in sorted({p["grade_status"] for p in standard})}}
+
+def run(root=ROOT,recovery_ref=None):
     schedule_data=json.loads((Path(root)/"schedule_2026.json").read_text(encoding="utf-8"))
     if schedule_data.get("game_count")!=272:
         raise ValueError("Incomplete season schedule; refusing grade update")
@@ -382,6 +442,17 @@ def run(root=ROOT):
     prior_history=read_csv(archive_path)
     prior_health_path=Path(root)/HEALTH.name
     prior_health=json.loads(prior_health_path.read_text(encoding="utf-8")) if prior_health_path.exists() else {}
+    recovery_receipt=None
+    receipt_path=Path(root)/"original_evidence_recovery_2026.json"
+    if recovery_ref and (not receipt_path.exists() or
+          json.loads(receipt_path.read_text()).get("source_commit")!=recovery_ref):
+        original,original_manifest=historic_snapshot(recovery_ref)
+        prior_history,_=collect_history(prior_history,original,schedule)
+        recovery_receipt={"source_commit":recovery_ref,
+            "captured_at":original_manifest["captured_at"],
+            "source_rows":len(original),
+            "source_rows_with_exact_evidence":sum(bool(r.get("matchup_evidence")) for r in original),
+            "method":"IDENTICAL_FROZEN_SOURCE_BYTES_NO_RETROACTIVE_MODEL"}
     history,rejected=collect_history(prior_history,snapshot,schedule)
     # An API outage, corrupted archive or invalid snapshot may not silently
     # reduce the number of durable valid frozen pregame observations.
@@ -418,6 +489,7 @@ def run(root=ROOT):
              "expected_final_picks":expected,"graded_picks":genuine_grades,
              "void_picks":voids,
              "pending_picks":len(pending),
+             **pending_counts(pending),
              "pushes":sum(x["result"]=="Push" for x in graded),
              "official_grading_scope":"FROZEN_STANDARD_LINE_ONLY",
              "standard_graded_picks_including_pushes":len(official_standard),
@@ -434,11 +506,25 @@ def run(root=ROOT):
     # Fail closed on a bad new snapshot while still grading already archived
     # predictions; never destroy previous frozen history.
     write_csv_if_changed(archive_path,history,FIELDS)
+    # Small durable active-game feed survives latest-snapshot rotation. Final
+    # cards come from grade/pending ledgers with the same evidence columns.
+    now=datetime.now(timezone.utc)
+    active_ids={gid for gid,g in schedule.items() if g.get("status")!="final"
+                and utc(g.get("kickoff_utc")) and utc(g["kickoff_utc"])<=now}
+    active=closing(history,active_ids)
+    active=[r for r in active if r["odds_type"]=="standard"]
+    write_json_if_changed(Path(root)/"active_frozen_2026.json",
+                          {"season":2026,"scope":"EXACT_ARCHIVED_PREGAME_ROWS","records":active})
     write_csv_if_changed(Path(root)/GRADES.name,graded,OUTPUT_FIELDS)
     write_csv_if_changed(Path(root)/PENDING.name,pending,OUTPUT_FIELDS)
     write_json_if_changed(Path(root)/HEALTH.name,metrics)
+    if recovery_receipt:write_json_if_changed(receipt_path,recovery_receipt)
     print("NFL public grading:",json.dumps(metrics,sort_keys=True))
     return metrics
 
 if __name__=="__main__":
-    run()
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--recover-snapshot-ref")
+    args=parser.parse_args()
+    run(recovery_ref=args.recover_snapshot_ref)

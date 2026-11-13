@@ -91,6 +91,10 @@ def status(value,**details):
 
 
 def main():
+    if os.environ.get("SPORTS_BOT_ENABLE_PAID_ODDS") != "1":
+        status("PAID_ODDS_POLLING_DISABLED", old_lines_may_be_stale=True)
+        print("Paid moneyline polling disabled; preserving prior observations.",flush=True)
+        return
     key=os.getenv("ODDS_API_KEY","").strip()
     if not key:
         status("MISSING_ODDS_API_KEY")

@@ -12,7 +12,23 @@ const fetchText=async p=>{
  if(!response.ok)throw Error(p+" HTTP "+response.status);
  return response.text();
 };
-(async()=>{
+function validateActivation(html){
+ const sources=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
+  .map(x=>new URL(x[1],SITE+"/dames-picks/").pathname);
+ if(!sources.includes(new URL(SITE+"/dames-picks/live_direct.js").pathname)||
+    !html.includes('L.mergeScores(')||!html.includes('liveTick('))
+  throw Error("Deployed page has not activated browser-direct ESPN live polling");
+}
+function verifyLiveObservation(score,observed,row){
+ const failures=[];
+ if(!observed?.player_rows?.length)failures.push(score.game+": no verified live player summary");
+ if(row.fixed_card_score!==row.espn_score)failures.push(score.game+": score differs from verified ESPN observation");
+ if(row.fixed_live_attached!==row.picks_with_player_in_box)
+  failures.push(score.game+": missing attached verified player totals");
+ return failures;
+}
+module.exports={validateActivation,verifyLiveObservation};
+if(require.main===module)(async()=>{
  const now=Date.now();
  const [html,feeds,liveCode,ledger,form,legacy,schedule,oldScores,indep]=await Promise.all([
  "dames-picks/index.html","dames-picks/feeds.js","dames-picks/live_direct.js"
@@ -21,9 +37,7 @@ const fetchText=async p=>{
  "live_player_tracking.json","nba_schedule.json","nba_scoreboard_independent.json",
  "nba_player_tracking_independent.json"
  ].map(fetchJSON)));
- if(!html.includes('<script src="live_direct.js"></script>')||
-    !html.includes('L.mergeScores(')||!html.includes('liveTick('))
-  throw Error("Deployed page has not activated browser-direct ESPN live polling");
+ validateActivation(html);
  const ctx={Intl,Date,AbortController,setTimeout,clearTimeout,fetch};
  vm.createContext(ctx);
  vm.runInContext(feeds,ctx);
@@ -63,9 +77,7 @@ const fetchText=async p=>{
    fixed_live_attached:eligible.filter(p=>p.live).length,
    teams_missing_live:[...new Set(eligible.filter(p=>!p.live).map(p=>p.team))]};
   report.games.push(row);
-  if(row.fixed_card_score==="MISSING")report.failures.push(score.game+": no verified score card");
-  if(row.fixed_live_attached!==row.picks_with_player_in_box)
-   report.failures.push(score.game+": missing attached verified player totals");
+  report.failures.push(...verifyLiveObservation(score,observed,row));
  }
  console.log(JSON.stringify(report,null,2));
  if(report.failures.length)process.exit(1);

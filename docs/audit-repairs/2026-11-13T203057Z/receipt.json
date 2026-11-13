@@ -1,0 +1,345 @@
+{
+  "status": "PARTIAL",
+  "full_contract_completed": false,
+  "start": "2026-11-13T20:30:57+00:00",
+  "end": "2026-11-13T20:38:41.264144+00:00",
+  "duration_seconds": 464,
+  "main_sha": "2ff652e2c8e39f96566943a445137a37aa08859e",
+  "merge_sha": "cd6bed804d99c761fa743eec92760bc831050c66",
+  "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/426",
+  "release": "dp-public-qa-labels-20261113-r36",
+  "new_defects": 3,
+  "repaired": 3,
+  "production_behavior_verified": 2,
+  "regression_verified_only": 1,
+  "files_changed": [
+    "iphone_bot/health_audit.py",
+    "iphone_bot/tests/test_health_audit.py",
+    ".github/workflows/phase1_feed_health.yml",
+    "scripts/e2e_live_site.py",
+    "scripts/mobile_board_health.py",
+    "tests/test_mobile_board_health.py"
+  ],
+  "findings": [
+    {
+      "id": "D1",
+      "severity": "medium",
+      "cause": "Future odds/tracker timestamps accepted as fresh.",
+      "repair": "Reject observations more than five minutes ahead; preserve bounded clock skew.",
+      "verification": "16 targeted tests pass locally and in production job; future rejection itself regression-tested, not observed against real future-dated provider data."
+    },
+    {
+      "id": "D2",
+      "severity": "medium",
+      "cause": "Failed health jobs discarded machine-readable results.",
+      "repair": "Write JSON and upload with always(), failing visibly if evidence missing.",
+      "verification": "Production run43503079373 fails honestly for stale retired sportsbook feeds; artifact14075525833 downloaded and verified."
+    },
+    {
+      "id": "D3",
+      "severity": "high",
+      "cause": "Phone test passed zero cards when games were outside three-hour near-tip window; fixed five-second loading wait.",
+      "repair": "Require rendered cards for authentic saved forecasts in next24hours, wait up to45seconds for rendering, retain failure screenshot.",
+      "verification": "Before run43501919665 passed0cards and skipped footer. After run43503079393 passes395cards/608expected saved picks, nine checks pass and footer verified."
+    }
+  ],
+  "branch_coverage": {
+    "heads_before_new_branch": 426,
+    "historical_pr_tips": 425,
+    "method": "Fresh full git fetch and local ahead/behind comparison",
+    "open_prs": [
+      307,
+      272,
+      249,
+      135,
+      132,
+      72,
+      3
+    ],
+    "conflicts": [
+      307,
+      249,
+      135,
+      3
+    ],
+    "exceptions": [
+      "Deleted unreachable refs unavailable",
+      "No semantic execution/repair of every historical revision"
+    ]
+  },
+  "workflow_coverage": {
+    "definitions": 174,
+    "recent_run_observations": 396,
+    "table": "workflows.md",
+    "older_history_basis": "Previous receipt 2026-11-13T182518Z; not all174 histories re-fetched",
+    "no_history": [
+      "nba-backtest-real-market.yml"
+    ]
+  },
+  "tests": {
+    "targeted_local": 16,
+    "ci": "feed-health and pipeline-contracts passed",
+    "production_health_run": 43503079373,
+    "phone_run": 43503079393,
+    "before_phone_run": 43501919665
+  },
+  "static": {
+    "counts": {
+      "tracked_files": 1253,
+      "extension:.yml": 174,
+      "extension:": 3,
+      "extension:.md": 26,
+      "extension:.live-tracker": 1,
+      "extension:.csv": 42,
+      "extension:.json": 266,
+      "json_parse_pass": 266,
+      "extension:.py": 571,
+      "python_ast_pass": 571,
+      "extension:.gz": 126,
+      "extension:.js": 7,
+      "node_syntax_pass": 38,
+      "extension:.html": 3,
+      "extension:.webmanifest": 1,
+      "extension:.txt": 2,
+      "extension:.cjs": 31,
+      "workflows_total": 174,
+      "workflow_jobs": 185,
+      "pr_workflows": 104,
+      "manually_dispatchable": 149,
+      "workflow_steps": 1173,
+      "actions_not_sha_pinned": 384,
+      "runtime_test_commands_unguarded_steps": 89,
+      "scheduled_workflows": 83,
+      "continue_on_error_steps": 36,
+      "workflow_push_steps": 94,
+      "workflow_run_triggers": 11
+    },
+    "errors": 0,
+    "warnings": 45
+  },
+  "data": {
+    "readiness": {
+      "checked_at": "2026-11-13T20:14:52.182829+00:00",
+      "game_date_eastern": "2026-11-13",
+      "status": "DEGRADED",
+      "ready_for_trustworthy_picks": false,
+      "readiness_is_not_model_accuracy": true,
+      "today_schedule_games": 9,
+      "upcoming_games": 9,
+      "started_not_marked_final": 0,
+      "next_tip_at": "2026-11-14T00:00:00+00:00",
+      "components": {
+        "schedule": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 14.6
+        },
+        "season_calendar": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 177.5
+        },
+        "ai_forecasts": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 14.6
+        },
+        "prizepicks_lines": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 50.8
+        },
+        "pregame_capture": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 6.9
+        },
+        "unmodeled_provider_market_coverage": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
+          ],
+          "age_minutes": 6.9
+        },
+        "current_primary_model_coverage": {
+          "state": "DEGRADED",
+          "required": true,
+          "reasons": [
+            "CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL",
+            "CURRENT_STANDARD_MODEL_COVERAGE_INCOMPLETE"
+          ],
+          "age_minutes": 6.9
+        },
+        "published_pick_settlement": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 17.1
+        },
+        "published_pick_cards": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
+            "PUBLISHED_PICK_BOARD_STALE",
+            "NO_PROVIDER_EVENTS_CHECKED",
+            "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
+          ],
+          "age_minutes": 8422.7
+        },
+        "prizepicks_research_cards": {
+          "state": "DEGRADED",
+          "required": false,
+          "reasons": [
+            "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT"
+          ],
+          "age_minutes": 5.8
+        },
+        "public_browser": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 19.6
+        },
+        "scoreboard": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 0.5
+        },
+        "live_player_stats": {
+          "state": "READY",
+          "required": false,
+          "reasons": [],
+          "age_minutes": null
+        },
+        "nightly_grades": {
+          "state": "READY",
+          "required": true,
+          "reasons": [],
+          "age_minutes": 36.9
+        }
+      },
+      "blocking_components": [],
+      "degraded_components": [
+        "current_primary_model_coverage"
+      ],
+      "required_checks": 10,
+      "passing_required_checks": 9,
+      "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
+    },
+    "capture": {
+      "schedule_games": 9,
+      "games_with_saved_source_quotes": 9,
+      "games_with_frozen_ai": 9,
+      "games_with_line_backed_models": 9,
+      "total_quotes": 634,
+      "total_standard_source_quotes": 634,
+      "total_standard_markets_without_frozen_model": 29,
+      "total_price_moves_from_original_frozen_line": 0,
+      "total_player_stat_markets_never_primary_frozen": 29,
+      "total_missing_primary_with_separate_research_receipt": 12,
+      "total_missing_primary_without_any_ai_receipt": 17,
+      "total_ai_only": 904,
+      "total_line_backed": 608,
+      "total_line_backed_graded": 0,
+      "total_ai_only_graded": 0
+    },
+    "current_coverage": {
+      "status": "INCOMPLETE",
+      "checked_at": "2026-11-13T20:20:52.890196+00:00",
+      "source_generated_at": "2026-11-13T19:24:02.051986+00:00",
+      "verified_current_offers": 362,
+      "matched_primary_offers": 345,
+      "missing_primary_offers": 17,
+      "issues": [],
+      "scope": "CURRENT_UPCOMING_STANDARD_OFFERS_ONLY",
+      "research_and_provisional_count_as_primary": false
+    },
+    "nba_grading": {
+      "checked_at": "2026-11-13T20:28:21.427669+00:00",
+      "game_date_eastern": "2026-11-12",
+      "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "grace_hours_from_scheduled_start": 12,
+      "prizepicks_saved": 327,
+      "prizepicks_settled": 318,
+      "prizepicks_void": 9,
+      "prizepicks_pending": 0,
+      "prizepicks_overdue": 0,
+      "prizepicks_overdue_games": {},
+      "paper_saved": 0,
+      "paper_pending": 0,
+      "paper_overdue": 0,
+      "unpriced_forecasts_separate": 388,
+      "prizepicks_scope_status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "ai_forecast_accuracy_status": "AI_PRETIP_FORECASTS_GRADED",
+      "ai_forecasts_recorded": 388,
+      "ai_forecasts_graded": 332,
+      "ai_forecasts_ungraded": 0,
+      "ai_forecasts_verified_dnp_excluded": 56,
+      "ai_forecasts_accounted_for": 388,
+      "ai_forecasts_fully_accounted_for": true,
+      "ai_forecasts_fully_graded": false,
+      "overall_grading_status": "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR",
+      "capture_missing": false,
+      "complete_slate_not_guaranteed": true,
+      "notice": "Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
+    },
+    "nfl_grading": {
+      "alternative_tier_historical_grades_excluded": 932,
+      "alternative_tier_pending_excluded": 4,
+      "archived_pregame_lines": 70692,
+      "expected_final_picks": 1087,
+      "final_games_with_frozen_picks": 2,
+      "frozen_final_pick_candidates": 1087,
+      "graded_picks": 1067,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 4,
+      "pending_reasons": {
+        "player_not_in_verified_boxscore": 4
+      },
+      "pushes": 3,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 135,
+      "standard_hit_rate": 39.39,
+      "standard_pending_picks": 0,
+      "standard_pending_reasons": {},
+      "standard_settled": 132,
+      "standard_wins": 52,
+      "void_picks": 16
+    },
+    "nba_fixed_calendar_games": 1200,
+    "nfl_calendar_games": 272,
+    "nba_espn_identity_tip_matches": 9,
+    "nfl_player_rows_matched": 18
+  },
+  "public_verification": {
+    "phone": "after-iphone-deployed.json",
+    "release_convergence": "after-deployment-convergence.json",
+    "health_failure_artifact": "production-feed-health.json",
+    "ui_assets_changed": false
+  },
+  "remaining": [
+    "17current primary offers missing;29archived thresholds have no validated primary model (12research receipts,17withoutAIreceipt). Missing authentic evidence never fabricated.",
+    "Paid source refresh forbidden; legacy sportsbook feed remains stale and gates remain red.",
+    "Pages branch-mode cancellations remain; available connector cannot change admin source setting. Owner action: Settings > Pages > Source > GitHub Actions.",
+    "Four older PR conflicts and384mutable action references/45architecture warnings remain; this run does not complete all repair work.",
+    "No active games: live30-second pacing unobserved; physical Safari and full Underdog pipeline unverified.",
+    "Exhaustive dependency vulnerability scans and execution of every historical tip not performed."
+  ],
+  "environment": {
+    "github_read_write": "Verified by fetch/PR/merge",
+    "local_python_node_git": "available",
+    "local_browser": "Playwright executable missing; hosted Actions browser completed as workaround"
+  },
+  "notification": "Please notify Damien using enabled ChatGPT mobile notifications; delivery unconfirmed."
+}

@@ -2,7 +2,7 @@ name: Verify full NBA season and upcoming 14-day fixture coverage
 on:
   workflow_dispatch:
   schedule:
-    - cron: '22 12,16,20,0,4 * * *'
+    - cron: '22 */4 * * *'
   push:
     branches: [main]
     paths:
@@ -33,9 +33,11 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test calendar, duplicate identities and resilience without betting APIs
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_season_schedule_baseline.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_audit_nba_schedule_horizon.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_publish_nba_schedule_atomic.py' -v
           python -m py_compile iphone_bot/audit_nba_schedule_horizon.py
       - name: Audit the real full-season and next two days on the runner
         if: github.event_name != 'pull_request'
@@ -46,21 +48,24 @@ jobs:
         if: always() && github.event_name != 'pull_request' && steps.audit.outcome != 'skipped'
         run: |
           set -euo pipefail
-          cp docs/nba_schedule_horizon_audit.json "$RUNNER_TEMP/season-audit.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp "$RUNNER_TEMP/season-audit.json" docs/nba_schedule_horizon_audit.json
-            git add docs/nba_schedule_horizon_audit.json
+            rm -f docs/nba_schedule_horizon_audit.json
+            python -m iphone_bot.audit_nba_schedule_horizon --repair-window || test -f docs/nba_schedule_horizon_audit.json
+            git add docs/nba_schedule.json docs/nba_schedule_horizon_audit.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Publish verified NBA season and fourteen-day fixture audit'
             if git push origin HEAD:main; then exit 0; fi
           done
           exit 1
       - name: Fail visibly when known fixtures are missing
-        if: always() && github.event_name != 'pull_request' && steps.audit.outcome == 'failure'
+        if: always() && github.event_name != 'pull_request'
         run: |
-          echo "::error::Season fixture archive or near-term slate incomplete."
-          exit 1
+          python - <<'PYCODE'
+          import json
+          result=json.load(open('docs/nba_schedule_horizon_audit.json'))
+          assert result['status']=='READY', result['reason_codes']
+          PYCODE

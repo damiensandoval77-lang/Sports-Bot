@@ -65,6 +65,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Test immutable pregame captures and paper settlement
+        if: github.event_name == 'pull_request'
         run: |
           python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v
@@ -109,6 +110,8 @@ jobs:
       - name: Train original opponent-aware model for same combined projection
         run: python -u iphone_bot/train_defense_shadow.py
       - name: Download verified current-season NBA player games
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python -u iphone_bot/fetch_current_form.py
       - name: Refresh official NBA injury statuses before producing AI projections
         run: |
@@ -119,12 +122,14 @@ jobs:
           python -m unittest discover -s iphone_bot/tests -p 'test_enrich_current_shooting.py' -v
           python -u iphone_bot/enrich_current_shooting.py
       - name: Validate injury-updated projections for official OUT players
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/injury_projection_adjustment.py iphone_bot/compare_live_models.py
           python -m unittest discover -s iphone_bot/tests -p 'test_injury_projection_adjustment.py' -v
       - name: Check Unicode player identity matching across sportsbook and NBA roster
         env:
           PYTHONPATH: ${{ github.workspace }}/iphone_bot:${{ github.workspace }}
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_player_name_matching.py' -v
       - name: Preserve the exact original trained-model projection and probability pipeline
         env:

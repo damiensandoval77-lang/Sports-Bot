@@ -97,13 +97,20 @@ def audit(root=ROOT, now=None):
         archive, graded, pending = [], [], []
     counts = {
         "archived_pregame_lines": len(archive),
-        "graded_picks": len(graded),
+        "graded_picks": sum(r.get("grade_status") == "graded" for r in graded),
         "pending_picks": len(pending),
         "expected_final_picks": len(graded) + len(pending),
     }
     for key, actual in counts.items():
         if health.get(key) != actual:
             problems.append(f"grading health {key}={health.get(key)} disagrees with CSV count={actual}")
+    void_count = sum(r.get("grade_status") == "void_verified_inactive" for r in graded)
+    if health.get("void_picks", 0) != void_count:
+        problems.append("grading health void_picks disagrees with verified inactive CSV count")
+    if any(r.get("grade_status") == "void_verified_inactive" and
+           (r.get("actual") not in (None, "") or r.get("result") != "Void" or
+            r.get("won") not in (None, "")) for r in graded):
+        problems.append("verified inactive void has a fabricated actual or win/loss")
     # Independently derive which pre-kickoff frozen quotes should be represented
     # in the grading ledger. A successful job must not silently drop eligible picks.
     finished = {g.get("game_id") for g in games if g.get("status") == "final"
@@ -126,9 +133,9 @@ def audit(root=ROOT, now=None):
         if r.get("game_id") not in finals:
             problems.append("grading ledger includes game not marked final")
             break
-    if any(r.get("grade_status") != "graded" for r in graded):
+    if any(r.get("grade_status") not in ("graded", "void_verified_inactive") for r in graded):
         problems.append("graded CSV contains ungraded entries")
-    if any(r.get("grade_status") == "graded" for r in pending):
+    if any(r.get("grade_status") in ("graded", "void_verified_inactive") for r in pending):
         problems.append("pending CSV contains graded entries")
 
     box = load(root / "boxscores" / "manifest.json")
@@ -147,7 +154,8 @@ def audit(root=ROOT, now=None):
         "snapshot_age_hours": capture_age_hours,
         "nearest_kickoff_hours": nearest_kickoff_hours,
         "archived_pregame_lines": len(archive),
-        "graded_picks": len(graded),
+        "graded_picks": counts["graded_picks"],
+        "void_picks": void_count,
         "pending_picks": len(pending),
         "eligible_frozen_final_picks": len(expected_keys),
         "missing_final_pick_grades": len(missing),

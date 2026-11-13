@@ -1,0 +1,20 @@
+name: Research matchup hit estimate (not production)
+on:
+  pull_request:
+    paths:
+      - 'research/matchup_hit_estimate.py'
+      - 'research/tests/test_matchup_hit_estimate.py'
+      - '.github/workflows/research-matchup-hit-estimate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify pretip matchup features, timestamp guards and model estimate semantics
+        run: python -m unittest discover -s research/tests -p 'test_matchup_hit_estimate.py' -v

@@ -1,0 +1,2018 @@
+{
+  "schema_version": 1,
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "status": "PARTIAL",
+  "run_start": "2026-11-13T16:30:28Z",
+  "run_end": "2026-11-13T17:50:31.116634+00:00",
+  "main_sha_start": "ecf0cf06c89af8608c5f02ab718970a7ce764637",
+  "main_sha_static_verified": "94c48fec955c3bc11a5760e2773f373a2b648919",
+  "main_sha_before_receipt": "94c48fec955c3bc11a5760e2773f373a2b648919",
+  "deployed_release": "dp-public-qa-labels-20261113-r36",
+  "new_actionable_defect_groups": 10,
+  "merged_repair_prs": 7,
+  "repairs": [
+    {
+      "id": "D1",
+      "severity": "high",
+      "pr": 417,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/417",
+      "merge_sha": "71d6dbcf96df2a1c5ee373d2cfe46b6469b36a44",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/71d6dbcf96df2a1c5ee373d2cfe46b6469b36a44",
+      "before": "Public monitor kept an obsolete failure after a successful publisher",
+      "root_cause": "Missing publisher completion trigger and transient public fetch failures",
+      "after": "Recheck successful main publisher; retain bounded retry evidence",
+      "files": [
+        ".github/workflows/verify_public_dashboard.yml",
+        "iphone_bot/tests/test_verify_deployed_dashboard.py",
+        "iphone_bot/verify_deployed_dashboard.py"
+      ],
+      "run_ids": [
+        43467902657,
+        43467947980
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43467902657",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43467947980"
+      ],
+      "verification": "PUBLIC_JSON_VERIFIED"
+    },
+    {
+      "id": "D2",
+      "severity": "high",
+      "pr": 418,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/418",
+      "merge_sha": "f86be1a049c113dd5580f349143249ebec89f2da",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/f86be1a049c113dd5580f349143249ebec89f2da",
+      "before": "Valid final boxes rejected when official rows included DNPs",
+      "root_cause": "DNP rows incorrectly participated in played-player validation",
+      "after": "Exclude explained zero-minute DNP rows; reject contradictory totals or missing reasons",
+      "files": [
+        "research/tests/test_official_defense_backfill.py",
+        "research/tests/test_verified_team_defense_context.py",
+        "research/verified_team_defense_context.py"
+      ],
+      "run_ids": [
+        43467057380
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43467057380"
+      ],
+      "verification": "HOSTED_RECOVERY_VERIFIED"
+    },
+    {
+      "id": "D3",
+      "severity": "high",
+      "pr": 419,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/419",
+      "merge_sha": "77efc770fab0eb3c4e786e7e9c8e694b29f9ece2",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/77efc770fab0eb3c4e786e7e9c8e694b29f9ece2",
+      "before": "Official-history collector returned no verified games during schedule outage",
+      "root_cause": "Official event discovery depended on unavailable live schedule",
+      "after": "Use saved genuine ID/date/team hints; independently verify every final box",
+      "files": [
+        ".github/workflows/research-official-defense-history.yml",
+        "research/data/official_nba_schedule_hints_2026_27.json",
+        "research/official_defense_backfill.py",
+        "research/tests/test_official_defense_backfill.py"
+      ],
+      "run_ids": [
+        43467057380
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43467057380"
+      ],
+      "verification": "HOSTED_RECOVERY_VERIFIED"
+    },
+    {
+      "id": "D4",
+      "severity": "medium",
+      "pr": 420,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/420",
+      "merge_sha": "68cce8cce70eafc7a95eda058bef6c04601867fb",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/68cce8cce70eafc7a95eda058bef6c04601867fb",
+      "before": "Privileged comparison publisher and monitor used mutable action tags",
+      "root_cause": "Write-capable jobs did not pin dependency revisions",
+      "after": "Pin checkout and Python setup to verified commit SHAs",
+      "files": [
+        ".github/workflows/publish_live_pp_ai_join.yml",
+        ".github/workflows/verify_public_dashboard.yml"
+      ],
+      "run_ids": [
+        43467902657,
+        43467947980
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43467902657",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43467947980"
+      ],
+      "verification": "HOSTED_EXECUTION_VERIFIED"
+    },
+    {
+      "id": "D5",
+      "severity": "high",
+      "pr": 421,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/421",
+      "merge_sha": "15d748de2d320a4bd97a3b62186ccd068950a4ad",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/15d748de2d320a4bd97a3b62186ccd068950a4ad",
+      "before": "Complete ATL-IND final rejected because Indiana played only six players",
+      "root_cause": "Seven-player minimum incorrectly excluded a real complete rotation",
+      "after": "Allow five/six only with exact official minutes totaling regulation/OT duration and all existing identity/score checks",
+      "files": [
+        ".github/workflows/research-official-defense-history.yml",
+        "research/official_defense_backfill.py",
+        "research/tests/test_official_defense_backfill.py",
+        "research/tests/test_verified_team_defense_context.py",
+        "research/verified_team_defense_context.py"
+      ],
+      "run_ids": [
+        43468528082
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43468528082"
+      ],
+      "verification": "HOSTED_RECOVERY_VERIFIED"
+    },
+    {
+      "id": "D6",
+      "severity": "medium",
+      "pr": 421,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/421",
+      "merge_sha": "15d748de2d320a4bd97a3b62186ccd068950a4ad",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/15d748de2d320a4bd97a3b62186ccd068950a4ad",
+      "before": "Offline PR checks queued behind slow production history collection",
+      "root_cause": "PR and production jobs shared a concurrency group",
+      "after": "Isolate PR concurrency by PR number, preserve production serialization",
+      "files": [
+        ".github/workflows/research-official-defense-history.yml",
+        "research/official_defense_backfill.py",
+        "research/tests/test_official_defense_backfill.py",
+        "research/tests/test_verified_team_defense_context.py",
+        "research/verified_team_defense_context.py"
+      ],
+      "run_ids": [
+        43468126664,
+        43468126456,
+        43468126276
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43468126664",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43468126456",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43468126276"
+      ],
+      "verification": "HOSTED_CONCURRENCY_VERIFIED"
+    },
+    {
+      "id": "D7",
+      "severity": "high",
+      "pr": 423,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/423",
+      "merge_sha": "9c6133d32d827b5992b02f62ebf6133977b8622e",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/9c6133d32d827b5992b02f62ebf6133977b8622e",
+      "before": "Legacy collectors could spend Odds API credits when triggered",
+      "root_cause": "No default-off guard before network requests",
+      "after": "Require explicit opt-in; preserve old observation timestamps; publish disabled status",
+      "files": [
+        ".github/workflows/hide-tipped-ai-props-tests.yml",
+        ".github/workflows/nba-consensus-test.yml",
+        ".github/workflows/nba-live-tracker-external-verification.yml",
+        ".github/workflows/nba-slate-resilience-tests.yml",
+        ".github/workflows/nba-ui-integrity.yml",
+        ".github/workflows/opponent_simulation_tests.yml",
+        ".github/workflows/verify-live-tracker-espn.yml",
+        "iphone_bot/fetch_game_moneylines.py",
+        "iphone_bot/fetch_odds_scores.py",
+        "iphone_bot/fetch_props.py",
+        "iphone_bot/tests/test_fetch_props.py",
+        "iphone_bot/tests/test_paid_odds_disabled.py",
+        "iphone_bot/tests/test_root_redirect.cjs"
+      ],
+      "run_ids": [
+        43470362958
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43470362958"
+      ],
+      "verification": "PUBLIC_JSON_VERIFIED"
+    },
+    {
+      "id": "D8",
+      "severity": "high",
+      "pr": 423,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/423",
+      "merge_sha": "9c6133d32d827b5992b02f62ebf6133977b8622e",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/9c6133d32d827b5992b02f62ebf6133977b8622e",
+      "before": "Legacy UI CI failed against the retired root dashboard",
+      "root_cause": "Tests still required old widgets, old timer, and simulation labels",
+      "after": "Run canonical unified app/root redirect contracts while retaining backend tests; follow-up PR424 replaces remaining obsolete test entry points with canonical app/live/redirect behavior and fixes their triggers.",
+      "files": [
+        ".github/workflows/hide-tipped-ai-props-tests.yml",
+        ".github/workflows/nba-consensus-test.yml",
+        ".github/workflows/nba-live-tracker-external-verification.yml",
+        ".github/workflows/nba-slate-resilience-tests.yml",
+        ".github/workflows/nba-ui-integrity.yml",
+        ".github/workflows/opponent_simulation_tests.yml",
+        ".github/workflows/verify-live-tracker-espn.yml",
+        "iphone_bot/fetch_game_moneylines.py",
+        "iphone_bot/fetch_odds_scores.py",
+        "iphone_bot/fetch_props.py",
+        "iphone_bot/tests/test_fetch_props.py",
+        "iphone_bot/tests/test_paid_odds_disabled.py",
+        "iphone_bot/tests/test_root_redirect.cjs"
+      ],
+      "run_ids": [
+        43469958544,
+        43469958884,
+        43469958870,
+        43469958546,
+        43469958631,
+        43469958488,
+        43470363267,
+        43470363196,
+        43470363163,
+        43475664150,
+        43475664064,
+        43475663741,
+        43476030403,
+        43476030315,
+        43476030003
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43469958544",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43469958884",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43469958870",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43469958546",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43469958631",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43469958488",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43470363267",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43470363196",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43470363163"
+      ],
+      "verification": "HOSTED_CI_AND_PRODUCTION_VERIFIED",
+      "additional_pr": 424,
+      "additional_commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/93321d4ea27d52a16ecf066c3796bbdbcedabb9b",
+      "additional_files": [
+        ".github/workflows/nfl-ui-smoke.yml",
+        ".github/workflows/phase1_dashboard_scoreboard.yml",
+        ".github/workflows/phase1_real_pp_join.yml",
+        "tests/test_nfl_player_cards.cjs",
+        "iphone_bot/tests/test_dashboard_scoreboard_integration.py",
+        "iphone_bot/tests/test_real_prizepicks_pregame_join.cjs"
+      ],
+      "additional_verification": "All three corrected entry points passed production push runs after PR424 merged."
+    },
+    {
+      "id": "D9",
+      "severity": "medium",
+      "pr": 423,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/423",
+      "merge_sha": "9c6133d32d827b5992b02f62ebf6133977b8622e",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/9c6133d32d827b5992b02f62ebf6133977b8622e",
+      "before": "Obsolete external tracker workflow still targeted Replit",
+      "root_cause": "Retired service remained a runnable health probe",
+      "after": "Make workflow manual-only retirement notice, remove external requests",
+      "files": [
+        ".github/workflows/hide-tipped-ai-props-tests.yml",
+        ".github/workflows/nba-consensus-test.yml",
+        ".github/workflows/nba-live-tracker-external-verification.yml",
+        ".github/workflows/nba-slate-resilience-tests.yml",
+        ".github/workflows/nba-ui-integrity.yml",
+        ".github/workflows/opponent_simulation_tests.yml",
+        ".github/workflows/verify-live-tracker-espn.yml",
+        "iphone_bot/fetch_game_moneylines.py",
+        "iphone_bot/fetch_odds_scores.py",
+        "iphone_bot/fetch_props.py",
+        "iphone_bot/tests/test_fetch_props.py",
+        "iphone_bot/tests/test_paid_odds_disabled.py",
+        "iphone_bot/tests/test_root_redirect.cjs"
+      ],
+      "run_ids": [],
+      "run_urls": [],
+      "verification": "CONFIGURATION_VERIFIED_NOT_EXECUTED"
+    },
+    {
+      "id": "D10",
+      "severity": "high",
+      "pr": 424,
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/424",
+      "merge_sha": "93321d4ea27d52a16ecf066c3796bbdbcedabb9b",
+      "commit_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/93321d4ea27d52a16ecf066c3796bbdbcedabb9b",
+      "before": "Tracking coverage publication failed after three successive main push conflicts",
+      "root_cause": "Only three immediate retries and re-use of a saved stale report instead of newest source inputs",
+      "after": "Recompute after each fresh fetch/reset; ten bounded attempts with backoff; explicit failure on exhaustion; PR cannot publish",
+      "files": [
+        ".github/workflows/nba-tracking-coverage.yml",
+        "iphone_bot/tests/test_tracking_coverage_workflow.py"
+      ],
+      "run_ids": [
+        43475664143,
+        43475664430
+      ],
+      "run_urls": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43475664143",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43475664430"
+      ],
+      "verification": "PUBLIC_JSON_AND_HOSTED_EXECUTION_VERIFIED",
+      "production_run_id": 43476029907,
+      "production_run_url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43476029907",
+      "public_output": "https://damiensandoval77-lang.github.io/Sports-Bot/tracking_coverage_status.json",
+      "public_generated_at": "2026-11-13T17:46:14.789647+00:00",
+      "public_read_at": "2026-11-13T17:47:27.165015+00:00"
+    }
+  ],
+  "permissions": {
+    "github_read": true,
+    "github_write": true,
+    "evidence": "Six branches/PRs created and eligible passing PRs merged",
+    "coding_environment": "Python/Node/git execution available",
+    "pages_administration": "BLOCKED: connector lacks Pages settings mutation and browser is signed out",
+    "no_paid_provider_requests": true,
+    "no_secret_changes": true,
+    "no_replit_requests": true
+  },
+  "branch_coverage": {
+    "start_active_heads": 418,
+    "start_historical_pr_tips": 416,
+    "final_active_heads": 425,
+    "final_historical_pr_tips": 424,
+    "inventory_method": "Fetched all advertised heads and refs/pull/*/head; compared ancestry to pinned main",
+    "exceptions": "Ancestry/static audit is not execution of every historical revision. Deleted unreachable tips cannot be inventoried. Conflicting old PRs are not merged blindly.",
+    "open_prs_at_start": [
+      {
+        "number": 307,
+        "title": "Recover short-history NBA forecasts and verify iPhone/WebKit release behavior",
+        "sha": "eeabd5b7a0598daf905eb2d1c721ae49ba4b92bc",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/307",
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in .github/workflows/live-site-e2e.yml",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/dames_take.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/feeds.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/live_direct.js",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/release.json",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs",
+          "CONFLICT (content): Merge conflict in scripts/e2e_live_site.py"
+        ],
+        "changed_files": " .github/workflows/live-site-e2e.yml               |  2 +-\n docs/dames-picks/dames_take.js                    |  2 +-\n docs/dames-picks/feeds.js                         |  8 ++-\n docs/dames-picks/index.html                       | 12 ++--\n docs/dames-picks/live_direct.js                   |  2 +-\n docs/dames-picks/release.json                     | 14 ++---\n iphone_bot/live_multimarket_matchup.py            | 72 +++++++++++++++++++---\n iphone_bot/tests/test_dames_picks_vE.cjs          | 12 ++++\n iphone_bot/tests/test_live_multimarket_matchup.py | 29 ++++++++-\n scripts/e2e_live_site.py                          | 74 ++++++++++++++++++-----\n 10 files changed, 184 insertions(+), 43 deletions(-)\n"
+      },
+      {
+        "number": 272,
+        "title": "Diagnose which free NBA live providers the real deployed browser can reach",
+        "sha": "1dc5e775322071ac826d913902c88a9369bfd73e",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/272",
+        "merge_tree_exit": 0,
+        "conflicts": [],
+        "changed_files": " .github/workflows/diagnose-public-live-cors.yml | 24 +++++++++++\n iphone_bot/diagnose_public_live_cors.py         | 54 +++++++++++++++++++++++++\n 2 files changed, 78 insertions(+)\n"
+      },
+      {
+        "number": 249,
+        "title": "Root-cause reliability: preserve all verified game boxscores across partial live collector runs",
+        "sha": "29c9616b923362b872a11d773088491e9c56efd1",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/249",
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in .github/workflows/live-night-integration.yml",
+          "CONFLICT (content): Merge conflict in .github/workflows/production_readiness.yml",
+          "CONFLICT (content): Merge conflict in docs/dames-picks/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/merge_nba_player_boxscore_publish.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_dames_picks_vE.cjs",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_production_live_recovery_workflow.py"
+        ],
+        "changed_files": " .../workflows/independent_nba_player_boxscores.yml |   2 +\n .github/workflows/live-night-integration.yml       |   6 +\n .github/workflows/production_readiness.yml         |  17 ++\n docs/PRODUCTION_RELIABILITY_ARCHITECTURE.md        | 186 +++++++++++++++++++++\n docs/dames-picks/index.html                        |  48 +++++-\n iphone_bot/merge_nba_player_boxscore_publish.py    | 186 ++++++++++++++++-----\n iphone_bot/tests/test_dames_picks_vE.cjs           |  28 ++++\n .../test_merge_nba_player_boxscore_publish.py      | 100 +++++++++++\n .../test_production_live_recovery_workflow.py      |   9 +\n iphone_bot/tests/test_workflow_topology_audit.py   |  66 ++++++++\n scripts/audit_workflow_topology.py                 |  91 ++++++++++\n 11 files changed, 691 insertions(+), 48 deletions(-)\n"
+      },
+      {
+        "number": 135,
+        "title": "Fix verified PrizePicks line cards crashing in detailed sportsbook renderer",
+        "sha": "2026b606d4a3db2652f141402cf0c83e88f00b5b",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/135",
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in docs/index.html",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_restored_main_card_coverage.cjs",
+          "CONFLICT (content): Merge conflict in iphone_bot/tests/test_verify_browser_dashboard.py",
+          "CONFLICT (content): Merge conflict in iphone_bot/verify_browser_dashboard.py"
+        ],
+        "changed_files": " docs/index.html                                    |  40 +++++++\n .../tests/test_restored_main_card_coverage.cjs     |  13 ++\n iphone_bot/tests/test_verify_browser_dashboard.py  |  68 +++++------\n iphone_bot/verify_browser_dashboard.py             | 131 +++++++++++----------\n 4 files changed, 156 insertions(+), 96 deletions(-)\n"
+      },
+      {
+        "number": 132,
+        "title": "Diagnose why public NBA dashboard isn't rendering current standard lines",
+        "sha": "c6187d7fd4be15b8f015e70050dbb2becd6200bf",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/132",
+        "merge_tree_exit": 0,
+        "conflicts": [],
+        "changed_files": " .../incident-public-browser-diagnostics.yml        | 70 ++++++++++++++++++++++\n 1 file changed, 70 insertions(+)\n"
+      },
+      {
+        "number": 72,
+        "title": "Phase 1: inspect actual provider refresh and publication dependencies before tipoff",
+        "sha": "07696e01a28fb92bbf8bf9827f788a52b470f29c",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/72",
+        "merge_tree_exit": 0,
+        "conflicts": [],
+        "changed_files": " .github/workflows/production_readiness.yml | 9 +++++++++\n 1 file changed, 9 insertions(+)\n"
+      },
+      {
+        "number": 3,
+        "title": "Research-only minutes, injury, and schedule validation guards",
+        "sha": "a6102b0b75ce61da1870d9ed3916f3c9785cfe2a",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/3",
+        "merge_tree_exit": 1,
+        "conflicts": [
+          "CONFLICT (content): Merge conflict in .github/workflows/nba-schedule.yml"
+        ],
+        "changed_files": " .github/workflows/nba-schedule.yml         |  7 ++-\n .github/workflows/research-safety-ci.yml   | 75 ++++++++++++++++++++++++++++++\n iphone_bot/fetch_official_injuries.py      |  3 ++\n iphone_bot/minutes_model_v2.py             |  9 ++--\n iphone_bot/tests/test_minutes_model_v2.py  | 16 ++++++-\n iphone_bot/tests/test_research_upgrades.py | 15 +++++-\n 6 files changed, 119 insertions(+), 6 deletions(-)\n"
+      }
+    ],
+    "concurrent_pr_422": "Merged by separate actor at 17:03:47 UTC, commit 479a9c253174bd8c83ea690c2b868c30f7d1fb18; not included in this cycle repair count",
+    "closeout_inventory": "branches-closeout.json.gz"
+  },
+  "workflow_coverage": {
+    "tracked_definitions": 174,
+    "run_history_queried": 174,
+    "runtime_with_observed_run": 173,
+    "scheduled_without_any_observed_run": [],
+    "unique_runs": 2124,
+    "conclusions": {
+      "success": 1413,
+      "cancelled": 456,
+      "failure": 247,
+      "skipped": 4,
+      "in_progress": 4
+    },
+    "no_runtime_evidence": [
+      ".github/workflows/nba-backtest-real-market.yml"
+    ],
+    "definition_sha": "94c48fec955c3bc11a5760e2773f373a2b648919",
+    "sample_cutoff": "2026-11-13T17:50:31.116634+00:00"
+  },
+  "failed_runs": [
+    {
+      "id": 43460605668,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43460605668",
+      "cause": "Required primary-model coverage incomplete"
+    },
+    {
+      "id": 43457521047,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43457521047",
+      "cause": "Legacy ODDS_STALE/TRACKER_STALE; paid recovery prohibited"
+    },
+    {
+      "id": 43457393709,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43457393709",
+      "cause": "Captured standard thresholds lack primary frozen forecasts"
+    },
+    {
+      "id": 43457221972,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43457221972",
+      "cause": "End-to-end readiness depends on incomplete primary coverage"
+    },
+    {
+      "id": 43457112970,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43457112970",
+      "cause": "Stale public monitor result, repaired D1"
+    },
+    {
+      "id": 43456432224,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43456432224",
+      "cause": "Readiness plus stale health report"
+    },
+    {
+      "id": 43456209317,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43456209317",
+      "cause": "NBA coverage, artifact health and clean-window release gate"
+    },
+    {
+      "id": 43453079213,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43453079213",
+      "cause": "Official history source outage"
+    },
+    {
+      "id": 43452696035,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43452696035",
+      "cause": "NBA DEGRADED while app and NFL READY"
+    },
+    {
+      "id": 43449964083,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43449964083",
+      "cause": "Static audit succeeded; repair/verify summary correctly failed on degraded production"
+    },
+    {
+      "id": 43426792646,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43426792646",
+      "cause": "Historical lifecycle failure; full root cause not independently reproduced"
+    },
+    {
+      "id": 43465134917,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43465134917",
+      "cause": "First repair run still had no verified finals; fixed by D3 in same cycle"
+    },
+    {
+      "id": 43468877797,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43468877797",
+      "cause": "Obsolete UI expectations; fixed by D8 in same cycle"
+    },
+    {
+      "id": 42921102194,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921102194",
+      "cause": "Historical obsolete hide-tipped UI test"
+    },
+    {
+      "id": 42921113429,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921113429",
+      "cause": "Historical obsolete consensus UI test"
+    },
+    {
+      "id": 42599207324,
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42599207324",
+      "cause": "Historical retired external tracker probe"
+    },
+    {
+      "id": 42930933845,
+      "job": 130229193947,
+      "cause": "Legacy Odds API score provider fetch failed; schedule preserved. Default-off paid guard in PR423 now prevents spending. Current public ESPN/NBA feeds independently verified.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42930933845"
+    },
+    {
+      "id": 43124311963,
+      "job": 130872385760,
+      "cause": "Three consecutive main push conflicts exhausted retries. PR424 recalculates against newest main on ten bounded retries with backoff.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43124311963"
+    },
+    {
+      "id": 42921113538,
+      "cause": "NFL smoke test required groupPlayerMarkets in retired redirect HTML; reproduced locally; PR424 runs unified app plus redirect contracts.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921113538"
+    },
+    {
+      "id": 42921102157,
+      "cause": "Phase1 scoreboard test required removed root refreshScoresOnly; reproduced locally; PR424 verifies canonical live contracts.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921102157"
+    },
+    {
+      "id": 42921102576,
+      "cause": "Phase1 PP join test expected retired root provider widgets; reproduced locally; PR424 verifies canonical frozen standard-line joins.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42921102576"
+    },
+    {
+      "id": 42717086323,
+      "job": 129501301491,
+      "cause": "UNDERDOG_X_BEARER_TOKEN missing; diagnostic is manual-only. No secret or paid service changes made; X integration remains unavailable.",
+      "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/42717086323"
+    }
+  ],
+  "static_validation": {
+    "tracked_files": 1225,
+    "extension:.yml": 174,
+    "extension:": 3,
+    "extension:.md": 24,
+    "extension:.live-tracker": 1,
+    "extension:.csv": 42,
+    "extension:.json": 246,
+    "json_parse_pass": 246,
+    "extension:.py": 571,
+    "python_ast_pass": 571,
+    "extension:.gz": 120,
+    "extension:.js": 7,
+    "node_syntax_pass": 38,
+    "extension:.html": 3,
+    "extension:.webmanifest": 1,
+    "extension:.txt": 2,
+    "extension:.cjs": 31,
+    "workflows_total": 174,
+    "workflow_jobs": 185,
+    "pr_workflows": 104,
+    "manually_dispatchable": 149,
+    "workflow_steps": 1173,
+    "actions_not_sha_pinned": 390,
+    "runtime_test_commands_unguarded_steps": 89,
+    "scheduled_workflows": 83,
+    "continue_on_error_steps": 36,
+    "workflow_push_steps": 94,
+    "workflow_run_triggers": 11
+  },
+  "tests": {
+    "distinct_targeted_local_tests": 242,
+    "breakdown": {
+      "public_monitor": 10,
+      "team_defense": 16,
+      "official_backfill": 20,
+      "primary_heartbeat_cache": 40,
+      "NFL_schedule": 38,
+      "paid_collectors_parsers": 19,
+      "archive": 5,
+      "retained_boxscore_compatibility": 12,
+      "unified_app_live_root_javascript": 74,
+      "tracking_status_and_conflict": 5,
+      "nfl_redirect": 2,
+      "scoreboard_wrapper": 1
+    },
+    "static_errors": 0,
+    "static_warnings": 45,
+    "dependency_advisories": "Pipeline contract advisory check passed; not a guarantee of zero supply-chain vulnerabilities",
+    "additional_PR424": {
+      "tracking_status_and_conflict_tests": 5,
+      "UI_entry_point_executions": 134,
+      "note": "Shared unified suite runs through both entry points; 134 is not 134 new distinct tests. Two new NFL redirect cases plus three new publisher tests.",
+      "scoreboard_wrapper": 1,
+      "all_passed": true
+    }
+  },
+  "data_coverage": {
+    "NBA_season_games": 1200,
+    "NFL_season_games": 272,
+    "NBA_current_slate_games": 9,
+    "NBA_games_with_saved_quotes_and_forecasts": 9,
+    "current_standard_offers": 371,
+    "current_primary_matched": 355,
+    "current_missing_primary": 16,
+    "archived_standard_quotes": 607,
+    "archived_thresholds_missing_primary": 28,
+    "archived_missing_with_separate_research": 12,
+    "archived_missing_without_any_AI": 16,
+    "frozen_AI_only": 904,
+    "frozen_line_backed_future_pending": 582,
+    "NBA_primary_ledger": {
+      "snapshot_scope": "Initial audit snapshot; new future captures accumulated later in this cycle",
+      "records": 1672,
+      "graded_including_pushes": 1075,
+      "pushes": 17,
+      "future_pending": 562,
+      "verified_DNP": 35,
+      "decisions_wins": 564,
+      "decisions_losses": 494
+    },
+    "nightly_grading": {
+      "checked_at": "2026-11-13T17:22:45.547434+00:00",
+      "game_date_eastern": "2026-11-12",
+      "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "grace_hours_from_scheduled_start": 12,
+      "prizepicks_saved": 327,
+      "prizepicks_settled": 318,
+      "prizepicks_void": 9,
+      "prizepicks_pending": 0,
+      "prizepicks_overdue": 0,
+      "prizepicks_overdue_games": {},
+      "paper_saved": 0,
+      "paper_pending": 0,
+      "paper_overdue": 0,
+      "unpriced_forecasts_separate": 388,
+      "prizepicks_scope_status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "ai_forecast_accuracy_status": "AI_PRETIP_FORECASTS_GRADED",
+      "ai_forecasts_recorded": 388,
+      "ai_forecasts_graded": 332,
+      "ai_forecasts_ungraded": 0,
+      "ai_forecasts_verified_dnp_excluded": 56,
+      "ai_forecasts_accounted_for": 388,
+      "ai_forecasts_fully_accounted_for": true,
+      "ai_forecasts_fully_graded": false,
+      "overall_grading_status": "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR",
+      "capture_missing": false,
+      "complete_slate_not_guaranteed": true,
+      "notice": "Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
+    },
+    "NFL_grading": {
+      "alternative_tier_historical_grades_excluded": 932,
+      "alternative_tier_pending_excluded": 4,
+      "archived_pregame_lines": 70692,
+      "expected_final_picks": 1087,
+      "final_games_with_frozen_picks": 2,
+      "frozen_final_pick_candidates": 1087,
+      "graded_picks": 1067,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 4,
+      "pending_reasons": {
+        "player_not_in_verified_boxscore": 4
+      },
+      "pushes": 3,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 135,
+      "standard_hit_rate": 39.39,
+      "standard_pending_picks": 0,
+      "standard_pending_reasons": {},
+      "standard_settled": 132,
+      "standard_wins": 52,
+      "void_picks": 16
+    },
+    "recovered_official_history": {
+      "version": 1,
+      "status": "RESEARCH_OFFICIAL_NBA_FINAL_BOX_BACKFILL",
+      "captured_at": "2026-11-13T17:07:02.321920+00:00",
+      "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+      "season_schedule_source": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-data/main/nba/schedules/parquet/nba_schedule_2027.parquet",
+      "requested_games": 1,
+      "official_ids_found": 1,
+      "official_ids_from_saved_discovery": 0,
+      "verified_espn_id_hints": 1,
+      "espn_http_circuit_open": false,
+      "provider_outage_detected": false,
+      "schedule_lookup_error": null,
+      "verified_games_by_provider": {
+        "NBA_CDN_FINAL": 1
+      },
+      "verified_new_games": 1,
+      "verified_combined_games": 91,
+      "failures": {},
+      "production_approved": false,
+      "retroactive_pregame_feature_claims": false,
+      "note": "Official final observations captured now. Never claim availability at historical pick capture; does not change grading, sportsbook lines, model outputs or live odds.",
+      "row_count": 2134,
+      "verified_dnp_rows": 89,
+      "window_validated_games": 90,
+      "additional_history_recovered_games": 1,
+      "defense_context": {
+        "status": "RESEARCH_TEAM_DEFENSE_NO_POSITION",
+        "captured_at": "2026-11-13T17:07:13.210385+00:00",
+        "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+        "source_cache_published_at": null,
+        "cache_publication_time_verified": false,
+        "retroactive_feature_backfill_allowed": false,
+        "production_hit_estimate_eligible": false,
+        "min_independent_prior_games": 5,
+        "verified_final_games": 91,
+        "rejected_final_games": {},
+        "future_game_count": 14,
+        "blockers": {},
+        "note": "Team totals are not positional defense. Cache has no published_at; this research capture does not prove those games were available to an older pick. No opponent adjustment is promoted."
+      }
+    }
+  },
+  "deployment": {
+    "url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "phone_test_run": 43462996631,
+    "phone_artifact_url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43462996631/artifacts/14057518209",
+    "phone_checked_at": "2026-11-13T16:37:10.333280+00:00",
+    "phone_viewport": "390x844 Chromium emulation",
+    "phone_checks_passed": 9,
+    "independent_public_probe": {
+      "attempt_count": 1,
+      "attempts": [
+        {
+          "checked_at": "2026-11-13T17:27:11.426475+00:00",
+          "matched_offers": 360,
+          "reasons": [],
+          "status": "READY"
+        }
+      ],
+      "browser_render_verified": false,
+      "checked_at": "2026-11-13T17:27:11.426475+00:00",
+      "html_handoff_present": true,
+      "matched_by_game": {
+        "Atlanta Hawks @ Chicago Bulls": 35,
+        "Cleveland Cavaliers @ Miami Heat": 38,
+        "Golden State Warriors @ San Antonio Spurs": 47,
+        "Memphis Grizzlies @ New Orleans Pelicans": 42,
+        "Milwaukee Bucks @ Orlando Magic": 38,
+        "New York Knicks @ Indiana Pacers": 40,
+        "Oklahoma City Thunder @ LA Clippers": 44,
+        "Portland Trail Blazers @ Sacramento Kings": 43,
+        "Utah Jazz @ Houston Rockets": 33
+      },
+      "matched_offers": 360,
+      "note": "Public HTML and JSON readiness, not a browser screenshot, wager or calibrated betting accuracy.",
+      "provider_partial": false,
+      "reasons": [],
+      "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/",
+      "status": "READY"
+    },
+    "cards": 382,
+    "physical_iPhone_or_Safari_verified": false,
+    "interactive_checks": [
+      "Myles Turner projection 2.8 against standard AST 1.5, Over and hit estimate visible",
+      "Dame's Take immediately below projection",
+      "NBA upcoming game detail shows saved standard lines and honest missing forecasts",
+      "NFL final WAS 24 NYG 21, 18 observed player rows and saved standard forecasts"
+    ],
+    "active_game_30_second_updates_verified": false,
+    "reason": "No active games during verification; timer/mapping regressions passed, live in-game behavior unobserved",
+    "NBA_ESPN_schedule_reconciliation": {
+      "checked_at": "2026-11-13T17:25:42.122177+00:00",
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20261113&limit=100",
+      "source_events": 9,
+      "expected_games": 9,
+      "rows": [
+        {
+          "id": "401909296",
+          "game": "New York Knicks @ Indiana Pacers",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "IND",
+            "away": "NY"
+          },
+          "canonical_teams": {
+            "home": "IND",
+            "away": "NYK"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909297",
+          "game": "Milwaukee Bucks @ Orlando Magic",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "ORL",
+            "away": "MIL"
+          },
+          "canonical_teams": {
+            "home": "ORL",
+            "away": "MIL"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909298",
+          "game": "Cleveland Cavaliers @ Miami Heat",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "MIA",
+            "away": "CLE"
+          },
+          "canonical_teams": {
+            "home": "MIA",
+            "away": "CLE"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909299",
+          "game": "Atlanta Hawks @ Chicago Bulls",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "CHI",
+            "away": "ATL"
+          },
+          "canonical_teams": {
+            "home": "CHI",
+            "away": "ATL"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909300",
+          "game": "Memphis Grizzlies @ New Orleans Pelicans",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "NO",
+            "away": "MEM"
+          },
+          "canonical_teams": {
+            "home": "NOP",
+            "away": "MEM"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909301",
+          "game": "Utah Jazz @ Houston Rockets",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "HOU",
+            "away": "UTAH"
+          },
+          "canonical_teams": {
+            "home": "HOU",
+            "away": "UTA"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909302",
+          "game": "Golden State Warriors @ San Antonio Spurs",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "SA",
+            "away": "GS"
+          },
+          "canonical_teams": {
+            "home": "SAS",
+            "away": "GSW"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909303",
+          "game": "Portland Trail Blazers @ Sacramento Kings",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "SAC",
+            "away": "POR"
+          },
+          "canonical_teams": {
+            "home": "SAC",
+            "away": "POR"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        },
+        {
+          "id": "401909304",
+          "game": "Oklahoma City Thunder @ LA Clippers",
+          "source_present": true,
+          "raw_provider_teams": {
+            "home": "LAC",
+            "away": "OKC"
+          },
+          "canonical_teams": {
+            "home": "LAC",
+            "away": "OKC"
+          },
+          "teams_match": true,
+          "tip_matches": true,
+          "state": "pre"
+        }
+      ],
+      "all_match": true,
+      "normalization_source": "iphone_bot/fetch_hoopr_nba_schedule.py ALIASES",
+      "initial_literal_abbreviation_comparison_mismatches": 4,
+      "semantic_identity_mismatches": 0
+    },
+    "NFL_ESPN_player_reconciliation": {
+      "checked_at": "2026-11-13T17:23:58.052486+00:00",
+      "status": "ok",
+      "errors": [],
+      "game_id": "2026_10_WAS_NYG",
+      "event_id": "401873052",
+      "player_rows": 18,
+      "public_fields_equal": {
+        "away": true,
+        "home": true,
+        "espn_event_id": true,
+        "away_score": true,
+        "home_score": true,
+        "status": true,
+        "players": true
+      },
+      "source_url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873052",
+      "public_url": "https://damiensandoval77-lang.github.io/Sports-Bot/nfl/data/live_2026.json"
+    },
+    "last_release_read_at": "2026-11-13T17:47:27.165015+00:00",
+    "release_unchanged_from_phone_test": true
+  },
+  "blockers": [
+    {
+      "id": "B1",
+      "severity": "high",
+      "issue": "Six players have only 3-7 qualifying same-team opportunity-history games; primary requires 8",
+      "affected_current_offers": 16,
+      "action": "Preserve explicit unavailable state; cannot invent history or promote unvalidated research estimates",
+      "players": [
+        "Patrick Williams",
+        "Jaylon Tyson",
+        "Jalen Suggs",
+        "Ivica Zubac",
+        "Max Strus",
+        "Keegan Murray"
+      ]
+    },
+    {
+      "id": "B2",
+      "severity": "high",
+      "issue": "Transient PrizePicks freshness warning recovered by existing scheduled publication at 17:19:22 UTC",
+      "status": "RECOVERED_BY_EXISTING_SCHEDULE_NOT_THIS_REPAIR",
+      "action": "No paid refresh was initiated by this audit; source readiness READY on final readback"
+    },
+    {
+      "id": "B3",
+      "severity": "high",
+      "issue": "Legacy branch Pages deployment cancellations and races",
+      "evidence_run": 43465547852,
+      "action": "Repository owner must select Settings > Pages > Build and deployment > Source > GitHub Actions; connector cannot change setting and browser lacks authenticated admin session"
+    },
+    {
+      "id": "B4",
+      "severity": "medium",
+      "issue": "No complete 72-hour clean production window or active-game verification during this run",
+      "action": "Do not force release gate green; requires actual future observations"
+    },
+    {
+      "id": "B5",
+      "severity": "medium",
+      "issue": "Remaining mutable action references are supply-chain hardening findings, not proof of an exploited vulnerability",
+      "action": "Critical touched publisher actions pinned; broad unrelated workflow changes could activate prohibited provider work."
+    },
+    {
+      "id": "B6",
+      "severity": "medium",
+      "issue": "Manual Underdog X diagnostic lacks UNDERDOG_X_BEARER_TOKEN",
+      "action": "No secret changes or paid X access attempted. Full Underdog end-to-end coverage remains unverified."
+    }
+  ],
+  "evidence_integrity": {
+    "historical_missing_pretip_evidence": "Irrecoverable unless an authentic pretip capture exists; no fabricated projections, grades or market observations",
+    "official_history_recovery_is_research_only": true,
+    "Underdog_end_to_end_coverage_verified": false,
+    "receipt_contains_no_credentials_or_raw_provider_bulk_payloads": true
+  },
+  "notifications": {
+    "requested": true,
+    "delivery_confirmed": false
+  },
+  "duration_seconds": 4803,
+  "independently_verified_defect_groups": 9,
+  "configuration_only_defect_groups": 1,
+  "hosted_recovery_verification": {
+    "captured_at": "2026-11-13T17:11:42.126532+00:00",
+    "espn_http_circuit_open": false,
+    "failures": {},
+    "note": "Official final observations captured now. Never claim availability at historical pick capture; does not change grading, sportsbook lines, model outputs or live odds.",
+    "official_ids_found": 90,
+    "official_ids_from_saved_discovery": 90,
+    "production_approved": false,
+    "provider_outage_detected": false,
+    "requested_games": 90,
+    "retroactive_pregame_feature_claims": false,
+    "schedule_lookup_error": "TimeoutError",
+    "season_schedule_source": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-data/main/nba/schedules/parquet/nba_schedule_2027.parquet",
+    "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+    "status": "RESEARCH_OFFICIAL_NBA_FINAL_BOX_BACKFILL",
+    "verified_combined_games": 90,
+    "verified_espn_id_hints": 90,
+    "verified_games_by_provider": {
+      "NBA_CDN_FINAL": 90
+    },
+    "verified_new_games": 90,
+    "version": 1,
+    "row_count": 2107,
+    "run_id": 43468528082,
+    "artifact_url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43468528082/artifacts/14060179329",
+    "hosted_context": {
+      "blockers": {
+        "insufficient_verified_prior_defense_games": 2
+      },
+      "cache_publication_time_verified": false,
+      "captured_at": "2026-11-13T17:30:45.037703+00:00",
+      "future_game_count": 14,
+      "future_games": [
+        {
+          "away": "NYK",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909296",
+          "home": "IND",
+          "start": "2026-11-14T00:00:00+00:00",
+          "team_defense": {
+            "IND": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 25.0,
+                "PRA": 183.0,
+                "PTS": 110.2,
+                "REB": 47.8
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-07",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600160",
+                "0022600178",
+                "0022600189",
+                "0022600207",
+                "0022600217"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "NYK": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 22.2,
+                "PRA": 157.4,
+                "PTS": 98.4,
+                "REB": 36.8
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-07",
+                "2026-11-10",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600161",
+                "0022600177",
+                "0022600191",
+                "0022600211",
+                "0022600218"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "MIL",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909297",
+          "home": "ORL",
+          "start": "2026-11-14T00:00:00+00:00",
+          "team_defense": {
+            "MIL": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 24.6,
+                "PRA": 180.4,
+                "PTS": 109.2,
+                "REB": 46.6
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-08",
+                "2026-11-10",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600175",
+                "0022600030",
+                "0022600200",
+                "0022600211",
+                "0022600222"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "ORL": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 25.4,
+                "PRA": 170.2,
+                "PTS": 110.6,
+                "REB": 34.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-05",
+                "2026-11-07",
+                "2026-11-10",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600162",
+                "0022600187",
+                "0022600193",
+                "0022600215",
+                "0022600224"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "CLE",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909298",
+          "home": "MIA",
+          "start": "2026-11-14T01:00:00+00:00",
+          "team_defense": {
+            "CLE": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 26.8,
+                "PRA": 182.8,
+                "PTS": 111.8,
+                "REB": 44.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-07",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600180",
+                "0022600027",
+                "0022600191",
+                "0022600204",
+                "0022600218"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "MIA": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 31.4,
+                "PRA": 194.6,
+                "PTS": 118.2,
+                "REB": 45.0
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-05",
+                "2026-11-08",
+                "2026-11-10"
+              ],
+              "prior_game_ids": [
+                "0022600172",
+                "0022600186",
+                "0022600188",
+                "0022600202",
+                "0022600214"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "ATL",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909299",
+          "home": "CHI",
+          "start": "2026-11-14T01:00:00+00:00",
+          "team_defense": {
+            "ATL": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 26.8,
+                "PRA": 186.8,
+                "PTS": 117.2,
+                "REB": 42.8
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-07",
+                "2026-11-09"
+              ],
+              "prior_game_ids": [
+                "0022600160",
+                "0022600174",
+                "0022600025",
+                "0022600190",
+                "0022600203"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "CHI": {
+              "observed_games": 4,
+              "position_adjustment_verified": false,
+              "required_games": 5,
+              "status": "INSUFFICIENT_VERIFIED_PRIOR_GAMES"
+            }
+          }
+        },
+        {
+          "away": "MEM",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909300",
+          "home": "NOP",
+          "start": "2026-11-14T01:00:00+00:00",
+          "team_defense": {
+            "MEM": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 24.4,
+                "PRA": 175.0,
+                "PTS": 111.4,
+                "REB": 39.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600165",
+                "0022600178",
+                "0022600029",
+                "0022600206",
+                "0022600221"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "NOP": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 29.6,
+                "PRA": 204.8,
+                "PTS": 130.0,
+                "REB": 45.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-08",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600179",
+                "0022600031",
+                "0022600201",
+                "0022600210",
+                "0022600223"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "UTA",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909301",
+          "home": "HOU",
+          "start": "2026-11-14T01:30:00+00:00",
+          "team_defense": {
+            "HOU": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 23.8,
+                "PRA": 170.6,
+                "PTS": 104.0,
+                "REB": 42.8
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-07",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600167",
+                "0022600181",
+                "0022600194",
+                "0022600208",
+                "0022600225"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "UTA": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 21.4,
+                "PRA": 181.8,
+                "PTS": 114.8,
+                "REB": 45.6
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-08",
+                "2026-11-10",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600179",
+                "0022600028",
+                "0022600198",
+                "0022600214",
+                "0022600224"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "GSW",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909302",
+          "home": "SAS",
+          "start": "2026-11-14T02:30:00+00:00",
+          "team_defense": {
+            "GSW": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 26.2,
+                "PRA": 173.8,
+                "PTS": 106.8,
+                "REB": 40.8
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-05",
+                "2026-11-07",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600170",
+                "0022600188",
+                "0022600193",
+                "0022600210",
+                "0022600225"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "SAS": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 26.6,
+                "PRA": 174.0,
+                "PTS": 107.6,
+                "REB": 39.8
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-07",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600184",
+                "0022600033",
+                "0022600195",
+                "0022600209",
+                "0022600220"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "POR",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909303",
+          "home": "SAC",
+          "start": "2026-11-14T03:00:00+00:00",
+          "team_defense": {
+            "POR": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 22.2,
+                "PRA": 181.6,
+                "PTS": 115.8,
+                "REB": 43.6
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-07",
+                "2026-11-10",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600183",
+                "0022600032",
+                "0022600195",
+                "0022600216",
+                "0022600226"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "SAC": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 23.4,
+                "PRA": 176.2,
+                "PTS": 112.2,
+                "REB": 40.6
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-08",
+                "2026-11-10"
+              ],
+              "prior_game_ids": [
+                "0022600164",
+                "0022600185",
+                "0022600033",
+                "0022600202",
+                "0022600215"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "OKC",
+          "date_eastern": "2026-11-13",
+          "game_id": "401909304",
+          "home": "LAC",
+          "start": "2026-11-14T03:30:00+00:00",
+          "team_defense": {
+            "LAC": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 29.2,
+                "PRA": 194.6,
+                "PTS": 123.2,
+                "REB": 42.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-01",
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-08",
+                "2026-11-10"
+              ],
+              "prior_game_ids": [
+                "0022600156",
+                "0022600171",
+                "0022600186",
+                "0022600201",
+                "0022600213"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "OKC": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 20.8,
+                "PRA": 170.2,
+                "PTS": 105.8,
+                "REB": 43.6
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-07",
+                "2026-11-10",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600180",
+                "0022600029",
+                "0022600192",
+                "0022600216",
+                "0022600226"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "DEN",
+          "date_eastern": "2026-11-14",
+          "game_id": "401909980",
+          "home": "NOP",
+          "start": "2026-11-15T00:00:00+00:00",
+          "team_defense": {
+            "DEN": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 28.6,
+                "PRA": 183.0,
+                "PTS": 110.8,
+                "REB": 43.6
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-07",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600169",
+                "0022600182",
+                "0022600189",
+                "0022600208",
+                "0022600221"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "NOP": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 29.6,
+                "PRA": 204.8,
+                "PTS": 130.0,
+                "REB": 45.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-08",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600179",
+                "0022600031",
+                "0022600201",
+                "0022600210",
+                "0022600223"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "DAL",
+          "date_eastern": "2026-11-14",
+          "game_id": "401909981",
+          "home": "CLE",
+          "start": "2026-11-15T00:30:00+00:00",
+          "team_defense": {
+            "CLE": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 26.8,
+                "PRA": 182.8,
+                "PTS": 111.8,
+                "REB": 44.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-07",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600180",
+                "0022600027",
+                "0022600191",
+                "0022600204",
+                "0022600218"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "DAL": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 27.2,
+                "PRA": 181.0,
+                "PTS": 112.0,
+                "REB": 41.8
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-08",
+                "2026-11-09",
+                "2026-11-12"
+              ],
+              "prior_game_ids": [
+                "0022600184",
+                "0022600028",
+                "0022600199",
+                "0022600207",
+                "0022600229"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "DET",
+          "date_eastern": "2026-11-14",
+          "game_id": "401909982",
+          "home": "MIA",
+          "start": "2026-11-15T01:00:00+00:00",
+          "team_defense": {
+            "DET": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 22.0,
+                "PRA": 183.4,
+                "PTS": 115.0,
+                "REB": 46.4
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-08",
+                "2026-11-09",
+                "2026-11-12"
+              ],
+              "prior_game_ids": [
+                "0022600159",
+                "0022600173",
+                "0022600197",
+                "0022600205",
+                "0022600228"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "MIA": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 31.4,
+                "PRA": 194.6,
+                "PTS": 118.2,
+                "REB": 45.0
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-05",
+                "2026-11-08",
+                "2026-11-10"
+              ],
+              "prior_game_ids": [
+                "0022600172",
+                "0022600186",
+                "0022600188",
+                "0022600202",
+                "0022600214"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "BKN",
+          "date_eastern": "2026-11-14",
+          "game_id": "401909983",
+          "home": "MEM",
+          "start": "2026-11-15T01:00:00+00:00",
+          "team_defense": {
+            "BKN": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 25.0,
+                "PRA": 179.0,
+                "PTS": 114.4,
+                "REB": 39.6
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-07",
+                "2026-11-08",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600161",
+                "0022600176",
+                "0022600190",
+                "0022600199",
+                "0022600223"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            },
+            "MEM": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 24.4,
+                "PRA": 175.0,
+                "PTS": 111.4,
+                "REB": 39.2
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-09",
+                "2026-11-11"
+              ],
+              "prior_game_ids": [
+                "0022600165",
+                "0022600178",
+                "0022600029",
+                "0022600206",
+                "0022600221"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        },
+        {
+          "away": "CHI",
+          "date_eastern": "2026-11-14",
+          "game_id": "401909984",
+          "home": "MIN",
+          "start": "2026-11-15T01:00:00+00:00",
+          "team_defense": {
+            "CHI": {
+              "observed_games": 4,
+              "position_adjustment_verified": false,
+              "required_games": 5,
+              "status": "INSUFFICIENT_VERIFIED_PRIOR_GAMES"
+            },
+            "MIN": {
+              "individual_defender_verified": false,
+              "last5_team_totals_allowed": {
+                "AST": 23.6,
+                "PRA": 167.6,
+                "PTS": 102.0,
+                "REB": 42.0
+              },
+              "not_a_modeled_hit_estimate": true,
+              "position_adjustment_verified": false,
+              "prior_dates": [
+                "2026-11-02",
+                "2026-11-04",
+                "2026-11-06",
+                "2026-11-08",
+                "2026-11-12"
+              ],
+              "prior_game_ids": [
+                "0022600166",
+                "0022600181",
+                "0022600031",
+                "0022600198",
+                "0022600229"
+              ],
+              "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+              "source_observed_in_research_at": "2026-11-13T17:30:45.037703+00:00",
+              "status": "VERIFIED_PRIOR_TEAM_TOTALS_ONLY"
+            }
+          }
+        }
+      ],
+      "min_independent_prior_games": 5,
+      "note": "Team totals are not positional defense. Cache has no published_at; this research capture does not prove those games were available to an older pick. No opponent adjustment is promoted.",
+      "production_hit_estimate_eligible": false,
+      "rejected_final_games": {},
+      "retroactive_feature_backfill_allowed": false,
+      "source": "NBA_CDN_FINAL_OR_ESPN_FINAL",
+      "source_cache_published_at": null,
+      "status": "RESEARCH_TEAM_DEFENSE_NO_POSITION",
+      "verified_final_games": 90
+    },
+    "additional_local_recovery": "official-defense-history-recovered.json.gz contains one additional verified CHI game (91 combined) and removes these two research context blockers; this extended cache is not promoted to production forecasts."
+  },
+  "final_required_checks": {
+    "passing": 9,
+    "total": 10,
+    "required_stale_components": 0,
+    "checked_at": "2026-11-13T17:34:12.906701+00:00",
+    "remaining_required_failure": "current_primary_model_coverage",
+    "read_at": "2026-11-13T17:47:27.165015+00:00"
+  },
+  "schedule_verified": {
+    "enabled": true,
+    "cadence_hours": 2,
+    "changed_this_run": false
+  },
+  "carry_forward_work": [
+    "Primary-model evidence gaps cannot be filled with fabricated or research-only predictions",
+    "Pages administration setting unavailable in connected API and signed-out browser",
+    "Prospective validation, active-game observation, and a genuine 72-hour clean interval require future real evidence"
+  ],
+  "scope_exceptions": [
+    "All advertised refs fetched and ancestry compared, but not all historical revisions executed",
+    "Underdog full pretip-to-grade path not independently verified",
+    "Native Pages cancellation cause observed; administrative source setting not changed",
+    "Research-only model/data artifacts remain separate from production probabilities and frozen grades",
+    "All 174 workflows had history queried; nba-backtest-real-market.yml returned no runs. Histories sampled, not every execution ever."
+  ],
+  "files_sha256": {
+    "repair-run-events.json": "58a51fe58d52bcef2215e9bc6dc14810643916db305cbb5b5e866d4c21746e69",
+    "heartbeat-live.json": "776b466a560456c09b929bdd3188addd7814410150729adcae1a347a560cc78d",
+    "tracking-coverage-public.json": "093a16e61243dbd1c48aea89944e3f10a155922288265dbe0220dc8f8705b2e5",
+    "remaining-workflow-history.json": "d9eaa45b893786e86f7dd16c1a6190e24ad2738da63b2e199c2488245ddecd04",
+    "open-prs.json": "13ccce06a38ff26e09f5f52a58b9a2e83cd173986f598c73a7e635b1acf1e8d0",
+    "nightly-grading.json": "77939bc7e20805562143324311d3da11c6dd1797822fc2e0baa7a0de6c54f445",
+    "public-canary-independent.json": "cf3c3ba960d972f07a5a6deb398b543ee3de5b98861978b1f6da512b4ba51774",
+    "nfl-grading.json": "d328241cd055a042c636a120808e17e4cada6debc6e007d5e22543c2fc4ab435",
+    "action-pins.json": "cd10ece0c4fb6f0f171c4b68ff502949eda81fd422c2aeeca9657e37281af5da",
+    "cached-discovery-replay.json": "8def3aec6a7e470f322c2cd67ae532cedcb37ec209bea67e17a612c05b548d8f",
+    "public-release-final.json": "da8f8491fe93507b5aa7a35277d570c710b88696e0c32eb6e56798bea4eda438",
+    "branches-closeout.json.gz": "31d5b27f8cc6fafa7599b1aa67867a372a643c5566a1d708a837753533229e58",
+    "workflow-coverage.json": "2094d1b621f8cc085da2b9ba5dbd7decbed9ca76cc4b49cb4edf9c90733b9890",
+    "workflow-security-patterns.json": "1579fd01436df81954907bdb09509f7952bcb4a44c090cf9b1a343f0208fd5af",
+    "nfl-live-reconciliation.json": "7becb617e1ada3df4f8cbc042196be79a821ee79419db43ee27c93539d5b5f6e",
+    "branches.json.gz": "ee58bb2f2cb9647d6a1d4f14be48394c8b38603dac67032207e331123a33bbe7",
+    "static-audit-start.json": "2d928f7055f7f89e52ff6a5ef8f51da4302c122db6aa9fd81da118f7cd8d7a18",
+    "branches-final.json.gz": "13ff7d93203475121e6d2386c6e0f2f56ce69d65b074a595a45fc8ad8e96db32",
+    "workflow-api-inventory.json": "d4319afad60c29b6e93505c4685108aa699686701c9b1c914ae9bdce17608726",
+    "additional-failure-diagnoses.json": "c2d7a24c7b62b448aa0d55bdac8ed74693a0408bf5c607909fc752448309a2e6",
+    "public-canary-final.json": "8b8999a089bb3bfd15a87575b1681f715f89a732bd41b03ca76484e7be2aee05",
+    "hosted-recovery-verification.json": "1c7f1f5e28e481d6abb5caf593193e32c6487ad2a14613f117fda53387ec19d2",
+    "production-readiness-final.json": "40f007e295550e49e67eb404f0b6533816627e396e232b8ebc90b5887c28b218",
+    "iphone-deployed.json": "00f6c3f95d5c4549e34f13bb322c7a9bf4d399a982f05557c4e1f6332d761994",
+    "nba-live-schedule-reconciliation.json": "5d40287ae4fecb0fadb8a3364e7f449046cb8560d162ee8fc5a2a56392e2692f",
+    "capture-coverage.json": "e6289f38d8963a46b40bf818ffda4e4d610ef84308dce94f6cdbfd5cd2342d92",
+    "official-defense-history-recovered.json.gz": "af4eb397de11ca37ea5773e2084e566e554ed63305e0b9f426d5a8cc8f8e90d9",
+    "workflow-runs.json.gz": "3b7c61b9cf9c6eee339e552faa6ce22e86309dd44c7c2afb4077195445a6c4ba",
+    "paid-polling-public.json": "ae2f37f064d87579414b5fd567e54d7d296db2ad40164e9df6ab72fef4358f67",
+    "workflow-inventory.json.gz": "b0abf8b69db7f895fd78875987b4fe5e0b0ed3c094553ddcb267a8017572e92f",
+    "workflows.md": "67565b92ab5b3cd1cbf796c917bd7b229c4c83550413f66009a906a5783029fd",
+    "history-recovery-summary.json": "a2a8e3fbb41c14c87d8abfe03e38063ac7c6674ecdfa0f5da7cd246b108b79b3",
+    "static-audit-final.json": "b765418d51e5fd770ee7ae7d8cfefe58b9da7de112364116a43d0807d993b013",
+    "deployment-convergence.json": "188222741b9ae6657373cd4f26af39aa47f55cb8467051f249b0b106bf94a756",
+    "recovered-defense-context.json.gz": "4ab0652fadd29d8d44795b65fbe6011079546bc9923c79ca3fe9071bf1437470"
+  },
+  "additional_verification": {
+    "concurrent_NFL_audit_fix": {
+      "pr": 422,
+      "tests_passed": 4,
+      "test_file": "iphone_bot/tests/test_failure_domain_phase.py",
+      "cases": [
+        "actual standard pending remains visible",
+        "alternative pending excluded",
+        "invalid standard pending fails closed"
+      ],
+      "credited_to_this_run": false
+    }
+  }
+}

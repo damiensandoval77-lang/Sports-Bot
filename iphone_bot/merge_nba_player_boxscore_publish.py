@@ -1,160 +1,144 @@
-"""Conflict-safe verified NBA live player boxscore publishing.
+"""Safe NBA player boxscore publication: reject malformed observations.
 
-Never let a partial later observation erase a verified game from the same
-Eastern slate. Merge by exact game identity and per-game observation time,
-without copying numbers between games or claiming outdated rows are fresh.
-Only observed official boxscores can enter this file. No odds credits.
+Repair only the known trailing literal backslash-n artifact from an old
+workflow. All other malformed JSON fails closed. Never overwrite a newer
+verified snapshot or downgrade a same-date live snapshot to pregame.
 """
 import argparse
 import datetime as dt
 import json
 from pathlib import Path
 
-
-LIVE = {"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES", "PARTIAL_NBA_PLAYER_BOXSCORES"}
-WAITING = "WAITING_FOR_SCHEDULED_TIPOFF"
-
-
 def parse(raw, *, allow_legacy_suffix=False):
-    text = raw
+    text=raw
     if allow_legacy_suffix and text.rstrip().endswith(r"\n"):
-        text = text.rstrip()[:-2]
-    payload = json.loads(text)
-    if not isinstance(payload, dict) or not isinstance(payload.get("games"), list):
+        text=text.rstrip()[:-2]
+    payload=json.loads(text)
+    if not isinstance(payload,dict) or not isinstance(payload.get("games"),list):
         raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_SCHEMA")
+    # Validate before any first-snapshot, new-date, or older-wrapper return.
+    # Otherwise malformed rows can enter production through those fast paths.
+    seen=set()
+    for game in payload["games"]:
+        if not isinstance(game,dict):raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_GAME")
+        key=game_key(game)
+        if key in seen:raise ValueError("NBA_PLAYER_BOXSCORE_DUPLICATE_GAME")
+        seen.add(key)
+        if game.get("player_rows") is not None and not isinstance(game["player_rows"],list):
+            raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_PLAYER_ROWS")
     return payload
 
-
-def time_value(raw):
-    if not raw:
-        return None
-    try:
-        value = dt.datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
-        return value.astimezone(dt.timezone.utc) if value.tzinfo else None
-    except (TypeError, ValueError, OverflowError):
-        return None
-
-
 def stamp(obj):
-    return time_value(obj.get("captured_at") or obj.get("checked_at"))
+    raw=obj.get("captured_at") or obj.get("checked_at")
+    if not raw:return None
+    try:
+        t=dt.datetime.fromisoformat(str(raw).replace("Z","+00:00"))
+        return t.astimezone(dt.timezone.utc) if t.tzinfo else None
+    except (TypeError,ValueError):
+        return None
 
+def game_key(game):
+    """Stable official event ID; only use the matchup when ID is unavailable."""
+    if game.get("id") is not None and str(game["id"]).strip():
+        return "id:"+str(game["id"]).strip()
+    if game.get("game") and str(game["game"]).strip():
+        return "game:"+str(game["game"]).strip()
+    raise ValueError("NBA_PLAYER_BOXSCORE_GAME_IDENTITY_MISSING")
 
-def game_key(row):
-    """Use the full official ID when present; otherwise the exact matchup."""
-    if not isinstance(row, dict):
-        raise ValueError("NBA_PLAYER_BOXSCORE_GAME_NOT_OBJECT")
-    identity = str(row.get("id") or row.get("game") or "").strip()
-    if not identity:
-        raise ValueError("NBA_PLAYER_BOXSCORE_GAME_IDENTITY_MISSING")
-    return identity
+def game_observed(game,parent):
+    """Do not mark retained old games fresh with the new wrapper timestamp."""
+    return stamp({"captured_at":game.get("observed_at")}) or stamp(parent)
 
-
-def validate_games(report):
-    seen = set()
-    for game in report.get("games", []):
-        identity = game_key(game)
-        if identity in seen:
-            raise ValueError("NBA_PLAYER_BOXSCORE_DUPLICATE_GAME")
-        seen.add(identity)
-        if report.get("status") in LIVE and game.get("player_rows") is not None:
-            if not isinstance(game["player_rows"], list):
-                raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_PLAYER_ROWS")
-
-
-def observation(row, report):
-    return time_value(row.get("observed_at")) or stamp(report)
-
-
-def merge(old_raw, new_raw):
-    new = parse(new_raw)
-    old = parse(old_raw, allow_legacy_suffix=True) if old_raw is not None else None
-    current_stamp = stamp(new)
-    if current_stamp is None:
+def merge(old_raw,new_raw):
+    new=parse(new_raw)
+    old=parse(old_raw,allow_legacy_suffix=True) if old_raw is not None else None
+    if stamp(new) is None:
         raise ValueError("NBA_PLAYER_BOXSCORE_INCOMING_TIMESTAMP_INVALID")
-    validate_games(new)
-    if not old:
-        return new
-    validate_games(old)
-    previous_stamp = stamp(old)
-    # Never overwrite newer observations with an earlier completed workflow.
-    if previous_stamp and previous_stamp > current_stamp:
+    if not old:return new
+    prior_time,new_time=stamp(old),stamp(new)
+    if prior_time and prior_time>new_time:
         return old
-    # New Eastern dates are separate slates; don't leak previous day boxes.
-    if old.get("date_eastern") != new.get("date_eastern"):
-        return new
-    if old.get("status") in LIVE and new.get("status") == WAITING:
+    if (old.get("date_eastern")==new.get("date_eastern")
+        and old.get("status")=="OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"
+        and new.get("status")=="WAITING_FOR_SCHEDULED_TIPOFF"):
         return old
-    if old.get("games") and not new.get("games"):
-        return old
-    if new.get("status") not in LIVE:
-        return old if old.get("status") in LIVE else new
-    if old.get("status") not in LIVE or not old.get("games"):
+    if old.get("date_eastern")!=new.get("date_eastern"):
+        # Different dates are not combined: old finals belong to their date.
         return new
+    if old["games"] and not new["games"]:
+        # An unavailable/empty fetch is never allowed to erase observations.
+        return old
 
-    # Retain source-linked old observations for other games if this fetch only
-    # observed some games. No synthesis of rows and no player-level mixing.
-    combined = {}
+    # A partial valid run is valuable but cannot erase other games from the
+    # same Eastern slate. Keep each game with its original observed timestamp
+    # and take only a genuinely newer observation for that exact identity.
+    by_id={}
+    matchup_ids={}
     for game in old["games"]:
-        combined[game_key(game)] = (dict(game), observation(game, old))
-    kept_previous = 0
+        if not isinstance(game,dict):raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_GAME")
+        k=game_key(game)
+        if k in by_id:raise ValueError("NBA_PLAYER_BOXSCORE_DUPLICATE_GAME")
+        by_id[k]=game
+        if game.get("game") and game.get("id") is not None:
+            matchup_ids[str(game["game"])]=str(game["id"])
+    incoming_ids=set()
+    rejected_observations=set()
     for game in new["games"]:
-        key = game_key(game)
-        existing = combined.get(key)
-        if existing:
-            prior, at = existing
-            if prior.get("game") and game.get("game") and prior["game"] != game["game"]:
+        if not isinstance(game,dict):raise ValueError("NBA_PLAYER_BOXSCORE_INVALID_GAME")
+        k=game_key(game)
+        if k in incoming_ids:raise ValueError("NBA_PLAYER_BOXSCORE_DUPLICATE_GAME")
+        incoming_ids.add(k)
+        if game.get("game") and game.get("id") is not None:
+            previous_id=matchup_ids.get(str(game["game"]))
+            if previous_id and previous_id!=str(game["id"]):
+                raise ValueError("NBA_PLAYER_BOXSCORE_GAME_ID_MISMATCH")
+        prior=by_id.get(k)
+        if prior is not None:
+            if prior.get("game") and game.get("game") and prior["game"]!=game["game"]:
                 raise ValueError("NBA_PLAYER_BOXSCORE_GAME_IDENTITY_CONFLICT")
-            fresh_time = observation(game, new)
-            if at and (not fresh_time or fresh_time < at):
-                kept_previous += 1
+            # Never turn a final verified box back into a live snapshot.
+            if prior.get("state") in ("post","final") and game.get("state")=="in":
+                rejected_observations.add(k)
                 continue
+            # An empty or older observation cannot overwrite real player rows.
             if prior.get("player_rows") and not game.get("player_rows"):
-                kept_previous += 1
+                rejected_observations.add(k)
                 continue
-        combined[key] = (dict(game), observation(game, new))
-    for key in {game_key(g) for g in old["games"]}:
-        if key not in {game_key(g) for g in new["games"]}:
-            kept_previous += 1
-
-    result = dict(new)
-    result["games"] = [row for row, _ in combined.values()]
-    # Do not claim that a partial provider fetch is complete because old
-    # values were retained. Per-game observed_at controls UI freshness.
-    expected = max(
-        len(result["games"]),
-        int((old.get("coverage") or {}).get("active_or_final_count") or 0),
-        int((new.get("coverage") or {}).get("active_or_final_count") or 0),
-    )
-    result["coverage"] = dict(new.get("coverage") or {})
-    result["coverage"]["observed_game_count"] = len(result["games"])
-    result["coverage"]["active_or_final_count"] = expected
-    result["coverage"]["complete"] = (
-        new.get("status") == "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"
-        and (new.get("coverage") or {}).get("complete") is True
-        and len(new.get("games") or []) >= expected
-    )
-    result["status"] = (
-        "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES"
-        if result["coverage"]["complete"] else "PARTIAL_NBA_PLAYER_BOXSCORES"
-    )
-    result["preserved_prior_game_observations"] = kept_previous
-    return result
-
+            older=game_observed(prior,old)
+            current=game_observed(game,new)
+            if older and current and older>current:
+                rejected_observations.add(k)
+                continue
+        by_id[k]=game
+    merged={**new,"games":list(by_id.values())}
+    retained=sum(1 for k in by_id if k not in incoming_ids or k in rejected_observations)
+    # The original source's coverage flags cannot be promoted to complete when
+    # missing games were rescued from an older run.
+    coverage={**(new.get("coverage") or {})}
+    coverage["observed_game_count"]=len(merged["games"])
+    coverage["retained_prior_game_count"]=retained
+    coverage["complete"]=bool(coverage.get("complete") and retained==0)
+    merged["coverage"]=coverage
+    if retained:
+        merged["status"]="PARTIAL_NBA_PLAYER_BOXSCORES"
+        errors=list(new.get("errors") or [])
+        if "RETAINED_PRIOR_OBSERVATIONS" not in errors:
+            errors.append("RETAINED_PRIOR_OBSERVATIONS")
+        merged["errors"]=errors
+    return merged
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--current", required=True)
-    parser.add_argument("--incoming", required=True)
-    args = parser.parse_args()
-    path = Path(args.current)
-    candidate = Path(args.incoming).read_text(encoding="utf-8")
-    old = path.read_text(encoding="utf-8") if path.exists() else None
-    result = merge(old, candidate)
-    path.write_text(json.dumps(result, indent=2, ensure_ascii=False)+"\n", encoding="utf-8")
-    print("Independent NBA player snapshot published:",
-          result.get("status"), len(result["games"]), "games",
-          "prior observations retained:", result.get("preserved_prior_game_observations", 0))
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--current",required=True)
+    parser.add_argument("--incoming",required=True)
+    args=parser.parse_args()
+    path=Path(args.current)
+    new=Path(args.incoming).read_text(encoding="utf-8")
+    old=path.read_text(encoding="utf-8") if path.exists() else None
+    result=merge(old,new)
+    path.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+    print("Independent NBA player snapshot published:",result.get("status"),
+          len(result["games"]),"games")
 
-
-if __name__ == "__main__":
+if __name__=="__main__":
     main()

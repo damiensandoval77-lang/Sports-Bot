@@ -64,16 +64,22 @@ jobs:
       - name: Install existing trained NBA model dependencies
         run: pip install -r iphone_bot/requirements-training.txt pyarrow requests "scikit-learn>=1.4,<2" "joblib>=1.3,<2"
       - name: Validate combined-model 20k research simulator
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p "test_combined_simulation.py" -v
       - name: Validate pregame reliability screening
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p "test_reliability_screen.py" -v
       - name: Validate edge-readiness safeguards
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_edge_readiness.py' -v
       - name: Validate existing-grade preliminary edge comparisons
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_preliminary_edge.py' -v
       - name: Validate pregame tracking opportunity feature ingestion
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunity_features.py' -v
       - name: Validate assist and rebound opportunity shadow simulations
+        if: github.event_name == 'pull_request'
         run: python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_shadow_models.py' -v
       - name: Train original historical model and separate opponent shadow
         run: |
@@ -82,6 +88,8 @@ jobs:
           python -u iphone_bot/train_provisional.py
           python -u iphone_bot/train_defense_shadow.py
       - name: Refresh real current-season history and official availability
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python -u iphone_bot/fetch_current_form.py
           pip install "pypdf>=5,<7"

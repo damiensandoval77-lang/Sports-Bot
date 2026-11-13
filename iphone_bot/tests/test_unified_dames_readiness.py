@@ -38,6 +38,39 @@ class UnifiedIntegrityTests(unittest.TestCase):
         self.put("tonight_capture_gradeability.json",json.dumps({"status":"CAPTURE_INCOMPLETE"}))
         r=evaluate(self.root)
         self.assertIn("PRETIP_CAPTURE_NOT_VERIFIED",r["sports"]["NBA"]["issues"])
+    def coverage_report(self):
+        return {"status":"CAPTURE_INCOMPLETE", "summary":{
+            "schedule_games":1, "games_with_saved_source_quotes":1,
+            "games_with_frozen_ai":1, "games_with_line_backed_models":1,
+            "total_standard_markets_without_frozen_model":2},
+            "games":[{"source_quotes":4, "frozen_ai_only":4,
+                      "frozen_line_backed":2,
+                      "issues":["STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"]}],
+            "current_upcoming_coverage":{"status":"INCOMPLETE"}}
+    def check_capture(self, report):
+        self.put("tonight_capture_gradeability.json",json.dumps(report))
+        return evaluate(self.root)
+    def test_verified_game_capture_with_coverage_gaps_has_precise_reasons(self):
+        r=self.check_capture(self.coverage_report())
+        self.assertEqual(r["status"],"DEGRADED")
+        self.assertEqual(r["sports"]["NBA"]["issues"],[
+            "ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL",
+            "CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL"])
+    def test_missing_game_capture_is_not_hidden_by_coverage_gaps(self):
+        p=self.coverage_report(); p["games"][0]["frozen_line_backed"]=0
+        self.assertIn("PRETIP_CAPTURE_NOT_VERIFIED", self.check_capture(p)["sports"]["NBA"]["issues"])
+    def test_unknown_game_issue_is_fail_closed(self):
+        p=self.coverage_report(); p["games"][0]["issues"].append("UNKNOWN_FAILURE")
+        self.assertIn("PRETIP_CAPTURE_NOT_VERIFIED", self.check_capture(p)["sports"]["NBA"]["issues"])
+    def test_unexplained_incomplete_report_is_not_healthy(self):
+        p=self.coverage_report(); p["summary"]["total_standard_markets_without_frozen_model"]=0
+        p["current_upcoming_coverage"]["status"]="COMPLETE"
+        self.assertIn("PRETIP_CAPTURE_NOT_VERIFIED", self.check_capture(p)["sports"]["NBA"]["issues"])
+    def test_archived_gap_remains_even_when_current_offers_complete(self):
+        p=self.coverage_report(); p["current_upcoming_coverage"]["status"]="COMPLETE"
+        r=self.check_capture(p)
+        self.assertEqual(r["sports"]["NBA"]["issues"],["ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL"])
+        self.assertEqual(r["status"],"DEGRADED")
     def test_old_dashboard_link_is_regression(self):
         self.put("dames-picks/index.html",'feeds.js dames_take.js getJSON("nfl/data/latest_2026.json") getJSON("lagged_matchup_all_market_ledger.json") ../nfl/index.html')
         self.assertIn("RETIRED_DASHBOARD_LINK_REINTRODUCED",evaluate(self.root)["app"]["issues"])

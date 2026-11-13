@@ -21,7 +21,7 @@ NBA_LIVE_URLS = (
     "https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/scoreboard/todaysScoreboard_00.json",
 )
 
-def nba_live_scoreboard(days, requester=request_json):
+def nba_live_scoreboard(days, requester=request_json, validate_rows=None):
     """Fetch live NBA scoreboard via CDN or original mediaops S3 source."""
     failures = []
     for url in NBA_LIVE_URLS:
@@ -38,6 +38,8 @@ def nba_live_scoreboard(days, requester=request_json):
                 if parsed is not None and parsed["id"] not in seen:
                     seen.add(parsed["id"])
                     rows.append(parsed)
+            if validate_rows is not None and not validate_rows(rows):
+                raise ValueError("Incomplete or stale live scoreboard; try next endpoint")
             return {"events": sorted(rows, key=lambda g:g["start"]),
                     "source": "NBA official liveData scoreboard via "+
                               ("NBA CDN" if url == NBA_LIVE_URLS[0] else "mediaops S3"),
@@ -183,7 +185,13 @@ def main():
     def alternative(dates):
         expected = expected_matchups(baseline, dates)
         try:
-            observed = nba_live_scoreboard(dates)
+            def valid_live_rows(rows):
+                actual={(str(g.get("date_eastern")),str(g.get("game","")).strip().casefold())
+                        for g in rows}
+                return ((not expected or expected.issubset(actual)) and
+                        not started_games_missing_scores(rows,baseline,dates,
+                                                         dt.datetime.now(dt.timezone.utc)))
+            observed = nba_live_scoreboard(dates, validate_rows=valid_live_rows)
             actual = {(str(g.get("date_eastern")), str(g.get("game", "")).strip().casefold())
                       for g in observed["events"]}
             # NBA liveData can still carry yesterday's games before its date rollover.

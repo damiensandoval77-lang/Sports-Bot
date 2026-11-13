@@ -7,39 +7,63 @@ Never turns an AI forecast into a boxscore or makes a paid odds request.
 import datetime as dt
 import json
 from pathlib import Path
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 from iphone_bot.official_game_id_index import recovery_game_ids
 from iphone_bot.archived_espn_game_ids import archived_espn_hints
 from iphone_bot.fetch_final_boxscores import gather, request_json, NBA_SCOREBOARD, NBA_BOX, NBA_SCHEDULE, NBA_SCHEDULE_ALT
 from iphone_bot.prizepicks_research_ledger import LEDGER, ROOT, utc, settle
-from iphone_bot.verified_prizepicks_inactives import load_verified_inactive_rows
+from iphone_bot.verified_prizepicks_inactives import verified_inactive_subset
 from iphone_bot.verified_nov9_nonparticipants import load_nonparticipants
-from iphone_bot.verified_final_cache import read_cache
+from iphone_bot.verified_final_cache import read_cache, merge_rows
+from iphone_bot.verified_gamebook_inactives import load_gamebook_inactives
 
 OUT=ROOT/"data/nba/current/prizepicks_verified_final_games.json"
 STATUS=ROOT/"docs/prizepicks_final_recovery_status.json"
 ET=ZoneInfo("America/New_York")
 S3_BASE="https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/"
 
-def multi_origin_request(url, requester=request_json):
-    """Try the independent official mediaops mirror before fragile CDN hosts.
+def merge_cached_finals(records, fetched, cached, now=None):
+    """Reuse verified final observations for exact pending fixtures after rollover.
 
-    Never downgrade a failed boxscore to a score-only result.
+    The AI grader may already have obtained an explicit ESPN DNP that a later
+    NBA-only response omits. Missing rows must not erase that source evidence.
+    Conflicting cache/fetch observations remain rejected by merge_rows.
     """
+    from iphone_bot.paper_pick_pipeline import expected_opponents
+    now=now or dt.datetime.now(dt.timezone.utc)
+    fixtures=set()
+    for r in records:
+        start=utc(r.get('start'))
+        if r.get('status')!='PENDING' or not start or start>=now:
+            continue
+        for opponent in expected_opponents(r.get('game'),r.get('team')):
+            day=start.astimezone(ET).date().isoformat()
+            fixtures.add((day,r['team'],opponent))
+            fixtures.add((day,opponent,r['team']))
+    selected=[r for r in cached
+              if (r.get('date'),r.get('team'),r.get('opponent')) in fixtures]
+    return merge_rows(selected,fetched)
+
+def multi_origin_request(url, requester=request_json):
+    """Retry NBA and ESPN JSON through their own provider mirrors."""
     candidates=[url]
     if url == NBA_SCOREBOARD:
         candidates=[S3_BASE+"scoreboard/todaysScoreboard_00.json",url]
     elif url.startswith(NBA_BOX.split("{}")[0]):
         filename=url.rsplit("/",1)[-1]
         candidates=[S3_BASE+"boxscore/"+filename,url]
+    elif url.startswith("https://site.api.espn.com/apis/site/v2/"):
+        candidates.append(url.replace("https://site.api.espn.com/", "https://site.web.api.espn.com/", 1))
     errors=[]
     for candidate in candidates:
         try:
             return requester(candidate,timeout=7)
         except (OSError,TimeoutError,ValueError,RuntimeError) as err:
-            errors.append(type(err).__name__)
-    raise OSError("All independent official NBA endpoints failed: "+",".join(errors))
+            reason=getattr(err,"code",type(err).__name__)
+            errors.append(f"{urlsplit(candidate).hostname}: {reason}")
+    raise OSError("Final data request failed: "+", ".join(errors)) from None
 
 def pending_matchup_requests(records,now=None,max_matchups=12,days_back=3):
     now=now or dt.datetime.now(dt.timezone.utc)
@@ -48,7 +72,7 @@ def pending_matchup_requests(records,now=None,max_matchups=12,days_back=3):
     for r in records:
         if r.get("status")!="PENDING":continue
         start=utc(r.get("start"))
-        if start is None or (now-start).total_seconds()<4*3600:continue
+        if start is None or (now-start).total_seconds()<2*3600:continue
         date=start.astimezone(ET).date().isoformat()
         if date<minimum or not r.get("game") or not r.get("team"):continue
         key=(date,r["game"])
@@ -105,11 +129,15 @@ def main():
         rows=[]
         report={"status":"PRIZEPICKS_FINAL_RECOVERY_FAILED","requested_matchups":None,
                 "verified_rows":0,"errors":[type(e).__name__]}
+    historical=read_cache(ROOT/"docs/verified_final_player_cache.json")
+    before_cache=len(rows)
+    rows=merge_cached_finals(records,rows,historical)
+    report['verified_cache_rows_reused']=max(0,len(rows)-before_cache)
     # Supplement missing official feed inactivity only with manually verified
     # NBA/club postgame source links and a matching independently final game ID.
     # A failed cross-check NEVER creates a DNP or changes a settled record.
     try:
-        checked_inactives=load_verified_inactive_rows(rows)
+        checked_inactives=verified_inactive_subset(rows)
     except (OSError,ValueError,TypeError,KeyError) as error:
         checked_inactives=[]
         report.setdefault("errors",[]).append("OFFICIAL_INACTIVE_CROSSCHECK_"+type(error).__name__)
@@ -117,12 +145,12 @@ def main():
     # An independently verified FINAL player cache can establish exact game
     # completion for historical source-confirmed nonparticipants. A cache
     # never supplies an absent player's made-up points or a betting win/loss.
-    historical=read_cache(ROOT/"docs/verified_final_player_cache.json")
     checked_historical=load_nonparticipants(historical+rows)
     existing={(x.get("source_game_id"),x.get("team"),x.get("player")) for x in rows}
     checked_historical=[r for r in checked_historical
                         if (r.get("source_game_id"),r.get("team"),r.get("player")) not in existing]
     rows.extend(checked_historical)
+    rows.extend(load_gamebook_inactives(historical + rows))
     report["historical_source_confirmed_dnp_rows"]=len(checked_historical)
     report["manual_crosschecked_official_inactive_rows"]=len(checked_inactives)
     report["verified_rows"]=len(rows)
@@ -133,12 +161,15 @@ def main():
     now = dt.datetime.now(dt.timezone.utc)
     pending = [r for r in records if r.get("status")=="PENDING" and
                (start:=utc(r.get("start"))) and
-               (now-start).total_seconds()>=4*3600 and
+               (now-start).total_seconds()>=2*3600 and
                start.astimezone(ET).date().isoformat() in target_dates]
     preview = settle({"records":pending},[],final_games=rows)
     graded = [r for r in preview["records"] if r.get("status")=="SETTLED"]
     voided=[r for r in preview["records"] if r.get("status")=="VOID_DNP"]
     unresolved=[r for r in preview["records"] if r.get("status")=="PENDING"]
+    if (report['status']=='PRIZEPICKS_FINAL_RECOVERY_FAILED' and pending and
+            not unresolved and report['verified_cache_rows_reused']):
+        report['status']='VERIFIED_FINAL_CACHE_RECOVERY'
     report["recent_research_pending_before_recovery"]=len(pending)
     report["recent_research_settlement_matches"]=len(graded)
     report["recent_research_verified_dnp_voids"]=len(voided)

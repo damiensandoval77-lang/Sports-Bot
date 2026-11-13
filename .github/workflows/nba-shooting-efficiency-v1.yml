@@ -28,6 +28,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate shot-v1 independent formulas and chronological boundaries
+        if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/shooting_efficiency_v1.py iphone_bot/shooting_efficiency_backtest.py
           python -m unittest discover -s iphone_bot/tests -p 'test_shooting_efficiency_v1.py' -v
