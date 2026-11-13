@@ -22,6 +22,8 @@ on:
     # Calendar-derived guard covers every fixture, including Thursday finals
     # after midnight Friday and international/holiday games.
     - cron: '5,35 * * 9-12,1-2 *'
+    # Keep background retries for delayed final-stat sources beyond 12 hours.
+    - cron: '35 3,9,13,17,21 * 9-12,1-2 *'
 permissions:
   contents: write
 concurrency:
@@ -43,7 +45,7 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
         run: |
-          if [ "$EVENT" = "schedule" ]; then
+          if [ "$EVENT" = "schedule" ] && [ "${{ github.event.schedule }}" != "35 3,9,13,17,21 * 9-12,1-2 *" ]; then
             echo "run=$(python scripts/nfl_postgame_due.py)" >> "$GITHUB_OUTPUT"
           else
             echo 'run=true' >> "$GITHUB_OUTPUT"

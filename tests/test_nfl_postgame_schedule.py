@@ -39,6 +39,11 @@ class PostgameScheduleTests(unittest.TestCase):
     def test_invalid_schedule_requests_refresh(self):
         self.assertTrue(due({}, dt.datetime.now(dt.timezone.utc)))
 
+    def test_delayed_source_background_retry_is_preserved(self):
+        source = (ROOT / '.github/workflows/nfl-boxscores-publish.yml').read_text()
+        self.assertIn("35 3,9,13,17,21 * 9-12,1-2 *", source)
+        self.assertIn('github.event.schedule', source)
+
     def test_export_remains_final_only(self):
         source = (ROOT / 'scripts/export_nfl_boxscores.py').read_text()
         self.assertIn('g["status"]=="final"', source)
