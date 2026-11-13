@@ -1,6 +1,6 @@
 """Append-only prospective research receipts. Never primary picks or official grades."""
 from copy import deepcopy
-from datetime import datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
 import hashlib
 import json
 import math
@@ -44,8 +44,10 @@ def archive(previous, feed, now=None):
                     raise ValueError('INVALID_NUMBER')
                 if not 3 <= row['prior_games'] <= 7 or len(row['history_dates']) != row['prior_games']:
                     raise ValueError('INVALID_COHORT')
-                if len(set(row['history_dates'])) != row['prior_games'] or any(
-                        d >= tip.astimezone(ET).date().isoformat() for d in row['history_dates']):
+                dates = [date.fromisoformat(d) for d in row['history_dates']]
+                if any(d.isoformat() != raw for d, raw in zip(dates, row['history_dates'])) or \
+                        len(set(dates)) != row['prior_games'] or any(
+                        d >= tip.astimezone(ET).date() for d in dates):
                     raise ValueError('NON_PRIOR_OR_DUPLICATE_HISTORY')
                 # Model version + exact offer: first receipt wins across repeat training runs.
                 artifact = feed['model_artifact_sha256']

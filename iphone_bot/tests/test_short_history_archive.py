@@ -27,7 +27,7 @@ class ArchiveTests(unittest.TestCase):
     def test_invalid_and_ineligible_fail_closed(self):
         for k,v in [('stat','AST'),('primary_model_eligible',True),('official_grade_eligible',True),
                     ('research_only',False),('hit_probability',.8),('line',float('nan')),
-                    ('standard_line_two_sided_verified',False),('history_dates',['2026-11-13']*3)]:
+                    ('standard_line_two_sided_verified',False),('history_dates',['2026-11-13']*3),('history_dates',['','0000','1900-not-a-date'])]:
             f=feed();f['estimates'][0][k]=v;self.assertEqual(archive(None,f,NOW)['count'],0,(k,v))
     def test_blocked_feed_preserves_old(self):
         f=feed();a=archive(None,f,NOW);f['blocker']='STALE';f['estimates']=[]
