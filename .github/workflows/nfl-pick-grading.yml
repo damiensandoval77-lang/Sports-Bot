@@ -2,6 +2,8 @@ name: NFL frozen-pick grading and accuracy ledger
 on:
   pull_request:
     paths:
+      - 'scripts/verified_nfl_gamebook.py'
+      - 'tests/test_nfl_gamebook.py'
       - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
@@ -9,6 +11,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/verified_nfl_gamebook.py'
+      - 'tests/test_nfl_gamebook.py'
       - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
@@ -18,6 +22,7 @@ on:
       - 'docs/nfl/data/boxscores/week_*.json'
       - 'docs/nfl/data/boxscores/manifest.json'
       - 'docs/nfl/data/boxscores/espn_verified_finals.json'
+      - 'docs/nfl/data/boxscores/verified_gamebook_*.json'
       - 'docs/nfl/data/verified_inactives_2026.json'
       - 'docs/nfl/data/verified_zero_snap_stats_2026.json'
       - 'docs/nfl/data/verified_full_scoring_2026_09_BUF_MIN.json'
@@ -75,6 +80,8 @@ jobs:
       - name: Run deterministic public NFL grading unit tests
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+      - name: Verify complete official gamebook safeguards
+        run: python -m unittest discover -s tests -p 'test_nfl_gamebook.py' -v
       - name: Attempt independent snap-count zero-target recovery
         continue-on-error: true
         # A source outage must not discard already published grades.

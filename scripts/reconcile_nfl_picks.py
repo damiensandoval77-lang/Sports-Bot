@@ -183,6 +183,8 @@ def verified_boxscores(schedule,boxroot=ROOT/"boxscores"):
                 validate_stored(game,schedule.get(gid))
                 boxes[gid]={p["player_id"]:p for p in game["players"]}
             except (ValueError,KeyError,TypeError): problems.add(gid)
+    from verified_nfl_gamebook import supplement
+    supplement(boxroot,schedule,boxes)
     # An invalid source never counts as a verified outcome.
     for gid in problems:boxes.pop(gid,None)
     return boxes,problems
@@ -287,6 +289,9 @@ def verified_full_game_scoring(root=ROOT):
 
 def exact_fantasy_score(player,game_scoring):
     """PrizePicks offensive full-PPR, only when all components are proven."""
+    from verified_nfl_gamebook import REVIEWED_SHA
+    if player.get("verified_gamebook_sha256")==REVIEWED_SHA:
+        return number(player.get("verified_prizepicks_full_ppr"))
     if not game_scoring or player.get("team") not in ("BUF","MIN"):
         return None
     game_id=str(player.get("player_id") or "")
