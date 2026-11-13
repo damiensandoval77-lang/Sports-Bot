@@ -780,4 +780,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-threshold-labels-20261113-r35";
+globalThis.__damesRunningAssets["feeds.js"]="dp-public-qa-labels-20261113-r36";
