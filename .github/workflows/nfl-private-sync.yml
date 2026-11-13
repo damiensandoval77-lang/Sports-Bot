@@ -2,6 +2,8 @@ name: Sync private NFL lines for public grading
 on:
   pull_request:
     paths:
+      - 'scripts/check_nfl_pregame_coverage.cjs'
+      - 'tests/test_nfl_pregame_coverage.cjs'
       - 'scripts/sync_private_nfl_snapshot.py'
       - 'tests/test_nfl_private_sync.py'
       - 'scripts/audit_nfl_reliability.py'
@@ -12,6 +14,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/check_nfl_pregame_coverage.cjs'
+      - 'tests/test_nfl_pregame_coverage.cjs'
       - 'scripts/sync_private_nfl_snapshot.py'
       - 'tests/test_nfl_private_sync.py'
       - 'scripts/audit_nfl_reliability.py'
@@ -20,9 +24,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '15 6,12,18,0 * 1,2,9-12 *'
-    # Monday-night NFL: sync before kickoff and through late games, UTC.
-    - cron: '*/15 22-23 * 1,2,9-12 1'
-    - cron: '*/15 0-5 * 1,2,9-12 2'
+    # All game days, including Thursday, Saturday and international kickoffs.
+    # Private scanner captures first; this relay validates before publishing.
+    - cron: '7,22,37,52 0-5,12-23 * 1,2,9-12 *'
 permissions:
   contents: write
 concurrency:
@@ -40,6 +44,7 @@ jobs:
       - name: Verify sync data-integrity safeguards
         if: github.event_name == 'pull_request'
         run: |
+          node --test tests/test_nfl_pregame_coverage.cjs
           python -m unittest discover -s tests -p 'test_nfl_private_sync.py' -v
           python -m unittest discover -s tests -p 'test_nfl_reliability.py' -v
           python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
@@ -47,7 +52,15 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           NFL_PRIVATE_READ_TOKEN: ${{ secrets.NFL_PRIVATE_READ_TOKEN }}
-        run: python scripts/sync_private_nfl_snapshot.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if python scripts/sync_private_nfl_snapshot.py && node scripts/check_nfl_pregame_coverage.cjs; then exit 0; fi
+            if [ "$attempt" -lt 3 ]; then sleep 60; fi
+          done
+          echo "::error::Pregame NFL coverage failed after three fresh-source checks; prior public snapshot retained."
+          exit 1
       - name: Archive newly synced pregame picks and reconcile final stats
         if: github.event_name != 'pull_request'
         run: python scripts/reconcile_nfl_picks.py
@@ -80,6 +93,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             python scripts/sync_private_nfl_snapshot.py
+            node scripts/check_nfl_pregame_coverage.cjs
             python scripts/reconcile_nfl_picks.py
             python scripts/audit_nfl_reliability.py
           done
