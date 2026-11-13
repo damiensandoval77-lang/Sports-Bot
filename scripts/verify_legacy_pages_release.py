@@ -92,6 +92,7 @@ def main():
     evidence["checked_at"]=dt.datetime.now(dt.timezone.utc).isoformat()
     evidence["source_mode"]="legacy_branch"
     evidence["note"]="Verifies native Pages deployment; does NOT claim GitHub Actions deploy-pages was run."
+    out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(evidence,indent=2)+"\n")
     print(json.dumps(evidence,indent=2))
     return 0 if evidence["status"]=="PASS" else 1

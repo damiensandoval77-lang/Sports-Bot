@@ -2,6 +2,8 @@
 import hashlib
 import importlib.util
 import unittest
+import tempfile
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -10,6 +12,14 @@ checker=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(checker)
 
 class PagesVerificationTests(unittest.TestCase):
+    def test_cli_creates_nested_receipt_directory_in_fresh_checkout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output=Path(directory)/"new"/"nested"/"receipt.json"
+            with patch.object(checker.sys,"argv",["verify",str(output)]), patch.object(
+                    checker,"verify_with_retry",return_value={"status":"PASS"}):
+                self.assertEqual(checker.main(),0)
+            self.assertTrue(output.is_file())
+
     def test_phone_e2e_waits_for_publication_and_surfaces_failed_convergence(self):
         workflow=(ROOT/".github/workflows/live-site-e2e.yml").read_text()
         self.assertLess(workflow.index("python scripts/verify_legacy_pages_release.py"),
