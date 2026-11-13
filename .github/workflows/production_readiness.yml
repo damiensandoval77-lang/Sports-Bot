@@ -91,7 +91,6 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          cp docs/production_readiness.json "$RUNNER_TEMP/production_readiness.json"
           if [ -f docs/nba_scoreboard_independent.json ]; then
             cp docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
           fi
@@ -110,7 +109,6 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp "$RUNNER_TEMP/production_readiness.json" docs/production_readiness.json
             if [ -f "$RUNNER_TEMP/nba_scoreboard_independent.json" ]; then
               python -m iphone_bot.merge_scoreboard_snapshot docs/nba_scoreboard_independent.json "$RUNNER_TEMP/nba_scoreboard_independent.json"
             fi
@@ -119,6 +117,9 @@ jobs:
                 --current docs/nba_player_tracking_independent.json \
                 --incoming "$RUNNER_TEMP/nba_player_tracking_independent.json"
             fi
+            # Classify the exact inputs we will publish after each latest-main
+            # merge. Exit 2 is an honest degraded report, not a script crash.
+            python -u -m iphone_bot.production_readiness || test "$?" -eq 2
             git add docs/production_readiness.json docs/nba_scoreboard_independent.json docs/nba_player_tracking_independent.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'Record honest NBA production feed readiness'
@@ -228,7 +229,8 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Fail visibly when bot is not ready for reliable picks
-        if: always() && github.event_name != 'pull_request' && steps.check.outcome == 'failure'
+        if: always() && github.event_name != 'pull_request' && steps.check.outcome != 'skipped'
         run: |
+          if [ -s docs/production_readiness.json ] && jq -e '.status == "READY"' docs/production_readiness.json >/dev/null; then exit 0; fi
           echo "::error::NBA live data/projections/line coverage not fully ready. See docs/production_readiness.json"
           exit 1
