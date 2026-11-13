@@ -10,6 +10,14 @@ checker=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(checker)
 
 class PagesVerificationTests(unittest.TestCase):
+    def test_phone_e2e_waits_for_publication_and_surfaces_failed_convergence(self):
+        workflow=(ROOT/".github/workflows/live-site-e2e.yml").read_text()
+        self.assertLess(workflow.index("python scripts/verify_legacy_pages_release.py"),
+                        workflow.index("python scripts/e2e_live_site.py"))
+        self.assertIn("steps.deployment.outputs.code != '0'",workflow)
+        self.assertIn("steps.verify.outputs.code != '0'",workflow)
+        self.assertIn("ref: main",workflow)
+
     def test_unchanged_manifest_and_all_served_assets_pass(self):
         assets={name:(name+" real code").encode() for name in
                 ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","index.html")}
