@@ -2,6 +2,8 @@ name: Publish verified NFL final boxscores
 on:
   pull_request:
     paths:
+      - 'scripts/push_with_retry.py'
+      - 'tests/test_push_with_retry.py'
       - 'scripts/nfl_postgame_due.py'
       - 'tests/test_nfl_postgame_schedule.py'
       - '.github/workflows/nfl-boxscores-publish.yml'
@@ -9,6 +11,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/push_with_retry.py'
+      - 'tests/test_push_with_retry.py'
       - 'scripts/nfl_postgame_due.py'
       - 'tests/test_nfl_postgame_schedule.py'
       - 'tests/test_nfl_boxscore_display.cjs'
@@ -64,6 +68,9 @@ jobs:
         run: pip install pandas pyarrow
       - name: Verify player-name rendering in all boxscore categories
         run: node tests/test_nfl_boxscore_display.cjs
+      - name: Verify concurrent publisher recovery without overwrites
+        if: github.event_name == 'pull_request'
+        run: python -m unittest discover -s tests -p 'test_push_with_retry.py' -v
       - name: Run export data-integrity tests
         if: github.event_name == 'pull_request'
         run: python -m unittest discover -s tests -p 'test_nfl_boxscores.py' -v
@@ -90,8 +97,7 @@ jobs:
           git add docs/nfl/data/boxscores/ docs/nfl/data/schedule_2026.json
           if ! git diff --cached --quiet; then
             git commit -m "Refresh verified NFL final box scores"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            python scripts/push_with_retry.py
           fi
       - name: Keep the workflow visibly failed if data export failed
         if: steps.final_export.outcome == 'failure'
