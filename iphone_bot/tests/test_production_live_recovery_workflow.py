@@ -50,4 +50,14 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
         self.assertIn("python -m iphone_bot.merge_scoreboard_snapshot",text)
         self.assertIn("python -m iphone_bot.readiness_recovery",text)
         self.assertNotIn("PRIZEPICKS_API_KEY",text)
+
+    def test_failed_comparison_publisher_reaches_bounded_recovery(self):
+        text=(ROOT/".github/workflows/production_readiness.yml").read_text()
+        condition=next(line.strip() for line in text.splitlines() if line.strip().startswith("if: github.event_name"))
+        self.assertIn("(github.event.workflow_run.name == 'Publish lightweight verified PrizePicks AI comparisons' && github.event.workflow_run.conclusion == 'failure')", condition)
+        self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=90", text)
+        self.assertIn('(.status != "completed")', text)
+        self.assertIn('($paid == "true" or .conclusion == "success")', text)
+        self.assertIn('python -m iphone_bot.readiness_recovery', text)
+
 if __name__=="__main__":unittest.main()
