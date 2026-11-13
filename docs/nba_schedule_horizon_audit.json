@@ -1,48 +1,51 @@
 {
-  "checked_at": "2026-11-13T01:27:27.115011+00:00",
-  "status": "READY",
+  "checked_at": "2026-11-13T05:16:59.343467+00:00",
+  "status": "DEGRADED",
   "season": "2026-27",
   "season_fixed_games": 1200,
-  "reason_codes": [],
+  "reason_codes": [
+    "DAILY_DATE_NOT_PUBLISHED",
+    "PUBLISHED_GAMES_MISSING_FROM_DAILY_SLATE"
+  ],
   "next_two_days_reconciliation": {
-    "2026-11-12": {
-      "season_fixed_games": 4,
-      "daily_games": 4,
-      "missing": []
-    },
     "2026-11-13": {
       "season_fixed_games": 9,
       "daily_games": 9,
       "missing": []
+    },
+    "2026-11-14": {
+      "season_fixed_games": 5,
+      "daily_games": 0,
+      "missing": [
+        {
+          "game": "Denver Nuggets @ New Orleans Pelicans",
+          "start": "2026-11-15T00:00:00+00:00",
+          "id": "401909980"
+        },
+        {
+          "game": "Dallas Mavericks @ Cleveland Cavaliers",
+          "start": "2026-11-15T00:30:00+00:00",
+          "id": "401909981"
+        },
+        {
+          "game": "Detroit Pistons @ Miami Heat",
+          "start": "2026-11-15T01:00:00+00:00",
+          "id": "401909982"
+        },
+        {
+          "game": "Brooklyn Nets @ Memphis Grizzlies",
+          "start": "2026-11-15T01:00:00+00:00",
+          "id": "401909983"
+        },
+        {
+          "game": "Chicago Bulls @ Minnesota Timberwolves",
+          "start": "2026-11-15T01:00:00+00:00",
+          "id": "401909984"
+        }
+      ]
     }
   },
   "next_14_days": [
-    {
-      "date_eastern": "2026-11-12",
-      "known_games": 4,
-      "games": [
-        {
-          "id": "401909976",
-          "game": "Toronto Raptors @ Philadelphia 76ers",
-          "start": "2026-11-13T00:00:00+00:00"
-        },
-        {
-          "id": "401909977",
-          "game": "Detroit Pistons @ Washington Wizards",
-          "start": "2026-11-13T00:00:00+00:00"
-        },
-        {
-          "id": "401909978",
-          "game": "Dallas Mavericks @ Minnesota Timberwolves",
-          "start": "2026-11-13T01:00:00+00:00"
-        },
-        {
-          "id": "401909979",
-          "game": "Charlotte Hornets @ Phoenix Suns",
-          "start": "2026-11-13T02:00:00+00:00"
-        }
-      ]
-    },
     {
       "date_eastern": "2026-11-13",
       "known_games": 9,
@@ -600,6 +603,11 @@
           "start": "2026-11-26T03:00:00+00:00"
         }
       ]
+    },
+    {
+      "date_eastern": "2026-11-26",
+      "known_games": 0,
+      "games": []
     }
   ],
   "note": "Released fixtures only; unassigned NBA Cup matchups are not invented, and published tip times can change."
