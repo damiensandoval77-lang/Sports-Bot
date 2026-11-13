@@ -37,6 +37,20 @@ class PublicDeploymentCanaryTests(unittest.TestCase):
         r=evaluate("https://example.github.io/Sports-Bot/",HTML,h,NOW)
         self.assertIn("PUBLIC_PROVIDER_BOARD_INCOMPLETE",r["reasons"])
 
+    def test_non_object_json_retains_failure_receipt_instead_of_crashing(self):
+        for payload in [None, [], "invalid", 42, True]:
+            with self.subTest(payload=payload):
+                def request(url):
+                    return json.dumps(payload) if url.endswith('.json') else HTML
+                r=run("https://example.github.io/Sports-Bot/",NOW,request=request)
+                self.assertEqual(r["status"],"DEGRADED")
+                self.assertIn("PUBLIC_AI_RESEARCH_JSON_INVALID_SHAPE",r["reasons"])
+                self.assertIn("PUBLIC_COMPARISONS_MISSING",r["reasons"])
+                self.assertIsNone(r["matched_offers"])
+                self.assertEqual(r["checked_at"],NOW.isoformat())
+                self.assertFalse(r["browser_render_verified"])
+                json.dumps(r)
+
     def test_old_public_json_rejected(self):
         h={**HEALTH,"generated_at":"2026-11-08T10:00:00+00:00"}
         r=evaluate("https://example.github.io/Sports-Bot/",HTML,h,NOW)
