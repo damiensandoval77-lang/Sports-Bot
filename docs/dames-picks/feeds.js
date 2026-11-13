@@ -154,7 +154,7 @@ function nflMatchupPreview(p,start){
     !Object.keys(features).length||Object.entries(features).some(([k,v])=>
       !/^OPP_ALLOW_(REC_YDS|RUSH_YDS|REC|FPTS)_L6$/.test(k)||!used.includes(k)||n(v)===null||n(v)<0))return null;
  return {rate:selected,asOf:p.captured_at,method:x.method,calibrated:false,
-  sport:"NFL",pushRate:push,opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
+  sport:"NFL",pushRate:push,playingTimeUncertain:x.eligibility_context?.playing_time_uncertain===true,opponentAwareVerified:true,source:"Frozen NFL opponent-position ensemble research estimate"};
 }
 function nflRequiresProviderEvent(start){return stamp(start)>=Date.parse("2026-11-13T02:00:00Z")}
 function nflProviderEventVerified(p,start){
@@ -162,6 +162,15 @@ function nflProviderEventVerified(p,start){
  return !!(x&&typeof x.provider_game_id==="string"&&x.provider_game_id.trim()&&
    x.provider_team===p.team&&Number.isFinite(stamp(start))&&stamp(x.provider_start_time)===stamp(start));
 }
+function nflTrainingSupportVerified(p){
+ let e;try{e=JSON.parse(p.matchup_evidence||"null")}catch(_){return false}
+ const rules={PASS_YDS:[["QB"],"PASS_ATT_L5",15],PASS_ATT:[["QB"],"PASS_ATT_L5",15],PASS_CMP:[["QB"],"PASS_ATT_L5",15],PASS_TD:[["QB"],"PASS_ATT_L5",15],PASS_INT:[["QB"],"PASS_ATT_L5",15],PASS_RUSH_YDS:[["QB"],"PASS_ATT_L5",15],RUSH_YDS:[["QB","RB","WR"],"RUSH_ATT_L5",2],RUSH_ATT:[["QB","RB","WR"],"RUSH_ATT_L5",2],REC_YDS:[["RB","WR","TE"],"TGT_L5",2],REC:[["RB","WR","TE"],"TGT_L5",2],TGT:[["RB","WR","TE"],"TGT_L5",2],RUSH_REC_YDS:[["RB","WR","TE"],"TOUCH_L5",3],ANY_TD:[["QB","RB","WR","TE"],"TOUCH_L5",3],FPTS:[["QB","RB","WR","TE"],"TOUCH_L5",3]};
+ const rule=rules[p.target],x=e?.training_support;
+ if(!rule||!x||x.verified!==true||x.source!=="NFL_TRAINING_RULES_V1"||x.target!==p.target||x.position!==p.position||x.position_allowed!==true||!rule[0].includes(p.position)||!Number.isInteger(x.history_games)||x.history_games<=0||!Number.isInteger(x.current_season_history_games)||x.current_season_history_games<0)return false;
+ const value=x.rules?.[rule[1]];
+ return !!(value&&typeof value.value==="number"&&Number.isFinite(value.value)&&value.minimum===rule[2]&&value.value>=rule[2]);
+}
+function nflFutureEvidenceVerified(p,start){return nflProviderEventVerified(p,start)&&nflTrainingSupportVerified(p)}
 function nfl(chunks,schedule,now=Date.now()){
  const games=new Map((schedule?.games||[]).map(g=>[g.game_id,g]));
  const found=new Map();
@@ -172,7 +181,7 @@ function nfl(chunks,schedule,now=Date.now()){
    !(stamp(p.captured_at)<stamp(game.kickoff_utc)))continue;
   // Future markets require actual provider event attribution, never a name-only
   // join to both upcoming weeks. Keep already-started immutable history intact.
-  if(nflRequiresProviderEvent(game.kickoff_utc)&&!nflProviderEventVerified(p,game.kickoff_utc))continue;
+  if(nflRequiresProviderEvent(game.kickoff_utc)&&!nflFutureEvidenceVerified(p,game.kickoff_utc))continue;
   const prob=n(p.p_more),direction=p.pick==="More"?"MORE":"LESS";
   const chance=prob!==null&&prob>=0&&prob<=1?(direction==="MORE"?prob:1-prob):null;
   let logs=[];try{logs=JSON.parse(p.season_game_log||"[]")}catch(_){}
@@ -466,7 +475,7 @@ function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
   for(const r of records||[]){
    const game=games.get(r.game_id);
    const at=stamp(r.captured_at),kickoff=stamp(game?.kickoff_utc);
-   const valid=game?.status==="final"&&(!nflRequiresProviderEvent(game.kickoff_utc)||nflProviderEventVerified(r,game.kickoff_utc))&&n(game.home_score)!==null&&
+   const valid=game?.status==="final"&&(!nflRequiresProviderEvent(game.kickoff_utc)||nflFutureEvidenceVerified(r,game.kickoff_utc))&&n(game.home_score)!==null&&
       n(game.away_score)!==null&&Number.isFinite(at)&&Number.isFinite(kickoff)&&
       at<kickoff&&r.odds_type==="standard"&&
       !!r.player_id&&!!r.player&&!!r.stat&&n(r.line)!==null&&n(r.proj)!==null&&
@@ -698,7 +707,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,gameCatalog,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -725,4 +734,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-snapshot-time-20261113-r29";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-training-support-20261113-r30";

@@ -1,6 +1,6 @@
 const{test}=require('node:test'),a=require('node:assert/strict');require('../docs/dames-picks/feeds.js');const m=globalThis.DamesPicksModel;
 const kickoff='2030-11-15T18:00:00Z',now=Date.parse('2030-11-15T17:00:00Z');
-function row(){return {game_id:'g',player_id:'p',player:'Player',team:'A',opponent:'B',stat:'Receptions',target:'REC',line:'3',proj:'4',p_more:'.6',pick:'More',odds_type:'standard',captured_at:'2030-11-15T16:00:00Z',matchup_evidence:JSON.stringify({provider_game_id:'NFL_game_test',provider_team:'A',provider_start_time:kickoff})}}
+function row(){return {game_id:'g',player_id:'p',player:'Player',position:'WR',team:'A',opponent:'B',stat:'Receptions',target:'REC',line:'3',proj:'4',p_more:'.6',pick:'More',odds_type:'standard',captured_at:'2030-11-15T16:00:00Z',matchup_evidence:JSON.stringify({training_support:{verified:true,source:'NFL_TRAINING_RULES_V1',target:'REC',position:'WR',position_allowed:true,history_games:5,current_season_history_games:5,rules:{TGT_L5:{value:3,minimum:2}}},provider_game_id:'NFL_game_test',provider_team:'A',provider_start_time:kickoff})}}
 const schedule={games:[{game_id:'g',kickoff_utc:kickoff},{game_id:'next',kickoff_utc:'2030-11-22T18:00:00Z'}]};
 test('provider event matching exact team/kickoff passes',()=>a.equal(m.nfl([[row()]],schedule,now).length,1));
 test('same offer cannot become next-week opponent forecast',()=>a.equal(m.nfl([[row(),{...row(),game_id:'next'}]],schedule,now).length,1));
