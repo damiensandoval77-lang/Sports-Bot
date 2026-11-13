@@ -11,8 +11,16 @@ const real=JSON.parse(fs.readFileSync('docs/verified_final_player_cache.json'));
 const final= m.attachNBAFinals([g],real)[0];assert(final.players.length>10);assert(final.players.some(p=>p.player==='Cade Cunningham'));
 console.log('Verified final display: exact day/teams, provenance, zero, DNP, conflicts and production DET/WAS cache pass');
 
-const score=JSON.parse(fs.readFileSync("docs/nba_scoreboard_independent.json")),schedule=JSON.parse(fs.readFileSync("docs/nba_schedule.json"));
-const catalog=m.attachNBAFinals(m.gameCatalog(null,null,schedule,null,Date.parse(score.generated_at),score),real);
-assert(catalog.some(g=>g.finalBoxscore&&g.players.some(p=>p.player==="Cade Cunningham")),"Schedule full-name identity must preserve abbreviations");
+// Deterministic identity regression: rotating daily schedule/scoreboard files
+// legitimately stop containing yesterday's game. These are synthetic fixtures,
+// not published outcomes; the real final-cache assertions remain above.
+const scheduled={id:"identity-fixture",game:"Detroit Pistons @ Washington Wizards",
+ away:"Detroit Pistons",home:"Washington Wizards",away_abbreviation:"DET",home_abbreviation:"WAS",
+ start:g.start,date_eastern:"2026-11-12"};
+const schedule={dates_eastern:["2026-11-12"],games:[scheduled]};
+const score={generated_at:"2026-11-13T03:00:00Z",is_live_score_source:true,
+ games:[{...scheduled,game_state:"post",away_score:100,home_score:101}]};
+const catalog=m.attachNBAFinals(m.gameCatalog(null,null,schedule,null,Date.parse(score.generated_at),score),{rows:[row]});
+assert(catalog.some(g=>g.finalBoxscore&&g.players.some(p=>p.player==="Test")),"Schedule full-name identity must preserve abbreviations");
 
 assert.equal(attach([row,{...row,player:"Inactive",source:"ESPN_FINAL",source_game_id:"espn",MIN:null,dnp_final_verified:true}]).players.length,1,"DNP evidence from alternate official provider cannot suppress played boxscore");

@@ -29,7 +29,7 @@ function sortByHitEstimate(rows){
   return (Number.isFinite(at)?at:Infinity)-(Number.isFinite(bt)?bt:Infinity)||key(a).localeCompare(key(b));
  });
 }
-/* Card display only: one current captured standard line per player/stat/
+/* Card display only: current captured standard lines per player/stat/
    scheduled game. Never rewrite the immutable frozen-price/grade ledger.
    A real pretip model outranks an unmodeled quote-only research receipt;
    among equivalent records, the latest verified pretip capture wins. */
@@ -45,12 +45,15 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
  const validStart=p=>p&&["NBA","NFL"].includes(p.sport)&&
    Number.isFinite(stamp(p.start))&&Number.isFinite(stamp(p.captured))&&
    stamp(p.captured)<stamp(p.start);
- const source=(rows||[]).filter(validStart);
+ const source=(rows||[]).filter(p=>validStart(p)&&
+   (p.sport!=="NFL"||!p.marketTier||p.marketTier==="standard"));
  const dates=[...new Set(source.map(p=>et(stamp(p.start)).date))].sort();
  // On a league off-day the tracker shows the last slate with saved lines,
  // never a mixture of that slate and the next one.
  const selectedDate=dates.includes(today.date)?today.date:
    dates.filter(d=>d<today.date).at(-1)||dates.find(d=>d>today.date)||null;
+ const marketKey=p=>[p.sport,p.gameId||p.game,stamp(p.start),norm(p.player)||p.playerId,
+                    nbaTeamCode(p.team),p.stat].join("|");
  const latest=new Map();
  for(const p of source){
   if(!p||!["NBA","NFL"].includes(p.sport))continue;
@@ -62,8 +65,7 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
       start>=now-10*3600000&&start<=now;
    if(when.date!==selectedDate&&!recentLateGame)continue;
   }
-  const match=[p.sport,p.gameId||p.game,start,norm(p.player)||p.playerId,
-               nbaTeamCode(p.team),p.stat].join("|");
+  const match=marketKey(p);
   const prior=latest.get(match);
   if(!prior){latest.set(match,p);continue;}
   const modeled=p.quoteOnly!==true&&Number.isFinite(n(p.projection));
@@ -73,7 +75,24 @@ function displayCurrentPicks(rows,now=Date.now(),currentSlateOnly=false){
   if(captured>priorAt||(captured===priorAt&&Number(p.line)<Number(prior.line)))
    latest.set(match,p);
  }
- return [...latest.values()];
+ // A provider can simultaneously designate multiple genuine standard lines.
+ // Preserve distinct thresholds from the SAME newest snapshot, not stale lines
+ // or demon/goblin offers. Completed-game and NBA display behavior is unchanged.
+ const displayed=[];
+ for(const [match,p] of latest){
+  if(p.sport!=="NFL"||stamp(p.start)<=now||p.marketTier!=="standard"){
+   displayed.push(p);continue;
+  }
+  const exact=new Map();
+  for(const candidate of source){
+   if(candidate.marketTier!=="standard"||marketKey(candidate)!==match||
+      stamp(candidate.captured)!==stamp(p.captured)||n(candidate.line)===null)continue;
+   const line=n(candidate.line);
+   if(!exact.has(line))exact.set(line,candidate);
+  }
+  displayed.push(...[...exact.values()].sort((a,b)=>a.line-b.line));
+ }
+ return displayed;
 }
 function csv(text){
  let cells=[],row=[],field="",quoted=false;
@@ -188,7 +207,7 @@ function nfl(chunks,schedule,now=Date.now()){
   const obj={
    sport:"NFL",playerId:p.player_id,player:p.player,position:p.position||"",team:p.team,opponent:p.opponent,
    game:p.team+" vs "+p.opponent,gameId:p.game_id,start:game.kickoff_utc,stat:p.stat,target:p.target,
-   source:"PrizePicks",line:n(p.line),projection:n(p.proj),direction,chance,
+   source:"PrizePicks",marketTier:"standard",line:n(p.line),projection:n(p.proj),direction,chance,
    chanceSource:"NFL model estimate; not a calibrated hit probability",
    chanceMethod:"NFL_FROZEN_MODEL",chanceCalibrated:false,
    matchupPreview:nflMatchupPreview(p,game.kickoff_utc),
@@ -753,4 +772,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-take-over-under-20261113-r33";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-standard-thresholds-20261113-r34";
