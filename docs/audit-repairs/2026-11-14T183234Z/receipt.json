@@ -1,0 +1,223 @@
+{
+  "status": "FAILED/INCOMPLETE",
+  "start": "2026-11-14T18:32:34Z",
+  "audit_end": "2026-11-14T18:38:36.250526+00:00",
+  "duration_seconds": 362,
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "pinned_main": "9ea05de6c89fa7673f6d38e377adc40ef84836b8",
+  "release": "dp-readable-market-tabs-20261114-r41",
+  "permissions": {
+    "pull": true,
+    "push": true,
+    "admin": true,
+    "coding_environment": true
+  },
+  "counts": {
+    "active_root_findings": 3,
+    "new_production_repairs": 0,
+    "new_production_fixes_verified": 0,
+    "independent_native_pretip_quotes_preserved": 174,
+    "native_capture_games": 5
+  },
+  "inventory": {
+    "branches": 454,
+    "pr_tips": 453,
+    "refs": 907,
+    "open_prs": 0,
+    "distinct_source_blobs": 2036,
+    "historical_syntax_failures": 3,
+    "affected_historical_tips": 8,
+    "current_main_static_errors": 0,
+    "warnings": 45,
+    "closed_unmerged_prs": [
+      304,
+      272,
+      248,
+      246,
+      213,
+      135,
+      132,
+      105,
+      98,
+      72
+    ],
+    "historical_disposition": "Three invalid historical blobs already fixed in main; immutable PR tips retained. Closed unmerged PR dispositions carried from prior audit, not fully rereviewed."
+  },
+  "workflows": {
+    "definitions": 176,
+    "sample_runs": 200,
+    "run_outcomes": {
+      "success": 117,
+      "cancelled": 53,
+      "failure": 30
+    },
+    "jobs": 407,
+    "failed_jobs_inspected": 30,
+    "definitions_without_sample_run": 127,
+    "failed_run_ids": [
+      43626104696,
+      43626089599,
+      43626064551,
+      43624930283,
+      43624840764,
+      43624489980,
+      43624489940,
+      43624295581,
+      43623983670,
+      43623983648,
+      43623953355,
+      43623953313,
+      43623953298,
+      43623838143,
+      43623748435,
+      43623726238,
+      43623254532,
+      43623254510,
+      43623227915,
+      43622900912,
+      43622808034,
+      43622801076,
+      43622726403,
+      43622700768,
+      43622689344,
+      43621379978,
+      43620835942,
+      43620784625,
+      43620738310,
+      43620713940
+    ],
+    "matrix": "workflows.md",
+    "failures": "failures.md"
+  },
+  "findings": [
+    {
+      "id": "NBA_PRIMARY_COVERAGE",
+      "severity": "high",
+      "before_after": "185 current offers,170 matched primary,15 missing;281 archived quotes,259 primary frozen,22 missing",
+      "root_cause": "Insufficient eligible opportunity history under validated eight-game model; no unsupported model promotion",
+      "source_files": [
+        "iphone_bot/live_lagged_matchup_sidecar.py",
+        "iphone_bot/offensive_involvement_holdout.py"
+      ],
+      "latest_model_run": 43625985372,
+      "heartbeat_run": 43626089599,
+      "result": "Unresolved; latest existing recovery already successful, no duplicate recovery dispatched",
+      "injury_exclusions": 3
+    },
+    {
+      "id": "QUOTE_FRESHNESS",
+      "severity": "high",
+      "root_cause": "Configured provider snapshot is 17:02:10Z; production gate reports STALE_SOURCE",
+      "source_files": [
+        "iphone_bot/fetch_prizepicks.py",
+        "iphone_bot/validate_prizepicks_publish.py",
+        ".github/workflows/nba-prizepicks-full-slate.yml"
+      ],
+      "attempt": "Public no-key endpoint probe returned3936 rows; separate strict standard, both-sided, full-game, single-player, schedule-matched capture retained174 quotes for5games. One follow-up without custom User-Agent received403; same original audit request subsequently returned200. Paid provider not called.",
+      "status": "INCOMPLETE",
+      "remaining": "Native-source production adapter and its regression/deployment validation were not implemented. Existing source gates require different provider provenance; no claim this is an unavoidable external blocker.",
+      "capture": "native-standard-pretip-evidence.json"
+    },
+    {
+      "id": "PAGES_CANCELLATIONS",
+      "severity": "medium",
+      "root_cause": "Concurrent legacy branch-mode Pages publishers",
+      "evidence": "53 cancelled runs in sample; latest initial Pages run43626731085 succeeded",
+      "source_file": ".github/workflows/pages-controlled.yml",
+      "blocker": "Connected tools lack Pages settings mutation; prior checked local CLI unauthenticated and browser logged out. Not newly reauthenticated this cycle.",
+      "required_action": "Attach authenticated Pages administration or set repository Settings > Pages > Source > GitHub Actions."
+    }
+  ],
+  "recent_existing_repairs_verified": {
+    "PR452": "Merged17:12:59Z; research offered-line diagnostic remains isolated",
+    "PR453": "Merged17:08:35Z; public research file has14 outcomes and29 receipts;45combined regression tests pass; not counted as this run repair"
+  },
+  "tests": {
+    "core": 98,
+    "research": 45,
+    "nfl_live": 31,
+    "nfl_pregame": 18,
+    "pace_sort": 4,
+    "total_pass": 196,
+    "dependency_audit": "No known vulnerabilities found in requirements.txt and iphone_bot/requirements-training.txt",
+    "mutable_action_refs": 385
+  },
+  "production": {
+    "nba_games_today": 5,
+    "nfl_games_today": 0,
+    "nba_fixed_calendar": 1200,
+    "nfl_calendar": 272,
+    "archived_standard": 281,
+    "primary_frozen": 259,
+    "missing_archived_primary": 22,
+    "missing_with_research": 17,
+    "missing_without_ai": 5,
+    "ai_only": 504,
+    "ledger": {
+      "total": 2083,
+      "graded": 1760,
+      "dnp": 64,
+      "upcoming_pending": 259,
+      "overdue": 0
+    },
+    "nov13": {
+      "saved": 740,
+      "settled": 711,
+      "void": 29,
+      "pending": 0,
+      "ai": 904,
+      "ai_graded": 700,
+      "ai_dnp": 204
+    },
+    "nfl": {
+      "standard_graded": 135,
+      "pushes": 3,
+      "wins": 52,
+      "decisions": 132,
+      "hit_rate": 39.39,
+      "standard_pending": 0,
+      "alt_grades_excluded": 932,
+      "alt_pending_excluded": 4
+    },
+    "readiness": {
+      "passing": 8,
+      "required": 10
+    }
+  },
+  "phone": {
+    "run": 43626250144,
+    "job": 132545782499,
+    "artifact": 14126132570,
+    "checked_at": "2026-11-14T18:34:14.398986+00:00",
+    "browser": "webkit",
+    "width": 390,
+    "passed": 19,
+    "release_and_blob_hash_match": true,
+    "screenshots_inspected": [
+      "nba-player-detail.png",
+      "nfl-player-detail.png"
+    ],
+    "sampled_nfl_hit_estimate": "Unavailable; honest no eligible matchup model disclosure",
+    "active_pacing": "Not observable: no active games"
+  },
+  "limitations": [
+    "Full repair objective incomplete; free-source ingestion remains unfinished.",
+    "127 workflow definitions lack execution in sampled200runs.",
+    "Full Underdog coverage not certified.",
+    "Historical60missingthresholds previously reported not rederived.",
+    "No active-game30second pacing proof.",
+    "385mutableActionrefs are risk observations, not certified vulnerabilities."
+  ],
+  "changes": {
+    "production_code": [],
+    "new_prs": [],
+    "secret_changes": false,
+    "paid_calls": false,
+    "fabricated_grades": false,
+    "artifacts_only": true
+  },
+  "notification": {
+    "requested": true,
+    "delivery_confirmed": false
+  }
+}
