@@ -25,6 +25,13 @@ class FrozenBaselineTests(unittest.TestCase):
   f.update({"status":"GRADED","actual":23,"final_source":"NBA_CDN_FINAL","source_game_id":"0022600001","team":"WRONG"})
   one={"status":SNAP["status"],"immutable_predictions":True,"records":[r]}
   self.assertEqual(grade(one,{"records":[f]})["pending"],1)
+ def test_dnp_requires_approved_source_reason_and_null_actual(self):
+  r=SNAP["records"][0];f={k:r[k] for k in ("player_id","team","game","start","stat")}
+  f.update(status="EXCLUDED_VERIFIED_DNP",actual=None,final_source="NBA_CDN_FINAL",source_game_id="0022600001",verified_dnp_reason="INACTIVE")
+  one={"status":SNAP["status"],"immutable_predictions":True,"records":[r]}
+  self.assertEqual(grade(one,{"records":[f]})["pending"],0)
+  for change in ({"final_source":"FAKE"},{"actual":0},{"verified_dnp_reason":""}):
+   self.assertEqual(grade(one,{"records":[{**f,**change}]})["pending"],1)
  def test_no_retroactive_frozen_or_provider_timestamp(self):
   x=copy.deepcopy(SNAP);x["records"][0]["locked_at"]=x["records"][0]["start"]
   with self.assertRaises(ValueError):grade(x,{"records":[]})

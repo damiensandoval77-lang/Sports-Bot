@@ -7,6 +7,7 @@ import datetime as dt
 import json
 import math
 from pathlib import Path
+from iphone_bot.reconcile_grading_production import observed_final
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"docs/frozen_baseline_pregame_lines_2026-11-09.json"
@@ -31,8 +32,7 @@ def grade(snapshot,finals):
     index={}
     for f in results:
         if f.get("status") not in {"GRADED",*EXCLUSIONS}:continue
-        if not f.get("final_source") or not f.get("source_game_id"):continue
-        if f.get("status")=="GRADED" and f.get("final_source") not in ALLOWED:continue
+        if not observed_final(f):continue
         k=ident(f)
         if k in index and index[k]!=f:index[k]=None
         else:index.setdefault(k,f)
