@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'scripts/e2e_live_site.py'
+      - 'scripts/mobile_card_scope.py'
+      - 'tests/test_mobile_card_scope.py'
       - 'scripts/stalled_feed_probe.py'
       - 'tests/test_stalled_feed_probe.py'
       - '.github/workflows/live-site-e2e.yml'
@@ -12,6 +14,8 @@ on:
     paths:
       - 'docs/dames-picks/**'
       - 'scripts/e2e_live_site.py'
+      - 'scripts/mobile_card_scope.py'
+      - 'tests/test_mobile_card_scope.py'
       - 'scripts/stalled_feed_probe.py'
       - 'tests/test_stalled_feed_probe.py'
       - '.github/workflows/live-site-e2e.yml'
@@ -37,12 +41,15 @@ jobs:
         with:
           python-version: '3.11'
       - run: |
-          python -m py_compile scripts/e2e_live_site.py
+          python -m py_compile scripts/e2e_live_site.py scripts/mobile_card_scope.py
+          python -m unittest discover -s tests -p test_mobile_card_scope.py -v
           python -m unittest discover -s tests -p 'test_mobile_board_health.py' -v
       - name: Install isolated browser regression dependencies
         run: |
           pip install playwright==1.56.0
           python -m playwright install --with-deps chromium
+      - name: Verify hidden prior-sport cards cannot hijack the visible board selector
+        run: DAMES_SCOPE_BROWSER_TEST=1 python -m unittest discover -s tests -p test_mobile_card_scope.py -v
       - name: Verify synthetic timeout settles its route before teardown
         run: python -m unittest discover -s tests -p 'test_stalled_feed_probe.py' -v
   deployed-iphone:
