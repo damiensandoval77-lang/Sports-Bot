@@ -90,12 +90,61 @@ def started_games_missing_scores(rows, schedule, days, now, grace_minutes=10):
             return True
     return False
 
+def salvage_current_scores(report, days, schedule, now):
+    """Preserve fresh valid peers, never restamp old scores after a partial outage.
+
+    A missing/delayed fixture remains absent or explicitly unknown. The error
+    marker keeps the workflow/recovery unhealthy while peers stay observable.
+    """
+    if not isinstance(report, dict) or len(days) != len(set(days)):
+        return None
+    rows = report.get("games")
+    if not isinstance(rows, list) or not rows or not all(isinstance(r, dict) for r in rows):
+        return None
+    keys = [(r.get("date_eastern"), r.get("game")) for r in rows]
+    ids = [r.get("id") for r in rows]
+    if len(set(keys)) != len(keys) or len(set(ids)) != len(ids):
+        return None
+    dates = {d.isoformat() for d in days}
+    clean = []
+    valid_scores = 0
+    for raw in rows:
+        if not isinstance(raw, dict) or raw.get("date_eastern") not in dates:
+            return None
+        row = dict(raw)
+        scores = [row.get("away_score"), row.get("home_score")]
+        valid = (row.get("game_state") in ("in", "post") and
+                 all(isinstance(v, (int, float)) and not isinstance(v, bool)
+                     and 0 <= v <= 300 and v == int(v) for v in scores))
+        if valid:
+            valid_scores += 1
+        else:
+            row["away_score"] = row["home_score"] = None
+            if row.get("game_state") != "pre" or started_games_missing_scores(
+                    [row], {**(schedule or {}), "games": [g for g in (schedule or {}).get("games", [])
+                            if (g.get("date_eastern"), g.get("game")) == (row.get("date_eastern"), row.get("game"))]},
+                    days, now):
+                row["game_state"] = "unknown"
+        clean.append(row)
+    if not valid_scores:
+        return None
+    return {"generated_at": now.isoformat(),
+            "status": "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES",
+            "source": "ESPN public scoreboard (partial current observations)",
+            "is_live_score_source": True, "dates_eastern": sorted(dates),
+            "total_games": len(clean), "games": clean,
+            "source_records_rejected": report.get("source_records_rejected", 0),
+            "is_sportsbook_feed": False, "is_prizepicks_feed": False,
+            "error": "PARTIAL_CURRENT_SCOREBOARD", "coverage_complete": False}
+
 def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None, fallback=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     dates = [d.isoformat() for d in days]
+    primary_report = None
     try:
         try:
             report = collect(days, reader=reader)
+            primary_report = report
             rows = report.get("games", [])
             expected = expected_matchups(schedule, days)
             primary_matchups={(str(g.get("date_eastern")),str(g.get("game","")).strip().casefold())
@@ -146,6 +195,9 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
             "error": None,
         }
     except (OSError, TimeoutError, RuntimeError, ValueError, KeyError, TypeError) as e:
+        partial = salvage_current_scores(primary_report, days, schedule, now)
+        if partial is not None:
+            return partial
         # A stale snapshot remains stale; do not update its generated_at field.
         old = dict(previous or {})
         if old.get("games") and old.get("generated_at"):
@@ -230,7 +282,7 @@ def main():
     print("Saved verified official NBA game IDs:",known)
     print(json.dumps({"status":result["status"],"total_games":result["total_games"],
                       "generated_at":result["generated_at"],"error":result.get("error")}))
-    if result["status"] not in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES", "OBSERVED_NBA_LIVE_SCOREBOARD", "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"):
+    if result.get("error") or result["status"] not in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES", "OBSERVED_NBA_LIVE_SCOREBOARD", "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE"):
         raise SystemExit(1)
 
 if __name__=="__main__":
