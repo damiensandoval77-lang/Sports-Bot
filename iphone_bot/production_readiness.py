@@ -23,6 +23,32 @@ def parse_time(raw):
     except (TypeError,ValueError,OverflowError):
         return None
 
+def provider_confirms_pregame(game, scoreboard, now):
+    """Fresh, exact provider observation can confirm delayed tip, not a schedule."""
+    if game.get("game_state") in ("in", "live", "post", "final"):
+        return False
+    if (scoreboard.get("is_live_score_source") is not True or
+        scoreboard.get("status") not in ("OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES",
+                                          "OBSERVED_NBA_LIVE_SCOREBOARD") or
+        scoreboard.get("error")):
+        return False
+    seen = parse_time(scoreboard.get("generated_at"))
+    tip = parse_time(game.get("start"))
+    if seen is None or tip is None or seen < tip or not 0 <= (now-seen).total_seconds() <= 300:
+        return False
+    rows = [r for r in scoreboard.get("games", []) if isinstance(r, dict)
+            and r.get("game") == game.get("game")
+            and r.get("date_eastern") == game.get("date_eastern")]
+    if len(rows) != 1:
+        return False
+    row = rows[0]
+    if not str(row.get("id", "")).isdecimal() or row.get("game_state") not in PRE_STATES:
+        return False
+    for key in ("away_abbreviation", "home_abbreviation"):
+        if game.get(key) and row.get(key) != game.get(key):
+            return False
+    return True
+
 def check(now,files):
     if now.tzinfo is None:raise ValueError("Timezone-aware current time required")
     now=now.astimezone(dt.timezone.utc)
@@ -36,7 +62,8 @@ def check(now,files):
     upcoming=[g for g in todays if (t:=parse_time(g.get("start"))) and t>=now]
     started=[g for g in todays if (t:=parse_time(g.get("start"))) and t<now]
     # During NBA tipoff, scoreboard/boxscore cannot be treated as just optional.
-    in_progress=[g for g in started if g.get("game_state") not in FINAL_STATES]
+    in_progress=[g for g in started if g.get("game_state") not in FINAL_STATES
+                 and not provider_confirms_pregame(g, load("nba_scoreboard_independent.json"), now)]
     next_tip=min((parse_time(g.get("start")) for g in upcoming),default=None)
     inputs={
         "schedule":(schedule,"generated_at"),
