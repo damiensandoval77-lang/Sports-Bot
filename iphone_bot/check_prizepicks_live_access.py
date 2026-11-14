@@ -15,11 +15,13 @@ ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/"docs/prizepicks_account_balance.json"
 URL="https://prizepicksapi.com/api/v1/projections"
 
-def check(key):
+def check(key, *, allow_paid_request=False):
     result={"checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
             "provider":"independent_prizepicksapi.com",
             "request":"ONE_SMALL_COMPACT_NBA_PAGE_NO_STORED_OFFERS",
             "sportsbook_credits_spent":0,"raw_player_lines_published":False}
+    if not allow_paid_request:
+        return {**result, "status":"PAID_REQUEST_NOT_AUTHORIZED", "api_requests_made":0, "credit_cost":0}
     if not key:return {**result,"status":"MISSING_API_KEY"}
     req=urllib.request.Request(URL+"?"+urllib.parse.urlencode({
           "league":"NBA","status":"active","view":"compact","limit":1}),
@@ -46,7 +48,11 @@ def check(key):
         return {**result,"status":"NETWORK_OR_RESPONSE_ERROR","error_type":type(e).__name__}
 
 def main():
-    result=check(os.environ.get("PRIZEPICKS_API_KEY","").strip())
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--allow-paid-request', action='store_true')
+    args=parser.parse_args()
+    result=check(os.environ.get("PRIZEPICKS_API_KEY","").strip(), allow_paid_request=args.allow_paid_request)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps(result,sort_keys=True))
 

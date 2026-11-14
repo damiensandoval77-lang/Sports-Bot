@@ -48,6 +48,22 @@ class CriticalProductionRepairContracts(unittest.TestCase):
         self.assertNotIn('"lines_coverage":"nba-prizepicks-full-slate.yml"',text)
         self.assertIn("recovery_workflow=None",text)
 
+    def test_quota_probe_requires_explicit_paid_authorization(self):
+        from unittest.mock import patch
+        from iphone_bot import check_prizepicks_live_access as probe
+        with patch.object(probe.urllib.request, 'urlopen') as request:
+            result=probe.check('fake-test-key')
+        request.assert_not_called()
+        self.assertEqual(result['status'], 'PAID_REQUEST_NOT_AUTHORIZED')
+        self.assertEqual(result['credit_cost'], 0)
+        data=load('nba-prizepicks-current-balance.yml')
+        triggers=data.get('on',data.get(True,{}))
+        self.assertEqual(set(triggers), {'workflow_dispatch'})
+        self.assertFalse(triggers['workflow_dispatch']['inputs']['allow_paid_request']['default'])
+        gate=data['jobs']['check']['if']
+        self.assertIn("github.event_name == 'workflow_dispatch'", gate)
+        self.assertIn('inputs.allow_paid_request == true', gate)
+
     def test_failed_free_workflow_does_not_enforce_cooldown(self):
         text=(WORK/"production_readiness.yml").read_text()
         self.assertIn('.conclusion == "success"',text)
