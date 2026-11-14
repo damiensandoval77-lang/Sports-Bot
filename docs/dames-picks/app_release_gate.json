@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-13T23:39:25.526967+00:00",
+  "checked_at": "2026-11-14T00:56:11.474089+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -9,7 +9,8 @@
   "blocking_checks": [
     "unified_artifacts",
     "nba_production",
-    "nba_capture"
+    "nba_capture",
+    "nba_grading"
   ],
   "checks": {
     "unified_artifacts": {
@@ -37,8 +38,11 @@
       ]
     },
     "nba_grading": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "HISTORICAL_AI_FORECASTS_UNRESOLVED",
+        "GRADING_INCOMPLETE:2026-11-13"
+      ]
     },
     "published_pick_settlement": {
       "state": "READY",
