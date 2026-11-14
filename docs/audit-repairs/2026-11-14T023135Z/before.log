@@ -1,0 +1,13 @@
+..............F
+======================================================================
+FAIL: test_live_window_has_recovery_headroom_before_twenty_minute_expiry (test_nba_player_boxscores.PlayerCollectorCadenceTests.test_live_window_has_recovery_headroom_before_twenty_minute_expiry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0231/iphone_bot/tests/test_nba_player_boxscores.py", line 166, in test_live_window_has_recovery_headroom_before_twenty_minute_expiry
+    self.assertLessEqual(max(b-a for a,b in zip(ordered,ordered[1:]+[ordered[0]+60])),5)
+AssertionError: 15 not less than or equal to 5
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.005s
+
+FAILED (failures=1)

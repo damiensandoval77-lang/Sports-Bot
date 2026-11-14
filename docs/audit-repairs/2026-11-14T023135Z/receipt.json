@@ -1,0 +1,589 @@
+{
+  "status": "PARTIAL",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "start": "2026-11-14T02:31:35Z",
+  "end": "2026-11-14T02:41:40.779953+00:00",
+  "duration_seconds": 605,
+  "pinned_main_sha": "bc40a1897767fc304ebf47436902ec6788429675",
+  "pr": 440,
+  "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/440",
+  "repair_head": "e87cae780e194a89464278c32fe1e26c6cea1dc7",
+  "merge": "92a02c4cf591dba834c39eab02383faeab3e20e2",
+  "release": "dp-newest-live-source-20261114-r40",
+  "defects_discovered": 2,
+  "defects_repaired": 2,
+  "tests": {
+    "collector": 15,
+    "safe_publication_merge": 14,
+    "ci": [
+      {
+        "name": "pipeline-contracts",
+        "conclusion": "success",
+        "html_url": null
+      },
+      {
+        "name": "player-boxscores",
+        "conclusion": "success",
+        "html_url": null
+      }
+    ],
+    "static_errors_before": 1,
+    "static_errors_after": 0
+  },
+  "findings": [
+    {
+      "id": "D1",
+      "severity": "high",
+      "root_cause": "15-minute player refresh schedule leaves insufficient headroom against 20-minute UI expiry under Actions delays. Initial public snapshot was 02:11:40 at run start02:31:35.",
+      "repair": "Existing free collector now runs at five-minute intervals during 23,0-8 UTC; existing daytime interval and non-overlapping concurrency retained.",
+      "files": [
+        ".github/workflows/independent_nba_player_boxscores.yml",
+        "iphone_bot/tests/test_nba_player_boxscores.py"
+      ],
+      "regression": "Before: 15-minute gap fails <=5 check. After:15 collector tests +14 safe merge tests pass.",
+      "limits": "No guarantee of exact GitHub start times or 30-second provider freshness."
+    },
+    {
+      "id": "D2",
+      "severity": "medium",
+      "root_cause": "Prior audit evidence file was zero bytes and could not parse.",
+      "repair": "Restored exact original local audit output dated 2026-11-14T00:34:30.291821+00:00.",
+      "file": "docs/audit-repairs/2026-11-14T002445Z/static-audit-after.json",
+      "verification": "JSON parses; full repository static errors fall from1 to0. No historical sports captures modified."
+    }
+  ],
+  "production_collection_run": 43547299701,
+  "production_collection_job": 132301483480,
+  "browser_verification_run": 43542619794,
+  "browser_verification_job": 132302282820,
+  "browser_after": {
+    "checked_at": "2026-11-14T02:41:03.789874+00:00",
+    "status": "READY",
+    "browser_render_verified": true,
+    "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "app_title": "Dame's Picks \u00b7 NBA + NFL",
+    "NBA": {
+      "selected": "NBA",
+      "loaded": true,
+      "rows": 2345,
+      "rendered": 459,
+      "live_expected": 5,
+      "live_missing": 0,
+      "score_missing": 0,
+      "player_missing": 0,
+      "errors": [],
+      "status": "Checked 9:41 PM \u00b7 60 provider standard markets withheld from AI picks \u00b7 2026-11-12 NBA AI-only: 332 graded, 0 pending, 56 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    },
+    "NFL": {
+      "selected": "NFL",
+      "loaded": true,
+      "rows": 811,
+      "rendered": 74,
+      "live_expected": 0,
+      "live_missing": 0,
+      "score_missing": 0,
+      "player_missing": 0,
+      "errors": [],
+      "status": "Checked 9:41 PM \u00b7 60 provider standard markets withheld from AI picks \u00b7 2026-11-12 NBA AI-only: 332 graded, 0 pending, 56 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    },
+    "reasons": [],
+    "browser_errors": [],
+    "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
+    "browser_direct_probe": {
+      "attempted": true,
+      "received": false,
+      "directGames": 0,
+      "directScores": 0,
+      "directErrors": [],
+      "at": null
+    }
+  },
+  "public_player_snapshot": {
+    "captured_at": "2026-11-14T02:31:23.701428+00:00",
+    "status": "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+    "games": 6,
+    "rows": 210
+  },
+  "coverage": {
+    "checked_at": "2026-11-14T02:33:18.878283+00:00",
+    "game_date_eastern": "2026-11-13",
+    "status": "CAPTURE_INCOMPLETE",
+    "games": [
+      {
+        "game": "Milwaukee Bucks @ Orlando Magic",
+        "start": "2026-11-14T00:00:00+00:00",
+        "source_quotes": 90,
+        "standard_source_quotes": 90,
+        "standard_unique_markets": 90,
+        "standard_markets_without_frozen_model": 23,
+        "standard_price_moves_from_original_frozen_line": 7,
+        "standard_player_stat_markets_never_primary_frozen": 16,
+        "missing_primary_with_separate_research_receipt": 12,
+        "missing_primary_without_any_ai_receipt": 11,
+        "unique_provider_player_stat_markets": 53,
+        "frozen_ai_only": 92,
+        "frozen_line_backed": 67,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 67,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "New York Knicks @ Indiana Pacers",
+        "start": "2026-11-14T00:00:00+00:00",
+        "source_quotes": 81,
+        "standard_source_quotes": 81,
+        "standard_unique_markets": 81,
+        "standard_markets_without_frozen_model": 11,
+        "standard_price_moves_from_original_frozen_line": 2,
+        "standard_player_stat_markets_never_primary_frozen": 9,
+        "missing_primary_with_separate_research_receipt": 11,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 46,
+        "frozen_ai_only": 104,
+        "frozen_line_backed": 70,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 70,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Atlanta Hawks @ Chicago Bulls",
+        "start": "2026-11-14T01:00:00+00:00",
+        "source_quotes": 90,
+        "standard_source_quotes": 90,
+        "standard_unique_markets": 90,
+        "standard_markets_without_frozen_model": 8,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 8,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 8,
+        "unique_provider_player_stat_markets": 52,
+        "frozen_ai_only": 100,
+        "frozen_line_backed": 82,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 82,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Cleveland Cavaliers @ Miami Heat",
+        "start": "2026-11-14T01:00:00+00:00",
+        "source_quotes": 82,
+        "standard_source_quotes": 82,
+        "standard_unique_markets": 82,
+        "standard_markets_without_frozen_model": 6,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 6,
+        "missing_primary_with_separate_research_receipt": 6,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 50,
+        "frozen_ai_only": 104,
+        "frozen_line_backed": 77,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 77,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Memphis Grizzlies @ New Orleans Pelicans",
+        "start": "2026-11-14T01:00:00+00:00",
+        "source_quotes": 88,
+        "standard_source_quotes": 88,
+        "standard_unique_markets": 88,
+        "standard_markets_without_frozen_model": 1,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 1,
+        "missing_primary_with_separate_research_receipt": 1,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 53,
+        "frozen_ai_only": 100,
+        "frozen_line_backed": 87,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 87,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Utah Jazz @ Houston Rockets",
+        "start": "2026-11-14T01:30:00+00:00",
+        "source_quotes": 68,
+        "standard_source_quotes": 68,
+        "standard_unique_markets": 68,
+        "standard_markets_without_frozen_model": 0,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 0,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 42,
+        "frozen_ai_only": 104,
+        "frozen_line_backed": 69,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 69,
+        "issues": []
+      },
+      {
+        "game": "Golden State Warriors @ San Antonio Spurs",
+        "start": "2026-11-14T02:30:00+00:00",
+        "source_quotes": 97,
+        "standard_source_quotes": 97,
+        "standard_unique_markets": 97,
+        "standard_markets_without_frozen_model": 0,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 0,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 0,
+        "unique_provider_player_stat_markets": 56,
+        "frozen_ai_only": 108,
+        "frozen_line_backed": 98,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 98,
+        "issues": []
+      },
+      {
+        "game": "Portland Trail Blazers @ Sacramento Kings",
+        "start": "2026-11-14T03:00:00+00:00",
+        "source_quotes": 81,
+        "standard_source_quotes": 81,
+        "standard_unique_markets": 81,
+        "standard_markets_without_frozen_model": 8,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 8,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 8,
+        "unique_provider_player_stat_markets": 51,
+        "frozen_ai_only": 96,
+        "frozen_line_backed": 73,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 73,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      },
+      {
+        "game": "Oklahoma City Thunder @ LA Clippers",
+        "start": "2026-11-14T03:30:00+00:00",
+        "source_quotes": 86,
+        "standard_source_quotes": 86,
+        "standard_unique_markets": 86,
+        "standard_markets_without_frozen_model": 3,
+        "standard_price_moves_from_original_frozen_line": 0,
+        "standard_player_stat_markets_never_primary_frozen": 3,
+        "missing_primary_with_separate_research_receipt": 0,
+        "missing_primary_without_any_ai_receipt": 3,
+        "unique_provider_player_stat_markets": 56,
+        "frozen_ai_only": 96,
+        "frozen_line_backed": 83,
+        "line_backed_graded": 0,
+        "ai_only_graded": 0,
+        "line_backed_pending": 83,
+        "issues": [
+          "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+        ]
+      }
+    ],
+    "issues": [
+      "Milwaukee Bucks @ Orlando Magic: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "New York Knicks @ Indiana Pacers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Atlanta Hawks @ Chicago Bulls: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Cleveland Cavaliers @ Miami Heat: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Memphis Grizzlies @ New Orleans Pelicans: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Portland Trail Blazers @ Sacramento Kings: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL",
+      "Oklahoma City Thunder @ LA Clippers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
+    ],
+    "note": "Provider quotes, AI-only forecasts, line-backed frozen predictions and final grades are separate. Missing records never fabricated.",
+    "summary": {
+      "schedule_games": 9,
+      "games_with_saved_source_quotes": 9,
+      "games_with_frozen_ai": 9,
+      "games_with_line_backed_models": 9,
+      "total_quotes": 763,
+      "total_standard_source_quotes": 763,
+      "total_standard_markets_without_frozen_model": 60,
+      "total_price_moves_from_original_frozen_line": 9,
+      "total_player_stat_markets_never_primary_frozen": 51,
+      "total_missing_primary_with_separate_research_receipt": 30,
+      "total_missing_primary_without_any_ai_receipt": 30,
+      "total_ai_only": 904,
+      "total_line_backed": 706,
+      "total_line_backed_graded": 0,
+      "total_ai_only_graded": 0
+    },
+    "current_upcoming_coverage": {
+      "status": "INCOMPLETE",
+      "checked_at": "2026-11-14T02:33:18.878283+00:00",
+      "source_generated_at": "2026-11-14T01:30:55.687111+00:00",
+      "verified_current_offers": 90,
+      "matched_primary_offers": 83,
+      "missing_primary_offers": 7,
+      "games": [
+        {
+          "game": "Oklahoma City Thunder @ LA Clippers",
+          "start": "2026-11-14T03:30:00+00:00",
+          "verified_current_offers": 46,
+          "matched_primary_offers": 44,
+          "missing_primary_offers": 2,
+          "missing": [
+            {
+              "player": "Max Strus",
+              "team": "LAC",
+              "stat": "PRA",
+              "line": 15.5
+            },
+            {
+              "player": "Max Strus",
+              "team": "LAC",
+              "stat": "PTS",
+              "line": 9.5
+            }
+          ]
+        },
+        {
+          "game": "Portland Trail Blazers @ Sacramento Kings",
+          "start": "2026-11-14T03:00:00+00:00",
+          "verified_current_offers": 44,
+          "matched_primary_offers": 39,
+          "missing_primary_offers": 5,
+          "missing": [
+            {
+              "player": "Keegan Murray",
+              "team": "SAC",
+              "stat": "PRA",
+              "line": 16.5
+            },
+            {
+              "player": "Keegan Murray",
+              "team": "SAC",
+              "stat": "PTS",
+              "line": 10.5
+            },
+            {
+              "player": "Dylan Cardwell",
+              "team": "SAC",
+              "stat": "REB",
+              "line": 6.5
+            },
+            {
+              "player": "Dylan Cardwell",
+              "team": "SAC",
+              "stat": "PTS",
+              "line": 5.5
+            },
+            {
+              "player": "Dylan Cardwell",
+              "team": "SAC",
+              "stat": "PRA",
+              "line": 13.5
+            }
+          ]
+        }
+      ],
+      "issues": [],
+      "scope": "CURRENT_UPCOMING_STANDARD_OFFERS_ONLY",
+      "research_and_provisional_count_as_primary": false
+    }
+  },
+  "grading": {
+    "prior_nba": {
+      "checked_at": "2026-11-14T02:00:24.138738+00:00",
+      "game_date_eastern": "2026-11-12",
+      "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "grace_hours_from_scheduled_start": 12,
+      "prizepicks_saved": 327,
+      "prizepicks_settled": 318,
+      "prizepicks_void": 9,
+      "prizepicks_pending": 0,
+      "prizepicks_overdue": 0,
+      "prizepicks_overdue_games": {},
+      "paper_saved": 0,
+      "paper_pending": 0,
+      "paper_overdue": 0,
+      "unpriced_forecasts_separate": 388,
+      "prizepicks_scope_status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "ai_forecast_accuracy_status": "AI_PRETIP_FORECASTS_GRADED",
+      "ai_forecasts_recorded": 388,
+      "ai_forecasts_graded": 332,
+      "ai_forecasts_ungraded": 0,
+      "ai_forecasts_verified_dnp_excluded": 56,
+      "ai_forecasts_accounted_for": 388,
+      "ai_forecasts_fully_accounted_for": true,
+      "ai_forecasts_fully_graded": false,
+      "overall_grading_status": "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR",
+      "capture_missing": false,
+      "complete_slate_not_guaranteed": true,
+      "notice": "Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
+    },
+    "nfl": {
+      "alternative_tier_historical_grades_excluded": 932,
+      "alternative_tier_pending_excluded": 4,
+      "archived_pregame_lines": 70692,
+      "expected_final_picks": 1087,
+      "final_games_with_frozen_picks": 2,
+      "frozen_final_pick_candidates": 1087,
+      "graded_picks": 1067,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 4,
+      "pending_reasons": {
+        "player_not_in_verified_boxscore": 4
+      },
+      "pushes": 3,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 135,
+      "standard_hit_rate": 39.39,
+      "standard_pending_picks": 0,
+      "standard_pending_reasons": {},
+      "standard_settled": 132,
+      "standard_wins": 52,
+      "void_picks": 16
+    },
+    "published_settlement": {
+      "checked_at": "2026-11-14T02:06:50.139846+00:00",
+      "status": "READY",
+      "complete": false,
+      "reconciled": true,
+      "scope": "PUBLISHED_STANDARD_FROZEN_PICKS_ONLY",
+      "counts": {
+        "graded": 1075,
+        "frozen_picks": 1816,
+        "verified_dnp_excluded": 35,
+        "dnp_without_independent_forecast_record": 5,
+        "pending": 706
+      },
+      "actionable_verified_finals": 0,
+      "overdue_missing_verified_finals": 0,
+      "issues": {},
+      "note": "Provider lines without a validated frozen prediction are not published picks. Every saved pick requires an original pretip line and a verified final or independently crosschecked DNP; live scores never grade bets."
+    },
+    "tonight_ai": {
+      "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
+      "generated_at": "2026-11-14T02:00:01.872973+00:00",
+      "game_date_eastern": "2026-11-13",
+      "recorded_pregame_forecasts": 604,
+      "graded": 0,
+      "verified_dnp_exclusions": 0,
+      "verified_pretip_transfer_exclusions": 0,
+      "accounted_for": 0,
+      "ungraded": 604,
+      "new_grades": 0,
+      "new_verified_dnp_exclusions": 0,
+      "new_verified_pretip_transfer_exclusions": 0,
+      "ungraded_distinct_player_markets": 604,
+      "is_betting_hit_rate": false,
+      "note": "Forecast-vs-actual absolute error only; no market line or bet direction. Missing players/DNP are not assigned zero.",
+      "is_current_day_live_grade_status": true,
+      "final_only_no_live_wins": true
+    },
+    "new_final_grades_verified_this_run": false
+  },
+  "inventory": {
+    "heads": 440,
+    "pr_tips": 439,
+    "new_branch_and_pr_after_inventory": true,
+    "all_fetched_refs_divergence_compared_locally": true,
+    "open_prs_initial": 0,
+    "full_historical_semantic_execution": false,
+    "deleted_unreachable_tips": "not discoverable"
+  },
+  "workflows": {
+    "definitions": 176,
+    "recent_run_rows": 200,
+    "static_counts": {
+      "tracked_files": 1335,
+      "extension:.yml": 176,
+      "extension:": 3,
+      "extension:.md": 32,
+      "extension:.live-tracker": 1,
+      "extension:.csv": 42,
+      "extension:.json": 315,
+      "json_parse_pass": 315,
+      "extension:.py": 577,
+      "python_ast_pass": 577,
+      "extension:.gz": 141,
+      "extension:.png": 1,
+      "extension:.log": 2,
+      "extension:.js": 7,
+      "node_syntax_pass": 39,
+      "extension:.html": 3,
+      "extension:.webmanifest": 1,
+      "extension:.txt": 2,
+      "extension:.cjs": 32,
+      "workflows_total": 176,
+      "workflow_jobs": 189,
+      "pr_workflows": 107,
+      "manually_dispatchable": 151,
+      "workflow_steps": 1195,
+      "actions_not_sha_pinned": 385,
+      "runtime_test_commands_unguarded_steps": 94,
+      "scheduled_workflows": 84,
+      "continue_on_error_steps": 36,
+      "workflow_push_steps": 95,
+      "workflow_run_triggers": 12
+    },
+    "warnings": 45,
+    "all_histories_retrieved": false
+  },
+  "unresolved": [
+    {
+      "id": "B1",
+      "severity": "high",
+      "issue": "Seven of90 current upcoming standard offers lack primary models;60 archived thresholds unmatched (9 moved,51 never-primary).",
+      "required": "Authentic supported history or validated model support; no post-tip reconstruction."
+    },
+    {
+      "id": "B2",
+      "severity": "high",
+      "issue": "Native Pages cancellation churn persists.",
+      "required": "Owner/admin access to Settings > Pages > Source GitHub Actions, followed by Actions-mode verification."
+    },
+    {
+      "id": "B3",
+      "severity": "medium",
+      "issue": "Browser-direct provider probe returns no feed;30-second upstream freshness not certified.",
+      "required": "Reliable no-cost browser-accessible provider path or a suitably provisioned runtime; this workflow cadence change is not that guarantee."
+    },
+    {
+      "id": "B4",
+      "severity": "medium",
+      "issue": "Legacy odds health fails ODDS_STALE; paid refresh prohibited.",
+      "required": "Validated no-cost replacement or retirement with consumer review; not bypassing freshness gates."
+    },
+    {
+      "id": "B5",
+      "severity": "medium",
+      "issue": "Full per-workflow history and every historical revision execution remain incomplete.",
+      "required": "Authenticated exhaustive history access/execution; current static inventory and sampled runs are evidence, not complete certification."
+    }
+  ],
+  "no_paid_calls": true,
+  "no_secrets_changed": true,
+  "no_destructive_actions": true,
+  "no_fabricated_captures_or_grades": true,
+  "notification_delivery": "UNCONFIRMED",
+  "production_collection_conclusion": "success",
+  "restored_evidence_readback": "Parsed remote JSON at merge SHA; original timestamp00:34:30.291821Z and errors0",
+  "verified_production_output": true,
+  "public_raw_player_snapshot": {
+    "url": "https://raw.githubusercontent.com/damiensandoval77-lang/Sports-Bot/main/docs/nba_player_tracking_independent.json",
+    "captured_at": "2026-11-14T02:37:15.795357+00:00",
+    "status": "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+    "games": 6,
+    "rows": 210
+  },
+  "pages_player_snapshot_lags_raw": true
+}
