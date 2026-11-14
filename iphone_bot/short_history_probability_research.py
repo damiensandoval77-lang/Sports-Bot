@@ -208,14 +208,22 @@ def settle_boxscores(archive,boxes,now=None):
 
 def settle_pending(archive,now=None):
     from .fetch_final_boxscores import gather
+    from .verified_final_cache import read_cache
     now=stamp(now or datetime.now(timezone.utc))
+    original=archive
+    archive=settle_boxscores(archive,read_cache(ROOT/'docs/verified_final_player_cache.json'),now)
+    recovered=len(archive.get('outcomes',{}))-len(original.get('outcomes',{}))
     pending=[{'status':'PENDING','event_start':r['start'],'game':r['game']} for r in archive['records'] if r['receipt_key'] not in archive.get('outcomes',{})]
     known_path=ROOT/'docs/official_nba_game_ids.json'
     known=json.loads(known_path.read_text()) if known_path.exists() else None
-    boxes,report=gather(pending,now=now,known_game_ids=known)
+    if pending:
+        boxes,report=gather(pending,now=now,known_game_ids=known)
+    else:
+        boxes=[];report={'status':'ALL_RESEARCH_RECEIPTS_ACCOUNTED','pending_matchups':0}
+    report['verified_cached_outcomes_recovered']=recovered
     output=settle_boxscores(archive,boxes,now)
     prior_report={k:v for k,v in archive.get('last_outcome_check',{}).items() if k!='checked_at'}
-    if prior_report!=report or output.get('outcomes')!=archive.get('outcomes'):
+    if prior_report!=report or output.get('outcomes')!=original.get('outcomes'):
         output['last_outcome_check']={'checked_at':now.isoformat(),**report}
     return output
 
