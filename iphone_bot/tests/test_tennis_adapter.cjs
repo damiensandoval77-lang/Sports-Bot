@@ -13,7 +13,7 @@ test('Verified current full match standard line displays with no estimate or inv
  assert.equal(r.surface,undefined);assert.equal(r.tour,undefined);
 });
 test('Reject unverifiable quotes individually without breaking valid rows',()=>{
- const invalid=[{is_demo:true},{is_demo:undefined},{is_combo:true},{is_combo:undefined},{tier:'goblin'},{more_tier:'demon'},{less_tier:undefined},{more_available:false},{less_available:undefined},{player_id:''},{fixture_id:''},{id:null},{opponent:''},{opponent:quote.player},{status:'live'},{period:'first_set'},{stat:'Games'},{line:null},{line:'22.5'},{line:NaN},{line:Infinity},{line:-1},{starts_at:'2026-11-14T18:00:00Z'},{captured_at:'2026-11-14T20:00:00Z'},{observed_at:'2026-11-14T17:59:00Z'},{observed_at:'2026-11-14T17:00:00Z'},{observed_at:'2026-11-14T17:55:00'},{captured_at:'2026-11-14T17:58:00Z'}];
+ const invalid=[{is_demo:true},{is_demo:undefined},{is_combo:true},{is_combo:undefined},{tier:'goblin'},{more_tier:'demon',less_tier:'goblin'},{more_available:false,less_available:false},{more_available:null,less_available:undefined},{player_id:''},{fixture_id:''},{id:null},{opponent:''},{opponent:quote.player},{status:'live'},{period:'first_set'},{stat:'Games'},{line:null},{line:'22.5'},{line:NaN},{line:Infinity},{line:-1},{starts_at:'2026-11-14T18:00:00Z'},{captured_at:'2026-11-14T20:00:00Z'},{observed_at:'2026-11-14T17:59:00Z'},{observed_at:'2026-11-14T17:00:00Z'},{observed_at:'2026-11-14T17:55:00'},{captured_at:'2026-11-14T17:58:00Z'}];
  for(const change of invalid){assert.equal(tennis(feed([{...quote,...change}]),now).length,0,JSON.stringify(change));}
  assert.equal(tennis(feed([{...quote,is_demo:true},quote]),now).length,1);
 });
@@ -33,4 +33,14 @@ test('Exact stat/line/identity deduplication keeps latest observation only',()=>
 test('Module is additive and does not mutate input or NBA/NFL global',()=>{
  const original={nba:()=>['unchanged']};const separate={DamesPicksModel:original};vm.createContext(separate);vm.runInContext(fs.readFileSync('docs/dames-picks/tennis.js','utf8'),separate);
  assert.equal(separate.DamesPicksModel,original);const input=feed();const before=JSON.stringify(input);tennis(input,now);assert.equal(JSON.stringify(input),before);
+});
+
+test('Only explicitly available standard sides are shown, never the missing other side',()=>{
+ for(const [change, expected] of [ [{less_available:null,less_tier:null},['more']], [{more_available:false},['less']], [{more_tier:'demon'},['less']], [{less_tier:'goblin'},['more']], [{more_available:'true',less_available:null},[]] ]){
+  const rows=tennis(feed([{...quote,...change}]),now);
+  assert.equal(rows.length,expected.length?1:0);
+  if(rows.length)assert.deepEqual(Array.from(rows[0].standardSides),expected);
+ }
+ const row=tennis(feed([{...quote,stat:'Fantasy Score',less_available:null}]),now)[0];
+ assert.equal(row.stat,'Fantasy Score');assert.equal(row.projection,null);assert.equal(row.chance,null);
 });

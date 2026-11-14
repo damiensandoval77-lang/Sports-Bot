@@ -45,6 +45,10 @@ def summary(payload):
             'projection_type_category':category(fields.get('projection_type'), {'Single Stat','Fantasy Score'}),
             'period_source_present':{'market':'period' in (row.get('market') or {}),'source_fields':'period' in fields},
             'has_fixture_id':bool(row.get('fixture_id') or event.get('id')),
+            'selection_evidence':[{'side':category(sel.get('side'),{'more','less'}),
+                'availability':sel.get('available') if isinstance(sel.get('available'),bool) else None,
+                'tier':category(sel.get('tier'),{'standard','goblin','demon','unknown'})}
+                for sel in (row.get('selections') if isinstance(row.get('selections'),list) else []) if isinstance(sel,dict)],
             'has_player_id':bool(player.get('id')),'has_player_name':bool(player.get('name')),
             'has_opponent':bool(event.get('opponent')),'has_start':bool(event.get('starts_at')),
             'has_surface':bool(event.get('surface') or fields.get('surface')),
@@ -80,23 +84,34 @@ def normalized_board(payload, captured_at):
             player=row.get('player') or {};event=row.get('event') or {};market=row.get('market') or {};fields=row.get('source_fields') or {}
             if str(row.get('league','')).upper()!='TENNIS' or row.get('is_demo') is True or row.get('status')!='active':
                 reject('NOT_ACTIVE_REAL_TENNIS');continue
-            if any(obj.get(k) is True for obj in (row,fields) for k in ('is_live','in_game','is_promo','is_combo')):
+            if any(obj.get(k) is True for obj in (row,fields,event) for k in ('is_live','in_game','is_promo','is_combo')) or any(str(obj.get('event_type','')).strip().lower()=='combo' for obj in (row,fields,event)):
                 reject('LIVE_PROMO_OR_COMBO');continue
             if market.get('stat') not in allowed:
                 reject('UNSUPPORTED_STAT');continue
             if str(market.get('period','')).lower() not in ('full game','full match','full_game','full_match'):
                 reject('FULL_MATCH_PERIOD_UNVERIFIED');continue
-            if fields.get('projection_type') != 'Single Stat':
-                reject('SINGLE_STAT_UNVERIFIED');continue
+            projection_type=fields.get('projection_type')
+            if not (projection_type=='Single Stat' or
+                    (projection_type=='Fantasy Score' and market.get('stat')=='Fantasy Score')):
+                reject('SINGLE_STAT_OR_FANTASY_SCORE_UNVERIFIED');continue
             line=row.get('line')
             if isinstance(line,bool) or not isinstance(line,(int,float)) or not math.isfinite(line) or line<0:
                 reject('INVALID_LINE');continue
-            selection_rows=[s for s in row.get('selections',[]) if isinstance(s,dict) and s.get('side') in ('more','less')]
-            if len(selection_rows)!=len({s['side'] for s in selection_rows}):
+            selections=row.get('selections',[])
+            if not isinstance(selections,list) or any(not isinstance(s,dict) or s.get('side') not in ('more','less') for s in selections):
+                reject('MALFORMED_SELECTIONS');continue
+            if len({s['side'] for s in selections})!=len(selections):
                 reject('DUPLICATE_SELECTION_SIDE');continue
-            sides={s['side']:s for s in row.get('selections',[]) if isinstance(s,dict) and s.get('side') in ('more','less')}
-            if any(sides.get(k,{}).get('available') is not True or sides.get(k,{}).get('tier')!='standard' for k in ('more','less')):
-                reject('TWO_STANDARD_SIDES_UNVERIFIED');continue
+            sides={s['side']:s for s in selections}
+            # Keep explicit source evidence; missing/invalid is unknown, not false.
+            availability={side:(sides.get(side,{}).get('available')
+                if isinstance(sides.get(side,{}).get('available'),bool) else None)
+                for side in ('more','less')}
+            tiers={side:(sides.get(side,{}).get('tier')
+                if sides.get(side,{}).get('tier') in ('standard','demon','goblin','unknown') else None)
+                for side in ('more','less')}
+            if not any(availability[side] is True and tiers[side]=='standard' for side in ('more','less')):
+                reject('NO_AVAILABLE_STANDARD_SIDE');continue
             start=dt.datetime.fromisoformat(event['starts_at'].replace('Z','+00:00'))
             observed=dt.datetime.fromisoformat(row['observed_at'].replace('Z','+00:00'))
             if not start.tzinfo or not observed.tzinfo:
@@ -116,8 +131,8 @@ def normalized_board(payload, captured_at):
             out['quotes'].append({'id':str(row['id']),'player_id':str(player['id']),
                 'fixture_id':str(fixture),'player':player['name'],'opponent':event['opponent'],
                 'stat':market['stat'],'period':'full_match','line':line,'status':'active','is_demo':False,'is_combo':False,
-                'tier':'standard','more_tier':'standard','less_tier':'standard',
-                'more_available':True,'less_available':True,'observed_at':observed.isoformat(),
+                'tier':'standard','more_tier':tiers['more'],'less_tier':tiers['less'],
+                'more_available':availability['more'],'less_available':availability['less'],'observed_at':observed.isoformat(),
                 'captured_at':captured_at,'starts_at':start.isoformat()})
         except (KeyError,TypeError,ValueError,AttributeError):
             reject('MISSING_OR_MALFORMED_FIELDS')

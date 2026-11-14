@@ -836,4 +836,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nba-confidence-correction-20261114-r44";
+globalThis.__damesRunningAssets["feeds.js"]="dp-tennis-explicit-standard-sides-20261114-r45";
