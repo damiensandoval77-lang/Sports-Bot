@@ -63,6 +63,19 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
         self.assertIn('($paid == "true" or .conclusion == "success")', text)
         self.assertIn('python -m iphone_bot.readiness_recovery', text)
 
+    def test_free_live_recovery_does_not_wait_until_public_ttl(self):
+        import re
+        text=(ROOT/".github/workflows/production_readiness.yml").read_text()
+        for workflow in ("independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml"):
+            with self.subTest(workflow=workflow):
+                cooldown=int(re.search(re.escape(workflow)+r"\) cooldown_minutes=(\d+)", text).group(1))
+                self.assertEqual(cooldown,5)
+        # Free retries do not remove paid-call caps or active-run deduplication.
+        self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=90",text)
+        self.assertIn("nba-new-ai-all-markets.yml) cooldown_minutes=90",text)
+        self.assertIn('.status != "completed"',text)
+        self.assertIn("failure_backoff_minutes=5",text)
+
     def test_failure_completion_cannot_immediately_redispatch_itself(self):
         text=(ROOT/".github/workflows/production_readiness.yml").read_text()
         self.assertIn("failure_backoff_minutes=5",text)
