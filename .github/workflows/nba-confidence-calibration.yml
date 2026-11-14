@@ -1,0 +1,55 @@
+name: Publish limited-sample NBA confidence correction
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Guarded new NBA AI all markets PTS REB AST PRA']
+    types: [completed]
+    branches: [main]
+  pull_request:
+    paths: ['iphone_bot/nba_confidence_calibration*', 'iphone_bot/tests/test_nba_confidence_calibration*', 'docs/dames-picks/feeds.js', '.github/workflows/nba-confidence-calibration.yml']
+  push:
+    branches: [main]
+    paths: ['iphone_bot/nba_confidence_calibration*', 'iphone_bot/tests/test_nba_confidence_calibration*', '.github/workflows/nba-confidence-calibration.yml']
+permissions:
+  contents: read
+concurrency:
+  group: nba-confidence-correction-${{ github.event_name == 'pull_request' && github.ref || 'publish' }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: {node-version: '22'}
+      - run: python -m unittest iphone_bot.tests.test_nba_confidence_calibration -v
+      - run: node --test iphone_bot/tests/test_nba_confidence_calibration.cjs
+  publish:
+    if: github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    needs: test
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: {ref: main, fetch-depth: 0}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with: {python-version: '3.12'}
+      - name: Freeze corrections before tip without changing original predictions
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m iphone_bot.nba_confidence_calibration
+            git add docs/nba_confidence_calibration.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'Publish versioned pretip NBA confidence corrections; original picks unchanged'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 5))
+          done
+          exit 1

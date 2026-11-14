@@ -134,6 +134,7 @@ function nba(ledger,form){
    opponentContextUnavailable:p.opponent_context_unavailable===true,
    singleSourceHistory:p.single_source_history===true,
    chanceMethod:c.method,chanceDraws:c.draws,chanceCalibrated:c.calibrated,
+   rawMoreProbability:n(c.modeled_more_probability),
    opponentAwareVerified:false,
    matchupEstimate:p.matchup_hit_estimate||null,
    captured:p.captured_at,grade,actual:grade==="GRADED"?n(p.actual):null,
@@ -388,9 +389,58 @@ root.DamesPicksLineHistory={attachGameLogs,etDay};
    The browser verifies provenance shape; backtesting/calibration remain separate. */
 const MATCHUP_INPUTS=["opponent_position_defense","projected_minutes",
  "usage_opportunities","teammate_availability","depth_role","pace_possessions"];
+/* Authorized correction fits ONLY original residual-model probabilities, never
+   the distinct position-preview model. It preserves saved sides and grading. */
+const NBA_CONFIDENCE_SPEC="8947501c0e0993eed12a96629cb4b48b344623f07d8d531d5b04c9cb937ae2a6";
+function attachNBAConfidence(rows,feed,now=Date.now()){
+ if(feed?.status!=="FROZEN_PRETIP_NBA_CONFIDENCE_CORRECTIONS"||
+    feed.model!=="NBA_POOLED_LOGIT_CONFIDENCE_V1"||feed.calibration_spec_sha256!==NBA_CONFIDENCE_SPEC||
+    feed.historical_forecasts_modified!==false||!Array.isArray(feed.records))return rows;
+ const key=r=>[String(r.player_id),r.team,r.opponent,r.game,stamp(r.start),r.stat,n(r.line),stamp(r.source_captured_at)].join("|");
+ const records=new Map(),conflicts=new Set();
+ for(const r of feed.records){
+  if(!r||r.model!==feed.model||r.calibration_spec_sha256!==NBA_CONFIDENCE_SPEC||
+     r.source_method!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||
+     r.original_direction_preserved!==true||r.historical_forecast_modified!==false||r.grade_modified!==false||
+     r.prospective_accuracy_improvement_verified!==false||!["MORE","LESS"].includes(r.original_side)||
+     !Number.isFinite(stamp(r.source_market_updated))||!Number.isFinite(stamp(r.source_captured_at))||
+     !Number.isFinite(stamp(r.applied_at))||!Number.isFinite(stamp(r.start))||
+     stamp(r.source_market_updated)>stamp(r.source_captured_at)||stamp(r.source_captured_at)>stamp(r.applied_at)||
+     stamp(r.applied_at)>=stamp(r.start)||stamp(r.applied_at)>now+120000||n(r.line)%1!==.5)continue;
+  const c=r.raw_estimated_hit_chance,raw=n(c?.modeled_more_probability);
+  if(raw===null||raw<0||raw>1||c.method!==r.source_method||c.draws!==20000||c.calibrated!==false||
+     c.modeled_push_probability!==0||c.modeled_direction?.toUpperCase()!==r.original_side)continue;
+  const p=Math.max(.00001,Math.min(.99999,raw));
+  const more=1/(1+Math.exp(-(-.13509652870488206+.3088709056487632*Math.log(p/(1-p)))));
+  const rate=r.original_side==="MORE"?more:1-more;
+  if(n(r.probability_more)===null||n(r.probability_less)===null||Math.abs(r.probability_more-more)>1e-9||
+     n(r.corrected_original_side_probability)===null||Math.abs(r.corrected_original_side_probability-rate)>1e-9||
+     Math.abs(r.probability_more+r.probability_less-1)>1e-9||r.probability_push!==0)continue;
+  const k=key(r),old=records.get(k);
+  if(old&&JSON.stringify(old)!==JSON.stringify(r))conflicts.add(k);else records.set(k,r);
+ }
+ for(const k of conflicts)records.delete(k);
+ return rows.map(p=>{
+  if(p.sport!=="NBA"||p.quoteOnly||p.injuryUncertainty||p.opponentContextUnavailable||p.singleSourceHistory||
+     p.chanceMethod!=="JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED"||p.chanceDraws!==20000||p.chanceCalibrated!==false)return p;
+  const r=records.get([String(p.playerId),p.team,p.opponent,p.game,stamp(p.start),p.stat,n(p.line),stamp(p.captured)].join("|"));
+  if(!r||r.original_side!==p.direction||n(r.original_projection)!==n(p.projection)||
+     n(r.raw_estimated_hit_chance.modeled_more_probability)!==n(p.rawMoreProbability)||
+     n(r.raw_original_side_probability)!==n(p.chance))return p;
+  return {...p,confidenceCorrection:{rate:r.corrected_original_side_probability,rawRate:r.raw_original_side_probability,
+   method:r.model,specSha256:r.calibration_spec_sha256,asOf:r.applied_at,sourceCaptured:r.source_captured_at,
+   source:"Limited-sample NBA confidence correction; original side preserved",validationNotice:feed.validation_notice}};
+ });
+}
+
 function hitEstimate(p){
  if(!p||p.quoteOnly||!["MORE","LESS"].includes(p.direction)||
    n(p.line)===null||n(p.projection)===null)return null;
+ const corrected=p.confidenceCorrection;
+ if(corrected?.method==="NBA_POOLED_LOGIT_CONFIDENCE_V1"&&corrected.specSha256===NBA_CONFIDENCE_SPEC&&
+    Number.isFinite(corrected.rate)&&corrected.rate>=0&&corrected.rate<=1&&
+    stamp(corrected.sourceCaptured)===stamp(p.captured)&&stamp(corrected.asOf)<stamp(p.start))
+  return {...corrected,calibrated:false,confidenceCorrected:true,opponentAwareVerified:true};
  const x=p.matchupEstimate;
  if(!x||x.method!=="PREGAME_MATCHUP_CONDITIONED_V1"||
     x.research_only!==false||x.opponent_aware_verified!==true||
@@ -759,7 +809,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,sortLiveGames,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,attachNBAConfidence,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,sortLiveGames,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -786,4 +836,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-tennis-quote-board-20261114-r43";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nba-confidence-correction-20261114-r44";
