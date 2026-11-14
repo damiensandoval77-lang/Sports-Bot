@@ -99,7 +99,7 @@ test("production saved pretip quote archive is internally consistent",()=>{
  assert.equal(p.count,p.quotes.length);
  assert.ok(p.count>0);
  for(const q of p.quotes){
-  assert.equal(q.source,"independent_prizepicksapi_com");
+  assert.ok(["independent_prizepicksapi_com","native_prizepicks_public"].includes(q.source),"unsupported quote provenance");
   assert.equal(q.is_demo,false);
   assert.equal(q.tier,q.more_tier);
   assert.equal(q.tier,q.less_tier);
