@@ -780,4 +780,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-pregame-status-20261114-r39";
+globalThis.__damesRunningAssets["feeds.js"]="dp-newest-live-source-20261114-r40";
