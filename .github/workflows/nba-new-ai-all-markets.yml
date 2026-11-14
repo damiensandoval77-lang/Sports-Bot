@@ -298,6 +298,7 @@ jobs:
                 exit 1
               fi
               echo "::warning::Injury context changed; regenerate before publishing ($regen/3)"
+              python -m iphone_bot.build_prizepicks_model_input
               python -u iphone_bot/live_multimarket_matchup.py
               python -u iphone_bot/multimarket_forecast_ledger.py
               cp docs/lagged_matchup_live_all_markets.json "$RUNNER_TEMP/new-ai.json"
