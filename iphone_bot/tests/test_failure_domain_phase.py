@@ -72,7 +72,7 @@ class NBAGradingCoverageTests(unittest.TestCase):
     def test_unknown_missing_empty_or_contradictory_status_is_not_success(self):
         for invalid in (None, [], "OK"):
             self.assertEqual(self.result(invalid)[0],"critical")
-        for status in (None,"UNKNOWN","VERIFIED_FINAL_ROWS_OUTSTANDING"):
+        for status in (None,[],{},"UNKNOWN","VERIFIED_FINAL_ROWS_OUTSTANDING"):
             x=self.valid();x["status"]=status;self.assertEqual(self.result(x)[0],"critical")
         for days in (None,{},[],{"bad-date":{}}):
             x=self.valid();x["days"]=days;self.assertEqual(self.result(x)[0],"critical")
@@ -96,3 +96,12 @@ class NBAGradingCoverageTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[2]/"docs"
         value=json.loads((root/"ai_forecast_coverage_audit.json").read_text())
         self.assertIn(self.result(value)[0],("ok","warning"))
+
+    def test_nonobject_json_is_rejected_by_integrated_audit(self):
+        from unittest.mock import patch
+        from iphone_bot import audit_failure_domains as audit
+        original=audit.load
+        for bad in ([],None,"OK"):
+            with patch.object(audit,"load",side_effect=lambda path: bad if path=="ai_forecast_coverage_audit.json" else original(path)):
+                result=audit.check_artifacts()
+            self.assertTrue(any(r["domain"]=="NBA grading" and r["code"]=="GRADE_AUDIT_UNAVAILABLE" and r["level"]=="critical" for r in result["checks"]))
