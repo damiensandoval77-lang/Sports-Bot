@@ -35,6 +35,26 @@ class QuoteWorkflowTests(unittest.TestCase):
         section=publish[publish.index('quote_refresh_integrity'):publish.index('# Rebuild against the latest official')]
         self.assertIn('"$quote_regen" -gt 3',section)
         self.assertLess(section.index('build_prizepicks_model_input'),section.index('live_multimarket_matchup.py'))
-        self.assertLess(section.index('merge_new_ai_publishing'),section.index('cp docs/lagged_matchup_all_market_ledger.json'))
-        self.assertIn('--incoming "$RUNNER_TEMP/new-ai-ledger.json"',section)
+        self.assertLess(publish.index('merge_new_ai_publishing'),publish.index('quote_refresh_integrity'))
+        self.assertIn('--incoming "$RUNNER_TEMP/new-ai-ledger.json"',publish[:publish.index('quote_refresh_integrity')])
         self.assertIn('continue',section)
+
+class RegenerationLedgerTests(unittest.TestCase):
+    def test_quote_then_injury_regeneration_preserves_main_and_earliest_capture(self):
+        from iphone_bot.tests.test_merge_new_ai_publishing import forecast, frozen
+        from iphone_bot.multimarket_forecast_ledger import merge
+        from iphone_bot.merge_new_ai_publishing import durable_merge
+        main=forecast(1)
+        early=forecast(2)
+        temp=frozen(early)
+        current=durable_merge(frozen(main),temp,{})
+        revised={**early,'captured_at':'2026-11-09T22:15:00Z','projection':19.0}
+        current=merge(current,{'status':'LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED','predictions':[revised,forecast(3)]},{})
+        # Next retry resets to main, and the injury regeneration follows tip.
+        current=durable_merge(frozen(main),current,{})
+        late={**early,'captured_at':'2026-11-10T00:01:00Z','projection':21.0}
+        current=merge(current,{'status':'LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED','predictions':[late]},{})
+        self.assertEqual(len(current['records']),3)
+        saved=next(x for x in current['records'] if x['player_id']=='2')
+        self.assertEqual(saved['captured_at'],early['captured_at'])
+        self.assertEqual(saved['projection'],early['projection'])
