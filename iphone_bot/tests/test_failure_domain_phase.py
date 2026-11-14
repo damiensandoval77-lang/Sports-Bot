@@ -49,3 +49,50 @@ class NFLStandardPendingAuditTests(unittest.TestCase):
             with self.subTest(value=value):
                 result = self.checks(standard_pending_picks=value)
                 self.assertTrue(any(x["code"] == "STANDARD_PENDING_COUNT_INVALID" and x["level"] == "critical" for x in result))
+
+
+class NBAGradingCoverageTests(unittest.TestCase):
+    def valid(self):
+        return {"status": "ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR", "days": {
+            "2026-11-13": {"captured": 5, "graded": 3, "void_dnp": 1,
+                "excluded_nonparticipant": 1, "pending": 0, "accounted_for": 5,
+                "pending_by_game": {}}}}
+
+    def result(self, value):
+        from iphone_bot.audit_failure_domains import grading_coverage_result
+        return grading_coverage_result(value)
+
+    def test_accounted_and_pending_are_distinguished(self):
+        x=self.valid(); self.assertEqual(self.result(x)[0], "ok")
+        x["days"]["2026-11-13"].update(captured=7,pending=2,pending_by_game={"A @ B":2})
+        self.assertEqual(self.result(x)[0], "critical")
+        x["status"]="VERIFIED_FINAL_ROWS_OUTSTANDING"
+        self.assertEqual(self.result(x)[:2], ("warning","FINAL_ROWS_OUTSTANDING"))
+
+    def test_unknown_missing_empty_or_contradictory_status_is_not_success(self):
+        for invalid in (None, [], "OK"):
+            self.assertEqual(self.result(invalid)[0],"critical")
+        for status in (None,"UNKNOWN","VERIFIED_FINAL_ROWS_OUTSTANDING"):
+            x=self.valid();x["status"]=status;self.assertEqual(self.result(x)[0],"critical")
+        for days in (None,{},[],{"bad-date":{}}):
+            x=self.valid();x["days"]=days;self.assertEqual(self.result(x)[0],"critical")
+
+    def test_invalid_counts_or_reconciliation_fail_closed(self):
+        for key in ("captured","graded","void_dnp","excluded_nonparticipant","pending","accounted_for"):
+            for value in (None,-1,"0",False):
+                x=self.valid();x["days"]["2026-11-13"][key]=value
+                self.assertEqual(self.result(x)[0],"critical",(key,value))
+        for change in ({"captured":6},{"accounted_for":4},{"pending_by_game":{"A @ B":1}},
+                       {"pending_by_game":None},{"pending_by_game":{"A":False}}):
+            x=self.valid();x["days"]["2026-11-13"].update(change)
+            self.assertEqual(self.result(x)[0],"critical")
+
+    def test_zero_only_report_is_not_verified_coverage(self):
+        x=self.valid();row=x["days"]["2026-11-13"]
+        row.update({k:0 for k in row if k!="pending_by_game"})
+        self.assertEqual(self.result(x)[0],"critical")
+
+    def test_real_published_coverage_remains_valid(self):
+        root=Path(__file__).resolve().parents[2]/"docs"
+        value=json.loads((root/"ai_forecast_coverage_audit.json").read_text())
+        self.assertIn(self.result(value)[0],("ok","warning"))
