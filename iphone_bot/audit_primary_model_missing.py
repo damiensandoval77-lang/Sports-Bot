@@ -3,6 +3,10 @@
 Never creates a late freeze, replaces an original price, treats a research
 projection as a validated model, or calls paid APIs.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 from collections import Counter
@@ -27,7 +31,7 @@ def audit(quotes, frozen, live, research, day, now=None):
     now=now or dt.datetime.now(dt.timezone.utc)
     archive=[x for x in quotes.get("quotes",[])
              if x.get("tier")=="standard" and
-             x.get("source")=="independent_prizepicksapi_com" and
+             x.get("source") in PP_SOURCES and
              x.get("is_demo") is False and eastern_date(x.get("starts_at"))==day
              and key(x)]
     locked=[x for x in frozen.get("records",[]) if eastern_date(x.get("start"))==day and key(x)]

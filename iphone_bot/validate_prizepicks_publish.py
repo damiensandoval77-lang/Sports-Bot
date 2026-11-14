@@ -3,6 +3,10 @@
 Never claims full provider coverage when upstream paginated data is partial.
 Only checks whether the candidate export truthfully preserves its own source.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import argparse
 import datetime as dt
 import json
@@ -22,9 +26,9 @@ def validate(raw,site,model,now=None,max_source_age_minutes=360):
     issues=[]
     if not all(isinstance(x,dict) for x in (raw,site,model)):
         return ["INPUT_NOT_OBJECT"]
-    if raw.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES" or site.get("status")!=raw.get("status"):
+    if raw.get("status") not in PP_STATUSES or site.get("status")!=raw.get("status"):
         issues.append("UNVERIFIED_PROVIDER_STATUS")
-    if site.get("source")!="independent_prizepicksapi_com":
+    if site.get("source") != board_source(raw):
         issues.append("INVALID_SITE_SOURCE")
     if site.get("generated_at")!=raw.get("generated_at"):
         issues.append("SITE_SOURCE_TIMESTAMP_MISMATCH")
@@ -36,7 +40,7 @@ def validate(raw,site,model,now=None,max_source_age_minutes=360):
     if not isinstance(board,list) or not isinstance(original,list) or not board:
         issues.append("EMPTY_OR_INVALID_PROVIDER_BOARD")
         return issues
-    valid=[x for x in original if isinstance(x,dict) and x.get("source")=="independent_prizepicksapi_com"
+    valid=[x for x in original if isinstance(x,dict) and x.get("source")==board_source(raw)
            and x.get("is_demo") is False and x.get("game") and x.get("starts_at")
            and (x.get("more_tier") or x.get("less_tier"))]
     if len(board)!=len(valid) or site.get("independent_board_count")!=len(valid):
@@ -55,7 +59,7 @@ def validate(raw,site,model,now=None,max_source_age_minutes=360):
             issues.append("EXPORTED_OFFER_DIFFERS_FROM_VERIFIED_SOURCE")
             break
     for row in board:
-        if not isinstance(row,dict) or row.get("is_demo") is not False or row.get("source")!="independent_prizepicksapi_com":
+        if not isinstance(row,dict) or row.get("is_demo") is not False or row.get("source") != board_source(raw):
             issues.append("UNVERIFIED_EXPORTED_OFFER")
             break
         line=row.get("line")

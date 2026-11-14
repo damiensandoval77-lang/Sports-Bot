@@ -177,7 +177,7 @@
  function frozenPrizePicks(records){
   const result=[];
   for(const p of records||[]){
-   if(p?.source!=="independent_prizepicksapi_com"||
+   if(!["independent_prizepicksapi_com","native_prizepicks_public"].includes(p?.source)||
       p.no_calibrated_hit_percentage!==true||
       !p.provider_projection_id)continue;
    const row={
@@ -200,8 +200,8 @@
  // Require the provider snapshot itself to have been saved before this tipoff.
  function observedPregameLine(forecast,provider){
   const tip=Date.parse(forecast?.start),captured=Date.parse(provider?.generated_at);
-  if(provider?.status!=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"||
-     provider?.source!=="independent_prizepicksapi_com"||
+  if(!["LIVE_THIRD_PARTY_PRIZEPICKS_LINES","LIVE_NATIVE_PRIZEPICKS_LINES"].includes(provider?.status)||
+     !["independent_prizepicksapi_com","native_prizepicks_public"].includes(provider?.source)||
      !Array.isArray(provider.board_offers)||
      !Number.isFinite(tip)||!Number.isFinite(captured)||
      captured>=tip||tip-captured>6*3600000||
@@ -209,7 +209,7 @@
     return null;
   const matches=[];
   for(const q of provider.board_offers){
-   if(!q||q.source!=="independent_prizepicksapi_com"||q.is_demo!==false||
+   if(!q||!["independent_prizepicksapi_com","native_prizepicks_public"].includes(q.source)||q.is_demo!==false||
       normalize(q.player)!==normalize(forecast.player)||
       canonicalTeam(q.team)!==canonicalTeam(forecast.team)||
       normalize(q.game)!==normalize(forecast.game)||q.stat!==forecast.stat||
@@ -232,7 +232,7 @@
    const first=rows[0];
    return {line:Number(first.line),tier,
      observed_at:first.observed_at,provider_projection_id:String(first.id||""),
-     source:"independent_prizepicksapi_com",
+     source:first.source,
      status:"OBSERVED_PRETIP_QUOTE_NOT_FROZEN_PICK"};
   }
   return null;
@@ -271,7 +271,7 @@
   const tip=Date.parse(forecast?.start);
   if(!Number.isFinite(tip))return null;
   const matches=archive.quotes.filter(q=>
-     q?.source==="independent_prizepicksapi_com"&&
+     ["independent_prizepicksapi_com","native_prizepicks_public"].includes(q?.source)&&
      q.is_demo===false&&
      normalize(q.player)===normalize(forecast.player)&&
      canonicalTeam(q.team)===canonicalTeam(forecast.team)&&
@@ -295,7 +295,7 @@
    if(new Set(tied.map(q=>Number(q.line))).size!==1)return null;
    return {line:Number(tied[0].line),tier,observed_at:latest,
       provider_projection_id:String(tied[0].id||""),
-      source:"independent_prizepicksapi_com",
+      source:tied[0].source,
       status:"OBSERVED_PRETIP_QUOTE_NOT_FROZEN_PICK"};
   }
   return null;

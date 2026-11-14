@@ -3,6 +3,10 @@
 Only authentic two-sided standard offers for this slate's future games count.
 Neither research previews nor short-history baselines satisfy primary coverage.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import math
 from collections import defaultdict
@@ -33,7 +37,7 @@ def evaluate(feed, ledger, games, now):
         for p in feed.get('picks',[]):
             if not isinstance(p,dict) or p.get('stat') not in STATS or p.get('pickem_tier')!='standard':continue
             if (p.get('game'),utc(p.get('start'))) not in fixtures:continue
-            if p.get('source')!='independent_prizepicksapi_com' or p.get('direction') not in ('More','Less'):continue
+            if p.get('source') not in PP_SOURCES or p.get('direction') not in ('More','Less'):continue
             line=float(p['line']);observed=utc(p['market_updated'])
             if not math.isfinite(line) or not 0<=line<=100 or not observed<=updated or not observed<utc(p['start']):continue
             if not p.get('player') or not p.get('team'):continue

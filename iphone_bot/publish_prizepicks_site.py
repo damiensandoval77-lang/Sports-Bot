@@ -3,6 +3,10 @@
 Reads an already captured authenticated source file; never uses the API key,
 re-queries a provider, invents a quote, or rewrites research/graded records.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import json
 from collections import Counter
 from datetime import datetime,timezone
@@ -21,10 +25,10 @@ def slim(offer):
     return {k:offer[k] for k in FIELDS if k in offer}
 
 def summarize(board,schedule):
-    accepted=board.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
+    accepted=board.get("status") in PP_STATUSES
     raw=board.get("board_offers") if accepted and isinstance(board.get("board_offers"),list) else []
     matched=board.get("offers") if accepted and isinstance(board.get("offers"),list) else []
-    verified=[o for o in raw if isinstance(o,dict) and o.get("source")=="independent_prizepicksapi_com"
+    verified=[o for o in raw if isinstance(o,dict) and o.get("source") in PP_SOURCES
               and o.get("is_demo") is False and o.get("game") and o.get("starts_at")
               and (o.get("more_tier") or o.get("less_tier"))]
     # Event identity must include the actual scheduled tipoff. Identical
@@ -116,7 +120,7 @@ def summarize(board,schedule):
           "board_coverage_scope":board.get("board_coverage_scope") or "UNVERIFIED_LEGACY_SCOPE",
           "offers":[slim(x) for x in matched if isinstance(x,dict)],
           "board_offers":[slim(x) for x in verified],
-          "source":"independent_prizepicksapi_com",
+          "source":board_source(board),
           "is_actual_sportsbook_american_odds":False}
     return site,health
 
@@ -124,7 +128,7 @@ def main():
     board=json.loads(FULL.read_text())
     schedule=json.loads((ROOT/"docs/nba_schedule.json").read_text())
     site,health=summarize(board,schedule)
-    if site["status"]!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES" or not site["board_offers"]:
+    if site["status"] not in PP_STATUSES or not site["board_offers"]:
         print("No verified independent PrizePicks full-slate input: retaining existing site snapshot")
         return
     SITE.write_text(json.dumps(site,separators=(",",":"),ensure_ascii=False)+"\n")

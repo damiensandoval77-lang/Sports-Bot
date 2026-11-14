@@ -1,9 +1,11 @@
-name: Refresh independent NBA PrizePicks full-slate lines
+name: Refresh free native NBA PrizePicks standard lines
 on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'iphone_bot/fetch_prizepicks.py'
+      - 'iphone_bot/fetch_native_prizepicks.py'
+      - 'iphone_bot/prizepicks_provenance.py'
+      - 'iphone_bot/tests/test_native_prizepicks.py'
       - 'iphone_bot/preserve_research_inputs.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
       - 'iphone_bot/tests/test_preserve_research_inputs.py'
@@ -12,9 +14,10 @@ on:
     branches: ['main']
     paths:
       - 'docs/prizepicks_manual_refresh_request.json'
+      - 'iphone_bot/fetch_native_prizepicks.py'
+      - '.github/workflows/nba-prizepicks-full-slate.yml'
   schedule:
-    # Six bounded windows across the afternoon and pretip period (UTC).\n    # The prior five-hour gap guaranteed stale lines after 90 minutes.\n    # Each run may use up to four compact pages (up to 40 provider credits).\n    # At most six scheduled runs/day (240-credit possible scheduled ceiling).\n    # Provider 429 responses stop reads; actual top-up balance is not inferred.
-    # Uses proven top-up access even if the monthly remaining-credit header is zero.
+    # One free public request per window. No credentials or paid fallback.
     - cron: '28 0,16,18,20,22,23 * * *'
 permissions:
   contents: write
@@ -29,34 +32,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.head_ref || 'main' }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Validate collector import and syntax before a paid source read
-        if: github.event_name != 'pull_request'
+      - name: Test strict native quote provenance and existing publisher compatibility
         run: |
-          python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
-          python - <<'PY'
-          import subprocess,sys
-          p=subprocess.run([sys.executable,'-c',
-            "import sys;sys.path.insert(0,'iphone_bot');import fetch_prizepicks;assert fetch_prizepicks.expected_opponents"],
-            capture_output=True,text=True)
-          assert p.returncode==0,p.stderr
-          PY
-      - name: Test strict pregame event, team, market and source matching
-        if: github.event_name == 'pull_request'
-        run: |
-          python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
-          python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v
-      - name: Fetch bounded, cursor-paged actual NBA PrizePicks board
+          python -m unittest iphone_bot.tests.test_native_prizepicks iphone_bot.tests.test_fetch_prizepicks iphone_bot.tests.test_build_prizepicks_model_input iphone_bot.tests.test_publish_prizepicks_site iphone_bot.tests.test_validate_prizepicks_publish iphone_bot.tests.test_archive_prizepicks_pregame_lines -v
+      - name: Fetch free public standard NBA quotes (no paid fallback)
         if: github.event_name != 'pull_request'
-        env:
-          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
-          # Explicit daily refresh: ignore stale zero-monthly-credit header
-          # and pre-existing snapshot cooldown; provider 429 still stops reads.
-          PRIZEPICKS_FORCE_REFRESH: '1'
-        run: python -u iphone_bot/fetch_prizepicks.py
+        run: python -m iphone_bot.fetch_native_prizepicks
       - name: Archive original independent pick'em lines and tiers
         if: github.event_name != 'pull_request'
         run: python -u iphone_bot/preserve_research_inputs.py prizepicks
@@ -81,7 +66,7 @@ jobs:
             git rebase origin/main || { git rebase --abort || true; exit 1; }
           done
           exit 1
-      - name: Immediately publish lines to site after authenticated provider update
+      - name: Immediately publish lines to site after verified public provider update
         if: github.event_name != 'pull_request' && steps.publish.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}

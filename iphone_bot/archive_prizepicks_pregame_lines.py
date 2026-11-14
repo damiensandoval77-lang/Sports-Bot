@@ -3,6 +3,10 @@
 Not predictions, not bets, and never populated by post-tip source observations.
 No provider API requests. Every record is independently source-linked.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 import math
@@ -32,7 +36,7 @@ def identity(q):
     return market_identity(q)+(q["line"],)
 
 def safe_row(q):
-    if not isinstance(q,dict) or q.get("source")!=SOURCE or q.get("is_demo") is not False:
+    if not isinstance(q,dict) or q.get("source") not in PP_SOURCES or q.get("is_demo") is not False:
         return False
     if not all(isinstance(q.get(k),str) and q[k].strip() for k in
                ("id","player","team","game","starts_at","observed_at","source_generated_at")):
@@ -54,7 +58,7 @@ def build(site,old=None,now=None):
     previous=(old or {}).get("quotes") or []
     saved={identity(q):q for q in previous if safe_row(q) and
            moment(q["starts_at"])>=now-dt.timedelta(days=14)}
-    if site.get("status")== "LIVE_THIRD_PARTY_PRIZEPICKS_LINES" and site.get("source")==SOURCE:
+    if site.get("status") in PP_STATUSES and site.get("source") in PP_SOURCES:
         timestamp=site.get("generated_at")
         generated=moment(timestamp)
         if generated and generated<=now+dt.timedelta(minutes=10):

@@ -4,6 +4,10 @@ Evidence categories deliberately separate:
   source quote observation != frozen AI prediction != line-backed model != graded outcome.
 Never create missing picks or infer winners. JSON report is independently auditable.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 import sys
@@ -32,7 +36,7 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None,c
     games=[g for g in schedule.get("games",[]) if isinstance(g,dict)
            and g.get("date_eastern")==day and g.get("game")]
     qs=[q for q in quotes.get("quotes",[]) if
-        q.get("source")=="independent_prizepicksapi_com" and
+        q.get("source") in PP_SOURCES and
         q.get("is_demo") is False and eastern_day(q.get("starts_at"))==day]
     preds=[p for p in ai.get("predictions",[]) if
            p.get("is_pregame_prediction") is True and p.get("line") is None and
@@ -85,7 +89,7 @@ def reconcile(schedule,quotes,ai,locked,grades,now=None,day=None,research=None,c
             and x.get("calibrated") is False
             and x.get("grade")=="UNSETTLED_RESEARCH"
             and x.get("more_tier")=="standard" and x.get("less_tier")=="standard"
-            and x.get("source")=="independent_prizepicksapi_com"
+            and x.get("source") in PP_SOURCES
         }
         research_backed=missing_markets & eligible_research
         no_ai_receipt=missing_markets - eligible_research

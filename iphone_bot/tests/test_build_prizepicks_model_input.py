@@ -13,11 +13,11 @@ def feed():
         "game":"Boston Celtics @ New York Knicks",
         "opponent":"NYK","stat":"PTS","line":26.5,
         "starts_at":begin,"observed_at":observed,
-        "more_tier":"standard","less_tier":"standard","is_demo":False},
+        "more_tier":"standard","less_tier":"standard","is_demo":False,"source":"independent_prizepicksapi_com"},
        {"id":"p2","player":"Jayson Tatum","team":"BOS",
         "game":"Boston Celtics @ New York Knicks","opponent":"NYK",
         "stat":"REB","line":7.5,"starts_at":begin,"observed_at":observed,
-        "more_tier":"standard","less_tier":None,"is_demo":False}]}
+        "more_tier":"standard","less_tier":None,"is_demo":False,"source":"independent_prizepicksapi_com"}]}
 
 class PrizePicksModelInputTests(unittest.TestCase):
     def test_real_pickem_lines_are_never_bogus_bookmaker_odds(self):

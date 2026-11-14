@@ -4,6 +4,10 @@ Consumes the authenticated independent PrizePicks site export, never invents
 American sportsbook odds. Only future, recently observed, scheduled NBA
 full-game offers with team/opponent and source identity are eligible.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import json
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
@@ -25,7 +29,7 @@ def convert(source,now=None):
           "updated_at":now.isoformat(),"picks":[],
           "events_covered":[],"excluded_reasons":{},
           "notice":"Real pick'em line comparisons, NOT sportsbook American odds or calibrated probabilities."}
-    if not isinstance(source,dict) or source.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
+    if not isinstance(source,dict) or source.get("status") not in PP_STATUSES:
         return {**base,"status":"NO_VERIFIED_PROVIDER_BOARD"}
     issued=timeparse(source.get("generated_at"))
     if not issued or issued>now+timedelta(minutes=10) or now-issued>timedelta(hours=6):
@@ -53,6 +57,7 @@ def convert(source,now=None):
             elif not observed or observed>now+timedelta(minutes=10) or now-observed>timedelta(hours=6):
                 reason="not_recent"
             elif line is None or not 0<=line<300:reason="invalid_line"
+            elif item.get("source") not in PP_SOURCES:reason="unverified_source"
             elif item.get("is_demo") is not False:reason="unverified_live"
             elif not item.get("team") or not expected_opponents(item["game"],item["team"]):
                 reason="wrong_team"
@@ -76,7 +81,7 @@ def convert(source,now=None):
               "game":item["game"],"start":started.isoformat(),
               "market_updated":observed.isoformat(),"line":line,
               "direction":direction,"odds":None,"pickem_tier":tier,
-              "source":"independent_prizepicksapi_com"})
+              "source":item["source"]})
     games={x["game"]:x["start"] for x in rows}
     return {**base,"status":"FRESH_AUTHENTIC_PRIZEPICKS_LINES" if rows else "NO_ELIGIBLE_UPCOMING_OFFERS",
         "is_live":bool(rows),"updated_at":issued.isoformat(),
