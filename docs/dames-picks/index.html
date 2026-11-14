@@ -226,9 +226,7 @@ function renderLiveGames(){
  const term=$("query").value.toLowerCase().trim();
  const slate=m.currentSlateGames(state.liveGames,state.league);
  $("games").textContent=slate.length;
- const games=slate.filter(g=>!term||(g.game+" "+g.away+" "+g.home).toLowerCase().includes(term));
- const order={in:0,stale:1,final:2,scheduled:3,unknown:4};
- games.sort((a,b)=>(order[a.state]??4)-(order[b.state]??4)||a.game.localeCompare(b.game));
+ const games=m.sortLiveGames(slate.filter(g=>!term||(g.game+" "+g.away+" "+g.home).toLowerCase().includes(term)));
  $("cards").innerHTML=games.length?games.map(g=>{
    const count=m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)&&!p.quoteOnly)).length;
    const title=g.state==="in"?"LIVE":g.state==="stale"?"STALE":g.state==="final"?"FINAL":g.state==="scheduled"?"UPCOMING":"STATUS N/A";
