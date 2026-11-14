@@ -1,0 +1,157 @@
+{
+  "status": "PARTIAL",
+  "start": "2026-11-14T12:27:29Z",
+  "pinned_main": "8d4419fc57480078cc08d7f2cf3fee0bba4c77d0",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "release": "dp-newest-live-source-20261114-r40",
+  "counts": {
+    "findings_reconfirmed": 3,
+    "new_code_defects": 0,
+    "repairs": 0,
+    "verified_fixes": 0,
+    "free_recovery_attempts": 1
+  },
+  "inventory": {
+    "branches": 447,
+    "historical_pr_tips": 446,
+    "refs": 893,
+    "source_blobs": 2008,
+    "syntax_errors": 0,
+    "open_prs": 0
+  },
+  "workflows": {
+    "definitions": 176,
+    "recent_runs": 200,
+    "success": 131,
+    "cancelled": 46,
+    "failure": 23,
+    "failed_runs_logs_inspected": 23,
+    "unrepresented_definitions": 128,
+    "static_warnings": 45,
+    "mutable_action_references": 385
+  },
+  "tests": {
+    "targeted_pass": 98,
+    "fresh_webkit_pass": 16,
+    "fresh_webkit_skip": 0,
+    "teardown_exception": false,
+    "run": 43593824256,
+    "job": 132447445258,
+    "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43593824256/artifacts/14114175919"
+  },
+  "findings": [
+    {
+      "id": "PRIMARY-COVERAGE",
+      "severity": "high",
+      "root_cause": "Seven players have fewer than required eight prior same-team opportunity games",
+      "histories": {
+        "Egor Demin": 5,
+        "Danny Wolf": 6,
+        "Jaylon Tyson": 7,
+        "Cameron Johnson": 7,
+        "Nic Claxton": 3,
+        "DeAndre Jordan": 4,
+        "Spencer Jones": 3
+      },
+      "current_offers": 176,
+      "projections": 160,
+      "excluded": 16,
+      "archived_thresholds": 232,
+      "primary_frozen": 212,
+      "unmatched": 20,
+      "with_separate_research": 15,
+      "without_any_ai_receipt": 5,
+      "source": [
+        "iphone_bot/live_lagged_matchup_sidecar.py",
+        "iphone_bot/offensive_involvement_holdout.py"
+      ],
+      "action": "Reran free history/model job132440910561; replacement132447641679 success with160projections/16exclusions; no new durable captures or grades",
+      "recovery_run": 43592670050,
+      "result": "BLOCKED_INPUT_HISTORY; requirements unchanged; research not promoted"
+    },
+    {
+      "id": "LEGACY-PAGES-RACE",
+      "severity": "high",
+      "root_cause": "Native branch publishing repeatedly cancelled during frequent repository pushes",
+      "cancellations": 46,
+      "source": ".github/workflows/pages-controlled.yml",
+      "result": "UNRESOLVED_ADMINISTRATION",
+      "action": "Verified live app/model availability and controlled verifier; did not repeat successful deployment needlessly",
+      "required_user_action": "Repository Settings > Pages > Source > GitHub Actions; connected tools lack Pages administration capability"
+    },
+    {
+      "id": "HISTORICAL-PRETIP-EVIDENCE",
+      "severity": "high",
+      "carried_count": 60,
+      "provenance": "Prior receipts; not independently rederived this run",
+      "result": "IRRECOVERABLE_WITHOUT_ORIGINAL_TIMESTAMPED_FORECASTS",
+      "action": "Preserved historical captures; reconciled all actually captured completed records without fabricating missing predictions"
+    }
+  ],
+  "production": {
+    "nba_schedule_games": 5,
+    "games_with_quotes_ai_linebacked_models": 5,
+    "ai_only_upcoming": 504,
+    "nba_fixed_season_baseline_games": 1200,
+    "nba_cup_tbd_exception": true,
+    "nfl_schedule_games": 272,
+    "frozen_ledger": {
+      "records": 2036,
+      "graded": 1760,
+      "verified_dnp": 64,
+      "pending_upcoming": 212
+    },
+    "nov13": {
+      "quotes_saved": 740,
+      "settled": 711,
+      "void": 29,
+      "pending": 0,
+      "overdue": 0,
+      "ai_saved": 904,
+      "ai_graded": 700,
+      "ai_dnp": 204
+    },
+    "nfl": {
+      "standard_graded": 135,
+      "pushes": 3,
+      "decisions": 132,
+      "wins": 52,
+      "hit_rate_percent": 39.39,
+      "standard_pending": 0,
+      "excluded_alt_grades": 932
+    },
+    "readiness": {
+      "passing": 9,
+      "required": 10,
+      "blocked_component": "current_primary_model_coverage",
+      "release_certified": false
+    }
+  },
+  "changes": {
+    "code_files": [],
+    "prs": [],
+    "secrets": false,
+    "paid_calls": false,
+    "destructive_actions": false
+  },
+  "limitations": [
+    "128 workflows lack executions in sampled runs; schedule reliability not fully certified",
+    "Every branch head syntax checked; full behavioral equivalence across historical branches not established",
+    "No active-game proof of changing30second ESPN totals; NFL live snapshot is a completed WAS-NYG game",
+    "Full Underdog provider coverage not verified",
+    "45 warnings and385 mutable refs remain; no full transitive security certification",
+    "Missing histories and pretip evidence cannot be invented"
+  ],
+  "notification_delivery_confirmed": false,
+  "end_evidence": "2026-11-14T12:31:57.995745+00:00",
+  "recovery_live_verification": {
+    "generated_at": "2026-11-14T12:29:31.429127+00:00",
+    "checked_at": "2026-11-14T12:31:38.396283+00:00",
+    "http": 200,
+    "projections": 160,
+    "exclusions": 16,
+    "defect_resolved": false,
+    "successful_pages_run": 43595191079
+  },
+  "duration_evidence_seconds": 269
+}
