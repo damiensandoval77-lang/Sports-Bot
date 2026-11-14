@@ -30,6 +30,45 @@ def verified_posttip_slate(schedule,season,now):
     except (ValueError,KeyError,TypeError):
         return False
 
+def grading_coverage_result(audit):
+    """Accept only reconciled, explicit coverage evidence, never a status alone."""
+    if not isinstance(audit, dict):
+        return "critical", "GRADE_AUDIT_INVALID", "Coverage report must be an object"
+    known = {"ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR", "VERIFIED_FINAL_ROWS_OUTSTANDING"}
+    days = audit.get("days")
+    if not isinstance(audit.get("status"), str) or audit["status"] not in known or not isinstance(days, dict) or not days:
+        return "critical", "GRADE_AUDIT_INVALID", "Known status and nonempty daily coverage required"
+    pending = 0
+    captured_total = 0
+    for day, row in days.items():
+        try:
+            if dt.date.fromisoformat(day).isoformat() != day or not isinstance(row, dict):
+                raise ValueError
+            keys = ("captured", "graded", "void_dnp", "excluded_nonparticipant", "pending", "accounted_for")
+            if any(type(row.get(k)) is not int or row[k] < 0 for k in keys):
+                raise ValueError
+            resolved = row["graded"] + row["void_dnp"] + row["excluded_nonparticipant"]
+            if row["accounted_for"] != resolved or row["captured"] != resolved + row["pending"]:
+                raise ValueError
+            by_game = row.get("pending_by_game")
+            if (not isinstance(by_game, dict) or
+                any(not isinstance(k, str) or not k.strip() or type(v) is not int or v <= 0
+                    for k, v in by_game.items()) or sum(by_game.values()) != row["pending"]):
+                raise ValueError
+            pending += row["pending"]
+            captured_total += row["captured"]
+        except (ValueError, TypeError):
+            return "critical", "GRADE_AUDIT_INVALID", "Daily grading counts or game backlog do not reconcile"
+    if captured_total == 0:
+        return "critical", "GRADE_AUDIT_INVALID", "No archived forecast coverage evidence"
+    expected = "VERIFIED_FINAL_ROWS_OUTSTANDING" if pending else "ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR"
+    if audit["status"] != expected:
+        return "critical", "GRADE_AUDIT_INVALID", "Status contradicts reconciled pending count"
+    if pending:
+        return "warning", "FINAL_ROWS_OUTSTANDING", f"{pending} frozen forecasts still require verified final reconciliation"
+    return "ok", "GRADE_AUDIT_STATUS", expected
+
+
 def check_artifacts(now=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     reports = []
@@ -159,14 +198,13 @@ def check_artifacts(now=None):
                f"{receipt.get('count')} separate historical research receipts (not official grades)")
 
     audit = load("ai_forecast_coverage_audit.json")
+    if not isinstance(audit, dict):
+        audit = {"_read_error": "Coverage report must be an object"}
     freshness("NBA grading", audit, "checked_at", 240)
     if audit.get("_read_error"):
         record("NBA grading", "critical", "GRADE_AUDIT_UNAVAILABLE", audit["_read_error"])
-    elif audit.get("status") == "VERIFIED_FINAL_ROWS_OUTSTANDING":
-        record("NBA grading", "warning", "FINAL_ROWS_OUTSTANDING",
-               "Frozen forecasts still require verified final reconciliation")
     else:
-        record("NBA grading", "ok", "GRADE_AUDIT_STATUS", str(audit.get("status", "UNVERIFIED")))
+        record("NBA grading", *grading_coverage_result(audit))
 
     provider = load("prizepicks_site.json")
     if provider.get("status") != "LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
