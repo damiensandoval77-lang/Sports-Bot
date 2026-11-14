@@ -12,6 +12,17 @@ checker=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(checker)
 
 class PagesVerificationTests(unittest.TestCase):
+    def test_checked_in_release_manifest_and_runtime_are_consistent(self):
+        import json
+        folder=ROOT/'docs/dames-picks'
+        manifest=json.loads((folder/'release.json').read_text())
+        release=manifest['release_id']
+        self.assertEqual(manifest['runtime_bundle_id'],release)
+        for name,digest in manifest['asset_blob_sha1'].items():
+            data=(folder/name).read_bytes()
+            self.assertEqual(checker.git_blob_sha(data),digest,name)
+            self.assertIn(release.encode(),data,name)
+
     def test_cli_creates_nested_receipt_directory_in_fresh_checkout(self):
         with tempfile.TemporaryDirectory() as directory:
             output=Path(directory)/"new"/"nested"/"receipt.json"

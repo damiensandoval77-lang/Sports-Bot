@@ -159,4 +159,4 @@ root.DamesTake={POOL,tierFor,support,damesTake,forSlate};
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["dames_take.js"]="dp-readable-market-tabs-20261114-r41";
+globalThis.__damesRunningAssets["dames_take.js"]="dp-live-kickoff-cache-safe-20261114-r42";

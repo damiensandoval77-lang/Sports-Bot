@@ -8,6 +8,7 @@ import yaml
 
 QUARANTINE={}
 EXTRA=[
+    "python -m unittest discover -s tests -p test_verify_legacy_pages_release.py -v",
     "node --test iphone_bot/tests/test_coverage_banner.cjs",
     "python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v",
     "python -m unittest iphone_bot.tests.test_espn_injury_void -v",
