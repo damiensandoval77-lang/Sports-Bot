@@ -36,7 +36,7 @@ def grading_coverage_result(audit):
         return "critical", "GRADE_AUDIT_INVALID", "Coverage report must be an object"
     known = {"ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR", "VERIFIED_FINAL_ROWS_OUTSTANDING"}
     days = audit.get("days")
-    if audit.get("status") not in known or not isinstance(days, dict) or not days:
+    if not isinstance(audit.get("status"), str) or audit["status"] not in known or not isinstance(days, dict) or not days:
         return "critical", "GRADE_AUDIT_INVALID", "Known status and nonempty daily coverage required"
     pending = 0
     captured_total = 0
@@ -198,6 +198,8 @@ def check_artifacts(now=None):
                f"{receipt.get('count')} separate historical research receipts (not official grades)")
 
     audit = load("ai_forecast_coverage_audit.json")
+    if not isinstance(audit, dict):
+        audit = {"_read_error": "Coverage report must be an object"}
     freshness("NBA grading", audit, "checked_at", 240)
     if audit.get("_read_error"):
         record("NBA grading", "critical", "GRADE_AUDIT_UNAVAILABLE", audit["_read_error"])
