@@ -72,3 +72,18 @@ class ProbeTest(unittest.TestCase):
         self.assertNotIn('secret_unexpected',json.dumps(out))
         r['market']['period']='1st Set'
         self.assertEqual(normalized_board(p,'2026-11-14T20:00:00+00:00')['accepted_quote_count'],0)
+
+    def test_normalized_input_boundaries(self):
+        from iphone_bot.probe_tennis_provider import normalized_board
+        p=self.payload();r=p['data'][0]
+        r.update(id='q1',fixture_id='f1',status='active',is_demo=False,line=22.5,observed_at='2026-11-14T19:59:00Z',selections=[{'side':x,'available':True,'tier':'standard'} for x in ['more','less']])
+        r['market']['period']='Full game';r['source_fields']['projection_type']='Single Stat'
+        now='2026-11-14T20:00:00+00:00'
+        r['is_combo']=True
+        self.assertEqual(normalized_board(p,now)['accepted_quote_count'],0)
+        del r['is_combo'];r['player']['name']={'unexpected':'nested'}
+        self.assertEqual(normalized_board(p,now)['accepted_quote_count'],0)
+        r['player']['name']='Valid Name';r['fixture_id']=['nested']
+        self.assertEqual(normalized_board(p,now)['accepted_quote_count'],0)
+        r['fixture_id']='f1';del p['meta']['next_cursor']
+        self.assertFalse(normalized_board(p,now)['complete_pagination'])

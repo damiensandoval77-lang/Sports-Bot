@@ -53,7 +53,7 @@ def normalized_board(payload, captured_at):
     out={'schema_version':'tennis_board_v1','sport':'TENNIS',
         'generated_at':captured_at,'source':'independent_prizepicksapi_com',
         'provider_mode':meta.get('mode'),'source_status':meta.get('source_status'),'is_demo':False,
-        'complete_pagination':meta.get('next_cursor') is None,
+        'complete_pagination':'next_cursor' in meta and meta['next_cursor'] is None,
         'model_status':'WITHHELD','blockers':['Tennis model context and probabilities not validated'],
         'quotes':[]}
     if meta.get('mode')!='live' or meta.get('source_status')!='fresh':return out
@@ -63,7 +63,7 @@ def normalized_board(payload, captured_at):
         try:
             player=row.get('player') or {};event=row.get('event') or {};market=row.get('market') or {};fields=row.get('source_fields') or {}
             if str(row.get('league','')).upper()!='TENNIS' or row.get('is_demo') is True or row.get('status')!='active':continue
-            if any(obj.get(k) is True for obj in (row,fields) for k in ('is_live','in_game','is_promo')):continue
+            if any(obj.get(k) is True for obj in (row,fields) for k in ('is_live','in_game','is_promo','is_combo')):continue
             if market.get('stat') not in allowed or str(market.get('period','')).lower() not in ('full game','full match','full_game','full_match'):continue
             if fields.get('projection_type') != 'Single Stat':continue
             line=row.get('line')
@@ -74,8 +74,8 @@ def normalized_board(payload, captured_at):
             observed=dt.datetime.fromisoformat(row['observed_at'].replace('Z','+00:00'))
             if not start.tzinfo or not observed.tzinfo or not observed<=now<start or now-observed>dt.timedelta(minutes=30):continue
             fixture=row.get('fixture_id') or event.get('id')
-            if not all([row.get('id'),player.get('id'),player.get('name'),fixture,event.get('opponent')]):continue
-            if not isinstance(event['opponent'],str):continue
+            identities=[row.get('id'),player.get('id'),player.get('name'),fixture,event.get('opponent')]
+            if not all(isinstance(v,str) and 0<len(v.strip())<=200 for v in identities):continue
             out['quotes'].append({'id':str(row['id']),'player_id':str(player['id']),
                 'fixture_id':str(fixture),'player':player['name'],'opponent':event['opponent'],
                 'stat':market['stat'],'period':'full_match','line':line,'status':'active','is_demo':False,'is_combo':False,
