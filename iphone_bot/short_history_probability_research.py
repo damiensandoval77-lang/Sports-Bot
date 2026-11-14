@@ -91,6 +91,7 @@ def capture_context(row,injuries,news,free_watch,feed,records,now):
                 'own_reported_statuses':own,'own_status_interpretation':
                     ('EXPLICIT_REPORT_ENTRY' if own else 'UNKNOWN_NOT_LISTED'),
                 'matched_fixture_rows':relevant},
+            'input_hash_scope':'Fingerprints only; not complete archived source payloads or proof of original upstream publication time.',
             'input_sha256':{'news':digest(news),'free_watch':digest(free_watch),
                 'market_feed':digest(feed),'current_game_history':digest(records)},
             'interpretation':'Observed pretip source evidence only; report omission is not AVAILABLE or unrestricted minutes; not a fitted injury adjustment.'}
@@ -105,6 +106,10 @@ def capture(records,feed,pack,*,primary,injuries,news,free_watch,now=None):
     context=build_team_games(records,season='2026-27')
     for row in allowed['estimates']:
         if now-stamp(row['market_updated'])>timedelta(minutes=30):continue
+        observed_context=capture_context(row,injuries,news,free_watch,feed,records,now)
+        if not observed_context['official_report']['verified_at_capture']:
+            result['excluded']['INVALID_INJURY_CAPTURE_PROVENANCE']=result['excluded'].get('INVALID_INJURY_CAPTURE_PROVENANCE',0)+1
+            continue
         prior=[r for r in records if str(r['id'])==row['player_id']]
         day=stamp(row['start']).astimezone(__import__('zoneinfo').ZoneInfo('America/New_York')).date().isoformat()
         f,reason=features(prior,row['team'],row['opponent'],day,context)
@@ -131,7 +136,7 @@ def capture(records,feed,pack,*,primary,injuries,news,free_watch,now=None):
             'baseline_model':'PRIOR_MEAN_EMPIRICAL_RESIDUAL_2023_ISOTONIC_2024',
             'baseline_probability_over':float(baseline_raw[0]),'baseline_probability_under':float(baseline_raw[1]),
             'baseline_probability_push':float(baseline_raw[2]),'baseline_half_integer_calibrated_map_over':baseline_mapped,
-            'capture_context':capture_context(row,injuries,news,free_watch,feed,records,now),
+            'capture_context':observed_context,
             'features':f,'research_probability_over':float(raw[0]),'research_probability_under':float(raw[1]),
             'research_probability_push':float(raw[2]),'research_half_integer_calibrated_map_over':mapped,
             'probability_mapping_note':'Retrospective isotonic map only; NOT validated betting calibration',
