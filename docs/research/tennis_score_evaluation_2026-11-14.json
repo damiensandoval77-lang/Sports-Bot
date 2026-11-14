@@ -1,0 +1,30 @@
+{
+  "mode": "offline_research_only",
+  "live_ready": false,
+  "as_of": "2026-11-14 19:30:00+00:00",
+  "holdout_start": "2026-10-14 12:15:00+00:00",
+  "train_matches": 60904,
+  "test_matches": 8246,
+  "source": "https://www.valuebetennis.com/en/donnees.htm",
+  "attribution": "Valuebetennis, CC BY 4.0; transformed score-only research",
+  "limitations": [
+    "No verified future fixtures",
+    "No calibrated betting-line probabilities",
+    "48h completion availability is an assumption, not observed provenance",
+    "No aces, double faults, break points or games-won model"
+  ],
+  "metrics": {
+    "total_games": {
+      "mae": 4.189115904074992,
+      "training_mean_baseline_mae": 4.509803940621501
+    },
+    "total_sets": {
+      "mae": 0.3309914309320708,
+      "training_mean_baseline_mae": 0.35196182672458065
+    },
+    "total_tiebreaks": {
+      "mae": 0.34376396214576427,
+      "training_mean_baseline_mae": 0.3597255270968105
+    }
+  }
+}

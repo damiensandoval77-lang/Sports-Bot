@@ -20,6 +20,9 @@ import pandas as pd
 import numpy as np
 import os
 
+FEATURE_CONTRACT_VERSION = 'tennis_pre_tournament_v2'
+HISTORY_AVAILABILITY_LAG_DAYS = 21
+
 # --- CONFIGURATION ---
 BASE_DIR    = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 ATP_FILE    = os.path.join(BASE_DIR, 'data', 'tennis', 'raw', 'atp_raw_matches.csv')
@@ -69,7 +72,7 @@ def load_data():
     df = pd.concat(frames, ignore_index=True)
     df['tourney_date'] = pd.to_datetime(df['tourney_date'], errors='coerce')
     df = df.dropna(subset=['tourney_date', 'player_id'])
-    df = df.sort_values(['player_id', 'tourney_date']).reset_index(drop=True)
+    df = df.sort_values(['tour', 'player_id', 'tourney_date']).reset_index(drop=True)
 
     # Drop retired matches from TARGETS — partial stats skew the model
     df = df[df['retired'] == 0].copy()
@@ -113,61 +116,68 @@ def add_context_features(df):
 # ROLLING AVERAGES (player's own recent form)
 # ---------------------------------------------------------------------------
 
+def _prior_mean(df, stat, keys, window=None, min_periods=1, eligible=None):
+    """Pre-tournament snapshot using strictly earlier tournament-start dates.
+
+    Match numbers are identities, not timestamps. Outcomes become eligible only when their tournament start plus 21 days
+    is strictly earlier than the prediction tournament start. Same-date outcomes
+    are never available to one another. A trailing match window includes the entire oldest
+    date bucket at its boundary (so it can exceed N matches), avoiding arbitrary
+    ordering within a date. These are NOT true match-time/live features: the 21-day lag is a conservative research assumption, not proof of
+    completion. Real completion timestamps are required before production activation.
+    """
+    result = np.full(len(df), np.nan)
+    work = df.reset_index(drop=True)
+    dates = pd.to_datetime(work['tourney_date'], errors='coerce')
+    if dates.isna().any() or work[keys].isna().any().any():
+        raise ValueError('Tennis history requires valid tour/player/date identity')
+    mask = np.ones(len(work), dtype=bool) if eligible is None else np.asarray(eligible, dtype=bool)
+    values = pd.to_numeric(work[stat], errors='coerce')
+    for _, indices in work.groupby(keys, sort=False).indices.items():
+        idx = np.asarray(indices)
+        history = pd.DataFrame({'date': dates.iloc[idx].to_numpy(),
+                                'value': values.iloc[idx].where(mask[idx]).to_numpy(),
+                                'eligible': mask[idx].astype(int)})
+        buckets = history.groupby('date', sort=True).agg(
+            total=('value', 'sum'), count=('value', 'count'), rows=('eligible', 'sum'))
+        totals = np.r_[0., buckets.total.cumsum().to_numpy()]
+        counts = np.r_[0, buckets['count'].cumsum().to_numpy()]
+        rows = np.r_[0, buckets.rows.cumsum().to_numpy()]
+        right = buckets.index.searchsorted(
+            buckets.index - pd.Timedelta(days=HISTORY_AVAILABILITY_LAG_DAYS), side='left')
+        left = np.zeros(len(buckets), dtype=int)
+        if window is not None:
+            left = np.searchsorted(rows, np.maximum(rows[right] - window, 0), side='right') - 1
+            left = np.minimum(left, right)
+        n = counts[right] - counts[left]
+        means = np.divide(totals[right] - totals[left], n,
+                          out=np.full(len(n), np.nan), where=n >= min_periods)
+        result[idx] = pd.Series(means, index=buckets.index).reindex(dates.iloc[idx]).to_numpy()
+    return pd.Series(result, index=df.index)
+
+
 def add_rolling_features(df):
-    print("...Calculating rolling averages (L5, L20, Season)")
     df = df.copy()
-
-    stats_to_roll = TARGET_STATS + ['won_match', 'sets_won', 'bp_faced', 'svpt', 'svc_games']
-
-    grouped = df.groupby('player_id')
-    rolling_data = {}
-
-    for stat in stats_to_roll:
-        if stat not in df.columns:
+    stats = TARGET_STATS + ['won_match', 'sets_won', 'bp_faced', 'svpt', 'svc_games']
+    features = {}
+    for stat in stats:
+        if stat not in df:
             continue
-        # Shift(1) prevents leakage — current match not included
-        s = grouped[stat].transform(lambda x: x.shift(1))
-        rolling_data[f'{stat}_L5']     = s.groupby(df['player_id']).transform(lambda x: x.rolling(5,  min_periods=3).mean())
-        rolling_data[f'{stat}_L20']    = s.groupby(df['player_id']).transform(lambda x: x.rolling(20, min_periods=10).mean())
-        rolling_data[f'{stat}_Season'] = grouped[stat].transform(lambda x: x.shift(1).expanding(min_periods=1).mean())
+        for suffix, window, minimum in [('L5', 5, 3), ('L20', 20, 10), ('Season', None, 1)]:
+            features[f'{stat}_{suffix}'] = _prior_mean(
+                df, stat, ['tour', 'player_id'], window, minimum)
+    return pd.concat([df, pd.DataFrame(features, index=df.index)], axis=1)
 
-    df = pd.concat([df, pd.DataFrame(rolling_data, index=df.index)], axis=1)
-    return df
-
-
-# ---------------------------------------------------------------------------
-# SURFACE-SPECIFIC ROLLING AVERAGES
-# ---------------------------------------------------------------------------
 
 def add_surface_rolling(df):
-    """
-    Rolling averages split by surface.
-    E.g. aces_hard_L10 = player's avg aces on hard courts, last 10 matches.
-    Critical because clay/hard/grass produce very different stats.
-    """
-    print("...Calculating surface-split rolling averages")
-    df = df.copy()
-    key_stats = ['aces', 'double_faults', 'total_games', 'games_won', 'bp_won']
-
-    surface_rolling = {}
+    """Last 10 surface matches, with whole-date boundaries; see _prior_mean."""
+    features = {}
     for surf in ['Hard', 'Clay', 'Grass']:
-        mask = df['surface'] == surf
-        surf_key = surf.lower()
-
-        for stat in key_stats:
-            if stat not in df.columns:
-                continue
-            col_name = f'{stat}_{surf_key}_L10'
-            # Fill non-matching surface rows with NaN, then forward-fill within player
-            stat_on_surf = df[stat].where(mask)
-            surface_rolling[col_name] = (
-                df.groupby('player_id')[stat]
-                  .transform(lambda x: x.where(df.loc[x.index, 'surface'] == surf)
-                                        .shift(1).rolling(10, min_periods=3).mean())
-            )
-
-    df = pd.concat([df, pd.DataFrame(surface_rolling, index=df.index)], axis=1)
-    return df
+        for stat in ['aces', 'double_faults', 'total_games', 'games_won', 'bp_won']:
+            if stat in df:
+                features[f'{stat}_{surf.lower()}_L10'] = _prior_mean(
+                    df, stat, ['tour', 'player_id'], 10, 3, df['surface'].eq(surf))
+    return pd.concat([df.copy(), pd.DataFrame(features, index=df.index)], axis=1)
 
 
 # ---------------------------------------------------------------------------
@@ -236,185 +246,64 @@ def add_opponent_surface_context(df):
 # FATIGUE / SCHEDULE FEATURES
 # ---------------------------------------------------------------------------
 
+def _prior_schedule(df):
+    """Lagged start-date proxies, NOT actual fatigue/rest. With a 21-day lag
+    matches_L14D is necessarily zero; no recent completion history is known."""
+    work = df.reset_index(drop=True)
+    dates = pd.to_datetime(work['tourney_date'], errors='coerce')
+    if dates.isna().any() or work[['tour', 'player_id']].isna().any().any():
+        raise ValueError('Tennis history requires valid tour/player/date identity')
+    career = np.zeros(len(df), dtype=int)
+    rest = np.full(len(df), 14., dtype=float)
+    recent = np.zeros(len(df), dtype=int)
+    for _, indices in work.groupby(['tour', 'player_id'], sort=False).indices.items():
+        idx = np.asarray(indices)
+        buckets = dates.iloc[idx].value_counts().sort_index()
+        d = buckets.index
+        cumulative = np.r_[0, buckets.cumsum().to_numpy()]
+        available = d.searchsorted(d - pd.Timedelta(days=HISTORY_AVAILABILITY_LAG_DAYS), side='left')
+        past = cumulative[available]
+        left = d.searchsorted(d - pd.Timedelta(days=14), side='right')
+        recent_counts = past - cumulative[np.minimum(left, available)]
+        previous = pd.Series(pd.NaT, index=d, dtype=d.dtype)
+        has_history = available > 0
+        previous.loc[has_history] = d[available[has_history] - 1].to_numpy()
+        days_rest = (pd.Series(d, index=d) - previous).dt.days.clip(upper=30).fillna(14)
+        career[idx] = pd.Series(past, index=d).reindex(dates.iloc[idx]).to_numpy()
+        recent[idx] = pd.Series(recent_counts, index=d).reindex(dates.iloc[idx]).to_numpy()
+        rest[idx] = days_rest.reindex(dates.iloc[idx]).to_numpy()
+    return career, rest, recent
+
+
 def add_fatigue_features(df):
-    print("...Adding fatigue & schedule features")
-
-    df = df.sort_values(['player_id', 'tourney_date'])
-
-    # Days since last match
-    df['prev_match_date'] = df.groupby('player_id')['tourney_date'].shift(1)
-    df['days_rest'] = (df['tourney_date'] - df['prev_match_date']).dt.days.clip(upper=30).fillna(14)
-
-    # Matches in last 14 days
-    def matches_in_window(group, days=14):
-        dates = group['tourney_date'].values
-        result = []
-        for i, d in enumerate(dates):
-            cutoff = d - pd.Timedelta(days=days)
-            count  = np.sum((dates[:i] > cutoff) & (dates[:i] < d))
-            result.append(count)
-        return pd.Series(result, index=group.index)
-
-    df['matches_L14D'] = df.groupby('player_id', group_keys=False).apply(matches_in_window)
-
-    # Is this a back-to-back day (within tournament)?
+    df = df.copy()
+    _, df['days_rest'], df['matches_L14D'] = _prior_schedule(df)
     df['is_b2b'] = (df['days_rest'] <= 1).astype(int)
-
-    df.drop(columns=['prev_match_date'], inplace=True)
     return df
 
 
-# ---------------------------------------------------------------------------
-# H2H FEATURES
-# ---------------------------------------------------------------------------
-
 def add_h2h_features(df):
-    """
-    Head-to-head history between player and specific opponent.
-    Uses only PRIOR matches to avoid leakage.
-    """
-    print("...Calculating H2H features")
     df = df.copy()
-    df = df.sort_values(['player_id', 'opp_id', 'tourney_date'])
-
-    df['h2h_key'] = df.apply(
-        lambda r: '_'.join(sorted([str(r['player_id']), str(r['opp_id'])])), axis=1
-    )
-
-    # Win rate in prior H2H
-    df['h2h_win_rate'] = (
-        df.groupby(['player_id', 'opp_id'])['won_match']
-          .transform(lambda x: x.shift(1).expanding(min_periods=1).mean())
-          .fillna(0.5)
-    )
-
-    # Avg games in prior H2H (match length predictor)
-    df['h2h_avg_games'] = (
-        df.groupby(['h2h_key'])['total_games']
-          .transform(lambda x: x.shift(1).expanding(min_periods=1).mean())
-          .fillna(df['total_games'].mean())
-    )
-
-    df.drop(columns=['h2h_key'], inplace=True)
+    # Directed pair avoids counting reciprocal rows twice and never mixes tours.
+    keys = ['tour', 'player_id', 'opp_id']
+    df['h2h_win_rate'] = _prior_mean(df, 'won_match', keys).fillna(0.5)
+    # No full-dataset fallback: unseen H2H remains missing, never future-informed.
+    df['h2h_avg_games'] = _prior_mean(df, 'total_games', keys)
     return df
 
 
 def add_rank_bracket_performance(df):
-    """
-    Calculate rolling win rate and stats against specific rank brackets:
-    - Vs Top 20
-    - Vs Top 50
-    - Vs Top 100
-    Addresses: "How they have performed against a similar player in that ranking"
-    """
-    print("...Calculating performance vs Rank Brackets (Top 20/50/100)")
     df = df.copy()
-    
-    # Pre-calculate opponent rank buckets for every match
-    # active_opp_rank is the rank of the OPPONENT in that match
-    # We want to know: when I played a Top 20 guy, did I win?
-    
-    brackets = [20, 50, 100]
-    
-    # We need to shift(1) to avoid leakage (prior matches only)
-    # Group by player
-    grouped = df.sort_values(['player_id', 'tourney_date']).groupby('player_id')
-    
-    for b in brackets:
-        # 1. Flag matches where opponent was in this bracket
-        is_in_bracket = (df['opp_rank'] <= b)
-        
-        # 2. Calculate rolling win rate in these specific matches
-        # We only care about rows where the opponent WAS in the bracket
-        # But we need to map it back to the current row index
-        
-        # Create a series where we have values only for relevant matches
-        # won_match = 1 or 0. If opp not in bracket, set to NaN so it's ignored by rolling?
-        # No, rolling ignores NaNs? Yes.
-        
-        relevant_wins = df['won_match'].where(is_in_bracket)
-        
-        # Rolling mean of wins against this bracket
-        # We need to shift FIRST, then roll.
-        # But rolling on a series with NaNs (skipped matches) works if we use min_periods?
-        # Actually, we want the last N matches *against this bracket*.
-        
-        # Method: 
-        # 1. Filter to just matches vs Top X
-        # 2. Calculate rolling stats on that filtered df
-        # 3. Merge back to main df by (player_id, date)
-        
-        # Filter:
-        vs_bracket = df[df['opp_rank'] <= b].copy()
-        if vs_bracket.empty:
-            continue
-            
-        vs_bracket = vs_bracket.sort_values(['player_id', 'tourney_date'])
-        
-        # Calculate rolling win rate (L10 matches vs this bracket)
-        # Shift 1 to exclude current match
-        vs_bracket[f'win_rate_vs_top{b}'] = (
-            vs_bracket.groupby('player_id')['won_match']
-            .transform(lambda x: x.shift(1).rolling(10, min_periods=1).mean())
-        )
-        
-        # Merge back
-        # We need the most recent value for the player as of this date
-        # Forward fill? 
-        # Actually, standard merge on player/date will only populate rows where the CURRENT opp is top X.
-        # But we want to know my history vs Top X *regardless* of who I'm playing today?
-        # "How does he perform vs Top 20?" is a feature of the PLAYER, valid for ANY match.
-        
-        # Correct approach:
-        # 1. Calculate the running 'Vs Top X' stats for every match the player played
-        #    (carrying forward the last known value)
-        
-        # Let's iterate players? Slow.
-        # Vectorized:
-        # Create a 'win_vs_topX' column (1/0/NaN).
-        col_name = f'win_vs_top{b}_L10'
-        
-        # Mask: 1 if Won & Opp<=X, 0 if Lost & Opp<=X, NaN otherwise
-        wins_vs_bracket = df['won_match'].where(df['opp_rank'] <= b)
-        
-        # We want the rolling mean of the valid values (ignoring NaNs), 
-        # but we want the result available on EVERY row.
-        # Pandas rolling() counts NaNs in the window size (step-wise), unless using time-based?
-        # No, we want "Last 10 matches against Top 20".
-        # This is hard to vectorize perfectly without complex indirection.
-        
-        # Approximation: 
-        # Rolling Global L50, filtered? No.
-        
-        # Alternative: Cumulative stats (easier). 
-        # expanding().mean() of wins_vs_bracket?
-        
-        # Let's implement Expanding Mean (Career Win % vs Top 20)
-        # This is a strong signal. "Career win rate vs Top 20".
-        
-        # Group by player, transforming the wins_vs_bracket series
-        # We use a custom expanding mean that skips NaNs
-        # shift(1) is crucial
-        
-        df[f'career_win_pct_vs_top{b}'] = (
-            grouped['won_match']
-            .apply(lambda x: x.where(df.loc[x.index, 'opp_rank'] <= b).shift(1).expanding().mean())
-            .reset_index(level=0, drop=True)
-        ).fillna(0)  # Default to 0 if no history
-        
-        # Also Last 5 matches vs Top X? Harder to vectorize. 
-        # Let's stick to Career Win % vs Bracket for now - robust and significant.
-    
+    for bracket in [20, 50, 100]:
+        df[f'career_win_pct_vs_top{bracket}'] = _prior_mean(
+            df, 'won_match', ['tour', 'player_id'],
+            eligible=df['opp_rank'].le(bracket)).fillna(0)
     return df
 
 
-# ---------------------------------------------------------------------------
-# CAREER / EXPERIENCE FEATURES
-# ---------------------------------------------------------------------------
-
 def add_career_features(df):
-    print("...Adding career/experience features")
-    df['career_matches'] = df.groupby('player_id').cumcount() + 1
+    df = df.copy()
+    df['career_matches'], _, _ = _prior_schedule(df)
     df['is_early_career'] = (df['career_matches'] < 30).astype(int)
     return df
 
@@ -446,15 +335,8 @@ def finalize_dataset(df):
 # PIPELINE
 # ---------------------------------------------------------------------------
 
-def build_features():
-    print("=" * 55)
-    print("   🎾 TENNIS FEATURE ENGINEERING")
-    print("=" * 55)
-
-    df = load_data()
-    if df is None:
-        return
-
+def transform_features(df):
+    """Transform history and upcoming NaN-target rows without dropping fixtures."""
     df = add_context_features(df)
     df = add_rolling_features(df)
     df = add_surface_rolling(df)
@@ -464,6 +346,20 @@ def build_features():
     df = add_h2h_features(df)
     df = add_rank_bracket_performance(df)  # NEW
     df = add_career_features(df)
+    df['feature_contract_version'] = FEATURE_CONTRACT_VERSION
+    return df
+
+
+def build_features():
+    print("=" * 55)
+    print("   🎾 TENNIS FEATURE ENGINEERING")
+    print("=" * 55)
+
+    df = load_data()
+    if df is None:
+        return
+
+    df = transform_features(df)
     df = finalize_dataset(df)
 
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)

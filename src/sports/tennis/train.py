@@ -18,16 +18,16 @@ Usage:
 
 import pandas as pd
 import numpy as np
-import xgboost as xgb
 import os
 import csv
 from datetime import datetime
 from sklearn.metrics import mean_absolute_error, r2_score
+from src.sports.tennis.validation import chronological_masks
 
 # --- CONFIGURATION ---
 BASE_DIR   = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 DATA_FILE  = os.path.join(BASE_DIR, 'data',   'tennis', 'processed', 'training_dataset.csv')
-MODEL_DIR  = os.path.join(BASE_DIR, 'models', 'tennis')
+MODEL_DIR  = os.path.join(BASE_DIR, 'models', 'tennis', 'research_v2')
 
 # Hold out the last 10% of matches (by date) as the test set.
 # This is robust regardless of when the data ends — no hardcoded dates.
@@ -88,6 +88,7 @@ for stat in ['total_games', 'games_won', 'aces', 'double_faults', 'bp_won', 'bp_
 
 
 def train_and_evaluate():
+    import xgboost as xgb
     print("=" * 55)
     print("   🎾 TENNIS MODEL TRAINING")
     print("=" * 55)
@@ -102,14 +103,11 @@ def train_and_evaluate():
     df = df.dropna(subset=['tourney_date'])
     df = df.sort_values('tourney_date').reset_index(drop=True)
 
-    # --- Dynamic time-based split (last 10% of rows by date) ---
-    split_idx      = int(len(df) * (1 - TEST_FRACTION))
-    split_date     = df.iloc[split_idx]['tourney_date']
-    test_start_str = split_date.strftime('%Y-%m-%d')
-
-    print(f"Loaded {len(df):,} rows for training")
-    print(f"Train: before {test_start_str}  ({split_idx:,} rows)")
-    print(f"Test:  {test_start_str} → {df['tourney_date'].max().date()}  ({len(df) - split_idx:,} rows)\n")
+    from src.sports.tennis.features import FEATURE_CONTRACT_VERSION
+    if 'feature_contract_version' not in df or not df['feature_contract_version'].eq(FEATURE_CONTRACT_VERSION).all():
+        raise ValueError('Rebuild tennis features: legacy data can leak match outcomes')
+    _, _, split_date = chronological_masks(df, test_fraction=TEST_FRACTION)
+    print(f"Loaded {len(df):,} rows; held-out dates from {split_date.date()}")
 
     os.makedirs(MODEL_DIR, exist_ok=True)
     metrics_path = os.path.join(MODEL_DIR, 'model_metrics.csv')
@@ -133,10 +131,9 @@ def train_and_evaluate():
         X = df_model[available_features].fillna(0)
         y = df_model[target]
 
-        # Re-compute split index per-target (some targets have fewer rows)
-        t_split    = int(len(df_model) * (1 - TEST_FRACTION))
-        train_mask = df_model.index < t_split
-        test_mask  = df_model.index >= t_split
+        dates = pd.to_datetime(df_model['tourney_date'], utc=True)
+        train_mask = dates + pd.Timedelta(days=21) < split_date
+        test_mask = dates >= split_date
 
         X_train, y_train = X[train_mask], y[train_mask]
         X_test,  y_test  = X[test_mask],  y[test_mask]
@@ -175,15 +172,14 @@ def train_and_evaluate():
         mae   = mean_absolute_error(y_test, preds)
         r2    = r2_score(y_test, preds)
 
-        # Directional accuracy vs line (over/under the line value)
-        # Use test-set mean as proxy for "the line"
+        # Diagnostic relative to TRAIN mean, NOT betting-line accuracy.
         target_mean = float(y_train.mean())
         dir_correct = (
             np.sum((preds > target_mean) == (y_test.values > target_mean))
             / len(y_test) * 100
         )
 
-        print(f"   MAE: {mae:.3f} | R²: {r2:.3f} | Dir Acc: {dir_correct:.1f}%")
+        print(f"   MAE: {mae:.3f} | R²: {r2:.3f} | Train-mean diagnostic: {dir_correct:.1f}%")
 
         model_path = os.path.join(MODEL_DIR, f'{target}_model.json')
         model.save_model(model_path)
@@ -195,7 +191,9 @@ def train_and_evaluate():
             'test_rows':    len(X_test),
             'mae':          round(mae, 4),
             'r2':           round(r2, 4),
-            'dir_accuracy': round(dir_correct, 2),
+            'train_mean_direction_accuracy': round(dir_correct, 2),
+            'feature_contract_version': FEATURE_CONTRACT_VERSION,
+            'holdout_start': str(split_date.date()),
             'trained_at':   datetime.now().strftime('%Y-%m-%d %H:%M'),
         })
 
@@ -212,10 +210,10 @@ def train_and_evaluate():
     print(f"{'TARGET':<22} {'MAE':>6} {'R²':>6} {'DIR%':>7}")
     print("-" * 45)
     for m in all_metrics:
-        print(f"{m['target']:<22} {m['mae']:>6.3f} {m['r2']:>6.3f} {m['dir_accuracy']:>6.1f}%")
+        print(f"{m['target']:<22} {m['mae']:>6.3f} {m['r2']:>6.3f} {m['train_mean_direction_accuracy']:>6.1f}%")
     print("=" * 55)
     print("✅  TRAINING COMPLETE")
-    print("   Next step: Run scanner.py to make predictions.")
+    print("   Research artifacts only: legacy scanner is incompatible; no live activation.")
 
 
 if __name__ == "__main__":
