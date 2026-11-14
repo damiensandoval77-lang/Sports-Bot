@@ -94,3 +94,13 @@ test("pregame observations cannot erase an existing fresh live player snapshot",
  const result=L.mergeFeeds(old,feed,NOW);
  assert.equal(result.games[0].state,"in");assert.equal(result.games[0].player_rows.length,1);
 });
+test("real live and final scoreboard observations override preserved pregame status",()=>{
+ const pre=L.build(NOW-1000,[event("7","pre","A","B","0","0")],{});
+ const schedule={games:[{id:"7",game:"A @ B",start:"2026-11-11T01:00:00Z"}]};
+ for(const st of ["in","post"]){
+  const next=L.build(NOW,[event("7",st,"A","B","35","33")],{});
+  const [g]=m.gameCatalog(L.mergeFeeds(pre.feed,next.feed,NOW),null,schedule,null,NOW,L.mergeScores(pre.board,next.board,NOW));
+  assert.equal(g.state,st==="in"?"in":"final");
+  assert.equal(g.awayScore,35);assert.equal(g.homeScore,33);assert.equal(g.players.length,0);
+ }
+});
