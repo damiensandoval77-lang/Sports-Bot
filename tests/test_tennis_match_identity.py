@@ -25,6 +25,12 @@ class MatchIdentityTests(unittest.TestCase):
         a=self.rows(); b=a.copy(); b['tour']='wta'; b['aces_L5']+=100
         result=add_opponent_features(pd.concat([a,b]))
         self.assertEqual(result.opp_aces_L5.tolist(),[20,10,30,11,120,110,130,111])
+    def test_missing_reciprocal_does_not_match_other_game(self):
+        rows=self.rows().iloc[[0,2,3]].copy()
+        actual=add_opponent_features(rows)
+        self.assertEqual(len(actual),3)
+        self.assertTrue(pd.isna(actual.opp_aces_L5.iloc[0]))
+        self.assertEqual(actual.opp_aces_L5.iloc[1:].tolist(),[30,11])
     def test_builder_preserves_match_num(self):
         rows=expand_to_player_rows(pd.DataFrame([dict(match_num=17,score='6-4 6-3',winner_id=1,loser_id=2)]),'atp')
         self.assertEqual(rows.match_num.tolist(),[17,17])
