@@ -15,6 +15,27 @@ def site(start=None,snapshot=None,ledger=None,model=None):
             "nba_scoreboard_independent.json":{},"nba_player_tracking_independent.json":{}}
 def stage(r,name):return next(x for x in r["stages"] if x["stage"]==name)
 class Heartbeat(unittest.TestCase):
+    def test_quote_freshness_matches_sixty_minute_contract(self):
+        for seconds,expected in ((0,"OK"),(3599,"OK"),(3600,"OK"),(3601,"WARN"),(4800,"WARN")):
+            s=site();s["prizepicks.json"]["generated_at"]=time(seconds=-seconds)
+            row=stage(evaluate(NOW,s),"lines_fresh")
+            self.assertEqual(row["status"],expected,seconds)
+            self.assertEqual(row["evidence"]["max_age_minutes"],60)
+            self.assertIsNone(row["recovery_workflow"])
+
+    def test_invalid_quote_time_warns_without_provider_dispatch(self):
+        for value in (None,"broken",42,time(seconds=1),"2026-11-11T23:29:00"):
+            s=site();s["prizepicks.json"]["generated_at"]=value
+            row=stage(evaluate(NOW,s),"lines_fresh")
+            self.assertEqual(row["status"],"WARN",value)
+            self.assertIsNone(row["evidence"]["age_minutes"])
+            self.assertIsNone(row["recovery_workflow"])
+
+    def test_fresh_publisher_does_not_relabel_stale_provider_quotes(self):
+        s=site();s["prizepicks.json"]["generated_at"]=time(minutes=-80)
+        s["prizepicks_site.json"]["generated_at"]=time(minutes=-1)
+        self.assertEqual(stage(evaluate(NOW,s),"lines_fresh")["status"],"WARN")
+
     def test_future_live_observations_do_not_count_as_fresh(self):
         s=site(start=time(minutes=-30))
         s["nba_scoreboard_independent.json"]={"generated_at":time(hours=24),

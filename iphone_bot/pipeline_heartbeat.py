@@ -6,6 +6,7 @@ import urllib.request
 from pathlib import Path
 from zoneinfo import ZoneInfo
 ET = ZoneInfo("America/New_York")
+NBA_QUOTE_TTL_MINUTES = 60
 
 SITE="https://damiensandoval77-lang.github.io/Sports-Bot"
 FILES=["prizepicks.json","prizepicks_site.json","lagged_matchup_all_market_ledger.json",
@@ -73,11 +74,19 @@ def evaluate(now,site,espn=None):
                      provider_generated_at=pp.get("generated_at"),
                      published_at=published.get("source_generated_at") or published.get("generated_at"),
                      lag_minutes=lag))
-    a=age(now,pp.get("generated_at"))
-    stale_source=bool(pretip and (a is None or a>240))
+    # Quote freshness shares the 60-minute readiness/UI contract. A naive,
+    # missing or future quote timestamp cannot establish fresh availability.
+    raw_quote_time=pp.get("generated_at")
+    try:
+        quote_time=dt.datetime.fromisoformat(raw_quote_time.replace("Z","+00:00"))
+        a=((now-quote_time).total_seconds()/60
+           if quote_time.tzinfo is not None and quote_time<=now else None)
+    except (AttributeError,TypeError,ValueError):
+        a=None
+    stale_source=bool(pretip and (a is None or a>NBA_QUOTE_TTL_MINUTES))
     out.append(check("lines_fresh","WARN" if stale_source else "OK",
                      "Source line age; paid provider refresh is alert-only",
-                     age_minutes=a,upcoming=len(pretip)))
+                     age_minutes=a,max_age_minutes=NBA_QUOTE_TTL_MINUTES,upcoming=len(pretip)))
     board=[v for d in (pp,published) for v in d.get("board_offers",[])
            if isinstance(v,dict) and v.get("game")
            and v.get("more_tier")=="standard" and v.get("less_tier")=="standard"]
