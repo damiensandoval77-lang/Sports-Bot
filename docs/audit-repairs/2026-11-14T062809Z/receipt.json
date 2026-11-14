@@ -1,0 +1,148 @@
+{
+  "status": "PARTIAL",
+  "start": "2026-11-14T06:28:09Z",
+  "pinned_main": "2b3195df2742936b903379fccc5440d9a81dd844",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "new_code_changes": 0,
+  "new_prs": [],
+  "open_prs_at_start": 0,
+  "findings": [
+    {
+      "id": "DEPLOY-OIDC",
+      "severity": "high",
+      "root_cause": "GitHub ID-token request timeout in native Pages deployment",
+      "failed_run": 43566320706,
+      "failed_job": 132360917029,
+      "action": "Rerun failed deployment job",
+      "recovery_job": 132361522904,
+      "result": "SUCCESS; public site and JSON HTTP200; recurring legacy Pages race remains unresolved"
+    },
+    {
+      "id": "CURRENT-COVERAGE",
+      "severity": "high",
+      "root_cause": "Four of five upcoming games have no captured provider quote; two Egor Demin markets excluded by trained primary model for insufficient player opportunity history",
+      "count_missing_primary": 2,
+      "markets": [
+        "PTS8.5",
+        "PRA13.5"
+      ],
+      "action": "Inspected model source, source-coverage receipt, research receipts and current frozen records; maintained minimum-history and immutable capture safeguards",
+      "result": "BLOCKED_INPUT_COVERAGE; research forecasts not promoted to primary"
+    },
+    {
+      "id": "RELEASE-SNAPSHOT",
+      "severity": "medium",
+      "root_cause": "Latest published release gate predates completed grading",
+      "action": "Rerun existing release gate against latest main",
+      "run": 43563351440,
+      "job": 132362130417,
+      "result": "Grading now READY; overall DEGRADED due current quote/capture/model coverage. Expected failure retained."
+    },
+    {
+      "id": "HISTORICAL-CAPTURE",
+      "severity": "high",
+      "root_cause": "Prior-day60 exact standard quote thresholds lack original primary receipts",
+      "result": "IRRECOVERABLE_MISSING_PRETIP_EVIDENCE; cannot turn posttip inference into historical predictions"
+    },
+    {
+      "id": "PAGES-CONCURRENCY",
+      "severity": "high",
+      "root_cause": "Legacy branch Pages deployment cancels amid data commits",
+      "result": "ADMINISTRATION_BLOCKED; connector excludes Pages settings; previous signed-out browser fallback unsuccessful",
+      "required_action": "Repository owner Settings > Pages > Source GitHub Actions; verify existing controlled workflow afterward"
+    }
+  ],
+  "verification": {
+    "python_tests_passed": 96,
+    "source_branch_heads": 446,
+    "historical_pr_tips": 445,
+    "source_blobs": 2004,
+    "branch_syntax_failures": 0,
+    "workflow_definitions": 176,
+    "recent_runs": 200,
+    "recent_results": {
+      "success": 116,
+      "cancelled": 60,
+      "failure": 23,
+      "waiting": 1
+    },
+    "sampled_workflow_definitions": 48,
+    "workflow_history_exceptions": 128,
+    "static_errors": 0,
+    "static_warnings": 45,
+    "mutable_action_refs": 385
+  },
+  "limitations": [
+    "All branch heads syntax checked, not complete behavioral execution of every historical tip",
+    "No complete dependency advisory or secret-security certification",
+    "Local runtime works, but current model artifact and current_games cache absent; production inference evidence inspected in hosted outputs",
+    "Four games lack provider lines; no paid polling used",
+    "Direct ESPN30-second live freshness not established with no active games",
+    "A guessed nfl_live.json URL404 was corrected to canonical nfl/data/live_2026.json HTTP200; not counted as app defect"
+  ],
+  "production": {
+    "site": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "version": "dp-newest-live-source-20261114-r40",
+    "primary_ledger": {
+      "frozen": 1853,
+      "graded": 1760,
+      "dnp": 64,
+      "pending_upcoming": 29
+    },
+    "nov13_nightly": {
+      "saved": 740,
+      "settled": 711,
+      "void": 29,
+      "pending": 0,
+      "ai_only": 904,
+      "ai_graded": 700,
+      "ai_dnp": 204,
+      "ai_pending": 0
+    },
+    "nov14_slate": {
+      "games": 5,
+      "ai_only": 484,
+      "standard_quotes": 31,
+      "primary_frozen": 29,
+      "games_with_quotes": 1
+    },
+    "NFL": {
+      "season_games": 272,
+      "standard_graded": 135,
+      "pushes": 3,
+      "wins": 52,
+      "decisions": 132,
+      "standard_pending": 0,
+      "alternative_grades_excluded": 932
+    },
+    "live_note": "NBA scoreboard is explicit schedule fallback, not confirmed live. NFL public feed is an older completed WAS-NYG final, not a current active-game feed."
+  },
+  "prior_repairs_not_counted": [
+    "PR442",
+    "PR443",
+    "PR444",
+    "PR445 merged by other repair work before this run"
+  ],
+  "notification_requested": true,
+  "notification_delivery_confirmed": false,
+  "checks_completed_at": "2026-11-14T06:33:16.473140+00:00",
+  "counts": {
+    "finding_categories": 5,
+    "operational_recoveries": 2,
+    "new_code_repairs": 0,
+    "independently_verified_recoveries": 2,
+    "unresolved_categories": 3
+  },
+  "phone_verification": {
+    "job": 132362042261,
+    "run": 43559222952,
+    "at": "2026-11-14T06:32:07Z",
+    "browser": "WebKit",
+    "width": 390,
+    "assertions_passed": 16,
+    "skipped": 0,
+    "visible_cards": 29,
+    "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43559222952/artifacts/14102152878",
+    "physical_phone": false
+  }
+}
