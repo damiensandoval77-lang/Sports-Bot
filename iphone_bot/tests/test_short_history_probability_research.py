@@ -149,3 +149,23 @@ class InvalidProvenanceCaptureTests(unittest.TestCase):
   with patch('iphone_bot.short_history_probability_research.eligibility',return_value={'estimates':[eligible]}),patch('iphone_bot.short_history_probability_research.build_team_games',return_value={}):
    r=capture([],{}, {},primary={},injuries=inj,news={},free_watch={},now=NOW)
    self.assertEqual(r['records'],[]);self.assertEqual(r['excluded']['INVALID_INJURY_CAPTURE_PROVENANCE'],1)
+
+class VerifiedCacheRecoveryTests(unittest.TestCase):
+ def test_cache_recovers_without_network_and_preserves_receipts(self):
+  import json,tempfile
+  from pathlib import Path
+  receipt={**row(),'player':'Jalen Suggs','team':'ORL','opponent':'MIL','game':'Milwaukee Bucks @ Orlando Magic'}
+  archive={'status':STATUS,'records':[receipt],'outcomes':{}}
+  box={'player':'Jalen Suggs','team':'ORL','opponent':'MIL','date':'2026-11-13','PTS':3,'REB':2,'AST':3,'PRA':8,'MIN':20.9,'source':'NBA_CDN_FINAL','source_game_id':'0022600035','final_confirmed':True}
+  with tempfile.TemporaryDirectory() as d:
+   root=Path(d);(root/'docs').mkdir();path=root/'docs/verified_final_player_cache.json'
+   path.write_text(json.dumps({'version':1,'rows':[box]}))
+   with patch('iphone_bot.short_history_probability_research.ROOT',root),patch('iphone_bot.fetch_final_boxscores.gather') as network:
+    result=settle_pending(archive,'2026-11-14T17:00:00+00:00');network.assert_not_called()
+    self.assertEqual(result['outcomes']['test']['actual'],3)
+    self.assertEqual(result['records'],archive['records']);self.assertEqual(archive['outcomes'],{})
+    self.assertEqual(result['last_outcome_check']['verified_cached_outcomes_recovered'],1)
+   for change in [{'final_confirmed':False},{'PRA':99},{'opponent':'CHI'}]:
+    path.write_text(json.dumps({'version':1,'rows':[{**box,**change}]}))
+    with patch('iphone_bot.short_history_probability_research.ROOT',root),patch('iphone_bot.fetch_final_boxscores.gather',return_value=([],{'status':'NO_FINAL_BOXSCORES_AVAILABLE'})) as network:
+     result=settle_pending(archive,'2026-11-14T17:00:00+00:00');network.assert_called_once();self.assertEqual(result['outcomes'],{})
