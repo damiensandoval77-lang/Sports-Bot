@@ -2553,10 +2553,446 @@
       },
       "archived_at": "2026-11-14T21:02:26.237292+00:00",
       "notice": "Exploratory direct-exceedance probabilities. Not validated betting probabilities, primary picks, or official grades."
+    },
+    {
+      "player": "Danny Wolf",
+      "player_id": "1642874",
+      "team": "BKN",
+      "opponent": "MEM",
+      "game": "Brooklyn Nets @ Memphis Grizzlies",
+      "start": "2026-11-15T01:00:00+00:00",
+      "stat": "PRA",
+      "line": 15.5,
+      "projection": null,
+      "captured_at": "2026-11-14T23:00:23.492483+00:00",
+      "market_updated": "2026-11-14T22:32:05.428000+00:00",
+      "prior_games": 6,
+      "history_dates": [
+        "2026-10-25",
+        "2026-10-30",
+        "2026-11-04",
+        "2026-11-07",
+        "2026-11-08",
+        "2026-11-11"
+      ],
+      "method": "SHORT_HISTORY_DIRECT_MONOTONE_EXCEEDANCE_V1",
+      "cohort": "DIRECT_EXCEEDANCE_RESEARCH_ONLY",
+      "label": "Provisional estimate",
+      "research_only": true,
+      "trained_model": true,
+      "primary_model_eligible": false,
+      "official_grade_eligible": false,
+      "estimated_hit_chance": null,
+      "calibrated_probability": null,
+      "hit_probability": null,
+      "injury_context_status": "NO_REPORTED_OUT",
+      "source": "INDEPENDENTLY_CROSSCHECKED_PLAYER_HISTORY",
+      "pickem_tier": "standard",
+      "standard_line_two_sided_verified": true,
+      "candidate_model": "SHORT_HISTORY_DIRECT_MONOTONE_EXCEEDANCE_V1",
+      "receipt_key": "e660fbc2ebf8268bb63567a58fa045c158f76727840d4d558b968b79eb7399ca",
+      "features": {
+        "history_count": 6,
+        "minutes_mean": 23.747222222222224,
+        "minutes_last3": 32.18888888888889,
+        "minutes_last": 29.433333333333334,
+        "own_possessions": 98.55199999999999,
+        "opponent_possessions": 101.976,
+        "opponent_points_allowed_per100": 112.40483389017093,
+        "PTS_mean": 9.833333333333334,
+        "PTS_last3": 10.333333333333334,
+        "PTS_per_min": 0.4140835185401801,
+        "REB_mean": 6.166666666666667,
+        "REB_last3": 8.0,
+        "REB_per_min": 0.25967949467774004,
+        "AST_mean": 2.1666666666666665,
+        "AST_last3": 2.3333333333333335,
+        "AST_per_min": 0.09123874137326002,
+        "FGA_per_min": 0.28073458884080005,
+        "FTA_per_min": 0.11931220025734003,
+        "TOV_per_min": 0.06316528248918002
+      },
+      "descriptive_baseline_projection": 18.167,
+      "calibrated": false,
+      "historical_improvement_gate_passed": true,
+      "diagnostic_previously_inspected": true,
+      "spec_sha256": "937eb8b9095cdf8c38691b45884001da5d9c5e71aa0821e6606260db479b2d94",
+      "artifact_sha256": "09e7a00fe9bf372635106234d6fbe6cb46f282c8b55ac5ac467c9ab61afe4fac",
+      "code_sha256": {
+        "short_history_direct_capture.py": "e098ad2e42497aa5c0304f37bb2305c1dec9de5b2edb6715ff4f92021dc7a702",
+        "short_history_candidate.py": "6dc9dbef23ca70bd04ce5268758ed0dd182b7f05adb7740c4e85045b961fd605",
+        "expanded_matchup_research.py": "3133aa2a53ad04d3a483c526c98c97411413b8a6f750c924e822088761fd0394",
+        "provisional_short_history.py": "6c58d49dafa9d25bac638122d1b4a257f60fc0e281103d2b7d616e03f76ad756",
+        "short_history_probability_research.py": "cb19e7d75075920746c79f43c7260b83fe778a1c15bbe783d7b3285bd4779e7c",
+        "live_lagged_matchup_sidecar.py": "b09a624e2b5bcd98d16fa2a727bc650bec939391d2cd12457b285b72a0c3f8c6",
+        "live_multimarket_matchup.py": "19aa100f31480efdc0ff1904c7ce6b418c6dd5b39aa6fc04aaf5f8d78a300856"
+      },
+      "library_versions": {
+        "numpy": "2.3.5",
+        "sklearn": "1.8.0",
+        "joblib": "1.5.3",
+        "python": "3.12"
+      },
+      "source_hashes": [
+        {
+          "season": "2022-23",
+          "sha256": "f398a553e4c92216fc2dfc4d25622470c8a62bd8254811fccb3496d4cafc553f",
+          "bytes": 393440,
+          "rows": 25687
+        },
+        {
+          "season": "2023-24",
+          "sha256": "5fff5e5a57dd73ea36b6610c61fb1cb182156ace89e5c8e1c7024427bb9eefc4",
+          "bytes": 405025,
+          "rows": 26095
+        },
+        {
+          "season": "2024-25",
+          "sha256": "a4cc538112a7c4c7a4f42476022726159907ed71fc13cdd9a070c9950c2b50d6",
+          "bytes": 437754,
+          "rows": 26158
+        },
+        {
+          "season": "2025-26",
+          "sha256": "2119a573915ebcd548a290e9d2d9c509921adb85b7e01e570908f423d60cb3a3",
+          "bytes": 445819,
+          "rows": 26648
+        }
+      ],
+      "research_probability_over": 0.4744525547445255,
+      "research_probability_under": 0.5255474452554745,
+      "research_probability_push": 0.0,
+      "research_half_integer_calibrated_map_over": 0.4744525547445255,
+      "raw_direct_exceedance_probability": 0.4471796418649161,
+      "baseline_probability_over": 0.6551724137931034,
+      "baseline_probability_under": 0.3448275862068966,
+      "baseline_probability_push": 0.0,
+      "baseline_half_integer_calibrated_map_over": 0.6551724137931034,
+      "baseline_model": "PRIOR_MEAN_TRAIN2022_2023_RESIDUAL_CAL2024",
+      "observed_context": {
+        "schema_version": 1,
+        "captured_at": "2026-11-14T23:00:23.492483+00:00",
+        "official_report": {
+          "status": "OFFICIAL_NBA_REPORT_VERIFIED",
+          "report_issued_at": "2026-11-14T22:45:00+00:00",
+          "feed_generated_at": "2026-11-14T22:50:09.866949+00:00",
+          "source_pdf": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-14_05_45PM.pdf",
+          "source_page": "https://official.nba.com/nba-injury-report-2026-27-season/",
+          "parsed_feed_sha256": "68f360da2946515217e6221c7cfb89123d89d89f836f04cb46483d8ec0be12a5",
+          "timestamp_order_verified": true,
+          "verified_at_capture": true,
+          "own_reported_statuses": [],
+          "own_status_interpretation": "UNKNOWN_NOT_LISTED",
+          "matched_fixture_rows": [
+            {
+              "player": "Mikel Brown Jr.",
+              "player_id": "1643414",
+              "team": "BKN",
+              "game_date": "2026-11-14",
+              "status": "Probable"
+            },
+            {
+              "player": "Joshua Jefferson",
+              "player_id": "1643538",
+              "team": "BKN",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Ben Saraf",
+              "player_id": "1642879",
+              "team": "BKN",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Nolan Traore",
+              "player_id": "1642849",
+              "team": "BKN",
+              "game_date": "2026-11-14",
+              "status": "Probable"
+            },
+            {
+              "player": "Zach Edey",
+              "player_id": "1641744",
+              "team": "MEM",
+              "game_date": "2026-11-14",
+              "status": "Questionable"
+            },
+            {
+              "player": "Jerami Grant",
+              "player_id": "203924",
+              "team": "MEM",
+              "game_date": "2026-11-14",
+              "status": "Questionable"
+            },
+            {
+              "player": "Ty Jerome",
+              "player_id": "1629660",
+              "team": "MEM",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Scotty Pippen Jr.",
+              "player_id": "1630590",
+              "team": "MEM",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Quinten Post",
+              "player_id": "1642366",
+              "team": "MEM",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            }
+          ]
+        },
+        "input_hash_scope": "Fingerprints only; not complete archived source payloads or proof of original upstream publication time.",
+        "input_sha256": {
+          "news": "121882a1b62049b8b38f4064f2f751ef3b3b4b56b7e0a6a310b766b0209b86b0",
+          "free_watch": "42a319d0480e246f828dff0ed20a6c4c1146dca5934043a71bc0e006aaf91a5b",
+          "market_feed": "9befd874bdd4ee101c01c547e81df1253743f11511f163b6aac1c72262df3623",
+          "current_game_history": "4ce7d38b984f27700f90ebf6b2eca49eddf7f66bb733db2a5aa80c3ea495d172"
+        },
+        "interpretation": "Observed pretip source evidence only; report omission is not AVAILABLE or unrestricted minutes; not a fitted injury adjustment."
+      },
+      "archived_at": "2026-11-14T23:00:23.492483+00:00",
+      "notice": "Exploratory direct-exceedance probabilities. Not validated betting probabilities, primary picks, or official grades."
+    },
+    {
+      "player": "Jordan Poole",
+      "player_id": "1629673",
+      "team": "NOP",
+      "opponent": "DEN",
+      "game": "Denver Nuggets @ New Orleans Pelicans",
+      "start": "2026-11-15T00:00:00+00:00",
+      "stat": "PRA",
+      "line": 15.5,
+      "projection": null,
+      "captured_at": "2026-11-14T23:00:23.492483+00:00",
+      "market_updated": "2026-11-14T22:32:05.428000+00:00",
+      "prior_games": 7,
+      "history_dates": [
+        "2026-10-21",
+        "2026-10-23",
+        "2026-10-24",
+        "2026-10-28",
+        "2026-11-09",
+        "2026-11-11",
+        "2026-11-13"
+      ],
+      "method": "SHORT_HISTORY_DIRECT_MONOTONE_EXCEEDANCE_V1",
+      "cohort": "DIRECT_EXCEEDANCE_RESEARCH_ONLY",
+      "label": "Provisional estimate",
+      "research_only": true,
+      "trained_model": true,
+      "primary_model_eligible": false,
+      "official_grade_eligible": false,
+      "estimated_hit_chance": null,
+      "calibrated_probability": null,
+      "hit_probability": null,
+      "injury_context_status": "NO_REPORTED_OUT",
+      "source": "INDEPENDENTLY_CROSSCHECKED_PLAYER_HISTORY",
+      "pickem_tier": "standard",
+      "standard_line_two_sided_verified": true,
+      "candidate_model": "SHORT_HISTORY_DIRECT_MONOTONE_EXCEEDANCE_V1",
+      "receipt_key": "8b4a098167b593f2f13cc72f9e1da6c54818b001f61102ecdaa565df67d3f9f7",
+      "features": {
+        "history_count": 7,
+        "minutes_mean": 19.926190476190477,
+        "minutes_last3": 25.31111111111111,
+        "minutes_last": 20.716666666666665,
+        "own_possessions": 100.88,
+        "opponent_possessions": 97.248,
+        "opponent_points_allowed_per100": 115.0073538634414,
+        "PTS_mean": 8.285714285714286,
+        "PTS_last3": 11.333333333333334,
+        "PTS_per_min": 0.41582028916238495,
+        "REB_mean": 1.8571428571428572,
+        "REB_last3": 1.6666666666666667,
+        "REB_per_min": 0.09320109929501731,
+        "AST_mean": 2.857142857142857,
+        "AST_last3": 2.6666666666666665,
+        "AST_per_min": 0.14338630660771895,
+        "FGA_per_min": 0.29394192854582385,
+        "FTA_per_min": 0.22941809057235032,
+        "TOV_per_min": 0.05018520731270163
+      },
+      "descriptive_baseline_projection": 13.0,
+      "calibrated": false,
+      "historical_improvement_gate_passed": true,
+      "diagnostic_previously_inspected": true,
+      "spec_sha256": "937eb8b9095cdf8c38691b45884001da5d9c5e71aa0821e6606260db479b2d94",
+      "artifact_sha256": "09e7a00fe9bf372635106234d6fbe6cb46f282c8b55ac5ac467c9ab61afe4fac",
+      "code_sha256": {
+        "short_history_direct_capture.py": "e098ad2e42497aa5c0304f37bb2305c1dec9de5b2edb6715ff4f92021dc7a702",
+        "short_history_candidate.py": "6dc9dbef23ca70bd04ce5268758ed0dd182b7f05adb7740c4e85045b961fd605",
+        "expanded_matchup_research.py": "3133aa2a53ad04d3a483c526c98c97411413b8a6f750c924e822088761fd0394",
+        "provisional_short_history.py": "6c58d49dafa9d25bac638122d1b4a257f60fc0e281103d2b7d616e03f76ad756",
+        "short_history_probability_research.py": "cb19e7d75075920746c79f43c7260b83fe778a1c15bbe783d7b3285bd4779e7c",
+        "live_lagged_matchup_sidecar.py": "b09a624e2b5bcd98d16fa2a727bc650bec939391d2cd12457b285b72a0c3f8c6",
+        "live_multimarket_matchup.py": "19aa100f31480efdc0ff1904c7ce6b418c6dd5b39aa6fc04aaf5f8d78a300856"
+      },
+      "library_versions": {
+        "numpy": "2.3.5",
+        "sklearn": "1.8.0",
+        "joblib": "1.5.3",
+        "python": "3.12"
+      },
+      "source_hashes": [
+        {
+          "season": "2022-23",
+          "sha256": "f398a553e4c92216fc2dfc4d25622470c8a62bd8254811fccb3496d4cafc553f",
+          "bytes": 393440,
+          "rows": 25687
+        },
+        {
+          "season": "2023-24",
+          "sha256": "5fff5e5a57dd73ea36b6610c61fb1cb182156ace89e5c8e1c7024427bb9eefc4",
+          "bytes": 405025,
+          "rows": 26095
+        },
+        {
+          "season": "2024-25",
+          "sha256": "a4cc538112a7c4c7a4f42476022726159907ed71fc13cdd9a070c9950c2b50d6",
+          "bytes": 437754,
+          "rows": 26158
+        },
+        {
+          "season": "2025-26",
+          "sha256": "2119a573915ebcd548a290e9d2d9c509921adb85b7e01e570908f423d60cb3a3",
+          "bytes": 445819,
+          "rows": 26648
+        }
+      ],
+      "research_probability_over": 0.19875776397515527,
+      "research_probability_under": 0.8012422360248448,
+      "research_probability_push": 0.0,
+      "research_half_integer_calibrated_map_over": 0.19875776397515527,
+      "raw_direct_exceedance_probability": 0.18541418105488663,
+      "baseline_probability_over": 0.3709677419354839,
+      "baseline_probability_under": 0.6290322580645161,
+      "baseline_probability_push": 0.0,
+      "baseline_half_integer_calibrated_map_over": 0.3709677419354839,
+      "baseline_model": "PRIOR_MEAN_TRAIN2022_2023_RESIDUAL_CAL2024",
+      "observed_context": {
+        "schema_version": 1,
+        "captured_at": "2026-11-14T23:00:23.492483+00:00",
+        "official_report": {
+          "status": "OFFICIAL_NBA_REPORT_VERIFIED",
+          "report_issued_at": "2026-11-14T22:45:00+00:00",
+          "feed_generated_at": "2026-11-14T22:50:09.866949+00:00",
+          "source_pdf": "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2026-11-14_05_45PM.pdf",
+          "source_page": "https://official.nba.com/nba-injury-report-2026-27-season/",
+          "parsed_feed_sha256": "68f360da2946515217e6221c7cfb89123d89d89f836f04cb46483d8ec0be12a5",
+          "timestamp_order_verified": true,
+          "verified_at_capture": true,
+          "own_reported_statuses": [],
+          "own_status_interpretation": "UNKNOWN_NOT_LISTED",
+          "matched_fixture_rows": [
+            {
+              "player": "DaRon Holmes II",
+              "player_id": "1641747",
+              "team": "DEN",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Ryan Nembhard",
+              "player_id": "1642948",
+              "team": "DEN",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Cam Whitmore",
+              "player_id": "1641715",
+              "team": "DEN",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Malik Dia",
+              "player_id": "1643738",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Available"
+            },
+            {
+              "player": "Bennedict Mathurin",
+              "player_id": "1631097",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Bryce McGowens",
+              "player_id": "1631121",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Yves Missi",
+              "player_id": "1642274",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Available"
+            },
+            {
+              "player": "Trey Murphy III",
+              "player_id": "1630530",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Dejounte Murray",
+              "player_id": "1627749",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            },
+            {
+              "player": "Jaron Pierre Jr.",
+              "player_id": "1643555",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Available"
+            },
+            {
+              "player": "Julian Reese",
+              "player_id": "1642882",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Available"
+            },
+            {
+              "player": "Trendon Watford",
+              "player_id": "1630570",
+              "team": "NOP",
+              "game_date": "2026-11-14",
+              "status": "Out"
+            }
+          ]
+        },
+        "input_hash_scope": "Fingerprints only; not complete archived source payloads or proof of original upstream publication time.",
+        "input_sha256": {
+          "news": "121882a1b62049b8b38f4064f2f751ef3b3b4b56b7e0a6a310b766b0209b86b0",
+          "free_watch": "42a319d0480e246f828dff0ed20a6c4c1146dca5934043a71bc0e006aaf91a5b",
+          "market_feed": "9befd874bdd4ee101c01c547e81df1253743f11511f163b6aac1c72262df3623",
+          "current_game_history": "4ce7d38b984f27700f90ebf6b2eca49eddf7f66bb733db2a5aa80c3ea495d172"
+        },
+        "interpretation": "Observed pretip source evidence only; report omission is not AVAILABLE or unrestricted minutes; not a fitted injury adjustment."
+      },
+      "archived_at": "2026-11-14T23:00:23.492483+00:00",
+      "notice": "Exploratory direct-exceedance probabilities. Not validated betting probabilities, primary picks, or official grades."
     }
   ],
   "outcomes": {},
-  "count": 12,
+  "count": 14,
   "notice": "Exploratory direct-exceedance probabilities. Not validated betting probabilities, primary picks, or official grades.",
   "primary_model_eligible": false,
   "official_grade_eligible": false,
@@ -2574,6 +3010,6 @@
     "verified_cached_outcomes_recovered": 0
   },
   "last_capture_blocker": null,
-  "last_capture_count": 0,
-  "updated_at": "2026-11-14T21:02:32.987985+00:00"
+  "last_capture_count": 8,
+  "updated_at": "2026-11-14T23:00:32.281844+00:00"
 }
