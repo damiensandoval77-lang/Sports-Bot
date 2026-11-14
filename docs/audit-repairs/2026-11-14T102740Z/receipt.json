@@ -1,0 +1,157 @@
+{
+  "status": "PARTIAL",
+  "start": "2026-11-14T10:27:40Z",
+  "end_evidence": "2026-11-14T10:31:40.897281+00:00",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "pinned_main": "18d9ab5d76dc23b2533a588ed411f604040306c1",
+  "app_release": "dp-newest-live-source-20261114-r40",
+  "environment": {
+    "execution_available": true,
+    "github_read": true,
+    "actions_write_verified": true,
+    "paid_calls_used": false,
+    "secret_changes": false
+  },
+  "counts": {
+    "finding_categories": 4,
+    "new_code_defects_confirmed": 0,
+    "code_repairs": 0,
+    "operational_report_refreshes_verified": 1,
+    "unresolved_categories": 3
+  },
+  "inventory": {
+    "active_heads": 447,
+    "historical_pr_tips": 446,
+    "total_refs": 893,
+    "open_prs": 0,
+    "source_blobs": 2008,
+    "syntax_failures": 0,
+    "historical_behavioral_tests": "not exhaustive"
+  },
+  "workflows": {
+    "definitions": 176,
+    "runs_sampled": 200,
+    "success": 127,
+    "cancelled": 49,
+    "failure": 19,
+    "in_progress": 4,
+    "queued": 1,
+    "unrepresented_definitions": 129,
+    "failed_run_logs_inspected": 19,
+    "warnings": 45,
+    "mutable_action_references": 385,
+    "full_matrix": "workflows.md"
+  },
+  "findings": [
+    {
+      "id": "DERIVED-REPORT-FRESHNESS",
+      "severity": "medium",
+      "before": "Public report still included stale provider lines; newer authentic quotes and model output were already committed",
+      "action": "Reran credit-free release gate, rebuilding production and unified reports from latest main",
+      "run": 43573575604,
+      "job": 132419127571,
+      "after": "Public report checked_at 2026-11-14T10:29:58.340227+00:00; source blocker removed, 9/10 required READY; overall DEGRADED",
+      "verification": "public HTTP200 at 10:30:32Z",
+      "result": "REPORT_REFRESH_VERIFIED; no predictive coverage repair claimed"
+    },
+    {
+      "id": "PRIMARY-MODEL-COVERAGE",
+      "severity": "high",
+      "source_files": [
+        "iphone_bot/live_lagged_matchup_sidecar.py",
+        "iphone_bot/offensive_involvement_holdout.py"
+      ],
+      "root_cause": "Insufficient same-team opportunity history; minimum eight games",
+      "player_history_games": {
+        "Egor Demin": 5,
+        "Jaylon Tyson": 7,
+        "Cameron Johnson": 7,
+        "Nic Claxton": 3
+      },
+      "current_offers": 161,
+      "projections": 149,
+      "excluded": 12,
+      "archived_thresholds": 209,
+      "primary_frozen": 193,
+      "unmatched": 16,
+      "missing_with_separate_research": 12,
+      "missing_without_any_ai_receipt": 4,
+      "action": "Inspected and followed already-running free model recovery 43585213521 to completion; all four jobs succeeded, public model timestamp10:27:22Z. Avoided duplicate inference. No weakened history requirements or research promotion.",
+      "result": "BLOCKED_INPUT_HISTORY"
+    },
+    {
+      "id": "LEGACY-PAGES-CANCELLATIONS",
+      "severity": "high",
+      "sample_cancelled_runs": 49,
+      "example_runs": [
+        43585370212,
+        43585380920
+      ],
+      "source": ".github/workflows/pages-controlled.yml",
+      "action": "Checked native deployment state and public convergence. Public model and release reports reached site; recurring cancellation cause remains.",
+      "result": "ADMINISTRATION_BLOCKER",
+      "required_action": "Owner: repository Settings > Pages > Source > GitHub Actions. Connection lacks Pages administration capability."
+    },
+    {
+      "id": "HISTORICAL-PRETIP-EVIDENCE",
+      "severity": "high",
+      "carried_thresholds": 60,
+      "provenance": "Earlier receipt 2026-11-14T082704Z; not independently rederived this run",
+      "action": "Verified actually captured completed records reconciled; kept absent original forecasts absent",
+      "result": "IRRECOVERABLE_WITHOUT_ORIGINAL_TIMESTAMPED_EVIDENCE"
+    }
+  ],
+  "production": {
+    "nba_games": 5,
+    "games_with_quotes_ai_and_linebacked_forecasts": 5,
+    "ai_only_upcoming": 504,
+    "ledger": {
+      "frozen": 2017,
+      "graded": 1760,
+      "verified_dnp": 64,
+      "pending_upcoming": 193
+    },
+    "nov13": {
+      "saved_quotes": 740,
+      "settled": 711,
+      "void": 29,
+      "pending": 0,
+      "ai_only_saved": 904,
+      "ai_only_graded": 700,
+      "ai_only_dnp": 204
+    },
+    "nfl": {
+      "schedule_games": 272,
+      "standard_graded": 135,
+      "pushes": 3,
+      "decisions": 132,
+      "wins": 52,
+      "standard_pending": 0,
+      "historical_alt_grades_excluded": 932
+    },
+    "required_ready": 9,
+    "required_total": 10,
+    "release_certified": false
+  },
+  "tests": {
+    "targeted_pass": 98,
+    "fresh_webkit_pass": 16,
+    "fresh_webkit_skips": 0,
+    "teardown_error": false,
+    "phone_run": 43585185291,
+    "phone_job": 132418943575,
+    "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43585185291/artifacts/14110720815"
+  },
+  "code_changes": [],
+  "new_prs": [],
+  "limitations": [
+    "129 definitions lack sampled executions; all workflow schedules not certified",
+    "Full behavioral testing of historical branches not completed",
+    "No active game proof of changing 30-second ESPN totals",
+    "Underdog full provider coverage not independently certified",
+    "No full transitive vulnerability audit this run; static mutable references remain",
+    "Initial uncached published JSON lagged newer commits; final cache-busted public responses supersede initial counts",
+    "Mistyped model URL failed; corrected actual URL succeeded"
+  ],
+  "notification_delivery_confirmed": false
+}
