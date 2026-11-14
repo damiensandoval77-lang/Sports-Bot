@@ -64,6 +64,19 @@ class CriticalProductionRepairContracts(unittest.TestCase):
         self.assertIn("github.event_name == 'workflow_dispatch'", gate)
         self.assertIn('inputs.allow_paid_request == true', gate)
 
+    def test_schema_probe_import_and_default_execution_make_no_request(self):
+        from unittest.mock import patch
+        import importlib
+        with patch('urllib.request.urlopen') as request:
+            module=importlib.import_module('iphone_bot.inspect_prizepicks_compact_schema')
+            module.main([])
+        request.assert_not_called()
+        data=load('inspect-prizepicks-compact.yml')
+        triggers=data.get('on',data.get(True,{}))
+        self.assertEqual(set(triggers), {'workflow_dispatch'})
+        self.assertFalse(triggers['workflow_dispatch']['inputs']['allow_paid_request']['default'])
+        self.assertIn('inputs.allow_paid_request == true', data['jobs']['inspect']['if'])
+
     def test_failed_free_workflow_does_not_enforce_cooldown(self):
         text=(WORK/"production_readiness.yml").read_text()
         self.assertIn('.conclusion == "success"',text)

@@ -1,14 +1,17 @@
 name: Inspect PrizePicks compact field shape once
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/inspect_prizepicks_compact_schema.py'
-      - '.github/workflows/inspect-prizepicks-compact.yml'
+  workflow_dispatch:
+    inputs:
+      allow_paid_request:
+        description: 'Explicitly authorize one credit-backed provider request'
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: write
 jobs:
   inspect:
+    if: github.event_name == 'workflow_dispatch' && inputs.allow_paid_request == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -20,7 +23,7 @@ jobs:
       - name: Inspect three real compact rows (no key or player identity output)
         env:
           PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
-        run: python -u iphone_bot/inspect_prizepicks_compact_schema.py
+        run: python -u iphone_bot/inspect_prizepicks_compact_schema.py --allow-paid-request
       - name: Save public-safe field schema
         run: |
           git config user.name 'github-actions[bot]'
