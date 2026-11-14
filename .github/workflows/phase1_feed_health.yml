@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "iphone_bot/health_audit.py"
+      - "iphone_bot/audit_failure_domains.py"
+      - "iphone_bot/tests/test_failure_domain_phase.py"
       - "iphone_bot/tests/test_health_audit.py"
       - ".github/workflows/phase1_feed_health.yml"
   schedule:
@@ -16,6 +18,8 @@ on:
       - "scripts/mobile_board_health.py"
       - "tests/test_mobile_board_health.py"
       - "iphone_bot/health_audit.py"
+      - "iphone_bot/audit_failure_domains.py"
+      - "iphone_bot/tests/test_failure_domain_phase.py"
       - "iphone_bot/slate_matchup_audit.py"
       - "iphone_bot/tests/test_slate_matchup_audit.py"
       - "docs/nba_schedule.json"
@@ -42,14 +46,17 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_health_audit.py' -v
       - name: Test independent matchup coverage
         run: python -m unittest discover -s iphone_bot/tests -p 'test_slate_matchup_audit.py' -v
-      - name: Print exact uncovered NBA matchups
-        if: github.event_name != 'pull_request'
-        run: python iphone_bot/slate_matchup_audit.py
+      - name: Test active app grading and primary-model coverage gates
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_failure_domain_phase.py' -v
       - name: Check published feeds for stale or missing game coverage
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p out
-          python iphone_bot/health_audit.py --output out/feed-health.json
+          # The unified app uses authenticated standard-line captures. The
+          # retired sportsbook data.json is intentionally not refreshed.
+          # Preserve real active-app failures and their JSON even on exit 1.
+          set -o pipefail
+          python -m iphone_bot.audit_failure_domains | tee out/feed-health.json
       - name: Retain feed-health evidence even when unhealthy
         if: always() && github.event_name != 'pull_request'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

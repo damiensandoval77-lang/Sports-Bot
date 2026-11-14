@@ -105,3 +105,32 @@ class NBAGradingCoverageTests(unittest.TestCase):
             with patch.object(audit,"load",side_effect=lambda path: bad if path=="ai_forecast_coverage_audit.json" else original(path)):
                 result=audit.check_artifacts()
             self.assertTrue(any(r["domain"]=="NBA grading" and r["code"]=="GRADE_AUDIT_UNAVAILABLE" and r["level"]=="critical" for r in result["checks"]))
+
+
+class ActiveFeedScopeTests(unittest.TestCase):
+    def test_active_audit_ignores_retired_odds_but_keeps_primary_capture_failure(self):
+        from unittest.mock import patch
+        from iphone_bot import audit_failure_domains as audit
+        original=audit.load
+        loaded=[]
+        def load(path):
+            loaded.append(path)
+            if path=='tonight_capture_gradeability.json':
+                return {'status':'CAPTURE_INCOMPLETE','checked_at':dt.datetime.now(dt.timezone.utc).isoformat(),
+                        'summary':{'total_standard_markets_without_frozen_model':2,
+                                   'total_missing_primary_with_separate_research_receipt':1,
+                                   'total_missing_primary_without_any_ai_receipt':1}}
+            return original(path)
+        with patch.object(audit,'load',side_effect=load):
+            result=audit.check_artifacts()
+        self.assertNotIn('data.json',loaded)
+        self.assertIn('prizepicks_site.json',loaded)
+        self.assertEqual(result['status'],'DEGRADED')
+        self.assertTrue(any(x['code']=='PRIMARY_FROZEN_MODEL_INCOMPLETE' and x['level']=='critical' for x in result['checks']))
+
+    def test_scheduled_gate_preserves_active_failure_exit_and_artifact(self):
+        src=(Path(__file__).resolve().parents[2]/'.github/workflows/phase1_feed_health.yml').read_text()
+        self.assertNotIn('python iphone_bot/health_audit.py --output',src)
+        self.assertIn('set -o pipefail',src)
+        self.assertIn('python -m iphone_bot.audit_failure_domains | tee out/feed-health.json',src)
+        self.assertIn("if: always() && github.event_name != 'pull_request'",src)
