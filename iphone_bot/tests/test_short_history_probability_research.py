@@ -71,13 +71,13 @@ class CaptureTests(unittest.TestCase):
   ctx={t:[('2026-11-01',{'poss':90.},{'PTS':100.,'poss':90.})]*3 for t in ['AAA','BBB']}
   pack={'models':[Model(10),Model(4),Model(2)],'residuals':np.zeros((1000,3)),'maps':{s:Map() for s in ['PTS','REB','AST','PRA']},'baseline_residuals':np.zeros((1000,3)),'baseline_maps':{s:Map() for s in ['PTS','REB','AST','PRA']},'artifact_sha256':'a'*64,'spec_sha256':'b'*64,'source_hashes':[],'library_versions':{}}
   with patch('iphone_bot.short_history_probability_research.eligibility',return_value={'estimates':[eligible]}),patch('iphone_bot.short_history_probability_research.build_team_games',return_value=ctx):
-   a=capture(rs,{},pack,primary={},injuries={},news={},free_watch={},now=NOW)['records'][0]
+   a=capture(rs,{},pack,primary={},injuries={'status':'OFFICIAL_NBA_REPORT_VERIFIED','injury_data_verified':True,'report_issued_at':'2026-11-13T22:30:00+00:00','generated_at':'2026-11-13T22:40:00+00:00'},news={},free_watch={},now=NOW)['records'][0]
    self.assertEqual(a['candidate_projection'],10.);self.assertEqual(a['descriptive_baseline_projection'],3.)
    self.assertEqual(a['features']['PTS_mean'],3.);self.assertEqual(a['line'],10.)
    self.assertEqual(a['baseline_probability_under'],1.);self.assertEqual(a['research_probability_push'],1.);self.assertIsNone(a['research_half_integer_calibrated_map_over'])
    self.assertEqual(a['method'],MODEL);self.assertTrue(a['trained_model']);self.assertFalse(a['primary_model_eligible'])
    pack['artifact_sha256']='c'*64
-   b=capture(rs,{},pack,primary={},injuries={},news={},free_watch={},now=NOW)['records'][0]
+   b=capture(rs,{},pack,primary={},injuries={'status':'OFFICIAL_NBA_REPORT_VERIFIED','injury_data_verified':True,'report_issued_at':'2026-11-13T22:30:00+00:00','generated_at':'2026-11-13T22:40:00+00:00'},news={},free_watch={},now=NOW)['records'][0]
    self.assertNotEqual(a['receipt_key'],b['receipt_key'])
  def test_old_quote_rejected_despite_new_capture(self):
   r=row();r['market_updated']='2026-11-13T22:29:59+00:00'
@@ -117,3 +117,35 @@ class OutcomeRepeatTests(unittest.TestCase):
    a=settle_pending(a,NOW)
    self.assertEqual(settle_pending(a,'2026-11-13T23:01:00+00:00'),a)
 if __name__=='__main__':unittest.main()
+
+class ContextTests(unittest.TestCase):
+ def context(self,inj):
+  from iphone_bot.short_history_probability_research import capture_context,stamp
+  return capture_context({**row(),'opponent':'BBB'},inj,{}, {},{},[],stamp(NOW))
+ def injury(self):
+  return {'status':'OFFICIAL_NBA_REPORT_VERIFIED','injury_data_verified':True,'report_issued_at':'2026-11-13T22:30:00+00:00','generated_at':'2026-11-13T22:40:00+00:00','source_pdf':'https://example.test/report.pdf','players':[{'player_id':'2','team':'AAA','game_date':'2026-11-13','status':'Out'},{'player_id':'3','team':'CCC','game_date':'2026-11-13','status':'Out'}]}
+ def test_absent_is_unknown_not_available(self):
+  c=self.context(self.injury())['official_report']
+  self.assertTrue(c['verified_at_capture']);self.assertEqual(c['own_status_interpretation'],'UNKNOWN_NOT_LISTED');self.assertEqual(c['own_reported_statuses'],[])
+  self.assertEqual(len(c['matched_fixture_rows']),1)
+ def test_future_generated_or_issued_not_verified(self):
+  for field in ['generated_at','report_issued_at']:
+   inj=self.injury();inj[field]='2026-11-13T23:01:00+00:00'
+   self.assertFalse(self.context(inj)['official_report']['verified_at_capture'])
+ def test_explicit_entry_and_deepcopy(self):
+  inj=self.injury();inj['players'].append({'player_id':'1','team':'AAA','game_date':'2026-11-13','status':'Available'})
+  c=self.context(inj);inj['players'][-1]['status']='Out'
+  self.assertEqual(c['official_report']['own_reported_statuses'],['AVAILABLE'])
+  self.assertEqual(c['official_report']['matched_fixture_rows'][-1]['status'],'Available')
+  self.assertNotEqual(c['official_report']['parsed_feed_sha256'],self.context(inj)['official_report']['parsed_feed_sha256'])
+ def test_old_receipt_not_retroactively_enriched(self):
+  a=merge(None,{'records':[row()]},NOW);r={**row(),'capture_context':self.context(self.injury())}
+  self.assertNotIn('capture_context',merge(a,{'records':[r]},NOW)['records'][0])
+
+class InvalidProvenanceCaptureTests(unittest.TestCase):
+ def test_future_feed_blocks_before_probability_model(self):
+  eligible={**row(),'opponent':'BBB'}
+  inj={'status':'OFFICIAL_NBA_REPORT_VERIFIED','injury_data_verified':True,'report_issued_at':'2026-11-13T22:30:00+00:00','generated_at':'2026-11-13T23:01:00+00:00'}
+  with patch('iphone_bot.short_history_probability_research.eligibility',return_value={'estimates':[eligible]}),patch('iphone_bot.short_history_probability_research.build_team_games',return_value={}):
+   r=capture([],{}, {},primary={},injuries=inj,news={},free_watch={},now=NOW)
+   self.assertEqual(r['records'],[]);self.assertEqual(r['excluded']['INVALID_INJURY_CAPTURE_PROVENANCE'],1)
