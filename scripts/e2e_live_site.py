@@ -7,6 +7,7 @@ import sys
 import urllib.request
 from pathlib import Path
 from mobile_board_health import board_rendered
+from mobile_card_scope import BOARD_CARDS, BOARD_GAMES, verify_board_scope
 from stalled_feed_probe import stalled_feed_deadline
 from playwright.sync_api import sync_playwright
 
@@ -61,6 +62,8 @@ def main():
     check("every_deployed_asset_matches_exact_repository_blob",bool(asset_evidence) and all(v["exact_match"] for v in asset_evidence.values()),asset_evidence)
     with sync_playwright() as browser_tool:
         browser=getattr(browser_tool,engine).launch(headless=True,**({"args":["--no-sandbox"]} if engine=="chromium" else {}))
+        check("canary_excludes_retained_hidden_detail_cards",verify_board_scope(browser),
+              {"scope":"isolated synthetic selector regression; not live-site evidence"})
         page=browser.new_page(viewport={"width":390,"height":844},device_scale_factor=2,is_mobile=True,has_touch=True,timezone_id="America/New_York")
         errors=[]
         page.on("pageerror",lambda error:errors.append(str(error)))
@@ -68,14 +71,14 @@ def main():
         page.wait_for_timeout(5000)
         if expected_upcoming_picks:
             try:
-                page.wait_for_function("document.querySelectorAll('button.pick').length > 0", timeout=45000)
+                page.wait_for_function("document.querySelectorAll('#board:not(.hidden) #cards button.pick').length > 0", timeout=45000)
             except Exception:
                 pass  # Record a failed rendering check and screenshot below.
         running=page.evaluate("globalThis.__damesRunningAssets || {}")
         coverage=page.evaluate("(()=>{const x=document.querySelector('#coverage');return {visible:!!x&&!x.hidden&&!!x.textContent,text:x?.textContent||''}})()")
-        cards=page.locator("button.pick").count()
+        cards=page.locator(BOARD_CARDS).count()
         footer_evidence=page.evaluate("""() => Array.from(
-          document.querySelectorAll('button.pick')).map(card => {
+          document.querySelectorAll('#board:not(.hidden) #cards button.pick')).map(card => {
             const footer=card.querySelector('.over-under-footer');
             const text=footer?.textContent?.replace(/\\s+/g,' ').trim() || null;
             const spans=Array.from(footer?.querySelectorAll('span') || [])
@@ -96,7 +99,7 @@ def main():
             "document.documentElement.scrollWidth <= innerWidth + 1"),{"width":390})
         # Bound screenshot size even when hundreds of cards are present.
         page.screenshot(path=str(OUT/"iphone-deployed.png"),full_page=False)
-        under=page.locator('button.pick').filter(has=page.locator('.chip.under'))
+        under=page.locator(BOARD_CARDS).filter(has=page.locator('.chip.under'))
         if under.count():
             under.first.click()
             page.locator('#detail-content .lean.under').wait_for(timeout=10000)
@@ -113,8 +116,8 @@ def main():
             page.locator('[data-view="tracker"]').click()
             page.locator('[data-league="'+sport+'"]').click()
             try:
-                page.locator('button.pick').first.wait_for(timeout=15000)
-                page.locator('button.pick').first.click()
+                page.locator(BOARD_CARDS).first.wait_for(timeout=15000)
+                page.locator(BOARD_CARDS).first.click()
                 page.locator('#detail:not(.hidden)').wait_for(timeout=10000)
                 evidence=page.evaluate("""() => {
                     const hero=document.querySelector('#detail-content .hero');
@@ -131,9 +134,9 @@ def main():
                 check(sport.lower()+"_player_detail_and_take",False,{"error":str(error)[:400]})
                 if page.locator('#back').is_visible():page.locator('#back').click()
             page.locator('[data-view="live"]').click()
-            game_count=page.locator('[data-game]').count()
+            game_count=page.locator(BOARD_GAMES).count()
             if game_count:
-                page.locator('[data-game]').first.click()
+                page.locator(BOARD_GAMES).first.click()
                 text=page.locator('#detail-content').inner_text()
                 check(sport.lower()+"_game_detail",'Full published player box score' in text,
                       {"games":game_count,"boxscore_section":'Full published player box score' in text})
