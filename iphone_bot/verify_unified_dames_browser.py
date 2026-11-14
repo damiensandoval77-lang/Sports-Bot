@@ -197,7 +197,7 @@ def observe_confidence(page):
     }""")
     if obs.get("eligible_count"):
         # CSS.escape avoids interpreting punctuation in a source-derived ID.
-        selector=page.evaluate("id=>'#cards .pick[data-id="'+CSS.escape(id)+'"]'",obs['id'])
+        selector=page.evaluate("""id => '#cards .pick[data-id="'+CSS.escape(id)+'"]'""",obs['id'])
         page.locator(selector).click(timeout=10000)
         detail=page.evaluate("""() => {
           const el=document.querySelector('#detail-content .hero'),a=el.querySelectorAll('.triple strong');
