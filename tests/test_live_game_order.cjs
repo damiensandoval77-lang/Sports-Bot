@@ -9,4 +9,14 @@ test('live state priority preserved, invalid starts last and ties deterministic'
  const rows=[game('A','bad'),game('Z','2026-11-15T18:00Z'),game('B','2026-11-15T18:00Z'),game('LIVE','2026-11-22T18:00Z','in')];
  assert.deepEqual(M.sortLiveGames(rows).map(x=>x.game),['LIVE','B','Z','A']);
 });
-test('renderer uses tested game ordering',()=>{assert.match(require('node:fs').readFileSync(require('node:path').join(__dirname,'../docs/dames-picks/index.html'),'utf8'),/const games=m\.sortLiveGames\(slate\.filter/)});
+test('renderer uses tested game ordering',()=>{assert.match(require('node:fs').readFileSync(require('node:path').join(__dirname,'../docs/dames-picks/index.html'),'utf8'),/const games=sortLiveGamesCompat\(slate\.filter/)});
+
+test('new HTML works with old cached model lacking helper',()=>{
+ const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'../docs/dames-picks/index.html'),'utf8');
+ const source=html.slice(html.indexOf('function sortLiveGamesCompat('),html.indexOf('function renderLiveGames('));
+ const oldModel={};const sort=require('node:vm').runInNewContext(source+';sortLiveGamesCompat',{m:oldModel});
+ const rows=[game('ARI @ KC','2026-11-22T18:00Z'),game('NE @ DET','2026-11-15T14:30Z')];
+ assert.equal(sort(rows)[0].game,'NE @ DET');assert.equal(rows[0].game,'ARI @ KC');
+ assert.match(html,/feeds\.js\?bundle=dp-live-kickoff-cache-safe-20261114-r42/);
+ assert(!html.includes('dp-readable-market-tabs-20261114-r41'));
+});
