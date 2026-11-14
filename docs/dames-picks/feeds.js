@@ -719,6 +719,12 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
  return [...result.values()];
 }
 // Live NBA view is one Eastern slate. Keep the full catalog for schedule coverage.
+function sortLiveGames(games){
+ const order={in:0,stale:1,final:2,scheduled:3,unknown:4};
+ const start=g=>{const t=stamp(g.start);return Number.isFinite(t)?t:Infinity};
+ return games.slice().sort((a,b)=>(order[a.state]??4)-(order[b.state]??4)||
+   (start(a)<start(b)?-1:start(a)>start(b)?1:0)||String(a.game||"").localeCompare(String(b.game||"")));
+}
 function currentSlateGames(games,league,now=Date.now()){
  const selected=(games||[]).filter(g=>g.sport===league);
  if(league!=="NBA")return selected;
@@ -753,7 +759,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,sortLiveGames,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
