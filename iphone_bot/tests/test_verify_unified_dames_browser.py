@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.verify_unified_dames_browser import assess, assess_live_order
+from iphone_bot.verify_unified_dames_browser import assess, assess_live_order, assess_tennis
 
 class UnifiedBrowserAssessmentTests(unittest.TestCase):
     def test_both_sports_rendered(self):
@@ -98,4 +98,38 @@ class LiveOrderTests(unittest.TestCase):
     def test_wrong_view_empty_slate_fails(self):
         self.assertIn("LIVE_VIEW_NOT_SELECTED",assess_live_order({"sport":"NFL","selected":"NBA","mode":"tracker","expected_ids":[],"cards":[]}))
 
+class TennisBrowserTests(unittest.TestCase):
+    def obs(self,mode="board"):
+        return dict(selected="TENNIS",mode=mode,requested_mode=mode,metrics=["—"]*3,
+                    notice="Projections, hit estimates and grading are unavailable",cards=[],expected_ids=[],
+                    empty="Missing quotes are not evidence that no tennis matches exist",viewport_width=390,overflow=0)
+    def test_honest_empty(self):
+        self.assertEqual(assess_tennis(self.obs()),[])
+    def test_valid_quote_only(self):
+        o=self.obs();o.update(cards=[dict(id="t1",projection="—",estimate="—",grade="LINE ONLY")],expected_ids=["t1"])
+        self.assertEqual(assess_tennis(o),[])
+        o["cards"][0]["estimate"]="80%"
+        self.assertIn("TENNIS_UNSUPPORTED_ESTIMATE_OR_GRADE",assess_tennis(o))
+    def test_contamination(self):
+        o=self.obs();o.update(cards=[dict(id="NBA1")],metrics=["1–0","100%","5"],research_visible=True)
+        r=assess_tennis(o)
+        self.assertIn("TENNIS_CROSS_LEAGUE_OR_MISSING_CARDS",r)
+        self.assertIn("TENNIS_UNSUPPORTED_METRICS",r)
+        self.assertIn("TENNIS_CROSS_LEAGUE_RESEARCH_VISIBLE",r)
+    def test_unsupported_views(self):
+        for mode in ("live","tracker"):
+            o=self.obs(mode);self.assertIn("TENNIS_UNSUPPORTED_LIVE_OR_GRADING",assess_tennis(o))
+            o['empty']='Tennis scores not connected. This does not mean no matches are playing.'
+            self.assertEqual(assess_tennis(o),[])
+    def test_wrong_league_or_view(self):
+        o=self.obs();o['selected']='NBA';self.assertIn("TENNIS_VIEW_NOT_SELECTED",assess_tennis(o))
+        o=self.obs();o['mode']='live';self.assertIn("TENNIS_VIEW_NOT_SELECTED",assess_tennis(o))
+    def test_phone_and_honesty(self):
+        o=self.obs();o.update(viewport_width=1200,empty='No matches',notice='')
+        r=assess_tennis(o)
+        self.assertIn("TENNIS_PHONE_LAYOUT_FAILED",r)
+        self.assertIn("TENNIS_EMPTY_STATE_NOT_HONEST",r)
+        self.assertIn("TENNIS_LIMITATION_NOTICE_MISSING",r)
+
 if __name__=="__main__":unittest.main()
+
