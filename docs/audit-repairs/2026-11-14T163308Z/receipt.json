@@ -1,0 +1,291 @@
+{
+  "status": "FAILED/BLOCKED",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "start": "2026-11-14T16:33:08Z",
+  "start_basis": "First retained UTC clock in this execution",
+  "pinned_main": "97caaaed773282dac8d49338b2386ebfbb4f0d77",
+  "release": "dp-readable-market-tabs-20261114-r41",
+  "counts": {
+    "active_root_findings": 2,
+    "defects_repaired_this_run": 0,
+    "fixes_independently_verified_this_run": 0,
+    "historical_invalid_source_blobs": 3,
+    "historical_pr_tips_affected": 8
+  },
+  "permissions": {
+    "pull": true,
+    "push": true,
+    "admin": true,
+    "source": "GitHub repository API",
+    "pages_admin_operation": "Not exposed by connector; /pages fetch rejected INVALID_ARGUMENT. Local gh unauthenticated; GH_TOKEN/GITHUB_TOKEN absent. Prior browser fallback logged out."
+  },
+  "environment": {
+    "coding_available": true,
+    "python_git_node": true,
+    "isolated_worktree": true,
+    "base_user_changes_preserved": true
+  },
+  "schedule": {
+    "existing_enabled": true,
+    "interval_hours": 2,
+    "duplicate_created": false,
+    "notification_requested": true,
+    "delivery_confirmed": false
+  },
+  "inventory": {
+    "branches": 452,
+    "pr_tips": 451,
+    "refs": 903,
+    "open_prs": 0,
+    "prs_enumerated": 451,
+    "distinct_source_blobs": 2031,
+    "main_static_errors": 0,
+    "current_branch_source_errors": 0,
+    "historical_source_errors": 3,
+    "divergence_errors": 0,
+    "closed_unmerged_prs": [
+      304,
+      272,
+      248,
+      246,
+      213,
+      135,
+      132,
+      105,
+      98,
+      72
+    ],
+    "closed_pr_dispositions": "Rechecked list unchanged; prior dispositions carried in evidence. Historical syntax failures in PR2 and PR259-265 are already corrected in main; immutable tips not rewritten."
+  },
+  "workflows": {
+    "definitions": 176,
+    "recent_runs": 200,
+    "outcomes": {
+      "success": 141,
+      "failure": 23,
+      "cancelled": 36
+    },
+    "jobs_observed": 376,
+    "job_outcomes": {
+      "success": 253,
+      "failure": 24,
+      "cancelled": 88,
+      "skipped": 10,
+      "in_progress": 1
+    },
+    "job_observation_note": "One in-progress job was this run's phone rerun; subsequently passed.",
+    "failed_job_logs_inspected": 24,
+    "definitions_without_run_in_sample": 127,
+    "matrix": "workflows.md",
+    "failure_log": "failures.md",
+    "failed_runs": [
+      43615472585,
+      43614472750,
+      43614437501,
+      43614155485,
+      43613238445,
+      43613132415,
+      43612379957,
+      43612088809,
+      43612074196,
+      43612052763,
+      43611699082,
+      43610542489,
+      43609998760,
+      43609924422,
+      43609865644,
+      43609732407,
+      43609183288,
+      43609133466,
+      43608920218,
+      43607982125,
+      43607823313,
+      43607214258,
+      43606954704
+    ]
+  },
+  "findings": [
+    {
+      "id": "NBA_PRIMARY_COVERAGE",
+      "severity": "high",
+      "status": "BLOCKED_EVIDENCE",
+      "before": {
+        "current": 183,
+        "primary": 169,
+        "missing": 14,
+        "archived": 273,
+        "frozen": 251,
+        "unmatched": 22
+      },
+      "after": {
+        "current": 183,
+        "primary": 169,
+        "missing": 14,
+        "archived": 273,
+        "frozen": 251,
+        "unmatched": 22
+      },
+      "cause": "Six players have only 3\u20137 recorded same-team games; validated opportunity model requires 8. Recovery confirmed 14 INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY exclusions.",
+      "source_files": [
+        "iphone_bot/live_lagged_matchup_sidecar.py",
+        "iphone_bot/offensive_involvement_holdout.py"
+      ],
+      "attempt": "Reran no-cost existing all-market job, refreshed current history and injury/matchup context, regenerated forecasts and research cohorts, deployed and fetched public JSON.",
+      "run": 43609930762,
+      "job": 132512605823,
+      "commit": "f01fb9d98fc64990beade9a318e27074bb808e88",
+      "result": "All four recovery jobs succeeded; public model generated_at advanced to 16:36:56.125259Z, but missing coverage unchanged. Durable ledger NEW 0, GRADED1760. No repair claimed.",
+      "blocking_evidence": "Original authentic additional eligible history or a separately validated model is required; research/provisional rows cannot silently count as primary."
+    },
+    {
+      "id": "PAGES_CANCELLATIONS",
+      "severity": "medium",
+      "status": "BLOCKED_ADMIN_CAPABILITY",
+      "cause": "Legacy native branch-mode builds are superseded by concurrent data publishes; controlled workflow only verifies native release in this mode.",
+      "source_files": [
+        ".github/workflows/pages-controlled.yml"
+      ],
+      "evidence_runs": [
+        43614421505,
+        43616583310,
+        43616600450,
+        43616611148,
+        43616659086,
+        43616764660
+      ],
+      "workaround": "Verified eventual public convergence and exact asset blobs; did not cancel ingestion or overwrite settings.",
+      "result": "Latest inspected successful Pages run43616764660; cancellation architecture remains.",
+      "required_user_action": "Repository Settings > Pages > Build and deployment > Source > GitHub Actions, or attach an authenticated Pages administration capability."
+    }
+  ],
+  "carried_history": {
+    "missing_thresholds_previously_reported": 60,
+    "independently_rederived_this_run": false,
+    "status": "UNVERIFIED_CARRY_FORWARD",
+    "recovery_rule": "Do not synthesize original pretip forecasts or grades; original timestamped evidence required."
+  },
+  "production": {
+    "nba_games_today": 5,
+    "nba_games_tomorrow": 9,
+    "nba_fixed_season_games": 1200,
+    "nfl_season_games": 272,
+    "espn_today_nba": 5,
+    "espn_today_nfl": 0,
+    "active_games": 0,
+    "standard_capture_games": 5,
+    "archived_standard_quotes": 273,
+    "primary_frozen": 251,
+    "missing_archived_primary": 22,
+    "separate_research_receipts_for_missing": 17,
+    "missing_any_ai_receipt": 5,
+    "ai_only": 504,
+    "model_current_offers": 183,
+    "model_current_primary": 169,
+    "model_current_missing": 14,
+    "model_standard_rejections": 19,
+    "ledger": {
+      "frozen": 2075,
+      "graded": 1760,
+      "dnp": 64,
+      "pending_upcoming": 251,
+      "overdue": 0
+    },
+    "nba_nov13": {
+      "saved_quotes": 740,
+      "settled": 711,
+      "void": 29,
+      "pending": 0,
+      "overdue": 0,
+      "ai_recorded": 904,
+      "ai_graded": 700,
+      "ai_dnp": 204,
+      "ai_unaccounted": 0
+    },
+    "nfl": {
+      "standard_graded_including_push": 135,
+      "pushes": 3,
+      "decisions": 132,
+      "wins": 52,
+      "hit_rate_percent": 39.39,
+      "standard_pending": 0,
+      "alternative_grades_excluded": 932,
+      "alternative_pending_excluded": 4
+    },
+    "readiness_required": 10,
+    "readiness_pass": 9,
+    "release_certified": false
+  },
+  "tests": {
+    "core_unit": 98,
+    "nfl_live_unit": 31,
+    "nfl_pregame_node": 18,
+    "failure_domain_unit": 12,
+    "live_pace_sort_node": 4,
+    "total": 163,
+    "failed": 0,
+    "static": {
+      "tracked": 1521,
+      "python": 583,
+      "json": 427,
+      "node": 39,
+      "yaml": 176,
+      "errors": 0,
+      "warnings": 45
+    },
+    "dependencies": "pip-audit requirements.txt + iphone_bot/requirements-training.txt: No known vulnerabilities found",
+    "supply_chain": "385 mutable action references remain risk observations; not an exploit finding or comprehensive security certification."
+  },
+  "live_verification": {
+    "url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "json_endpoints_200": 15,
+    "phone_run": 43614457308,
+    "phone_job": 132512089946,
+    "browser": "webkit",
+    "width": 390,
+    "checked_at": "2026-11-14T16:35:32.389895+00:00",
+    "checks_passed": 19,
+    "checks_skipped": 0,
+    "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43614457308/artifacts/14122631822",
+    "screenshots_visually_inspected": [
+      "nba-player-detail.png",
+      "nfl-player-detail.png"
+    ],
+    "release_blob_match": true,
+    "projection_take_order": true,
+    "under_red": true,
+    "market_labels_fit": true,
+    "game_details": true,
+    "over_under_footer": true,
+    "live_interval_ms": 30000,
+    "live_active_game_pacing": "NOT_OBSERVABLE_NO_ACTIVE_GAMES",
+    "nfl_hit_estimate": "Observed unavailable for sampled Fantasy Score; UI honestly discloses no eligible opponent model. Not a verified complete hit-estimate implementation."
+  },
+  "changes": {
+    "source_code": [],
+    "new_prs": [],
+    "merged_prs": [],
+    "data_recovery_commits": [
+      "f01fb9d98fc64990beade9a318e27074bb808e88",
+      "69d5fc1aee4df9fae656ac6b1efafe28d831722c"
+    ],
+    "secret_changes": false,
+    "paid_api_calls": false,
+    "destructive_actions": false,
+    "fabricated_records": false
+  },
+  "limitations": [
+    "127 workflows absent from 200-run sample, so full historic schedule/runtime certification incomplete.",
+    "Historical code tips syntax-scanned, not all behavior tested.",
+    "No active-game 30-second changing-score verification possible today at audit time.",
+    "Underdog full-market pretip coverage not independently certified.",
+    "Historical 60 missing thresholds carried, not rederived.",
+    "NFL hit-estimate coverage not complete.",
+    "Repair objective remains blocked; successful recovery and phone checks do not mean full production health."
+  ],
+  "notification": {
+    "requested": true,
+    "push_delivery": "UNCONFIRMED"
+  },
+  "audit_end": "2026-11-14T16:42:41.192628+00:00",
+  "duration_seconds": 573
+}
