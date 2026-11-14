@@ -1,0 +1,27 @@
+{
+  "model": "NBA_POOLED_LOGIT_CONFIDENCE_V1",
+  "base_method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
+  "base_draws": 20000,
+  "intercept": -0.13509652870488206,
+  "slope": 0.3088709056487632,
+  "training_dates": [
+    "2026-11-09",
+    "2026-11-10",
+    "2026-11-11"
+  ],
+  "training_n": 608,
+  "diagnostic_dates": [
+    "2026-11-12",
+    "2026-11-13"
+  ],
+  "diagnostic_n": 582,
+  "diagnostic_games": 13,
+  "source_ledger_sha256": "f581aa25d8234b7713d845bb2c8a39f983e0dfd327a717d8d86b5b04d88793e8",
+  "cohort": "Earliest one pretip standard half-integer threshold per player-game-stat",
+  "original_brier": 0.25949176099656357,
+  "corrected_brier": 0.25071119979395073,
+  "constant_half_brier": 0.25,
+  "preserve_original_direction": true,
+  "prospective_accuracy_improvement_verified": false,
+  "validation_notice": "Confidence correction trained on Nov 9\u201311 and checked on Nov 12\u201313 only (582 forecasts, 13 games). Limited sample; no reliable accuracy improvement or betting edge established. Original pick direction and grading unchanged."
+}

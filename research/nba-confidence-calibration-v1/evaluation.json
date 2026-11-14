@@ -1,0 +1,277 @@
+{
+  "spec": {
+    "candidate": "NBA_POOLED_LOGIT_CALIBRATION_RESEARCH_V1",
+    "created_before_fit": "2026-11-14",
+    "goal": "correct observed overconfidence; not presume hit-rate improvement",
+    "train_dates": [
+      "2026-11-09",
+      "2026-11-10",
+      "2026-11-11"
+    ],
+    "chronological_diagnostic_dates": [
+      "2026-11-12",
+      "2026-11-13"
+    ],
+    "cohort": "genuinely pretip standard half-integer lines with official final; earliest one threshold per player-game-stat, chosen before outcomes",
+    "features": "one feature: logit(original frozen more probability)",
+    "estimator": "LogisticRegression(C=0.1, solver=lbfgs, max_iter=1000); fixed, no tuning",
+    "comparators": [
+      "original frozen probability",
+      "fixed 50% shrink toward0.5",
+      "constant0.5"
+    ],
+    "uncertainty": "cluster per game; two diagnostic dates insufficient for date-generalization inference",
+    "release": "No primary release from this previously inspected small five-date experiment; immutable prospective evidence required. Never replace frozen forecasts or fabricate data.",
+    "metadata_correction": "Corrected clerical date Nov15 to Nov14 after execution; model/splits/parameters unchanged."
+  },
+  "training_n": 608,
+  "diagnostic_n": 582,
+  "diagnostic_games": 13,
+  "coefficients": {
+    "intercept": -0.13509652870488206,
+    "slope": 0.3088709056487632
+  },
+  "results": {
+    "original": {
+      "overall": {
+        "n": 582,
+        "brier": 0.25949176099656357,
+        "direction_hit_rate": 0.520618556701031,
+        "mean_selected_probability": 0.5960591065292096,
+        "actual_more_rate": 0.48109965635738833
+      },
+      "brier_delta_vs_original": 0.0,
+      "game_cluster_ci95": [
+        0.0,
+        0.0
+      ],
+      "by_stat": {
+        "PTS": {
+          "n": 189,
+          "brier": 0.2617198541798942,
+          "direction_hit_rate": 0.5291005291005291,
+          "mean_selected_probability": 0.5852698412698412,
+          "actual_more_rate": 0.48148148148148145
+        },
+        "REB": {
+          "n": 130,
+          "brier": 0.2532635049230769,
+          "direction_hit_rate": 0.5,
+          "mean_selected_probability": 0.6031538461538462,
+          "actual_more_rate": 0.4846153846153846
+        },
+        "AST": {
+          "n": 80,
+          "brier": 0.2537756025,
+          "direction_hit_rate": 0.525,
+          "mean_selected_probability": 0.613895,
+          "actual_more_rate": 0.5
+        },
+        "PRA": {
+          "n": 183,
+          "brier": 0.26411392688524593,
+          "direction_hit_rate": 0.5245901639344263,
+          "mean_selected_probability": 0.5943650273224044,
+          "actual_more_rate": 0.46994535519125685
+        }
+      },
+      "by_date": {
+        "2026-11-12": {
+          "n": 179,
+          "brier": 0.2455198376536313,
+          "direction_hit_rate": 0.553072625698324,
+          "mean_selected_probability": 0.5899575418994414,
+          "actual_more_rate": 0.44692737430167595
+        },
+        "2026-11-13": {
+          "n": 403,
+          "brier": 0.2656976525062035,
+          "direction_hit_rate": 0.5062034739454094,
+          "mean_selected_probability": 0.5987692307692308,
+          "actual_more_rate": 0.49627791563275436
+        }
+      }
+    },
+    "pooled_logit": {
+      "overall": {
+        "n": 582,
+        "brier": 0.25071119979395073,
+        "direction_hit_rate": 0.5257731958762887,
+        "mean_selected_probability": 0.5529309227998115,
+        "actual_more_rate": 0.48109965635738833
+      },
+      "brier_delta_vs_original": -0.008780561202612861,
+      "game_cluster_ci95": [
+        -0.015001868731263567,
+        -0.0025432507072424026
+      ],
+      "by_stat": {
+        "PTS": {
+          "n": 189,
+          "brier": 0.25218221324643864,
+          "direction_hit_rate": 0.5291005291005291,
+          "mean_selected_probability": 0.5499917918946894,
+          "actual_more_rate": 0.48148148148148145
+        },
+        "REB": {
+          "n": 130,
+          "brier": 0.24867093310802182,
+          "direction_hit_rate": 0.5384615384615384,
+          "mean_selected_probability": 0.5564673683426161,
+          "actual_more_rate": 0.4846153846153846
+        },
+        "AST": {
+          "n": 80,
+          "brier": 0.24816293613386833,
+          "direction_hit_rate": 0.525,
+          "mean_selected_probability": 0.5555798832225072,
+          "actual_more_rate": 0.5
+        },
+        "PRA": {
+          "n": 183,
+          "brier": 0.2517553212117493,
+          "direction_hit_rate": 0.5136612021857924,
+          "mean_selected_probability": 0.5522961740931871,
+          "actual_more_rate": 0.46994535519125685
+        }
+      },
+      "by_date": {
+        "2026-11-12": {
+          "n": 179,
+          "brier": 0.24372698868857876,
+          "direction_hit_rate": 0.5698324022346368,
+          "mean_selected_probability": 0.5477683685208911,
+          "actual_more_rate": 0.44692737430167595
+        },
+        "2026-11-13": {
+          "n": 403,
+          "brier": 0.25381336800204396,
+          "direction_hit_rate": 0.5062034739454094,
+          "mean_selected_probability": 0.555223968000622,
+          "actual_more_rate": 0.49627791563275436
+        }
+      }
+    },
+    "fixed_half_shrink": {
+      "overall": {
+        "n": 582,
+        "brier": 0.2511073045103093,
+        "direction_hit_rate": 0.520618556701031,
+        "mean_selected_probability": 0.5480295532646048,
+        "actual_more_rate": 0.48109965635738833
+      },
+      "brier_delta_vs_original": -0.008384456486254297,
+      "game_cluster_ci95": [
+        -0.014365045159257373,
+        -0.0026093341876965758
+      ],
+      "by_stat": {
+        "PTS": {
+          "n": 189,
+          "brier": 0.25305827042328044,
+          "direction_hit_rate": 0.5291005291005291,
+          "mean_selected_probability": 0.5426349206349206,
+          "actual_more_rate": 0.48148148148148145
+        },
+        "REB": {
+          "n": 130,
+          "brier": 0.2474258762307692,
+          "direction_hit_rate": 0.5,
+          "mean_selected_probability": 0.5515769230769232,
+          "actual_more_rate": 0.4846153846153846
+        },
+        "AST": {
+          "n": 80,
+          "brier": 0.24676827562499998,
+          "direction_hit_rate": 0.525,
+          "mean_selected_probability": 0.5569474999999999,
+          "actual_more_rate": 0.5
+        },
+        "PRA": {
+          "n": 183,
+          "brier": 0.2536044380054645,
+          "direction_hit_rate": 0.5245901639344263,
+          "mean_selected_probability": 0.5471825136612022,
+          "actual_more_rate": 0.46994535519125685
+        }
+      },
+      "by_date": {
+        "2026-11-12": {
+          "n": 179,
+          "brier": 0.24445593706703908,
+          "direction_hit_rate": 0.553072625698324,
+          "mean_selected_probability": 0.5449787709497207,
+          "actual_more_rate": 0.44692737430167595
+        },
+        "2026-11-13": {
+          "n": 403,
+          "brier": 0.25406163397022336,
+          "direction_hit_rate": 0.5062034739454094,
+          "mean_selected_probability": 0.5493846153846155,
+          "actual_more_rate": 0.49627791563275436
+        }
+      }
+    },
+    "constant_half": {
+      "overall": {
+        "n": 582,
+        "brier": 0.25,
+        "direction_hit_rate": 0.48109965635738833,
+        "mean_selected_probability": 0.5,
+        "actual_more_rate": 0.48109965635738833
+      },
+      "brier_delta_vs_original": -0.009491760996563575,
+      "game_cluster_ci95": [
+        -0.021069483337093572,
+        0.0015699861271518964
+      ],
+      "by_stat": {
+        "PTS": {
+          "n": 189,
+          "brier": 0.25,
+          "direction_hit_rate": 0.48148148148148145,
+          "mean_selected_probability": 0.5,
+          "actual_more_rate": 0.48148148148148145
+        },
+        "REB": {
+          "n": 130,
+          "brier": 0.25,
+          "direction_hit_rate": 0.4846153846153846,
+          "mean_selected_probability": 0.5,
+          "actual_more_rate": 0.4846153846153846
+        },
+        "AST": {
+          "n": 80,
+          "brier": 0.25,
+          "direction_hit_rate": 0.5,
+          "mean_selected_probability": 0.5,
+          "actual_more_rate": 0.5
+        },
+        "PRA": {
+          "n": 183,
+          "brier": 0.25,
+          "direction_hit_rate": 0.46994535519125685,
+          "mean_selected_probability": 0.5,
+          "actual_more_rate": 0.46994535519125685
+        }
+      },
+      "by_date": {
+        "2026-11-12": {
+          "n": 179,
+          "brier": 0.25,
+          "direction_hit_rate": 0.44692737430167595,
+          "mean_selected_probability": 0.5,
+          "actual_more_rate": 0.44692737430167595
+        },
+        "2026-11-13": {
+          "n": 403,
+          "brier": 0.25,
+          "direction_hit_rate": 0.49627791563275436,
+          "mean_selected_probability": 0.5,
+          "actual_more_rate": 0.49627791563275436
+        }
+      }
+    }
+  },
+  "primary_release_eligible": false
+}
