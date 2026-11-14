@@ -82,3 +82,24 @@ class ForecastCoverageAuditTests(unittest.TestCase):
             self.assertEqual(counts["captured"],
                              counts["accounted_for"]+counts["pending"],day)
 if __name__=="__main__":unittest.main()
+
+class ReportAsOfTests(unittest.TestCase):
+    def test_newly_tipped_unresolved_records_remain_pending(self):
+        old=p();new={**p("AST"),"start":"2026-11-10T04:00:00Z"}
+        report=daily(recorded_pregame_forecasts=1,graded=0,ungraded=1,
+                     generated_at="2026-11-10T03:30:00Z")
+        out=audit({"predictions":[old,new]},{"records":[]},today=report,now=NOW)
+        self.assertEqual(out['days']['2026-11-09']['pending'],2)
+        self.assertEqual(out['daily_report_time_adjustments'][0]['newly_started_unresolved_forecasts'],1)
+    def test_asof_exception_cannot_hide_grade_disagreement(self):
+        old=p();new={**p("AST"),"start":"2026-11-10T04:00:00Z"}
+        report=daily(recorded_pregame_forecasts=1,graded=1,ungraded=0,
+                     generated_at="2026-11-10T03:30:00Z")
+        with self.assertRaisesRegex(ValueError,"AI_DAY_STATUS_LEDGER_DISAGREEMENT"):
+            audit({"predictions":[old,new]},{"records":[]},today=report,now=NOW)
+    def test_future_or_missing_timestamp_cannot_hide_mismatch(self):
+        rows=[p(),{**p("AST"),"start":"2026-11-10T04:00:00Z"}]
+        for stamp in [None,"2026-11-11T00:00:00Z","invalid"]:
+            report=daily(recorded_pregame_forecasts=1,graded=0,ungraded=1,generated_at=stamp)
+            with self.assertRaisesRegex(ValueError,"AI_DAY_STATUS_LEDGER_DISAGREEMENT"):
+                audit({"predictions":rows},{"records":[]},today=report,now=NOW)
