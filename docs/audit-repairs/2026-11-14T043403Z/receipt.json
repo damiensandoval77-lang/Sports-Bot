@@ -1,0 +1,329 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL",
+  "start": "2026-11-14T04:34:03+00:00",
+  "audit_checks_completed_at": "2026-11-14T05:00:08.755901+00:00",
+  "audit_duration_seconds": 1566,
+  "timezone_for_user": "America/New_York",
+  "repo": "damiensandoval77-lang/Sports-Bot",
+  "pinned_main_sha": "9eaaf1101ee49717b7f344cd25031d720b6f1049",
+  "last_observed_main_sha": "a3413e009ba6385d756bd6e58f8a33506a708742",
+  "deployment_version": "dp-newest-live-source-20261114-r40",
+  "counts": {
+    "findings": 9,
+    "repair_categories_completed": 5,
+    "production_repairs_verified_live": 3,
+    "branch_only_repairs": 1,
+    "branches_repaired": 5,
+    "ci_only_repairs": 1,
+    "remaining_blocker_categories": 4
+  },
+  "permissions": {
+    "github_read_write": "VERIFIED_BY_BRANCH_COMMIT_PR_MERGE_RECOVERY",
+    "coding_environment": "AVAILABLE_TESTS_EXECUTED",
+    "pages_admin": "NOT_AVAILABLE"
+  },
+  "automation": {
+    "enabled": true,
+    "schedule": "FREQ=HOURLY;INTERVAL=2",
+    "run_status": "in_progress",
+    "notification_delivery": "unknown"
+  },
+  "branch_inventory": {
+    "start_heads": 442,
+    "end_heads": 445,
+    "historical_pr_tips": 444,
+    "total_refs": 889,
+    "source_blobs_checked": 2001,
+    "syntax_errors_after": 0,
+    "open_prs_at_start": 0,
+    "repair_prs_created_and_merged": [
+      442,
+      443,
+      444
+    ],
+    "exceptions": [
+      "Not every historical tip was executed or behaviorally tested",
+      "Deleted unreachable tips cannot be enumerated",
+      "Original audit_branch_inventory.py stalled over7minutes and was interrupted; full git refs plus connector PR metadata reproduced inventory",
+      "Closed unmerged PRs304,272,248,246,213,135,132,105,98,72 reviewed as historical work; not blindly merged"
+    ],
+    "evidence": [
+      "branches.json.gz",
+      "prs.json.gz",
+      "branch-source-syntax.json",
+      "unassociated-branch-review.json.gz"
+    ]
+  },
+  "workflows": {
+    "definitions_checked": 176,
+    "jobs_defined": 189,
+    "scheduled_definitions": 84,
+    "initial_recent_run_sample": 200,
+    "sample_conclusions": {
+      "success": 114,
+      "cancelled": 57,
+      "failure": 27,
+      "in_progress": 2
+    },
+    "definitions_with_recent_sample": 55,
+    "definitions_without_recent_sample": 121,
+    "inventory": "workflows.md",
+    "exact_exceptions": "workflow-exceptions.json",
+    "later_runs": "final-run-evidence.json"
+  },
+  "security_audit": {
+    "static_errors": 0,
+    "static_warnings": 45,
+    "mutable_action_references": 385,
+    "limitations": "Warnings and mutable refs are risks, not confirmed vulnerabilities. Complete dependency-advisory and secret-security certification unavailable."
+  },
+  "tests": {
+    "targeted_python_passed": 180,
+    "frontend_node_passed": 65,
+    "pr444_checks_passed": 11,
+    "production_readback_immutable_field_changes": 0
+  },
+  "sports": {
+    "NBA": {
+      "season_fixed_games": 1200,
+      "teams": 30,
+      "note": "Cup/TBD games not certified as complete1230-season schedule",
+      "slate_games": 9,
+      "standard_quotes": 771,
+      "frozen_line_backed": 714,
+      "frozen_ai_only": 904,
+      "primary_missing_exact_thresholds": 60,
+      "primary_ledger": {
+        "graded": 1511,
+        "frozen_picks": 1824,
+        "verified_dnp_excluded": 51,
+        "pending": 262
+      },
+      "research_counts": {
+        "HIT": 760,
+        "MISS": 782,
+        "NO_LEAN": 35,
+        "PUSH": 20,
+        "VOID": 47,
+        "UNSETTLED_RESEARCH": 263
+      },
+      "prior_night": "2026-11-12:327 saved PP,318 settled,9 void,0pending;388AI,332graded,56DNP,0unaccounted"
+    },
+    "NFL": {
+      "season_games": 272,
+      "standard_graded": 135,
+      "standard_pushes": 3,
+      "standard_decisions": 132,
+      "wins": 52,
+      "losses": 80,
+      "hit_rate": 0.3939393939393939,
+      "standard_void": 2,
+      "standard_pending": 0,
+      "alternative_graded_excluded": 932,
+      "live_active_games_at_probe": 0,
+      "identity_mismatch_reproduced": false
+    }
+  },
+  "live_verification": {
+    "site": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "public_grading": "live-grading-verification.json",
+    "browser": {
+      "checked_at": "2026-11-14T04:35:28.672260+00:00",
+      "status": "READY",
+      "browser_render_verified": true,
+      "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+      "app_title": "Dame's Picks \u00b7 NBA + NFL",
+      "NBA": {
+        "selected": "NBA",
+        "loaded": true,
+        "rows": 2353,
+        "rendered": 459,
+        "live_expected": 3,
+        "live_missing": 0,
+        "score_missing": 0,
+        "player_missing": 0,
+        "errors": [],
+        "status": "Checked 11:35 PM \u00b7 60 provider standard markets withheld from AI picks \u00b7 2026-11-12 NBA AI-only: 332 graded, 0 pending, 56 exclusions \u00b7 Live values show only fresh verified player snapshots"
+      },
+      "NFL": {
+        "selected": "NFL",
+        "loaded": true,
+        "rows": 811,
+        "rendered": 74,
+        "live_expected": 0,
+        "live_missing": 0,
+        "score_missing": 0,
+        "player_missing": 0,
+        "errors": [],
+        "status": "Checked 11:35 PM \u00b7 60 provider standard markets withheld from AI picks \u00b7 2026-11-12 NBA AI-only: 332 graded, 0 pending, 56 exclusions \u00b7 Live values show only fresh verified player snapshots"
+      },
+      "reasons": [],
+      "browser_errors": [],
+      "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
+      "browser_direct_probe": {
+        "attempted": true,
+        "received": false,
+        "directGames": 0,
+        "directScores": 0,
+        "directErrors": [],
+        "at": null
+      }
+    },
+    "phone": {
+      "latest_run_id": 43558817775,
+      "webkit_job": 132337663341,
+      "chromium_job": 132337663161,
+      "checked_at": "2026-11-14T04:54:21Z",
+      "width": 390,
+      "pass": 14,
+      "skip": 2,
+      "skips": [
+        "No authentic Under card available",
+        "No current pregame board cards for footer assertion"
+      ],
+      "artifact_url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43558817775/artifacts/14098959706",
+      "physical_iphone": false,
+      "note": "Playwright route teardown logged CancelledError after passing assertions; not a site JavaScript exception"
+    }
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "title": "Browser recovery dispatched the wrong workflow",
+      "root_cause": "public_browser recovery invoked data publisher, which does not refresh the browser receipt",
+      "repair": "Target verify_unified_dames_browser.yml, retain dedup/backoff and shorten successful browser recheck cooldown",
+      "pr": 442,
+      "merge": "feed3202382e3df5bd19a1fc4820498f905f0c94",
+      "status": "VERIFIED_LIVE",
+      "before": "Stale failed browser receipt held readiness degraded after data recovery",
+      "after": "7/7 required production checks READY and public receipt refreshed",
+      "tests": "74 targeted tests; PR CI; production run 43557621462",
+      "files": [
+        "iphone_bot/readiness_recovery.py",
+        ".github/workflows/production_readiness.yml"
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/442",
+      "merge_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/feed3202382e3df5bd19a1fc4820498f905f0c94"
+    },
+    {
+      "id": "R2",
+      "severity": "high",
+      "title": "Settlement publication did not follow completed grading",
+      "root_cause": "Settlement workflow lacked completion triggers for both authoritative graders",
+      "repair": "Same-repository main workflow_run triggers with serial concurrency",
+      "pr": 443,
+      "merge": "a34b4ea67f37549f478fae208ecc9762a338e0cd",
+      "status": "VERIFIED_LIVE",
+      "before": "Public receipt 1442 graded /347 pending while ledger 1511/278",
+      "after": "Automatic completion run 43557958913 refreshed receipt; subsequent DNP completion run 43558720383 passed; public totals reconcile",
+      "tests": "15 settlement tests, PR CI and actual workflow_run execution",
+      "files": [
+        ".github/workflows/nba-published-pick-settlement.yml",
+        "iphone_bot/tests/test_published_pick_settlement.py"
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/443",
+      "merge_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/a34b4ea67f37549f478fae208ecc9762a338e0cd"
+    },
+    {
+      "id": "R3",
+      "severity": "medium",
+      "title": "Five archived branch heads contained invalid workflow YAML",
+      "root_cause": "Colon in unquoted step name",
+      "repair": "Quote the step name in each current branch, forward-only CAS updates",
+      "status": "VERIFIED_BRANCH_ONLY",
+      "before": "One invalid source blob on five branch heads",
+      "after": "445 branch heads, 2001 unique source blobs, zero syntax errors",
+      "commits": [
+        "f5512959c331675d514e0ff09277dfd6785b96a5",
+        "05cc421ec8d19801ba28322fc7db59ab5f374abf",
+        "8a851d3fbbe8703415bd9120a8111d516b211928",
+        "c0e334e92beabe3ae37bbaee00cb64c2bf1e70de",
+        "d245ac9e508b266a3b0d9335b98e3d1caf357c7d"
+      ],
+      "files": [
+        ".github/workflows/research-pregame-evidence.yml"
+      ],
+      "tests": "Python AST, node --check, bash -n, YAML parsing across fetched branch heads"
+    },
+    {
+      "id": "R4",
+      "severity": "high",
+      "title": "Official verified DNP results were left pending",
+      "root_cause": "Primary and research DNP readers disagreed with authoritative NBA_CDN_FINAL/ESPN_FINAL provenance",
+      "repair": "Accept exact-identity explicitly verified official DNP results; reuse authoritative observed_final predicate for separate research/baseline exclusions; reject undocumented exclusions",
+      "pr": 444,
+      "merge": "13326a54dbdcea7ffa09ffce97ff5893185b7db2",
+      "status": "VERIFIED_LIVE",
+      "before": "16 primary picks pending; 21 research picks unsettled despite verified DNP evidence",
+      "after": "Primary 1511 graded,51 DNP,262 pending; research47 void,263 unsettled. Zero immutable pretip field changes",
+      "tests": "Regression failures reproduced before;89 related tests passed;11 PR checks passed; production graders43558695023/43558694974 passed; public HTTP200 grading data verified04:58 UTC",
+      "files": [
+        "iphone_bot/multimarket_forecast_ledger.py",
+        "iphone_bot/published_pick_settlement.py",
+        "iphone_bot/grade_standard_quote_ai_research.py",
+        "iphone_bot/grade_frozen_baseline_join.py"
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/444",
+      "merge_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/13326a54dbdcea7ffa09ffce97ff5893185b7db2"
+    },
+    {
+      "id": "R5",
+      "severity": "medium",
+      "title": "Pull-request CI depended on live provider quote availability",
+      "root_cause": "Multi-market PR workflow ran production capture and current-board generation after tip",
+      "repair": "Keep all fixture/regression checks on PRs; gate four live generation/validation steps to non-PR events. Production fail-closed gates unchanged",
+      "pr": 444,
+      "merge": "13326a54dbdcea7ffa09ffce97ff5893185b7db2",
+      "status": "VERIFIED_CI_ONLY",
+      "before": "CI43558356194 failed Verified standard live lines unavailable after tests passed",
+      "after": "Updated PR444 head86f4d6d6883fa4b576d6a5e4773fc785ee572da2 passed all11 checks",
+      "files": [
+        ".github/workflows/nba-new-ai-all-markets.yml",
+        "iphone_bot/tests/test_multimarket_workflow_dependencies.py"
+      ],
+      "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/444",
+      "merge_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/13326a54dbdcea7ffa09ffce97ff5893185b7db2"
+    },
+    {
+      "id": "B1",
+      "severity": "high",
+      "title": "Historical primary-model capture evidence incomplete",
+      "status": "BLOCKED_MISSING_IMMUTABLE_EVIDENCE",
+      "count": 60,
+      "details": "9 changed thresholds from original frozen line and51 markets never primary-frozen;7 have separate research receipt,53 have no AI receipt. Existing forecasts and exact thresholds cannot be fabricated posttip. Heartbeat and release gate correctly remain red.",
+      "workaround_attempt": "Examined archived captures, research cohort and branch/PR history; kept separate cohorts; fixed recoverable DNP grading without inventing evidence"
+    },
+    {
+      "id": "B2",
+      "severity": "high",
+      "title": "Repeated legacy Pages deployment cancellation",
+      "status": "RECOVERED_OUTPUT_ADMIN_FIX_BLOCKED",
+      "details": "Latest successful Pages runs43558860916,43558902420,43559021208,43559106496 delivered corrected grading JSON; recurring cancellation root remains.",
+      "blocker": "GitHub connector excludes Pages administration; browser settings page is signed-out404",
+      "required_action": "Repository owner: Settings > Pages > Build and deployment > Source: GitHub Actions; then verify existing controlled Pages workflow. No secret changes required."
+    },
+    {
+      "id": "B3",
+      "severity": "medium",
+      "title": "Browser-direct ESPN receipt unavailable",
+      "status": "UNVERIFIED_DIRECT_SOURCE",
+      "details": "Current real browser probe attempted direct source but received false;3 active NBA games had no missing score/player coverage through published/raw fallbacks.30-second timer exists, but end-to-end direct update freshness is not certified.",
+      "workaround_attempt": "Verified free published/raw fallback, stale-data safeguards and phone rendering; no paid polling"
+    },
+    {
+      "id": "B4",
+      "severity": "high",
+      "title": "Fresh verified standard provider board unavailable",
+      "status": "BLOCKED_SOURCE_AVAILABILITY",
+      "details": "Current offers0 with stale/unverified source status, not certified empty coverage. Production generators correctly refuse output. All9 current slate games already started; no paid source refresh authorized.",
+      "workaround_attempt": "Used immutable pretip records for settlement and official free final results; did not fabricate future or posttip quote captures"
+    }
+  ],
+  "notification": {
+    "requested": true,
+    "delivery_confirmed": false
+  },
+  "persistence": "This receipt and compact evidence committed to repository; no raw credentials or full ledgers included"
+}

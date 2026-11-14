@@ -1,0 +1,68 @@
+test_after_tipoff_cannot_backfill (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_after_tipoff_cannot_backfill) ... ok
+test_explicit_official_final_dnp_settles_each_original_threshold (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_explicit_official_final_dnp_settles_each_original_threshold) ... 
+  test_explicit_official_final_dnp_settles_each_original_threshold (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_explicit_official_final_dnp_settles_each_original_threshold) (source='NBA_CDN_FINAL') ... FAIL
+  test_explicit_official_final_dnp_settles_each_original_threshold (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_explicit_official_final_dnp_settles_each_original_threshold) (source='ESPN_FINAL') ... FAIL
+test_first_prediction_preserved_and_new_pretip_threshold_separately_frozen (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_first_prediction_preserved_and_new_pretip_threshold_separately_frozen) ... ok
+test_four_markets_can_grade_independently (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_four_markets_can_grade_independently) ... ok
+test_grader_not_blocked_behind_model_training (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_grader_not_blocked_behind_model_training) ... ok
+test_multiple_pretip_thresholds_grade_independently_at_original_lines (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_multiple_pretip_thresholds_grade_independently_at_original_lines) ... ok
+test_revised_threshold_captured_after_tipoff_never_frozen (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_revised_threshold_captured_after_tipoff_never_frozen) ... ok
+test_unknown_box_source_cannot_grade (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_unknown_box_source_cannot_grade) ... ok
+test_unverified_dnp_cannot_change_a_pick (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_unverified_dnp_cannot_change_a_pick) ... ok
+test_verified_dnp_and_scored_final_disagree_so_do_not_settle (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_verified_dnp_and_scored_final_disagree_so_do_not_settle) ... ok
+test_verified_dnp_is_excluded_not_pending_or_loss (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_verified_dnp_is_excluded_not_pending_or_loss) ... ok
+test_alternate_and_post_tip_capture_fail_closed (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_alternate_and_post_tip_capture_fail_closed) ... ok
+test_completed_flag_does_not_confuse_pending_with_success (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_completed_flag_does_not_confuse_pending_with_success) ... ok
+test_cross_provider_dnp_ids_match_only_exact_verified_event (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_cross_provider_dnp_ids_match_only_exact_verified_event) ... ok
+test_different_lines_are_separate_gradeable_records (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_different_lines_are_separate_gradeable_records) ... ok
+test_exact_line_push_requires_no_win_or_loss (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_exact_line_push_requires_no_win_or_loss) ... ok
+test_genuine_graded_pick_passes (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_genuine_graded_pick_passes) ... ok
+test_grade_must_match_independent_final_value (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_grade_must_match_independent_final_value) ... ok
+test_official_dnp_requires_void_not_pending (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_official_dnp_requires_void_not_pending) ... ok
+test_official_final_dnp_is_actionable_then_reconciles_as_exclusion (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_official_final_dnp_is_actionable_then_reconciles_as_exclusion) ... 
+  test_official_final_dnp_is_actionable_then_reconciles_as_exclusion (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_official_final_dnp_is_actionable_then_reconciles_as_exclusion) (source='NBA_CDN_FINAL') ... FAIL
+  test_official_final_dnp_is_actionable_then_reconciles_as_exclusion (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_official_final_dnp_is_actionable_then_reconciles_as_exclusion) (source='ESPN_FINAL') ... FAIL
+test_official_final_requires_immediate_settlement (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_official_final_requires_immediate_settlement) ... ok
+test_overdue_without_real_final_fails_not_infers_result (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_overdue_without_real_final_fails_not_infers_result) ... ok
+test_reject_duplicate_saved_pick_versions (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_reject_duplicate_saved_pick_versions) ... ok
+test_standard_direction_is_checked_against_original_line (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_standard_direction_is_checked_against_original_line) ... ok
+test_verified_pregame_pending_is_allowed_before_official_final (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_verified_pregame_pending_is_allowed_before_official_final) ... ok
+test_verified_void_counts_neither_win_loss_nor_pending (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_verified_void_counts_neither_win_loss_nor_pending) ... ok
+test_grader_completion_refreshes_reconciliation_without_waiting_for_cron (iphone_bot.tests.test_published_pick_settlement.SettlementPublicationWorkflowTests.test_grader_completion_refreshes_reconciliation_without_waiting_for_cron) ... ok
+
+======================================================================
+FAIL: test_explicit_official_final_dnp_settles_each_original_threshold (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_explicit_official_final_dnp_settles_each_original_threshold) (source='NBA_CDN_FINAL')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0434/iphone_bot/tests/test_multimarket_forecast_ledger.py", line 104, in test_explicit_official_final_dnp_settles_each_original_threshold
+    self.assertEqual(result["new_verified_dnp_exclusions"],2)
+AssertionError: 0 != 2
+
+======================================================================
+FAIL: test_explicit_official_final_dnp_settles_each_original_threshold (iphone_bot.tests.test_multimarket_forecast_ledger.ImmutableMarketsTests.test_explicit_official_final_dnp_settles_each_original_threshold) (source='ESPN_FINAL')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0434/iphone_bot/tests/test_multimarket_forecast_ledger.py", line 104, in test_explicit_official_final_dnp_settles_each_original_threshold
+    self.assertEqual(result["new_verified_dnp_exclusions"],2)
+AssertionError: 0 != 2
+
+======================================================================
+FAIL: test_official_final_dnp_is_actionable_then_reconciles_as_exclusion (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_official_final_dnp_is_actionable_then_reconciles_as_exclusion) (source='NBA_CDN_FINAL')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0434/iphone_bot/tests/test_published_pick_settlement.py", line 46, in test_official_final_dnp_is_actionable_then_reconciles_as_exclusion
+    self.assertEqual(pending["actionable_verified_finals"],1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_official_final_dnp_is_actionable_then_reconciles_as_exclusion (iphone_bot.tests.test_published_pick_settlement.PublishedCaptureSettlementTests.test_official_final_dnp_is_actionable_then_reconciles_as_exclusion) (source='ESPN_FINAL')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0434/iphone_bot/tests/test_published_pick_settlement.py", line 46, in test_official_final_dnp_is_actionable_then_reconciles_as_exclusion
+    self.assertEqual(pending["actionable_verified_finals"],1)
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.003s
+
+FAILED (failures=4)

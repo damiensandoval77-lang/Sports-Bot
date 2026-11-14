@@ -1,0 +1,47 @@
+test_alternate_tier_cannot_become_grading_receipt (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_alternate_tier_cannot_become_grading_receipt) ... ok
+test_conflicting_final_stats_quarantined (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_conflicting_final_stats_quarantined) ... ok
+test_explicit_official_dnp_requires_reason_and_null_actual (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_explicit_official_dnp_requires_reason_and_null_actual) ... FAIL
+test_identity_and_source_mismatches_remain_unsettled (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_identity_and_source_mismatches_remain_unsettled) ... ok
+test_only_verified_final_after_tip_can_settle (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_only_verified_final_after_tip_can_settle) ... ok
+test_push_void_and_wrong_side (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_push_void_and_wrong_side) ... ok
+test_repeated_grading_is_idempotent_and_no_stale_overwrite (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_repeated_grading_is_idempotent_and_no_stale_overwrite) ... ok
+test_dnp_requires_approved_source_reason_and_null_actual (iphone_bot.tests.test_grade_frozen_baseline_join.FrozenBaselineTests.test_dnp_requires_approved_source_reason_and_null_actual) ... FAIL
+test_fake_source_not_a_grade (iphone_bot.tests.test_grade_frozen_baseline_join.FrozenBaselineTests.test_fake_source_not_a_grade) ... ok
+test_no_retroactive_frozen_or_provider_timestamp (iphone_bot.tests.test_grade_frozen_baseline_join.FrozenBaselineTests.test_no_retroactive_frozen_or_provider_timestamp) ... ok
+test_real_saved_pretip_snapshot_all_rows_valid_and_pending (iphone_bot.tests.test_grade_frozen_baseline_join.FrozenBaselineTests.test_real_saved_pretip_snapshot_all_rows_valid_and_pending) ... ok
+test_verified_final_grades_exact_original_identity (iphone_bot.tests.test_grade_frozen_baseline_join.FrozenBaselineTests.test_verified_final_grades_exact_original_identity) ... ok
+test_wrong_team_fails_closed (iphone_bot.tests.test_grade_frozen_baseline_join.FrozenBaselineTests.test_wrong_team_fails_closed) ... ok
+test_pr_checks_do_not_depend_on_current_posttip_provider_quotes (iphone_bot.tests.test_multimarket_workflow_dependencies.MultimarketWorkflowDependencies.test_pr_checks_do_not_depend_on_current_posttip_provider_quotes) ... FAIL
+test_shared_history_changes_trigger_both_pr_and_main (iphone_bot.tests.test_multimarket_workflow_dependencies.MultimarketWorkflowDependencies.test_shared_history_changes_trigger_both_pr_and_main) ... ok
+
+======================================================================
+FAIL: test_explicit_official_dnp_requires_reason_and_null_actual (iphone_bot.tests.test_grade_standard_quote_ai_research.FinalResearchTests.test_explicit_official_dnp_requires_reason_and_null_actual)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0434/iphone_bot/tests/test_grade_standard_quote_ai_research.py", line 54, in test_explicit_official_dnp_requires_reason_and_null_actual
+    self.assertEqual(reconcile(a,{"records":[valid]},now=POST)["records"][0]["grade"],"VOID")
+AssertionError: 'UNSETTLED_RESEARCH' != 'VOID'
+- UNSETTLED_RESEARCH
++ VOID
+
+
+======================================================================
+FAIL: test_dnp_requires_approved_source_reason_and_null_actual (iphone_bot.tests.test_grade_frozen_baseline_join.FrozenBaselineTests.test_dnp_requires_approved_source_reason_and_null_actual)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0434/iphone_bot/tests/test_grade_frozen_baseline_join.py", line 34, in test_dnp_requires_approved_source_reason_and_null_actual
+    self.assertEqual(grade(one,{"records":[{**f,**change}]})["pending"],1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_pr_checks_do_not_depend_on_current_posttip_provider_quotes (iphone_bot.tests.test_multimarket_workflow_dependencies.MultimarketWorkflowDependencies.test_pr_checks_do_not_depend_on_current_posttip_provider_quotes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-0434/iphone_bot/tests/test_multimarket_workflow_dependencies.py", line 27, in test_pr_checks_do_not_depend_on_current_posttip_provider_quotes
+    self.assertEqual(names[name].get('if'), "github.event_name != 'pull_request'")
+AssertionError: None != "github.event_name != 'pull_request'"
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.035s
+
+FAILED (failures=3)

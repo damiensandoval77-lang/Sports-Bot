@@ -1,0 +1,215 @@
+{
+  "start": "2026-11-14T04:34:03Z",
+  "pinned_main": "9eaaf1101ee49717b7f344cd25031d720b6f1049",
+  "browser": {
+    "checked_at": "2026-11-14T04:35:28.672260+00:00",
+    "status": "READY",
+    "browser_render_verified": true,
+    "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "app_title": "Dame's Picks \u00b7 NBA + NFL",
+    "NBA": {
+      "selected": "NBA",
+      "loaded": true,
+      "rows": 2353,
+      "rendered": 459,
+      "live_expected": 3,
+      "live_missing": 0,
+      "score_missing": 0,
+      "player_missing": 0,
+      "errors": [],
+      "status": "Checked 11:35 PM \u00b7 60 provider standard markets withheld from AI picks \u00b7 2026-11-12 NBA AI-only: 332 graded, 0 pending, 56 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    },
+    "NFL": {
+      "selected": "NFL",
+      "loaded": true,
+      "rows": 811,
+      "rendered": 74,
+      "live_expected": 0,
+      "live_missing": 0,
+      "score_missing": 0,
+      "player_missing": 0,
+      "errors": [],
+      "status": "Checked 11:35 PM \u00b7 60 provider standard markets withheld from AI picks \u00b7 2026-11-12 NBA AI-only: 332 graded, 0 pending, 56 exclusions \u00b7 Live values show only fresh verified player snapshots"
+    },
+    "reasons": [],
+    "browser_errors": [],
+    "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
+    "browser_direct_probe": {
+      "attempted": true,
+      "received": false,
+      "directGames": 0,
+      "directScores": 0,
+      "directErrors": [],
+      "at": null
+    }
+  },
+  "repair_merge": {
+    "sha": "feed3202382e3df5bd19a1fc4820498f905f0c94",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "repair_head": "342df6cfaa0b3c8a283abf8025008a4058dd2690",
+  "settlement_merge": {
+    "sha": "a34b4ea67f37549f478fae208ecc9762a338e0cd",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "settlement_head": "bb7b1317bb32ca63161211cdf5188062fdc54b92",
+  "branch_repairs": [
+    {
+      "branch": "fix/auth-current-season-position-source-20261111",
+      "sha": "8ffdb6650e2fe6bd273be833c0603650afc02470",
+      "tree": "8f21b8d2db03ae7ef4969385984d307623d3ac0e",
+      "commit": "f5512959c331675d514e0ff09277dfd6785b96a5",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "branch": "research/current-season-position-defense-evidence-20261111",
+      "sha": "6e907a0f4c790a1063f62d2a022b17b08b1a6250",
+      "tree": "856a8c01d74751196a1726e8f2c413c4654b024a",
+      "commit": "05cc421ec8d19801ba28322fc7db59ab5f374abf",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "branch": "research/join-pregame-matchup-features-20261111",
+      "sha": "36e513e2558c1f340c44faef907ab8100ca40e15",
+      "tree": "deecc1bcb2df7922a7085431599637ac040c210a",
+      "commit": "8a851d3fbbe8703415bd9120a8111d516b211928",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "branch": "research/official-defense-history-backfill-20261111",
+      "sha": "05d5188e18db4d641a23b623c4d2d8b625a091e9",
+      "tree": "1d142c9ca51a94d69914b7b5320d79ef7492ff81",
+      "commit": "c0e334e92beabe3ae37bbaee00cb64c2bf1e70de",
+      "result": {
+        "success": true
+      }
+    },
+    {
+      "branch": "research/verified-opponent-defense-context-20261111",
+      "sha": "daf13a6cb353ddf4a55d427c729c2ef1b6d5b251",
+      "tree": "8803d31e91a4f6577305567ed0607908bb06d6b8",
+      "commit": "d245ac9e508b266a3b0d9335b98e3d1caf357c7d",
+      "result": {
+        "success": true
+      }
+    }
+  ],
+  "automation": {
+    "enabled": true,
+    "schedule": "FREQ=HOURLY;INTERVAL=2",
+    "run_status": "in_progress",
+    "notification_delivery": "unknown"
+  },
+  "failures": [
+    {
+      "id": 43557137523,
+      "job": 132332430721,
+      "lines": [
+        "2026-11-14T04:32:24.5488993Z test_missing_live_matchup_fails (test_health_audit.HealthAuditTests.test_missing_live_matchup_fails) ... ok",
+        "2026-11-14T04:32:24.6736762Z test_completed_games_not_missing (test_slate_matchup_audit.SlateMatchupAuditTests.test_completed_games_not_missing) ... ok",
+        "2026-11-14T04:32:24.6739348Z test_missing_dallas_named_without_inventing_lines (test_slate_matchup_audit.SlateMatchupAuditTests.test_missing_dallas_named_without_inventing_lines) ... ok",
+        "2026-11-14T04:32:24.7310725Z   \"missing_game_names\": [",
+        "2026-11-14T04:32:24.7315998Z   \"notes\": \"Missing event coverage is separate from whether a provider offers props\""
+      ]
+    },
+    {
+      "id": 43556936681,
+      "job": 132331830515,
+      "lines": [
+        "2026-11-14T04:30:46.2721024Z PUBLIC DEPLOYMENT CHECK: {\"attempt_count\": 3, \"attempts\": [{\"checked_at\": \"2026-11-14T04:30:05.711876+00:00\", \"matched_offers\": 0, \"reasons\": [\"PUBLIC_AI_JOIN_UNAVAILABLE\", \"PUBLIC_COMPARISONS_MISSING\", \"PUBLIC_PROVIDER_SNAPSHOT_STALE\"], \"status\": \"DEGRADED\"}, {\"checked_at\": \"2026-11-14T04:30:25.941358+00:00\", \"matched_offers\": 0, \"reasons\": [\"PUBLIC_AI_JOIN_UNAVAILABLE\", \"PUBLIC_COMPARISONS_MISSING\", \"PUBLIC_PROVIDER_SNAPSHOT_STALE\"], \"status\": \"DEGRADED\"}, {\"checked_at\": \"2026-11-14T04:30:46.169861+00:00\", \"matched_offers\": 0, \"reasons\": [\"PUBLIC_AI_JOIN_UNAVAILABLE\", \"PUBLIC_COMPARISONS_MISSING\", \"PUBLIC_PROVIDER_SNAPSHOT_STALE\"], \"status\": \"DEGRADED\"}], \"browser_render_verified\": false, \"checked_at\": \"2026-11-14T04:30:46.169861+00:00\", \"html_handoff_present\": true, \"matched_by_game\": {}, \"matched_offers\": 0, \"note\": \"Public HTML and JSON readiness, not a browser screenshot, wager or calibrated betting accuracy.\", \"provider_partial\": false, \"reasons\": [\"PUBLIC_AI_JOIN_UNAVAILABLE\", \"PUBLIC_COMPARISONS_MISSING\", \"PUBLIC_PROVIDER_SNAPSHOT_STALE\"], \"site_url\": \"https://damiensandoval77-lang.github.io/Sports-Bot/\", \"status\": \"DEGRADED\"}",
+        "2026-11-14T04:30:48.5461414Z ##[group]Run echo \"::error::Public Sports-Bot page or saved research join is not verified. See docs/deployed_dashboard_probe.json\""
+      ]
+    },
+    {
+      "id": 43556923291,
+      "job": 132331792407,
+      "lines": [
+        "2026-11-14T04:29:59.1830976Z Traceback (most recent call last):"
+      ]
+    },
+    {
+      "id": 43556921537,
+      "job": 132331784961,
+      "lines": [
+        "2026-11-14T04:29:55.8716009Z ##[group]Run python -m iphone_bot.audit_primary_model_missing",
+        "2026-11-14T04:29:56.7522178Z TONIGHT_CAPTURE_GRADEABILITY {\"checked_at\": \"2026-11-14T04:29:56.719780+00:00\", \"game_date_eastern\": \"2026-11-13\", \"status\": \"CAPTURE_INCOMPLETE\", \"games\": [{\"game\": \"New York Knicks @ Indiana Pacers\", \"start\": \"2026-11-14T00:00:00+00:00\", \"source_quotes\": 81, \"standard_source_quotes\": 81, \"standard_unique_markets\": 81, \"standard_markets_without_frozen_model\": 11, \"standard_price_moves_from_original_frozen_line\": 2, \"standard_player_stat_markets_never_primary_frozen\": 9, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 11, \"unique_provider_player_stat_markets\": 46, \"frozen_ai_only\": 104, \"frozen_line_backed\": 70, \"line_backed_graded\": 70, \"ai_only_graded\": 80, \"line_backed_pending\": 0, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Milwaukee Bucks @ Orlando Magic\", \"start\": \"2026-11-14T00:00:00+00:00\", \"source_quotes\": 90, \"standard_source_quotes\": 90, \"standard_unique_markets\": 90, \"standard_markets_without_frozen_model\": 23, \"standard_price_moves_from_original_frozen_line\": 7, \"standard_player_stat_markets_never_primary_frozen\": 16, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 23, \"unique_provider_player_stat_markets\": 53, \"frozen_ai_only\": 92, \"frozen_line_backed\": 67, \"line_backed_graded\": 67, \"ai_only_graded\": 76, \"line_backed_pending\": 0, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Cleveland Cavaliers @ Miami Heat\", \"start\": \"2026-11-14T01:00:00+00:00\", \"source_quotes\": 82, \"standard_source_quotes\": 82, \"standard_unique_markets\": 82, \"standard_markets_without_frozen_model\": 6, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 6, \"missing_primary_with_separate_research_receipt\": 6, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 50, \"frozen_ai_only\": 104, \"frozen_line_backed\": 77, \"line_backed_graded\": 70, \"ai_only_graded\": 80, \"line_backed_pending\": 7, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Atlanta Hawks @ Chicago Bulls\", \"start\": \"2026-11-14T01:00:00+00:00\", \"source_quotes\": 90, \"standard_source_quotes\": 90, \"standard_unique_markets\": 90, \"standard_markets_without_frozen_model\": 8, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 8, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 8, \"unique_provider_player_stat_markets\": 52, \"frozen_ai_only\": 100, \"frozen_line_backed\": 82, \"line_backed_graded\": 82, \"ai_only_graded\": 68, \"line_backed_pending\": 0, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Memphis Grizzlies @ New Orleans Pelicans\", \"start\": \"2026-11-14T01:00:00+00:00\", \"source_quotes\": 88, \"standard_source_quotes\": 88, \"standard_unique_markets\": 88, \"standard_markets_without_frozen_model\": 1, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 1, \"missing_primary_with_separate_research_receipt\": 1, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 53, \"frozen_ai_only\": 100, \"frozen_line_backed\": 87, \"line_backed_graded\": 78, \"ai_only_graded\": 76, \"line_backed_pending\": 9, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Utah Jazz @ Houston Rockets\", \"start\": \"2026-11-14T01:30:00+00:00\", \"source_quotes\": 68, \"standard_source_quotes\": 68, \"standard_unique_markets\": 68, \"standard_markets_without_frozen_model\": 0, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 0, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 42, \"frozen_ai_only\": 104, \"frozen_line_backed\": 69, \"line_backed_graded\": 69, \"ai_only_graded\": 84, \"line_backed_pending\": 0, \"issues\": []}, {\"game\": \"Golden State Warriors @ San Antonio Spurs\", \"start\": \"2026-11-14T02:30:00+00:00\", \"source_quotes\": 97, \"standard_source_quotes\": 97, \"standard_unique_markets\": 97, \"standard_markets_without_frozen_model\": 0, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 0, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 56, \"frozen_ai_only\": 108, \"frozen_line_backed\": 98, \"line_backed_graded\": 0, \"ai_only_graded\": 0, \"line_backed_pending\": 98, \"issues\": []}, {\"game\": \"Portland Trail Blazers @ Sacramento Kings\", \"start\": \"2026-11-14T03:00:00+00:00\", \"source_quotes\": 82, \"standard_source_quotes\": 82, \"standard_unique_markets\": 82, \"standard_markets_without_frozen_model\": 8, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 8, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 8, \"unique_provider_player_stat_markets\": 51, \"frozen_ai_only\": 96, \"frozen_line_backed\": 74, \"line_backed_graded\": 0, \"ai_only_graded\": 0, \"line_backed_pending\": 74, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Oklahoma City Thunder @ LA Clippers\", \"start\": \"2026-11-14T03:30:00+00:00\", \"source_quotes\": 93, \"standard_source_quotes\": 93, \"standard_unique_markets\": 93, \"standard_markets_without_frozen_model\": 3, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 3, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 3, \"unique_provider_player_stat_markets\": 56, \"frozen_ai_only\": 96, \"frozen_line_backed\": 90, \"line_backed_graded\": 0, \"ai_only_graded\": 0, \"line_backed_pending\": 90, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}], \"issues\": [\"New York Knicks @ Indiana Pacers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Milwaukee Bucks @ Orlando Magic: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Cleveland Cavaliers @ Miami Heat: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Atlanta Hawks @ Chicago Bulls: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Memphis Grizzlies @ New Orleans Pelicans: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Portland Trail Blazers @ Sacramento Kings: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Oklahoma City Thunder @ LA Clippers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"], \"note\": \"Provider quotes, AI-only forecasts, line-backed frozen predictions and final grades are separate. Missing records never fabricated.\", \"summary\": {\"schedule_games\": 9, \"games_with_saved_source_quotes\": 9, \"games_with_frozen_ai\": 9, \"games_with_line_backed_models\": 9, \"total_quotes\": 771, \"total_standard_source_quotes\": 771, \"total_standard_markets_without_frozen_model\": 60, \"total_price_moves_from_original_frozen_line\": 9, \"total_player_stat_markets_never_primary_frozen\": 51, \"total_missing_primary_with_separate_research_receipt\": 7, \"total_missing_primary_without_any_ai_receipt\": 53, \"total_ai_only\": 904, \"total_line_backed\": 714, \"total_line_backed_graded\": 436, \"total_ai_only_graded\": 464}, \"current_upcoming_coverage\": {\"status\": \"UNVERIFIED\", \"checked_at\": \"2026-11-14T04:29:56.719780+00:00\", \"source_generated_at\": \"2026-11-14T02:52:21.475018+00:00\", \"verified_current_offers\": 0, \"matched_primary_offers\": 0, \"missing_primary_offers\": 0, \"games\": [], \"issues\": [\"CURRENT_SOURCE_OR_PRIMARY_LEDGER_UNVERIFIED\"], \"scope\": \"CURRENT_UPCOMING_STANDARD_OFFERS_ONLY\", \"research_and_provisional_count_as_primary\": false}}",
+        "2026-11-14T04:29:58.4239889Z TONIGHT_CAPTURE_GRADEABILITY {\"checked_at\": \"2026-11-14T04:29:58.395463+00:00\", \"game_date_eastern\": \"2026-11-13\", \"status\": \"CAPTURE_INCOMPLETE\", \"games\": [{\"game\": \"New York Knicks @ Indiana Pacers\", \"start\": \"2026-11-14T00:00:00+00:00\", \"source_quotes\": 81, \"standard_source_quotes\": 81, \"standard_unique_markets\": 81, \"standard_markets_without_frozen_model\": 11, \"standard_price_moves_from_original_frozen_line\": 2, \"standard_player_stat_markets_never_primary_frozen\": 9, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 11, \"unique_provider_player_stat_markets\": 46, \"frozen_ai_only\": 104, \"frozen_line_backed\": 70, \"line_backed_graded\": 70, \"ai_only_graded\": 80, \"line_backed_pending\": 0, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Milwaukee Bucks @ Orlando Magic\", \"start\": \"2026-11-14T00:00:00+00:00\", \"source_quotes\": 90, \"standard_source_quotes\": 90, \"standard_unique_markets\": 90, \"standard_markets_without_frozen_model\": 23, \"standard_price_moves_from_original_frozen_line\": 7, \"standard_player_stat_markets_never_primary_frozen\": 16, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 23, \"unique_provider_player_stat_markets\": 53, \"frozen_ai_only\": 92, \"frozen_line_backed\": 67, \"line_backed_graded\": 67, \"ai_only_graded\": 76, \"line_backed_pending\": 0, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Cleveland Cavaliers @ Miami Heat\", \"start\": \"2026-11-14T01:00:00+00:00\", \"source_quotes\": 82, \"standard_source_quotes\": 82, \"standard_unique_markets\": 82, \"standard_markets_without_frozen_model\": 6, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 6, \"missing_primary_with_separate_research_receipt\": 6, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 50, \"frozen_ai_only\": 104, \"frozen_line_backed\": 77, \"line_backed_graded\": 70, \"ai_only_graded\": 80, \"line_backed_pending\": 7, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Atlanta Hawks @ Chicago Bulls\", \"start\": \"2026-11-14T01:00:00+00:00\", \"source_quotes\": 90, \"standard_source_quotes\": 90, \"standard_unique_markets\": 90, \"standard_markets_without_frozen_model\": 8, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 8, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 8, \"unique_provider_player_stat_markets\": 52, \"frozen_ai_only\": 100, \"frozen_line_backed\": 82, \"line_backed_graded\": 82, \"ai_only_graded\": 68, \"line_backed_pending\": 0, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Memphis Grizzlies @ New Orleans Pelicans\", \"start\": \"2026-11-14T01:00:00+00:00\", \"source_quotes\": 88, \"standard_source_quotes\": 88, \"standard_unique_markets\": 88, \"standard_markets_without_frozen_model\": 1, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 1, \"missing_primary_with_separate_research_receipt\": 1, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 53, \"frozen_ai_only\": 100, \"frozen_line_backed\": 87, \"line_backed_graded\": 78, \"ai_only_graded\": 76, \"line_backed_pending\": 9, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Utah Jazz @ Houston Rockets\", \"start\": \"2026-11-14T01:30:00+00:00\", \"source_quotes\": 68, \"standard_source_quotes\": 68, \"standard_unique_markets\": 68, \"standard_markets_without_frozen_model\": 0, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 0, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 42, \"frozen_ai_only\": 104, \"frozen_line_backed\": 69, \"line_backed_graded\": 69, \"ai_only_graded\": 84, \"line_backed_pending\": 0, \"issues\": []}, {\"game\": \"Golden State Warriors @ San Antonio Spurs\", \"start\": \"2026-11-14T02:30:00+00:00\", \"source_quotes\": 97, \"standard_source_quotes\": 97, \"standard_unique_markets\": 97, \"standard_markets_without_frozen_model\": 0, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 0, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 0, \"unique_provider_player_stat_markets\": 56, \"frozen_ai_only\": 108, \"frozen_line_backed\": 98, \"line_backed_graded\": 0, \"ai_only_graded\": 0, \"line_backed_pending\": 98, \"issues\": []}, {\"game\": \"Portland Trail Blazers @ Sacramento Kings\", \"start\": \"2026-11-14T03:00:00+00:00\", \"source_quotes\": 82, \"standard_source_quotes\": 82, \"standard_unique_markets\": 82, \"standard_markets_without_frozen_model\": 8, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 8, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 8, \"unique_provider_player_stat_markets\": 51, \"frozen_ai_only\": 96, \"frozen_line_backed\": 74, \"line_backed_graded\": 0, \"ai_only_graded\": 0, \"line_backed_pending\": 74, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}, {\"game\": \"Oklahoma City Thunder @ LA Clippers\", \"start\": \"2026-11-14T03:30:00+00:00\", \"source_quotes\": 93, \"standard_source_quotes\": 93, \"standard_unique_markets\": 93, \"standard_markets_without_frozen_model\": 3, \"standard_price_moves_from_original_frozen_line\": 0, \"standard_player_stat_markets_never_primary_frozen\": 3, \"missing_primary_with_separate_research_receipt\": 0, \"missing_primary_without_any_ai_receipt\": 3, \"unique_provider_player_stat_markets\": 56, \"frozen_ai_only\": 96, \"frozen_line_backed\": 90, \"line_backed_graded\": 0, \"ai_only_graded\": 0, \"line_backed_pending\": 90, \"issues\": [\"STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"]}], \"issues\": [\"New York Knicks @ Indiana Pacers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Milwaukee Bucks @ Orlando Magic: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Cleveland Cavaliers @ Miami Heat: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Atlanta Hawks @ Chicago Bulls: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Memphis Grizzlies @ New Orleans Pelicans: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Portland Trail Blazers @ Sacramento Kings: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\", \"Oklahoma City Thunder @ LA Clippers: STANDARD_MARKETS_WITHOUT_FROZEN_MODEL\"], \"note\": \"Provider quotes, AI-only forecasts, line-backed frozen predictions and final grades are separate. Missing records never fabricated.\", \"summary\": {\"schedule_games\": 9, \"games_with_saved_source_quotes\": 9, \"games_with_frozen_ai\": 9, \"games_with_line_backed_models\": 9, \"total_quotes\": 771, \"total_standard_source_quotes\": 771, \"total_standard_markets_without_frozen_model\": 60, \"total_price_moves_from_original_frozen_line\": 9, \"total_player_stat_markets_never_primary_frozen\": 51, \"total_missing_primary_with_separate_research_receipt\": 7, \"total_missing_primary_without_any_ai_receipt\": 53, \"total_ai_only\": 904, \"total_line_backed\": 714, \"total_line_backed_graded\": 436, \"total_ai_only_graded\": 464}, \"current_upcoming_coverage\": {\"status\": \"UNVERIFIED\", \"checked_at\": \"2026-11-14T04:29:58.395463+00:00\", \"source_generated_at\": \"2026-11-14T02:52:21.475018+00:00\", \"verified_current_offers\": 0, \"matched_primary_offers\": 0, \"missing_primary_offers\": 0, \"games\": [], \"issues\": [\"CURRENT_SOURCE_OR_PRIMARY_LEDGER_UNVERIFIED\"], \"scope\": \"CURRENT_UPCOMING_STANDARD_OFFERS_ONLY\", \"research_and_provisional_count_as_primary\": false}}",
+        "2026-11-14T04:29:59.4425714Z ##[group]Run echo \"::error::CAPTURE INCOMPLETE: some games are missing saved lines, saved AI, or frozen line-backed models. Review docs/tonight_capture_gradeability.json\"",
+        "2026-11-14T04:29:59.4554149Z ##[error]CAPTURE INCOMPLETE: some games are missing saved lines, saved AI, or frozen line-backed models. Review docs/tonight_capture_gradeability.json"
+      ]
+    },
+    {
+      "id": 43556881946,
+      "job": 132331810461,
+      "lines": [
+        "2026-11-14T04:30:21.1249293Z test_missing_primary_ledger_fails_closed (test_provisional_short_history.ProvisionalTests.test_missing_primary_ledger_fails_closed) ... ok",
+        "2026-11-14T04:30:21.1373410Z {\"status\": \"PROVISIONAL_SHORT_HISTORY_DESCRIPTIVE_BASELINE\", \"count\": 0, \"blocker\": \"SOURCE_REFRESH_FAILED\", \"excluded\": {}}",
+        "2026-11-14T04:30:24.8168781Z {\"status\": \"PROVISIONAL_SHORT_HISTORY_DESCRIPTIVE_BASELINE\", \"count\": 0, \"blocker\": \"VERIFIED_STANDARD_FEED_UNAVAILABLE\", \"excluded\": {}}"
+      ]
+    },
+    {
+      "id": 43554236479,
+      "job": 132323348712,
+      "lines": [
+        "2026-11-14T03:57:50.5440168Z ##[group]Run python -m iphone_bot.unified_dames_readiness",
+        "2026-11-14T03:57:51.1118387Z {\"status\": \"DEGRADED\", \"app\": {\"state\": \"READY\", \"issues\": []}, \"sports\": {\"NBA\": {\"state\": \"DEGRADED\", \"issues\": [\"ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL\"]}, \"NFL\": {\"state\": \"READY\", \"issues\": []}}}",
+        "2026-11-14T03:57:52.4532110Z {\"status\": \"DEGRADED\", \"app\": {\"state\": \"READY\", \"issues\": []}, \"sports\": {\"NBA\": {\"state\": \"DEGRADED\", \"issues\": [\"ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL\"]}, \"NFL\": {\"state\": \"READY\", \"issues\": []}}}",
+        "2026-11-14T03:57:53.5858078Z ##[group]Run echo \"::error::Unified Dame's Picks integrity DEGRADED; inspect docs/dames-picks/unified_readiness.json\"",
+        "2026-11-14T03:57:53.6007207Z ##[error]Unified Dame's Picks integrity DEGRADED; inspect docs/dames-picks/unified_readiness.json"
+      ]
+    },
+    {
+      "id": 43554039386,
+      "job": 132322725679,
+      "lines": [
+        "2026-11-14T03:55:20.3540015Z test_missing_schedule_fails_closed (test_end_to_end_readiness.ReadinessTests.test_missing_schedule_fails_closed) ... ok",
+        "2026-11-14T03:55:20.3541967Z test_partial_feed_is_not_ready_even_with_many_matches (test_end_to_end_readiness.ReadinessTests.test_partial_feed_is_not_ready_even_with_many_matches) ... ok",
+        "2026-11-14T03:55:20.3544187Z test_posttip_uses_frozen_capture_not_expired_live_offer (test_end_to_end_readiness.ReadinessTests.test_posttip_uses_frozen_capture_not_expired_live_offer) ... ok",
+        "2026-11-14T03:55:20.3549490Z test_stale_data_and_missing_grades_fail (test_end_to_end_readiness.ReadinessTests.test_stale_data_and_missing_grades_fail) ... ok",
+        "2026-11-14T03:55:20.3571990Z test_validated_season_requires_exact_matchup_not_only_count (test_end_to_end_readiness.ReadinessTests.test_validated_season_requires_exact_matchup_not_only_count) ... ok",
+        "2026-11-14T03:55:20.3730754Z ##[group]Run python -m iphone_bot.end_to_end_readiness",
+        "2026-11-14T03:55:20.4176750Z   \"status\": \"DEGRADED\",",
+        "2026-11-14T03:55:20.4191362Z   \"note\": \"Snapshot readiness only. No live API calls, no credit use, and no claim about betting accuracy.\"",
+        "2026-11-14T03:55:20.4334059Z   name: end-to-end-readiness-43554039386",
+        "2026-11-14T03:55:20.4334392Z   path: out/end-to-end-readiness.json",
+        "2026-11-14T03:55:21.7746464Z Artifact end-to-end-readiness-43554039386.zip successfully finalized. Artifact ID 14097830189",
+        "2026-11-14T03:55:21.7747940Z Artifact end-to-end-readiness-43554039386 has been successfully uploaded! Final size is 775 bytes. Artifact ID is 14097830189"
+      ]
+    },
+    {
+      "id": 43553716185,
+      "job": 132321703447,
+      "lines": [
+        "2026-11-14T03:51:14.3362432Z   \"status\": \"DEGRADED\",",
+        "2026-11-14T03:51:14.3378204Z       \"domain\": \"NBA readiness\",",
+        "2026-11-14T03:51:14.3380418Z       \"detail\": \"status=BLOCKED; check published readiness blockers\"",
+        "2026-11-14T03:51:14.3400975Z       \"code\": \"NO_MISSING_ACTIVE_GAMES\","
+      ]
+    },
+    {
+      "id": 43553614237,
+      "job": 132321385251,
+      "lines": [
+        "2026-11-14T03:50:01.1942794Z HEAD is now at 3877f31 Record honest NBA production feed readiness",
+        "2026-11-14T03:50:01.4407564Z NBA AI FORECAST ARCHIVE RECONCILIATION: {\"checked_at\": \"2026-11-14T03:50:01.421795+00:00\", \"daily_report_time_adjustments\": [{\"date\": \"2026-11-13\", \"generated_at\": \"2026-11-14T03:23:58.179750+00:00\", \"newly_started_unresolved_forecasts\": 96, \"report\": \"today\"}], \"daily_status_reports_crosschecked\": [\"2026-11-12\", \"2026-11-13\"], \"days\": {\"2026-11-11\": {\"accounted_for\": 212, \"captured\": 212, \"excluded_nonparticipant\": 0, \"graded\": 172, \"pending\": 0, \"pending_by_game\": {}, \"void_dnp\": 40}, \"2026-11-12\": {\"accounted_for\": 388, \"captured\": 388, \"excluded_nonparticipant\": 0, \"graded\": 332, \"pending\": 0, \"pending_by_game\": {}, \"void_dnp\": 56}, \"2026-11-13\": {\"accounted_for\": 196, \"captured\": 904, \"excluded_nonparticipant\": 0, \"graded\": 156, \"pending\": 708, \"pending_by_game\": {\"Atlanta Hawks @ Chicago Bulls\": 100, \"Cleveland Cavaliers @ Miami Heat\": 104, \"Golden State Warriors @ San Antonio Spurs\": 108, \"Memphis Grizzlies @ New Orleans Pelicans\": 100, \"Oklahoma City Thunder @ LA Clippers\": 96, \"Portland Trail Blazers @ Sacramento Kings\": 96, \"Utah Jazz @ Houston Rockets\": 104}, \"void_dnp\": 40}}, \"note\": \"Unresolved is not a loss or DNP. Final settlement requires verified player-level results. This audit never changes outcomes.\", \"status\": \"VERIFIED_FINAL_ROWS_OUTSTANDING\", \"verified_historical_outcomes_not_in_rolling_archive\": 2540}",
+        "2026-11-14T03:50:01.4877621Z PRODUCTION READINESS: {\"blocked\": [\"scoreboard\", \"live_player_stats\"], \"degraded\": [], \"passing\": 5, \"required\": 7, \"status\": \"BLOCKED\"}",
+        "2026-11-14T03:50:01.5781058Z {\"status\": \"DEGRADED\", \"app\": {\"state\": \"READY\", \"issues\": []}, \"sports\": {\"NBA\": {\"state\": \"DEGRADED\", \"issues\": [\"ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL\"]}, \"NFL\": {\"state\": \"READY\", \"issues\": []}}}",
+        "2026-11-14T03:50:01.6143890Z DAMES_PICKS_RELEASE_GATE {\"checked_at\": \"2026-11-14T03:50:01.613148+00:00\", \"status\": \"DEGRADED\", \"checks_passing\": false, \"release_certified\": false, \"healthy_streak_started_at\": null, \"healthy_streak_hours\": 0.0, \"required_consecutive_hours\": 72, \"blocking_checks\": [\"unified_artifacts\", \"nba_production\", \"nba_capture\"], \"checks\": {\"unified_artifacts\": {\"state\": \"DEGRADED\", \"issues\": [\"UNIFIED_APP_ARTIFACTS_NOT_READY\", \"NBA_OR_NFL_ARTIFACTS_NOT_READY\"]}, \"public_unified_browser\": {\"state\": \"READY\", \"issues\": []}, \"nba_production\": {\"state\": \"DEGRADED\", \"issues\": [\"NBA_PRODUCTION_NOT_READY\", \"NBA_FAILED_SCOREBOARD\", \"NBA_FAILED_LIVE_PLAYER_STATS\"]}, \"nba_capture\": {\"state\": \"DEGRADED\", \"issues\": [\"PRIMARY_STANDARD_COVERAGE_INCOMPLETE\"]}, \"nba_grading\": {\"state\": \"READY\", \"issues\": []}, \"published_pick_settlement\": {\"state\": \"READY\", \"issues\": []}, \"nfl_grading\": {\"state\": \"READY\", \"issues\": []}}, \"scope\": \"UNIFIED_DAMES_PICKS_NBA_NFL_RELEASE_GATE\", \"note\": \"72h sustained clean artifacts and observed public browser, pretip captures, frozen standard-only grading and current source gates; this does not prove predictive accuracy or zero downtime.\"}"
+      ]
+    }
+  ],
+  "dnp_merge": {
+    "sha": "13326a54dbdcea7ffa09ffce97ff5893185b7db2",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "dnp_head": "86f4d6d6883fa4b576d6a5e4773fc785ee572da2"
+}
