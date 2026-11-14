@@ -144,3 +144,23 @@ class LiveBoxscoreTests(unittest.TestCase):
 
 if __name__=="__main__":
     unittest.main()
+
+class PlayerCollectorCadenceTests(unittest.TestCase):
+    def test_live_window_has_recovery_headroom_before_twenty_minute_expiry(self):
+        import re
+        from pathlib import Path
+        workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/independent_nba_player_boxscores.yml').read_text()
+        crons = [c.split() for c in re.findall(r'cron: "([^"]+)"', workflow)]
+        for hour in [23, *range(9)]:
+            minutes = set()
+            for c in crons:
+                hours = set()
+                for part in c[1].split(','):
+                    if part == '*': hours.update(range(24))
+                    elif '-' in part:
+                        a,b=map(int,part.split('-'));hours.update(range(a,b+1))
+                    else: hours.add(int(part))
+                if hour in hours: minutes.update(map(int,c[0].split(',')))
+            ordered=sorted(minutes)
+            self.assertTrue(ordered)
+            self.assertLessEqual(max(b-a for a,b in zip(ordered,ordered[1:]+[ordered[0]+60])),5)
