@@ -1,6 +1,6 @@
 import datetime as dt
 import unittest
-from iphone_bot.production_readiness import check
+from iphone_bot.production_readiness import check, provider_confirms_pregame
 
 NOW=dt.datetime(2026,11,9,18,0,tzinfo=dt.timezone.utc)
 STAMP="2026-11-09T17:50:00+00:00"
@@ -61,6 +61,65 @@ def fixtures(now=NOW):
                              "comparisons":[{"game":GAME["game"],"projection":19}]}
     }
 class StrictProductionReadinessTests(unittest.TestCase):
+    def delayed_tip_fixture(self):
+        data=fixtures()
+        game=data["nba_schedule.json"]["games"][0]
+        game.update(start="2026-11-09T17:55:00+00:00", id="123")
+        data["nba_scoreboard_independent.json"].update(
+            generated_at="2026-11-09T17:59:00+00:00",
+            status="OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES", is_live_score_source=True,
+            games=[dict(game)])
+        return data
+
+    def test_fresh_exact_provider_pregame_does_not_require_invented_scores(self):
+        data=self.delayed_tip_fixture()
+        result=check(NOW,data)
+        self.assertEqual(result["started_not_marked_final"],0)
+        self.assertEqual(result["components"]["scoreboard"]["state"],"READY")
+        self.assertFalse(result["components"]["live_player_stats"]["required"])
+
+    def test_pregame_exemption_fails_closed_for_untrusted_or_stale_observations(self):
+        import copy
+        base=self.delayed_tip_fixture()
+        for change in ({"generated_at":"2026-11-09T17:54:00Z"},
+                       {"generated_at":"2026-11-09T18:01:00Z"},
+                       {"generated_at":"2026-11-09T17:54:59Z"},
+                       {"status":"STALE_UPSTREAM_ERROR"},
+                       {"is_live_score_source":False}, {"error":"TimeoutError"}):
+            data=copy.deepcopy(base);data["nba_scoreboard_independent.json"].update(change)
+            result=check(NOW,data)
+            self.assertEqual(result["started_not_marked_final"],1,change)
+            self.assertIn("IN_PROGRESS_GAME_MISSING_LIVE_SCORE",result["components"]["scoreboard"]["reasons"])
+        for key,value in (("game_state","unknown"),("date_eastern","2026-11-08"),("game","Other @ Team"),("id",None)):
+            data=copy.deepcopy(base);data["nba_scoreboard_independent.json"]["games"][0][key]=value
+            self.assertEqual(check(NOW,data)["started_not_marked_final"],1,(key,value))
+
+    def test_pregame_cannot_override_prior_live_or_ambiguous_fixture(self):
+        data=self.delayed_tip_fixture();game=data["nba_schedule.json"]["games"][0]
+        sb=data["nba_scoreboard_independent.json"]
+        game["game_state"]="in"
+        self.assertFalse(provider_confirms_pregame(game,sb,NOW))
+        game["game_state"]="pre";sb["games"].append(dict(sb["games"][0]))
+        self.assertFalse(provider_confirms_pregame(game,sb,NOW))
+
+    def test_pregame_cannot_erase_prior_live_player_evidence(self):
+        data=self.delayed_tip_fixture()
+        data["nba_player_tracking_independent.json"]={
+            "status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES", "date_eastern":"2026-11-09",
+            "captured_at":"2026-11-09T17:58:00Z", "games":[
+                {"game":GAME["game"],"state":"in","observed_at":"2026-11-09T17:58:00Z"}]}
+        self.assertEqual(check(NOW,data)["started_not_marked_final"],1)
+
+    def test_conflicting_score_period_or_team_cannot_confirm_pregame(self):
+        for key,value in (("home_score",2),("away_score","1"),("period",1),
+                          ("home_abbreviation","WRONG"),("away_abbreviation","WRONG")):
+            data=self.delayed_tip_fixture();game=data["nba_schedule.json"]["games"][0]
+            game.update(away_abbreviation="AAA",home_abbreviation="HHH")
+            sb=data["nba_scoreboard_independent.json"]
+            sb["games"][0].update(away_abbreviation="AAA",home_abbreviation="HHH")
+            sb["games"][0][key]=value
+            self.assertFalse(provider_confirms_pregame(game,sb,NOW),(key,value))
+
     def test_healthy_complete_pregame_is_ready(self):
         r=check(NOW,fixtures())
         self.assertEqual(r["status"],"READY",r["components"])
