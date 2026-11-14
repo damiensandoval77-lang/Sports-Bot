@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.verify_unified_dames_browser import assess, assess_live_order, assess_tennis
+from iphone_bot.verify_unified_dames_browser import assess, assess_live_order, assess_tennis, assess_confidence
 
 class UnifiedBrowserAssessmentTests(unittest.TestCase):
     def test_both_sports_rendered(self):
@@ -131,5 +131,25 @@ class TennisBrowserTests(unittest.TestCase):
         self.assertIn("TENNIS_EMPTY_STATE_NOT_HONEST",r)
         self.assertIn("TENNIS_LIMITATION_NOTICE_MISSING",r)
 
+class ConfidenceBrowserTests(unittest.TestCase):
+    def obs(self):
+        return dict(eligible_count=1,viewport_width=390,overflow=0,estimates=[80,62],
+          card=dict(line="6.5",projection="5.5",direction="UNDER",estimate="~62%"),
+          detail=dict(line="6.5",projection="5.5",direction="UNDER",estimate="~62%",note="Limited. Applied Nov 14. Raw saved confidence 75%."),
+          expected_estimate="~62%",expected_raw="75%",expected_applied="Nov 14",validation_notice="Limited.",grade_before="PENDING",grade_after="PENDING")
+    def test_correct_display(self):
+        self.assertEqual(assess_confidence(self.obs()),[])
+    def test_changed_estimate_pick_grade(self):
+        o=self.obs();o['detail'].update(estimate="75%",direction="OVER");o['grade_after']='GRADED'
+        r=assess_confidence(o)
+        for x in ['NBA_CORRECTION_DISPLAY_MISMATCH','NBA_CORRECTION_CHANGED_PICK','NBA_CORRECTION_CHANGED_GRADE']:self.assertIn(x,r)
+    def test_provenance_order_layout(self):
+        o=self.obs();o['detail']['note']='';o.update(estimates=[62,80],overflow=20)
+        r=assess_confidence(o)
+        for x in ['NBA_CORRECTION_PROVENANCE_MISSING','NBA_BOARD_CONFIDENCE_ORDER','NBA_CONFIDENCE_PHONE_LAYOUT']:self.assertIn(x,r)
+    def test_no_eligible_is_not_false_failure(self):
+        self.assertEqual(assess_confidence(dict(eligible_count=0,viewport_width=390,overflow=0,estimates=[])),[])
+
 if __name__=="__main__":unittest.main()
+
 
