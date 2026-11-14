@@ -174,6 +174,25 @@ def add_surface_rolling(df):
 # OPPONENT ROLLING AVERAGES (how does the opponent typically play?)
 # ---------------------------------------------------------------------------
 
+def _attach_exact_opponent(df, columns):
+    """Join the reciprocal player row, never another match in the tournament.
+
+    Sackmann's tourney_date is the tournament start, not a unique match date.
+    Old raw files must be rebuilt to retain match_num before using this join.
+    """
+    keys = ['tour', 'tourney_id', 'match_num', 'tourney_date']
+    identity = keys + ['player_id', 'opp_id']
+    if any(c not in df for c in identity) or df[identity].isna().any().any():
+        raise ValueError('Tennis match identity missing; rebuild raw data with match_num')
+    if df.duplicated(identity).any():
+        raise ValueError('Duplicate tennis player-match identity')
+    lookup = df[identity + columns].rename(columns={
+        'player_id': 'opp_id', 'opp_id': 'player_id',
+        **{c: 'opp_' + c for c in columns},
+    })
+    return df.merge(lookup, on=identity, how='left', validate='one_to_one', sort=False)
+
+
 def add_opponent_features(df):
     """
     For each match, attach the opponent's recent rolling stats.
@@ -193,14 +212,7 @@ def add_opponent_features(df):
     if not opp_cols:
         return df
 
-    # Create a slim lookup table: player_id, tourney_date -> rolling stats
-    lookup_df = df[['player_id', 'tourney_date'] + list(set(opp_cols.values()))].copy()
-    lookup_df = lookup_df.rename(columns={'player_id': 'opp_id', 'tourney_date': 'tourney_date'})
-    rename_map = {v: k for k, v in opp_cols.items()}
-    lookup_df = lookup_df.rename(columns=rename_map)
-
-    df = df.merge(lookup_df, on=['opp_id', 'tourney_date'], how='left')
-    return df
+    return _attach_exact_opponent(df, list(opp_cols.values()))
 
 
 def add_opponent_surface_context(df):
@@ -217,15 +229,7 @@ def add_opponent_surface_context(df):
     if not surf_cols:
         return df
         
-    lookup_df = df[['player_id', 'tourney_date'] + surf_cols].copy()
-    lookup_df = lookup_df.rename(columns={'player_id': 'opp_id'})
-    
-    # Rename cols to opp_{stat}_{surface}_L10
-    rename_map = {c: f'opp_{c}' for c in surf_cols}
-    lookup_df = lookup_df.rename(columns=rename_map)
-    
-    df = df.merge(lookup_df, on=['opp_id', 'tourney_date'], how='left')
-    return df
+    return _attach_exact_opponent(df, surf_cols)
 
 
 # ---------------------------------------------------------------------------

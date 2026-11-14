@@ -133,6 +133,7 @@ def expand_to_player_rows(df, tour):
 
         base = {
             'tourney_id':      m.get('tourney_id'),
+            'match_num':       m.get('match_num'),
             'tourney_name':    m.get('tourney_name'),
             'surface':         m.get('surface', 'Unknown'),
             'tourney_date':    m.get('tourney_date'),
