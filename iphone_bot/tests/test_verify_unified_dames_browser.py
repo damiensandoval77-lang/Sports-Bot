@@ -68,11 +68,11 @@ class UnifiedBrowserAssessmentTests(unittest.TestCase):
         self.assertLess(source.index("await liveTick(true)"),source.index("for sport in (\"NBA\",\"NFL\")"))
         self.assertIn('report["browser_direct_probe"]=direct',source)
 
-if __name__=="__main__":unittest.main()
+
 
 class LiveOrderTests(unittest.TestCase):
     def observation(self, cards):
-        return {"expected_ids":[c["id"] for c in cards],"cards":cards}
+        return {"sport":"NFL","selected":"NFL","mode":"live","expected_ids":[c["id"] for c in cards],"cards":cards}
     def test_live_first_and_upcoming_chronological(self):
         cards=[{"id":"live","state":"in","start":"2026-11-15T20:00:00Z"},
                {"id":"tomorrow","state":"scheduled","start":"2026-11-15T14:30:00Z"},
@@ -85,7 +85,7 @@ class LiveOrderTests(unittest.TestCase):
     def test_duplicate_and_missing_fixture_fail(self):
         self.assertIn("LIVE_FIXTURE_RENDER_MISMATCH",assess_live_order({"expected_ids":["a","b"],"cards":[{"id":"a"},{"id":"a"}]}))
     def test_empty_slate_is_valid(self):
-        self.assertEqual(assess_live_order({"expected_ids":[],"cards":[]}),[])
+        self.assertEqual(assess_live_order(self.observation([])),[])
     def test_unknown_time_last_in_state(self):
         cards=[{"id":"a","state":"scheduled","start":None},{"id":"b","state":"scheduled","start":"2026-11-15T14:30:00Z"}]
         self.assertIn("LIVE_FIXTURES_OUT_OF_ORDER",assess_live_order(self.observation(cards)))
@@ -94,3 +94,8 @@ class LiveOrderTests(unittest.TestCase):
         source=(Path(__file__).resolve().parents[1]/"verify_unified_dames_browser.py").read_text()
         self.assertIn('page.reload(wait_until="domcontentloaded"',source)
         self.assertIn('"WARM_RELOAD"',source)
+
+    def test_wrong_view_empty_slate_fails(self):
+        self.assertIn("LIVE_VIEW_NOT_SELECTED",assess_live_order({"sport":"NFL","selected":"NBA","mode":"tracker","expected_ids":[],"cards":[]}))
+
+if __name__=="__main__":unittest.main()
