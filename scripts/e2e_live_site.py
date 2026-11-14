@@ -125,6 +125,9 @@ def main():
                             projection:!!hero, take_immediately_after_projection:
                             !!hero?.nextElementSibling?.classList.contains('take')};
                 }""")
+                tabs=page.locator('#markets button').evaluate_all("buttons => buttons.map(b => ({text:b.textContent, width:b.clientWidth, content_width:b.scrollWidth}))")
+                check(sport.lower()+"_market_tab_labels_fit",bool(tabs) and
+                      all(t["content_width"]<=t["width"]+1 for t in tabs),tabs)
                 detail_evidence.append({"sport":sport,**evidence})
                 page.screenshot(path=str(OUT/(sport.lower()+"-player-detail.png")))
                 page.locator('#back').click()
