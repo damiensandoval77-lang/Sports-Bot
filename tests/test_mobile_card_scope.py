@@ -49,3 +49,25 @@ class BrowserCardScopeTests(unittest.TestCase):
                 self.assertTrue(verify_board_scope(browser))
             finally:
                 browser.close()
+
+class BrowserMarketTabTests(unittest.TestCase):
+    @unittest.skipUnless(__import__('os').environ.get('DAMES_SCOPE_BROWSER_TEST')=='1', 'browser regression runs in configured CI')
+    def test_long_market_names_fit_production_tab_buttons(self):
+        import re
+        from playwright.sync_api import sync_playwright
+        html=(Path(__file__).parents[1]/'docs/dames-picks/index.html').read_text()
+        css=re.search(r'<style>(.*?)</style>',html,re.S).group(1)
+        labels=['Fantasy Score · 15.0','Pass Attempts · 29.5','Pass Completions · 18.0','INT · 0.5','Pass+Rush Yds · 225.5']
+        with sync_playwright() as p:
+            browser=p.chromium.launch(headless=True,args=['--no-sandbox'])
+            try:
+                page=browser.new_page(viewport={'width':390,'height':844})
+                page.set_content('<style>'+css+'</style><div class="app"><div class="tabstrip">'+''.join('<button>'+label+'</button>' for label in labels)+'</div></div>')
+                self.assertEqual(page.locator('button').count(),len(labels))
+                self.assertTrue(page.locator('button').evaluate_all('bs => bs.every(b => b.scrollWidth <= b.clientWidth + 1)'))
+                self.assertTrue(page.locator('.tabstrip').evaluate('b => b.scrollWidth > b.clientWidth'))
+                self.assertTrue(page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+                page.locator('button').last.scroll_into_view_if_needed()
+                self.assertTrue(page.locator('button').last.is_visible())
+            finally:
+                browser.close()
