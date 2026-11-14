@@ -153,6 +153,64 @@ def observe_tennis(page):
             observations.append(obs)
     return observations
 
+def assess_confidence(obs):
+    reasons=[]
+    estimates=obs.get("estimates",[])
+    if any(a<b for a,b in zip(estimates,estimates[1:])):
+        reasons.append("NBA_BOARD_CONFIDENCE_ORDER")
+    if obs.get("viewport_width")!=390 or obs.get("overflow",0)>1:
+        reasons.append("NBA_CONFIDENCE_PHONE_LAYOUT")
+    if not obs.get("eligible_count"):
+        # Honest no-applicable-card result, not evidence of successful correction.
+        return reasons
+    card=obs.get("card",{}); detail=obs.get("detail",{})
+    if card.get("estimate")!=obs.get("expected_estimate") or detail.get("estimate")!=obs.get("expected_estimate"):
+        reasons.append("NBA_CORRECTION_DISPLAY_MISMATCH")
+    if detail.get("line")!=card.get("line") or detail.get("projection")!=card.get("projection") or detail.get("direction")!=card.get("direction"):
+        reasons.append("NBA_CORRECTION_CHANGED_PICK")
+    note=detail.get("note","")
+    for text in (obs.get("validation_notice") or "MISSING_VALIDATION_NOTICE",
+                 "Raw saved confidence "+obs.get("expected_raw", "MISSING"),
+                 "Applied "+obs.get("expected_applied", "MISSING")):
+        if text not in note:reasons.append("NBA_CORRECTION_PROVENANCE_MISSING")
+    if obs.get("grade_before")!=obs.get("grade_after"):
+        reasons.append("NBA_CORRECTION_CHANGED_GRADE")
+    return list(dict.fromkeys(reasons))
+
+def observe_confidence(page):
+    page.locator('button[data-league="NBA"]').click(timeout=10000)
+    page.locator('button[data-view="board"]').click(timeout=10000)
+    obs=page.evaluate("""() => {
+      const rows=shown(), candidates=rows.filter(p=>m.hitEstimate(p)?.confidenceCorrected);
+      const p=candidates.find(p=>p.player==='Jamal Murray'&&p.stat==='AST')||candidates[0];
+      const els=[...document.querySelectorAll('#cards .pick')];
+      const base={eligible_count:candidates.length, viewport_width:innerWidth,
+        overflow:document.documentElement.scrollWidth-innerWidth,
+        estimates:els.map(e=>Number(e.querySelectorAll('.stat-grid strong')[2]?.textContent.replace(/[~%]/g,''))).filter(Number.isFinite)};
+      if(!p)return {...base,scope:'NO_VISIBLE_ELIGIBLE_CORRECTION'};
+      const h=m.hitEstimate(p),el=els.find(e=>e.dataset.id===m.key(p)),strong=el?.querySelectorAll('.stat-grid strong');
+      return {...base,id:m.key(p),player:p.player,stat:p.stat,source_captured:h.sourceCaptured||p.confidenceCorrection.sourceCaptured,
+        applied_at:h.asOf,expected_estimate:'~'+Math.round(h.rate*100)+'%',expected_raw:Math.round(h.rawRate*100)+'%',
+        expected_applied:when(h.asOf),validation_notice:h.validationNotice,grade_before:p.grade,
+        card:{line:strong?.[0]?.textContent,projection:strong?.[1]?.textContent,estimate:strong?.[2]?.textContent,
+          direction:el?.querySelector('.chip')?.textContent.replace(/[↑↓]/g,'').trim()}};
+    }""")
+    if obs.get("eligible_count"):
+        # CSS.escape avoids interpreting punctuation in a source-derived ID.
+        selector=page.evaluate("id=>'#cards .pick[data-id="'+CSS.escape(id)+'"]'",obs['id'])
+        page.locator(selector).click(timeout=10000)
+        detail=page.evaluate("""() => {
+          const el=document.querySelector('#detail-content .hero'),a=el.querySelectorAll('.triple strong');
+          return {line:a[0].textContent,projection:a[1].textContent,estimate:a[2].textContent,
+            direction:el.querySelector('.lean').textContent.trim().split(' ')[0],note:el.querySelector('.note').textContent};
+        }""")
+        obs['detail']=detail
+        obs['grade_after']=page.evaluate("() => state.picked.grade")
+        obs['overflow']=max(obs['overflow'],page.evaluate("() => document.documentElement.scrollWidth-innerWidth"))
+        page.locator('#back').click(timeout=10000)
+    obs['reasons']=assess_confidence(obs)
+    return obs
+
 def probe():
     from playwright.sync_api import sync_playwright
     errors=[]
@@ -223,6 +281,8 @@ def probe():
             report=assess(result["NBA"],result["NFL"],errors,app_title=title)
             report["browser_direct_probe"]=direct
             report["TENNIS"]=observe_tennis(page)
+            report["nba_confidence"]=observe_confidence(page)
+            report["reasons"].extend(report["nba_confidence"]["reasons"])
             # Keep the same context/service-worker/cache and reload as a returning
             # user does. This tests a warm reload, not an invented historical cache.
             page.reload(wait_until="domcontentloaded",timeout=45000)
