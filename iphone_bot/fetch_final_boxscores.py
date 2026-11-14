@@ -234,10 +234,16 @@ def espn_boxscore_rows(event,summary):
                 reason=entry.get("reason") or entry.get("notPlayingReason")
                 played_minutes=(minutes(values[keys["MIN"]])
                                 if isinstance(values,list) and "MIN" in keys and keys["MIN"]<len(values) else None)
+                positive_stats=False
+                for stat in ("PTS","REB","AST"):
+                    if isinstance(values,list) and stat in keys and keys[stat]<len(values):
+                        try:positive_stats=positive_stats or float(values[keys[stat]])>0
+                        except (ValueError,TypeError):pass
                 if entry.get("didNotPlay") is True:
                     # Require an explicit final-game reason; a blank or
                     # contradictory DNP flag is not settlement evidence.
                     if (isinstance(reason,str) and reason.strip() and
+                        not positive_stats and
                         not (played_minutes is not None and played_minutes>0)):
                         row=verified_dnp_player(player.get("displayName"),code,opp,day,
                                                 reason,"ESPN_FINAL",event_id)
@@ -275,6 +281,29 @@ def verified_espn_schedule_hints(payload):
         except (KeyError,ValueError,TypeError):
             continue
     return result
+
+
+def final_espn_scoreboard_hints(payload, day):
+    """Bounded discovery only; a final summary must separately prove every DNP."""
+    candidates={}
+    conflicts=set()
+    for event in espn_final_events(payload):
+        try:
+            if local_date(event["date"])!=day:continue
+            comps=event.get("competitions") or []
+            if len(comps)!=1:continue
+            competitors=comps[0].get("competitors") or []
+            if len(competitors)!=2:continue
+            sides={c["homeAway"]:team(c.get("team",{}).get("abbreviation"))
+                   for c in competitors}
+            away,home=sides.get("away"),sides.get("home")
+            event_id=str(event.get("id") or "")
+            if not away or not home or away==home or not event_id.isdigit():continue
+            ident=(day,away,home)
+            if ident in candidates and candidates[ident]!=event_id:conflicts.add(ident)
+            else:candidates[ident]=event_id
+        except (KeyError,TypeError,ValueError):continue
+    return {k:v for k,v in candidates.items() if k not in conflicts}
 
 
 def verified_direct_espn_summary(event_id,matchup_key,summary):
@@ -493,7 +522,8 @@ def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_
     # player, independently check an ESPN COMPLETED final summary for an
     # explicit didNotPlay+reason. Never infer a DNP from absence or a blank
     # stat field, and never substitute ESPN scores into an NBA played row.
-    if known_espn_games and supplemental_espn_dnp_names:
+    if supplemental_espn_dnp_names:
+        discovered_days={}
         from iphone_bot.paper_pick_pipeline import strict_player_name
         for key in sorted(nba_complete):
             requests=supplemental_espn_dnp_names.get(key) or set()
@@ -509,7 +539,22 @@ def gather(records,now=None,request=request_json,known_game_ids=None,known_espn_
             absent=set(requests)-published
             if not absent:
                 continue
-            espn_id=known_espn_games.get(key)
+            espn_id=(known_espn_games or {}).get(key)
+            if not espn_id:
+                # One dated free-source lookup per needed day, only for exact
+                # completed NBA fixtures with requested missing players.
+                if day not in discovered_days:
+                    discovered_days[day]={}
+                    try:
+                        board=request(ESPN_SCORE+"?"+urllib.parse.urlencode(
+                            {"dates":day.replace("-",""),"limit":100}))
+                        discovered_days[day]=final_espn_scoreboard_hints(board,day)
+                    except (OSError,ValueError,KeyError,TypeError) as exc:
+                        report["errors"].append("Secondary ESPN date discovery unavailable: "+str(exc)[:140])
+                espn_id=discovered_days[day].get(key)
+                if espn_id:
+                    report["secondary_espn_dnp_discovered_game_hints"]=(
+                        report.get("secondary_espn_dnp_discovered_game_hints",0)+1)
             if not espn_id or not str(espn_id).isdigit():
                 report["secondary_espn_dnp_no_verified_game_hint"] = (
                     report.get("secondary_espn_dnp_no_verified_game_hint",0)+len(absent))
