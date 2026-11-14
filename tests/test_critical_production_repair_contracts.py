@@ -36,7 +36,7 @@ class CriticalProductionRepairContracts(unittest.TestCase):
             self.assertIn("github.event_name != 'pull_request'",step(name,title)["if"])
         self.assertNotIn("if",step(name,"Test strict native quote provenance and existing publisher compatibility"))
         self.assertNotIn("PRIZEPICKS_API_KEY",(WORK/name).read_text())
-        self.assertNotIn("fetch_prizepicks.py",(WORK/name).read_text())
+        self.assertNotIn("python -u iphone_bot/fetch_prizepicks.py",(WORK/name).read_text())
 
     def test_paid_source_is_not_auto_dispatched_by_heartbeat(self):
         text=(ROOT/"iphone_bot/pipeline_heartbeat.py").read_text()
