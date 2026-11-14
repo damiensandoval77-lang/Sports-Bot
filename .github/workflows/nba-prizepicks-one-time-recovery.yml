@@ -1,6 +1,10 @@
 name: One-time authorized NBA provider recovery (single compact request)
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - docs/prizepicks_one_time_recovery_request.json
 permissions:
   contents: write
   actions: write

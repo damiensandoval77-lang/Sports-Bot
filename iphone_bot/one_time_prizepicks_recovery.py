@@ -7,6 +7,8 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
+import subprocess
 from pathlib import Path
 import urllib.request
 import urllib.parse
@@ -127,16 +129,58 @@ def execute(receipt, schedule, now, run_id, key, reader=read_once, clock=None):
     return result, board
 
 
+REQUEST_PATH = 'docs/prizepicks_one_time_recovery_request.json'
+
+
+def authorize_trigger(event_name, ref, force, now, request=None, event=None, changed_paths=()):
+    """Allow manual dispatch or the exact one-off request-file push only."""
+    window(now)
+    if ref != 'refs/heads/main' or force != '1':
+        raise ValueError('main-only explicit recovery trigger required')
+    if event_name == 'workflow_dispatch':
+        return
+    if event_name != 'push' or not isinstance(request, dict) or not isinstance(event, dict):
+        raise ValueError('invalid one-off request trigger')
+    if event.get('ref') != ref or event.get('deleted') is True:
+        raise ValueError('invalid push ref')
+    if REQUEST_PATH not in changed_paths:
+        raise ValueError('push did not add or modify the one-off request')
+    requested = provider.timeparse(request.get('requested_at'))
+    if (request.get('authorization_id') != AUTHORIZATION or
+        request.get('action') != 'EXECUTE_SINGLE_AUTHORIZED_COMPACT_READ' or
+        requested is None or not START <= requested <= now < END):
+        raise ValueError('mismatched or expired one-off request')
+
+
+def changed_request_paths(event, github_sha):
+    # Actions push payloads may omit per-commit added/modified arrays. Verify
+    # the actual pushed Git diff instead, never trust a stale request's presence.
+    before, after = event.get('before'), event.get('after')
+    if (not all(isinstance(v,str) and re.fullmatch(r'[0-9a-f]{40}',v)
+                for v in (before,after)) or after != github_sha or before == '0'*40):
+        raise ValueError('unverified push commit range')
+    output = subprocess.check_output(['git','diff','--name-only','--diff-filter=AM',
+                                     before, after, '--', REQUEST_PATH], text=True)
+    return output.splitlines()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mode', choices=['claim','fetch'])
     args = parser.parse_args()
-    if os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch' or os.environ.get('PRIZEPICKS_FORCE_REFRESH') != '1':
-        raise ValueError('manual workflow only')
     docs = Path(__file__).resolve().parents[1]/'docs'
     path = docs/RECEIPT
     prior = json.loads(path.read_text())
     now = dt.datetime.now(dt.timezone.utc)
+    event_name = os.environ.get('GITHUB_EVENT_NAME', '')
+    request = event = None
+    changed_paths = ()
+    if event_name == 'push':
+        request = json.loads((docs/Path(REQUEST_PATH).name).read_text())
+        event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
+        changed_paths = changed_request_paths(event, os.environ.get('GITHUB_SHA'))
+    authorize_trigger(event_name, os.environ.get('GITHUB_REF'),
+                      os.environ.get('PRIZEPICKS_FORCE_REFRESH'), now, request, event, changed_paths)
     run = os.environ.get('GITHUB_RUN_ID', '')
     if args.mode == 'claim':
         output = claim(prior, now, run, os.environ.get('GITHUB_RUN_ATTEMPT',''))
