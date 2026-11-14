@@ -20,6 +20,23 @@ def fixture():
             'relationships':{'new_player':{'data':{'type':'new_player','id':'1'}},
                              'duration':{'data':{'type':'duration','id':'11'}}}}]}
 class NativeQuotes(unittest.TestCase):
+    def test_denial_preserves_snapshot_and_records_no_paid_retry(self):
+        import json,tempfile,urllib.error
+        from pathlib import Path
+        from iphone_bot import fetch_native_prizepicks as collector
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);(root/'docs').mkdir()
+            saved=root/'docs/prizepicks.json';saved.write_text('{"prior":true}')
+            with patch.object(collector,'ROOT',root),patch.object(collector,'urlopen',side_effect=urllib.error.HTTPError(collector.URL,403,'Forbidden',{},None)) as request:
+                with self.assertRaises(urllib.error.HTTPError):collector.main()
+                request.assert_called_once()
+            self.assertEqual(saved.read_text(),'{"prior":true}')
+            health=json.loads((root/'docs/prizepicks_refresh_health.json').read_text())
+            self.assertEqual(health['http_status'],403)
+            self.assertFalse(health['fresh_quotes_published'])
+            self.assertFalse(health['paid_provider_balance_checked'])
+            self.assertEqual(health['source'],NATIVE)
+
     def test_health_describes_current_free_source_not_paid_balance(self):
         board=build(fixture(),SCHEDULE,NOW.isoformat());health=refresh_health(board)
         self.assertEqual(NATIVE,health['source'])

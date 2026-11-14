@@ -41,6 +41,7 @@ jobs:
         run: |
           python -m unittest iphone_bot.tests.test_native_prizepicks iphone_bot.tests.test_fetch_prizepicks iphone_bot.tests.test_build_prizepicks_model_input iphone_bot.tests.test_publish_prizepicks_site iphone_bot.tests.test_validate_prizepicks_publish iphone_bot.tests.test_archive_prizepicks_pregame_lines -v
       - name: Fetch free public standard NBA quotes (no paid fallback)
+        id: native_fetch
         if: github.event_name != 'pull_request'
         run: python -m iphone_bot.fetch_native_prizepicks
       - name: Archive original independent pick'em lines and tiers
@@ -72,3 +73,26 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run nba-prizepicks-site-publish.yml --ref main
+      - name: Publish failed native refresh evidence without replacing saved quotes
+        if: failure() && steps.native_fetch.outcome == 'failure'
+        run: |
+          set -euo pipefail
+          python - <<'PYCODE'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('docs/prizepicks_refresh_health.json').read_text())
+          assert report['status']=='NATIVE_REFRESH_FAILED_PRIOR_SNAPSHOT_PRESERVED'
+          assert report['source']=='native_prizepicks_public'
+          assert report['fresh_quotes_published'] is False
+          PYCODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/prizepicks_refresh_health.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record failed native quote refresh without replacing prior snapshot'
+          for attempt in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; exit 1; }
+          done
+          exit 1
