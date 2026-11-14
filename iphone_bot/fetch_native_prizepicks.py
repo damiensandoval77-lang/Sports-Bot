@@ -87,6 +87,19 @@ def build(payload, schedule, observed_at):
         'total_provider_charged_credits': 0,
         'notice': 'Observed public standard pickem quotes, not sportsbook odds. Unsupported markets excluded.'}
 
+def refresh_health(board):
+    """Report this public request, never the retired vendor's account balance."""
+    return {'checked_at': board['generated_at'], 'status': 'FRESH_NATIVE_LINES_PUBLISHED',
+        'source': NATIVE, 'source_url': URL, 'api_requests_made': 1,
+        'provider_pages_read': board['pages_read'], 'provider_status': board['provider_status'],
+        'raw_rows': board['raw_rows_read'], 'eligible_upcoming_offers': len(board['board_offers']),
+        'rejected_by_reason': board['filtered_out_reasons'],
+        'source_board_remains_partial': board['partial_board'],
+        'board_coverage_scope': board['board_coverage_scope'],
+        'credits_reported_charged': 0, 'billing_scope': 'FREE_PUBLIC_ENDPOINT_NO_PAID_FALLBACK',
+        'monthly_credits_header': None, 'paid_provider_balance_checked': False,
+        'stale_quotes_published_as_current': False}
+
 def main():
     # One public request. A denial or schema change fails closed; no paid retry.
     request = Request(URL, headers={'User-Agent': 'DamesPicks-Audit/1.0', 'Accept': 'application/json'})
@@ -99,6 +112,7 @@ def main():
         previous = timeparse(json.loads(target.read_text()).get('generated_at'))
         if previous and previous >= timeparse(observed): raise ValueError('Newer snapshot already saved')
     target.write_text(json.dumps(board, ensure_ascii=False, separators=(',', ':'))+'\n')
+    (ROOT/'docs/prizepicks_refresh_health.json').write_text(json.dumps(refresh_health(board), indent=2)+'\n')
     print(json.dumps({'status': board['status'], 'generated_at': observed,
                       'markets': len(board['board_offers']), 'games': board['games_with_independent_lines']}))
 

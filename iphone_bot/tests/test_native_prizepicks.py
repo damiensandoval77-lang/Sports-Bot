@@ -2,7 +2,7 @@ import copy
 import datetime as dt
 import unittest
 from unittest.mock import patch
-from iphone_bot.fetch_native_prizepicks import build
+from iphone_bot.fetch_native_prizepicks import build, refresh_health
 from iphone_bot.publish_prizepicks_site import summarize
 from iphone_bot.build_prizepicks_model_input import convert
 from iphone_bot.validate_prizepicks_publish import validate
@@ -20,6 +20,17 @@ def fixture():
             'relationships':{'new_player':{'data':{'type':'new_player','id':'1'}},
                              'duration':{'data':{'type':'duration','id':'11'}}}}]}
 class NativeQuotes(unittest.TestCase):
+    def test_health_describes_current_free_source_not_paid_balance(self):
+        board=build(fixture(),SCHEDULE,NOW.isoformat());health=refresh_health(board)
+        self.assertEqual(NATIVE,health['source'])
+        self.assertEqual(board['generated_at'],health['checked_at'])
+        self.assertEqual(1,health['api_requests_made'])
+        self.assertEqual(0,health['credits_reported_charged'])
+        self.assertIsNone(health['monthly_credits_header'])
+        self.assertFalse(health['paid_provider_balance_checked'])
+        self.assertTrue(health['source_board_remains_partial'])
+        self.assertEqual(len(board['board_offers']),health['eligible_upcoming_offers'])
+
     def test_real_source_survives_export_model_and_immutable_archive(self):
         raw=build(fixture(),SCHEDULE,NOW.isoformat());site,health=summarize(raw,SCHEDULE)
         model=convert(site,now=NOW)
