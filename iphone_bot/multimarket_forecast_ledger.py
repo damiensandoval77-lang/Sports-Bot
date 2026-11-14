@@ -73,7 +73,9 @@ def merge(previous,feed,finals):
     # excludes ALL of that player's frozen thresholds, without recording
     # a win/loss, a synthetic zero, or a fake model error.
     allowed_finals={"NBA_CDN_FINAL","ESPN_FINAL"}
-    allowed_dnp={"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
+    # The upstream final grader also emits explicit DNP from official final boxes.
+    # Status, reason, null actual and exact event identity remain mandatory.
+    allowed_dnp=allowed_finals | {"NBA_OFFICIAL_INACTIVE_CROSSCHECKED",
                  "VERIFIED_FINAL_BOXSCORE_DNP_CROSSCHECKED",
                  "ESPN_FINAL_BOX_ABSENT_INJURY_LISTED"}
     for x in finals.get("records",[]):
