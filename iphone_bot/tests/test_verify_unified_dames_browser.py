@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.verify_unified_dames_browser import assess
+from iphone_bot.verify_unified_dames_browser import assess, assess_live_order
 
 class UnifiedBrowserAssessmentTests(unittest.TestCase):
     def test_both_sports_rendered(self):
@@ -67,5 +67,35 @@ class UnifiedBrowserAssessmentTests(unittest.TestCase):
         self.assertIn("page.wait_for_function(\"() => !state.liveBusy\"",source)
         self.assertLess(source.index("await liveTick(true)"),source.index("for sport in (\"NBA\",\"NFL\")"))
         self.assertIn('report["browser_direct_probe"]=direct',source)
+
+
+
+class LiveOrderTests(unittest.TestCase):
+    def observation(self, cards):
+        return {"sport":"NFL","selected":"NFL","mode":"live","expected_ids":[c["id"] for c in cards],"cards":cards}
+    def test_live_first_and_upcoming_chronological(self):
+        cards=[{"id":"live","state":"in","start":"2026-11-15T20:00:00Z"},
+               {"id":"tomorrow","state":"scheduled","start":"2026-11-15T14:30:00Z"},
+               {"id":"nextweek","state":"scheduled","start":"2026-11-22T18:00:00Z"}]
+        self.assertEqual(assess_live_order(self.observation(cards)),[])
+        cards[1:]=reversed(cards[1:])
+        self.assertIn("LIVE_FIXTURES_OUT_OF_ORDER",assess_live_order(self.observation(cards)))
+    def test_stale_board_cards_cannot_pass(self):
+        self.assertIn("LIVE_FIXTURE_RENDER_MISMATCH",assess_live_order({"expected_ids":["NFL|1"],"cards":[]}))
+    def test_duplicate_and_missing_fixture_fail(self):
+        self.assertIn("LIVE_FIXTURE_RENDER_MISMATCH",assess_live_order({"expected_ids":["a","b"],"cards":[{"id":"a"},{"id":"a"}]}))
+    def test_empty_slate_is_valid(self):
+        self.assertEqual(assess_live_order(self.observation([])),[])
+    def test_unknown_time_last_in_state(self):
+        cards=[{"id":"a","state":"scheduled","start":None},{"id":"b","state":"scheduled","start":"2026-11-15T14:30:00Z"}]
+        self.assertIn("LIVE_FIXTURES_OUT_OF_ORDER",assess_live_order(self.observation(cards)))
+    def test_warm_reload_same_page_is_exercised(self):
+        from pathlib import Path
+        source=(Path(__file__).resolve().parents[1]/"verify_unified_dames_browser.py").read_text()
+        self.assertIn('page.reload(wait_until="domcontentloaded"',source)
+        self.assertIn('"WARM_RELOAD"',source)
+
+    def test_wrong_view_empty_slate_fails(self):
+        self.assertIn("LIVE_VIEW_NOT_SELECTED",assess_live_order({"sport":"NFL","selected":"NBA","mode":"tracker","expected_ids":[],"cards":[]}))
 
 if __name__=="__main__":unittest.main()
