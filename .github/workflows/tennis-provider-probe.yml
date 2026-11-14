@@ -1,0 +1,76 @@
+name: One-time authorized tennis provider schema probe
+on:
+  push:
+    branches: [main]
+    paths: ['docs/tennis/provider_probe_request.json']
+  pull_request:
+    paths: ['iphone_bot/probe_tennis_provider.py', 'iphone_bot/tests/test_tennis_provider_probe.py', '.github/workflows/tennis-provider-probe.yml', 'docs/tennis/provider_probe_request.json']
+permissions:
+  contents: write
+concurrency:
+  group: tennis-provider-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event_name == 'push' && 'main' || github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Offline probe contract tests
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_tennis_provider_probe.py' -v
+      - name: Persist one-time claim before consuming provider credits
+        id: claim
+        if: github.event_name == 'push'
+        env:
+          TENNIS_PROBE_CLAIM: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          python - <<'PYCODE'
+          import json,os
+          from pathlib import Path
+          req=json.loads(Path('docs/tennis/provider_probe_request.json').read_text())
+          out=Path('docs/tennis/provider_probe_status.json')
+          old=json.loads(out.read_text()) if out.exists() else {}
+          if old.get('request_id')==req['request_id']:
+              print('Request already claimed; no retry or provider call')
+              raise SystemExit(0)
+          out.write_text(json.dumps({'request_id':req['request_id'],
+              'status':'CLAIMED_NO_RETRY','claim_token':os.environ['TENNIS_PROBE_CLAIM'],
+              'note':'Durably claimed before request; do not infer success or zero spend'},indent=2)+'\n')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('run_probe=true\n')
+          PYCODE
+          if git diff --quiet -- docs/tennis/provider_probe_status.json && git ls-files --error-unmatch docs/tennis/provider_probe_status.json >/dev/null 2>&1; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/tennis/provider_probe_status.json
+          git commit -m 'Claim authorized tennis probe before credit consumption'
+          for n in 1 2 3 4; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
+      - name: Make exactly one bounded authenticated request
+        if: github.event_name == 'push' && steps.claim.outputs.run_probe == 'true'
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+          TENNIS_PROBE_CLAIM: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: python iphone_bot/probe_tennis_provider.py
+      - name: Publish sanitized schema and consumption only
+        if: github.event_name == 'push' && steps.claim.outputs.run_probe == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/tennis/provider_probe_status.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record bounded tennis provider schema probe'
+          for n in 1 2 3 4; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+          done
+          exit 1
