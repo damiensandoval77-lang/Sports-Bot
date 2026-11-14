@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-14T02:34:16.020181+00:00",
+  "checked_at": "2026-11-14T02:52:51.686561+00:00",
   "game_date_eastern": "2026-11-13",
   "status": "CAPTURE_INCOMPLETE",
   "games": [
@@ -17,9 +17,9 @@
       "unique_provider_player_stat_markets": 53,
       "frozen_ai_only": 92,
       "frozen_line_backed": 67,
-      "line_backed_graded": 0,
-      "ai_only_graded": 0,
-      "line_backed_pending": 67,
+      "line_backed_graded": 67,
+      "ai_only_graded": 76,
+      "line_backed_pending": 0,
       "issues": [
         "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
       ]
@@ -38,9 +38,9 @@
       "unique_provider_player_stat_markets": 46,
       "frozen_ai_only": 104,
       "frozen_line_backed": 70,
-      "line_backed_graded": 0,
-      "ai_only_graded": 0,
-      "line_backed_pending": 70,
+      "line_backed_graded": 70,
+      "ai_only_graded": 80,
+      "line_backed_pending": 0,
       "issues": [
         "STANDARD_MARKETS_WITHOUT_FROZEN_MODEL"
       ]
@@ -149,14 +149,14 @@
     {
       "game": "Portland Trail Blazers @ Sacramento Kings",
       "start": "2026-11-14T03:00:00+00:00",
-      "source_quotes": 81,
-      "standard_source_quotes": 81,
-      "standard_unique_markets": 81,
-      "standard_markets_without_frozen_model": 8,
-      "standard_price_moves_from_original_frozen_line": 0,
+      "source_quotes": 82,
+      "standard_source_quotes": 82,
+      "standard_unique_markets": 82,
+      "standard_markets_without_frozen_model": 9,
+      "standard_price_moves_from_original_frozen_line": 1,
       "standard_player_stat_markets_never_primary_frozen": 8,
       "missing_primary_with_separate_research_receipt": 0,
-      "missing_primary_without_any_ai_receipt": 8,
+      "missing_primary_without_any_ai_receipt": 9,
       "unique_provider_player_stat_markets": 51,
       "frozen_ai_only": 96,
       "frozen_line_backed": 73,
@@ -170,14 +170,14 @@
     {
       "game": "Oklahoma City Thunder @ LA Clippers",
       "start": "2026-11-14T03:30:00+00:00",
-      "source_quotes": 86,
-      "standard_source_quotes": 86,
-      "standard_unique_markets": 86,
-      "standard_markets_without_frozen_model": 3,
-      "standard_price_moves_from_original_frozen_line": 0,
+      "source_quotes": 93,
+      "standard_source_quotes": 93,
+      "standard_unique_markets": 93,
+      "standard_markets_without_frozen_model": 10,
+      "standard_price_moves_from_original_frozen_line": 7,
       "standard_player_stat_markets_never_primary_frozen": 3,
       "missing_primary_with_separate_research_receipt": 0,
-      "missing_primary_without_any_ai_receipt": 3,
+      "missing_primary_without_any_ai_receipt": 10,
       "unique_provider_player_stat_markets": 56,
       "frozen_ai_only": 96,
       "frozen_line_backed": 83,
@@ -204,33 +204,51 @@
     "games_with_saved_source_quotes": 9,
     "games_with_frozen_ai": 9,
     "games_with_line_backed_models": 9,
-    "total_quotes": 763,
-    "total_standard_source_quotes": 763,
-    "total_standard_markets_without_frozen_model": 60,
-    "total_price_moves_from_original_frozen_line": 9,
+    "total_quotes": 771,
+    "total_standard_source_quotes": 771,
+    "total_standard_markets_without_frozen_model": 68,
+    "total_price_moves_from_original_frozen_line": 17,
     "total_player_stat_markets_never_primary_frozen": 51,
     "total_missing_primary_with_separate_research_receipt": 30,
-    "total_missing_primary_without_any_ai_receipt": 30,
+    "total_missing_primary_without_any_ai_receipt": 38,
     "total_ai_only": 904,
     "total_line_backed": 706,
-    "total_line_backed_graded": 0,
-    "total_ai_only_graded": 0
+    "total_line_backed_graded": 137,
+    "total_ai_only_graded": 156
   },
   "current_upcoming_coverage": {
     "status": "INCOMPLETE",
-    "checked_at": "2026-11-14T02:34:16.020181+00:00",
-    "source_generated_at": "2026-11-14T01:30:55.687111+00:00",
-    "verified_current_offers": 90,
-    "matched_primary_offers": 83,
-    "missing_primary_offers": 7,
+    "checked_at": "2026-11-14T02:52:51.686561+00:00",
+    "source_generated_at": "2026-11-14T02:52:21.475018+00:00",
+    "verified_current_offers": 88,
+    "matched_primary_offers": 73,
+    "missing_primary_offers": 15,
     "games": [
       {
         "game": "Oklahoma City Thunder @ LA Clippers",
         "start": "2026-11-14T03:30:00+00:00",
-        "verified_current_offers": 46,
-        "matched_primary_offers": 44,
-        "missing_primary_offers": 2,
+        "verified_current_offers": 43,
+        "matched_primary_offers": 34,
+        "missing_primary_offers": 9,
         "missing": [
+          {
+            "player": "Isaiah Jackson",
+            "team": "LAC",
+            "stat": "REB",
+            "line": 7.5
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "team": "OKC",
+            "stat": "PRA",
+            "line": 43.5
+          },
+          {
+            "player": "Aday Mara",
+            "team": "OKC",
+            "stat": "PTS",
+            "line": 11.5
+          },
           {
             "player": "Max Strus",
             "team": "LAC",
@@ -238,19 +256,43 @@
             "line": 15.5
           },
           {
+            "player": "Alex Caruso",
+            "team": "OKC",
+            "stat": "PTS",
+            "line": 8.0
+          },
+          {
             "player": "Max Strus",
             "team": "LAC",
             "stat": "PTS",
             "line": 9.5
+          },
+          {
+            "player": "Shai Gilgeous-Alexander",
+            "team": "OKC",
+            "stat": "PTS",
+            "line": 33.5
+          },
+          {
+            "player": "Alex Caruso",
+            "team": "OKC",
+            "stat": "PRA",
+            "line": 14.5
+          },
+          {
+            "player": "Brook Lopez",
+            "team": "LAC",
+            "stat": "PTS",
+            "line": 10.5
           }
         ]
       },
       {
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "start": "2026-11-14T03:00:00+00:00",
-        "verified_current_offers": 44,
+        "verified_current_offers": 45,
         "matched_primary_offers": 39,
-        "missing_primary_offers": 5,
+        "missing_primary_offers": 6,
         "missing": [
           {
             "player": "Keegan Murray",
@@ -263,6 +305,12 @@
             "team": "SAC",
             "stat": "PTS",
             "line": 10.5
+          },
+          {
+            "player": "Deni Avdija",
+            "team": "POR",
+            "stat": "PTS",
+            "line": 24.5
           },
           {
             "player": "Dylan Cardwell",
