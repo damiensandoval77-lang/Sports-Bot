@@ -1,0 +1,367 @@
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_audit_ai_forecast_coverage.py' -v .github/workflows/audit-ai-forecast-coverage.yml
+PASS python -m py_compile iphone_bot/audit_ai_forecast_coverage.py .github/workflows/audit-ai-forecast-coverage.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_grading_production.py' -v .github/workflows/authoritative-nba-grading-reconciliation.yml
+PASS python -m py_compile iphone_bot/app_release_gate.py .github/workflows/dames-picks-app-release-gate.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_app_release_gate.py' -v .github/workflows/dames-picks-app-release-gate.yml
+PASS python -m py_compile iphone_bot/freeze_baseline_pregame_quotes.py .github/workflows/freeze_baseline_pregame_quotes.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_freeze_baseline_pregame_quotes.py' -v .github/workflows/freeze_baseline_pregame_quotes.yml
+PASS python -m py_compile iphone_bot/grade_standard_quote_ai_research.py .github/workflows/grade-standard-quote-ai-research.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_grade_standard_quote_ai_research.py' -v .github/workflows/grade-standard-quote-ai-research.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_archive_standard_quote_ai_research.py' -v .github/workflows/grade-standard-quote-ai-research.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_baseline_join.py' -v .github/workflows/grade_automatic_baseline_join.yml
+PASS python -m py_compile iphone_bot/grade_frozen_baseline_join.py .github/workflows/grade_automatic_baseline_join.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verified_gamebook_inactives.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_grade_frozen_ai_forecasts.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_merge_ai_actual_publishing.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_final_boxscores.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_direct_espn_final_recovery.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_archived_espn_game_ids.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_fetch_final_boxscores.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m py_compile iphone_bot/grade_frozen_ai_forecasts.py iphone_bot/verified_final_cache.py .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verified_final_cache.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verified_prizepicks_inactives.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verified_boxscore_dnps.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verified_nba_official_dnps.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verified_nov9_nonparticipants.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verified_pretip_trade.py' -v .github/workflows/grade_frozen_ai_forecasts.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_nba_player_boxscores.py' -v .github/workflows/independent_nba_player_boxscores.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_merge_nba_player_boxscore_publish.py' -v .github/workflows/independent_nba_player_boxscores.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_independent_scoreboard.py' -v .github/workflows/independent_scoreboard_refresh.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_merge_scoreboard_snapshot.py' -v .github/workflows/independent_scoreboard_refresh.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_official_game_id_index.py" -v .github/workflows/independent_scoreboard_refresh.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_scoreboard_failure_workflow.py' -v .github/workflows/independent_scoreboard_refresh.yml
+PASS python -m py_compile iphone_bot/capture_ai_board.py iphone_bot/minutes_early_season_research.py iphone_bot/season_average_research.py iphone_bot/matchup_context.py iphone_bot/compare_live_models.py iphone_bot/fetch_current_form.py iphone_bot/train_defense_shadow.py iphone_bot/defense_training.py iphone_bot/experimental_probability.py iphone_bot/train_provisional.py iphone_bot/sportsbook_consensus.py iphone_bot/fetch_props.py iphone_bot/hypothetical_ev.py iphone_bot/paper_pick_pipeline.py iphone_bot/combined_projection.py iphone_bot/projection_explanation.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/fetch_prizepicks.py iphone_bot/fetch_official_injuries.py iphone_bot/research_context.py iphone_bot/minutes_model_v2.py iphone_bot/shot_profile_research.py iphone_bot/weight_research.py .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_matchup_context.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_experimental_probability.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_sportsbook_consensus.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_fetch_props.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_hypothetical_ev.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_paper_pick_pipeline.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_model_performance.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_accuracy_feedback.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_pipeline_health.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_research_upgrades.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_minutes_model_v2.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_shot_profile_research.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_fetch_prizepicks.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_combined_projection.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_season_average_research.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_minutes_early_season_research.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_projection_explanation.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_minutes_scenario_validation.py" -v .github/workflows/nba-ai-comparisons.yml
+PASS python -m py_compile iphone_bot/selective_challenger.py iphone_bot/paper_pick_pipeline.py iphone_bot/model_performance.py iphone_bot/accuracy_feedback.py iphone_bot/probability_audit.py iphone_bot/fetch_final_boxscores.py .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_paper_pick_pipeline.py' -v .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verify_paper_settlement_voids.py' -v .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_selective_challenger.py' -v .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_model_performance.py' -v .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_accuracy_feedback.py' -v .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_capture_ai_board.py' -v .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_probability_audit.py' -v .github/workflows/nba-ai-record.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_cross_market_coherence.py' -v .github/workflows/nba-cross-market-coherence.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pra_coherence_challenger.py' -v .github/workflows/nba-cross-market-coherence.yml
+PASS python -m py_compile iphone_bot/defender_matchup_v3.py iphone_bot/fetch_defender_matchups.py iphone_bot/import_archived_defender_matchups.py iphone_bot/defender_v3_holdout.py iphone_bot/defender_v3_points.py iphone_bot/defender_v3_assignment.py iphone_bot/defender_v3_replication.py .github/workflows/nba-defender-v3-research.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_defender_matchup_v3.py' -v .github/workflows/nba-defender-v3-research.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_fetch_defender_matchups.py' -v .github/workflows/nba-defender-v3-research.yml
+FAIL python -m unittest discover -s iphone_bot/tests -p 'test_import_archived_defender_matchups.py' -v .github/workflows/nba-defender-v3-research.yml
+test_exact_schema_and_alternates (test_import_archived_defender_matchups.ImportArchiveTests.test_exact_schema_and_alternates) ... ok
+test_missing_and_ambiguous_columns_fail_closed (test_import_archived_defender_matchups.ImportArchiveTests.test_missing_and_ambiguous_columns_fail_closed) ... ok
+test_parquet_roundtrip_and_duplicate_aggregation (test_import_archived_defender_matchups.ImportArchiveTests.test_parquet_roundtrip_and_duplicate_aggregation) ... ERROR
+test_real_archived_nba_v3_column_names_and_minutes (test_import_archived_defender_matchups.ImportArchiveTests.test_real_archived_nba_v3_column_names_and_minutes) ... ERROR
+test_reject_playoff_or_leaking_season (test_import_archived_defender_matchups.ImportArchiveTests.test_reject_playoff_or_leaking_season) ... ERROR
+
+======================================================================
+ERROR: test_parquet_roundtrip_and_duplicate_aggregation (test_import_archived_defender_matchups.ImportArchiveTests.test_parquet_roundtrip_and_duplicate_aggregation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_import_archived_defender_matchups.py", line 24, in test_parquet_roundtrip_and_duplicate_aggregation
+    import pyarrow as pa
+ModuleNotFoundError: No module named 'pyarrow'
+
+======================================================================
+ERROR: test_real_archived_nba_v3_column_names_and_minutes (test_import_archived_defender_matchups.ImportArchiveTests.test_real_archived_nba_v3_column_names_and_minutes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_import_archived_defender_matchups.py", line 46, in test_real_archived_nba_v3_column_names_and_minutes
+    import pyarrow as pa
+ModuleNotFoundError: No module named 'pyarrow'
+
+======================================================================
+ERROR: test_reject_playoff_or_leaking_season (test_import_archived_defender_matchups.ImportArchiveTests.test_reject_playoff_or_leaking_season)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_import_archived_defender_matchups.py", line 61, in test_reject_playoff_or_leaking_season
+    import pyarrow as pa
+ModuleNotFoundError: No module named 'pyarrow'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (errors=3)
+
+FAIL python -m unittest discover -s iphone_bot/tests -p 'test_defender_v3_holdout.py' -v .github/workflows/nba-defender-v3-research.yml
+test_game_split_does_not_score_training_rows (test_defender_v3_holdout.DefenderHoldoutTests.test_game_split_does_not_score_training_rows) ... ok
+test_no_invented_improvement_when_small_sample (test_defender_v3_holdout.DefenderHoldoutTests.test_no_invented_improvement_when_small_sample) ... ok
+test_real_archived_schema_requires_verified_nba_games (test_defender_v3_holdout.DefenderHoldoutTests.test_real_archived_schema_requires_verified_nba_games) ... ERROR
+
+======================================================================
+ERROR: test_real_archived_schema_requires_verified_nba_games (test_defender_v3_holdout.DefenderHoldoutTests.test_real_archived_schema_requires_verified_nba_games)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_defender_v3_holdout.py", line 34, in test_real_archived_schema_requires_verified_nba_games
+    import pyarrow as pa
+ModuleNotFoundError: No module named 'pyarrow'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (errors=1)
+
+FAIL python -m unittest discover -s iphone_bot/tests -p 'test_defender_v3_points.py' -v .github/workflows/nba-defender-v3-research.yml
+test_defender_v3_points (unittest.loader._FailedTest.test_defender_v3_points) ... ERROR
+
+======================================================================
+ERROR: test_defender_v3_points (unittest.loader._FailedTest.test_defender_v3_points)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_defender_v3_points
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_defender_v3_points.py", line 3, in <module>
+    import pyarrow as pa
+ModuleNotFoundError: No module named 'pyarrow'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_defender_v3_assignment.py' -v .github/workflows/nba-defender-v3-research.yml
+FAIL python -m unittest discover -s iphone_bot/tests -p 'test_defender_v3_replication.py' -v .github/workflows/nba-defender-v3-research.yml
+test_defender_v3_replication (unittest.loader._FailedTest.test_defender_v3_replication) ... ERROR
+
+======================================================================
+ERROR: test_defender_v3_replication (unittest.loader._FailedTest.test_defender_v3_replication)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_defender_v3_replication
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_defender_v3_replication.py", line 6, in <module>
+    import pyarrow as pa
+ModuleNotFoundError: No module named 'pyarrow'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+
+PASS python -m py_compile iphone_bot/refresh_injury_projections.py iphone_bot/injury_projection_adjustment.py .github/workflows/nba-fast-injury-reprojection.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_injury_projection_adjustment.py' -v .github/workflows/nba-fast-injury-reprojection.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_refresh_injury_projections.py' -v .github/workflows/nba-fast-injury-reprojection.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v .github/workflows/nba-free-official-injury-watch.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_underdog_injury_watch.py' -v .github/workflows/nba-free-official-injury-watch.yml
+PASS node --test iphone_bot/tests/test_nba_full_game_lifecycle.cjs .github/workflows/nba-full-game-lifecycle.yml
+PASS node --test iphone_bot/tests/test_live_prop_tracker.cjs .github/workflows/nba-full-game-lifecycle.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_nba_full_game_lifecycle_grading.py' -v .github/workflows/nba-full-game-lifecycle.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pregame_lifecycle_readiness.py' -v .github/workflows/nba-full-game-lifecycle.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_archive_prizepicks_pregame_lines.py' -v .github/workflows/nba-full-game-lifecycle.yml
+PASS python -m py_compile iphone_bot/verify_live_pregame_line_browser.py .github/workflows/nba-full-game-lifecycle.yml
+PASS python -m py_compile iphone_bot/grading_overdue_watchdog.py .github/workflows/nba-grading-overdue.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_grading_overdue_watchdog.py' -v .github/workflows/nba-grading-overdue.yml
+PASS python -m py_compile iphone_bot/historical_minutes_research.py iphone_bot/minutes_model_v2.py iphone_bot/research_context.py iphone_bot/shot_profile_research.py .github/workflows/nba-historical-minutes.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_historical_minutes_research.py' -v .github/workflows/nba-historical-minutes.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_minutes_model_v2.py' -v .github/workflows/nba-historical-minutes.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_shot_profile_research.py' -v .github/workflows/nba-historical-minutes.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_live_lagged_matchup_sidecar.py' -v .github/workflows/nba-live-lagged-challenger.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_points_hit_probability.py' -v .github/workflows/nba-live-lagged-challenger.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_lagged_matchup_points_ledger.py' -v .github/workflows/nba-live-lagged-challenger.yml
+PASS python -m py_compile iphone_bot/capture_live_research.py .github/workflows/nba-live-research-checkpoints.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_durable_research_storage.py' -v .github/workflows/nba-live-research-checkpoints.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_tracker_feed.py' -v .github/workflows/nba-live-tracker-backup.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_final_transition_grade_trigger.py' -v .github/workflows/nba-live-tracker-backup.yml
+PASS python -m py_compile iphone_bot/publish_live_tracker_feed.py .github/workflows/nba-live-tracker-backup.yml
+PASS python -m py_compile iphone_bot/fetch_props.py .github/workflows/nba-market-refresh.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_fetch_props.py' -v .github/workflows/nba-market-refresh.yml
+PASS python -m py_compile iphone_bot/minutes_v3_research.py iphone_bot/opportunity_v2_research.py iphone_bot/minutes_opportunity_joint_backtest.py .github/workflows/nba-minutes-v3-opportunity-v2.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_minutes_opportunity_v3v2.py' -v .github/workflows/nba-minutes-v3-opportunity-v2.yml
+PASS python -m py_compile iphone_bot/fetch_game_moneylines.py .github/workflows/nba-moneylines.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_fetch_game_moneylines.py' -v .github/workflows/nba-moneylines.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_workflow_dependencies.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_recover_csv_opportunities.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_live_multimarket_matchup.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_source_receipt.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_injury_refresh_integrity.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_quote_refresh_integrity.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_workflow_model_cache.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pretip_matchup_shadow.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s research/tests -p 'test_publish_matchup_shadow_guard.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest discover -s research/tests -p 'test_prospective_matchup_calibration.py' -v .github/workflows/nba-new-ai-all-markets.yml
+PASS python -m unittest iphone_bot.tests.test_espn_injury_void -v .github/workflows/nba-new-ai-multimarket-grade.yml
+PASS python -m py_compile iphone_bot/daily_projection_fallback.py .github/workflows/nba-no-line-daily-projections.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_daily_projection_fallback.py' -v .github/workflows/nba-no-line-daily-projections.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_reconcile_official_nba_schedule.py' -v .github/workflows/nba-no-line-daily-projections.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_fetch_hoopr_official_reconcile.py' -v .github/workflows/nba-no-line-daily-projections.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_settlement_merge.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_phase1_e2e_grading.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_dnp_settlement.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_missed_game_audit.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_projection_error_analysis.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_underprojection_research.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_extreme_miss_forensics.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_selection_quality_audit.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_combined_probability_audit.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_backtest.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_shooting_efficiency_grade.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_minutes_opportunity_joint_grade.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_assist_retrospective_backtest.py' -v .github/workflows/nba-postgame-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_official_web_final_boxscores.py' -v .github/workflows/nba-postgame-settlement.yml
+FAIL python -m unittest discover -s iphone_bot/tests -p 'test_fetch_cbs_final_boxscores.py' -v .github/workflows/nba-postgame-settlement.yml
+t_fetch_cbs_final_boxscores.CBSFallbackTests.test_missing_opponent_or_roster_fails_closed) ... ERROR
+test_no_pending_projections_no_network (test_fetch_cbs_final_boxscores.CBSFallbackTests.test_no_pending_projections_no_network) ... ok
+
+======================================================================
+ERROR: test_final_only_with_both_teams_and_matched_player (test_fetch_cbs_final_boxscores.CBSFallbackTests.test_final_only_with_both_teams_and_matched_player)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_fetch_cbs_final_boxscores.py", line 36, in test_final_only_with_both_teams_and_matched_player
+    actual=parse_final(synthetic(),"2026-11-06","WAS","ATL",records())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/fetch_cbs_final_boxscores.py", line 66, in parse_final
+    if BeautifulSoup is None:raise RuntimeError("beautifulsoup4 not installed")
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: beautifulsoup4 not installed
+
+======================================================================
+ERROR: test_missing_opponent_or_roster_fails_closed (test_fetch_cbs_final_boxscores.CBSFallbackTests.test_missing_opponent_or_roster_fails_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_fetch_cbs_final_boxscores.py", line 43, in test_missing_opponent_or_roster_fails_closed
+    self.assertEqual(parse_final(synthetic(),"2026-11-06","BOS","CHA",records()),[])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/fetch_cbs_final_boxscores.py", line 66, in parse_final
+    if BeautifulSoup is None:raise RuntimeError("beautifulsoup4 not installed")
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: beautifulsoup4 not installed
+
+======================================================================
+FAIL: test_cbs_live_route_recovers_from_boxscore_404 (test_fetch_cbs_final_boxscores.CBSFallbackTests.test_cbs_live_route_recovers_from_boxscore_404)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_fetch_cbs_final_boxscores.py", line 71, in test_cbs_live_route_recovers_from_boxscore_404
+    self.assertEqual(len(found),6)
+AssertionError: 0 != 6
+
+======================================================================
+FAIL: test_collector_queries_single_game_and_finds_final (test_fetch_cbs_final_boxscores.CBSFallbackTests.test_collector_queries_single_game_and_finds_final)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/97fb5f73fd0f/audit-20261114-2102-final/iphone_bot/tests/test_fetch_cbs_final_boxscores.py", line 52, in test_collector_queries_single_game_and_finds_final
+    self.assertEqual(len(result),6)
+AssertionError: 0 != 6
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (failures=2, errors=2)
+
+PASS python -m py_compile iphone_bot/archive_pregame_ai_board.py .github/workflows/nba-pregame-ai-archive.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_archive_pregame_ai_board.py' -v .github/workflows/nba-pregame-ai-archive.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_combined_simulation.py" -v .github/workflows/nba-prizepicks-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p "test_reliability_screen.py" -v .github/workflows/nba-prizepicks-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_edge_readiness.py' -v .github/workflows/nba-prizepicks-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_preliminary_edge.py' -v .github/workflows/nba-prizepicks-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunity_features.py' -v .github/workflows/nba-prizepicks-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_opportunity_shadow_models.py' -v .github/workflows/nba-prizepicks-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_research_ledger.py' -v .github/workflows/nba-prizepicks-research-ledger.yml
+PASS python -m py_compile iphone_bot/prizepicks_research_ledger.py .github/workflows/nba-prizepicks-research-ledger.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_final_recovery.py' -v .github/workflows/nba-prizepicks-research-ledger.yml
+PASS python -m py_compile iphone_bot/publish_prizepicks_site.py .github/workflows/nba-prizepicks-site-publish.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_publish_prizepicks_site.py' -v .github/workflows/nba-prizepicks-site-publish.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_per_date_coverage.py' -v .github/workflows/nba-prizepicks-site-publish.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_build_prizepicks_model_input.py' -v .github/workflows/nba-prizepicks-site-publish.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_validate_prizepicks_publish.py' -v .github/workflows/nba-prizepicks-site-publish.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_model_dispatch_recovery.py' -v .github/workflows/nba-prizepicks-site-publish.yml
+PASS python -m py_compile iphone_bot/published_pick_settlement.py .github/workflows/nba-published-pick-settlement.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_published_pick_settlement.py' -v .github/workflows/nba-published-pick-settlement.yml
+PASS python -m py_compile iphone_bot/research_storage_integrity.py iphone_bot/research_archive_persistence.py iphone_bot/capture_live_research.py iphone_bot/preserve_research_inputs.py .github/workflows/nba-research-storage-integrity.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_prospective_research_gate.py' -v .github/workflows/nba-research-storage-integrity.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_preserve_research_inputs.py' -v .github/workflows/nba-research-storage-integrity.yml
+PASS python -m py_compile iphone_bot/fetch_nba_schedule.py .github/workflows/nba-schedule.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_fetch_nba_schedule.py' -v .github/workflows/nba-schedule.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_season_schedule_baseline.py' -v .github/workflows/nba-schedule.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_publish_nba_schedule_atomic.py' -v .github/workflows/nba-schedule.yml
+PASS python -m py_compile iphone_bot/fetch_odds_scores.py iphone_bot/fetch_game_moneylines.py .github/workflows/nba-scores.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_fetch_odds_scores.py' -v .github/workflows/nba-scores.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_audit_nba_schedule_horizon.py' -v .github/workflows/nba-season-horizon-audit.yml
+PASS python -m py_compile iphone_bot/audit_nba_schedule_horizon.py .github/workflows/nba-season-horizon-audit.yml
+PASS python -m py_compile iphone_bot/shooting_efficiency_v1.py iphone_bot/shooting_efficiency_backtest.py .github/workflows/nba-shooting-efficiency-v1.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_shooting_efficiency_v1.py' -v .github/workflows/nba-shooting-efficiency-v1.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_odds_slate_health.py' -v .github/workflows/nba-slate-coverage-health.yml
+PASS python -m py_compile iphone_bot/odds_slate_health.py .github/workflows/nba-slate-coverage-health.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_tonight_capture_gradeability.py' -v .github/workflows/nba-tonight-capture-gradeability.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_current_primary_coverage.py' -v .github/workflows/nba-tonight-capture-gradeability.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_audit_primary_model_missing.py' -v .github/workflows/nba-tonight-capture-gradeability.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_latest_report_publication.py' -v .github/workflows/nba-tonight-capture-gradeability.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_probe_tracking_provider.py' -v .github/workflows/nba-tracking-provider-access.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_projection_upgrade_research.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_quote_capture_coverage.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_opponent_context_v2.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_rebound_shadow_v1.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_tracking_opportunities_v1.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_import_tracking_export.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_lineup_onoff_research.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_import_authorized_onoff.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_request_plan.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_wowy_adapter.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pbpstats_game_coverage.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_assemble_pbpstats_wowy.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m py_compile iphone_bot/injury_projection_adjustment.py iphone_bot/compare_live_models.py .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_player_name_matching.py' -v .github/workflows/nba-trained-ai-board.yml
+PASS python -m unittest discover -s tests -p 'test_push_with_retry.py' -v .github/workflows/nfl-boxscores-publish.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_boxscores.py' -v .github/workflows/nfl-boxscores-publish.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_reconciliation.py' -v .github/workflows/nfl-boxscores-publish.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_live.py' -v .github/workflows/nfl-live-tracker.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_live_guard.py' -v .github/workflows/nfl-live-tracker.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_live_schedule.py' -v .github/workflows/nfl-live-tracker.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v .github/workflows/nfl-pick-grading.yml
+PASS node --test tests/test_nfl_pregame_coverage.cjs tests/test_nfl_provider_event.cjs tests/test_nfl_training_support.cjs .github/workflows/nfl-private-sync.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_private_sync.py' -v .github/workflows/nfl-private-sync.yml
+PASS python -m unittest discover -s tests -p 'test_nfl_reliability.py' -v .github/workflows/nfl-private-sync.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_nightly_settlement_health.py' -v .github/workflows/nightly_settlement_health.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_nightly_grade_date_audit.py' -v .github/workflows/nightly_settlement_health.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_production_readiness.py' -v .github/workflows/official_nba_fixture_reconciliation.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_probe_pbpstats_access.py' -v .github/workflows/pbpstats-connectivity-probe.yml
+PASS python -m py_compile iphone_bot/probe_pbpstats_game_coverage.py .github/workflows/pbpstats-onoff-coverage-probe.yml
+PASS python -m unittest iphone_bot.tests.test_pipeline_heartbeat iphone_bot.tests.test_heartbeat_recovery iphone_bot.tests.test_readiness_watchdog -v .github/workflows/pipeline-heartbeat.yml
+PASS python -m unittest discover -s tests -p 'test_critical_production_repair_contracts.py' -v .github/workflows/pipeline-heartbeat.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pregame_coverage_watchdog.py' -v .github/workflows/pregame_coverage_watchdog.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_readiness_recovery.py' -v .github/workflows/production_readiness.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_production_live_recovery_workflow.py' -v .github/workflows/production_readiness.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_publish_live_pp_ai_join.py' -v .github/workflows/publish_live_pp_ai_join.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_pub_handoff.py' -v .github/workflows/publish_live_pp_ai_join.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_pp_unchanged_snapshot_recovery.py' -v .github/workflows/publish_live_pp_ai_join.yml
+PASS python -m py_compile iphone_bot/publish_live_pp_ai_join.py .github/workflows/publish_live_pp_ai_join.yml
+PASS python -m py_compile iphone_bot/archive_standard_quote_ai_research.py .github/workflows/publish_live_pp_ai_join.yml
+PASS python -m py_compile iphone_bot/underdog_nba_alerts.py iphone_bot/new_ai_injury_context.py .github/workflows/underdog-nba-injury-watch.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_unified_dames_readiness.py' -v .github/workflows/unified-dames-picks-readiness.yml
+PASS python -m py_compile iphone_bot/verify_browser_dashboard.py .github/workflows/verify_browser_dashboard.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verify_browser_dashboard.py' -v .github/workflows/verify_browser_dashboard.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_reliability_guardrails.py' -v .github/workflows/verify_browser_dashboard.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verify_deployed_dashboard.py' -v .github/workflows/verify_public_dashboard.yml
+PASS python -m py_compile iphone_bot/verify_deployed_dashboard.py .github/workflows/verify_public_dashboard.yml
+PASS python -m py_compile iphone_bot/verify_unified_dames_browser.py .github/workflows/verify_unified_dames_browser.yml
+PASS python -m unittest discover -s iphone_bot/tests -p 'test_verify_unified_dames_browser.py' -v .github/workflows/verify_unified_dames_browser.yml
+PASS python -m unittest discover -s tests -p test_verify_legacy_pages_release.py -v extra
+PASS node --test iphone_bot/tests/test_coverage_banner.cjs extra
+PASS python -m unittest iphone_bot.tests.test_pipeline_heartbeat -v extra
+contract commands: 222 failed: 5 quarantined: 0

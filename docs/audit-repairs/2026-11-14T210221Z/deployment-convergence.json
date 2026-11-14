@@ -1,0 +1,67 @@
+{
+  "expected_release": "dp-tennis-quote-board-20261114-r43",
+  "served_release": "dp-tennis-quote-board-20261114-r43",
+  "checks": [
+    {
+      "name": "release_id_matches_main",
+      "pass": true
+    },
+    {
+      "name": "release_manifest_exact_match",
+      "pass": true
+    },
+    {
+      "name": "served_asset_index.html",
+      "pass": true,
+      "expected": "612cbb05ff98ace58ee4d3a7a7cd11bae742518b",
+      "actual": "612cbb05ff98ace58ee4d3a7a7cd11bae742518b"
+    },
+    {
+      "name": "served_asset_feeds.js",
+      "pass": true,
+      "expected": "1a0e80854e025b55d403f55b0c55efd8acf4aab2",
+      "actual": "1a0e80854e025b55d403f55b0c55efd8acf4aab2"
+    },
+    {
+      "name": "served_asset_live_direct.js",
+      "pass": true,
+      "expected": "2fade24d43e6cfc3e0d9d35631c163f03647d6d9",
+      "actual": "2fade24d43e6cfc3e0d9d35631c163f03647d6d9"
+    },
+    {
+      "name": "served_asset_dames_take.js",
+      "pass": true,
+      "expected": "f520b8f3b53bddfaaeeaf53cb6bf83bb4936c23a",
+      "actual": "f520b8f3b53bddfaaeeaf53cb6bf83bb4936c23a"
+    },
+    {
+      "name": "served_asset_provisional.js",
+      "pass": true,
+      "expected": "4956d72d3e8a362a0921c89fa10bebe2e104b448",
+      "actual": "4956d72d3e8a362a0921c89fa10bebe2e104b448"
+    },
+    {
+      "name": "served_asset_short_history.js",
+      "pass": true,
+      "expected": "f876f8d2aac70f3993681a63b84ce28e23701e34",
+      "actual": "f876f8d2aac70f3993681a63b84ce28e23701e34"
+    },
+    {
+      "name": "served_asset_tennis.js",
+      "pass": true,
+      "expected": "f1a58edb59da591c495b1b16684e891fcc52c5fc",
+      "actual": "f1a58edb59da591c495b1b16684e891fcc52c5fc"
+    },
+    {
+      "name": "all_pinned_assets_listed",
+      "pass": true
+    }
+  ],
+  "status": "PASS",
+  "attempt": 1,
+  "elapsed_seconds": 0.425,
+  "retry_budget_seconds": 360,
+  "checked_at": "2026-11-14T21:23:56.620846+00:00",
+  "source_mode": "legacy_branch",
+  "note": "Verifies native Pages deployment; does NOT claim GitHub Actions deploy-pages was run."
+}
