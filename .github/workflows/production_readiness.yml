@@ -153,8 +153,10 @@ jobs:
               # Model training can run up to 40m. Do not queue overlapping
               # generation runs or hammer injury/current-form endpoints.
               nba-new-ai-all-markets.yml) cooldown_minutes=90 ;;
-              independent_scoreboard_refresh.yml) cooldown_minutes=18 ;;
-              independent_nba_player_boxscores.yml) cooldown_minutes=12 ;;
+              # Free live feeds must be eligible well before the 20m public TTL.
+              # Active-run deduplication and failure backoff below still apply.
+              independent_scoreboard_refresh.yml) cooldown_minutes=5 ;;
+              independent_nba_player_boxscores.yml) cooldown_minutes=5 ;;
               nba-live-tracker-backup.yml) cooldown_minutes=4 ;;
               *) cooldown_minutes=35 ;;
             esac
