@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-14T01:10:50.440134+00:00",
+  "checked_at": "2026-11-14T01:59:09.637177+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -8,6 +8,7 @@
   "required_consecutive_hours": 72,
   "blocking_checks": [
     "unified_artifacts",
+    "public_unified_browser",
     "nba_production",
     "nba_capture"
   ],
@@ -20,15 +21,17 @@
       ]
     },
     "public_unified_browser": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "MERGED_BROWSER_NOT_VERIFIED"
+      ]
     },
     "nba_production": {
       "state": "DEGRADED",
       "issues": [
         "NBA_PRODUCTION_NOT_READY",
-        "NBA_FAILED_PRIZEPICKS_LINES",
-        "NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE"
+        "NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE",
+        "NBA_FAILED_PUBLIC_BROWSER"
       ]
     },
     "nba_capture": {
