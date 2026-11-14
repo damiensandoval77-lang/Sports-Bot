@@ -10,7 +10,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from iphone_bot.grade_frozen_ai_forecasts import eligible_predictions, key, eastern_day
+from iphone_bot.grade_frozen_ai_forecasts import eligible_predictions, key, eastern_day, utc
 
 ROOT=Path(__file__).resolve().parents[1]
 ET=ZoneInfo("America/New_York")
@@ -57,6 +57,7 @@ def audit(archive,ledger,previous=None,today=None,now=None):
                "EXCLUDED_VERIFIED_NONPARTICIPANT":"excluded_nonparticipant"}[state]
         bucket[field]+=1
     reported=[]
+    report_time_adjustments=[]
     for label,report in (("previous",previous),("today",today)):
         if not isinstance(report,dict):
             continue
@@ -69,6 +70,22 @@ def audit(archive,ledger,previous=None,today=None,now=None):
                   "excluded_nonparticipant":report.get("verified_pretip_transfer_exclusions"),
                   "pending":report.get("ungraded")}
         actual={k:counted[k] for k in declared}
+        # A persisted day summary is an as-of snapshot. Newly tipped games
+        # become eligible after its timestamp without being overdue grades.
+        # Adjust only explicitly unresolved new starts; never hide outcomes,
+        # changed predictions, arbitrary mismatches or old pending records.
+        observed=utc(report.get("generated_at"))
+        if declared!=actual and observed and observed<=now:
+            new_pending=sum(1 for ident,p in saved.items() if
+                eastern_day(p["start"])==date and ident not in resolved and
+                observed<=utc(p["start"])<now)
+            adjusted={**actual,"captured":actual["captured"]-new_pending,
+                      "pending":actual["pending"]-new_pending}
+            if new_pending and declared==adjusted:
+                actual=adjusted
+                report_time_adjustments.append({"report":label,"date":date,
+                    "generated_at":observed.isoformat(),
+                    "newly_started_unresolved_forecasts":new_pending})
         if declared!=actual:
             raise ValueError("AI_DAY_STATUS_LEDGER_DISAGREEMENT: "+
                              label+" "+date+" "+json.dumps(
@@ -89,6 +106,7 @@ def audit(archive,ledger,previous=None,today=None,now=None):
             "checked_at":now.isoformat(),
             "days":normalized,
             "daily_status_reports_crosschecked":reported,
+            "daily_report_time_adjustments":report_time_adjustments,
             "verified_historical_outcomes_not_in_rolling_archive":
                 len(set(resolved)-set(saved)),
             "note":"Unresolved is not a loss or DNP. Final settlement requires verified player-level results. This audit never changes outcomes."}
