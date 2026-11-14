@@ -102,3 +102,17 @@ class PublishedCaptureSettlementTests(unittest.TestCase):
              finals(),NOW)
   self.assertEqual(r["issues"]["INVALID_OR_DUPLICATE_FROZEN_PICK"],2)
 if __name__=="__main__":unittest.main()
+
+class SettlementPublicationWorkflowTests(unittest.TestCase):
+ def test_grader_completion_refreshes_reconciliation_without_waiting_for_cron(self):
+  from pathlib import Path
+  text=(Path(__file__).resolve().parents[2]/".github/workflows/nba-published-pick-settlement.yml").read_text()
+  trigger=text.split("  workflow_run:",1)[1].split("  schedule:",1)[0]
+  self.assertIn("Grade frozen new AI PTS REB AST PRA (no provider credits)",trigger)
+  self.assertIn("Grade frozen pretip AI forecasts against verified NBA finals",trigger)
+  self.assertIn("types: [completed]",trigger)
+  self.assertIn("branches: [main]",trigger)
+  self.assertIn("head_repository.full_name == github.repository",text)
+  self.assertIn("event != 'pull_request'",text)
+  self.assertIn("github.head_ref || 'main'",text)
+  self.assertIn("cancel-in-progress: false",text)

@@ -1,6 +1,13 @@
 name: Verify and self-heal published NBA pick settlement
 on:
   workflow_dispatch:
+  # Bot commits do not trigger push: reconcile immediately after free graders.
+  workflow_run:
+    workflows:
+      - Grade frozen new AI PTS REB AST PRA (no provider credits)
+      - Grade frozen pretip AI forecasts against verified NBA finals
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '13,33,53 * * * *'
   push:
@@ -22,6 +29,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.event != 'pull_request')
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
