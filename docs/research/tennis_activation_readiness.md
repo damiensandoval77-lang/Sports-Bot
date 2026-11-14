@@ -18,3 +18,47 @@ Status: offline research only; NOT a deployed pick feed.
 6. Establish authorized quote capture (standard lines), immutable pre-match predictions, final result matching and push/retirement handling. Verify automation and live phone display before enabling a tennis tab.
 
 No tennis schedule, provider spend, trained weights, public forecasts or NBA/NFL changes were made.
+
+## November 14: lawful fresh score-only research path
+
+[Valuebetennis's season exports](https://www.valuebetennis.com/en/donnees.htm)
+are explicitly CC BY 4.0, including commercial reuse with attribution. The local
+2026 file contains 79,079 matches through November 14 06:05 UTC. The strict
+importer accepts 69,901 complete conventional scores and rejects 9,178 unsupported
+or incomplete records. It does not invent serve stats, ranking, score orientation,
+or result availability timestamps. Player IDs are namespaced to prevent accidental
+joins to the older provider. Source dates denote match starts, not completion.
+
+A separate runnable **offline score-only research model** now exists:
+
+```sh
+OMP_NUM_THREADS=2 python -m src.sports.tennis.score_research \
+  --csv /path/to/legitimately-obtained-season.csv \
+  --output-dir /path/to/research-models \
+  --as-of 2026-11-14T19:30:00Z
+```
+
+This command imports local data only, trains three score-total regressors, and
+saves local research weights plus a machine-readable evaluation. It never calls
+PrizePicks, publishes predictions, or changes the live NBA/NFL feeds. Never call
+its outputs hit probabilities. Closing/opening odds are deliberately excluded.
+
+The recorded chronological holdout has 60,904 training matches and 8,246 test
+matches. Mean absolute errors (model vs training-mean baseline) are 4.189 vs 4.510
+games, 0.331 vs 0.352 sets, and 0.344 vs 0.360 tiebreaks. These are exploratory
+regression metrics, **not betting hit rates**. This experiment includes multiple
+competition levels and only one temporal holdout; prospective, competition-level
+validation remains necessary. See `tennis_score_evaluation_2026-11-14.json`.
+
+The research path assumes a 48-hour result-availability lag from match start;
+this is not verified publication provenance. It has no future fixture feed,
+calibrated per-offered-line Over/Under/Push distribution, or live integration.
+The original Sackmann feature path separately uses a conservative 21-day lag
+because its dates are tournament starts. Its trainer rejects unversioned legacy
+features and splits whole dates with an embargo. These safeguards do not restore
+the old scanner's guessed opponent/surface context; it must not be activated.
+
+**Release blockers:** a verified future-fixture/context feed, observed result
+availability, training/inference parity for those fixtures, calibrated held-out
+line probabilities, freshness/recovery automation, and live mobile QA. No tennis
+production activation is claimed by this change.
