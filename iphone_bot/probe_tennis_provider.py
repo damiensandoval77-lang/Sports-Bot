@@ -44,6 +44,7 @@ def summary(payload):
             'stat':(row.get('market') or {}).get('stat') if isinstance(row.get('market'),dict) else None})
     return {'provider_mode':meta.get('mode'),'source_status':meta.get('source_status'),
         'rows_returned':len(rows),'has_next_page':bool(meta.get('next_cursor')),
+        'metadata_present':{key:key in meta for key in ('mode','source_status','next_cursor')},
         'complete_board_claimed':False,'shapes':shapes}
 
 
@@ -55,41 +56,69 @@ def normalized_board(payload, captured_at):
         'provider_mode':meta.get('mode'),'source_status':meta.get('source_status'),'is_demo':False,
         'complete_pagination':'next_cursor' in meta and meta['next_cursor'] is None,
         'model_status':'WITHHELD','blockers':['Tennis model context and probabilities not validated'],
-        'quotes':[]}
-    if meta.get('mode')!='live' or meta.get('source_status')!='fresh':return out
+        'quotes':[], 'accepted_quote_count':0, 'rejected_quote_count':0,
+        'rejection_counts':{}, 'rejection_count_semantics':'first_failed_guard_per_row'}
+    def reject(reason, count=1):
+        out['rejection_counts'][reason]=out['rejection_counts'].get(reason,0)+count
+        out['rejected_quote_count']+=count
+    if meta.get('mode')!='live' or meta.get('source_status')!='fresh':
+        reject('PROVIDER_NOT_FRESH_LIVE',len(payload['data']))
+        return out
     now=dt.datetime.fromisoformat(captured_at)
     allowed={'Total Games','Total Games Won','Total Sets','Total Tie Breaks','Aces','Double Faults','Break Points Won','Fantasy Score'}
     for row in payload['data']:
         try:
             player=row.get('player') or {};event=row.get('event') or {};market=row.get('market') or {};fields=row.get('source_fields') or {}
-            if str(row.get('league','')).upper()!='TENNIS' or row.get('is_demo') is True or row.get('status')!='active':continue
-            if any(obj.get(k) is True for obj in (row,fields) for k in ('is_live','in_game','is_promo','is_combo')):continue
-            if market.get('stat') not in allowed or str(market.get('period','')).lower() not in ('full game','full match','full_game','full_match'):continue
-            if fields.get('projection_type') != 'Single Stat':continue
+            if str(row.get('league','')).upper()!='TENNIS' or row.get('is_demo') is True or row.get('status')!='active':
+                reject('NOT_ACTIVE_REAL_TENNIS');continue
+            if any(obj.get(k) is True for obj in (row,fields) for k in ('is_live','in_game','is_promo','is_combo')):
+                reject('LIVE_PROMO_OR_COMBO');continue
+            if market.get('stat') not in allowed:
+                reject('UNSUPPORTED_STAT');continue
+            if str(market.get('period','')).lower() not in ('full game','full match','full_game','full_match'):
+                reject('FULL_MATCH_PERIOD_UNVERIFIED');continue
+            if fields.get('projection_type') != 'Single Stat':
+                reject('SINGLE_STAT_UNVERIFIED');continue
             line=row.get('line')
-            if isinstance(line,bool) or not isinstance(line,(int,float)) or not math.isfinite(line) or line<0:continue
+            if isinstance(line,bool) or not isinstance(line,(int,float)) or not math.isfinite(line) or line<0:
+                reject('INVALID_LINE');continue
             sides={s['side']:s for s in row.get('selections',[]) if isinstance(s,dict) and s.get('side') in ('more','less')}
-            if any(sides.get(k,{}).get('available') is not True or sides.get(k,{}).get('tier')!='standard' for k in ('more','less')):continue
+            if any(sides.get(k,{}).get('available') is not True or sides.get(k,{}).get('tier')!='standard' for k in ('more','less')):
+                reject('TWO_STANDARD_SIDES_UNVERIFIED');continue
             start=dt.datetime.fromisoformat(event['starts_at'].replace('Z','+00:00'))
             observed=dt.datetime.fromisoformat(row['observed_at'].replace('Z','+00:00'))
-            if not start.tzinfo or not observed.tzinfo or not observed<=now<start or now-observed>dt.timedelta(minutes=30):continue
+            if not start.tzinfo or not observed.tzinfo:
+                reject('TIMEZONE_MISSING');continue
+            if observed>now:
+                reject('OBSERVED_AFTER_RECEIPT');continue
+            if now>=start:
+                reject('MATCH_ALREADY_STARTED');continue
+            if now-observed>dt.timedelta(minutes=30):
+                reject('STALE_OBSERVATION');continue
             fixture=row.get('fixture_id') or event.get('id')
             identities=[row.get('id'),player.get('id'),player.get('name'),fixture,event.get('opponent')]
-            if not all(isinstance(v,str) and 0<len(v.strip())<=200 for v in identities):continue
+            if not all(isinstance(v,str) and 0<len(v.strip())<=200 for v in identities):
+                reject('EXACT_IDENTITY_UNVERIFIED');continue
             out['quotes'].append({'id':str(row['id']),'player_id':str(player['id']),
                 'fixture_id':str(fixture),'player':player['name'],'opponent':event['opponent'],
                 'stat':market['stat'],'period':'full_match','line':line,'status':'active','is_demo':False,'is_combo':False,
                 'tier':'standard','more_tier':'standard','less_tier':'standard',
                 'more_available':True,'less_available':True,'observed_at':observed.isoformat(),
                 'captured_at':captured_at,'starts_at':start.isoformat()})
-        except (KeyError,TypeError,ValueError,AttributeError):continue
+        except (KeyError,TypeError,ValueError,AttributeError):
+            reject('MISSING_OR_MALFORMED_FIELDS')
     out['accepted_quote_count']=len(out['quotes'])
     out['rejected_quote_count']=len(payload['data'])-len(out['quotes'])
     return out
 
 
+def utc_now():
+    return dt.datetime.now(dt.timezone.utc).isoformat()
+
+
 def probe(key,open_request=None):
-    out={'checked_at':dt.datetime.now(dt.timezone.utc).isoformat(),
+    started=utc_now()
+    out={'checked_at':started, 'request_started_at':started,
         'requested_rows':100,'documented_max_credits':3,'maximum_requests':1,'ongoing_polling_enabled':False,
         'raw_records_public':False,'status':'NOT_RUN'}
     if not key:return {**out,'status':'MISSING_GITHUB_SECRET'},None
@@ -102,6 +131,9 @@ def probe(key,open_request=None):
                 try:out[name]=int(reply.headers.get(header))
                 except (TypeError,ValueError):out[name]=None
             raw=reply.read(1000001)
+            # A provider observation can legitimately occur while the request is in flight.
+            # Capture means response receipt, not the earlier request start.
+            out['checked_at']=out['response_received_at']=utc_now()
             if len(raw)>1000000:raise ValueError('Response size limit')
             payload=json.loads(raw)
             return {**out,**summary(payload),'status':'PROBE_COMPLETE'},payload
@@ -124,10 +156,12 @@ def main():
     result,raw=probe(os.getenv('PRIZEPICKS_API_KEY','').strip())
     result['request_id']=request_id
     OUTPUT.parent.mkdir(parents=True,exist_ok=True)
-    OUTPUT.write_text(json.dumps(result,indent=2)+'\n')
     if raw is not None:
-        board=normalized_board(raw,result['checked_at'])
+        board=normalized_board(raw,result['response_received_at'])
+        result['normalization']={key:board[key] for key in (
+            'accepted_quote_count','rejected_quote_count','rejection_counts','rejection_count_semantics')}
         (ROOT/'docs/tennis_board.json').write_text(json.dumps(board,indent=2)+'\n')
+    OUTPUT.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result))
 
 if __name__=='__main__':main()
