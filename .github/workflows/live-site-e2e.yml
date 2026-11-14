@@ -4,12 +4,16 @@ on:
   pull_request:
     paths:
       - 'scripts/e2e_live_site.py'
+      - 'scripts/stalled_feed_probe.py'
+      - 'tests/test_stalled_feed_probe.py'
       - '.github/workflows/live-site-e2e.yml'
   push:
     branches: [main]
     paths:
       - 'docs/dames-picks/**'
       - 'scripts/e2e_live_site.py'
+      - 'scripts/stalled_feed_probe.py'
+      - 'tests/test_stalled_feed_probe.py'
       - '.github/workflows/live-site-e2e.yml'
   workflow_dispatch:
   schedule:
@@ -35,6 +39,12 @@ jobs:
       - run: |
           python -m py_compile scripts/e2e_live_site.py
           python -m unittest discover -s tests -p 'test_mobile_board_health.py' -v
+      - name: Install isolated browser regression dependencies
+        run: |
+          pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Verify synthetic timeout settles its route before teardown
+        run: python -m unittest discover -s tests -p 'test_stalled_feed_probe.py' -v
   deployed-iphone:
     if: github.event_name != 'pull_request'
     strategy:
