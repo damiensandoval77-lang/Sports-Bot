@@ -216,5 +216,45 @@ class IndependentScoreboardTests(unittest.TestCase):
         self.assertFalse(r["is_live_score_source"])
         self.assertEqual(r["total_games"],1)
 
+
+class PartialCurrentScoreTests(unittest.TestCase):
+    def test_valid_peer_survives_failed_fallback_without_old_scores(self):
+        now=dt.datetime(2026,11,10,0,30,tzinfo=UTC)
+        live=event("live")
+        live["status"]["type"]["state"]="in"
+        live["competitions"][0]["competitors"][0]["score"]="51"
+        live["competitions"][0]["competitors"][1]["score"]="49"
+        missing={"game":"Missing @ Matchup", "date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z"}
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],"games":[missing]}
+        def fail(_):raise RuntimeError("upstream unavailable")
+        old={"generated_at":"2026-11-09T20:00:00Z","games":[{**missing,"home_score":20,"away_score":21}]}
+        out=snapshot([DAY],reader=lambda _: [live],fallback=fail,schedule=schedule,now=now,previous=old)
+        self.assertEqual(out["error"],"PARTIAL_CURRENT_SCOREBOARD")
+        self.assertEqual(out["generated_at"],now.isoformat())
+        self.assertEqual(out["games"][0]["home_score"],51)
+        self.assertEqual(len(out["games"]),1)
+        self.assertNotIn(missing,out["games"])
+
+    def test_partial_delayed_pregame_is_unknown_and_scoreless(self):
+        from iphone_bot.refresh_independent_scoreboard import salvage_current_scores
+        now=dt.datetime(2026,11,10,0,30,tzinfo=UTC)
+        delayed={"id":"d","game":"D @ E","date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z","game_state":"pre","home_score":0,"away_score":0}
+        live={"id":"a","game":"A @ B","date_eastern":DAY.isoformat(),"game_state":"in","home_score":12,"away_score":14}
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],"games":[delayed]}
+        out=salvage_current_scores({"games":[live,delayed]},[DAY],schedule,now)
+        self.assertEqual(out["games"][1]["game_state"],"unknown")
+        self.assertIsNone(out["games"][1]["home_score"])
+        self.assertEqual(out["games"][0]["home_score"],12)
+
+    def test_no_valid_current_score_does_not_restamp_prior(self):
+        from iphone_bot.refresh_independent_scoreboard import salvage_current_scores
+        for rows in ([{"id":"a","date_eastern":DAY.isoformat(),"game":"A @ B","game_state":"pre"}], [None]):
+            self.assertIsNone(salvage_current_scores({"games":rows},[DAY],{},NOW))
+
+    def test_duplicate_fixture_rejected(self):
+        from iphone_bot.refresh_independent_scoreboard import salvage_current_scores
+        row={"id":"a","date_eastern":DAY.isoformat(),"game":"A @ B","game_state":"in","home_score":2,"away_score":2}
+        self.assertIsNone(salvage_current_scores({"games":[row,{**row,"id":"b"}]},[DAY],{},NOW))
+
 if __name__=="__main__":
     unittest.main()
