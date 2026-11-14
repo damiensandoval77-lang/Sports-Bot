@@ -10,7 +10,9 @@ on:
       - "iphone_bot/tests/test_merge_nba_player_boxscore_publish.py"
       - ".github/workflows/independent_nba_player_boxscores.yml"
   schedule:
-    - cron: "6,21,36,51 * * * *"
+    # Leave retry headroom before the frontend twenty-minute freshness limit.
+    - cron: "1,6,11,16,21,26,31,36,41,46,51,56 0-8,23 * * *"
+    - cron: "6,21,36,51 9-22 * * *"
   pull_request:
     paths:
       - "iphone_bot/merge_nba_player_boxscore_publish.py"
