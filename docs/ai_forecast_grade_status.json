@@ -1,44 +1,45 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-14T05:25:54.202298+00:00",
+  "generated_at": "2026-11-14T05:50:40.531919+00:00",
   "game_date_eastern": "2026-11-13",
   "recorded_pregame_forecasts": 904,
-  "graded": 564,
-  "verified_dnp_exclusions": 148,
+  "graded": 632,
+  "verified_dnp_exclusions": 168,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 712,
-  "ungraded": 192,
-  "new_grades": 100,
-  "new_verified_dnp_exclusions": 8,
+  "accounted_for": 800,
+  "ungraded": 104,
+  "new_grades": 68,
+  "new_verified_dnp_exclusions": 20,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 141,
-      "mae": 5.414,
-      "mean_signed_error": 0.044
+      "graded": 158,
+      "mae": 5.439,
+      "mean_signed_error": 0.034
     },
     "REB": {
-      "graded": 141,
-      "mae": 1.835,
-      "mean_signed_error": -0.01
+      "graded": 158,
+      "mae": 1.787,
+      "mean_signed_error": 0.031
     },
     "AST": {
-      "graded": 141,
-      "mae": 1.443,
-      "mean_signed_error": -0.034
+      "graded": 158,
+      "mae": 1.406,
+      "mean_signed_error": 0.009
     },
     "PRA": {
-      "graded": 141,
-      "mae": 7.065,
-      "mean_signed_error": 0.029
+      "graded": 158,
+      "mae": 7.012,
+      "mean_signed_error": 0.088
     }
   },
   "ungraded_by_game": {
     "Oklahoma City Thunder @ LA Clippers": 96,
-    "Portland Trail Blazers @ Sacramento Kings": 96
+    "Portland Trail Blazers @ Sacramento Kings": 8
   },
   "excluded_verified_dnp_players": [
+    "Alex Karaban",
     "Alex Morales",
     "Asa Newell",
     "Braden Smith",
@@ -46,6 +47,7 @@
     "Bruce Thornton",
     "Bryce McGowens",
     "Caleb Wilson",
+    "Chris Youngblood",
     "Corey Kispert",
     "Dejounte Murray",
     "Evan Mobley",
@@ -56,6 +58,7 @@
     "Jase Richardson",
     "Jaylin Sellers",
     "Jericho Sims",
+    "Jonathan Mogbo",
     "Jordan Hawkins",
     "Jose Alvarado",
     "Kasparas Jaku\u010dionis",
@@ -68,11 +71,13 @@
     "Nick Richards",
     "Nikola Jovi\u0107",
     "Pelle Larsson",
+    "Precious Achiuwa",
     "Quinten Post",
     "Sam Merrill",
     "Stephen Curry",
     "Trendon Watford",
     "Trey Murphy III",
+    "V\u00edt Krej\u010d\u00ed",
     "Zach Collins",
     "Zach Edey",
     "Zuby Ejiofor"
@@ -105,52 +110,31 @@
       "Shai Gilgeous-Alexander"
     ],
     "Portland Trail Blazers @ Sacramento Kings": [
-      "Alex Karaban",
-      "Branden Carlson",
-      "Chris Youngblood",
-      "Daeqwon Plowden",
-      "Damian Lillard",
-      "Darius Acuff Jr.",
-      "De'Andre Hunter",
-      "Deni Avdija",
-      "Domantas Sabonis",
-      "Donovan Clingan",
-      "Emanuel Sharp",
-      "Jonathan Mogbo",
-      "Jrue Holiday",
-      "Leaky Black",
-      "Malik Monk",
       "Micah Potter",
-      "Precious Achiuwa",
-      "Robert Williams III",
-      "Scoot Henderson",
-      "Sidy Cissoko",
-      "Toumani Camara",
-      "V\u00edt Krej\u010d\u00ed",
-      "Yang Hansen",
-      "Zach LaVine"
+      "Yang Hansen"
     ]
   },
-  "ungraded_distinct_player_markets": 192,
+  "ungraded_distinct_player_markets": 104,
   "final_feed": {
     "pending_matchups": 13,
-    "final_nba_games": 11,
+    "final_nba_games": 12,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 338,
+    "retrieved_player_lines": 368,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 6,
+    "cached_official_id_candidates": 5,
     "final_cached_id_nba_games": 4,
-    "secondary_espn_dnp_no_verified_game_hint": 26,
+    "secondary_espn_dnp_no_verified_game_hint": 28,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 965,
-    "newly_retrieved_verified_rows": 35,
+    "verified_cache_rows": 995,
+    "newly_retrieved_verified_rows": 30,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 192
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 8,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 96
     },
     "players": [
       {
@@ -826,676 +810,60 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Karaban",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Youngblood",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Youngblood",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Youngblood",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Youngblood",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daeqwon Plowden",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daeqwon Plowden",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daeqwon Plowden",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daeqwon Plowden",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darius Acuff Jr.",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darius Acuff Jr.",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darius Acuff Jr.",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Darius Acuff Jr.",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Andre Hunter",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Andre Hunter",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Andre Hunter",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Andre Hunter",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Domantas Sabonis",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Domantas Sabonis",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Domantas Sabonis",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Domantas Sabonis",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Emanuel Sharp",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Emanuel Sharp",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Emanuel Sharp",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Emanuel Sharp",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Mogbo",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leaky Black",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leaky Black",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leaky Black",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leaky Black",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malik Monk",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malik Monk",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malik Monk",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malik Monk",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Micah Potter",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Micah Potter",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Micah Potter",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Micah Potter",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Precious Achiuwa",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Precious Achiuwa",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Precious Achiuwa",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Precious Achiuwa",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "V\u00edt Krej\u010d\u00ed",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Yang Hansen",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Yang Hansen",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Yang Hansen",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Yang Hansen",
         "team": "POR",
         "game": "Portland Trail Blazers @ Sacramento Kings",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach LaVine",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach LaVine",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach LaVine",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach LaVine",
-        "team": "SAC",
-        "game": "Portland Trail Blazers @ Sacramento Kings",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       }
     ],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
