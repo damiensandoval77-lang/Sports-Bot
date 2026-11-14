@@ -50,6 +50,47 @@ def assess(nba,nfl,errors, *, app_title, url=URL, now=None):
             "reasons":reasons,"browser_errors":errors[:10],
             "note":"Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete."}
 
+def assess_live_order(observation):
+    """Check rendered fixture identities/order independently of the UI sorter."""
+    reasons=[]
+    expected=observation.get("expected_ids",[])
+    cards=observation.get("cards",[])
+    ids=[card.get("id") for card in cards]
+    if len(ids)!=len(set(ids)) or set(ids)!=set(expected):
+        reasons.append("LIVE_FIXTURE_RENDER_MISMATCH")
+    priorities={"in":0,"stale":1,"final":2,"scheduled":3,"unknown":4}
+    previous=None
+    for card in cards:
+        rank=priorities.get(card.get("state"),4)
+        try:
+            start=dt.datetime.fromisoformat(card.get("start", "").replace("Z","+00:00")).timestamp()
+        except (ValueError,TypeError,AttributeError):
+            start=float("inf")
+        key=(rank,start)
+        if previous is not None and key<previous:
+            reasons.append("LIVE_FIXTURES_OUT_OF_ORDER")
+            break
+        previous=key
+    return list(dict.fromkeys(reasons))
+
+def observe_live_order(page, sport):
+    page.locator('button[data-league="'+sport+'"]').click(timeout=10000)
+    page.locator('button[data-view="live"]').click(timeout=10000)
+    # Rendering is synchronous. A click throwing inside the application must
+    # not pass merely because Tracker's archived cards still remain visible.
+    observed=page.evaluate("""sport => {
+      const expected=m.currentSlateGames(state.liveGames,sport);
+      const byId=new Map(expected.map(g=>[g.sport+"|"+g.gameId,g]));
+      return {expected_ids:[...byId.keys()],
+        cards:[...document.querySelectorAll('#cards [data-game]')].map(el=>{
+          const id=el.dataset.game,g=byId.get(id);
+          return {id,state:g?.state,start:g?.start||null,
+                  text:el.textContent.slice(0,240)};
+        })};
+    }""",sport)
+    observed["reasons"]=assess_live_order(observed)
+    return observed
+
 def probe():
     from playwright.sync_api import sync_playwright
     errors=[]
@@ -115,9 +156,25 @@ def probe():
                   errors:state.errors.slice(0,12),
                   status:document.querySelector('#status')?.textContent?.slice(0,250)
                 })""",sport)
+                observation["live_order"]=observe_live_order(page,sport)
                 result[sport]=observation
             report=assess(result["NBA"],result["NFL"],errors,app_title=title)
             report["browser_direct_probe"]=direct
+            # Keep the same context/service-worker/cache and reload as a returning
+            # user does. This tests a warm reload, not an invented historical cache.
+            page.reload(wait_until="domcontentloaded",timeout=45000)
+            page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
+            report["warm_reload"]={sport:observe_live_order(page,sport) for sport in ("NBA","NFL")}
+            report["cache_test_scope"]="Same-context warm reload; historical-version cache compatibility is tested offline."
+            for sport in ("NBA","NFL"):
+                for phase,obs in (("FIRST_LOAD",result[sport]["live_order"]),("WARM_RELOAD",report["warm_reload"][sport])):
+                    report["reasons"].extend(sport+"_"+phase+"_"+reason for reason in obs["reasons"])
+            if errors and "UNHANDLED_JS_ERRORS" not in report["reasons"]:
+                report["reasons"].append("UNHANDLED_JS_ERRORS")
+            report["browser_errors"]=errors[:10]
+            if report["reasons"]:
+                report["status"]="DEGRADED"
+                report["browser_render_verified"]=False
             if not direct.get("attempted"):
                 report["reasons"].append("BROWSER_DIRECT_REFRESH_NOT_TESTED")
                 report["status"]="DEGRADED"
