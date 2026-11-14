@@ -1,0 +1,399 @@
+{
+  "browser": "webkit",
+  "timezone": "America/New_York",
+  "checked_at": "2026-11-14T22:26:00.947958+00:00",
+  "deployed_release": "dp-nba-confidence-correction-20261114-r44",
+  "expected_repository_release": "dp-nba-confidence-correction-20261114-r44",
+  "nearby_games": [
+    {
+      "game": "Denver Nuggets @ New Orleans Pelicans",
+      "minutes_to_tip": 94,
+      "has_pick": true
+    },
+    {
+      "game": "Dallas Mavericks @ Cleveland Cavaliers",
+      "minutes_to_tip": 124,
+      "has_pick": true
+    },
+    {
+      "game": "Brooklyn Nets @ Memphis Grizzlies",
+      "minutes_to_tip": 154,
+      "has_pick": true
+    },
+    {
+      "game": "Chicago Bulls @ Minnesota Timberwolves",
+      "minutes_to_tip": 154,
+      "has_pick": true
+    },
+    {
+      "game": "Detroit Pistons @ Miami Heat",
+      "minutes_to_tip": 154,
+      "has_pick": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "deployed_release_matches_repository",
+      "status": "PASS",
+      "details": {
+        "deployed": "dp-nba-confidence-correction-20261114-r44",
+        "repository": "dp-nba-confidence-correction-20261114-r44"
+      }
+    },
+    {
+      "name": "deployed_manifest_matches_repository",
+      "status": "PASS",
+      "details": {
+        "deployed_asset_pins": {
+          "index.html": "76b5e4e36ca0a3fa21f33fed8dc31ec5336b5fda",
+          "feeds.js": "b6f578902c4287a2bedf03733ebdb8354c6c904f",
+          "live_direct.js": "d3c499c15c719edda0bfdd523819bb89866efa4c",
+          "dames_take.js": "df16d449db2494230e91e56f2faa0168981adb56",
+          "provisional.js": "09f590b34bbdad79d64f0d9794b61d8cf0932034",
+          "short_history.js": "816bba9842b775663981264ad44510a62e757f42",
+          "tennis.js": "49787ed37e0abffcfdc30330f37f4540a4135d79"
+        },
+        "repository_asset_pins": {
+          "index.html": "76b5e4e36ca0a3fa21f33fed8dc31ec5336b5fda",
+          "feeds.js": "b6f578902c4287a2bedf03733ebdb8354c6c904f",
+          "live_direct.js": "d3c499c15c719edda0bfdd523819bb89866efa4c",
+          "dames_take.js": "df16d449db2494230e91e56f2faa0168981adb56",
+          "provisional.js": "09f590b34bbdad79d64f0d9794b61d8cf0932034",
+          "short_history.js": "816bba9842b775663981264ad44510a62e757f42",
+          "tennis.js": "49787ed37e0abffcfdc30330f37f4540a4135d79"
+        }
+      }
+    },
+    {
+      "name": "every_deployed_asset_matches_exact_repository_blob",
+      "status": "PASS",
+      "details": {
+        "index.html": {
+          "expected": "76b5e4e36ca0a3fa21f33fed8dc31ec5336b5fda",
+          "deployed": "76b5e4e36ca0a3fa21f33fed8dc31ec5336b5fda",
+          "exact_match": true
+        },
+        "feeds.js": {
+          "expected": "b6f578902c4287a2bedf03733ebdb8354c6c904f",
+          "deployed": "b6f578902c4287a2bedf03733ebdb8354c6c904f",
+          "exact_match": true
+        },
+        "live_direct.js": {
+          "expected": "d3c499c15c719edda0bfdd523819bb89866efa4c",
+          "deployed": "d3c499c15c719edda0bfdd523819bb89866efa4c",
+          "exact_match": true
+        },
+        "dames_take.js": {
+          "expected": "df16d449db2494230e91e56f2faa0168981adb56",
+          "deployed": "df16d449db2494230e91e56f2faa0168981adb56",
+          "exact_match": true
+        },
+        "provisional.js": {
+          "expected": "09f590b34bbdad79d64f0d9794b61d8cf0932034",
+          "deployed": "09f590b34bbdad79d64f0d9794b61d8cf0932034",
+          "exact_match": true
+        },
+        "short_history.js": {
+          "expected": "816bba9842b775663981264ad44510a62e757f42",
+          "deployed": "816bba9842b775663981264ad44510a62e757f42",
+          "exact_match": true
+        },
+        "tennis.js": {
+          "expected": "49787ed37e0abffcfdc30330f37f4540a4135d79",
+          "deployed": "49787ed37e0abffcfdc30330f37f4540a4135d79",
+          "exact_match": true
+        }
+      }
+    },
+    {
+      "name": "canary_excludes_retained_hidden_detail_cards",
+      "status": "PASS",
+      "details": {
+        "scope": "isolated synthetic selector regression; not live-site evidence"
+      }
+    },
+    {
+      "name": "deployed_stalled_feed_deadline",
+      "status": "PASS",
+      "details": {
+        "rejected": true,
+        "error": "Feed request timed out",
+        "elapsed_ms": 121
+      }
+    },
+    {
+      "name": "phone_has_no_horizontal_overflow",
+      "status": "PASS",
+      "details": {
+        "width": 390
+      }
+    },
+    {
+      "name": "under_detail_is_red",
+      "status": "PASS",
+      "details": {
+        "color": "rgb(255, 107, 122)"
+      }
+    },
+    {
+      "name": "nba_market_tab_labels_fit",
+      "status": "PASS",
+      "details": [
+        {
+          "text": "PRA \u00b7 18.5",
+          "width": 99,
+          "content_width": 99
+        },
+        {
+          "text": "PTS \u00b7 12.5",
+          "width": 96,
+          "content_width": 96
+        }
+      ]
+    },
+    {
+      "name": "nba_player_detail_and_take",
+      "status": "PASS",
+      "details": {
+        "player": "Nolan Traore",
+        "projection": true,
+        "take_immediately_after_projection": true
+      }
+    },
+    {
+      "name": "nba_game_detail",
+      "status": "PASS",
+      "details": {
+        "games": 5,
+        "boxscore_section": true
+      }
+    },
+    {
+      "name": "nfl_market_tab_labels_fit",
+      "status": "PASS",
+      "details": [
+        {
+          "text": "Fantasy Score \u00b7 15.0",
+          "width": 175,
+          "content_width": 175
+        },
+        {
+          "text": "Pass Attempts \u00b7 29.5",
+          "width": 177,
+          "content_width": 177
+        },
+        {
+          "text": "Pass Completions \u00b7 18.0",
+          "width": 204,
+          "content_width": 204
+        },
+        {
+          "text": "INT \u00b7 0.5",
+          "width": 82,
+          "content_width": 82
+        },
+        {
+          "text": "Pass+Rush Yds \u00b7 225.5",
+          "width": 195,
+          "content_width": 195
+        },
+        {
+          "text": "Pass Yards \u00b7 201.5",
+          "width": 160,
+          "content_width": 160
+        },
+        {
+          "text": "Rush Yards \u00b7 15.5",
+          "width": 153,
+          "content_width": 153
+        }
+      ]
+    },
+    {
+      "name": "nfl_player_detail_and_take",
+      "status": "PASS",
+      "details": {
+        "player": "J.J. McCarthy",
+        "projection": true,
+        "take_immediately_after_projection": true
+      }
+    },
+    {
+      "name": "nfl_game_detail",
+      "status": "PASS",
+      "details": {
+        "games": 25,
+        "boxscore_section": true
+      }
+    },
+    {
+      "name": "live_board_footer_over_under_only",
+      "status": "PASS",
+      "details": {
+        "visible_board_cards": 189,
+        "cards": [
+          {
+            "player": "Naji Marshall",
+            "footer": "7 OVER2 UNDER",
+            "spans": [
+              "7 OVER",
+              "2 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Josh Giddey",
+            "footer": "5 OVER4 UNDER",
+            "spans": [
+              "5 OVER",
+              "4 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Jarrett Allen",
+            "footer": "3 OVER6 UNDER",
+            "spans": [
+              "3 OVER",
+              "6 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Jarrett Allen",
+            "footer": "3 OVER7 UNDER",
+            "spans": [
+              "3 OVER",
+              "7 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Donovan Mitchell",
+            "footer": "6 OVER4 UNDER",
+            "spans": [
+              "6 OVER",
+              "4 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Nikola Joki\u0107",
+            "footer": "3 OVER7 UNDER",
+            "spans": [
+              "3 OVER",
+              "7 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Nikola Joki\u0107",
+            "footer": "2 OVER5 UNDER",
+            "spans": [
+              "2 OVER",
+              "5 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Cooper Flagg",
+            "footer": "4 OVER2 UNDER",
+            "spans": [
+              "4 OVER",
+              "2 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Jarrett Allen",
+            "footer": "4 OVER6 UNDER",
+            "spans": [
+              "4 OVER",
+              "6 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "Saddiq Bey",
+            "footer": "2 OVER6 UNDER",
+            "spans": [
+              "2 OVER",
+              "6 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "P.J. Washington",
+            "footer": "5 OVER5 UNDER",
+            "spans": [
+              "5 OVER",
+              "5 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          },
+          {
+            "player": "LaMelo Ball",
+            "footer": "2 OVER8 UNDER",
+            "spans": [
+              "2 OVER",
+              "8 UNDER"
+            ],
+            "has_dots": false,
+            "is_exact_split": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "executing_assets_match_repository_release",
+      "status": "PASS",
+      "details": {
+        "tennis.js": "dp-nba-confidence-correction-20261114-r44",
+        "feeds.js": "dp-nba-confidence-correction-20261114-r44",
+        "live_direct.js": "dp-nba-confidence-correction-20261114-r44",
+        "dames_take.js": "dp-nba-confidence-correction-20261114-r44",
+        "provisional.js": "dp-nba-confidence-correction-20261114-r44",
+        "short_history.js": "dp-nba-confidence-correction-20261114-r44"
+      }
+    },
+    {
+      "name": "no_browser_javascript_exceptions",
+      "status": "PASS",
+      "details": []
+    },
+    {
+      "name": "board_cards_or_honest_empty_state",
+      "status": "PASS",
+      "details": {
+        "cards": 189,
+        "nearby_games": 5,
+        "expected_upcoming_picks": 304
+      }
+    },
+    {
+      "name": "near_tip_saved_picks",
+      "status": "PASS",
+      "details": []
+    },
+    {
+      "name": "missing_games_disclosed",
+      "status": "PASS",
+      "details": {
+        "visible": false,
+        "text": ""
+      }
+    }
+  ],
+  "overall": "PASS"
+}
