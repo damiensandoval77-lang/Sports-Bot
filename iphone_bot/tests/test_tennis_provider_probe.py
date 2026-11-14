@@ -58,3 +58,17 @@ class ProbeTest(unittest.TestCase):
                     module.main();call.assert_not_called()
                     out.write_text(json.dumps({'request_id':'one','status':'PROBE_COMPLETE','claim_token':'run-2'}))
                     module.main();call.assert_not_called()
+
+    def test_minimized_in_product_quote(self):
+        from iphone_bot.probe_tennis_provider import normalized_board
+        p=self.payload();r=p['data'][0]
+        r.update(id='q1',fixture_id='f1',status='active',is_demo=False,line=22.5,observed_at='2026-11-14T19:59:00Z',selections=[{'side':x,'available':True,'tier':'standard'} for x in ['more','less']])
+        r['market']['period']='Full game';r['source_fields']['projection_type']='Single Stat'
+        r['secret_unexpected']='do-not-publish'
+        out=normalized_board(p,'2026-11-14T20:00:00+00:00')
+        self.assertEqual(out['accepted_quote_count'],1)
+        self.assertEqual(out['quotes'][0]['line'],22.5)
+        self.assertFalse(out['quotes'][0]['is_combo'])
+        self.assertNotIn('secret_unexpected',json.dumps(out))
+        r['market']['period']='1st Set'
+        self.assertEqual(normalized_board(p,'2026-11-14T20:00:00+00:00')['accepted_quote_count'],0)

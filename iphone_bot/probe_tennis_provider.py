@@ -2,6 +2,7 @@
 import datetime as dt
 import json
 import os
+import math
 from pathlib import Path
 import urllib.error
 import urllib.request
@@ -46,6 +47,47 @@ def summary(payload):
         'complete_board_claimed':False,'shapes':shapes}
 
 
+def normalized_board(payload, captured_at):
+    """Minimal in-product quote display; never a raw feed/bulk history export."""
+    meta=payload.get('meta') or {}
+    out={'schema_version':'tennis_board_v1','sport':'TENNIS',
+        'generated_at':captured_at,'source':'independent_prizepicksapi_com',
+        'provider_mode':meta.get('mode'),'source_status':meta.get('source_status'),'is_demo':False,
+        'complete_pagination':meta.get('next_cursor') is None,
+        'model_status':'WITHHELD','blockers':['Tennis model context and probabilities not validated'],
+        'quotes':[]}
+    if meta.get('mode')!='live' or meta.get('source_status')!='fresh':return out
+    now=dt.datetime.fromisoformat(captured_at)
+    allowed={'Total Games','Total Games Won','Total Sets','Total Tie Breaks','Aces','Double Faults','Break Points Won','Fantasy Score'}
+    for row in payload['data']:
+        try:
+            player=row.get('player') or {};event=row.get('event') or {};market=row.get('market') or {};fields=row.get('source_fields') or {}
+            if str(row.get('league','')).upper()!='TENNIS' or row.get('is_demo') is True or row.get('status')!='active':continue
+            if any(obj.get(k) is True for obj in (row,fields) for k in ('is_live','in_game','is_promo')):continue
+            if market.get('stat') not in allowed or str(market.get('period','')).lower() not in ('full game','full match','full_game','full_match'):continue
+            if fields.get('projection_type') != 'Single Stat':continue
+            line=row.get('line')
+            if isinstance(line,bool) or not isinstance(line,(int,float)) or not math.isfinite(line) or line<0:continue
+            sides={s['side']:s for s in row.get('selections',[]) if isinstance(s,dict) and s.get('side') in ('more','less')}
+            if any(sides.get(k,{}).get('available') is not True or sides.get(k,{}).get('tier')!='standard' for k in ('more','less')):continue
+            start=dt.datetime.fromisoformat(event['starts_at'].replace('Z','+00:00'))
+            observed=dt.datetime.fromisoformat(row['observed_at'].replace('Z','+00:00'))
+            if not start.tzinfo or not observed.tzinfo or not observed<=now<start or now-observed>dt.timedelta(minutes=30):continue
+            fixture=row.get('fixture_id') or event.get('id')
+            if not all([row.get('id'),player.get('id'),player.get('name'),fixture,event.get('opponent')]):continue
+            if not isinstance(event['opponent'],str):continue
+            out['quotes'].append({'id':str(row['id']),'player_id':str(player['id']),
+                'fixture_id':str(fixture),'player':player['name'],'opponent':event['opponent'],
+                'stat':market['stat'],'period':'full_match','line':line,'status':'active','is_demo':False,'is_combo':False,
+                'tier':'standard','more_tier':'standard','less_tier':'standard',
+                'more_available':True,'less_available':True,'observed_at':observed.isoformat(),
+                'captured_at':captured_at,'starts_at':start.isoformat()})
+        except (KeyError,TypeError,ValueError,AttributeError):continue
+    out['accepted_quote_count']=len(out['quotes'])
+    out['rejected_quote_count']=len(payload['data'])-len(out['quotes'])
+    return out
+
+
 def probe(key,open_request=None):
     out={'checked_at':dt.datetime.now(dt.timezone.utc).isoformat(),
         'requested_rows':100,'documented_max_credits':3,'maximum_requests':1,'ongoing_polling_enabled':False,
@@ -83,6 +125,9 @@ def main():
     result['request_id']=request_id
     OUTPUT.parent.mkdir(parents=True,exist_ok=True)
     OUTPUT.write_text(json.dumps(result,indent=2)+'\n')
+    if raw is not None:
+        board=normalized_board(raw,result['checked_at'])
+        (ROOT/'docs/tennis_board.json').write_text(json.dumps(board,indent=2)+'\n')
     print(json.dumps(result))
 
 if __name__=='__main__':main()
