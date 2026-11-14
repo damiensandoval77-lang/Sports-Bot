@@ -1,0 +1,241 @@
+{
+  "status": "DIRECT_MONOTONE_EXCEEDANCE_EXPLORATORY_DIAGNOSTIC",
+  "spec_sha256": "937eb8b9095cdf8c38691b45884001da5d9c5e71aa0821e6606260db479b2d94",
+  "source_hashes": [
+    {
+      "season": "2022-23",
+      "sha256": "f398a553e4c92216fc2dfc4d25622470c8a62bd8254811fccb3496d4cafc553f",
+      "bytes": 393440,
+      "rows": 25687
+    },
+    {
+      "season": "2023-24",
+      "sha256": "5fff5e5a57dd73ea36b6610c61fb1cb182156ace89e5c8e1c7024427bb9eefc4",
+      "bytes": 405025,
+      "rows": 26095
+    },
+    {
+      "season": "2024-25",
+      "sha256": "a4cc538112a7c4c7a4f42476022726159907ed71fc13cdd9a070c9950c2b50d6",
+      "bytes": 437754,
+      "rows": 26158
+    },
+    {
+      "season": "2025-26",
+      "sha256": "2119a573915ebcd548a290e9d2d9c509921adb85b7e01e570908f423d60cb3a3",
+      "bytes": 445819,
+      "rows": 26648
+    }
+  ],
+  "results": {
+    "PTS": {
+      "player_games": 2903,
+      "dates": 156,
+      "brier": 0.0909767972964328,
+      "baseline_brier": 0.09276268551464459,
+      "difference": -0.0017858882182117787,
+      "date_cluster_ci95": [
+        -0.002579129532108495,
+        -0.000937509002120223
+      ],
+      "ece": 0.006993870861541305,
+      "bias": 0.0018804915039242287,
+      "distribution_gate_passed": true,
+      "primary_release_eligible": false
+    },
+    "REB": {
+      "player_games": 2903,
+      "dates": 156,
+      "brier": 0.11455654744451552,
+      "baseline_brier": 0.11706190068876952,
+      "difference": -0.0025053532442539882,
+      "date_cluster_ci95": [
+        -0.003651385666727564,
+        -0.001362128950730311
+      ],
+      "ece": 0.007397876611577809,
+      "bias": 0.005006046561719859,
+      "distribution_gate_passed": true,
+      "primary_release_eligible": false
+    },
+    "AST": {
+      "player_games": 2903,
+      "dates": 156,
+      "brier": 0.08983025356889324,
+      "baseline_brier": 0.09169826490074154,
+      "difference": -0.0018680113318483057,
+      "date_cluster_ci95": [
+        -0.002981148846342541,
+        -0.000686252589446784
+      ],
+      "ece": 0.010393864625195664,
+      "bias": 0.003841028510022814,
+      "distribution_gate_passed": true,
+      "primary_release_eligible": false
+    },
+    "PRA": {
+      "player_games": 2903,
+      "dates": 156,
+      "brier": 0.08864238081555482,
+      "baseline_brier": 0.08974639077718663,
+      "difference": -0.001104009961631818,
+      "date_cluster_ci95": [
+        -0.0019246970497709729,
+        -0.00024501017060595725
+      ],
+      "ece": 0.00823715807193099,
+      "bias": 0.005005927343667565,
+      "distribution_gate_passed": true,
+      "primary_release_eligible": false
+    }
+  },
+  "actual_offers": {
+    "PTS": {
+      "offers": 5,
+      "brier": 0.3024044090637962,
+      "baseline_brier": 0.24502998285329164,
+      "rows": [
+        {
+          "player": "Ivica Zubac",
+          "line": 12.5,
+          "probability": 0.3,
+          "baseline": 0.3374233128834356,
+          "brier": 0.09,
+          "baseline_brier": 0.11385449207723286
+        },
+        {
+          "player": "Max Strus",
+          "line": 9.5,
+          "probability": 0.5612535612535611,
+          "baseline": 0.47099447513812154,
+          "brier": 0.31500556001980484,
+          "baseline_brier": 0.2218357956106346
+        },
+        {
+          "player": "Patrick Williams",
+          "line": 8.5,
+          "probability": 0.3669064748201439,
+          "baseline": 0.3374233128834356,
+          "brier": 0.40080741162465716,
+          "baseline_brier": 0.43900786631036165
+        },
+        {
+          "player": "Jalen Suggs",
+          "line": 9.5,
+          "probability": 0.5526315789473685,
+          "baseline": 0.41304347826086957,
+          "brier": 0.3054016620498616,
+          "baseline_brier": 0.17060491493383742
+        },
+        {
+          "player": "Patrick Williams",
+          "line": 7.5,
+          "probability": 0.3669064748201439,
+          "baseline": 0.47099447513812154,
+          "brier": 0.40080741162465716,
+          "baseline_brier": 0.2798468453343915
+        }
+      ]
+    },
+    "REB": {
+      "offers": 3,
+      "brier": 0.38242556157671476,
+      "baseline_brier": 0.3898897929900622,
+      "rows": [
+        {
+          "player": "Ivica Zubac",
+          "line": 9.5,
+          "probability": 0.34097421203438394,
+          "baseline": 0.25137614678899084,
+          "brier": 0.43431498920370115,
+          "baseline_brier": 0.5604376735964987
+        },
+        {
+          "player": "Max Strus",
+          "line": 3.5,
+          "probability": 0.5751633986928104,
+          "baseline": 0.5431654676258992,
+          "brier": 0.3308129351958648,
+          "baseline_brier": 0.2950287252212618
+        },
+        {
+          "player": "Patrick Williams",
+          "line": 3.5,
+          "probability": 0.38181818181818183,
+          "baseline": 0.43946188340807174,
+          "brier": 0.3821487603305785,
+          "baseline_brier": 0.3142029801524262
+        }
+      ]
+    },
+    "AST": {
+      "offers": 1,
+      "brier": 0.8210845964368099,
+      "baseline_brier": 0.7211514235323759,
+      "rows": [
+        {
+          "player": "Jalen Suggs",
+          "line": 3.5,
+          "probability": 0.9061371841155234,
+          "baseline": 0.8492063492063492,
+          "brier": 0.8210845964368099,
+          "baseline_brier": 0.7211514235323759
+        }
+      ]
+    },
+    "PRA": {
+      "offers": 5,
+      "brier": 0.1312791757177838,
+      "baseline_brier": 0.3591316220502897,
+      "rows": [
+        {
+          "player": "Ivica Zubac",
+          "line": 24.5,
+          "probability": 0.6277777777777778,
+          "baseline": 0.2937853107344633,
+          "brier": 0.13854938271604939,
+          "baseline_brier": 0.49873918733441863
+        },
+        {
+          "player": "Max Strus",
+          "line": 15.5,
+          "probability": 0.40606060606060607,
+          "baseline": 0.6105263157894737,
+          "brier": 0.1648852157943067,
+          "baseline_brier": 0.37274238227146816
+        },
+        {
+          "player": "Jalen Suggs",
+          "line": 16.5,
+          "probability": 0.4828571428571429,
+          "baseline": 0.6105263157894737,
+          "brier": 0.23315102040816327,
+          "baseline_brier": 0.37274238227146816
+        },
+        {
+          "player": "Patrick Williams",
+          "line": 14.5,
+          "probability": 0.7552447552447552,
+          "baseline": 0.42045454545454547,
+          "brier": 0.059905129835199786,
+          "baseline_brier": 0.33587293388429756
+        },
+        {
+          "player": "Patrick Williams",
+          "line": 12.5,
+          "probability": 0.7552447552447552,
+          "baseline": 0.5357142857142857,
+          "brier": 0.059905129835199786,
+          "baseline_brier": 0.21556122448979592
+        }
+      ]
+    }
+  },
+  "primary_release_eligible": false,
+  "production_modified": false,
+  "limitations": [
+    "Historical diagnostic already inspected; not untouched.",
+    "Synthetic fixed-grid classification is not offered-line betting validation.",
+    "Actual-offer predictions reconstructed after outcomes from original pretip features, four player-games and one date; never original prospective receipts."
+  ]
+}
