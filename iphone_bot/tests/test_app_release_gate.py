@@ -97,3 +97,60 @@ class StandardOnlyReleaseTests(unittest.TestCase):
         for value in [None,False,-1,"0",1]:
             inp=fixture();inp["nfl_grading"]["standard_pending_picks"]=value
             self.assertEqual(evaluate(inp,NOW)["checks"]["nfl_grading"]["state"],"DEGRADED")
+
+import copy
+import datetime as dt
+import unittest
+from iphone_bot.app_release_gate import evaluate
+
+
+def live_fixture():
+    obj=fixture()
+    obj['nba_grading']={'checked_at':STAMP,'status':'VERIFIED_FINAL_ROWS_OUTSTANDING',
+        'days':{'2026-11-10':{'captured':10,'accounted_for':2,'pending':8,'pending_by_game':{'A @ B':8}}}}
+    obj['nba_scoreboard']={'generated_at':STAMP,'status':'OBSERVED_NBA_LIVE_SCOREBOARD','is_live_score_source':True,
+        'games':[{'id':'123','game':'A @ B','date_eastern':'2026-11-10','start':(NOW-dt.timedelta(hours=1)).isoformat(),'game_state':'in'}]}
+    return obj
+
+class LivePendingGateTests(unittest.TestCase):
+    def blocked(self,obj):
+        return 'nba_grading' in evaluate(obj,NOW)['blocking_checks']
+    def test_verified_live_pending_not_overdue(self):
+        self.assertFalse(self.blocked(live_fixture()))
+    def test_scheduled_delay_with_fresh_observation_not_overdue(self):
+        obj=live_fixture();obj['nba_scoreboard']['games'][0]['game_state']='pre'
+        self.assertFalse(self.blocked(obj))
+    def test_final_unknown_stale_or_future_observation_blocks(self):
+        for state in ['post','unknown','']:
+            obj=live_fixture();obj['nba_scoreboard']['games'][0]['game_state']=state
+            self.assertTrue(self.blocked(obj),state)
+        for minutes in [-1,21]:
+            obj=live_fixture();obj['nba_scoreboard']['generated_at']=(NOW-dt.timedelta(minutes=minutes)).isoformat()
+            self.assertTrue(self.blocked(obj))
+    def test_overdue_or_mismatched_fixture_blocks(self):
+        for field,value in [('start',(NOW-dt.timedelta(hours=7)).isoformat()),('date_eastern','2026-11-09'),('game','B @ A'),('id','')]:
+            obj=live_fixture();obj['nba_scoreboard']['games'][0][field]=value
+            self.assertTrue(self.blocked(obj),field)
+    def test_conflicting_or_missing_evidence_blocks(self):
+        obj=live_fixture();obj['nba_scoreboard']['games'].append(copy.deepcopy(obj['nba_scoreboard']['games'][0]))
+        self.assertTrue(self.blocked(obj))
+        obj=live_fixture();obj.pop('nba_scoreboard');self.assertTrue(self.blocked(obj))
+    def test_bad_accounting_and_unlisted_pending_block(self):
+        for field,value in [('captured',11),('pending',True),('pending_by_game',{'A @ B':7}),('pending_by_game',{'A @ B':7,'C @ D':1})]:
+            obj=live_fixture();obj['nba_grading']['days']['2026-11-10'][field]=value
+            self.assertTrue(self.blocked(obj),field)
+    def test_no_mutation_and_unresolved_old_day_still_blocks(self):
+        obj=live_fixture();original=copy.deepcopy(obj);evaluate(obj,NOW);self.assertEqual(obj,original)
+        obj['nba_grading']['days']['2026-11-09']={'captured':1,'accounted_for':0,'pending':1,'pending_by_game':{'A @ B':1}}
+        self.assertTrue(self.blocked(obj))
+    def test_final_remains_blocked_until_real_settlement(self):
+        obj=live_fixture();obj['nba_scoreboard']['games'][0]['game_state']='post';self.assertTrue(self.blocked(obj))
+        obj['nba_grading']['status']='ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR'
+        obj['nba_grading']['days']['2026-11-10'].update(pending=0,accounted_for=10,pending_by_game={})
+        self.assertFalse(self.blocked(obj))
+
+    def test_reported_fixture_day_must_match_actual_start(self):
+        obj=live_fixture()
+        obj['nba_grading']['days']['2026-11-09']=obj['nba_grading']['days'].pop('2026-11-10')
+        obj['nba_scoreboard']['games'][0]['date_eastern']='2026-11-09'
+        self.assertTrue(self.blocked(obj))
