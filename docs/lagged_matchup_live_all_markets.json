@@ -1,6 +1,6 @@
 {
   "status": "LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
-  "generated_at": "2026-11-14T02:53:13.077761+00:00",
+  "generated_at": "2026-11-14T03:25:29.073031+00:00",
   "source_provider_generated_at": "2026-11-14T02:52:21.475018+00:00",
   "source_model_input_generated_at": "2026-11-14T02:52:21.475018+00:00",
   "model": "LAGGED_MATCHUP_2022_24_THREE_MODELS_PRA_SUM",
@@ -9,782 +9,12 @@
   "component_consistency": true,
   "correlated_pra_scenarios": true,
   "market_counts": {
-    "PTS": 26,
-    "REB": 18,
-    "AST": 10,
-    "PRA": 27
+    "PTS": 14,
+    "REB": 9,
+    "AST": 3,
+    "PRA": 15
   },
   "predictions": [
-    {
-      "player": "Donovan Clingan",
-      "player_id": "1642270",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 11.5,
-      "projection": 10.315,
-      "components": {
-        "PTS": 10.315,
-        "REB": 9.697,
-        "AST": 1.45
-      },
-      "market_updated": "2026-11-14T02:50:14.659000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 10.315,
-        "modeled_more_probability": 0.3748,
-        "modeled_less_probability": 0.6252,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6252,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 10.315,
-          "REB": 9.697,
-          "AST": 1.45
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "De'Andre Hunter",
-      "player_id": "1629631",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 13.0,
-      "projection": 13.659,
-      "components": {
-        "PTS": 13.659,
-        "REB": 4.29,
-        "AST": 1.506
-      },
-      "market_updated": "2026-11-14T02:50:14.079000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 13.659,
-        "modeled_more_probability": 0.4542,
-        "modeled_less_probability": 0.4742,
-        "modeled_push_probability": 0.0716,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.4742,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.659,
-          "REB": 4.29,
-          "AST": 1.506
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Zach LaVine",
-      "player_id": "203897",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 19.5,
-      "projection": 20.928,
-      "components": {
-        "PTS": 20.928,
-        "REB": 3.664,
-        "AST": 2.809
-      },
-      "market_updated": "2026-11-14T02:52:12.550000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 20.928,
-        "modeled_more_probability": 0.5517,
-        "modeled_less_probability": 0.4482,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5517,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 20.928,
-          "REB": 3.664,
-          "AST": 2.809
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Damian Lillard",
-      "player_id": "203081",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 21.5,
-      "projection": 18.564,
-      "components": {
-        "PTS": 18.564,
-        "REB": 3.299,
-        "AST": 4.384
-      },
-      "market_updated": "2026-11-14T02:52:12.692000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 18.564,
-        "modeled_more_probability": 0.2762,
-        "modeled_less_probability": 0.7238,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7238,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 18.564,
-          "REB": 3.299,
-          "AST": 4.384
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Darius Acuff Jr.",
-      "player_id": "1643411",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 24.5,
-      "projection": 25.104,
-      "components": {
-        "PTS": 25.104,
-        "REB": 4.04,
-        "AST": 7.45
-      },
-      "market_updated": "2026-11-14T02:52:12.621000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 25.104,
-        "modeled_more_probability": 0.4954,
-        "modeled_less_probability": 0.5046,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5046,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 25.104,
-          "REB": 4.04,
-          "AST": 7.45
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Jrue Holiday",
-      "player_id": "201950",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 12.5,
-      "projection": 13.621,
-      "components": {
-        "PTS": 13.621,
-        "REB": 3.159,
-        "AST": 3.868
-      },
-      "market_updated": "2026-11-14T02:52:12.868000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 13.621,
-        "modeled_more_probability": 0.5285,
-        "modeled_less_probability": 0.4714,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5285,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.621,
-          "REB": 3.159,
-          "AST": 3.868
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Domantas Sabonis",
-      "player_id": "1627734",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 12.5,
-      "projection": 13.095,
-      "components": {
-        "PTS": 13.095,
-        "REB": 11.651,
-        "AST": 5.261
-      },
-      "market_updated": "2026-11-14T02:52:12.463000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 13.095,
-        "modeled_more_probability": 0.489,
-        "modeled_less_probability": 0.511,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.511,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.095,
-          "REB": 11.651,
-          "AST": 5.261
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Toumani Camara",
-      "player_id": "1641739",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 12.5,
-      "projection": 11.909,
-      "components": {
-        "PTS": 11.909,
-        "REB": 3.741,
-        "AST": 1.589
-      },
-      "market_updated": "2026-11-14T02:52:12.780000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 11.909,
-        "modeled_more_probability": 0.4122,
-        "modeled_less_probability": 0.5878,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5878,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.909,
-          "REB": 3.741,
-          "AST": 1.589
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Deni Avdija",
-      "player_id": "1630166",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 24.5,
-      "projection": 23.805,
-      "components": {
-        "PTS": 23.805,
-        "REB": 5.204,
-        "AST": 6.364
-      },
-      "market_updated": "2026-11-14T02:52:12.811000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 23.805,
-        "modeled_more_probability": 0.4117,
-        "modeled_less_probability": 0.5883,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5883,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 23.805,
-          "REB": 5.204,
-          "AST": 6.364
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Scoot Henderson",
-      "player_id": "1630703",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 10.5,
-      "projection": 9.204,
-      "components": {
-        "PTS": 9.204,
-        "REB": 2.534,
-        "AST": 1.799
-      },
-      "market_updated": "2026-11-14T02:52:12.720000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 9.204,
-        "modeled_more_probability": 0.3699,
-        "modeled_less_probability": 0.6301,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6301,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 9.204,
-          "REB": 2.534,
-          "AST": 1.799
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Robert Williams III",
-      "player_id": "1629057",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 6.5,
-      "projection": 6.814,
-      "components": {
-        "PTS": 6.814,
-        "REB": 5.602,
-        "AST": 0.98
-      },
-      "market_updated": "2026-11-14T02:52:12.759000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 6.814,
-        "modeled_more_probability": 0.4693,
-        "modeled_less_probability": 0.5308,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5308,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 6.814,
-          "REB": 5.602,
-          "AST": 0.98
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
     {
       "player": "Isaiah Jackson",
       "player_id": "1630543",
@@ -801,7 +31,7 @@
         "AST": 1.811
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -809,11 +39,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 7.595,
-        "modeled_more_probability": 0.4583,
-        "modeled_less_probability": 0.5416,
+        "modeled_more_probability": 0.4648,
+        "modeled_less_probability": 0.5352,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5416,
+        "modeled_selected_probability": 0.5352,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.595,
@@ -825,18 +55,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 9,
       "research_only": true,
@@ -858,7 +101,7 @@
         "AST": 1.657
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -866,11 +109,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 10.244,
-        "modeled_more_probability": 0.3718,
-        "modeled_less_probability": 0.6282,
+        "modeled_more_probability": 0.3706,
+        "modeled_less_probability": 0.6293,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6282,
+        "modeled_selected_probability": 0.6293,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.244,
@@ -882,18 +125,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -915,7 +171,7 @@
         "AST": 3.356
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -923,11 +179,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 11.307,
-        "modeled_more_probability": 0.5122,
-        "modeled_less_probability": 0.4878,
+        "modeled_more_probability": 0.5042,
+        "modeled_less_probability": 0.4958,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5122,
+        "modeled_selected_probability": 0.5042,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.307,
@@ -939,18 +195,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -972,7 +241,7 @@
         "AST": 1.999
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -980,11 +249,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 14.551,
-        "modeled_more_probability": 0.4546,
-        "modeled_less_probability": 0.5454,
+        "modeled_more_probability": 0.4556,
+        "modeled_less_probability": 0.5444,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5454,
+        "modeled_selected_probability": 0.5444,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.551,
@@ -996,18 +265,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 8,
       "research_only": true,
@@ -1029,7 +311,7 @@
         "AST": 6.816
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1037,11 +319,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 20.117,
-        "modeled_more_probability": 0.5688,
-        "modeled_less_probability": 0.4312,
+        "modeled_more_probability": 0.5682,
+        "modeled_less_probability": 0.4318,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5688,
+        "modeled_selected_probability": 0.5682,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.117,
@@ -1053,18 +335,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -1086,7 +381,7 @@
         "AST": 1.518
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1094,11 +389,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 10.457,
-        "modeled_more_probability": 0.4483,
-        "modeled_less_probability": 0.5517,
+        "modeled_more_probability": 0.4464,
+        "modeled_less_probability": 0.5536,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5517,
+        "modeled_selected_probability": 0.5536,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.457,
@@ -1110,18 +405,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 9,
       "research_only": true,
@@ -1143,7 +451,7 @@
         "AST": 1.889
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1151,11 +459,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 13.384,
-        "modeled_more_probability": 0.3249,
-        "modeled_less_probability": 0.6751,
+        "modeled_more_probability": 0.3266,
+        "modeled_less_probability": 0.6734,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6751,
+        "modeled_selected_probability": 0.6734,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.384,
@@ -1167,18 +475,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -1200,7 +521,7 @@
         "AST": 1.349
       },
       "market_updated": "2026-11-14T02:52:04.263000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1208,11 +529,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 7.503,
-        "modeled_more_probability": 0.444,
-        "modeled_less_probability": 0.5561,
+        "modeled_more_probability": 0.4501,
+        "modeled_less_probability": 0.5498,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5561,
+        "modeled_selected_probability": 0.5498,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.503,
@@ -1224,18 +545,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -1257,7 +591,7 @@
         "AST": 2.865
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1265,11 +599,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 9.523,
-        "modeled_more_probability": 0.5897,
-        "modeled_less_probability": 0.4103,
+        "modeled_more_probability": 0.591,
+        "modeled_less_probability": 0.409,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5897,
+        "modeled_selected_probability": 0.591,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.523,
@@ -1281,18 +615,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -1314,7 +661,7 @@
         "AST": 2.389
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1322,11 +669,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 7.57,
-        "modeled_more_probability": 0.3957,
-        "modeled_less_probability": 0.5447,
-        "modeled_push_probability": 0.0595,
+        "modeled_more_probability": 0.3892,
+        "modeled_less_probability": 0.5478,
+        "modeled_push_probability": 0.063,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5447,
+        "modeled_selected_probability": 0.5478,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.57,
@@ -1338,18 +685,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 9,
       "research_only": true,
@@ -1371,7 +731,7 @@
         "AST": 5.086
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1379,73 +739,16 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 30.047,
-        "modeled_more_probability": 0.2578,
-        "modeled_less_probability": 0.7422,
+        "modeled_more_probability": 0.2612,
+        "modeled_less_probability": 0.7388,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7422,
+        "modeled_selected_probability": 0.7388,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 30.047,
           "REB": 4.375,
           "AST": 5.086
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
-      "injury_context": {
-        "status": "NO_REPORTED_OUT",
-        "factor": 1.0,
-        "affected": []
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Sidy Cissoko",
-      "player_id": "1631321",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PTS",
-      "line": 8.5,
-      "projection": 9.678,
-      "components": {
-        "PTS": 9.678,
-        "REB": 3.566,
-        "AST": 1.869
-      },
-      "market_updated": "2026-11-14T02:52:12.896000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 9.678,
-        "modeled_more_probability": 0.5332,
-        "modeled_less_probability": 0.4668,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5332,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 9.678,
-          "REB": 3.566,
-          "AST": 1.869
         },
         "PRA_joint_distribution": false,
         "calibrated": false,
@@ -1458,16 +761,16 @@
         "factor": 1.0,
         "affected": [
           {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
+            "reported_at": "2026-11-14T03:15:00+00:00",
             "official": true
           }
         ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
         "injury_adjusted": false,
         "probability_actionable": false
       },
@@ -1478,7 +781,7 @@
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
       "injury_adjustment_verified": false,
       "calibrated_probability": null,
-      "source_prior_games": 11,
+      "source_prior_games": 12,
       "research_only": true,
       "production_replaced": false
     },
@@ -1498,7 +801,7 @@
         "AST": 3.61
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1506,11 +809,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 8.476,
-        "modeled_more_probability": 0.523,
-        "modeled_less_probability": 0.477,
+        "modeled_more_probability": 0.5177,
+        "modeled_less_probability": 0.4823,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.523,
+        "modeled_selected_probability": 0.5177,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.476,
@@ -1522,18 +825,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -1555,7 +871,7 @@
         "AST": 1.439
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1563,11 +879,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 9.116,
-        "modeled_more_probability": 0.49,
-        "modeled_less_probability": 0.51,
+        "modeled_more_probability": 0.4925,
+        "modeled_less_probability": 0.5075,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.51,
+        "modeled_selected_probability": 0.5075,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.116,
@@ -1579,18 +895,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -1612,7 +941,7 @@
         "AST": 1.288
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1620,11 +949,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 12.227,
-        "modeled_more_probability": 0.5762,
-        "modeled_less_probability": 0.4239,
+        "modeled_more_probability": 0.572,
+        "modeled_less_probability": 0.4279,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5762,
+        "modeled_selected_probability": 0.572,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 12.227,
@@ -1636,580 +965,33 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Jrue Holiday",
-      "player_id": "201950",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 3.5,
-      "projection": 3.159,
-      "components": {
-        "PTS": 13.621,
-        "REB": 3.159,
-        "AST": 3.868
-      },
-      "market_updated": "2026-11-14T02:50:14.672000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 3.159,
-        "modeled_more_probability": 0.3931,
-        "modeled_less_probability": 0.6069,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6069,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.621,
-          "REB": 3.159,
-          "AST": 3.868
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "De'Andre Hunter",
-      "player_id": "1629631",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 4.0,
-      "projection": 4.29,
-      "components": {
-        "PTS": 13.659,
-        "REB": 4.29,
-        "AST": 1.506
-      },
-      "market_updated": "2026-11-14T02:50:14.673000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 4.29,
-        "modeled_more_probability": 0.4187,
-        "modeled_less_probability": 0.4097,
-        "modeled_push_probability": 0.1717,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.4187,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.659,
-          "REB": 4.29,
-          "AST": 1.506
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
       "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Domantas Sabonis",
-      "player_id": "1627734",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 12.0,
-      "projection": 11.651,
-      "components": {
-        "PTS": 13.095,
-        "REB": 11.651,
-        "AST": 5.261
-      },
-      "market_updated": "2026-11-14T02:50:14.656000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 11.651,
-        "modeled_more_probability": 0.3291,
-        "modeled_less_probability": 0.5239,
-        "modeled_push_probability": 0.147,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5239,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.095,
-          "REB": 11.651,
-          "AST": 5.261
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Toumani Camara",
-      "player_id": "1641739",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 4.0,
-      "projection": 3.741,
-      "components": {
-        "PTS": 11.909,
-        "REB": 3.741,
-        "AST": 1.589
-      },
-      "market_updated": "2026-11-14T02:50:14.669000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 3.741,
-        "modeled_more_probability": 0.3382,
-        "modeled_less_probability": 0.5093,
-        "modeled_push_probability": 0.1525,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5093,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.909,
-          "REB": 3.741,
-          "AST": 1.589
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Donovan Clingan",
-      "player_id": "1642270",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 11.0,
-      "projection": 9.697,
-      "components": {
-        "PTS": 10.315,
-        "REB": 9.697,
-        "AST": 1.45
-      },
-      "market_updated": "2026-11-14T02:50:14.658000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 9.697,
-        "modeled_more_probability": 0.2124,
-        "modeled_less_probability": 0.6705,
-        "modeled_push_probability": 0.1171,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6705,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 10.315,
-          "REB": 9.697,
-          "AST": 1.45
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Damian Lillard",
-      "player_id": "203081",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 3.5,
-      "projection": 3.299,
-      "components": {
-        "PTS": 18.564,
-        "REB": 3.299,
-        "AST": 4.384
-      },
-      "market_updated": "2026-11-14T02:50:14.680000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 3.299,
-        "modeled_more_probability": 0.4171,
-        "modeled_less_probability": 0.5829,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5829,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 18.564,
-          "REB": 3.299,
-          "AST": 4.384
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Sidy Cissoko",
-      "player_id": "1631321",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 3.5,
-      "projection": 3.566,
-      "components": {
-        "PTS": 9.678,
-        "REB": 3.566,
-        "AST": 1.869
-      },
-      "market_updated": "2026-11-14T02:50:14.678000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 3.566,
-        "modeled_more_probability": 0.4596,
-        "modeled_less_probability": 0.5404,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5404,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 9.678,
-          "REB": 3.566,
-          "AST": 1.869
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Robert Williams III",
-      "player_id": "1629057",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 6.0,
-      "projection": 5.602,
-      "components": {
-        "PTS": 6.814,
-        "REB": 5.602,
-        "AST": 0.98
-      },
-      "market_updated": "2026-11-14T02:50:14.668000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 5.602,
-        "modeled_more_probability": 0.3155,
-        "modeled_less_probability": 0.5354,
-        "modeled_push_probability": 0.149,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5354,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 6.814,
-          "REB": 5.602,
-          "AST": 0.98
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
       "research_only": true,
       "production_replaced": false
     },
@@ -2229,7 +1011,7 @@
         "AST": 1.657
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2237,11 +1019,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 6.343,
-        "modeled_more_probability": 0.2844,
-        "modeled_less_probability": 0.7156,
+        "modeled_more_probability": 0.2781,
+        "modeled_less_probability": 0.7219,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7156,
+        "modeled_selected_probability": 0.7219,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.244,
@@ -2253,18 +1035,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -2286,7 +1081,7 @@
         "AST": 3.61
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2294,11 +1089,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 3.961,
-        "modeled_more_probability": 0.531,
-        "modeled_less_probability": 0.469,
+        "modeled_more_probability": 0.5239,
+        "modeled_less_probability": 0.4762,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.531,
+        "modeled_selected_probability": 0.5239,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.476,
@@ -2310,18 +1105,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -2343,7 +1151,7 @@
         "AST": 1.811
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2351,11 +1159,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 5.542,
-        "modeled_more_probability": 0.2016,
-        "modeled_less_probability": 0.7984,
+        "modeled_more_probability": 0.2034,
+        "modeled_less_probability": 0.7966,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7984,
+        "modeled_selected_probability": 0.7966,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.595,
@@ -2367,18 +1175,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 9,
       "research_only": true,
@@ -2400,7 +1221,7 @@
         "AST": 1.889
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2408,11 +1229,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 3.998,
-        "modeled_more_probability": 0.541,
-        "modeled_less_probability": 0.4591,
+        "modeled_more_probability": 0.5379,
+        "modeled_less_probability": 0.4622,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.541,
+        "modeled_selected_probability": 0.5379,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.384,
@@ -2424,18 +1245,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -2457,7 +1291,7 @@
         "AST": 1.999
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2465,11 +1299,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 5.982,
-        "modeled_more_probability": 0.5346,
-        "modeled_less_probability": 0.2816,
-        "modeled_push_probability": 0.1839,
+        "modeled_more_probability": 0.5298,
+        "modeled_less_probability": 0.2858,
+        "modeled_push_probability": 0.1845,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5346,
+        "modeled_selected_probability": 0.5298,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.551,
@@ -2481,18 +1315,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 8,
       "research_only": true,
@@ -2514,7 +1361,7 @@
         "AST": 6.816
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2522,11 +1369,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 2.686,
-        "modeled_more_probability": 0.4856,
-        "modeled_less_probability": 0.5144,
+        "modeled_more_probability": 0.4822,
+        "modeled_less_probability": 0.5179,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5144,
+        "modeled_selected_probability": 0.5179,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.117,
@@ -2538,18 +1385,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -2571,7 +1431,7 @@
         "AST": 3.948
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2579,73 +1439,16 @@
         "draws": 20000,
         "market": "REB",
         "projection": 9.406,
-        "modeled_more_probability": 0.2908,
-        "modeled_less_probability": 0.5677,
-        "modeled_push_probability": 0.1415,
+        "modeled_more_probability": 0.2882,
+        "modeled_less_probability": 0.5683,
+        "modeled_push_probability": 0.1436,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5677,
+        "modeled_selected_probability": 0.5683,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.482,
           "REB": 9.406,
           "AST": 3.948
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
-      "injury_context": {
-        "status": "NO_REPORTED_OUT",
-        "factor": 1.0,
-        "affected": []
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Deni Avdija",
-      "player_id": "1630166",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "REB",
-      "line": 6.5,
-      "projection": 5.204,
-      "components": {
-        "PTS": 23.805,
-        "REB": 5.204,
-        "AST": 6.364
-      },
-      "market_updated": "2026-11-14T02:50:14.667000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 5.204,
-        "modeled_more_probability": 0.2707,
-        "modeled_less_probability": 0.7294,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7294,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 23.805,
-          "REB": 5.204,
-          "AST": 6.364
         },
         "PRA_joint_distribution": false,
         "calibrated": false,
@@ -2658,16 +1461,16 @@
         "factor": 1.0,
         "affected": [
           {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
+            "reported_at": "2026-11-14T03:15:00+00:00",
             "official": true
           }
         ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
         "injury_adjusted": false,
         "probability_actionable": false
       },
@@ -2678,7 +1481,7 @@
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
       "injury_adjustment_verified": false,
       "calibrated_probability": null,
-      "source_prior_games": 11,
+      "source_prior_games": 12,
       "research_only": true,
       "production_replaced": false
     },
@@ -2698,7 +1501,7 @@
         "AST": 1.349
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2706,11 +1509,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 3.072,
-        "modeled_more_probability": 0.2495,
-        "modeled_less_probability": 0.7506,
+        "modeled_more_probability": 0.2483,
+        "modeled_less_probability": 0.7517,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7506,
+        "modeled_selected_probability": 0.7517,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.503,
@@ -2722,18 +1525,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -2755,7 +1571,7 @@
         "AST": 2.389
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2763,11 +1579,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 4.778,
-        "modeled_more_probability": 0.6796,
-        "modeled_less_probability": 0.3204,
+        "modeled_more_probability": 0.674,
+        "modeled_less_probability": 0.326,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.6796,
+        "modeled_selected_probability": 0.674,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.57,
@@ -2779,370 +1595,33 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Deni Avdija",
-      "player_id": "1630166",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "AST",
-      "line": 6.5,
-      "projection": 6.364,
-      "components": {
-        "PTS": 23.805,
-        "REB": 5.204,
-        "AST": 6.364
-      },
-      "market_updated": "2026-11-14T02:50:14.669000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 6.364,
-        "modeled_more_probability": 0.4042,
-        "modeled_less_probability": 0.5958,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5958,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 23.805,
-          "REB": 5.204,
-          "AST": 6.364
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Darius Acuff Jr.",
-      "player_id": "1643411",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "AST",
-      "line": 6.5,
-      "projection": 7.45,
-      "components": {
-        "PTS": 25.104,
-        "REB": 4.04,
-        "AST": 7.45
-      },
-      "market_updated": "2026-11-14T02:50:14.667000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 7.45,
-        "modeled_more_probability": 0.6972,
-        "modeled_less_probability": 0.3028,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6972,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 25.104,
-          "REB": 4.04,
-          "AST": 7.45
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Jrue Holiday",
-      "player_id": "201950",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "AST",
-      "line": 4.0,
-      "projection": 3.868,
-      "components": {
-        "PTS": 13.621,
-        "REB": 3.159,
-        "AST": 3.868
-      },
-      "market_updated": "2026-11-14T02:50:14.674000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 3.868,
-        "modeled_more_probability": 0.3049,
-        "modeled_less_probability": 0.477,
-        "modeled_push_probability": 0.218,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.477,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.621,
-          "REB": 3.159,
-          "AST": 3.868
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Domantas Sabonis",
-      "player_id": "1627734",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "AST",
-      "line": 6.0,
-      "projection": 5.261,
-      "components": {
-        "PTS": 13.095,
-        "REB": 11.651,
-        "AST": 5.261
-      },
-      "market_updated": "2026-11-14T02:50:14.669000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 5.261,
-        "modeled_more_probability": 0.2109,
-        "modeled_less_probability": 0.6112,
-        "modeled_push_probability": 0.1779,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6112,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.095,
-          "REB": 11.651,
-          "AST": 5.261
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Damian Lillard",
-      "player_id": "203081",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "AST",
-      "line": 4.5,
-      "projection": 4.384,
-      "components": {
-        "PTS": 18.564,
-        "REB": 3.299,
-        "AST": 4.384
-      },
-      "market_updated": "2026-11-14T02:50:14.683000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 4.384,
-        "modeled_more_probability": 0.4159,
-        "modeled_less_probability": 0.584,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.584,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 18.564,
-          "REB": 3.299,
-          "AST": 4.384
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
       "research_only": true,
       "production_replaced": false
     },
@@ -3162,7 +1641,7 @@
         "AST": 6.816
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3171,10 +1650,10 @@
         "market": "AST",
         "projection": 6.816,
         "modeled_more_probability": 0.2964,
-        "modeled_less_probability": 0.4838,
-        "modeled_push_probability": 0.2198,
+        "modeled_less_probability": 0.4842,
+        "modeled_push_probability": 0.2195,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.4838,
+        "modeled_selected_probability": 0.4842,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.117,
@@ -3186,18 +1665,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -3219,7 +1711,7 @@
         "AST": 3.948
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3227,11 +1719,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 3.948,
-        "modeled_more_probability": 0.3173,
-        "modeled_less_probability": 0.4552,
-        "modeled_push_probability": 0.2275,
+        "modeled_more_probability": 0.3139,
+        "modeled_less_probability": 0.4539,
+        "modeled_push_probability": 0.2322,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.4552,
+        "modeled_selected_probability": 0.4539,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.482,
@@ -3243,18 +1735,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -3276,7 +1781,7 @@
         "AST": 2.389
       },
       "market_updated": "2026-11-14T02:46:11.809000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3284,11 +1789,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 2.389,
-        "modeled_more_probability": 0.4114,
-        "modeled_less_probability": 0.5886,
+        "modeled_more_probability": 0.4155,
+        "modeled_less_probability": 0.5845,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5886,
+        "modeled_selected_probability": 0.5845,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.57,
@@ -3300,849 +1805,22 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
-      "injury_context": {
-        "status": "NO_REPORTED_OUT",
-        "factor": 1.0,
-        "affected": []
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Toumani Camara",
-      "player_id": "1641739",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "AST",
-      "line": 1.5,
-      "projection": 1.589,
-      "components": {
-        "PTS": 11.909,
-        "REB": 3.741,
-        "AST": 1.589
-      },
-      "market_updated": "2026-11-14T02:50:14.694000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 1.589,
-        "modeled_more_probability": 0.4669,
-        "modeled_less_probability": 0.5331,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5331,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.909,
-          "REB": 3.741,
-          "AST": 1.589
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
       "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
         "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
         "affected": [
           {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "De'Andre Hunter",
-      "player_id": "1629631",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "AST",
-      "line": 1.5,
-      "projection": 1.506,
-      "components": {
-        "PTS": 13.659,
-        "REB": 4.29,
-        "AST": 1.506
-      },
-      "market_updated": "2026-11-14T02:50:14.695000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 1.506,
-        "modeled_more_probability": 0.4467,
-        "modeled_less_probability": 0.5533,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5533,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.659,
-          "REB": 4.29,
-          "AST": 1.506
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
+            "reported_at": "2026-11-14T03:15:00+00:00",
             "official": true
           }
         ],
         "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Deni Avdija",
-      "player_id": "1630166",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 37.5,
-      "projection": 35.373,
-      "components": {
-        "PTS": 23.805,
-        "REB": 5.204,
-        "AST": 6.364
-      },
-      "market_updated": "2026-11-14T02:50:13.951000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 35.373,
-        "modeled_more_probability": 0.3674,
-        "modeled_less_probability": 0.6326,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6326,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 23.805,
-          "REB": 5.204,
-          "AST": 6.364
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Domantas Sabonis",
-      "player_id": "1627734",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 30.5,
-      "projection": 30.008,
-      "components": {
-        "PTS": 13.095,
-        "REB": 11.651,
-        "AST": 5.261
-      },
-      "market_updated": "2026-11-14T02:50:13.996000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 30.008,
-        "modeled_more_probability": 0.4422,
-        "modeled_less_probability": 0.5577,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5577,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.095,
-          "REB": 11.651,
-          "AST": 5.261
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Zach LaVine",
-      "player_id": "203897",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 24.5,
-      "projection": 27.401,
-      "components": {
-        "PTS": 20.928,
-        "REB": 3.664,
-        "AST": 2.809
-      },
-      "market_updated": "2026-11-14T02:50:13.962000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 27.401,
-        "modeled_more_probability": 0.614,
-        "modeled_less_probability": 0.386,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.614,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 20.928,
-          "REB": 3.664,
-          "AST": 2.809
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Toumani Camara",
-      "player_id": "1641739",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 18.5,
-      "projection": 17.239,
-      "components": {
-        "PTS": 11.909,
-        "REB": 3.741,
-        "AST": 1.589
-      },
-      "market_updated": "2026-11-14T02:50:13.976000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 17.239,
-        "modeled_more_probability": 0.4115,
-        "modeled_less_probability": 0.5885,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5885,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.909,
-          "REB": 3.741,
-          "AST": 1.589
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Damian Lillard",
-      "player_id": "203081",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 30.5,
-      "projection": 26.246,
-      "components": {
-        "PTS": 18.564,
-        "REB": 3.299,
-        "AST": 4.384
-      },
-      "market_updated": "2026-11-14T02:50:13.988000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 26.246,
-        "modeled_more_probability": 0.2741,
-        "modeled_less_probability": 0.7259,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7259,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 18.564,
-          "REB": 3.299,
-          "AST": 4.384
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Donovan Clingan",
-      "player_id": "1642270",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 24.5,
-      "projection": 21.462,
-      "components": {
-        "PTS": 10.315,
-        "REB": 9.697,
-        "AST": 1.45
-      },
-      "market_updated": "2026-11-14T02:50:13.987000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 21.462,
-        "modeled_more_probability": 0.3276,
-        "modeled_less_probability": 0.6724,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6724,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 10.315,
-          "REB": 9.697,
-          "AST": 1.45
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Darius Acuff Jr.",
-      "player_id": "1643411",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 35.5,
-      "projection": 36.594,
-      "components": {
-        "PTS": 25.104,
-        "REB": 4.04,
-        "AST": 7.45
-      },
-      "market_updated": "2026-11-14T02:50:13.932000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 36.594,
-        "modeled_more_probability": 0.5196,
-        "modeled_less_probability": 0.4803,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5196,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 25.104,
-          "REB": 4.04,
-          "AST": 7.45
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "De'Andre Hunter",
-      "player_id": "1629631",
-      "team": "SAC",
-      "opponent": "POR",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 19.5,
-      "projection": 19.456,
-      "components": {
-        "PTS": 13.659,
-        "REB": 4.29,
-        "AST": 1.506
-      },
-      "market_updated": "2026-11-14T02:50:13.963000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 19.456,
-        "modeled_more_probability": 0.4687,
-        "modeled_less_probability": 0.5313,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5313,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.659,
-          "REB": 4.29,
-          "AST": 1.506
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Jrue Holiday",
-      "player_id": "201950",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 20.5,
-      "projection": 20.648,
-      "components": {
-        "PTS": 13.621,
-        "REB": 3.159,
-        "AST": 3.868
-      },
-      "market_updated": "2026-11-14T02:50:13.963000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 20.648,
-        "modeled_more_probability": 0.4708,
-        "modeled_less_probability": 0.5292,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5292,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.621,
-          "REB": 3.159,
-          "AST": 3.868
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Robert Williams III",
-      "player_id": "1629057",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 14.5,
-      "projection": 13.396,
-      "components": {
-        "PTS": 6.814,
-        "REB": 5.602,
-        "AST": 0.98
-      },
-      "market_updated": "2026-11-14T02:50:14.072000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 13.396,
-        "modeled_more_probability": 0.4218,
-        "modeled_less_probability": 0.5783,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5783,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 6.814,
-          "REB": 5.602,
-          "AST": 0.98
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
         "injury_adjusted": false,
         "probability_actionable": false
       },
@@ -4173,7 +1851,7 @@
         "AST": 3.948
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4181,11 +1859,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 21.835,
-        "modeled_more_probability": 0.3414,
-        "modeled_less_probability": 0.6585,
+        "modeled_more_probability": 0.3377,
+        "modeled_less_probability": 0.6623,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6585,
+        "modeled_selected_probability": 0.6623,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.482,
@@ -4197,18 +1875,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -4230,7 +1921,7 @@
         "AST": 1.518
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4238,11 +1929,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 16.592,
-        "modeled_more_probability": 0.5211,
-        "modeled_less_probability": 0.4789,
+        "modeled_more_probability": 0.5278,
+        "modeled_less_probability": 0.4722,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5211,
+        "modeled_selected_probability": 0.5278,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.457,
@@ -4254,18 +1945,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 9,
       "research_only": true,
@@ -4287,7 +1991,7 @@
         "AST": 5.086
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4295,11 +1999,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 39.507,
-        "modeled_more_probability": 0.292,
-        "modeled_less_probability": 0.708,
+        "modeled_more_probability": 0.2857,
+        "modeled_less_probability": 0.7143,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.708,
+        "modeled_selected_probability": 0.7143,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 30.047,
@@ -4311,18 +2015,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -4344,7 +2061,7 @@
         "AST": 3.61
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4352,11 +2069,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 16.047,
-        "modeled_more_probability": 0.4876,
-        "modeled_less_probability": 0.4638,
-        "modeled_push_probability": 0.0485,
+        "modeled_more_probability": 0.4912,
+        "modeled_less_probability": 0.4567,
+        "modeled_push_probability": 0.052,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.4876,
+        "modeled_selected_probability": 0.4912,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.476,
@@ -4368,18 +2085,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -4401,7 +2131,7 @@
         "AST": 2.865
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4409,11 +2139,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 15.364,
-        "modeled_more_probability": 0.6225,
-        "modeled_less_probability": 0.3775,
+        "modeled_more_probability": 0.6206,
+        "modeled_less_probability": 0.3795,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.6225,
+        "modeled_selected_probability": 0.6206,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.523,
@@ -4425,18 +2155,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -4458,7 +2201,7 @@
         "AST": 3.356
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4466,11 +2209,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 18.044,
-        "modeled_more_probability": 0.545,
-        "modeled_less_probability": 0.4551,
+        "modeled_more_probability": 0.5425,
+        "modeled_less_probability": 0.4575,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.545,
+        "modeled_selected_probability": 0.5425,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.307,
@@ -4482,18 +2225,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -4515,7 +2271,7 @@
         "AST": 6.816
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4523,11 +2279,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 29.618,
-        "modeled_more_probability": 0.524,
-        "modeled_less_probability": 0.476,
+        "modeled_more_probability": 0.5277,
+        "modeled_less_probability": 0.4723,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.524,
+        "modeled_selected_probability": 0.5277,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.117,
@@ -4539,18 +2295,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -4572,7 +2341,7 @@
         "AST": 1.811
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4580,11 +2349,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 14.948,
-        "modeled_more_probability": 0.395,
-        "modeled_less_probability": 0.605,
+        "modeled_more_probability": 0.3902,
+        "modeled_less_probability": 0.6098,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.605,
+        "modeled_selected_probability": 0.6098,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.595,
@@ -4596,18 +2365,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 9,
       "research_only": true,
@@ -4629,7 +2411,7 @@
         "AST": 1.288
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4637,11 +2419,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 18.928,
-        "modeled_more_probability": 0.5399,
-        "modeled_less_probability": 0.4602,
+        "modeled_more_probability": 0.541,
+        "modeled_less_probability": 0.459,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5399,
+        "modeled_selected_probability": 0.541,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 12.227,
@@ -4653,18 +2435,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -4686,7 +2481,7 @@
         "AST": 1.657
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4694,11 +2489,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 18.244,
-        "modeled_more_probability": 0.3189,
-        "modeled_less_probability": 0.6812,
+        "modeled_more_probability": 0.3265,
+        "modeled_less_probability": 0.6735,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6812,
+        "modeled_selected_probability": 0.6735,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.244,
@@ -4710,18 +2505,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -4743,7 +2551,7 @@
         "AST": 1.349
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4751,11 +2559,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 11.925,
-        "modeled_more_probability": 0.352,
-        "modeled_less_probability": 0.648,
+        "modeled_more_probability": 0.3518,
+        "modeled_less_probability": 0.6482,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.648,
+        "modeled_selected_probability": 0.6482,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.503,
@@ -4767,18 +2575,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -4800,7 +2621,7 @@
         "AST": 1.999
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4808,11 +2629,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 22.533,
-        "modeled_more_probability": 0.5223,
-        "modeled_less_probability": 0.4777,
+        "modeled_more_probability": 0.5256,
+        "modeled_less_probability": 0.4743,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5223,
+        "modeled_selected_probability": 0.5256,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.551,
@@ -4824,18 +2645,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 8,
       "research_only": true,
@@ -4857,7 +2691,7 @@
         "AST": 1.889
       },
       "market_updated": "2026-11-14T02:46:40.764000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4865,11 +2699,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 19.271,
-        "modeled_more_probability": 0.3653,
-        "modeled_less_probability": 0.6348,
+        "modeled_more_probability": 0.3599,
+        "modeled_less_probability": 0.6401,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6348,
+        "modeled_selected_probability": 0.6401,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.384,
@@ -4881,18 +2715,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T03:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -4914,7 +2761,7 @@
         "AST": 1.439
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4922,73 +2769,16 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 12.696,
-        "modeled_more_probability": 0.4895,
-        "modeled_less_probability": 0.5104,
+        "modeled_more_probability": 0.4839,
+        "modeled_less_probability": 0.5161,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5104,
+        "modeled_selected_probability": 0.5161,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.116,
           "REB": 2.141,
           "AST": 1.439
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
-      "injury_context": {
-        "status": "NO_REPORTED_OUT",
-        "factor": 1.0,
-        "affected": []
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Scoot Henderson",
-      "player_id": "1630703",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 15.5,
-      "projection": 13.538,
-      "components": {
-        "PTS": 9.204,
-        "REB": 2.534,
-        "AST": 1.799
-      },
-      "market_updated": "2026-11-14T02:50:14.040000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 13.538,
-        "modeled_more_probability": 0.381,
-        "modeled_less_probability": 0.619,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.619,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 9.204,
-          "REB": 2.534,
-          "AST": 1.799
         },
         "PRA_joint_distribution": true,
         "calibrated": false,
@@ -5001,16 +2791,16 @@
         "factor": 1.0,
         "affected": [
           {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
+            "reported_at": "2026-11-14T03:15:00+00:00",
             "official": true
           }
         ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
         "injury_adjusted": false,
         "probability_actionable": false
       },
@@ -5041,7 +2831,7 @@
         "AST": 2.389
       },
       "market_updated": "2026-11-14T02:42:28.725000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
+      "captured_at": "2026-11-14T03:25:29.073031+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5049,73 +2839,16 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 14.736,
-        "modeled_more_probability": 0.4807,
-        "modeled_less_probability": 0.5193,
+        "modeled_more_probability": 0.4785,
+        "modeled_less_probability": 0.5214,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5193,
+        "modeled_selected_probability": 0.5214,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.57,
           "REB": 4.778,
           "AST": 2.389
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
-      "injury_context": {
-        "status": "NO_REPORTED_OUT",
-        "factor": 1.0,
-        "affected": []
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
-      "opponent_adjustment_verified": true,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Sidy Cissoko",
-      "player_id": "1631321",
-      "team": "POR",
-      "opponent": "SAC",
-      "game": "Portland Trail Blazers @ Sacramento Kings",
-      "start": "2026-11-14T03:00:00+00:00",
-      "stat": "PRA",
-      "line": 14.5,
-      "projection": 15.113,
-      "components": {
-        "PTS": 9.678,
-        "REB": 3.566,
-        "AST": 1.869
-      },
-      "market_updated": "2026-11-14T02:50:14.079000+00:00",
-      "captured_at": "2026-11-14T02:53:13.077761+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 15.113,
-        "modeled_more_probability": 0.4994,
-        "modeled_less_probability": 0.5007,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5007,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 9.678,
-          "REB": 3.566,
-          "AST": 1.869
         },
         "PRA_joint_distribution": true,
         "calibrated": false,
@@ -5128,16 +2861,16 @@
         "factor": 1.0,
         "affected": [
           {
-            "player_id": "1630173",
-            "player": "Precious Achiuwa",
-            "team": "SAC",
+            "player_id": "1642349",
+            "player": "Ajay Mitchell",
+            "team": "OKC",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T02:30:00+00:00",
+            "reported_at": "2026-11-14T03:15:00+00:00",
             "official": true
           }
         ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
         "injury_adjusted": false,
         "probability_actionable": false
       },
@@ -5148,16 +2881,16 @@
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
       "injury_adjustment_verified": false,
       "calibrated_probability": null,
-      "source_prior_games": 11,
+      "source_prior_games": 9,
       "research_only": true,
       "production_replaced": false
     }
   ],
-  "published_projections": 81,
+  "published_projections": 41,
   "excluded": {
     "CONFLICTING_STANDARD_LINES": 4,
     "INCOMPLETE_STANDARD_TWO_SIDED_LINE": 1,
-    "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY": 7
+    "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY": 2
   },
   "game_diagnostics": {
     "Oklahoma City Thunder @ LA Clippers": {
@@ -5167,20 +2900,12 @@
       "excluded": {
         "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY": 2
       }
-    },
-    "Portland Trail Blazers @ Sacramento Kings": {
-      "observed_provider_quote_rows": 90,
-      "verified_standard_offers": 45,
-      "frozen_forecasts": 40,
-      "excluded": {
-        "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY": 5
-      }
     }
   },
   "calibrated": false,
   "injury_news_processed": false,
   "official_injury_processed": true,
-  "official_report_issued_at": "2026-11-14T02:30:00+00:00",
+  "official_report_issued_at": "2026-11-14T03:15:00+00:00",
   "free_official_injury_transition_watch": true,
   "production_replaced": false,
   "existing_grades_modified": false,
