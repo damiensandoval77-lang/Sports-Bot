@@ -30,7 +30,14 @@ class RecoveryRoutingTests(unittest.TestCase):
             "pregame_capture":{"required":True,"state":"DEGRADED"},
             "public_browser":{"required":True,"state":"DEGRADED"}}}
         self.assertEqual(recovery_targets(report),[
-            "nba-prizepicks-site-publish.yml","nba-new-ai-all-markets.yml"])
+            "verify_unified_dames_browser.yml","nba-new-ai-all-markets.yml"])
+    def test_browser_only_failure_rechecks_actual_public_app_without_provider_refresh(self):
+        report={"status":"DEGRADED","upcoming_games":0,"components":{
+            "public_browser":{"required":True,"state":"DEGRADED"},
+            "scoreboard":{"required":True,"state":"READY"},
+            "live_player_stats":{"required":True,"state":"READY"}}}
+        self.assertEqual(recovery_targets(report),["verify_unified_dames_browser.yml"])
+
     def test_capture_does_not_attempt_to_recreate_models_after_tipoff(self):
         report={"status":"DEGRADED","upcoming_games":0,"components":{
             "pregame_capture":{"required":True,"state":"DEGRADED"}}}

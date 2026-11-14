@@ -12,11 +12,11 @@ RECOVERABLE = {
     "ai_forecasts": "nba-no-line-daily-projections.yml",
     "prizepicks_lines": "nba-prizepicks-full-slate.yml",
     "pregame_capture": "nba-new-ai-all-markets.yml",
-    "public_browser": "nba-prizepicks-site-publish.yml",
+    "public_browser": "verify_unified_dames_browser.yml",
     "scoreboard": "independent_scoreboard_refresh.yml",
     "live_player_stats": "independent_nba_player_boxscores.yml",
 }
-NO_COST = ("nba-schedule.yml", "nba-no-line-daily-projections.yml", "nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml",
+NO_COST = ("verify_unified_dames_browser.yml", "nba-schedule.yml", "nba-no-line-daily-projections.yml", "nba-prizepicks-site-publish.yml", "nba-new-ai-all-markets.yml",
            "independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml",
            "nba-live-tracker-backup.yml")
 
@@ -38,6 +38,8 @@ def recovery_targets(report):
         out.append(RECOVERABLE["ai_forecasts"])
     if "prizepicks_lines" in failed and report.get("upcoming_games", 0) > 0:
         out.append(RECOVERABLE["prizepicks_lines"])
+    # A feed publisher cannot refresh the real DOM verification receipt.
+    # Recheck the deployed app; failure remains visible until it actually passes.
     if "public_browser" in failed:
         out.append(RECOVERABLE["public_browser"])
     # Never leave an in-progress game waiting for a user to refresh the live

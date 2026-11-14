@@ -158,6 +158,7 @@ jobs:
               independent_scoreboard_refresh.yml) cooldown_minutes=5 ;;
               independent_nba_player_boxscores.yml) cooldown_minutes=5 ;;
               nba-live-tracker-backup.yml) cooldown_minutes=4 ;;
+              verify_unified_dames_browser.yml) cooldown_minutes=5 ;;
               *) cooldown_minutes=35 ;;
             esac
             # Failure-triggered evaluation must not create an immediate retry
