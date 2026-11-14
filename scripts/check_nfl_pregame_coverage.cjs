@@ -16,6 +16,14 @@ function check(rows,schedule,manifest,now=Date.now()){
   // Old in-game history is immutable, not recertified by this new-capture gate.
   if(t<=now)continue;
   available++;if(Number.isInteger(Number(r.line)))integers++;
+  // Evidence and quote can agree with each other yet name the wrong opponent.
+  // Bind them to the independently published schedule, not just its kickoff.
+  const team=String(r.team||'').toUpperCase(),opponent=String(r.opponent||'').toUpperCase();
+  const home=String(g.home||'').toUpperCase(),away=String(g.away||'').toUpperCase();
+  if(!home||!away||home===away||!((team===home&&opponent===away)||(team===away&&opponent===home))){
+   problems.push('Standard line teams do not match scheduled game: '+[r.game_id,r.player_id,team,opponent].join('/'));
+   continue;
+  }
   if(upcoming.has(r.game_id))upcoming.set(r.game_id,upcoming.get(r.game_id)+1);
   let e;try{e=JSON.parse(r.matchup_evidence||'null')}catch(_){}
   const sideFields=e&&['less','push'].every(k=>r['p_'+k]!==''&&r['p_'+k]!=null&&Number.isFinite(Number(r['p_'+k]))&&Math.abs(Number(r['p_'+k])-Number(e['modeled_'+k+'_probability']))<=1e-8);
