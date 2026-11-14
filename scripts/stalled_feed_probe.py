@@ -3,7 +3,8 @@
 def stalled_feed_deadline(page):
     pattern = "**/__audit_stalled_feed__*"
     pending = []
-    handler = pending.append
+    def handler(route):
+        pending.append(route)
     page.route(pattern, handler)
     try:
         return page.evaluate("""async () => {
