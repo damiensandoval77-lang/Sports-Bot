@@ -1,11 +1,12 @@
 name: Verify funded PrizePicks top-up availability (single API page)
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/probe_prizepicks_topup.py'
-      - '.github/workflows/nba-prizepicks-topup-verification.yml'
+    inputs:
+      allow_paid_request:
+        description: 'Explicitly authorize one credit-backed provider request'
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: write
 concurrency:
@@ -13,6 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   probe:
+    if: github.event_name == 'workflow_dispatch' && inputs.allow_paid_request == true
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -25,7 +27,7 @@ jobs:
       - name: One authenticated NBA compact page only, no retry or provider data committed
         env:
           PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
-        run: python -m iphone_bot.probe_prizepicks_topup
+        run: python -m iphone_bot.probe_prizepicks_topup --allow-paid-request
       - name: Publish access diagnostics without credentials or player lines
         run: |
           set -euo pipefail

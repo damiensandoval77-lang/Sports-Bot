@@ -14,13 +14,15 @@ from pathlib import Path
 OUT=Path("docs/prizepicks_connection_health.json")
 URL="https://prizepicksapi.com/api/v1/projections?league=NBA&view=compact&limit=1"
 
-def probe():
+def probe(*, allow_paid_request=False):
     observed=dt.datetime.now(dt.timezone.utc).isoformat()
     key=os.environ.get("PRIZEPICKS_API_KEY","").strip()
     result={"checked_at":observed,"provider":"independent_prizepicksapi.com",
             "scope":"ONE_AUTHENTICATED_COMPACT_NBA_REQUEST",
             "full_slate_coverage_verified":False,
             "credentials_disclosed":False}
+    if not allow_paid_request:
+        return {**result, 'status':'PAID_REQUEST_NOT_AUTHORIZED', 'api_requests_made':0, 'credit_cost':0}
     if not key:
         result["status"]="GITHUB_SECRET_MISSING"
         return result
@@ -44,7 +46,10 @@ def probe():
     return result
 
 if __name__=="__main__":
-    outcome=probe()
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--allow-paid-request', action='store_true')
+    outcome=probe(allow_paid_request=parser.parse_args().allow_paid_request)
     OUT.write_text(json.dumps(outcome,indent=2)+"\n")
     print("PrizePicks access status:",outcome["status"],
           "http:",outcome.get("http_status"),"rows:",outcome.get("returned_projection_count"),

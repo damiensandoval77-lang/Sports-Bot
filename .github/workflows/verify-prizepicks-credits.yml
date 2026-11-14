@@ -1,11 +1,12 @@
 name: Verify PrizePicks API credits once
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/verify_prizepicks_credits.py'
-      - '.github/workflows/verify-prizepicks-credits.yml'
   workflow_dispatch:
+    inputs:
+      allow_paid_request:
+        description: 'Explicitly authorize one credit-backed provider request'
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: write
 concurrency:
@@ -13,6 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify:
+    if: github.event_name == 'workflow_dispatch' && inputs.allow_paid_request == true
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -25,7 +27,7 @@ jobs:
       - name: Confirm one authenticated PrizePicks NBA response
         env:
           PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
-        run: python -u iphone_bot/verify_prizepicks_credits.py
+        run: python -u iphone_bot/verify_prizepicks_credits.py --allow-paid-request
       - name: Publish safe connectivity status
         run: |
           set -euo pipefail
