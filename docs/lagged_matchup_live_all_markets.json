@@ -1,6 +1,6 @@
 {
   "status": "LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
-  "generated_at": "2026-11-14T22:57:35.286156+00:00",
+  "generated_at": "2026-11-14T23:22:18.801944+00:00",
   "source_provider_generated_at": "2026-11-14T22:32:57.897512+00:00",
   "source_model_input_generated_at": "2026-11-14T22:32:57.897512+00:00",
   "model": "LAGGED_MATCHUP_2022_24_THREE_MODELS_PRA_SUM",
@@ -31,7 +31,7 @@
         "AST": 1.582
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -88,7 +88,7 @@
         "AST": 4.563
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -145,7 +145,7 @@
         "AST": 5.179
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -202,7 +202,7 @@
         "AST": 1.435
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -259,7 +259,7 @@
         "AST": 2.927
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -316,7 +316,7 @@
         "AST": 5.265
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -373,7 +373,7 @@
         "AST": 1.157
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -430,7 +430,7 @@
         "AST": 7.461
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -438,11 +438,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 25.963,
-        "modeled_more_probability": 0.4815,
-        "modeled_less_probability": 0.5184,
+        "modeled_more_probability": 0.4746,
+        "modeled_less_probability": 0.5254,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5184,
+        "modeled_selected_probability": 0.5254,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 25.963,
@@ -454,18 +454,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -487,7 +500,7 @@
         "AST": 4.424
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -495,11 +508,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 15.35,
-        "modeled_more_probability": 0.5144,
-        "modeled_less_probability": 0.4855,
+        "modeled_more_probability": 0.5136,
+        "modeled_less_probability": 0.4864,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5144,
+        "modeled_selected_probability": 0.5136,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 15.35,
@@ -511,18 +524,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -544,7 +570,7 @@
         "AST": 2.172
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -552,11 +578,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 16.309,
-        "modeled_more_probability": 0.5108,
-        "modeled_less_probability": 0.4892,
+        "modeled_more_probability": 0.5067,
+        "modeled_less_probability": 0.4934,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5108,
+        "modeled_selected_probability": 0.5067,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.309,
@@ -568,18 +594,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -601,7 +640,7 @@
         "AST": 5.283
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -609,11 +648,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 28.311,
-        "modeled_more_probability": 0.4375,
-        "modeled_less_probability": 0.5625,
+        "modeled_more_probability": 0.4371,
+        "modeled_less_probability": 0.5628,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5625,
+        "modeled_selected_probability": 0.5628,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 28.311,
@@ -625,18 +664,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -658,7 +710,7 @@
         "AST": 9.377
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -666,11 +718,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 17.07,
-        "modeled_more_probability": 0.708,
-        "modeled_less_probability": 0.292,
+        "modeled_more_probability": 0.7098,
+        "modeled_less_probability": 0.2902,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.708,
+        "modeled_selected_probability": 0.7098,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 17.07,
@@ -682,18 +734,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -715,7 +780,7 @@
         "AST": 2.951
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -723,11 +788,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 20.131,
-        "modeled_more_probability": 0.6439,
-        "modeled_less_probability": 0.3561,
+        "modeled_more_probability": 0.6372,
+        "modeled_less_probability": 0.3628,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.6439,
+        "modeled_selected_probability": 0.6372,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.131,
@@ -739,18 +804,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -772,7 +850,7 @@
         "AST": 2.131
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -780,11 +858,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 14.037,
-        "modeled_more_probability": 0.4818,
-        "modeled_less_probability": 0.5182,
+        "modeled_more_probability": 0.4841,
+        "modeled_less_probability": 0.5159,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5182,
+        "modeled_selected_probability": 0.5159,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.037,
@@ -796,18 +874,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -829,7 +920,7 @@
         "AST": 9.028
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -886,7 +977,7 @@
         "AST": 5.536
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -943,7 +1034,7 @@
         "AST": 2.887
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1000,7 +1091,7 @@
         "AST": 2.322
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1057,7 +1148,7 @@
         "AST": 1.324
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1065,11 +1156,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 14.215,
-        "modeled_more_probability": 0.5699,
-        "modeled_less_probability": 0.43,
+        "modeled_more_probability": 0.5794,
+        "modeled_less_probability": 0.4206,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5699,
+        "modeled_selected_probability": 0.5794,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.215,
@@ -1087,12 +1178,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1101,7 +1201,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1110,7 +1210,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1119,7 +1219,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -1154,7 +1254,7 @@
         "AST": 4.56
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1163,10 +1263,10 @@
         "market": "PTS",
         "projection": 21.45,
         "modeled_more_probability": 0.3814,
-        "modeled_less_probability": 0.6186,
+        "modeled_less_probability": 0.6187,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6186,
+        "modeled_selected_probability": 0.6187,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 21.45,
@@ -1184,12 +1284,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1198,7 +1307,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1207,7 +1316,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1216,7 +1325,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -1251,7 +1360,7 @@
         "AST": 6.474
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1259,11 +1368,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 25.035,
-        "modeled_more_probability": 0.4856,
-        "modeled_less_probability": 0.5144,
+        "modeled_more_probability": 0.4812,
+        "modeled_less_probability": 0.5188,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5144,
+        "modeled_selected_probability": 0.5188,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 25.035,
@@ -1281,12 +1390,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1295,7 +1413,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1304,7 +1422,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1313,7 +1431,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -1348,7 +1466,7 @@
         "AST": 3.175
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1405,7 +1523,7 @@
         "AST": 5.97
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1462,7 +1580,7 @@
         "AST": 2.239
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1470,11 +1588,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 10.822,
-        "modeled_more_probability": 0.5475,
-        "modeled_less_probability": 0.4525,
+        "modeled_more_probability": 0.5425,
+        "modeled_less_probability": 0.4575,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5475,
+        "modeled_selected_probability": 0.5425,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.822,
@@ -1486,18 +1604,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -1519,7 +1650,7 @@
         "AST": 2.134
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1527,11 +1658,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 12.014,
-        "modeled_more_probability": 0.4801,
-        "modeled_less_probability": 0.446,
-        "modeled_push_probability": 0.0739,
+        "modeled_more_probability": 0.4859,
+        "modeled_less_probability": 0.4421,
+        "modeled_push_probability": 0.072,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.4801,
+        "modeled_selected_probability": 0.4859,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 12.014,
@@ -1543,18 +1674,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -1576,7 +1720,7 @@
         "AST": 1.724
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1584,11 +1728,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 8.478,
-        "modeled_more_probability": 0.514,
-        "modeled_less_probability": 0.486,
+        "modeled_more_probability": 0.5199,
+        "modeled_less_probability": 0.4801,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.514,
+        "modeled_selected_probability": 0.5199,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.478,
@@ -1606,12 +1750,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1620,7 +1773,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1629,7 +1782,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -1638,7 +1791,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -1673,7 +1826,7 @@
         "AST": 1.856
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1730,7 +1883,7 @@
         "AST": 2.583
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1787,7 +1940,7 @@
         "AST": 3.666
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1844,7 +1997,7 @@
         "AST": 3.403
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1901,7 +2054,7 @@
         "AST": 6.627
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1958,7 +2111,7 @@
         "AST": 1.48
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2015,7 +2168,7 @@
         "AST": 2.688
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2072,7 +2225,7 @@
         "AST": 2.044
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2129,7 +2282,7 @@
         "AST": 1.816
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2137,11 +2290,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 4.879,
-        "modeled_more_probability": 0.4778,
-        "modeled_less_probability": 0.5222,
+        "modeled_more_probability": 0.4695,
+        "modeled_less_probability": 0.5305,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5222,
+        "modeled_selected_probability": 0.5305,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 4.879,
@@ -2159,12 +2312,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2173,7 +2335,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2182,7 +2344,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2191,7 +2353,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -2226,7 +2388,7 @@
         "AST": 1.49
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2234,11 +2396,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 8.618,
-        "modeled_more_probability": 0.6843,
-        "modeled_less_probability": 0.3157,
+        "modeled_more_probability": 0.6785,
+        "modeled_less_probability": 0.3215,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.6843,
+        "modeled_selected_probability": 0.6785,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.618,
@@ -2256,12 +2418,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2270,7 +2441,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2279,7 +2450,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2288,7 +2459,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -2323,7 +2494,7 @@
         "AST": 1.861
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2380,7 +2551,7 @@
         "AST": 8.491
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2437,7 +2608,7 @@
         "AST": 2.458
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2494,7 +2665,7 @@
         "AST": 1.894
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2551,7 +2722,7 @@
         "AST": 4.188
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2559,11 +2730,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 11.62,
-        "modeled_more_probability": 0.5187,
-        "modeled_less_probability": 0.4813,
+        "modeled_more_probability": 0.5298,
+        "modeled_less_probability": 0.4702,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5187,
+        "modeled_selected_probability": 0.5298,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.62,
@@ -2581,12 +2752,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2595,7 +2775,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2604,7 +2784,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2613,7 +2793,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -2648,7 +2828,7 @@
         "AST": 2.341
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2705,7 +2885,7 @@
         "AST": 0.732
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2762,7 +2942,7 @@
         "AST": 3.771
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2770,11 +2950,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 8.592,
-        "modeled_more_probability": 0.5272,
-        "modeled_less_probability": 0.4728,
+        "modeled_more_probability": 0.5291,
+        "modeled_less_probability": 0.4709,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5272,
+        "modeled_selected_probability": 0.5291,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.592,
@@ -2792,12 +2972,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2806,7 +2995,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2815,7 +3004,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -2824,7 +3013,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -2859,7 +3048,7 @@
         "AST": 0.859
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2867,11 +3056,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 5.145,
-        "modeled_more_probability": 0.4258,
-        "modeled_less_probability": 0.5743,
+        "modeled_more_probability": 0.4297,
+        "modeled_less_probability": 0.5703,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5743,
+        "modeled_selected_probability": 0.5703,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 5.145,
@@ -2883,18 +3072,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -2916,7 +3118,7 @@
         "AST": 1.093
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2973,7 +3175,7 @@
         "AST": 3.636
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3030,7 +3232,7 @@
         "AST": 1.168
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3038,11 +3240,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 11.207,
-        "modeled_more_probability": 0.4271,
-        "modeled_less_probability": 0.5728,
+        "modeled_more_probability": 0.4318,
+        "modeled_less_probability": 0.5683,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5728,
+        "modeled_selected_probability": 0.5683,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.207,
@@ -3054,18 +3256,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -3087,7 +3302,7 @@
         "AST": 2.588
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3144,7 +3359,7 @@
         "AST": 1.803
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3152,11 +3367,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 9.023,
-        "modeled_more_probability": 0.4208,
-        "modeled_less_probability": 0.5792,
+        "modeled_more_probability": 0.4224,
+        "modeled_less_probability": 0.5776,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5792,
+        "modeled_selected_probability": 0.5776,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.023,
@@ -3168,18 +3383,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -3201,7 +3429,7 @@
         "AST": 1.633
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3209,11 +3437,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 6.652,
-        "modeled_more_probability": 0.4556,
-        "modeled_less_probability": 0.5444,
+        "modeled_more_probability": 0.4631,
+        "modeled_less_probability": 0.537,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5444,
+        "modeled_selected_probability": 0.537,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 6.652,
@@ -3225,18 +3453,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -3258,7 +3499,7 @@
         "AST": 1.086
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3315,7 +3556,7 @@
         "AST": 4.959
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3372,7 +3613,7 @@
         "AST": 1.699
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3429,7 +3670,7 @@
         "AST": 5.302
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3437,11 +3678,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 11.887,
-        "modeled_more_probability": 0.5526,
-        "modeled_less_probability": 0.4474,
+        "modeled_more_probability": 0.5559,
+        "modeled_less_probability": 0.4441,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5526,
+        "modeled_selected_probability": 0.5559,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.887,
@@ -3453,18 +3694,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -3486,7 +3740,7 @@
         "AST": 0.784
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3543,7 +3797,7 @@
         "AST": 1.144
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3600,7 +3854,7 @@
         "AST": 1.442
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3608,11 +3862,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 7.844,
-        "modeled_more_probability": 0.4103,
-        "modeled_less_probability": 0.5897,
+        "modeled_more_probability": 0.4168,
+        "modeled_less_probability": 0.5833,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5897,
+        "modeled_selected_probability": 0.5833,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.844,
@@ -3624,18 +3878,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -3657,7 +3924,7 @@
         "AST": 4.563
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3714,7 +3981,7 @@
         "AST": 2.927
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3771,7 +4038,7 @@
         "AST": 5.265
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3828,7 +4095,7 @@
         "AST": 5.179
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3885,7 +4152,7 @@
         "AST": 4.424
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3893,11 +4160,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 4.163,
-        "modeled_more_probability": 0.5597,
-        "modeled_less_probability": 0.4402,
+        "modeled_more_probability": 0.5601,
+        "modeled_less_probability": 0.44,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5597,
+        "modeled_selected_probability": 0.5601,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 15.35,
@@ -3909,18 +4176,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -3942,7 +4222,7 @@
         "AST": 5.283
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3950,11 +4230,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 11.685,
-        "modeled_more_probability": 0.3276,
-        "modeled_less_probability": 0.5131,
-        "modeled_push_probability": 0.1593,
+        "modeled_more_probability": 0.3287,
+        "modeled_less_probability": 0.5174,
+        "modeled_push_probability": 0.1538,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5131,
+        "modeled_selected_probability": 0.5174,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 28.311,
@@ -3966,18 +4246,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -3999,7 +4292,7 @@
         "AST": 6.474
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4007,11 +4300,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 6.707,
-        "modeled_more_probability": 0.333,
-        "modeled_less_probability": 0.5128,
-        "modeled_push_probability": 0.1542,
+        "modeled_more_probability": 0.3343,
+        "modeled_less_probability": 0.5129,
+        "modeled_push_probability": 0.1528,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5128,
+        "modeled_selected_probability": 0.5129,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 25.035,
@@ -4029,12 +4322,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4043,7 +4345,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4052,7 +4354,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4061,7 +4363,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -4096,7 +4398,7 @@
         "AST": 4.56
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4104,11 +4406,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 3.621,
-        "modeled_more_probability": 0.4671,
-        "modeled_less_probability": 0.533,
+        "modeled_more_probability": 0.4684,
+        "modeled_less_probability": 0.5316,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.533,
+        "modeled_selected_probability": 0.5316,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 21.45,
@@ -4126,12 +4428,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4140,7 +4451,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4149,7 +4460,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4158,7 +4469,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -4193,7 +4504,7 @@
         "AST": 1.724
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4201,11 +4512,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 4.686,
-        "modeled_more_probability": 0.214,
-        "modeled_less_probability": 0.6718,
-        "modeled_push_probability": 0.1142,
+        "modeled_more_probability": 0.2111,
+        "modeled_less_probability": 0.6726,
+        "modeled_push_probability": 0.1163,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6718,
+        "modeled_selected_probability": 0.6726,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.478,
@@ -4223,12 +4534,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4237,7 +4557,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4246,7 +4566,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4255,7 +4575,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -4290,7 +4610,7 @@
         "AST": 1.324
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4298,11 +4618,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 6.868,
-        "modeled_more_probability": 0.5199,
-        "modeled_less_probability": 0.4801,
+        "modeled_more_probability": 0.5178,
+        "modeled_less_probability": 0.4823,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5199,
+        "modeled_selected_probability": 0.5178,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.215,
@@ -4320,12 +4640,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4334,7 +4663,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4343,7 +4672,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -4352,7 +4681,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -4387,7 +4716,7 @@
         "AST": 2.134
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4395,11 +4724,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 8.042,
-        "modeled_more_probability": 0.5389,
-        "modeled_less_probability": 0.4611,
+        "modeled_more_probability": 0.5391,
+        "modeled_less_probability": 0.4609,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5389,
+        "modeled_selected_probability": 0.5391,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 12.014,
@@ -4411,18 +4740,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -4444,7 +4786,7 @@
         "AST": 3.175
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4501,7 +4843,7 @@
         "AST": 2.583
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4558,7 +4900,7 @@
         "AST": 3.666
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4615,7 +4957,7 @@
         "AST": 1.894
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4672,7 +5014,7 @@
         "AST": 8.491
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4729,7 +5071,7 @@
         "AST": 5.536
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4786,7 +5128,7 @@
         "AST": 1.48
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4843,7 +5185,7 @@
         "AST": 1.157
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4900,7 +5242,7 @@
         "AST": 2.341
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4957,7 +5299,7 @@
         "AST": 1.861
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5014,7 +5356,7 @@
         "AST": 0.732
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5071,7 +5413,7 @@
         "AST": 1.093
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5128,7 +5470,7 @@
         "AST": 4.959
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5185,7 +5527,7 @@
         "AST": 2.172
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5193,11 +5535,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 2.637,
-        "modeled_more_probability": 0.4652,
-        "modeled_less_probability": 0.5348,
+        "modeled_more_probability": 0.4713,
+        "modeled_less_probability": 0.5287,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5348,
+        "modeled_selected_probability": 0.5287,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.309,
@@ -5209,18 +5551,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -5242,7 +5597,7 @@
         "AST": 1.144
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5299,7 +5654,7 @@
         "AST": 0.784
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5356,7 +5711,7 @@
         "AST": 0.859
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5364,11 +5719,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 2.161,
-        "modeled_more_probability": 0.3962,
-        "modeled_less_probability": 0.6038,
+        "modeled_more_probability": 0.3976,
+        "modeled_less_probability": 0.6025,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6038,
+        "modeled_selected_probability": 0.6025,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 5.145,
@@ -5380,18 +5735,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -5413,7 +5781,7 @@
         "AST": 1.633
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5421,11 +5789,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 4.528,
-        "modeled_more_probability": 0.4582,
-        "modeled_less_probability": 0.5417,
+        "modeled_more_probability": 0.4503,
+        "modeled_less_probability": 0.5497,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5417,
+        "modeled_selected_probability": 0.5497,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 6.652,
@@ -5437,18 +5805,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -5470,7 +5851,7 @@
         "AST": 1.442
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5478,11 +5859,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 2.288,
-        "modeled_more_probability": 0.415,
-        "modeled_less_probability": 0.5849,
+        "modeled_more_probability": 0.4125,
+        "modeled_less_probability": 0.5875,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5849,
+        "modeled_selected_probability": 0.5875,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.844,
@@ -5494,18 +5875,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -5527,7 +5921,7 @@
         "AST": 4.563
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5584,7 +5978,7 @@
         "AST": 5.179
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5641,7 +6035,7 @@
         "AST": 5.265
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5698,7 +6092,7 @@
         "AST": 5.283
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5706,11 +6100,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 5.283,
-        "modeled_more_probability": 0.3905,
-        "modeled_less_probability": 0.3412,
-        "modeled_push_probability": 0.2683,
+        "modeled_more_probability": 0.3916,
+        "modeled_less_probability": 0.3444,
+        "modeled_push_probability": 0.264,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.3905,
+        "modeled_selected_probability": 0.3916,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 28.311,
@@ -5722,18 +6116,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -5755,7 +6162,7 @@
         "AST": 9.028
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5812,7 +6219,7 @@
         "AST": 2.322
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5869,7 +6276,7 @@
         "AST": 4.56
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5877,11 +6284,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 4.56,
-        "modeled_more_probability": 0.4545,
-        "modeled_less_probability": 0.2766,
-        "modeled_push_probability": 0.269,
+        "modeled_more_probability": 0.4567,
+        "modeled_less_probability": 0.2723,
+        "modeled_push_probability": 0.271,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.4545,
+        "modeled_selected_probability": 0.4567,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 21.45,
@@ -5899,12 +6306,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -5913,7 +6329,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -5922,7 +6338,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -5931,7 +6347,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -5966,7 +6382,7 @@
         "AST": 6.474
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5974,11 +6390,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 6.474,
-        "modeled_more_probability": 0.431,
-        "modeled_less_probability": 0.2917,
-        "modeled_push_probability": 0.2772,
+        "modeled_more_probability": 0.4371,
+        "modeled_less_probability": 0.2929,
+        "modeled_push_probability": 0.27,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.431,
+        "modeled_selected_probability": 0.4371,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 25.035,
@@ -5996,12 +6412,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -6010,7 +6435,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -6019,7 +6444,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -6028,7 +6453,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -6063,7 +6488,7 @@
         "AST": 6.627
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6120,7 +6545,7 @@
         "AST": 1.48
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6177,7 +6602,7 @@
         "AST": 8.491
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6234,7 +6659,7 @@
         "AST": 3.771
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6242,11 +6667,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 3.771,
-        "modeled_more_probability": 0.4995,
-        "modeled_less_probability": 0.5006,
+        "modeled_more_probability": 0.4966,
+        "modeled_less_probability": 0.5033,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5006,
+        "modeled_selected_probability": 0.5033,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.592,
@@ -6264,12 +6689,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -6278,7 +6712,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -6287,7 +6721,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -6296,7 +6730,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -6331,7 +6765,7 @@
         "AST": 2.887
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6388,7 +6822,7 @@
         "AST": 5.302
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6396,11 +6830,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 5.302,
-        "modeled_more_probability": 0.6542,
-        "modeled_less_probability": 0.3458,
+        "modeled_more_probability": 0.6612,
+        "modeled_less_probability": 0.3388,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.6542,
+        "modeled_selected_probability": 0.6612,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.887,
@@ -6412,18 +6846,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -6445,7 +6892,7 @@
         "AST": 2.688
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6502,7 +6949,7 @@
         "AST": 2.341
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6559,7 +7006,7 @@
         "AST": 1.803
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6567,11 +7014,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 1.803,
-        "modeled_more_probability": 0.5061,
-        "modeled_less_probability": 0.4939,
+        "modeled_more_probability": 0.5105,
+        "modeled_less_probability": 0.4894,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5061,
+        "modeled_selected_probability": 0.5105,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.023,
@@ -6583,18 +7030,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -6616,7 +7076,7 @@
         "AST": 1.157
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6673,7 +7133,7 @@
         "AST": 5.179
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6730,7 +7190,7 @@
         "AST": 1.435
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6787,7 +7247,7 @@
         "AST": 4.563
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6844,7 +7304,7 @@
         "AST": 2.927
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6901,7 +7361,7 @@
         "AST": 5.265
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6958,7 +7418,7 @@
         "AST": 1.582
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7015,7 +7475,7 @@
         "AST": 5.302
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7023,11 +7483,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 26.292,
-        "modeled_more_probability": 0.6656,
-        "modeled_less_probability": 0.3344,
+        "modeled_more_probability": 0.667,
+        "modeled_less_probability": 0.333,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.6656,
+        "modeled_selected_probability": 0.667,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.887,
@@ -7039,18 +7499,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -7072,7 +7545,7 @@
         "AST": 7.461
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7080,11 +7553,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 38.183,
-        "modeled_more_probability": 0.396,
-        "modeled_less_probability": 0.604,
+        "modeled_more_probability": 0.4037,
+        "modeled_less_probability": 0.5963,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.604,
+        "modeled_selected_probability": 0.5963,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 25.963,
@@ -7096,18 +7569,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -7129,7 +7615,7 @@
         "AST": 4.424
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7137,11 +7623,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 23.938,
-        "modeled_more_probability": 0.4835,
-        "modeled_less_probability": 0.5165,
+        "modeled_more_probability": 0.488,
+        "modeled_less_probability": 0.512,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5165,
+        "modeled_selected_probability": 0.512,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 15.35,
@@ -7153,18 +7639,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -7186,7 +7685,7 @@
         "AST": 5.283
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7194,11 +7693,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 45.28,
-        "modeled_more_probability": 0.4058,
-        "modeled_less_probability": 0.5942,
+        "modeled_more_probability": 0.4052,
+        "modeled_less_probability": 0.5948,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5942,
+        "modeled_selected_probability": 0.5948,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 28.311,
@@ -7210,18 +7709,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -7243,7 +7755,7 @@
         "AST": 9.377
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7251,11 +7763,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 29.616,
-        "modeled_more_probability": 0.7415,
-        "modeled_less_probability": 0.2586,
+        "modeled_more_probability": 0.7395,
+        "modeled_less_probability": 0.2605,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.7415,
+        "modeled_selected_probability": 0.7395,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 17.07,
@@ -7267,18 +7779,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -7300,7 +7825,7 @@
         "AST": 2.951
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7308,11 +7833,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 32.04,
-        "modeled_more_probability": 0.5446,
-        "modeled_less_probability": 0.4553,
+        "modeled_more_probability": 0.5473,
+        "modeled_less_probability": 0.4527,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5446,
+        "modeled_selected_probability": 0.5473,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.131,
@@ -7324,18 +7849,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -7357,7 +7895,7 @@
         "AST": 9.028
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7414,7 +7952,7 @@
         "AST": 5.536
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7471,7 +8009,7 @@
         "AST": 2.322
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7528,7 +8066,7 @@
         "AST": 2.887
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7585,7 +8123,7 @@
         "AST": 2.044
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7642,7 +8180,7 @@
         "AST": 1.324
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7650,11 +8188,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 22.408,
-        "modeled_more_probability": 0.5214,
-        "modeled_less_probability": 0.4785,
+        "modeled_more_probability": 0.5085,
+        "modeled_less_probability": 0.4914,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5214,
+        "modeled_selected_probability": 0.5085,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.215,
@@ -7672,12 +8210,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7686,7 +8233,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7695,7 +8242,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7704,7 +8251,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -7739,7 +8286,7 @@
         "AST": 6.474
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7747,11 +8294,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 38.217,
-        "modeled_more_probability": 0.5016,
-        "modeled_less_probability": 0.4985,
+        "modeled_more_probability": 0.5013,
+        "modeled_less_probability": 0.4986,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5016,
+        "modeled_selected_probability": 0.5013,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 25.035,
@@ -7769,12 +8316,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7783,7 +8339,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7792,7 +8348,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7801,7 +8357,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -7836,7 +8392,7 @@
         "AST": 1.724
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7844,11 +8400,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 14.888,
-        "modeled_more_probability": 0.4397,
-        "modeled_less_probability": 0.5603,
+        "modeled_more_probability": 0.4356,
+        "modeled_less_probability": 0.5644,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5603,
+        "modeled_selected_probability": 0.5644,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.478,
@@ -7866,12 +8422,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7880,7 +8445,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7889,7 +8454,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7898,7 +8463,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -7933,7 +8498,7 @@
         "AST": 4.56
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -7941,11 +8506,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 29.631,
-        "modeled_more_probability": 0.4232,
-        "modeled_less_probability": 0.5768,
+        "modeled_more_probability": 0.4194,
+        "modeled_less_probability": 0.5806,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5768,
+        "modeled_selected_probability": 0.5806,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 21.45,
@@ -7963,12 +8528,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7977,7 +8551,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7986,7 +8560,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -7995,7 +8569,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -8030,7 +8604,7 @@
         "AST": 5.97
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8087,7 +8661,7 @@
         "AST": 3.175
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8144,7 +8718,7 @@
         "AST": 2.172
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8152,11 +8726,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 21.118,
-        "modeled_more_probability": 0.4995,
-        "modeled_less_probability": 0.5005,
+        "modeled_more_probability": 0.5022,
+        "modeled_less_probability": 0.4978,
         "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5005,
+        "modeled_direction": "More",
+        "modeled_selected_probability": 0.5022,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.309,
@@ -8168,18 +8742,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -8201,7 +8788,7 @@
         "AST": 2.134
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8209,11 +8796,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 22.19,
-        "modeled_more_probability": 0.5007,
-        "modeled_less_probability": 0.4993,
+        "modeled_more_probability": 0.5047,
+        "modeled_less_probability": 0.4953,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5007,
+        "modeled_selected_probability": 0.5047,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 12.014,
@@ -8225,18 +8812,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -8258,7 +8858,7 @@
         "AST": 1.168
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8266,11 +8866,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 18.445,
-        "modeled_more_probability": 0.4681,
-        "modeled_less_probability": 0.5319,
+        "modeled_more_probability": 0.4659,
+        "modeled_less_probability": 0.5341,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5319,
+        "modeled_selected_probability": 0.5341,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.207,
@@ -8282,18 +8882,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -8315,7 +8928,7 @@
         "AST": 2.239
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8323,11 +8936,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 16.019,
-        "modeled_more_probability": 0.4976,
-        "modeled_less_probability": 0.5024,
+        "modeled_more_probability": 0.4934,
+        "modeled_less_probability": 0.5066,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5024,
+        "modeled_selected_probability": 0.5066,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.822,
@@ -8339,18 +8952,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -8372,7 +8998,7 @@
         "AST": 2.131
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8380,11 +9006,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 18.37,
-        "modeled_more_probability": 0.5233,
-        "modeled_less_probability": 0.4767,
+        "modeled_more_probability": 0.5112,
+        "modeled_less_probability": 0.4888,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5233,
+        "modeled_selected_probability": 0.5112,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.037,
@@ -8396,18 +9022,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -8429,7 +9068,7 @@
         "AST": 3.403
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8486,7 +9125,7 @@
         "AST": 2.688
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8543,7 +9182,7 @@
         "AST": 1.48
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8600,7 +9239,7 @@
         "AST": 3.666
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8657,7 +9296,7 @@
         "AST": 6.627
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8714,7 +9353,7 @@
         "AST": 4.188
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8722,11 +9361,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 18.613,
-        "modeled_more_probability": 0.5833,
-        "modeled_less_probability": 0.4167,
+        "modeled_more_probability": 0.5799,
+        "modeled_less_probability": 0.42,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5833,
+        "modeled_selected_probability": 0.5799,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.62,
@@ -8744,12 +9383,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -8758,7 +9406,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -8767,7 +9415,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -8776,7 +9424,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -8811,7 +9459,7 @@
         "AST": 1.861
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8868,7 +9516,7 @@
         "AST": 2.458
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8925,7 +9573,7 @@
         "AST": 1.894
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -8982,7 +9630,7 @@
         "AST": 2.583
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9039,7 +9687,7 @@
         "AST": 8.491
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9096,7 +9744,7 @@
         "AST": 1.49
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9104,11 +9752,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 14.529,
-        "modeled_more_probability": 0.629,
-        "modeled_less_probability": 0.371,
+        "modeled_more_probability": 0.6343,
+        "modeled_less_probability": 0.3656,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.629,
+        "modeled_selected_probability": 0.6343,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.618,
@@ -9126,12 +9774,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -9140,7 +9797,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -9149,7 +9806,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -9158,7 +9815,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -9193,7 +9850,7 @@
         "AST": 1.699
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9250,7 +9907,7 @@
         "AST": 2.341
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9307,7 +9964,7 @@
         "AST": 0.732
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9364,7 +10021,7 @@
         "AST": 3.771
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9372,11 +10029,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 15.765,
-        "modeled_more_probability": 0.5818,
-        "modeled_less_probability": 0.4182,
+        "modeled_more_probability": 0.5874,
+        "modeled_less_probability": 0.4126,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5818,
+        "modeled_selected_probability": 0.5874,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.592,
@@ -9394,12 +10051,21 @@
         "factor": 1.0,
         "affected": [
           {
+            "player_id": "1631108",
+            "player": "Max Christie",
+            "team": "DAL",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          },
+          {
             "player_id": "1628386",
             "player": "Jarrett Allen",
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -9408,7 +10074,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -9417,7 +10083,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           },
           {
@@ -9426,7 +10092,7 @@
             "team": "CLE",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-14T22:45:00+00:00",
+            "reported_at": "2026-11-14T23:15:00+00:00",
             "official": true
           }
         ],
@@ -9461,7 +10127,7 @@
         "AST": 1.093
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9518,7 +10184,7 @@
         "AST": 3.636
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9575,7 +10241,7 @@
         "AST": 1.856
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9632,7 +10298,7 @@
         "AST": 2.588
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9689,7 +10355,7 @@
         "AST": 4.959
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9746,7 +10412,7 @@
         "AST": 1.442
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9754,11 +10420,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 11.574,
-        "modeled_more_probability": 0.3831,
-        "modeled_less_probability": 0.6169,
+        "modeled_more_probability": 0.3906,
+        "modeled_less_probability": 0.6094,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6169,
+        "modeled_selected_probability": 0.6094,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.844,
@@ -9770,18 +10436,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 10,
       "research_only": true,
@@ -9803,7 +10482,7 @@
         "AST": 1.803
       },
       "market_updated": "2026-11-14T22:32:05.428000+00:00",
-      "captured_at": "2026-11-14T22:57:35.286156+00:00",
+      "captured_at": "2026-11-14T23:22:18.801944+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -9811,11 +10490,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 13.773,
-        "modeled_more_probability": 0.4323,
-        "modeled_less_probability": 0.5677,
+        "modeled_more_probability": 0.4326,
+        "modeled_less_probability": 0.5674,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5677,
+        "modeled_selected_probability": 0.5674,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.023,
@@ -9827,18 +10506,31 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1641796",
+            "player": "Pelle Larsson",
+            "team": "MIA",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-14T23:15:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "NO_COMPLETE_PRIOR_WITH_WITHOUT_SPLITS",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -9894,7 +10586,7 @@
   "calibrated": false,
   "injury_news_processed": false,
   "official_injury_processed": true,
-  "official_report_issued_at": "2026-11-14T22:45:00+00:00",
+  "official_report_issued_at": "2026-11-14T23:15:00+00:00",
   "free_official_injury_transition_watch": true,
   "production_replaced": false,
   "existing_grades_modified": false,
