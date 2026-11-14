@@ -112,6 +112,7 @@ jobs:
       - name: Test report version and stale-publish guard
         if: github.event_name == 'pull_request'
         run: |
+          python -m pip install PyYAML==6.0.2
           python -m unittest discover -s iphone_bot/tests -p 'test_injury_refresh_integrity.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_quote_refresh_integrity.py' -v
       # These trained older-season models do not change when a provider line
