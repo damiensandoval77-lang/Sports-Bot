@@ -148,3 +148,9 @@ class LivePendingGateTests(unittest.TestCase):
         obj['nba_grading']['status']='ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR'
         obj['nba_grading']['days']['2026-11-10'].update(pending=0,accounted_for=10,pending_by_game={})
         self.assertFalse(self.blocked(obj))
+
+    def test_reported_fixture_day_must_match_actual_start(self):
+        obj=live_fixture()
+        obj['nba_grading']['days']['2026-11-09']=obj['nba_grading']['days'].pop('2026-11-10')
+        obj['nba_scoreboard']['games'][0]['date_eastern']='2026-11-09'
+        self.assertTrue(self.blocked(obj))
