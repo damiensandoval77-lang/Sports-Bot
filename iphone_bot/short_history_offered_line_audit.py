@@ -14,6 +14,8 @@ import numpy as np
 
 
 def timestamp(value):
+    if not isinstance(value, str):
+        raise ValueError('INVALID_TIME')
     t = datetime.fromisoformat(value.replace('Z', '+00:00'))
     if t.tzinfo is None:
         raise ValueError('NAIVE_TIME')
@@ -25,7 +27,7 @@ def audit(archive):
     for r in archive.get('records', []):
         try:
             captured, tip = timestamp(r['captured_at']), timestamp(r['start'])
-            if not timestamp(r['market_updated']) <= captured < tip:
+            if not timestamp(r['market_updated']) <= captured <= timestamp(r['archived_at']) < tip:
                 raise ValueError('NOT_PRETIP')
             if (r.get('pickem_tier') != 'standard' or
                 r.get('standard_line_two_sided_verified') is not True or
@@ -39,12 +41,21 @@ def audit(archive):
             version = tuple(r[k] for k in ('candidate_model', 'spec_sha256', 'artifact_sha256'))
             identity = tuple(r[k] for k in ('player_id', 'team', 'opponent', 'game', 'start', 'stat'))
             key = (*version, *identity, line)
-            if key not in selected or captured < timestamp(selected[key]['captured_at']):
-                selected[key] = r
+            if key not in selected or captured < timestamp(selected[key][0]['captured_at']):
+                selected[key] = [r]
+            elif captured == timestamp(selected[key][0]['captured_at']):
+                selected[key].append(r)
         except (ValueError, KeyError, TypeError) as exc:
             rejected[str(exc)] += 1
     cohorts = defaultdict(list); pending = 0; voids = 0
-    for key, r in selected.items():
+    for key, tied in selected.items():
+        # Reject conflicting earliest receipts before inspecting any outcomes.
+        # Comparing complete immutable receipts is deliberately conservative.
+        signatures = {json.dumps(r, sort_keys=True, separators=(',', ':')) for r in tied}
+        if len(signatures) != 1:
+            rejected['CONFLICTING_EARLIEST_RECEIPTS'] += 1
+            continue
+        r = tied[0]
         outcome = archive.get('outcomes', {}).get(r['receipt_key'])
         if not outcome:
             pending += 1; continue
