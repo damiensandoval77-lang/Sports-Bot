@@ -4,6 +4,10 @@ Independent from the validated model simulation ledger and official grading.
 Never promotes stale, post-tip, alternative-tier or research-only estimates into
 validated picks. Historical records survive provider outages and price moves.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 import math
@@ -34,7 +38,7 @@ def identity(record):
 def valid(row, now):
     if not isinstance(row, dict):
         return False
-    if (row.get("research_only") is not True or row.get("source") != "independent_prizepicksapi_com"
+    if (row.get("research_only") is not True or row.get("source")  not in PP_SOURCES
             or row.get("more_tier") != "standard" or row.get("less_tier") != "standard"
             or row.get("stat") not in {"PTS", "REB", "AST", "PRA"}
             or row.get("confidence_percent") is not None

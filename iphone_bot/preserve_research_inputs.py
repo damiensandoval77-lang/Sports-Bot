@@ -3,6 +3,10 @@
 Do not reconstruct an absent sportsbook quote, pretend a stale line is live,
 or modify saved paper grades. Snapshots are source data only.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import gzip
 import hashlib
 import json
@@ -37,7 +41,7 @@ def source_payload(kind,docs):
                 "not_a_pregame_paper_pick":True}
     if kind=="prizepicks":
         feed=json.loads((docs/"prizepicks.json").read_text())
-        if feed.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES" or not feed.get("board_offers"):
+        if feed.get("status") not in PP_STATUSES or not feed.get("board_offers"):
             return None
         source=feed["generated_at"]
         return {"status":"ORIGINAL_AUTHENTICATED_THIRD_PARTY_PRIZEPICKS_CAPTURE",

@@ -4,6 +4,10 @@ Separate from paid sportsbook ledger. Only pre-tip snapshots already published
 and time-stamped before an NBA matchup are eligible. No imagined prices, no
 retrospective changes to forecasts, no false ROI or hit probabilities.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -62,7 +66,7 @@ def freeze(existing,source):
                 "line_tier_verified":bool(row.get("more_tier") in
                     ("standard","goblin","demon") and
                     row.get("more_tier")==row.get("less_tier") and
-                    row.get("source")=="independent_prizepicksapi_com"),
+                    row.get("source") in PP_SOURCES),
                 "captured_at":row["captured_at"],
                 "snapshot_generated_at":source["generated_at"],
                 "source":"PUBLISHED_PRETIP_PRIZEPICKS_AI_RESEARCH",
@@ -218,7 +222,7 @@ def _quote_tier(row, quote_index):
             return None
     except (TypeError,ValueError):
         return None
-    if (quote.get("source")!="independent_prizepicksapi_com" or
+    if (quote.get("source") not in PP_SOURCES or
         quote.get("is_demo") is not False):
         return None
     tier=quote.get("tier")

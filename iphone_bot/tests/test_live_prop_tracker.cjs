@@ -305,3 +305,15 @@ test("combined app never turns a quote-only standard line into an AI projection"
  assert.ok(app.includes('p.quoteOnly?"NO AI"'));
  assert.ok(app.includes('p.quoteOnly?"NO AI"')); // quote-only identity remains labeled on card badge; footer is OVER/UNDER only
 });
+test('Native public pretip quote keeps its real source in live tracker',()=>{
+ const start='2026-11-15T00:00:00Z', game=GAME;
+ const row={player:'Nikola Jokic',team:'DEN',game,start,stat:'PTS',projection:30,line:null};
+ const q={id:'native:123',player:row.player,team:'DEN',game,stat:'PTS',line:28.5,
+   starts_at:start,observed_at:'2026-11-14T23:50:00Z',source:'native_prizepicks_public',
+   is_demo:false,more_tier:'standard',less_tier:'standard'};
+ const result=L.observedPregameLine(row,{status:'LIVE_NATIVE_PRIZEPICKS_LINES',source:q.source,
+   generated_at:'2026-11-14T23:50:00Z',board_offers:[q]});
+ assert.equal(result.source,q.source);assert.equal(result.line,28.5);assert.equal(row.line,null);
+ const saved={...q,tier:'standard',source_generated_at:q.observed_at};
+ assert.equal(L.archivedPregameLine(row,{status:'VERIFIED_PRETIP_PRIZEPICKS_QUOTES_ARCHIVE',quotes:[saved]}).source,q.source);
+});

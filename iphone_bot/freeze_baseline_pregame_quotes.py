@@ -3,6 +3,10 @@
 A separate recovery lane: never confused with the opponent-aware New AI,
 simulated probabilities, or an actual wager. No provider API calls.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 import math
@@ -71,7 +75,7 @@ def freeze(prior,quotes,models,schedule,now=None,seed=None):
     for q in quotes.get("quotes",[]):
         game=games.get(q.get("game"))
         start=moment(q.get("starts_at"));observed=moment(q.get("observed_at"));generated=moment(q.get("source_generated_at"))
-        if (not game or q.get("source")!="independent_prizepicksapi_com" or q.get("is_demo") is not False or
+        if (not game or q.get("source") not in PP_SOURCES or q.get("is_demo") is not False or
            q.get("tier")!="standard" or q.get("more_tier")!="standard" or q.get("less_tier")!="standard" or
            q.get("team") not in {game.get("home_abbreviation"),game.get("away_abbreviation")} or
            not start or not observed or not generated or not (observed<=generated<=now<start) or

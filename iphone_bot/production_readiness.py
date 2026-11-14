@@ -3,6 +3,10 @@
 Distinguish healthy, degraded, and unavailable feeds. Never infer uptime,
 game observations, paid API credits, provider completeness, or picks.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 from pathlib import Path
@@ -163,7 +167,7 @@ def check(now,files):
 
     pp=inputs["prizepicks_lines"][0]
     age,issues=common("prizepicks_lines")
-    if pp.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
+    if pp.get("status") not in PP_STATUSES:
         issues.append("NO_VALID_PRIZEPICKS_PROVIDER_DATA")
     offers=pp.get("board_offers")
     if not isinstance(offers,list) or not offers:

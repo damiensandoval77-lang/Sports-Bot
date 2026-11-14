@@ -3,6 +3,10 @@
 Only dispatch existing free-source workflows. Never trigger a paid odds or
 PrizePicks collector, fabricate lines, or mark unresolved grades as settled.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 from pathlib import Path
@@ -83,7 +87,7 @@ def plan(root=ROOT,now=None):
     provider=read(root,"docs/prizepicks_site.json")
     if (fresh(ai.get("generated_at"),now,180)
         and fresh(provider.get("generated_at"),now,90)
-        and provider.get("status")=="LIVE_THIRD_PARTY_PRIZEPICKS_LINES"
+        and provider.get("status") in PP_STATUSES
         and (health.get("status")!="FRESH_RESEARCH_ONLY_PRIZEPICKS_AI_COMPARISONS"
              or not fresh(health.get("generated_at"),now,90)
              or health.get("model_generated_at")!=ai.get("generated_at"))):

@@ -4,6 +4,10 @@ Does not re-train models or compute a calibrated hit probability. It publishes
 a distinct research-only comparison surface, never overwriting sportsbooks.
 Stale upstream data fail closed with explicit diagnostics, never fake picks.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 import math
@@ -48,7 +52,7 @@ def build(provider,ai,form,now=None):
         "provider_generated_at":provider.get("generated_at"),
         "model_generated_at":ai.get("generated_at")}
     failures=[]
-    if provider.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
+    if provider.get("status") not in PP_STATUSES:
         failures.append("NO_OBSERVED_PRIZEPICKS_SOURCE")
     if ai.get("status")!="PREGAME_PROJECTIONS_NO_LINES":
         failures.append("NO_OBSERVED_PREGAME_MODEL_BOARD")
@@ -84,7 +88,7 @@ def build(provider,ai,form,now=None):
     for offer in provider.get("board_offers",[]):
         if not isinstance(offer,dict):
             skip["malformed_offer"]+=1;continue
-        if offer.get("is_demo") is not False or offer.get("source")!="independent_prizepicksapi_com":
+        if offer.get("is_demo") is not False or offer.get("source") not in PP_SOURCES:
             skip["unverified_offer"]+=1;continue
         start=utc(offer.get("starts_at")); observed=utc(offer.get("observed_at"))
         if not start or not observed or start<=now or not 0<=(now-observed).total_seconds()<=MAX_PP_AGE:
@@ -129,7 +133,7 @@ def build(provider,ai,form,now=None):
           "projection":round(projection,2),"difference":difference,
           "ai_direction":"MORE" if difference>0 else "LESS" if difference<0 else "NO_LEAN",
           "more_tier":offer.get("more_tier"),"less_tier":offer.get("less_tier"),
-          "source":"independent_prizepicksapi_com","research_only":True,
+          "source":offer["source"],"research_only":True,
           "confidence_percent":None,"estimated_ev":None,
           "book_quotes":[],"odds":None,
           "reliability_screen":{"validated":False,"side":None}

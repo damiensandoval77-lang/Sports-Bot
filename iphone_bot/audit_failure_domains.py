@@ -2,6 +2,10 @@
 
 Never fetches odds, changes frozen picks, or tries to grade from unverified data.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import datetime as dt
 import json
 import os
@@ -207,7 +211,7 @@ def check_artifacts(now=None):
         record("NBA grading", *grading_coverage_result(audit))
 
     provider = load("prizepicks_site.json")
-    if provider.get("status") != "LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
+    if provider.get("status")  not in PP_STATUSES:
         record("PrizePicks provider", "critical", "NO_VERIFIED_SOURCE", str(provider.get("status")))
     elif provider.get("partial_board") is True or provider.get("complete_provider_board") is not True:
         record("PrizePicks provider", "warning", "PARTIAL_PROVIDER_COVERAGE",

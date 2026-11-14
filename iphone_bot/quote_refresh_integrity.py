@@ -1,4 +1,8 @@
 """Refuse publishing a model built from an older verified provider snapshot."""
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import argparse
 import json
 from datetime import datetime, timezone
@@ -14,7 +18,7 @@ def stamp(value):
 
 def check(source, model, now=None):
     now = now or datetime.now(timezone.utc)
-    if source.get('status') != 'LIVE_THIRD_PARTY_PRIZEPICKS_LINES' or source.get('provider_status') not in ('fresh', 'partial'):
+    if source.get('status')  not in PP_STATUSES or source.get('provider_status') not in ('fresh', 'partial'):
         return {'safe': True, 'reason': 'NO_NEW_VERIFIED_PROVIDER_SNAPSHOT'}
     try:
         issued = stamp(source['generated_at'])

@@ -13,7 +13,7 @@ on:
       - Backup NBA live player tracker observations (no sportsbook API)
       - Independent NBA player boxscores
       - Independent NBA scoreboard refresh
-      - Refresh independent NBA PrizePicks full-slate lines
+      - Refresh free native NBA PrizePicks standard lines
       - Guarded new NBA AI all markets PTS REB AST PRA
       - Publish lightweight PrizePicks site data and per-game coverage
       - Verify public unified Dame's Picks NBA + NFL browser
@@ -148,8 +148,8 @@ jobs:
           while IFS= read -r workflow; do
             [ -n "$workflow" ] || continue
             case "$workflow" in
-              # The collector is top-up billable. Never buy a board every audit.
-              nba-prizepicks-full-slate.yml) cooldown_minutes=90 ;;
+              # Native public collector is free; retain a bounded request cooldown.
+              nba-prizepicks-full-slate.yml) cooldown_minutes=25 ;;
               # Model training can run up to 40m. Do not queue overlapping
               # generation runs or hammer injury/current-form endpoints.
               nba-new-ai-all-markets.yml) cooldown_minutes=90 ;;
@@ -167,9 +167,9 @@ jobs:
             failure_backoff_minutes=5
             if [ "$workflow" = nba-new-ai-all-markets.yml ]; then failure_backoff_minutes=15; fi
             # Compare with actual started runs, including in-progress.
-            # Prevent every 20-minute audit from buying another board.
-            # Keep the paid collector on a hard cooldown even if its last
-            # request failed: avoid repeatedly spending top-up credits.
+            # Prevent repeated audits from requesting duplicate public boards.
+            # Keep the public collector on a hard cooldown even if its last
+            # request failed: avoid hammering a denied public endpoint.
             # Failed free runs may retry sooner than successful runs, but not
             # immediately on their own completion-triggered readiness event.
             recent=$(gh run list --workflow "$workflow" --limit 30 --json createdAt,updatedAt,status,conclusion,headBranch |

@@ -3,6 +3,10 @@
 This research output is separate from priced sportsbook research. It never
 substitutes pick'em tiers for American odds or calls any betting API.
 """
+try:
+    from .prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
+except ImportError:
+    from prizepicks_provenance import SOURCES as PP_SOURCES, STATUSES as PP_STATUSES, board_source
 import json
 from collections import Counter,defaultdict
 from datetime import datetime,timezone
@@ -54,7 +58,7 @@ def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None)
             if str(p.get("status","")).upper() not in ("OUT","DOUBTFUL"):continue
             if p.get("game_date") and p.get("player_id") and p.get("team"):
                 unavailable[(str(p["player_id"]),str(p["team"]),str(p["game_date"]))]=str(p["status"]).upper()
-    if feed.get("status")!="LIVE_THIRD_PARTY_PRIZEPICKS_LINES":
+    if feed.get("status") not in PP_STATUSES:
         raise ValueError("Only real, independently authenticated provider feed allowed")
     if form.get("season")!="2026-27" or (now-utc(form["updated_at"])).total_seconds()>48*3600:
         raise ValueError("Missing or stale NBA 2026-27 player form")
@@ -77,7 +81,7 @@ def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None)
             if start<=now or stat not in STATS or observed>now or now-observed>__import__("datetime").timedelta(hours=6):
                 skipped["not_upcoming_or_observation_stale"]+=1
                 continue
-            if offer.get("source")!="independent_prizepicksapi_com" or offer.get("is_demo") is not False:
+            if offer.get("source") not in PP_SOURCES or offer.get("is_demo") is not False:
                 skipped["not_verified_live_provider"]+=1
                 continue
             pair=matchup(offer["game"])
@@ -159,7 +163,7 @@ def generate(feed,form,current_games,models,shadows=None,now=None,injuries=None)
                 "minutes_v2_research_baseline":base.get("MIN_L5"),
                 "captured_at":now.isoformat(),
                 "no_calibrated_hit_percentage":True,"no_verified_ev":True,
-                "source":"independent_prizepicksapi_com"})
+                "source":offer["source"]})
         except (KeyError,ValueError,TypeError,OverflowError):
             skipped["invalid_source_or_model_inputs"]+=1
     return {"status":"PRIZEPICKS_AI_RESEARCH_ONLY_NOT_SPORTSBOOK_ODDS",
