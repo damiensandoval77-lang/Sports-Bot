@@ -58,7 +58,7 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
         self.assertIn("head_branch == 'main'", condition)
         self.assertIn("head_repository.full_name == github.repository", condition)
         self.assertIn("event != 'pull_request'", condition)
-        self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=90", text)
+        self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=25", text)
         self.assertIn('.status != "completed"', text)
         self.assertIn('($paid == "true" or .conclusion == "success")', text)
         self.assertIn('python -m iphone_bot.readiness_recovery', text)
@@ -71,7 +71,7 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
                 cooldown=int(re.search(re.escape(workflow)+r"\) cooldown_minutes=(\d+)", text).group(1))
                 self.assertEqual(cooldown,5)
         # Free retries do not remove paid-call caps or active-run deduplication.
-        self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=90",text)
+        self.assertIn("nba-prizepicks-full-slate.yml) cooldown_minutes=25",text)
         self.assertIn("nba-new-ai-all-markets.yml) cooldown_minutes=90",text)
         self.assertIn('.status != "completed"',text)
         self.assertIn("failure_backoff_minutes=5",text)
