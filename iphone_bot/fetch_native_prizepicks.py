@@ -103,10 +103,23 @@ def refresh_health(board):
 def main():
     # One public request. A denial or schema change fails closed; no paid retry.
     request = Request(URL, headers={'User-Agent': 'DamesPicks-Audit/1.0', 'Accept': 'application/json'})
-    with urlopen(request, timeout=30) as response:
-        payload = json.load(response)
-    observed = dt.datetime.now(dt.timezone.utc).isoformat()
-    board = build(payload, json.loads((ROOT/'docs/nba_schedule.json').read_text()), observed)
+    try:
+        with urlopen(request, timeout=30) as response:
+            payload = json.load(response)
+        observed = dt.datetime.now(dt.timezone.utc).isoformat()
+        board = build(payload, json.loads((ROOT/'docs/nba_schedule.json').read_text()), observed)
+    except Exception as error:
+        # Diagnose the denied/invalid refresh without relabeling old quotes fresh.
+        (ROOT/'docs/prizepicks_refresh_health.json').write_text(json.dumps({
+            'checked_at': dt.datetime.now(dt.timezone.utc).isoformat(),
+            'status': 'NATIVE_REFRESH_FAILED_PRIOR_SNAPSHOT_PRESERVED',
+            'source': NATIVE, 'source_url': URL, 'api_requests_made': 1,
+            'http_status': getattr(error, 'code', None), 'error_type': type(error).__name__,
+            'prior_snapshot_preserved': True, 'fresh_quotes_published': False,
+            'credits_reported_charged': 0, 'billing_scope': 'FREE_PUBLIC_ENDPOINT_NO_PAID_FALLBACK',
+            'monthly_credits_header': None, 'paid_provider_balance_checked': False
+        }, indent=2)+'\n')
+        raise
     target = ROOT/'docs/prizepicks.json'
     if target.exists():
         previous = timeparse(json.loads(target.read_text()).get('generated_at'))
