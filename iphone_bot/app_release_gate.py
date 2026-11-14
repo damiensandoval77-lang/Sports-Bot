@@ -20,6 +20,45 @@ def parse_stamp(value):
     except (TypeError,ValueError,OverflowError):
         return None
 
+def awaiting_verified_live_result(day, row, scoreboard, now):
+    """Only excuse exact pending fixtures observed non-final in a fresh official feed.
+
+    This never creates a grade. Unknown, stale, conflicting, final and overdue
+    fixtures remain blocked. There is no assumed final-settlement grace period.
+    """
+    if not isinstance(row, dict) or not isinstance(scoreboard, dict):
+        return False
+    stamp = parse_stamp(scoreboard.get("generated_at"))
+    if (scoreboard.get("status") != "OBSERVED_NBA_LIVE_SCOREBOARD" or
+        scoreboard.get("is_live_score_source") is not True or not stamp or
+        not 0 <= (now - stamp).total_seconds() <= 20 * 60):
+        return False
+    pending = row.get("pending")
+    groups = row.get("pending_by_game")
+    captured, accounted = row.get("captured"), row.get("accounted_for")
+    if (type(pending) is not int or pending <= 0 or
+        type(captured) is not int or type(accounted) is not int or
+        accounted < 0 or captured != accounted + pending or
+        not isinstance(groups, dict) or not groups or
+        any(type(v) is not int or v <= 0 for v in groups.values()) or
+        sum(groups.values()) != pending):
+        return False
+    games = scoreboard.get("games")
+    if not isinstance(games, list):
+        return False
+    for name in groups:
+        matches = [g for g in games if isinstance(g, dict) and
+                   g.get("game") == name and g.get("date_eastern") == day]
+        if len(matches) != 1:
+            return False
+        game = matches[0]
+        start = parse_stamp(game.get("start"))
+        if (not game.get("id") or game.get("game_state") not in {"pre", "in"} or
+            not start or not 0 <= (now - start).total_seconds() <= 6 * 3600 or
+            stamp < start):
+            return False
+    return True
+
 def evaluate(inputs, now=None, previous=None):
     now=now or dt.datetime.now(UTC)
     if now.tzinfo is None:
@@ -82,14 +121,21 @@ def evaluate(inputs, now=None, previous=None):
     if status=="CAPTURE_VERIFIED" and summary.get("total_standard_markets_without_frozen_model",0)!=0:
         errors.append("CAPTURE_REPORT_INCONSISTENT")
     grade,errors=check("nba_grading",inputs.get("nba_grading"),90)
-    if grade.get("status")!="ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR":
+    grade_status = grade.get("status")
+    if grade_status not in {"ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR", "VERIFIED_FINAL_ROWS_OUTSTANDING"}:
         errors.append("HISTORICAL_AI_FORECASTS_UNRESOLVED")
     days=grade.get("days",{})
     if not isinstance(days,dict) or not days:
         errors.append("GRADING_DATES_MISSING")
     else:
         for day,row in days.items():
-            if not isinstance(row,dict) or row.get("pending")!=0 or row.get("accounted_for")!=row.get("captured"):
+            settled = (isinstance(row, dict) and type(row.get("pending")) is int and
+                       row["pending"] == 0 and type(row.get("captured")) is int and
+                       type(row.get("accounted_for")) is int and row["captured"] >= 0 and
+                       row["accounted_for"] == row["captured"])
+            live_pending = (grade_status == "VERIFIED_FINAL_ROWS_OUTSTANDING" and
+                            awaiting_verified_live_result(day, row, inputs.get("nba_scoreboard"), now))
+            if not settled and not live_pending:
                 errors.append("GRADING_INCOMPLETE:"+str(day))
 
     # Strictly validate the picks that reached the public app.
@@ -158,6 +204,7 @@ def main():
         "nba_production":load("production_readiness.json"),
         "nba_capture":load("tonight_capture_gradeability.json"),
         "nba_grading":load("ai_forecast_coverage_audit.json"),
+        "nba_scoreboard":load("nba_scoreboard_independent.json"),
         "nfl_grading":load("nfl/data/grading_health_2026.json"),
         "published_pick_settlement":load("dames-picks/published_pick_settlement.json"),
     }
