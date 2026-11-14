@@ -1,0 +1,142 @@
+
+### tests.log
+..................................................................................................
+----------------------------------------------------------------------
+Ran 98 tests in 0.018s
+
+OK
+
+
+### nfl-live-tests.log
+...............................
+----------------------------------------------------------------------
+Ran 31 tests in 0.066s
+
+OK
+
+
+### mobile-tests.log
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+
+
+### nfl-capture-tests.log
+✔ correct integer distribution passes, push distinct (2.50881ms)
+✔ event fails (0.359468ms)
+✔ wrongkick fails (0.232089ms)
+✔ wrongteam fails (0.21559ms)
+✔ missing fails (0.214929ms)
+✔ storage fails (0.411986ms)
+✔ legacy fails (0.283597ms)
+✔ sum fails (0.253469ms)
+✔ identity fails (0.287817ms)
+✔ posttip fails (0.433348ms)
+✔ unused fails (0.294425ms)
+✔ mixed fails (0.220305ms)
+✔ no rows near kickoff is alert, never fabricated (0.158831ms)
+✔ old forecast fails within90min near kickoff (0.427883ms)
+✔ no post-tip recertification of missing historical row (0.175146ms)
+✔ self-consistent quote evidence cannot override canonical game teams (0.257138ms)
+✔ schedule without both teams fails closed (0.112418ms)
+✔ either home-away orientation is valid (0.320056ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17.538239
+
+
+### failure-domain-tests.log
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.491s
+
+OK
+
+
+### release-tests.log
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.001s
+
+OK
+
+
+### tab-tests.log
+ss....
+----------------------------------------------------------------------
+Ran 6 tests in 0.060s
+
+OK (skipped=2)
+
+
+### deployment-tests.log
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.003s
+
+OK
+{
+  "status": "PASS",
+  "checked_at": "2026-11-14T14:38:15.270814+00:00",
+  "source_mode": "legacy_branch",
+  "note": "Verifies native Pages deployment; does NOT claim GitHub Actions deploy-pages was run."
+}
+
+
+### nfl-ui-tests.log
+browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     npx playwright install                                 ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+    at /workspace/scratch/97fb5f73fd0f/audit-20261114-1428/tests/test_nfl_live_ui.cjs:122:31 {
+  log: [],
+  name: 'Error'
+}
+
+
+### open-tab-tests.log
+✔ coherent new release prompts without reload, then user button reloads preserving query (4.907836ms)
+✔ same never prompts/reloads (1.913255ms)
+✔ partial never prompts/reloads (1.010073ms)
+✔ mismatch never prompts/reloads (0.822906ms)
+✔ offline never prompts/reloads (0.927116ms)
+✔ hidden never prompts/reloads (1.126071ms)
+✔ invalid never prompts/reloads (0.940666ms)
+✔ overlapping poll does not duplicate fetches (2.219924ms)
+✔ missing snapshot does not render an epoch date (32.044522ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 54.338859
+
+
+### postchange-tests.log
+..............................
+----------------------------------------------------------------------
+Ran 30 tests in 0.006s
+
+OK
+
+
+### active-feed-tests.log
+............
+----------------------------------------------------------------------
+Ran 12 tests in 0.505s
+
+OK

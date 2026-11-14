@@ -1,0 +1,297 @@
+{
+  "status": "PARTIAL",
+  "start": "2026-11-14T14:28:28.254246Z",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "pinned_main": "0861ecc9abcd3be1843957611f769f7028b63c54",
+  "release": "dp-readable-market-tabs-20261114-r41",
+  "permissions": {
+    "pull": true,
+    "push": true,
+    "admin": true,
+    "verified_by": "repository API; two branches, PRs and eligible merges"
+  },
+  "environment": {
+    "python_and_git": true,
+    "browser_regression": "GitHub-hosted Chromium/WebKit; local Playwright executable unavailable",
+    "pages_administration": "connector lacks operation; attempted browser is logged out and settings page returns 404 with Sign in link"
+  },
+  "counts": {
+    "current_findings": 5,
+    "carried_historical_findings": 1,
+    "durable_code_fixes": 2,
+    "data_recoveries": 1,
+    "independently_verified": 3,
+    "awaiting_production_verification": []
+  },
+  "inventory": {
+    "branches": 450,
+    "historical_pr_tips": 449,
+    "refs": 899,
+    "source_blobs": 2016,
+    "syntax_failures": 0,
+    "open_prs_at_start": 0,
+    "own_prs": [
+      450,
+      451
+    ],
+    "closed_unmerged_prs_reviewed": [
+      304,
+      272,
+      248,
+      246,
+      213,
+      135,
+      132,
+      105,
+      98,
+      72
+    ],
+    "unassociated_branch": "claude/concrete-reign-city-sample-duogww contains unrelated game handoff, not a Sports-Bot repair"
+  },
+  "workflows": {
+    "definitions": 176,
+    "recent_runs": 200,
+    "jobs": 373,
+    "run_success": 134,
+    "run_failure": 24,
+    "run_cancelled": 41,
+    "run_in_progress": 1,
+    "failed_logs_checked": 24,
+    "unrepresented_definitions": 121,
+    "skipped_steps_reviewed": 221,
+    "static_warnings": 45,
+    "mutable_action_references": 385,
+    "security": "PR450 pip-audit: no known vulnerabilities in audited requirements; not a complete supply-chain certification"
+  },
+  "tests": {
+    "core": 98,
+    "nfl_live": 31,
+    "nfl_capture": 18,
+    "active_audit": 12,
+    "release": 10,
+    "pipeline_contract_commands": 222,
+    "pipeline_contract_failures": 0,
+    "phone_after": {
+      "run": 43606072411,
+      "webkit_job": 132480873100,
+      "chromium_job": 132480872877,
+      "passes_per_engine": 19,
+      "skip": 0
+    },
+    "local_browser_exception": "Local test_nfl_live_ui.cjs blocked by missing Playwright executable; same file passed in hosted NFL production/mobile QA run43605878014; contract commands are a separate suite.",
+    "pr451": {
+      "all_three_workflows_passed": true,
+      "run_ids": [
+        43606289820,
+        43606289829,
+        43606289856
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "PHONE-TAB-CLIPPING",
+      "severity": "medium",
+      "root_cause": "flex:1 shrank long NFL stat-tab labels below their text width",
+      "before": "Both Chromium and WebKit screenshots clip Pass Attempts/Completions inside tab buttons",
+      "after": "Natural-width non-wrapping buttons scroll horizontally; label scrollWidth equals clientWidth",
+      "pr": 450,
+      "commit": "2d84e1a1fa98b4de198726809f8009cd0cfbee79",
+      "files": [
+        "docs/dames-picks/index.html",
+        "docs/dames-picks/release.json",
+        "docs/dames-picks/feeds.js",
+        "docs/dames-picks/live_direct.js",
+        "docs/dames-picks/dames_take.js",
+        "docs/dames-picks/provisional.js",
+        "docs/dames-picks/short_history.js",
+        "scripts/e2e_live_site.py",
+        "tests/test_mobile_card_scope.py"
+      ],
+      "verification": "VERIFIED_LIVE_WEBKIT_AND_CHROMIUM"
+    },
+    {
+      "id": "STALE-NBA-TRACKER",
+      "severity": "medium",
+      "root_cause": "Night-window snapshot remained older than freshness limit outside its scheduled collection window",
+      "before": "2026-11-14T10:06:23.335785Z",
+      "after": "2026-11-14T14:33:42.621565Z",
+      "action": "Free ESPN recovery",
+      "run": 43575621881,
+      "job": 132479057859,
+      "commit": "aaee11aabc197f81951e8e7827d26528e63c399b",
+      "verification": "VERIFIED_PUBLISHED_JSON; 0 active games, 0 missing active matchups; freshness recovery, not proof of live-game pacing"
+    },
+    {
+      "id": "RETIRED-FEED-AUDIT",
+      "severity": "medium",
+      "root_cause": "Scheduled health audit required retired paid sportsbook docs/data.json and incorrectly reported its deliberate inactivity as active-app failure",
+      "before_run": 43602317224,
+      "pr": 451,
+      "files": [
+        ".github/workflows/phase1_feed_health.yml",
+        "iphone_bot/tests/test_failure_domain_phase.py"
+      ],
+      "after": "Maintained active-app auditor; actual primary gaps still fail, JSON artifact preserved with pipefail",
+      "verification": "VERIFIED_PRODUCTION_WORKFLOW; remains failed for actual primary-coverage gaps, not retired feed",
+      "commit": "5081a016dcdcec2714b4f679884c70266c71b5d0",
+      "production_run": 43606512229,
+      "production_job": 132482202271,
+      "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43606512229/artifacts/14118009582"
+    },
+    {
+      "id": "PRIMARY-COVERAGE",
+      "severity": "high",
+      "root_cause": "Insufficient same-team prior opportunity history for model minimum",
+      "current_offers": 179,
+      "primary_models": 166,
+      "exclusions": 13,
+      "archived_thresholds": 251,
+      "primary_frozen": 230,
+      "unmatched": 21,
+      "research_receipt": 16,
+      "no_ai_receipt": 5,
+      "files": [
+        "iphone_bot/live_lagged_matchup_sidecar.py",
+        "iphone_bot/offensive_involvement_holdout.py"
+      ],
+      "recovery": {
+        "run": 43601960164,
+        "jobs": [
+          {
+            "id": 132478982172,
+            "name": "multi-market",
+            "conclusion": "success"
+          },
+          {
+            "id": 132479270737,
+            "name": "preserved-matchup-previews",
+            "conclusion": "success"
+          },
+          {
+            "id": 132479270772,
+            "name": "short-history-research",
+            "conclusion": "success"
+          },
+          {
+            "id": 132479270807,
+            "name": "provisional-baseline",
+            "conclusion": "success"
+          }
+        ],
+        "generated_at": "2026-11-14T14:33:51.079507+00:00",
+        "before_projections": 166,
+        "after_projections": 166,
+        "excluded": 13,
+        "new_durable_captures": 0,
+        "log": [
+          "2026-11-14T14:33:39.7092289Z NEW_ALL_MARKETS {\"total\": 166, \"markets\": {\"PTS\": 61, \"REB\": 28, \"AST\": 17, \"PRA\": 60}, \"excluded\": {\"INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY\": 13}}",
+          "2026-11-14T14:33:49.1262543Z DURABLE NEW AI RECORDS 2054 NEW 0 GRADED 1760",
+          "2026-11-14T14:33:51.4933878Z NEW_ALL_MARKETS {\"total\": 166, \"markets\": {\"PTS\": 61, \"REB\": 28, \"AST\": 17, \"PRA\": 60}, \"excluded\": {\"INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY\": 13}}",
+          "2026-11-14T14:33:55.1499492Z DURABLE NEW AI RECORDS 2054 NEW 0 GRADED 1760",
+          "2026-11-14T14:33:58.0188813Z DURABLE NEW AI RECORDS 2054 NEW 0 GRADED 1760"
+        ]
+      },
+      "verification": "UNRESOLVED_INPUT_HISTORY; no model validation criteria relaxed"
+    },
+    {
+      "id": "LEGACY-PAGES-RACE",
+      "severity": "high",
+      "before": "41 cancelled native Pages runs in initial 200-run sample",
+      "root_cause": "Frequent commits displace native branch-publishing deployments",
+      "action": "Verified eventual live convergence and tried Pages settings browser fallback",
+      "verification": "BLOCKED_PAGES_SETTINGS_ACCESS",
+      "required_action": "Repository Settings > Pages > Build and deployment > Source > GitHub Actions; existing pages-controlled.yml supports workflow mode"
+    },
+    {
+      "id": "HISTORICAL-PRETIP-EVIDENCE",
+      "severity": "high",
+      "carried_count": 60,
+      "provenance": "Earlier receipt; count not independently rederived this cycle",
+      "verification": "IRRECOVERABLE_WITHOUT_ORIGINAL_TIMESTAMPED_FORECASTS",
+      "action": "Preserve original captures, never generate post-tip predictions or grades to fill missing history"
+    }
+  ],
+  "production": {
+    "nba_games_today": 5,
+    "nba_games_tomorrow": 9,
+    "nba_fixed_season_baseline": 1200,
+    "nba_tbd_exception": "Unassigned Cup fixtures",
+    "all_today_games_have_some_quotes_ai_primary": true,
+    "upcoming_ai_only": 504,
+    "ledger": {
+      "frozen": 2054,
+      "graded": 1760,
+      "verified_dnp": 64,
+      "upcoming_pending": 230,
+      "overdue": 0
+    },
+    "nov13": {
+      "saved_quotes": 740,
+      "settled": 711,
+      "void": 29,
+      "pending": 0,
+      "overdue": 0,
+      "ai_forecasts": 904,
+      "ai_graded": 700,
+      "ai_dnp": 204
+    },
+    "nfl": {
+      "schedule_games": 272,
+      "standard_graded_including_push": 135,
+      "pushes": 3,
+      "decisions": 132,
+      "wins": 52,
+      "hit_rate_percent": 39.39,
+      "standard_pending": 0,
+      "excluded_alternative_grades": 932,
+      "excluded_alternative_pending": 4,
+      "live_feed": "Completed WAS-NYG ESPN401873052; no active-game pacing proof"
+    },
+    "readiness": {
+      "passing": 9,
+      "required": 10,
+      "release_certified": false
+    },
+    "last_verified_pages_run": 43606556686
+  },
+  "limitations": [
+    "121 workflow definitions have no executions in 200-run sample; no exhaustive historic job/schedule certification",
+    "Every fetched branch head syntax checked; no claim of full behavioral equivalence for every historical tip",
+    "No active game during run to verify changing 30-second player totals; frontend interval and guards checked",
+    "Underdog live full-market coverage not independently certified this cycle",
+    "45 static architecture warnings and 385 mutable action refs are risk observations, not evidence of exploit",
+    "Historical missing quote count carried forward, not rederived"
+  ],
+  "changes": {
+    "secrets": false,
+    "paid_calls": false,
+    "destructive_actions": false,
+    "fabricated_data": false,
+    "source_files": [
+      "docs/dames-picks/index.html",
+      "docs/dames-picks/release.json",
+      "docs/dames-picks/feeds.js",
+      "docs/dames-picks/live_direct.js",
+      "docs/dames-picks/dames_take.js",
+      "docs/dames-picks/provisional.js",
+      "docs/dames-picks/short_history.js",
+      "scripts/e2e_live_site.py",
+      "tests/test_mobile_card_scope.py",
+      ".github/workflows/phase1_feed_health.yml",
+      "iphone_bot/tests/test_failure_domain_phase.py"
+    ]
+  },
+  "notification": {
+    "requested": true,
+    "delivered": "UNCONFIRMED"
+  },
+  "audit_end": "2026-11-14T14:47:28Z",
+  "duration_seconds": 1140,
+  "main_sha_after_repairs": "2b983e715155ba7465c13a8701c5ee6ad197ce9a",
+  "schedule": {
+    "existing_enabled": true,
+    "interval_hours": 2,
+    "duplicate_created": false
+  }
+}

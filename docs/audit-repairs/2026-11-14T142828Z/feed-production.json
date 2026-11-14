@@ -1,0 +1,78 @@
+{
+  "run": 43606512229,
+  "job": 132482202271,
+  "artifact": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43606512229/artifacts/14118009582",
+  "report": {
+    "checked_at": "2026-11-14T14:45:40.253513+00:00",
+    "mode": "READ_ONLY_NO_PAID_APIS",
+    "status": "DEGRADED",
+    "checks": [
+      {
+        "domain": "NFL grading",
+        "level": "ok",
+        "code": "ACCOUNTED",
+        "detail": "1087 historical final candidates accounted for across all tiers"
+      },
+      {
+        "domain": "NFL grading",
+        "level": "ok",
+        "code": "STANDARD_GRADES_SETTLED",
+        "detail": "0 pending frozen standard-line picks"
+      },
+      {
+        "domain": "NFL grading archive",
+        "level": "ok",
+        "code": "ALTERNATIVE_TIERS_EXCLUDED",
+        "detail": "932 historical alternative-tier grades and 4 pending alternative-tier rows excluded from official standard results"
+      },
+      {
+        "domain": "NBA full-season schedule",
+        "level": "ok",
+        "code": "NEXT_14_DAYS_ACCOUNTED",
+        "detail": "1200 fixed released fixtures saved and next two days reconciled"
+      },
+      {
+        "domain": "NBA readiness",
+        "level": "critical",
+        "code": "PRODUCTION_NOT_READY",
+        "detail": "status=DEGRADED; check published readiness blockers"
+      },
+      {
+        "domain": "NBA lines and AI join",
+        "level": "ok",
+        "code": "MATCHED",
+        "detail": "5 verified matched games"
+      },
+      {
+        "domain": "Pregame capture",
+        "level": "critical",
+        "code": "PRIMARY_FROZEN_MODEL_INCOMPLETE",
+        "detail": "21 exact standard prices lack primary frozen models; 16 have independently preserved research receipts, 5 have no AI receipt"
+      },
+      {
+        "domain": "Research archive",
+        "level": "ok",
+        "code": "RECEIPTS_RETAINED",
+        "detail": "2153 separate historical research receipts (not official grades)"
+      },
+      {
+        "domain": "NBA grading",
+        "level": "ok",
+        "code": "GRADE_AUDIT_STATUS",
+        "detail": "ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR"
+      },
+      {
+        "domain": "PrizePicks provider",
+        "level": "ok",
+        "code": "COMPLETE_SOURCE",
+        "detail": "Provider board reports complete coverage"
+      },
+      {
+        "domain": "NBA live tracking",
+        "level": "ok",
+        "code": "NO_MISSING_ACTIVE_GAMES",
+        "detail": "0 active matchups at last published snapshot"
+      }
+    ]
+  }
+}
