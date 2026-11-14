@@ -77,7 +77,8 @@ def evaluate(rows, output_dir, as_of):
         report['metrics'][target] = {'mae':float(mean_absolute_error(frame.loc[test,target], pred)),
                                     'training_mean_baseline_mae':float(mean_absolute_error(frame.loc[test,target], baseline))}
         import joblib
-        joblib.dump({'model':model,'features':FEATURES,'mode':'offline_research_only'}, out / (target+'.joblib'))
+        joblib.dump({'model':model,'features':FEATURES,'mode':'offline_research_only','contract':'tennis_score_research_v1',
+                     'target':target,'trained_as_of':str(as_of)}, out / (target+'.joblib'))
     (out/'evaluation.json').write_text(json.dumps(report, indent=2)+'\n')
     return report
 

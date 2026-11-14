@@ -62,3 +62,23 @@ the old scanner's guessed opponent/surface context; it must not be activated.
 availability, training/inference parity for those fixtures, calibrated held-out
 line probabilities, freshness/recovery automation, and live mobile QA. No tennis
 production activation is claimed by this change.
+
+## Fixture inference integration boundary
+
+`src.sports.tennis.fixture_inference.predict_fixture` now shares the training
+feature builder. It requires a locally supplied upcoming fixture with an explicit
+UTC/timezone timestamp, scheduled status, observed timestamp, source URL, tour,
+surface and two exact namespaced player IDs. It refuses stale/future observations,
+unknown or insufficient player history, future historical results and incompatible
+or future-trained model artifacts. It never substitutes a previous opponent,
+surface or surname match. Outputs are explicitly research-only projections with
+no probabilities, no provider calls and no publishing side effects.
+
+This is **not an automated fixture feed**. On November 14 the official TheSportsDB
+free schedule endpoints returned `events:null` for November 14 and 15 tennis.
+Its limited free development endpoints do not establish complete fixture coverage.
+Valuebetennis's explicit open-data licence covers season result CSVs, not a fixture
+API; no future-fixture API permission was found. A permitted fixture/context export
+or authorized provider access remains required. Cross-provider IDs require an
+explicit validated mapping. The score model also lacks verified match-format and
+competition-level context; this remains another reason not to publish it live.
