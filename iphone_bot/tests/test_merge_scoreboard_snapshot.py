@@ -50,5 +50,15 @@ class ScoreboardMergeTests(unittest.TestCase):
         new=row("2026-11-09T14:00:00Z")
         self.assertIs(select({},new),new)
 
+    def test_current_partial_does_not_import_old_missing_scores(self):
+        old=row("2026-11-09T14:00:00Z")
+        old["games"]=[{"id":"one","home_score":1},{"id":"missing","home_score":20}]
+        new=row("2026-11-09T14:10:00Z")
+        new["games"]=[{"id":"one","home_score":5}]
+        new["error"]="PARTIAL_CURRENT_SCOREBOARD"
+        result=select(old,new)
+        self.assertIs(result,new)
+        self.assertEqual(result["games"],[{"id":"one","home_score":5}])
+
 if __name__=="__main__":
     unittest.main()
