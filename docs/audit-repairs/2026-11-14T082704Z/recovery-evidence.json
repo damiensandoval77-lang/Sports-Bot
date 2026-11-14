@@ -1,0 +1,531 @@
+{
+  "model_log": [
+    "2026-11-14T08:29:12.1262192Z NEW_ALL_MARKETS {\"total\": 114, \"markets\": {\"PTS\": 43, \"REB\": 20, \"AST\": 9, \"PRA\": 42}, \"excluded\": {\"INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY\": 9}}",
+    "2026-11-14T08:29:14.0360622Z FROZEN_NEW_AI_ALL_MARKET {\"new\": 98, \"graded\": 0, \"dnp_excluded\": 0, \"by_stat\": {\"AST\": {\"recorded\": 210, \"graded\": 191, \"verified_dnp_excluded\": 6, \"pending\": 13, \"mae\": 1.7263, \"modeled_side_hit_rate\": 0.5081, \"direction_eligible\": 185}, \"PRA\": {\"recorded\": 694, \"graded\": 623, \"verified_dnp_excluded\": 26, \"pending\": 45, \"mae\": 6.744, \"modeled_side_hit_rate\": 0.533, \"direction_eligible\": 621}, \"PTS\": {\"recorded\": 680, \"graded\": 614, \"verified_dnp_excluded\": 20, \"pending\": 46, \"mae\": 5.2839, \"modeled_side_hit_rate\": 0.5041, \"direction_eligible\": 609}, \"REB\": {\"recorded\": 367, \"graded\": 332, \"verified_dnp_excluded\": 12, \"pending\": 23, \"mae\": 2.0949, \"modeled_side_hit_rate\": 0.5363, \"direction_eligible\": 317}}}",
+    "2026-11-14T08:29:14.0899147Z Frozen new-model stats {'AST': {'recorded': 210, 'graded': 191, 'verified_dnp_excluded': 6, 'pending': 13, 'mae': 1.7263, 'modeled_side_hit_rate': 0.5081, 'direction_eligible': 185}, 'PRA': {'recorded': 694, 'graded': 623, 'verified_dnp_excluded': 26, 'pending': 45, 'mae': 6.744, 'modeled_side_hit_rate': 0.533, 'direction_eligible': 621}, 'PTS': {'recorded': 680, 'graded': 614, 'verified_dnp_excluded': 20, 'pending': 46, 'mae': 5.2839, 'modeled_side_hit_rate': 0.5041, 'direction_eligible': 609}, 'REB': {'recorded': 367, 'graded': 332, 'verified_dnp_excluded': 12, 'pending': 23, 'mae': 2.0949, 'modeled_side_hit_rate': 0.5363, 'direction_eligible': 317}}",
+    "2026-11-14T08:29:20.6984842Z DURABLE NEW AI RECORDS 1951 NEW 0 GRADED 1760",
+    "2026-11-14T08:29:20.7363138Z {\"safe\": true, \"reason\": \"CURRENT_PROVIDER_SNAPSHOT\"}",
+    "2026-11-14T08:29:22.7173832Z NEW_ALL_MARKETS {\"total\": 114, \"markets\": {\"PTS\": 43, \"REB\": 20, \"AST\": 9, \"PRA\": 42}, \"excluded\": {\"INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY\": 9}}",
+    "2026-11-14T08:29:23.0714590Z FROZEN_NEW_AI_ALL_MARKET {\"new\": 0, \"graded\": 0, \"dnp_excluded\": 0, \"by_stat\": {\"AST\": {\"recorded\": 210, \"graded\": 191, \"verified_dnp_excluded\": 6, \"pending\": 13, \"mae\": 1.7263, \"modeled_side_hit_rate\": 0.5081, \"direction_eligible\": 185}, \"PRA\": {\"recorded\": 694, \"graded\": 623, \"verified_dnp_excluded\": 26, \"pending\": 45, \"mae\": 6.744, \"modeled_side_hit_rate\": 0.533, \"direction_eligible\": 621}, \"PTS\": {\"recorded\": 680, \"graded\": 614, \"verified_dnp_excluded\": 20, \"pending\": 46, \"mae\": 5.2839, \"modeled_side_hit_rate\": 0.5041, \"direction_eligible\": 609}, \"REB\": {\"recorded\": 367, \"graded\": 332, \"verified_dnp_excluded\": 12, \"pending\": 23, \"mae\": 2.0949, \"modeled_side_hit_rate\": 0.5363, \"direction_eligible\": 317}}}",
+    "2026-11-14T08:29:25.7338793Z DURABLE NEW AI RECORDS 1951 NEW 0 GRADED 1760",
+    "2026-11-14T08:29:25.7710590Z {\"safe\": true, \"reason\": \"CURRENT_PROVIDER_SNAPSHOT\"}",
+    "2026-11-14T08:29:25.8013278Z {\"safe\": true, \"reason\": \"CURRENT_OFFICIAL_INJURY_VERSION\"}",
+    "2026-11-14T08:29:28.2947056Z DURABLE NEW AI RECORDS 1951 NEW 0 GRADED 1760",
+    "2026-11-14T08:29:33.3429025Z     \"INSUFFICIENT_INDEPENDENT_GAME_DATES\","
+  ],
+  "phone_log": [
+    "﻿2026-11-14T08:28:03.2195982Z Current runner version: '2.338.2'",
+    "2026-11-14T08:28:04.3560571Z ##[group]Getting Git version info",
+    "2026-11-14T08:28:04.3563615Z [command]/usr/bin/git version",
+    "2026-11-14T08:28:04.3638835Z git version 2.56.1",
+    "2026-11-14T08:28:04.5099463Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/main*:refs/remotes/origin/main* +refs/tags/main*:refs/tags/main*",
+    "2026-11-14T08:28:08.5850878Z   python-version: 3.11",
+    "2026-11-14T08:28:08.7221923Z ##[group]Installed versions",
+    "2026-11-14T08:28:11.8708969Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 624.4/624.4 kB 121.3 MB/s  0:00:00",
+    "2026-11-14T08:28:18.1121222Z Reading package lists...",
+    "2026-11-14T08:28:18.4951531Z libicu74 is already the newest version (74.2-1ubuntu3.1).",
+    "2026-11-14T08:28:18.4952548Z libatomic1 is already the newest version (14.2.0-4ubuntu2~24.04.1).",
+    "2026-11-14T08:28:18.4954196Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).",
+    "2026-11-14T08:28:18.4956054Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).",
+    "2026-11-14T08:28:18.4957558Z libcairo-gobject2 is already the newest version (1.18.0-3build1).",
+    "2026-11-14T08:28:18.4959076Z libcairo2 is already the newest version (1.18.0-3build1).",
+    "2026-11-14T08:28:18.4960426Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).",
+    "2026-11-14T08:28:18.4962103Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).",
+    "2026-11-14T08:28:18.4963510Z libenchant-2-2 is already the newest version (2.3.3-2build2).",
+    "2026-11-14T08:28:18.4964927Z libepoxy0 is already the newest version (1.5.10-1build1).",
+    "2026-11-14T08:28:18.4966405Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).",
+    "2026-11-14T08:28:18.4967506Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.2).",
+    "2026-11-14T08:28:18.4968225Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.4).",
+    "2026-11-14T08:28:18.4968934Z libgdk-pixbuf-2.0-0 is already the newest version (2.42.10+dfsg-3ubuntu3.3).",
+    "2026-11-14T08:28:18.4969726Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.10).",
+    "2026-11-14T08:28:18.4970456Z libgstreamer1.0-0 is already the newest version (1.24.2-1ubuntu0.1).",
+    "2026-11-14T08:28:18.4971435Z libharfbuzz0b is already the newest version (8.3.0-2build2).",
+    "2026-11-14T08:28:18.4972326Z libjpeg-turbo8 is already the newest version (2.1.5-2ubuntu2).",
+    "2026-11-14T08:28:18.4973302Z liblcms2-2 is already the newest version (2.14-2ubuntu0.1).",
+    "2026-11-14T08:28:18.4973977Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).",
+    "2026-11-14T08:28:18.4974678Z libpangocairo-1.0-0 is already the newest version (1.52.1+ds-1build1).",
+    "2026-11-14T08:28:18.4975422Z libpng16-16t64 is already the newest version (1.6.43-5ubuntu0.7).",
+    "2026-11-14T08:28:18.4976127Z libwayland-client0 is already the newest version (1.22.0-2.1build1).",
+    "2026-11-14T08:28:18.4976884Z libwayland-egl1 is already the newest version (1.22.0-2.1build1).",
+    "2026-11-14T08:28:18.4977594Z libwebp7 is already the newest version (1.3.2-0.4build3).",
+    "2026-11-14T08:28:18.4978244Z libwebpdemux2 is already the newest version (1.3.2-0.4build3).",
+    "2026-11-14T08:28:18.4978916Z libx11-6 is already the newest version (2:1.8.7-1ubuntu0.1).",
+    "2026-11-14T08:28:18.4979542Z libxkbcommon0 is already the newest version (1.6.0-1build1).",
+    "2026-11-14T08:28:18.4980216Z libxml2 is already the newest version (2.9.14+dfsg-1.3ubuntu3.10).",
+    "2026-11-14T08:28:18.4980897Z libxslt1.1 is already the newest version (1.1.39-0exp1ubuntu0.24.04.3).",
+    "2026-11-14T08:28:18.4981893Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).",
+    "2026-11-14T08:28:18.4982339Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).",
+    "2026-11-14T08:28:18.4982799Z fonts-liberation is already the newest version (1:2.1.5-3).",
+    "2026-11-14T08:28:20.8390111Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libhwy1t64 amd64 1.0.7-8.1build1 [584 kB]",
+    "2026-11-14T08:28:22.7897121Z Get:39 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libx265-199 amd64 3.5-2build1 [1226 kB]",
+    "2026-11-14T08:28:26.1210790Z Get:89 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libraw1394-11 amd64 2.1.2-2build3 [26.2 kB]",
+    "2026-11-14T08:28:27.7447037Z Get:121 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjack-jackd2-0 amd64 1.9.21~dfsg-3ubuntu3 [289 kB]",
+    "2026-11-14T08:28:31.1218357Z Get:178 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libopenal1 amd64 1:1.23.1-4build1 [540 kB]",
+    "2026-11-14T08:28:33.5467121Z Unpacking fonts-unifont (1:15.1.01-1build1) ...",
+    "2026-11-14T08:28:35.3909366Z Selecting previously unselected package libswresample4:amd64.",
+    "2026-11-14T08:28:38.0121467Z Unpacking gstreamer1.0-plugins-base:amd64 (1.24.2-1ubuntu0.6) ...",
+    "2026-11-14T08:28:38.3907667Z Selecting previously unselected package libtag1v5:amd64.",
+    "2026-11-14T08:28:38.4039051Z Preparing to unpack .../095-libtag1v5_1.13.1-1build1_amd64.deb ...",
+    "2026-11-14T08:28:39.4811842Z Preparing to unpack .../121-libspa-0.2-modules_1.0.5-1ubuntu3.3_amd64.deb ...",
+    "2026-11-14T08:28:42.3900146Z Unpacking libdca0:amd64 (0.0.7-2build1) ...",
+    "2026-11-14T08:28:49.2339065Z     {",
+    "2026-11-14T08:28:49.2347847Z   \"status\": \"PASS\",",
+    "2026-11-14T08:28:49.2348851Z   \"checked_at\": \"2026-11-14T08:28:49.232664+00:00\",",
+    "2026-11-14T08:29:12.3307162Z   \"checked_at\": \"2026-11-14T08:28:49.444317+00:00\",",
+    "2026-11-14T08:29:12.3309198Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3311685Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3312112Z         \"deployed_asset_pins\": {",
+    "2026-11-14T08:29:12.3318614Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3328560Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3329470Z         \"elapsed_ms\": 121",
+    "2026-11-14T08:29:12.3330496Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3330890Z         \"width\": 390",
+    "2026-11-14T08:29:12.3332286Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3333721Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3335651Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3337258Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3339092Z       \"name\": \"nfl_game_detail\",",
+    "2026-11-14T08:29:12.3339322Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3341164Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3341604Z         \"visible_board_cards\": 121,",
+    "2026-11-14T08:29:12.3383682Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3383902Z       \"details\": {",
+    "2026-11-14T08:29:12.3387059Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3388100Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3388497Z         \"cards\": 121,",
+    "2026-11-14T08:29:12.3389954Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3390156Z       \"details\": []",
+    "2026-11-14T08:29:12.3390338Z     },",
+    "2026-11-14T08:29:12.3390502Z     {",
+    "2026-11-14T08:29:12.3390694Z       \"name\": \"missing_games_disclosed\",",
+    "2026-11-14T08:29:12.3391186Z       \"status\": \"PASS\",",
+    "2026-11-14T08:29:12.3392513Z   \"overall\": \"PASS\"",
+    "2026-11-14T08:29:13.9259649Z Artifact iphone-live-e2e-webkit-43575571405.zip successfully finalized. Artifact ID 14105824841",
+    "2026-11-14T08:29:13.9262471Z Artifact iphone-live-e2e-webkit-43575571405 has been successfully uploaded! Final size is 996515 bytes. Artifact ID is 14105824841",
+    "2026-11-14T08:29:13.9268625Z Artifact download URL: https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43575571405/artifacts/14105824841",
+    "2026-11-14T08:29:14.1881967Z [command]/usr/bin/git version",
+    "2026-11-14T08:29:14.1930384Z git version 2.56.1"
+  ],
+  "jobs": {
+    "jobs": [
+      {
+        "id": 132390276943,
+        "name": "multi-market",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 43568888351,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Install existing historical and ML requirements",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Test shared live-history dependency and automatic refresh wiring",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 5
+          },
+          {
+            "name": "Validate complete player-game CSV opportunity recovery contracts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 6
+          },
+          {
+            "name": "Test standard-only quotes and correlated PRA math",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 7
+          },
+          {
+            "name": "Test authenticated NBA news and no unvalidated injury uplift",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 8
+          },
+          {
+            "name": "Test free official NBA injury transitions",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9
+          },
+          {
+            "name": "Test report version and stale-publish guard",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 10
+          },
+          {
+            "name": "Verify pretip model cache and schedule wiring",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 11
+          },
+          {
+            "name": "Restore validated historical model (fast pretip path)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Fetch archived history and train only on cache miss",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 13
+          },
+          {
+            "name": "Verify four-market backtest completeness and coherent PRA",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Save validated historical model before live provider fetch",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 15
+          },
+          {
+            "name": "Fetch current season and verify actual standard PrizePicks lines",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Capture opponent position, source-rated defense and pregame minutes before model picks freeze",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Generate distinct points rebounds assists PRA model estimates",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Validate each posted offer and exact PRA component sum",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          },
+          {
+            "name": "Test analytical matchup probability with exact original standard lines",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 20
+          },
+          {
+            "name": "Calculate separate research-only opponent-based analytic probabilities",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          },
+          {
+            "name": "Verify research feed never replaces grades or publishes stale probabilities",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 22
+          },
+          {
+            "name": "Test and freeze pretip offers for independent multi-stat grading",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          },
+          {
+            "name": "Test durable merge preserves concurrent finalized grades",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 24
+          },
+          {
+            "name": "Retain original research artifact",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25
+          },
+          {
+            "name": "Preserve prospective shadow research separately from frozen market feeds",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 26
+          },
+          {
+            "name": "Publish ONLY separate new AI feed without rewriting existing cards/grades",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 27
+          },
+          {
+            "name": "Test immutable prospective forecast archive and true standard-line final audit",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 28
+          },
+          {
+            "name": "Publish separately guarded uncalibrated matchup research feed",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 29
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 57
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 58
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 59
+          }
+        ]
+      },
+      {
+        "id": 132390506885,
+        "name": "short-history-research",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 43568888351,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Install pinned isolated research model dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Test chronological cohort and fail-closed inference",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Reproduce separately gated research model from pinned historical sources",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Publish only separate research forecasts or explicit blocked output",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Preserve independent historical validation and current research receipt",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Fail visibly if historical research reproduction failed",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 132390506909,
+        "name": "preserved-matchup-previews",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 43568888351,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Test exact archived preview identities and provenance",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Rebuild and publish compact archived preview artifact only",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Retain compact archived preview artifact",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          }
+        ]
+      },
+      {
+        "id": 132390506926,
+        "name": "provisional-baseline",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 43568888351,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Install public-history reader dependencies (no training)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Test isolated provisional cohort and safety guards",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Publish only provisional estimates or an explicit empty blocked artifact",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Retain separate cohort artifact (never primary grades)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          }
+        ]
+      }
+    ]
+  }
+}

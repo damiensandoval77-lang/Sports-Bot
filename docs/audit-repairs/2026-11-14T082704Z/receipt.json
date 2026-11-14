@@ -1,0 +1,223 @@
+{
+  "status": "PARTIAL",
+  "start": "2026-11-14T08:27:04Z",
+  "pinned_main": "24afc0490713e63db4cc7e83e0104806e52f4e53",
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "environment": {
+    "code_execution": true,
+    "github_read": true,
+    "github_write": true,
+    "github_merge": true,
+    "local_browser_blocker": "Chromium socket() Operation not permitted; GitHub hosted browser regression and deployed checks used",
+    "paid_calls_used": false,
+    "secrets_changed": false
+  },
+  "inventory": {
+    "branches": 446,
+    "historical_pr_tips": 445,
+    "refs": 891,
+    "unique_source_blobs": 2004,
+    "source_syntax_failures": 0,
+    "open_prs_at_start": 0,
+    "tips_with_unique_commits": 820,
+    "divergence_note": "Unique commits can be squash-merged history; not evidence of missing fixes"
+  },
+  "workflow_coverage": {
+    "definitions": 176,
+    "recent_runs": 200,
+    "run_counts": {
+      "success": 130,
+      "cancelled": 42,
+      "failure": 26,
+      "in_progress": 1,
+      "skipped": 1
+    },
+    "failed_run_job_logs_inspected": 26,
+    "failed_jobs": 27,
+    "definitions_represented": 52,
+    "definitions_without_runs_in_sample": 124,
+    "exceptions_file": "workflow-exceptions.json",
+    "static_warnings": 45,
+    "mutable_action_references": 385
+  },
+  "automation": {
+    "id": "Automation_e692466cc8688191bd360a9d6de62973",
+    "enabled": true,
+    "interval_hours": 2,
+    "prompt_requires_full_final_report": true,
+    "delivery_confirmed": false
+  },
+  "findings": [
+    {
+      "id": "VERIFIER-ROUTE-TEARDOWN",
+      "severity": "medium",
+      "root_cause": "Synthetic stalled request never received a terminal route action and raised an unhandled Playwright CancelledError on browser close",
+      "before_job": 132390116945,
+      "pr": 446,
+      "merge_sha": "f1a38e5bacf2190f83e7eefaddc7ca8aa33c7a08",
+      "files": [
+        "scripts/e2e_live_site.py",
+        "scripts/stalled_feed_probe.py",
+        "tests/test_stalled_feed_probe.py",
+        ".github/workflows/live-site-e2e.yml"
+      ],
+      "action": "Explicitly abort held synthetic routes and remove the handler after the deployed deadline settles. Add real-browser regression and PR CI wiring.",
+      "regression_run": 43576740180,
+      "initial_attempt": "CI caught unsupported builtin callback registration; corrected to a regular Python handler before merge",
+      "result": "REPAIRED_VERIFIED_AGAINST_LIVE_SITE",
+      "live_run": 43576888586,
+      "live_jobs": [
+        132392964310,
+        132392964613
+      ]
+    },
+    {
+      "id": "CURRENT-PRIMARY-COVERAGE",
+      "severity": "high",
+      "root_cause": "Three players have fewer than the primary model minimum eight prior same-team opportunity games",
+      "current_offers": 123,
+      "primary_models": 114,
+      "excluded_current_offers": 9,
+      "archived_thresholds": 138,
+      "frozen_primary_thresholds": 127,
+      "missing_archived_thresholds": 11,
+      "separate_research_receipts_for_missing": 11,
+      "players": [
+        {
+          "name": "Egor Demin",
+          "games": 5
+        },
+        {
+          "name": "Jaylon Tyson",
+          "games": 7
+        },
+        {
+          "name": "Cameron Johnson",
+          "games": 7
+        }
+      ],
+      "source": "iphone_bot/live_lagged_matchup_sidecar.py; iphone_bot/offensive_involvement_holdout.py",
+      "action": "Reran free current history and primary model inference; all four jobs succeeded; independently checked public generated_at=2026-11-14T08:29:22.412586+00:00",
+      "recovery_run": 43568888351,
+      "recovery_job": 132390276943,
+      "result": "BLOCKED_INPUT_HISTORY; 114 projections and 9 exclusions unchanged; no new durable grades or captures added; research remains separate"
+    },
+    {
+      "id": "STALE-QUOTE-SOURCE",
+      "severity": "high",
+      "source": "docs/production_readiness.json; .github/workflows/production_readiness.yml",
+      "root_cause": "Last authentic provider snapshot is 2026-11-14T06:58:20.823532+00:00; readiness source age 88.6 minutes at 08:26:56",
+      "failed_run": 43575658137,
+      "action": "Inspected collector and saved snapshot publishing path. Free model rerun reused authentic snapshot. Paid source fetch prohibited; no source timestamp fabrication or freshness threshold relaxation.",
+      "result": "BLOCKED_NO_FRESH_AUTHENTIC_FREE_QUOTE_SOURCE"
+    },
+    {
+      "id": "PAGES-PUBLISH-RACE",
+      "severity": "high",
+      "root_cause": "Legacy native branch deployments coexist with frequent data pushes; repeated superseded deployments observed",
+      "sample_cancelled_runs": 42,
+      "example_run": 43575879719,
+      "last_sample_success": 43575767531,
+      "source": ".github/workflows/pages-controlled.yml; dynamic/pages/pages-build-deployment",
+      "action": "Verified public app HTTP200 and existing successful deployment; avoided redundant retries. Previously established administration access blocker remains.",
+      "result": "UNRESOLVED_ADMINISTRATION",
+      "required_owner_action": "Repository Settings > Pages > Source > GitHub Actions, then verify controlled deployment; connection cannot change Pages administration settings"
+    },
+    {
+      "id": "HISTORICAL-PRETIP-GAPS",
+      "severity": "high",
+      "root_cause": "Original exact pretip primary forecast evidence was not captured",
+      "carried_unmatched_thresholds": 60,
+      "provenance": "Prior persisted audit receipt 2026-11-14T062809Z; count carried forward, not independently rederived this run",
+      "action": "Preserved immutable historical records and reconciled all actually captured completed records",
+      "result": "IRRECOVERABLE_WITHOUT_ORIGINAL_TIMESTAMPED_EVIDENCE; no forecasts or grades fabricated"
+    }
+  ],
+  "production": {
+    "version": "dp-newest-live-source-20261114-r40",
+    "url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "nba_schedule_games_today": 5,
+    "games_with_lines_and_frozen_models": 5,
+    "nba_fixed_season_games": 1200,
+    "nba_calendar_exception": "Cup TBD games not fabricated",
+    "nfl_schedule_games": 272,
+    "nba_settlement": {
+      "frozen": 1951,
+      "graded": 1760,
+      "verified_dnp_excluded": 64,
+      "pending_upcoming": 127
+    },
+    "nov13_prizepicks": {
+      "saved": 740,
+      "settled": 711,
+      "void": 29,
+      "pending": 0,
+      "overdue": 0
+    },
+    "nov13_ai_only": {
+      "saved": 904,
+      "graded": 700,
+      "dnp_excluded": 204,
+      "pending": 0
+    },
+    "nfl_standard": {
+      "graded": 135,
+      "pushes": 3,
+      "decisions": 132,
+      "wins": 52,
+      "hit_rate_pct": 39.39,
+      "pending": 0,
+      "excluded_alternative_grades": 932
+    },
+    "required_readiness": {
+      "passing": 8,
+      "total": 10
+    },
+    "release_certified": false
+  },
+  "tests": {
+    "targeted_unit_tests_passed": 96,
+    "additional_mobile_board_tests_passed": 3,
+    "browser_regression_passed": 1,
+    "contract_commands_passed": 222,
+    "contract_commands_failed": 0,
+    "contract_commands_quarantined": 0,
+    "pip_audit": "No known vulnerabilities found in requirements.txt --no-deps; not a full transitive certification",
+    "pr_runs": [
+      43576740180,
+      43576740181,
+      43576740193
+    ]
+  },
+  "limitations": [
+    "All fetched heads were syntax-checked, not behaviorally executed against every historical tip",
+    "124 workflow definitions have no runs in the 200-run sample; no assertion all schedules healthy",
+    "45 static test-gating warnings and 385 mutable Action references remain; not 430 confirmed defects",
+    "No active games in browser probe; 30-second changing ESPN values not proven",
+    "Underdog full provider coverage not independently certified",
+    "Model accuracy and probability calibration not certified; model output remains marked uncalibrated",
+    "Missing player histories and historical pretip evidence cannot be synthesized to satisfy gates"
+  ],
+  "changes": {
+    "pr_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/446",
+    "merge_url": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/f1a38e5bacf2190f83e7eefaddc7ca8aa33c7a08"
+  },
+  "carry_forward": "External data/admin blockers and unverified coverage remain; no assertion of completed exhaustive repair.",
+  "counts": {
+    "finding_categories": 5,
+    "newly_discovered_defects": 1,
+    "repaired": 1,
+    "independently_verified_repairs": 1,
+    "unresolved_categories": 4
+  },
+  "phone_after": {
+    "file": "phone-after.json",
+    "webkit_pass": 16,
+    "chromium_pass": 16,
+    "skips": 0,
+    "teardown_exceptions": 0,
+    "physical_iphone": false
+  },
+  "end": "2026-11-14T08:41:55.089683+00:00",
+  "duration_seconds": 891
+}
