@@ -216,8 +216,6 @@ class IndependentScoreboardTests(unittest.TestCase):
         self.assertFalse(r["is_live_score_source"])
         self.assertEqual(r["total_games"],1)
 
-if __name__=="__main__":
-    unittest.main()
 
 class PartialCurrentScoreTests(unittest.TestCase):
     def test_valid_peer_survives_failed_fallback_without_old_scores(self):
@@ -257,3 +255,6 @@ class PartialCurrentScoreTests(unittest.TestCase):
         from iphone_bot.refresh_independent_scoreboard import salvage_current_scores
         row={"id":"a","date_eastern":DAY.isoformat(),"game":"A @ B","game_state":"in","home_score":2,"away_score":2}
         self.assertIsNone(salvage_current_scores({"games":[row,{**row,"id":"b"}]},[DAY],{},NOW))
+
+if __name__=="__main__":
+    unittest.main()
