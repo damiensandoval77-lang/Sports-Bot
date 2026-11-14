@@ -26,16 +26,17 @@ class CriticalProductionRepairContracts(unittest.TestCase):
                     if action and not action.startswith('./'):
                         self.assertRegex(action, r'^[^@]+@[0-9a-f]{40}$', name)
 
-    def test_paid_collector_is_never_called_in_pr(self):
+    def test_free_collector_never_networks_or_writes_in_pr(self):
         name="nba-prizepicks-full-slate.yml"
         data=load(name)
         self.assertIn("pull_request",data.get("on",data.get(True,{})))
-        for title in ("Fetch bounded, cursor-paged actual NBA PrizePicks board",
+        for title in ("Fetch free public standard NBA quotes (no paid fallback)",
                       "Archive original independent pick'em lines and tiers",
                       "Save real PrizePicks observations without modifying sportsbook odds"):
             self.assertIn("github.event_name != 'pull_request'",step(name,title)["if"])
-        self.assertEqual(step(name,"Test strict pregame event, team, market and source matching")["if"],
-                         "github.event_name == 'pull_request'")
+        self.assertNotIn("if",step(name,"Test strict native quote provenance and existing publisher compatibility"))
+        self.assertNotIn("PRIZEPICKS_API_KEY",(WORK/name).read_text())
+        self.assertNotIn("fetch_prizepicks.py",(WORK/name).read_text())
 
     def test_paid_source_is_not_auto_dispatched_by_heartbeat(self):
         text=(ROOT/"iphone_bot/pipeline_heartbeat.py").read_text()
