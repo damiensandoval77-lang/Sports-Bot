@@ -102,6 +102,24 @@ class StrictProductionReadinessTests(unittest.TestCase):
         game["game_state"]="pre";sb["games"].append(dict(sb["games"][0]))
         self.assertFalse(provider_confirms_pregame(game,sb,NOW))
 
+    def test_pregame_cannot_erase_prior_live_player_evidence(self):
+        data=self.delayed_tip_fixture()
+        data["nba_player_tracking_independent.json"]={
+            "status":"OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES", "date_eastern":"2026-11-09",
+            "captured_at":"2026-11-09T17:58:00Z", "games":[
+                {"game":GAME["game"],"state":"in","observed_at":"2026-11-09T17:58:00Z"}]}
+        self.assertEqual(check(NOW,data)["started_not_marked_final"],1)
+
+    def test_conflicting_score_period_or_team_cannot_confirm_pregame(self):
+        for key,value in (("home_score",2),("away_score","1"),("period",1),
+                          ("home_abbreviation","WRONG"),("away_abbreviation","WRONG")):
+            data=self.delayed_tip_fixture();game=data["nba_schedule.json"]["games"][0]
+            game.update(away_abbreviation="AAA",home_abbreviation="HHH")
+            sb=data["nba_scoreboard_independent.json"]
+            sb["games"][0].update(away_abbreviation="AAA",home_abbreviation="HHH")
+            sb["games"][0][key]=value
+            self.assertFalse(provider_confirms_pregame(game,sb,NOW),(key,value))
+
     def test_healthy_complete_pregame_is_ready(self):
         r=check(NOW,fixtures())
         self.assertEqual(r["status"],"READY",r["components"])

@@ -23,7 +23,7 @@ def parse_time(raw):
     except (TypeError,ValueError,OverflowError):
         return None
 
-def provider_confirms_pregame(game, scoreboard, now):
+def provider_confirms_pregame(game, scoreboard, now, player_feeds=()):
     """Fresh, exact provider observation can confirm delayed tip, not a schedule."""
     if game.get("game_state") in ("in", "live", "post", "final"):
         return False
@@ -36,6 +36,18 @@ def provider_confirms_pregame(game, scoreboard, now):
     tip = parse_time(game.get("start"))
     if seen is None or tip is None or seen < tip or not 0 <= (now-seen).total_seconds() <= 300:
         return False
+    for feed in player_feeds:
+        if (feed.get("status") not in ("OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
+                "PARTIAL_NBA_PLAYER_BOXSCORES", "OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK")
+                or feed.get("date_eastern") != game.get("date_eastern")):
+            continue
+        for prior in feed.get("games", []):
+            if not isinstance(prior, dict):
+                continue
+            observed = parse_time(prior.get("observed_at") or feed.get("captured_at"))
+            if (prior.get("game") == game.get("game") and prior.get("state") in ("in", "post")
+                    and observed is not None and tip <= observed <= now):
+                return False
     rows = [r for r in scoreboard.get("games", []) if isinstance(r, dict)
             and r.get("game") == game.get("game")
             and r.get("date_eastern") == game.get("date_eastern")]
@@ -44,6 +56,9 @@ def provider_confirms_pregame(game, scoreboard, now):
     row = rows[0]
     if not str(row.get("id", "")).isdecimal() or row.get("game_state") not in PRE_STATES:
         return False
+    for key in ("away_score", "home_score", "period"):
+        if row.get(key) not in (None, 0, "0", ""):
+            return False
     for key in ("away_abbreviation", "home_abbreviation"):
         if game.get(key) and row.get(key) != game.get(key):
             return False
@@ -63,7 +78,8 @@ def check(now,files):
     started=[g for g in todays if (t:=parse_time(g.get("start"))) and t<now]
     # During NBA tipoff, scoreboard/boxscore cannot be treated as just optional.
     in_progress=[g for g in started if g.get("game_state") not in FINAL_STATES
-                 and not provider_confirms_pregame(g, load("nba_scoreboard_independent.json"), now)]
+                 and not provider_confirms_pregame(g, load("nba_scoreboard_independent.json"), now,
+                     (load("nba_player_tracking_independent.json"),load("live_player_tracking.json")))]
     next_tip=min((parse_time(g.get("start")) for g in upcoming),default=None)
     inputs={
         "schedule":(schedule,"generated_at"),
