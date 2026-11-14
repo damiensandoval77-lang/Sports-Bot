@@ -1,0 +1,41 @@
+✔ successful JSON and text responses survive (4.957287ms)
+✔ stalled connection rejects and aborts (12.273752ms)
+✔ stalled response body cannot hold startup (12.278124ms)
+✔ HTTP and parser failures stay failures (9.106923ms)
+✖ newer Pages observation supersedes valid but older raw cache (13.369093ms)
+✔ newer raw observation supersedes older Pages (3.16264ms)
+✔ failed or invalid alternate cannot erase valid live source (5.656136ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 254.565191
+
+✖ failing tests:
+
+test at ../../../../tmp/pre0024-tests.cjs:11:1
+✖ newer Pages observation supersedes valid but older raw cache (13.369093ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be reference-equal to "expected":
+  + actual - expected
+  
+    {
+      games: [],
+  +   generated_at: '2026-11-14T00:21:00.112Z',
+  -   generated_at: '2026-11-14T00:30:59.113Z',
+      is_live_score_source: true,
+      status: 'OBSERVED_NBA_LIVE_SCOREBOARD'
+    }
+  
+      at TestContext.<anonymous> (/tmp/pre0024-tests.cjs:11:128)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { games: [], status: 'OBSERVED_NBA_LIVE_SCOREBOARD', is_live_score_source: true, generated_at: '2026-11-14T00:21:00.112Z' },
+    expected: { games: [], status: 'OBSERVED_NBA_LIVE_SCOREBOARD', is_live_score_source: true, generated_at: '2026-11-14T00:30:59.113Z' },
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
