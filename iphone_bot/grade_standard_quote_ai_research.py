@@ -8,6 +8,7 @@ import json
 import math
 from collections import defaultdict
 from pathlib import Path
+from iphone_bot.reconcile_grading_production import observed_final
 
 from iphone_bot.archive_standard_quote_ai_research import STATUS, identity, moment
 
@@ -30,8 +31,7 @@ def reconcile(archive, finals, now=None):
             continue
         status=row.get("status")
         source=row.get("final_source")
-        if not (status=="GRADED" and source in FINAL_SOURCES
-                or status=="EXCLUDED_VERIFIED_DNP" and source==DNP_SOURCE):
+        if status not in {"GRADED","EXCLUDED_VERIFIED_DNP"} or not observed_final(row):
             continue
         if status=="GRADED":
             try:

@@ -38,6 +38,19 @@ class PublishedCaptureSettlementTests(unittest.TestCase):
   r=evaluate(ledger(BASE),finals(fin()),NOW)
   self.assertEqual(r["issues"]["VERIFIED_FINAL_NOT_APPLIED"],1)
   self.assertEqual(r["actionable_verified_finals"],1)
+ def test_official_final_dnp_is_actionable_then_reconciles_as_exclusion(self):
+  for source,event in (("NBA_CDN_FINAL","0022600123"),("ESPN_FINAL","401909298")):
+   with self.subTest(source=source):
+    final={**fin("EXCLUDED_VERIFIED_DNP"),"final_source":source,"source_game_id":event}
+    pending=evaluate(ledger(BASE),finals(final),NOW)
+    self.assertEqual(pending["actionable_verified_finals"],1)
+    pick={**BASE,"grade":"EXCLUDED_VERIFIED_DNP","actual":None,"direction_hit":None,
+          "final_source":source,"source_game_id":event,"verified_dnp_reason":"INACTIVE"}
+    reconciled=evaluate(ledger(pick),finals(final),NOW)
+    self.assertEqual(reconciled["status"],"READY")
+    self.assertEqual(reconciled["counts"]["verified_dnp_excluded"],1)
+    self.assertEqual(reconciled["counts"].get("dnp_without_independent_forecast_record",0),0)
+
  def test_official_dnp_requires_void_not_pending(self):
   r=evaluate(ledger(BASE),finals(fin("EXCLUDED_VERIFIED_DNP")),NOW)
   self.assertEqual(r["actionable_verified_finals"],1)

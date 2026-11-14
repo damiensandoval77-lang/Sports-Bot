@@ -91,6 +91,25 @@ class ImmutableMarketsTests(unittest.TestCase):
                             for x in settled["records"]))
         self.assertEqual(merge(settled,{},dnp)["new_verified_dnp_exclusions"],0)
 
+    def test_explicit_official_final_dnp_settles_each_original_threshold(self):
+        for source,event in (("NBA_CDN_FINAL","0022600999"),("ESPN_FINAL","401909298")):
+            with self.subTest(source=source):
+                first=prediction(); later={**first,"line":35.5}
+                saved=merge({},feed(first,later),{})
+                row={"status":"EXCLUDED_VERIFIED_DNP","player_id":"123","team":"BOS",
+                     "game":first["game"],"start":first["start"],"stat":"PRA",
+                     "actual":None,"final_source":source,"source_game_id":event,
+                     "verified_dnp_reason":"INACTIVE_INJURY"}
+                result=merge(saved,{}, {"records":[row]})
+                self.assertEqual(result["new_verified_dnp_exclusions"],2)
+                self.assertEqual(result["new_verified_grades"],0)
+                self.assertTrue(all(r["actual"] is None and r["direction_hit"] is None
+                                    and r["absolute_error"] is None for r in result["records"]))
+                self.assertEqual([r["projection"] for r in result["records"]],[30.,30.])
+                for change in ({"actual":0},{"verified_dnp_reason":""},{"source_game_id":""}):
+                    rejected=merge(saved,{}, {"records":[{**row,**change}]})
+                    self.assertEqual(rejected["new_verified_dnp_exclusions"],0)
+
     def test_unverified_dnp_cannot_change_a_pick(self):
         p=prediction()
         saved=merge({},feed(p),{})

@@ -160,12 +160,14 @@ jobs:
             docs/lagged_matchup_all_market_validation.json
           key: nba-4market-validated-v2-${{ runner.os }}-py311-${{ hashFiles('iphone_bot/lagged_matchup_training.py', 'iphone_bot/multimarket_matchup_training.py', 'iphone_bot/offensive_involvement_holdout.py', 'iphone_bot/requirements-training.txt') }}
       - name: Fetch current season and verify actual standard PrizePicks lines
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           python -u iphone_bot/fetch_current_form.py
           python -m iphone_bot.build_prizepicks_model_input
       - name: Capture opponent position, source-rated defense and pregame minutes before model picks freeze
+        if: github.event_name != 'pull_request'
         id: matchup_source
         continue-on-error: true
         run: |
@@ -176,8 +178,10 @@ jobs:
           python -m research.minutes_forecast_research --evidence pregame-evidence-research.json --output minutes-forecast-research.json
           python -m research.join_matchup_features --evidence pregame-evidence-research.json --minutes minutes-forecast-research.json --position positional-defense-research.json --output joined-matchup-features-research.json
       - name: Generate distinct points rebounds assists PRA model estimates
+        if: github.event_name != 'pull_request'
         run: python -u iphone_bot/live_multimarket_matchup.py
       - name: Validate each posted offer and exact PRA component sum
+        if: github.event_name != 'pull_request'
         run: |
           python - <<'PY'
           import json

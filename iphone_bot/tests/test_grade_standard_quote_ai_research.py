@@ -45,7 +45,15 @@ class FinalResearchTests(unittest.TestCase):
         base=archive(receipt())
         self.assertEqual(reconcile(base,{"records":[final(24.5)]},now=POST)["records"][0]["grade"],"PUSH")
         self.assertEqual(reconcile(base,{"records":[final(22)]},now=POST)["records"][0]["grade"],"MISS")
-        self.assertEqual(reconcile(base,{"records":[final(status="EXCLUDED_VERIFIED_DNP",source="NBA_OFFICIAL_INACTIVE_CROSSCHECKED",actual=None)]},now=POST)["records"][0]["grade"],"VOID")
+        self.assertEqual(reconcile(base,{"records":[final(status="EXCLUDED_VERIFIED_DNP",source="NBA_OFFICIAL_INACTIVE_CROSSCHECKED",actual=None,verified_dnp_reason="INACTIVE")]},now=POST)["records"][0]["grade"],"VOID")
+
+    def test_explicit_official_dnp_requires_reason_and_null_actual(self):
+        a=archive(receipt())
+        for source in ("NBA_CDN_FINAL","ESPN_FINAL"):
+            valid=final(status="EXCLUDED_VERIFIED_DNP",source=source,actual=None,verified_dnp_reason="INACTIVE")
+            self.assertEqual(reconcile(a,{"records":[valid]},now=POST)["records"][0]["grade"],"VOID")
+            for change in ({"actual":0},{"verified_dnp_reason":""},{"source_game_id":""}):
+                self.assertEqual(reconcile(a,{"records":[{**valid,**change}]},now=POST)["records"][0]["grade"],"UNSETTLED_RESEARCH")
 
     def test_identity_and_source_mismatches_remain_unsettled(self):
         a=archive(receipt())
