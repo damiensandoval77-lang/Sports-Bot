@@ -53,6 +53,8 @@ def assess(nba,nfl,errors, *, app_title, url=URL, now=None):
 def assess_live_order(observation):
     """Check rendered fixture identities/order independently of the UI sorter."""
     reasons=[]
+    if observation.get("selected") != observation.get("sport") or observation.get("mode") != "live":
+        reasons.append("LIVE_VIEW_NOT_SELECTED")
     expected=observation.get("expected_ids",[])
     cards=observation.get("cards",[])
     ids=[card.get("id") for card in cards]
@@ -81,7 +83,7 @@ def observe_live_order(page, sport):
     observed=page.evaluate("""sport => {
       const expected=m.currentSlateGames(state.liveGames,sport);
       const byId=new Map(expected.map(g=>[g.sport+"|"+g.gameId,g]));
-      return {expected_ids:[...byId.keys()],
+      return {sport,selected:state.league,mode:state.mode,expected_ids:[...byId.keys()],
         cards:[...document.querySelectorAll('#cards [data-game]')].map(el=>{
           const id=el.dataset.game,g=byId.get(id);
           return {id,state:g?.state,start:g?.start||null,
@@ -164,6 +166,7 @@ def probe():
             # user does. This tests a warm reload, not an invented historical cache.
             page.reload(wait_until="domcontentloaded",timeout=45000)
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
+            page.wait_for_function("() => !state.liveBusy",timeout=45000)
             report["warm_reload"]={sport:observe_live_order(page,sport) for sport in ("NBA","NFL")}
             report["cache_test_scope"]="Same-context warm reload; historical-version cache compatibility is tested offline."
             for sport in ("NBA","NFL"):
