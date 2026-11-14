@@ -60,6 +60,14 @@ function build(nowMs,events,summaries){
     board.games.push({id,game,away_score:score.away,home_score:score.home,
       game_state:st,period:e.status?.period??null,short_detail:e.status?.type?.shortDetail||null});
   }
+  // A fresh provider pregame observation remains authoritative even after
+  // the advertised start time. Keep it status-only: no zero scores/stats.
+  if(st==="pre"){
+   feed.games.push({game,event_id:id,state:"pre",period:0,
+    shortDetail:e.status?.type?.shortDetail||"Scheduled · awaiting tipoff",
+    player_rows:[],observed_at:iso,stale:false,source_label:SOURCE});
+   continue;
+  }
   if(st!=="in")continue;
   const summary=summaries?.[id];
   if(!summary){feed.errors.push({event_id:id,reason:"MISSING_SOURCE"});continue}
@@ -123,7 +131,8 @@ function mergeFeeds(snapshot,direct,now=Date.now()){
    const observed=g.observed_at||feed.captured_at;
    const prev=byGame.get(g.game),oldTime=stamp(prev?.observed_at);
    const rows=Array.isArray(g.player_rows)?g.player_rows:[];
-   if(!prev||(rows.length>0&&(!prev.player_rows?.length||stamp(observed)>oldTime)))
+   if(!prev||(rows.length>0&&(!prev.player_rows?.length||stamp(observed)>oldTime))||
+      (!rows.length&&!prev.player_rows?.length&&stamp(observed)>oldTime))
      byGame.set(g.game,{...g,observed_at:observed});
   }
  }
@@ -215,4 +224,4 @@ root.DamesPicksLive={fetchNFL,mergeNFL,nflPlayers,etDate,matchup,playerRows,buil
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["live_direct.js"]="dp-under-detail-20261113-r38";
+globalThis.__damesRunningAssets["live_direct.js"]="dp-pregame-status-20261114-r39";

@@ -76,3 +76,31 @@ test("ESPN network failure retains fallback: never invent success",async()=>{
  const result=await L.fetchNBA({now:NOW,fetch:async()=>({ok:false,status:403})});
  assert.equal(result,null);
 });
+
+test("fresh pregame status survives advertised tip without invented live scores or players",()=>{
+ const {feed,board}=L.build(NOW,[event("7","pre","A","B","0","0")],{});
+ assert.equal(feed.games[0].state,"pre");
+ assert.equal(board.games.length,0);
+ const schedule={games:[{id:"7",game:"A @ B",start:"2026-11-11T01:00:00Z"}]};
+ const [g]=m.gameCatalog(L.mergeFeeds(null,feed,NOW),null,schedule,null,NOW,board);
+ assert.equal(g.state,"scheduled");assert.equal(g.players.length,0);
+ assert.equal(g.awayScore,undefined);assert.equal(g.homeScore,undefined);
+ const [stale]=m.gameCatalog(L.mergeFeeds(null,feed,NOW+21*60000),null,schedule,null,NOW+21*60000,board);
+ assert.equal(stale.state,"unknown");
+});
+test("pregame observations cannot erase an existing fresh live player snapshot",()=>{
+ const old={captured_at:new Date(NOW-1000).toISOString(),games:[{game:"A @ B",state:"in",player_rows:[{player:"P"}]}]};
+ const {feed}=L.build(NOW,[event("7","pre","A","B","0","0")],{});
+ const result=L.mergeFeeds(old,feed,NOW);
+ assert.equal(result.games[0].state,"in");assert.equal(result.games[0].player_rows.length,1);
+});
+test("real live and final scoreboard observations override preserved pregame status",()=>{
+ const pre=L.build(NOW-1000,[event("7","pre","A","B","0","0")],{});
+ const schedule={games:[{id:"7",game:"A @ B",start:"2026-11-11T01:00:00Z"}]};
+ for(const st of ["in","post"]){
+  const next=L.build(NOW,[event("7",st,"A","B","35","33")],{});
+  const [g]=m.gameCatalog(L.mergeFeeds(pre.feed,next.feed,NOW),null,schedule,null,NOW,L.mergeScores(pre.board,next.board,NOW));
+  assert.equal(g.state,st==="in"?"in":"final");
+  assert.equal(g.awayScore,35);assert.equal(g.homeScore,33);assert.equal(g.players.length,0);
+ }
+});
