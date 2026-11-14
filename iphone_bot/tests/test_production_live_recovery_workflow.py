@@ -66,7 +66,7 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
     def test_free_live_recovery_does_not_wait_until_public_ttl(self):
         import re
         text=(ROOT/".github/workflows/production_readiness.yml").read_text()
-        for workflow in ("independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml"):
+        for workflow in ("independent_scoreboard_refresh.yml", "independent_nba_player_boxscores.yml", "verify_unified_dames_browser.yml"):
             with self.subTest(workflow=workflow):
                 cooldown=int(re.search(re.escape(workflow)+r"\) cooldown_minutes=(\d+)", text).group(1))
                 self.assertEqual(cooldown,5)
