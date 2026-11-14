@@ -93,6 +93,66 @@ def observe_live_order(page, sport):
     observed["reasons"]=assess_live_order(observed)
     return observed
 
+def assess_tennis(observation):
+    """Tennis is quote-only: empty is honest, cross-league rows/estimates are not."""
+    reasons=[]
+    mode=observation.get("mode")
+    if observation.get("selected")!="TENNIS" or mode!=observation.get("requested_mode"):
+        reasons.append("TENNIS_VIEW_NOT_SELECTED")
+    if observation.get("metrics") != ["—","—","—"]:
+        reasons.append("TENNIS_UNSUPPORTED_METRICS")
+    if "Projections, hit estimates and grading are unavailable" not in observation.get("notice",""):
+        reasons.append("TENNIS_LIMITATION_NOTICE_MISSING")
+    cards=observation.get("cards",[])
+    ids=[c.get("id") for c in cards]
+    expected=observation.get("expected_ids",[])
+    if len(ids)!=len(set(ids)) or set(ids)!=set(expected) or observation.get("game_cards",0):
+        reasons.append("TENNIS_CROSS_LEAGUE_OR_MISSING_CARDS")
+    if any(c.get("projection")!="—" or c.get("estimate")!="—" or c.get("grade")!="LINE ONLY" for c in cards):
+        reasons.append("TENNIS_UNSUPPORTED_ESTIMATE_OR_GRADE")
+    empty=observation.get("empty","")
+    if mode in ("live","tracker"):
+        if cards or "not connected" not in empty or "does not mean no matches" not in empty:
+            reasons.append("TENNIS_UNSUPPORTED_LIVE_OR_GRADING")
+    elif not cards and "not evidence that no tennis matches exist" not in empty:
+        reasons.append("TENNIS_EMPTY_STATE_NOT_HONEST")
+    if observation.get("research_visible"):
+        reasons.append("TENNIS_CROSS_LEAGUE_RESEARCH_VISIBLE")
+    if observation.get("viewport_width")!=390 or observation.get("overflow",0)>1:
+        reasons.append("TENNIS_PHONE_LAYOUT_FAILED")
+    return list(dict.fromkeys(reasons))
+
+def observe_tennis(page):
+    observations=[]
+    # Enter from each populated league to detect retained cards and metrics.
+    for previous in ("NBA","NFL"):
+        page.locator('button[data-league="'+previous+'"]').click(timeout=10000)
+        page.locator('button[data-view="board"]').click(timeout=10000)
+        page.locator('button[data-league="TENNIS"]').click(timeout=10000)
+        for mode in ("board","live","tracker","saved"):
+            page.locator('button[data-view="'+mode+'"]').click(timeout=10000)
+            obs=page.evaluate("""mode => ({
+              selected:state.league, mode:state.mode, requested_mode:mode,
+              metrics:['wl','rate','games'].map(id=>document.getElementById(id).textContent.trim()),
+              notice:document.querySelector('#coverage')?.textContent||'',
+              expected_ids:['live','tracker'].includes(mode)?[]:shown().map(p=>m.key(p)),
+              cards:[...document.querySelectorAll('#cards .pick')].map(el=>({
+                id:el.dataset.id,grade:el.querySelector('.grade')?.textContent,
+                projection:el.querySelectorAll('.stat-grid strong')[1]?.textContent,
+                estimate:el.querySelectorAll('.stat-grid strong')[2]?.textContent})),
+              game_cards:document.querySelectorAll('#cards [data-game]').length,
+              empty:document.querySelector('#cards .empty')?.textContent||'',
+              research_visible:['provisional-short-history','trained-short-history'].some(id=>{
+                const el=document.getElementById(id);return el&&el.getClientRects().length>0;
+              }),
+              viewport_width:innerWidth,
+              overflow:document.documentElement.scrollWidth-innerWidth
+            })""",mode)
+            obs['previous_league']=previous
+            obs['reasons']=assess_tennis(obs)
+            observations.append(obs)
+    return observations
+
 def probe():
     from playwright.sync_api import sync_playwright
     errors=[]
@@ -162,12 +222,17 @@ def probe():
                 result[sport]=observation
             report=assess(result["NBA"],result["NFL"],errors,app_title=title)
             report["browser_direct_probe"]=direct
+            report["TENNIS"]=observe_tennis(page)
             # Keep the same context/service-worker/cache and reload as a returning
             # user does. This tests a warm reload, not an invented historical cache.
             page.reload(wait_until="domcontentloaded",timeout=45000)
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
             page.wait_for_function("() => !state.liveBusy",timeout=45000)
             report["warm_reload"]={sport:observe_live_order(page,sport) for sport in ("NBA","NFL")}
+            report["tennis_warm_reload"]=observe_tennis(page)
+            for phase, observations in (("FIRST_LOAD",report["TENNIS"]),("WARM_RELOAD",report["tennis_warm_reload"])):
+                for obs in observations:
+                    report["reasons"].extend(phase+"_"+reason for reason in obs["reasons"])
             report["cache_test_scope"]="Same-context warm reload; historical-version cache compatibility is tested offline."
             for sport in ("NBA","NFL"):
                 for phase,obs in (("FIRST_LOAD",result[sport]["live_order"]),("WARM_RELOAD",report["warm_reload"][sport])):
