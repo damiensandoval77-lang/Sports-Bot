@@ -21,9 +21,12 @@
    if(!q||![q.id,q.player_id,q.fixture_id,q.player,q.opponent].every(text)||
       q.player.trim().toLowerCase()===q.opponent.trim().toLowerCase()||
       q.status!=="active"||q.is_demo!==false||q.period!=="full_match"||
-      q.is_combo!==false||q.tier!=="standard"||q.more_tier!=="standard"||q.less_tier!=="standard"||
-      q.more_available!==true||q.less_available!==true||!STATS.has(q.stat)||
+      q.is_combo!==false||q.tier!=="standard"||!STATS.has(q.stat)||
       !finite(q.line)||q.line<0)continue;
+   // Only advertise independently verified available STANDARD sides.
+   // The missing/unavailable/nonstandard other side is never invented.
+   const standardSides=["more","less"].filter(side=>q[side+"_available"]===true&&q[side+"_tier"]==="standard");
+   if(!standardSides.length)continue;
    const observed=stamp(q.observed_at),captured=stamp(q.captured_at),start=stamp(q.starts_at);
    if(![observed,captured,start].every(Number.isFinite)||observed>captured||
       captured>generated||captured>=start||start<=now||now-observed>MAX_AGE_MS)continue;
@@ -36,7 +39,7 @@
     sport:"TENNIS",playerId:q.player_id,player:q.player.trim(),team:"",opponent:q.opponent.trim(),position:"",
     game:q.player.trim()+" vs "+q.opponent.trim(),gameId:q.fixture_id,start:q.starts_at,
     stat:q.stat,period:q.period,line:q.line,source:"Independent PrizePicks API · standard quote",
-    observed:q.observed_at,captured:q.captured_at,quoteId:q.id,
+    observed:q.observed_at,captured:q.captured_at,quoteId:q.id,standardSides,
     projection:null,direction:null,chance:null,modelId:null,component:null,
     chanceSource:"Line only · estimate unavailable",quoteOnly:true,
     grade:"UNMODELED",actual:null,hit:null,gradeSource:null,
@@ -51,4 +54,4 @@
 
 /* Runtime identity only; all tennis estimates remain withheld. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["tennis.js"]="dp-nba-confidence-correction-20261114-r44";
+globalThis.__damesRunningAssets["tennis.js"]="dp-tennis-explicit-standard-sides-20261114-r45";

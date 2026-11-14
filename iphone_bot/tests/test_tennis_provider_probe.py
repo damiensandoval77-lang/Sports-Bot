@@ -158,3 +158,53 @@ class CategorySafetyTest(unittest.TestCase):
     def test_malformed_market_rejected_before_telemetry(self):
         payload=ProbeTest().payload();payload['data'][0]['market']='unexpected'
         with self.assertRaises(ValueError):summary(payload)
+
+class ExplicitSelectionTests(unittest.TestCase):
+    def board(self,selections,**updates):
+        from iphone_bot.probe_tennis_provider import normalized_board
+        payload=ProbeDiagnosticsTest().payload()
+        payload['data'][0].update(selections=selections,**updates)
+        return normalized_board(payload,'2026-11-14T20:00:02+00:00')
+    def test_one_side_does_not_invent_other_side(self):
+        for side,other in [('more','less'),('less','more')]:
+            board=self.board([dict(side=side,available=True,tier='standard')])
+            self.assertEqual(board['accepted_quote_count'],1)
+            q=board['quotes'][0]
+            self.assertTrue(q[side+'_available']);self.assertEqual(q[side+'_tier'],'standard')
+            self.assertIsNone(q[other+'_available']);self.assertIsNone(q[other+'_tier'])
+    def test_mixed_side_evidence_is_preserved(self):
+        for available in [True,False,None,'true',1]:
+            for tier in ['demon','goblin','unknown',None,'unsupported']:
+                with self.subTest(available=available,tier=tier):
+                    q=self.board([dict(side='more',available=True,tier='standard'),
+                                  dict(side='less',available=available,tier=tier)])['quotes'][0]
+                    self.assertIs(q['less_available'],available if isinstance(available,bool) else None)
+                    self.assertEqual(q['less_tier'],tier if tier in ('demon','goblin','unknown') else None)
+    def test_no_explicit_available_standard_side_rejected(self):
+        for available,tier in [(False,'standard'),(None,'standard'),('true','standard'),(1,'standard'),(True,'demon'),(True,'goblin'),(True,'unknown'),(True,None)]:
+            out=self.board([dict(side='more',available=available,tier=tier)])
+            self.assertEqual(out['rejection_counts'],{'NO_AVAILABLE_STANDARD_SIDE':1})
+        self.assertEqual(self.board([])['rejection_counts'],{'NO_AVAILABLE_STANDARD_SIDE':1})
+    def test_duplicate_or_malformed_sides_rejected(self):
+        side=dict(side='more',available=True,tier='standard')
+        self.assertEqual(self.board([side,side])['rejection_counts'],{'DUPLICATE_SELECTION_SIDE':1})
+        for selections in [None,{},[side,None],[side,dict(side='other')]]:
+            self.assertEqual(self.board(selections)['rejection_counts'],{'MALFORMED_SELECTIONS':1})
+    def test_fantasy_score_exact_market_only(self):
+        from iphone_bot.probe_tennis_provider import normalized_board
+        p=ProbeDiagnosticsTest().payload();r=p['data'][0]
+        r['source_fields']['projection_type']='Fantasy Score'
+        self.assertEqual(normalized_board(p,'2026-11-14T20:00:02+00:00')['rejection_counts'],{'SINGLE_STAT_OR_FANTASY_SCORE_UNVERIFIED':1})
+        r['market']['stat']='Fantasy Score'
+        out=normalized_board(p,'2026-11-14T20:00:02+00:00')
+        self.assertEqual(out['accepted_quote_count'],1)
+        self.assertNotIn('projection',out['quotes'][0]);self.assertNotIn('probability',out['quotes'][0])
+    def test_combo_event_and_self_opponent_rejected(self):
+        from iphone_bot.probe_tennis_provider import normalized_board
+        for location in ['root','event','source_fields']:
+            for key,value in [('event_type','combo'),('is_combo',True)]:
+                p=ProbeDiagnosticsTest().payload();r=p['data'][0]
+                (r if location=='root' else r[location])[key]=value
+                self.assertEqual(normalized_board(p,'2026-11-14T20:00:02+00:00')['rejection_counts'],{'LIVE_PROMO_OR_COMBO':1})
+        p=ProbeDiagnosticsTest().payload();r=p['data'][0];r['event']['opponent']=' '+r['player']['name'].upper()+' '
+        self.assertEqual(normalized_board(p,'2026-11-14T20:00:02+00:00')['rejection_counts'],{'EXPLICIT_IDENTITY_CONFLICT':1})
