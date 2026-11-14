@@ -1,7 +1,7 @@
 {
   "status": "THIRD_PARTY_NBA_SCHEDULE_ONLY",
-  "generated_at": "2026-11-14T01:59:26.342342+00:00",
-  "source": "sportsdataverse hoopR 2026-27 ESPN-sourced season schedule + verified full-season fixture repair",
+  "generated_at": "2026-11-14T02:10:46.719184+00:00",
+  "source": "sportsdataverse hoopR 2026-27 ESPN-sourced season schedule",
   "source_url": "https://raw.githubusercontent.com/sportsdataverse/hoopR-nba-data/main/nba/schedules/parquet/nba_schedule_2027.parquet",
   "source_records_rejected": 0,
   "timezone": "America/New_York",
@@ -10,22 +10,6 @@
     "2026-11-14"
   ],
   "games": [
-    {
-      "id": "401909296",
-      "game": "New York Knicks @ Indiana Pacers",
-      "home": "Indiana Pacers",
-      "away": "New York Knicks",
-      "home_abbreviation": "IND",
-      "away_abbreviation": "NYK",
-      "start": "2026-11-14T00:00:00+00:00",
-      "date_eastern": "2026-11-13",
-      "game_state": "pre",
-      "home_score": null,
-      "away_score": null,
-      "clock": null,
-      "period": null,
-      "status_detail": null
-    },
     {
       "id": "401909297",
       "game": "Milwaukee Bucks @ Orlando Magic",
@@ -43,13 +27,13 @@
       "status_detail": null
     },
     {
-      "id": "401909298",
-      "game": "Cleveland Cavaliers @ Miami Heat",
-      "home": "Miami Heat",
-      "away": "Cleveland Cavaliers",
-      "home_abbreviation": "MIA",
-      "away_abbreviation": "CLE",
-      "start": "2026-11-14T01:00:00+00:00",
+      "id": "401909296",
+      "game": "New York Knicks @ Indiana Pacers",
+      "home": "Indiana Pacers",
+      "away": "New York Knicks",
+      "home_abbreviation": "IND",
+      "away_abbreviation": "NYK",
+      "start": "2026-11-14T00:00:00+00:00",
       "date_eastern": "2026-11-13",
       "game_state": "pre",
       "home_score": null,
@@ -65,6 +49,22 @@
       "away": "Atlanta Hawks",
       "home_abbreviation": "CHI",
       "away_abbreviation": "ATL",
+      "start": "2026-11-14T01:00:00+00:00",
+      "date_eastern": "2026-11-13",
+      "game_state": "pre",
+      "home_score": null,
+      "away_score": null,
+      "clock": null,
+      "period": null,
+      "status_detail": null
+    },
+    {
+      "id": "401909298",
+      "game": "Cleveland Cavaliers @ Miami Heat",
+      "home": "Miami Heat",
+      "away": "Cleveland Cavaliers",
+      "home_abbreviation": "MIA",
+      "away_abbreviation": "CLE",
       "start": "2026-11-14T01:00:00+00:00",
       "date_eastern": "2026-11-13",
       "game_state": "pre",
@@ -187,22 +187,6 @@
       "status_detail": null
     },
     {
-      "id": "401909982",
-      "game": "Detroit Pistons @ Miami Heat",
-      "home": "Miami Heat",
-      "away": "Detroit Pistons",
-      "home_abbreviation": "MIA",
-      "away_abbreviation": "DET",
-      "start": "2026-11-15T01:00:00+00:00",
-      "date_eastern": "2026-11-14",
-      "game_state": "pre",
-      "home_score": null,
-      "away_score": null,
-      "clock": null,
-      "period": null,
-      "status_detail": null
-    },
-    {
       "id": "401909983",
       "game": "Brooklyn Nets @ Memphis Grizzlies",
       "home": "Memphis Grizzlies",
@@ -233,6 +217,22 @@
       "clock": null,
       "period": null,
       "status_detail": null
+    },
+    {
+      "id": "401909982",
+      "game": "Detroit Pistons @ Miami Heat",
+      "home": "Miami Heat",
+      "away": "Detroit Pistons",
+      "home_abbreviation": "MIA",
+      "away_abbreviation": "DET",
+      "start": "2026-11-15T01:00:00+00:00",
+      "date_eastern": "2026-11-14",
+      "game_state": "pre",
+      "home_score": null,
+      "away_score": null,
+      "clock": null,
+      "period": null,
+      "status_detail": null
     }
   ],
   "total_games": 14,
@@ -240,8 +240,8 @@
   "has_sportsbook_props": false,
   "has_verified_player_availability": false,
   "limitations": [
-    "Published fixture baseline restores known games; it is not a player-line, injury, or live boxscore source.",
-    "NBA Cup unassigned matches and revised tip times require later verification."
+    "Season schedule and dates only; neither player prop lines nor injuries",
+    "A season file cannot guarantee late postponements or last-minute time changes"
   ],
   "official_fixture_reconciliation": {
     "status": "NO_COUNT_REFERENCE",
@@ -250,6 +250,5 @@
     "official_daily_schedule_url": "https://www.nba.com/games?date=2026-11-09"
   },
   "season_baseline_status": "VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
-  "season_baseline_total": 1200,
-  "baseline_recovered": 0
+  "season_baseline_total": 1200
 }
