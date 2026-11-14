@@ -6,6 +6,7 @@ A successful page load is not sufficient to certify app readiness.
 import datetime as dt
 import json
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parents[1]
 DOCS=ROOT/"docs"
@@ -55,7 +56,8 @@ def awaiting_verified_live_result(day, row, scoreboard, now):
         start = parse_stamp(game.get("start"))
         if (not game.get("id") or game.get("game_state") not in {"pre", "in"} or
             not start or not 0 <= (now - start).total_seconds() <= 6 * 3600 or
-            stamp < start):
+            stamp < start or
+            start.astimezone(ZoneInfo("America/New_York")).date().isoformat() != day):
             return False
     return True
 
