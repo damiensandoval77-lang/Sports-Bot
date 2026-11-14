@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Verify real AI forecasts render without a sportsbook quote
         run: python -m unittest discover -s iphone_bot/tests -p 'test_projection_delivery_smoke.py' -v
       - name: Offline tests for the independent public deployment probe
