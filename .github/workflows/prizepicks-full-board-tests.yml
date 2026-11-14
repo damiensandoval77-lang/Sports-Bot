@@ -2,6 +2,10 @@ name: PrizePicks NBA full board and UI validation (offline)
 on:
   pull_request:
     paths:
+      - 'iphone_bot/one_time_prizepicks_recovery.py'
+      - 'iphone_bot/tests/test_one_time_prizepicks_recovery.py'
+      - '.github/workflows/nba-prizepicks-one-time-recovery.yml'
+      - 'docs/prizepicks_one_time_recovery.json'
       - 'iphone_bot/fetch_prizepicks.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
       - 'iphone_bot/tests/test_prizepicks_targeted_search.py'
@@ -18,6 +22,10 @@ on:
   push:
     branches: ['main','fix/20261107-full-prizepicks-slate']
     paths:
+      - 'iphone_bot/one_time_prizepicks_recovery.py'
+      - 'iphone_bot/tests/test_one_time_prizepicks_recovery.py'
+      - '.github/workflows/nba-prizepicks-one-time-recovery.yml'
+      - 'docs/prizepicks_one_time_recovery.json'
       - 'iphone_bot/fetch_prizepicks.py'
       - 'iphone_bot/tests/test_fetch_prizepicks.py'
       - 'iphone_bot/publish_prizepicks_site.py'
@@ -36,6 +44,7 @@ jobs:
           python-version: '3.11'
       - name: Test authentic PrizePicks full board and research storage
         run: |
+          python -m unittest iphone_bot.tests.test_one_time_prizepicks_recovery -v
           python -m py_compile iphone_bot/fetch_prizepicks.py iphone_bot/preserve_research_inputs.py
           python -m unittest discover -s iphone_bot/tests -p 'test_fetch_prizepicks.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_prizepicks_targeted_search.py' -v
