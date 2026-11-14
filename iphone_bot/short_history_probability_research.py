@@ -62,6 +62,39 @@ def train(directory):
             'library_versions':{'sklearn':sklearn.__version__,'numpy':np.__version__,'joblib':joblib.__version__},
             'spec_sha256':hashlib.sha256(SPEC.read_bytes()).hexdigest(),'source_hashes':sources}
 
+def capture_context(row,injuries,news,free_watch,feed,records,now):
+    """Freeze observed evidence, never infer AVAILABLE from report omission.
+
+    These fields describe inputs seen now; old receipts are never enriched later.
+    PDF digest is deliberately not claimed: source_sha256 hashes parsed feed JSON.
+    """
+    from zoneinfo import ZoneInfo
+    digest=lambda obj:hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+    tip=stamp(row['start']);day=tip.astimezone(ZoneInfo('America/New_York')).date().isoformat()
+    relevant=[deepcopy(p) for p in injuries.get('players',[])
+              if p.get('game_date')==day and p.get('team') in (row['team'],row['opponent'])]
+    own=sorted({str(p.get('status','')).upper() for p in relevant
+                if str(p.get('player_id'))==row['player_id'] and p.get('team')==row['team']})
+    issued=injuries.get('report_issued_at');generated=injuries.get('generated_at')
+    try:
+        time_valid=stamp(issued)<=stamp(generated)<=now<tip
+    except (ValueError,TypeError,KeyError):time_valid=False
+    verified=bool(time_valid and injuries.get('status')=='OFFICIAL_NBA_REPORT_VERIFIED'
+                  and injuries.get('injury_data_verified') is True)
+    # Context hashes cover exact contemporaneous feeds without expanding public
+    # player detail to unrelated teams or pretending a later report existed earlier.
+    return {'schema_version':1,'captured_at':now.isoformat(),
+            'official_report':{'status':injuries.get('status'),'report_issued_at':issued,
+                'feed_generated_at':generated,'source_pdf':injuries.get('source_pdf'),
+                'source_page':injuries.get('source_page'),'parsed_feed_sha256':digest(injuries),
+                'timestamp_order_verified':time_valid,'verified_at_capture':verified,
+                'own_reported_statuses':own,'own_status_interpretation':
+                    ('EXPLICIT_REPORT_ENTRY' if own else 'UNKNOWN_NOT_LISTED'),
+                'matched_fixture_rows':relevant},
+            'input_sha256':{'news':digest(news),'free_watch':digest(free_watch),
+                'market_feed':digest(feed),'current_game_history':digest(records)},
+            'interpretation':'Observed pretip source evidence only; report omission is not AVAILABLE or unrestricted minutes; not a fitted injury adjustment.'}
+
 def capture(records,feed,pack,*,primary,injuries,news,free_watch,now=None):
     now=stamp(now or datetime.now(timezone.utc))
     allowed=eligibility(records,feed,primary=primary,injuries=injuries,news=news,free_watch=free_watch,now=now)
@@ -98,6 +131,7 @@ def capture(records,feed,pack,*,primary,injuries,news,free_watch,now=None):
             'baseline_model':'PRIOR_MEAN_EMPIRICAL_RESIDUAL_2023_ISOTONIC_2024',
             'baseline_probability_over':float(baseline_raw[0]),'baseline_probability_under':float(baseline_raw[1]),
             'baseline_probability_push':float(baseline_raw[2]),'baseline_half_integer_calibrated_map_over':baseline_mapped,
+            'capture_context':capture_context(row,injuries,news,free_watch,feed,records,now),
             'features':f,'research_probability_over':float(raw[0]),'research_probability_under':float(raw[1]),
             'research_probability_push':float(raw[2]),'research_half_integer_calibrated_map_over':mapped,
             'probability_mapping_note':'Retrospective isotonic map only; NOT validated betting calibration',
