@@ -1,0 +1,1227 @@
+{
+  "schema_version": 1,
+  "repository": "damiensandoval77-lang/Sports-Bot",
+  "status": "PARTIAL",
+  "run_start": "2026-11-14T20:31:26+00:00",
+  "evidence_closed_at": "2026-11-14T20:59:05.756029+00:00",
+  "duration_seconds_to_evidence_close": 1660,
+  "priority_defects": {
+    "identified": 5,
+    "fully_repaired": 1,
+    "partially_repaired_with_live_recovery": 1,
+    "unresolved": 3,
+    "independently_verified_outcomes": 2
+  },
+  "pinned_main_sha": "4e04a41402d94be18c73cb4423caadc2d2439737",
+  "main_at_final_inventory": "fb4aebbc7bb5738d32582b0db495ae68a7cff47b",
+  "environment": {
+    "python_git_node_execution": "available",
+    "github_read_write": "verified_by_reads_and_two_merged_PRs_and_data_commit",
+    "paid_calls": 0,
+    "secret_changes": 0,
+    "replit_used": false,
+    "local_browser_binaries": "absent; used GitHub-hosted WebKit/Chromium artifacts",
+    "base_user_dirty_files_preserved": true
+  },
+  "schedule": {
+    "automation_id": "Automation_e692466cc8688191bd360a9d6de62973",
+    "enabled": true,
+    "interval_hours": 2,
+    "new_duplicate_task_created": false,
+    "schedule_changed": false,
+    "notification_delivery_confirmed": false
+  },
+  "inventory": {
+    "branches": 462,
+    "historical_pr_tips": 461,
+    "refs_checked": 923,
+    "pr_records_reviewed": 462,
+    "initial_open_prs": 0,
+    "final_open_prs": [
+      {
+        "number": 465,
+        "title": "Add honest isolated Tennis tab alongside NBA and NFL",
+        "head": "d710d96657bb48d8f27cf0bdbd04c0c46654080e",
+        "html_url": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/465"
+      }
+    ],
+    "historical_syntax": {
+      "scope": "All fetched remote branch heads and historical PR tips; distinct Python, JS, CJS, shell and Actions YAML blobs; syntax only, not execution or behavioral equivalence",
+      "heads": 923,
+      "unique_source_blobs": 2070,
+      "failures": [
+        {
+          "sha": "0ffe417939e60cb14eacde52c3b48828a51c2919",
+          "path": "iphone_bot/tests/test_final_boxscores.py",
+          "refs": [
+            "refs/audit-pr/2"
+          ],
+          "error": "SyntaxError: unexpected character after line continuation character (<unknown>, line 63)"
+        },
+        {
+          "sha": "34371e4b1f597dd502e1c2786d8ac18a063a10c7",
+          "path": ".github/workflows/research-pregame-evidence.yml",
+          "refs": [
+            "refs/audit-pr/259"
+          ],
+          "error": "ScannerError: mapping values are not allowed here\n  in \"<unicode string>\", line 26, column 32:\n          - name: Regression checks: no posttip, future injury, inv ... \n                                   ^"
+        },
+        {
+          "sha": "cd1c5ba8fdbffbb3b027b663610e35759b9520c8",
+          "path": ".github/workflows/research-pregame-evidence.yml",
+          "refs": [
+            "refs/audit-pr/260",
+            "refs/audit-pr/261",
+            "refs/audit-pr/262",
+            "refs/audit-pr/263",
+            "refs/audit-pr/264",
+            "refs/audit-pr/265"
+          ],
+          "error": "ScannerError: mapping values are not allowed here\n  in \"<unicode string>\", line 28, column 32:\n          - name: Regression checks: no posttip, future injury, inv ... \n                                   ^"
+        }
+      ]
+    },
+    "closed_unmerged_prs": [
+      304,
+      272,
+      248,
+      246,
+      213,
+      135,
+      132,
+      105,
+      98,
+      72
+    ],
+    "exceptions": [
+      "Historical source syntax exceptions retained, not active main failures.",
+      "Closed-unmerged behavioral disposition carried forward, not all behavior re-executed.",
+      "PRs 462 and 465 appeared concurrently; independent Tennis work not merged or dispatched in this NBA/NFL run.",
+      "Final inventory includes moving main; static full-repository audit is pinned to initial SHA."
+    ]
+  },
+  "static_audit": {
+    "counts": {
+      "tracked_files": 1562,
+      "extension:.yml": 177,
+      "extension:": 3,
+      "extension:.md": 48,
+      "extension:.live-tracker": 1,
+      "extension:.csv": 42,
+      "extension:.json": 436,
+      "json_parse_pass": 436,
+      "extension:.py": 600,
+      "python_ast_pass": 600,
+      "extension:.gz": 188,
+      "extension:.png": 1,
+      "extension:.log": 19,
+      "extension:.js": 7,
+      "node_syntax_pass": 40,
+      "extension:.html": 3,
+      "extension:.webmanifest": 1,
+      "extension:.txt": 2,
+      "extension:.cjs": 33,
+      "extension:.joblib": 1,
+      "workflows_total": 177,
+      "workflow_jobs": 191,
+      "pr_workflows": 108,
+      "manually_dispatchable": 152,
+      "workflow_steps": 1209,
+      "actions_not_sha_pinned": 389,
+      "runtime_test_commands_unguarded_steps": 99,
+      "scheduled_workflows": 84,
+      "continue_on_error_steps": 36,
+      "workflow_push_steps": 96,
+      "workflow_run_triggers": 14
+    },
+    "errors": 0,
+    "warnings": 45,
+    "dependency_scan": "No known vulnerabilities found on successful retry; first attempt timed out querying PyPI.",
+    "warnings_are_not_confirmed_exploitable_vulnerabilities": true
+  },
+  "workflow_audit": {
+    "definitions_checked": 177,
+    "recent_runs_checked": 200,
+    "distinct_definitions_with_recent_runs": 60,
+    "definitions_without_run_in_sample": 117,
+    "run_outcomes": {
+      "success": 124,
+      "failure": 31,
+      "cancelled": 45
+    },
+    "jobs_checked": 380,
+    "job_outcomes": {
+      "success": 227,
+      "failure": 34,
+      "skipped": 14,
+      "cancelled": 105
+    },
+    "all_failed_job_logs_reviewed": true,
+    "failure_index": [
+      {
+        "run_id": 43637805238,
+        "job_id": 132578395704,
+        "name": "test",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637805238"
+      },
+      {
+        "run_id": 43637069247,
+        "job_id": 132576088341,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637069247"
+      },
+      {
+        "run_id": 43636039095,
+        "job_id": 132572941898,
+        "name": "verify",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636039095"
+      },
+      {
+        "run_id": 43635757317,
+        "job_id": 132572071864,
+        "name": "verify",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635757317"
+      },
+      {
+        "run_id": 43635695332,
+        "job_id": 132571881435,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635695332"
+      },
+      {
+        "run_id": 43635695300,
+        "job_id": 132571881320,
+        "name": "heartbeat",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635695300"
+      },
+      {
+        "run_id": 43635404649,
+        "job_id": 132570995920,
+        "name": "audit",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635404649"
+      },
+      {
+        "run_id": 43635297998,
+        "job_id": 132570664719,
+        "name": "heartbeat",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635297998"
+      },
+      {
+        "run_id": 43635297956,
+        "job_id": 132570664640,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635297956"
+      },
+      {
+        "run_id": 43635265762,
+        "job_id": 132570565450,
+        "name": "public-visibility",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265762"
+      },
+      {
+        "run_id": 43635265725,
+        "job_id": 132570565385,
+        "name": "verify",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265725"
+      },
+      {
+        "run_id": 43635106250,
+        "job_id": 132570093804,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635106250"
+      },
+      {
+        "run_id": 43635076066,
+        "job_id": 132570008322,
+        "name": "deployed-iphone (chromium)",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635076066"
+      },
+      {
+        "run_id": 43635076066,
+        "job_id": 132570008482,
+        "name": "deployed-iphone (webkit)",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635076066"
+      },
+      {
+        "run_id": 43634968382,
+        "job_id": 132569663738,
+        "name": "heartbeat",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634968382"
+      },
+      {
+        "run_id": 43634653018,
+        "job_id": 132568691460,
+        "name": "verify",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634653018"
+      },
+      {
+        "run_id": 43634653009,
+        "job_id": 132568690925,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634653009"
+      },
+      {
+        "run_id": 43634627353,
+        "job_id": 132568609313,
+        "name": "audit",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634627353"
+      },
+      {
+        "run_id": 43634376929,
+        "job_id": 132567836892,
+        "name": "deployed-iphone (webkit)",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634376929"
+      },
+      {
+        "run_id": 43634376929,
+        "job_id": 132567837052,
+        "name": "deployed-iphone (chromium)",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634376929"
+      },
+      {
+        "run_id": 43634145676,
+        "job_id": 132567133603,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634145676"
+      },
+      {
+        "run_id": 43634141640,
+        "job_id": 132567119812,
+        "name": "feed-health",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634141640"
+      },
+      {
+        "run_id": 43634109410,
+        "job_id": 132567073238,
+        "name": "source-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634109410"
+      },
+      {
+        "run_id": 43634107622,
+        "job_id": 132567011803,
+        "name": "verify",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634107622"
+      },
+      {
+        "run_id": 43633809796,
+        "job_id": 132566088708,
+        "name": "deploy",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633809796"
+      },
+      {
+        "run_id": 43633600810,
+        "job_id": 132565452797,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633600810"
+      },
+      {
+        "run_id": 43633570219,
+        "job_id": 132565361869,
+        "name": "deployed-iphone (chromium)",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633570219"
+      },
+      {
+        "run_id": 43633570219,
+        "job_id": 132565362067,
+        "name": "deployed-iphone (webkit)",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633570219"
+      },
+      {
+        "run_id": 43633527679,
+        "job_id": 132565229165,
+        "name": "audit",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633527679"
+      },
+      {
+        "run_id": 43633477842,
+        "job_id": 132565073874,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633477842"
+      },
+      {
+        "run_id": 43632507241,
+        "job_id": 132562022992,
+        "name": "audit",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632507241"
+      },
+      {
+        "run_id": 43632357502,
+        "job_id": 132561618951,
+        "name": "source-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632357502"
+      },
+      {
+        "run_id": 43632154682,
+        "job_id": 132560966909,
+        "name": "heartbeat",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632154682"
+      },
+      {
+        "run_id": 43632154672,
+        "job_id": 132561119087,
+        "name": "verify-readiness",
+        "url": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632154672"
+      }
+    ],
+    "exceptions": "No run in bounded sample is UNKNOWN, not PASS. PR-only and conditionally skipped jobs are not production proof. Exact matrix in workflows.md."
+  },
+  "findings": [
+    {
+      "id": "D1",
+      "severity": "high",
+      "title": "Stale credit-backed quote source lacked a free native path",
+      "before": "Public quotes 19:12:37 UTC; 174 current two-sided supported offers, 159 matched primary, 15 missing. Existing collector required credit-backed provider.",
+      "root_cause": "Collector and downstream provenance allowlists did not support native public standard quotes.",
+      "actions": [
+        "Implemented strict native collector and source/status allowlist across archive, model, health, and tracker readers.",
+        "Changed existing collector to free half-hour windows, retained explicit partial-board disclosure and failure preservation.",
+        "GitHub production collection failed HTTP 403; captured genuine public data in the working environment and published by compare-and-swap main commit."
+      ],
+      "after": {
+        "source_observed_at": "2026-11-14T20:49:23.960264+00:00",
+        "standard_markets": 184,
+        "games": 5,
+        "model_input_rows": 368,
+        "published_projections": 164,
+        "partial_board": true,
+        "complete_provider_board": false
+      },
+      "status": "PARTIAL_REPAIR_AND_VERIFIED_LIVE_RECOVERY",
+      "pr": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/463",
+      "merge": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/6f1509744383673a9f853ac2e599bccfc56c469c",
+      "capture_commit": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/b3c0123dcf31db03b679328057710feb4575721f",
+      "runs": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639555378",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639588318",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639937152",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639860298"
+      ],
+      "limitation": "Durable unattended collection remains blocked by D3; no complete-provider claim."
+    },
+    {
+      "id": "D2",
+      "severity": "high",
+      "title": "Research tests ran under a runtime incompatible with frozen artifact provenance",
+      "root_cause": "Python 3.11 test job loaded artifact whose immutable manifest requires Python 3.12.",
+      "before": "FROZEN_BUNDLE_PROVENANCE_MISMATCH in test_short_history_direct_capture.test_artifact_load_real_and_tampering.",
+      "after": "Test job uses Python 3.12. Production capture runtime and immutable model artifact hashes unchanged. Main test and capture jobs both passed.",
+      "status": "REPAIRED_AND_PRODUCTION_WORKFLOW_VERIFIED",
+      "pr": "https://github.com/damiensandoval77-lang/Sports-Bot/pull/464",
+      "merge": "https://github.com/damiensandoval77-lang/Sports-Bot/commit/d89b84b3023eed844953c5e113966822d60502e2",
+      "failed_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637805238",
+      "verified_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43638995904",
+      "public_research": {
+        "records": 29,
+        "outcomes": 14,
+        "status": "UNVALIDATED_SHORT_HISTORY_PROBABILITY_RESEARCH",
+        "official_grade_eligible": false,
+        "primary_model_eligible": false,
+        "content_change_expected": false
+      }
+    },
+    {
+      "id": "D3",
+      "severity": "high",
+      "title": "GitHub-hosted native quote request refused",
+      "root_cause": "Public endpoint returns HTTP 403 to the hosted production runner; identical documented request succeeded in this managed workspace. Exact provider-side reason not established.",
+      "status": "BLOCKED",
+      "failed_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639407883",
+      "failed_job": 132583343077,
+      "safe_workaround": "D1 actual pretip capture, with provenance and original timestamp, published without paid fallback.",
+      "required_fix": "A supported no-cost collector execution environment with permitted provider access, or provider restoration of access for GitHub-hosted runners. Do not evade access controls or add paid fallback.",
+      "preserved_old_data_on_error": true
+    },
+    {
+      "id": "D4",
+      "severity": "high",
+      "title": "Validated primary forecasts missing for standard markets",
+      "root_cause": "Current model reports INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY for 20 markets. Eight-game eligibility/provenance guards retained; research forecasts are ineligible for primary grading.",
+      "before": {
+        "current_missing": 15,
+        "archived_missing_thresholds": 28
+      },
+      "after": {
+        "current_missing": 20,
+        "archived_missing_thresholds": 35,
+        "research_only_receipts_for_missing": 27,
+        "missing_without_ai_receipt": 8
+      },
+      "status": "BLOCKED_BY_VERIFIED_DATA_AND_MODEL_VALIDATION",
+      "failed_runs": [
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639881533",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639881443",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639857420",
+        "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639619038"
+      ],
+      "safe_actions": [
+        "Refreshed model through no-cost recovery; 164 current offers matched.",
+        "Kept coverage gates failing honestly; no posttip backfill, threshold repricing, fabricated games, or research promotion."
+      ],
+      "required_fix": "Recover authentic eligible pretip feature history where it exists, or validate a short-history model prospectively before primary eligibility. Missing historical forecasts cannot be recreated as contemporaneous evidence."
+    },
+    {
+      "id": "D5",
+      "severity": "high",
+      "title": "Legacy Pages publication repeatedly cancelled by concurrent commits",
+      "root_cause": "Many artifact publishers trigger native legacy-branch deployment; queued native builds supersede one another. Controlled workflow currently verifies legacy output rather than owning deployment.",
+      "status": "BLOCKED_SETTINGS_CHANGE_WITH_CURRENT_DEPLOYMENT_RECOVERED",
+      "successful_deployment": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639937152",
+      "verified_release": "dp-live-kickoff-cache-safe-20261114-r42",
+      "blocker": "Connector lacks Pages settings mutation; local gh is unauthenticated; browser Settings/Pages returned logged-out 404. Repo admin/push permissions are present but do not supply this missing API capability.",
+      "required_user_action": "Repository Settings > Pages > Build and deployment > Source > GitHub Actions. Existing serialized pages-controlled.yml supports that source mode. No secrets need changing.",
+      "unsafe_workarounds_not_used": [
+        "No forced green gate",
+        "No disabling data publication",
+        "No repeated unauthorized GITHUB_TOKEN settings mutation"
+      ]
+    }
+  ],
+  "changed_files_by_merge": {
+    "6f1509744383673a9f853ac2e599bccfc56c469c": [
+      ".github/workflows/nba-prizepicks-full-slate.yml",
+      ".github/workflows/nba-prizepicks-site-publish.yml",
+      ".github/workflows/prizepicks-full-board-tests.yml",
+      ".github/workflows/production_readiness.yml",
+      "docs/live-prop-tracker.js",
+      "iphone_bot/archive_prizepicks_pregame_lines.py",
+      "iphone_bot/archive_standard_quote_ai_research.py",
+      "iphone_bot/audit_failure_domains.py",
+      "iphone_bot/audit_primary_model_missing.py",
+      "iphone_bot/build_prizepicks_model_input.py",
+      "iphone_bot/current_primary_coverage.py",
+      "iphone_bot/fetch_native_prizepicks.py",
+      "iphone_bot/freeze_baseline_pregame_quotes.py",
+      "iphone_bot/phase1_free_recovery.py",
+      "iphone_bot/preserve_research_inputs.py",
+      "iphone_bot/prizepicks_ai_research.py",
+      "iphone_bot/prizepicks_provenance.py",
+      "iphone_bot/prizepicks_research_ledger.py",
+      "iphone_bot/production_readiness.py",
+      "iphone_bot/publish_live_pp_ai_join.py",
+      "iphone_bot/publish_prizepicks_site.py",
+      "iphone_bot/quote_refresh_integrity.py",
+      "iphone_bot/tests/test_build_prizepicks_model_input.py",
+      "iphone_bot/tests/test_live_prop_tracker.cjs",
+      "iphone_bot/tests/test_native_prizepicks.py",
+      "iphone_bot/tests/test_prizepicks_pub_handoff.py",
+      "iphone_bot/tests/test_production_live_recovery_workflow.py",
+      "iphone_bot/tonight_capture_gradeability.py",
+      "iphone_bot/validate_prizepicks_publish.py",
+      "tests/test_critical_production_repair_contracts.py"
+    ],
+    "d89b84b3023eed844953c5e113966822d60502e2": [
+      ".github/workflows/nba-short-history-probability-research.yml"
+    ]
+  },
+  "checks_for_pr_463": [
+    {
+      "id": 43639217200,
+      "name": "Validate NBA Research Storage Integrity (offline)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 69,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217200/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217200/logs",
+      "workflow_id": 410785908
+    },
+    {
+      "id": 43639217378,
+      "name": "NBA production readiness and stability gate",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 556,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217378/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217378/logs",
+      "workflow_id": 412250261
+    },
+    {
+      "id": 43639217205,
+      "name": "Cross-domain Sports-Bot reliability audit (no provider credits)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 113,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217205/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217205/logs",
+      "workflow_id": 413552507
+    },
+    {
+      "id": 43639217456,
+      "name": "NBA main board eight-game card coverage and injury display gate",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 53,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217456/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217456/logs",
+      "workflow_id": 412685553
+    },
+    {
+      "id": 43639217166,
+      "name": "Pipeline heartbeat - deployed lines picks live and grades",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 505,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217166/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217166/logs",
+      "workflow_id": 415268754
+    },
+    {
+      "id": 43639217231,
+      "name": "Verify persistent pretip PrizePicks line archive",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 11,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217231/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217231/logs",
+      "workflow_id": 412740052
+    },
+    {
+      "id": 43639217275,
+      "name": "Automatically lock verified NBA pretip lines with saved baseline AI",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 113,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217275/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217275/logs",
+      "workflow_id": 412778257
+    },
+    {
+      "id": 43639217153,
+      "name": "Grade immutable standard-line AI research receipts (credit free)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 110,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217153/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217153/logs",
+      "workflow_id": 413601711
+    },
+    {
+      "id": 43639217146,
+      "name": "PrizePicks NBA full board and UI validation (offline)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 149,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217146/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217146/logs",
+      "workflow_id": 410797890
+    },
+    {
+      "id": 43639217297,
+      "name": "Started NBA matchup live tracker, pace and iPhone fallback (offline)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 208,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217297/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217297/logs",
+      "workflow_id": 410811030
+    },
+    {
+      "id": 43639217357,
+      "name": "NBA full-game lifecycle and next-slate readiness gate",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 116,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217357/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217357/logs",
+      "workflow_id": 412751798
+    },
+    {
+      "id": 43639217159,
+      "name": "Publish lightweight verified PrizePicks AI comparisons",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 367,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217159/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217159/logs",
+      "workflow_id": 412340165
+    },
+    {
+      "id": 43639217154,
+      "name": "Freeze and grade authentic pregame PrizePicks AI research",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 177,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217154/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217154/logs",
+      "workflow_id": 411464985
+    },
+    {
+      "id": 43639217281,
+      "name": "NBA Live Matchup Tracker (offline)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 105,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217281/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217281/logs",
+      "workflow_id": 410775618
+    },
+    {
+      "id": 43639217340,
+      "name": "Verify tonight NBA frozen lines predictions and grades",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 415,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217340/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217340/logs",
+      "workflow_id": 412768967
+    },
+    {
+      "id": 43639217307,
+      "name": "Publish lightweight PrizePicks site data and per-game coverage",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 246,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217307/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217307/logs",
+      "workflow_id": 410803444
+    },
+    {
+      "id": 43639217351,
+      "name": "Refresh free native NBA PrizePicks standard lines",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 117,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217351/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217351/logs",
+      "workflow_id": 410798491
+    },
+    {
+      "id": 43639217201,
+      "name": "Phase 1 credit-free source recovery coordinator",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 119,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217201/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217201/logs",
+      "workflow_id": 413264837
+    },
+    {
+      "id": 43639217326,
+      "name": "Phase 1 feed health audit",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 140,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217326/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217326/logs",
+      "workflow_id": 411967358
+    },
+    {
+      "id": 43639217332,
+      "name": "Dame's Picks recovery regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 118,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217332/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217332/logs",
+      "workflow_id": 415269731
+    },
+    {
+      "id": 43639217304,
+      "name": "Verify PrizePicks-only NBA AI research (offline)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 7,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217304/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217304/logs",
+      "workflow_id": 410806729
+    },
+    {
+      "id": 43639217345,
+      "name": "Guarded new NBA AI all markets PTS REB AST PRA",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 364,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217345/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217345/logs",
+      "workflow_id": 412623377
+    },
+    {
+      "id": 43639217317,
+      "name": "pipeline-contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 345,
+      "jobs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217317/jobs",
+      "logs_url": "https://api.github.com/repos/damiensandoval77-lang/Sports-Bot/actions/runs/43639217317/logs",
+      "workflow_id": 415274426
+    }
+  ],
+  "tests": {
+    "native_reader_archive_model_regressions": 116,
+    "native_tracker_node": 23,
+    "handoff_and_workflow_regressions": 25,
+    "final_native_and_controller": 20,
+    "critical_production_contracts": 7,
+    "readiness_regressions": 42,
+    "nfl_python": 31,
+    "nfl_pregame_node": 18,
+    "live_sort_node": 4,
+    "note": "Test groups overlap; counts are not a unique aggregate. All listed runs passed.",
+    "immutability_dry_run": {
+      "preexisting_receipts": 3310,
+      "changed_preexisting_receipts": 0
+    }
+  },
+  "coverage": {
+    "nba_current": {
+      "status": "INCOMPLETE",
+      "checked_at": "2026-11-14T20:53:29.844499+00:00",
+      "source_generated_at": "2026-11-14T20:49:23.960264+00:00",
+      "verified_current_offers": 184,
+      "matched_primary_offers": 164,
+      "missing_primary_offers": 20,
+      "games": [
+        {
+          "game": "Brooklyn Nets @ Memphis Grizzlies",
+          "start": "2026-11-15T01:00:00+00:00",
+          "verified_current_offers": 39,
+          "matched_primary_offers": 30,
+          "missing_primary_offers": 9,
+          "missing": [
+            {
+              "player": "Mikel Brown Jr.",
+              "team": "BKN",
+              "stat": "PRA",
+              "line": 18.5
+            },
+            {
+              "player": "Egor Dëmin",
+              "team": "BKN",
+              "stat": "PRA",
+              "line": 15.5
+            },
+            {
+              "player": "Danny Wolf",
+              "team": "BKN",
+              "stat": "PRA",
+              "line": 12.5
+            },
+            {
+              "player": "Mikel Brown Jr.",
+              "team": "BKN",
+              "stat": "PTS",
+              "line": 11.5
+            },
+            {
+              "player": "Egor Dëmin",
+              "team": "BKN",
+              "stat": "PTS",
+              "line": 10.5
+            },
+            {
+              "player": "Danny Wolf",
+              "team": "BKN",
+              "stat": "PTS",
+              "line": 6.5
+            },
+            {
+              "player": "Danny Wolf",
+              "team": "BKN",
+              "stat": "REB",
+              "line": 3.5
+            },
+            {
+              "player": "Mikel Brown Jr.",
+              "team": "BKN",
+              "stat": "AST",
+              "line": 3.5
+            },
+            {
+              "player": "Egor Dëmin",
+              "team": "BKN",
+              "stat": "REB",
+              "line": 2.5
+            }
+          ]
+        },
+        {
+          "game": "Chicago Bulls @ Minnesota Timberwolves",
+          "start": "2026-11-15T01:00:00+00:00",
+          "verified_current_offers": 37,
+          "matched_primary_offers": 35,
+          "missing_primary_offers": 2,
+          "missing": [
+            {
+              "player": "Nic Claxton",
+              "team": "CHI",
+              "stat": "PRA",
+              "line": 15.5
+            },
+            {
+              "player": "Nic Claxton",
+              "team": "CHI",
+              "stat": "PTS",
+              "line": 7.5
+            }
+          ]
+        },
+        {
+          "game": "Dallas Mavericks @ Cleveland Cavaliers",
+          "start": "2026-11-15T00:30:00+00:00",
+          "verified_current_offers": 35,
+          "matched_primary_offers": 35,
+          "missing_primary_offers": 0,
+          "missing": []
+        },
+        {
+          "game": "Denver Nuggets @ New Orleans Pelicans",
+          "start": "2026-11-15T00:00:00+00:00",
+          "verified_current_offers": 39,
+          "matched_primary_offers": 31,
+          "missing_primary_offers": 8,
+          "missing": [
+            {
+              "player": "Cameron Johnson",
+              "team": "DEN",
+              "stat": "PRA",
+              "line": 18.5
+            },
+            {
+              "player": "Cameron Johnson",
+              "team": "DEN",
+              "stat": "PTS",
+              "line": 12.5
+            },
+            {
+              "player": "Yves Missi",
+              "team": "NOP",
+              "stat": "PRA",
+              "line": 12.5
+            },
+            {
+              "player": "Jordan Poole",
+              "team": "NOP",
+              "stat": "PTS",
+              "line": 10.5
+            },
+            {
+              "player": "Yves Missi",
+              "team": "NOP",
+              "stat": "REB",
+              "line": 5.5
+            },
+            {
+              "player": "Yves Missi",
+              "team": "NOP",
+              "stat": "PTS",
+              "line": 5.5
+            },
+            {
+              "player": "Cameron Johnson",
+              "team": "DEN",
+              "stat": "REB",
+              "line": 3.5
+            },
+            {
+              "player": "Spencer Jones",
+              "team": "DEN",
+              "stat": "REB",
+              "line": 2.5
+            }
+          ]
+        },
+        {
+          "game": "Detroit Pistons @ Miami Heat",
+          "start": "2026-11-15T01:00:00+00:00",
+          "verified_current_offers": 34,
+          "matched_primary_offers": 33,
+          "missing_primary_offers": 1,
+          "missing": [
+            {
+              "player": "Myron Gardner",
+              "team": "MIA",
+              "stat": "PTS",
+              "line": 5.5
+            }
+          ]
+        }
+      ],
+      "issues": [],
+      "scope": "CURRENT_UPCOMING_STANDARD_OFFERS_ONLY",
+      "research_and_provisional_count_as_primary": false
+    },
+    "nba_archive": {
+      "schedule_games": 5,
+      "games_with_saved_source_quotes": 5,
+      "games_with_frozen_ai": 5,
+      "games_with_line_backed_models": 5,
+      "total_quotes": 339,
+      "total_standard_source_quotes": 339,
+      "total_standard_markets_without_frozen_model": 35,
+      "total_price_moves_from_original_frozen_line": 0,
+      "total_player_stat_markets_never_primary_frozen": 35,
+      "total_missing_primary_with_separate_research_receipt": 27,
+      "total_missing_primary_without_any_ai_receipt": 8,
+      "total_ai_only": 504,
+      "total_line_backed": 304,
+      "total_line_backed_graded": 0,
+      "total_ai_only_graded": 0
+    },
+    "nba_calendar_games": 1200,
+    "nba_today_games": 5,
+    "nba_tomorrow_games": 9,
+    "nfl_calendar_games": 272,
+    "nfl_today_games": 0,
+    "independent_espn_observed_at": "2026-11-14T20:46:11+00:00",
+    "live_30_second_polling": "Present in deployed frontend source; no in-progress NBA/NFL game during this run, so live pacing and final transition were not exercised.",
+    "official_nba_injury_report": "2026-11-14T20:15:00+00:00",
+    "underdog": "No verified Underdog quote pipeline or configured X monitor; no coverage claimed.",
+    "nfl_matchup_hit_estimate": "Unavailable in sampled rendered player detail where no eligible opponent model exists; no percentage fabricated."
+  },
+  "grading": {
+    "dames-picks_published_pick_settlement.json": {
+      "checked_at": "2026-11-14T20:44:02.557291+00:00",
+      "status": "READY",
+      "complete": false,
+      "reconciled": true,
+      "scope": "PUBLISHED_STANDARD_FROZEN_PICKS_ONLY",
+      "counts": {
+        "graded": 1760,
+        "frozen_picks": 2107,
+        "verified_dnp_excluded": 64,
+        "pending": 283
+      },
+      "actionable_verified_finals": 0,
+      "overdue_missing_verified_finals": 0,
+      "issues": {},
+      "note": "Provider lines without a validated frozen prediction are not published picks. Every saved pick requires an original pretip line and a verified final or independently crosschecked DNP; live scores never grade bets."
+    },
+    "nightly_grade_health.json": {
+      "checked_at": "2026-11-14T20:48:39.617346+00:00",
+      "game_date_eastern": "2026-11-13",
+      "status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "grace_hours_from_scheduled_start": 12,
+      "prizepicks_saved": 740,
+      "prizepicks_settled": 711,
+      "prizepicks_void": 29,
+      "prizepicks_pending": 0,
+      "prizepicks_overdue": 0,
+      "prizepicks_overdue_games": {},
+      "paper_saved": 0,
+      "paper_pending": 0,
+      "paper_overdue": 0,
+      "unpriced_forecasts_separate": 904,
+      "prizepicks_scope_status": "ALL_CAPTURED_PRIZEPICKS_RECORDS_RESOLVED",
+      "ai_forecast_accuracy_status": "AI_PRETIP_FORECASTS_GRADED",
+      "ai_forecasts_recorded": 904,
+      "ai_forecasts_graded": 700,
+      "ai_forecasts_ungraded": 0,
+      "ai_forecasts_verified_dnp_excluded": 204,
+      "ai_forecasts_accounted_for": 904,
+      "ai_forecasts_fully_accounted_for": true,
+      "ai_forecasts_fully_graded": false,
+      "overall_grading_status": "ALL_CAPTURED_RESEARCH_AND_AI_FORECASTS_ACCOUNTED_FOR",
+      "capture_missing": false,
+      "complete_slate_not_guaranteed": true,
+      "notice": "Only recorded pretip markets assessed; lack of captured picks is not successful grading. Pending is never a loss."
+    },
+    "nfl_data_grading_health_2026.json": {
+      "alternative_tier_historical_grades_excluded": 932,
+      "alternative_tier_pending_excluded": 4,
+      "archived_pregame_lines": 74863,
+      "expected_final_picks": 1087,
+      "final_games_with_frozen_picks": 2,
+      "frozen_final_pick_candidates": 1087,
+      "graded_picks": 1067,
+      "invalid_boxscore_games": [],
+      "official_grading_scope": "FROZEN_STANDARD_LINE_ONLY",
+      "pending_picks": 4,
+      "pending_reasons": {
+        "player_not_in_verified_boxscore": 4
+      },
+      "pushes": 3,
+      "rejected_non_pregame_or_invalid_lines": 0,
+      "season": 2026,
+      "source_snapshot_status": "verified",
+      "standard_graded_picks_including_pushes": 135,
+      "standard_hit_rate": 39.39,
+      "standard_pending_picks": 0,
+      "standard_pending_reasons": {},
+      "standard_settled": 132,
+      "standard_wins": 52,
+      "void_picks": 16
+    }
+  },
+  "production_readiness": {
+    "checked_at": "2026-11-14T20:54:13.064026+00:00",
+    "game_date_eastern": "2026-11-14",
+    "status": "DEGRADED",
+    "ready_for_trustworthy_picks": false,
+    "readiness_is_not_model_accuracy": true,
+    "today_schedule_games": 5,
+    "upcoming_games": 5,
+    "started_not_marked_final": 0,
+    "next_tip_at": "2026-11-15T00:00:00+00:00",
+    "components": {
+      "schedule": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 65.2
+      },
+      "season_calendar": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 235.1
+      },
+      "ai_forecasts": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 65.2
+      },
+      "prizepicks_lines": {
+        "state": "DEGRADED",
+        "required": true,
+        "reasons": [
+          "PARTIAL_PRIZEPICKS_PROVIDER_COVERAGE"
+        ],
+        "age_minutes": 4.8
+      },
+      "pregame_capture": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 0.7
+      },
+      "unmodeled_provider_market_coverage": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "STANDARD_QUOTES_WITHOUT_PRIMARY_FROZEN_MODEL"
+        ],
+        "age_minutes": 0.7
+      },
+      "current_primary_model_coverage": {
+        "state": "DEGRADED",
+        "required": true,
+        "reasons": [
+          "CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL",
+          "CURRENT_STANDARD_MODEL_COVERAGE_INCOMPLETE"
+        ],
+        "age_minutes": 0.7
+      },
+      "published_pick_settlement": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 10.2
+      },
+      "published_pick_cards": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "NO_PUBLISHED_PROJECTION_VS_LINE_CARDS",
+          "PUBLISHED_PICK_BOARD_STALE",
+          "NO_PROVIDER_EVENTS_CHECKED",
+          "SAVED_SPORTSBOOK_MARKET_COVERAGE_LIMITED"
+        ],
+        "age_minutes": 9902.0
+      },
+      "prizepicks_research_cards": {
+        "state": "DEGRADED",
+        "required": false,
+        "reasons": [
+          "DASHBOARD_PP_JOIN_HANDOFF_NOT_PRESENT",
+          "PP_RESEARCH_SOURCE_PARTIAL"
+        ],
+        "age_minutes": 3.8
+      },
+      "public_browser": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 5.1
+      },
+      "scoreboard": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 0.4
+      },
+      "live_player_stats": {
+        "state": "READY",
+        "required": false,
+        "reasons": [],
+        "age_minutes": null
+      },
+      "nightly_grades": {
+        "state": "READY",
+        "required": true,
+        "reasons": [],
+        "age_minutes": 5.6
+      }
+    },
+    "blocking_components": [],
+    "degraded_components": [
+      "prizepicks_lines",
+      "current_primary_model_coverage"
+    ],
+    "required_checks": 10,
+    "passing_required_checks": 8,
+    "note": "Provider completeness, projection freshness, live score freshness, and grading health are independently checked. No guarantee of zero downtime, sportsbook coverage, predictive win rate, or actual API credit balance."
+  },
+  "unified_readiness": {
+    "checked_at": "2026-11-14T20:53:46.916348+00:00",
+    "status": "DEGRADED",
+    "app": {
+      "state": "READY",
+      "issues": []
+    },
+    "sports": {
+      "NBA": {
+        "state": "DEGRADED",
+        "issues": [
+          "ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL",
+          "CURRENT_STANDARD_OFFERS_WITHOUT_PRIMARY_MODEL"
+        ]
+      },
+      "NFL": {
+        "state": "READY",
+        "issues": []
+      }
+    },
+    "scope": "UNIFIED_ARTIFACT_INTEGRITY_ONLY",
+    "live_browser_verified": false,
+    "provider_refresh_verified": false,
+    "note": "Artifact integrity is not proof of live browser rendering, current provider line availability, calibrated pick accuracy, or successful final grading."
+  },
+  "deployment": {
+    "url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
+    "source_mode": "legacy_branch",
+    "release": "dp-live-kickoff-cache-safe-20261114-r42",
+    "native_json_verified_at": "2026-11-14T20:55:10+00:00",
+    "native_json_source_time": "2026-11-14T20:49:23.960264+00:00",
+    "published_model_generated_at": "2026-11-14T20:50:38.067920+00:00",
+    "phone_run": "https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43639860298",
+    "phone_width_css_px": 390,
+    "webkit_checks": 19,
+    "webkit_passed": 19,
+    "chromium_job_result": "success",
+    "webkit_artifact_id": 14131641891,
+    "physical_user_phone_verified": false,
+    "screenshots_visually_inspected": [
+      "nba-player-detail.png",
+      "nfl-player-detail.png"
+    ],
+    "limits": [
+      "One check is explicitly synthetic selector regression, not live-site evidence.",
+      "NFL sampled matchup estimate is unavailable.",
+      "No games live during check; passing phone checks do not close coverage defects."
+    ]
+  },
+  "carry_forward": {
+    "reason": "Unavoidable provider access, verified-data/model eligibility, and Pages administration capability blockers; not voluntary deferral.",
+    "items": [
+      "D3",
+      "D4",
+      "D5"
+    ],
+    "additional_scope_gaps": [
+      "Underdog quote coverage",
+      "NFL opponent-model hit estimates"
+    ],
+    "historical_missing_evidence": "Uncaptured historical pretip evidence is not recoverable by fabricating it now. No new historical loss total asserted in this run."
+  },
+  "receipt_publication": "This JSON and evidence files committed to repository after evidence close; final report supplies receipt commit URL."
+}

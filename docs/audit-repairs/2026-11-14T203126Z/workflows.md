@@ -1,0 +1,181 @@
+# All workflow definitions and sampled runs
+
+Pinned main: `4e04a41402d94be18c73cb4423caadc2d2439737`. 200 most recent runs sampled; no-run entries are unverified, not passes.
+
+- **.github/workflows/assist-v2-research.yml** — Assist V2 research validation: NO RUN IN SAMPLE
+- **.github/workflows/assist-v2-shadow.yml** — Assist V2 pregame shadow capture and verified settlement: NO RUN IN SAMPLE
+- **.github/workflows/audit-ai-forecast-coverage.yml** — Audit immutable NBA forecast grading completeness: NO RUN IN SAMPLE
+- **.github/workflows/authoritative-nba-grading-reconciliation.yml** — Authoritative NBA nightly grading reconciliation - fail closed: NO RUN IN SAMPLE
+- **.github/workflows/confidence-readiness-research.yml** — Research Confidence Readiness (offline): NO RUN IN SAMPLE
+- **.github/workflows/cross-domain-reliability-audit.yml** — Cross-domain Sports-Bot reliability audit (no provider credits): [43633527679](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633527679) failure
+- **.github/workflows/dames-picks-app-release-gate.yml** — Dame's Picks unified NBA + NFL app release gate: [43636039095](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636039095) failure
+- **.github/workflows/dames-picks-recovery-regressions.yml** — Dame's Picks recovery regressions: NO RUN IN SAMPLE
+- **.github/workflows/dames-picks-version-e.yml** — Dame's Picks integrated Version E CI: [43635265611](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265611) success; [43635051163](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051163) success
+- **.github/workflows/dashboard-ui-check.yml** — Validate Sports-Bot dashboard navigation: NO RUN IN SAMPLE
+- **.github/workflows/dunkapi-import-one-game.yml** — Import one DunkAPI historical NBA game: NO RUN IN SAMPLE
+- **.github/workflows/dunkapi-probe.yml** — Probe DunkAPI historical NBA props: NO RUN IN SAMPLE
+- **.github/workflows/end_to_end_readiness.yml** — Phase 1 end-to-end eight-game reliability check: [43635757317](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635757317) failure
+- **.github/workflows/espn-live-json-resilience.yml** — ESPN live backup JSON resilience: NO RUN IN SAMPLE
+- **.github/workflows/external_stats_snapshot_tests.yml** — External stats research snapshot validation (no provider calls): NO RUN IN SAMPLE
+- **.github/workflows/freeze_baseline_pregame_quotes.yml** — Automatically lock verified NBA pretip lines with saved baseline AI: [43636192989](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636192989) success
+- **.github/workflows/full-repository-audit.yml** — Full repository static and workflow architecture audit: NO RUN IN SAMPLE
+- **.github/workflows/grade-standard-quote-ai-research.yml** — Grade immutable standard-line AI research receipts (credit free): NO RUN IN SAMPLE
+- **.github/workflows/grade_automatic_baseline_join.yml** — Grade immutable baseline NBA quote-paired forecasts from verified finals: [43634313662](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634313662) success
+- **.github/workflows/grade_frozen_ai_forecasts.yml** — Grade frozen pretip AI forecasts against verified NBA finals: [43636244404](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636244404) success
+- **.github/workflows/grade_frozen_baseline_join.yml** — Grade prospective frozen baseline PrizePicks markets with real finals: [43633755355](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633755355) success
+- **.github/workflows/hide-tipped-ai-props-tests.yml** — Hide tipped-off AI props (offline UI tests): [43635051167](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051167) success
+- **.github/workflows/independent_nba_player_boxscores.yml** — Independent NBA player boxscores: [43635663060](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635663060) success
+- **.github/workflows/independent_scoreboard_refresh.yml** — Independent NBA scoreboard refresh: [43637504680](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637504680) success; [43635222276](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635222276) success; [43634247718](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634247718) success
+- **.github/workflows/inspect-prizepicks-compact.yml** — Inspect PrizePicks compact field shape once: NO RUN IN SAMPLE
+- **.github/workflows/live-night-integration.yml** — Live-night deployed ESPN integration (read-only): NO RUN IN SAMPLE
+- **.github/workflows/live-site-e2e.yml** — Live deployed Dame's Picks iPhone browser E2E: [43636716488](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636716488) success; [43635487595](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635487595) success; [43635265726](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265726) cancelled; [43635076066](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635076066) failure; [43634376929](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634376929) failure; [43633570219](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633570219) failure
+- **.github/workflows/model-disagreement-research.yml** — Model Disagreement Research Tests (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-20k-stress-research.yml** — NBA 20K Stress Research Tests (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-ai-comparisons.yml** — Update experimental AI sportsbook comparisons: NO RUN IN SAMPLE
+- **.github/workflows/nba-ai-record.yml** — Settle immutable NBA AI record from completed box scores: [43634037041](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634037041) success
+- **.github/workflows/nba-assist-night-comparison.yml** — Publish actual assist model grades by Eastern game night: NO RUN IN SAMPLE
+- **.github/workflows/nba-audit-real-props.yml** — Audit saved real NBA props (no API credits): NO RUN IN SAMPLE
+- **.github/workflows/nba-backtest-provisional.yml** — Backtest NBA model probabilities (synthetic lines): NO RUN IN SAMPLE
+- **.github/workflows/nba-backtest-real-market.yml** — Backtest NBA against recorded real sportsbook lines: NO RUN IN SAMPLE
+- **.github/workflows/nba-build-dataset.yml** — Build NBA historical training dataset: NO RUN IN SAMPLE
+- **.github/workflows/nba-consensus-test.yml** — Test sportsbook consensus without odds API calls: [43635265756](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265756) success
+- **.github/workflows/nba-cross-market-coherence.yml** — NBA cross-market projection coherence audit: NO RUN IN SAMPLE
+- **.github/workflows/nba-current-form.yml** — Update 2026-27 NBA player recent form: NO RUN IN SAMPLE
+- **.github/workflows/nba-defender-rotation.yml** — Evaluate individual NBA defender rotation signals: NO RUN IN SAMPLE
+- **.github/workflows/nba-defender-v3-research.yml** — NBA Defender Matchup V3 Research (no live model changes): NO RUN IN SAMPLE
+- **.github/workflows/nba-defense-challenger.yml** — Evaluate opponent-aware NBA challenger: NO RUN IN SAMPLE
+- **.github/workflows/nba-direct-exceedance-research.yml** — NBA frozen direct-exceedance research: [43637805718](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637805718) success; [43635841013](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635841013) success; [43635600437](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635600437) success
+- **.github/workflows/nba-durable-research-tests.yml** — Validate NBA Research Storage Integrity (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-expanded-matchup-holdout.yml** — Expanded NBA pregame matchup historical research: NO RUN IN SAMPLE
+- **.github/workflows/nba-extreme-miss-forensics.yml** — Extreme NBA Miss Forensics (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-fast-injury-reprojection.yml** — Refresh NBA AI projections after official injury changes (no paid odds): [43637599536](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637599536) success; [43634637170](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634637170) success
+- **.github/workflows/nba-free-official-injury-watch.yml** — Free NBA official injury changes and AI refresh: [43637084273](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637084273) success; [43634087841](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634087841) success
+- **.github/workflows/nba-full-game-lifecycle.yml** — NBA full-game lifecycle and next-slate readiness gate: [43634109410](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634109410) failure; [43632357502](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632357502) failure
+- **.github/workflows/nba-grading-overdue.yml** — Detect overdue verified NBA finals and missing forecast grades: NO RUN IN SAMPLE
+- **.github/workflows/nba-historical-minutes.yml** — Validate historical NBA minutes across seasons (research only): NO RUN IN SAMPLE
+- **.github/workflows/nba-hoopr-schedule-probe.yml** — Probe alternate full 2026-27 NBA schedule data source: NO RUN IN SAMPLE
+- **.github/workflows/nba-injury-ai-recovery.yml** — NBA injury-to-AI self-recovery watchdog (free): [43636356302](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636356302) success; [43632404305](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632404305) success
+- **.github/workflows/nba-kaggle-file-list.yml** — List Kaggle NBA individual files without large download: NO RUN IN SAMPLE
+- **.github/workflows/nba-kaggle-range-inspect.yml** — Inspect Kaggle NBA archive index by HTTPS byte range: NO RUN IN SAMPLE
+- **.github/workflows/nba-kaggle-schema-audit.yml** — Inspect Kaggle NBA archive files before model ingestion: NO RUN IN SAMPLE
+- **.github/workflows/nba-kaggle-source-audit.yml** — Audit public Kaggle NBA historical dataset coverage: NO RUN IN SAMPLE
+- **.github/workflows/nba-lagged-matchup-training.yml** — Season-separated lagged matchup research training: NO RUN IN SAMPLE
+- **.github/workflows/nba-live-lagged-challenger.yml** — Guarded live NBA points challenger (independent sidecar): NO RUN IN SAMPLE
+- **.github/workflows/nba-live-matchup-tracker-tests.yml** — NBA Live Matchup Tracker (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-live-research-checkpoints.yml** — Save live NBA player box score research checkpoints: NO RUN IN SAMPLE
+- **.github/workflows/nba-live-tracker-backup.yml** — Backup NBA live player tracker observations (no sportsbook API): NO RUN IN SAMPLE
+- **.github/workflows/nba-live-tracker-external-verification.yml** — Retired legacy external tracker check (not a production health gate): NO RUN IN SAMPLE
+- **.github/workflows/nba-live-tracker-v2-tests.yml** — Started NBA matchup live tracker, pace and iPhone fallback (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-main-card-coverage.yml** — NBA main board eight-game card coverage and injury display gate: NO RUN IN SAMPLE
+- **.github/workflows/nba-market-refresh.yml** — Refresh full-slate NBA sportsbook props (lightweight): NO RUN IN SAMPLE
+- **.github/workflows/nba-minutes-v3-opportunity-v2.yml** — Joint Minutes V3 and AST-REB Opportunity V2 historical backtest: NO RUN IN SAMPLE
+- **.github/workflows/nba-model-readiness.yml** — NBA AI model readiness: NO RUN IN SAMPLE
+- **.github/workflows/nba-moneylines.yml** — Refresh verified NBA sportsbook game moneylines: [43635271625](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635271625) success
+- **.github/workflows/nba-new-ai-all-markets.yml** — Guarded new NBA AI all markets PTS REB AST PRA: [43635320293](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635320293) success; [43632429481](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632429481) success
+- **.github/workflows/nba-new-ai-multimarket-grade.yml** — Grade frozen new AI PTS REB AST PRA (no provider credits): [43636285870](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636285870) success
+- **.github/workflows/nba-new-model-points-grading.yml** — Grade frozen new-model NBA points forecasts (no provider credits): NO RUN IN SAMPLE
+- **.github/workflows/nba-no-line-daily-projections.yml** — Publish daily NBA AI player projections without paid prop lines: [43634023907](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634023907) success
+- **.github/workflows/nba-odds-budget-coverage-tests.yml** — NBA Odds Budget and Full-Slate Coverage Tests (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-odds-current-balance.yml** — Verify current Odds API credits without paying for prop markets: NO RUN IN SAMPLE
+- **.github/workflows/nba-offensive-involvement-holdout.yml** — Historical offensive involvement vs baseline (research only): NO RUN IN SAMPLE
+- **.github/workflows/nba-opportunity-shadow-tests.yml** — Validate assist/rebound opportunity models independent of live lines: NO RUN IN SAMPLE
+- **.github/workflows/nba-position-defense.yml** — Evaluate defense versus NBA player position: NO RUN IN SAMPLE
+- **.github/workflows/nba-postgame-settlement.yml** — Settle saved NBA props using verified final player box scores: [43637753773](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637753773) success; [43635042333](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635042333) success
+- **.github/workflows/nba-pregame-ai-archive.yml** — Preserve last genuine NBA pregame AI predictions: NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-ai-board.yml** — Train NBA AI against verified current PrizePicks pick'em lines (no sportsbook API): [43633433448](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633433448) success
+- **.github/workflows/nba-prizepicks-ai-offline-tests.yml** — Verify PrizePicks-only NBA AI research (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-ai-research.yml** — Research AI projections for independent PrizePicks NBA lines: NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-current-balance.yml** — Check funded independent PrizePicks API key and current quota: NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-full-slate.yml** — Refresh independent NBA PrizePicks full-slate lines: NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-research-ledger.yml** — Freeze and grade authentic pregame PrizePicks AI research: [43635273297](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635273297) success
+- **.github/workflows/nba-prizepicks-rest-setup.yml** — PrizePicks authenticated REST onboarding and NBA model sample: NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-sample-backtest-tests.yml** — Validate historical PrizePicks sample joins and backtest: NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-site-publish.yml** — Publish lightweight PrizePicks site data and per-game coverage: NO RUN IN SAMPLE
+- **.github/workflows/nba-prizepicks-topup-verification.yml** — Verify funded PrizePicks top-up availability (single API page): NO RUN IN SAMPLE
+- **.github/workflows/nba-projection-upgrade-research.yml** — NBA Projection Upgrade Research Audit (research only): [43637805317](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637805317) success; [43635086825](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635086825) success
+- **.github/workflows/nba-props.yml** — Update NBA sportsbook props: NO RUN IN SAMPLE
+- **.github/workflows/nba-publish-research.yml** — Publish experimental NBA model forecasts: NO RUN IN SAMPLE
+- **.github/workflows/nba-published-pick-settlement.yml** — Verify and self-heal published NBA pick settlement: [43636295520](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636295520) success; [43635762866](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635762866) success
+- **.github/workflows/nba-real-results.yml** — Grade actual completed NBA paper picks (no paid odds calls): NO RUN IN SAMPLE
+- **.github/workflows/nba-rebound-shadow-validation.yml** — Verify pregame rebound challenger before research scoring: NO RUN IN SAMPLE
+- **.github/workflows/nba-research-prospective-capture-tests.yml** — Prospective NBA Research Coverage Guards (offline): NO RUN IN SAMPLE
+- **.github/workflows/nba-research-storage-integrity.yml** — Audit saved NBA games, predictions, quotes and research evidence: NO RUN IN SAMPLE
+- **.github/workflows/nba-schedule.yml** — Publish full NBA daily schedule (independent of sportsbook): [43633431022](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633431022) success
+- **.github/workflows/nba-scores.yml** — Refresh NBA game scores using existing authorized odds provider: NO RUN IN SAMPLE
+- **.github/workflows/nba-season-horizon-audit.yml** — Verify full NBA season and upcoming 14-day fixture coverage: NO RUN IN SAMPLE
+- **.github/workflows/nba-shooting-efficiency-v1.yml** — Backtest Shooting Efficiency V1 vs historical and frozen Combined AI: NO RUN IN SAMPLE
+- **.github/workflows/nba-short-history-probability-research.yml** — NBA prospective short-history probability research: [43637805238](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637805238) failure; [43635086869](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635086869) success
+- **.github/workflows/nba-slate-coverage-health.yml** — Audit NBA slate versus verified sportsbook props (no API credits): NO RUN IN SAMPLE
+- **.github/workflows/nba-slate-resilience-tests.yml** — NBA Slate Resilience Tests (no odds API calls): NO RUN IN SAMPLE
+- **.github/workflows/nba-tonight-capture-gradeability.yml** — Verify tonight NBA frozen lines predictions and grades: [43635404649](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635404649) failure; [43634627353](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634627353) failure; [43632507241](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632507241) failure
+- **.github/workflows/nba-tracking-coverage.yml** — Keep NBA tracking opportunity coverage transparent: NO RUN IN SAMPLE
+- **.github/workflows/nba-tracking-opportunities-validation.yml** — Validate authorized NBA tracking chance research without live model changes: NO RUN IN SAMPLE
+- **.github/workflows/nba-tracking-provider-access.yml** — Inspect NBA potential-assist and rebound-chance provider safely: NO RUN IN SAMPLE
+- **.github/workflows/nba-train-provisional.yml** — Train NBA provisional prediction models: NO RUN IN SAMPLE
+- **.github/workflows/nba-trained-ai-board.yml** — Publish trained NBA AI props for every available game: NO RUN IN SAMPLE
+- **.github/workflows/nba-ui-integrity.yml** — Validate NBA dashboard against false probability confidence: [43635265606](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265606) success; [43635265606](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265606) success
+- **.github/workflows/nba-underprojection-research.yml** — NBA Underprojection Research Audit (offline): NO RUN IN SAMPLE
+- **.github/workflows/nfl-boxscores-publish.yml** — Publish verified NFL final boxscores: [43633584183](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633584183) success
+- **.github/workflows/nfl-live-tracker.yml** — NFL live player-stat snapshots: [43637405874](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637405874) success; [43634135039](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634135039) success
+- **.github/workflows/nfl-live-ui-qa.yml** — NFL production site and mobile visual QA: [43635265707](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265707) success; [43635051242](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051242) success
+- **.github/workflows/nfl-pick-grading.yml** — NFL frozen-pick grading and accuracy ledger: [43636759984](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636759984) success; [43636001558](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636001558) success; [43633605376](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633605376) success; [43632214102](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632214102) success; [43632162031](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632162031) success
+- **.github/workflows/nfl-private-sync.yml** — Sync private NFL lines for public grading: [43635968871](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635968871) success; [43632180080](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632180080) success
+- **.github/workflows/nfl-reconciliation-ci.yml** — NFL postgame reconciliation tests: NO RUN IN SAMPLE
+- **.github/workflows/nfl-schedule-publish.yml** — Publish complete NFL season schedule: NO RUN IN SAMPLE
+- **.github/workflows/nfl-ui-smoke.yml** — NFL player card UI smoke tests: [43635265697](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265697) success; [43635051209](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051209) success
+- **.github/workflows/nightly_grade_date_audit.yml** — Phase 1 verify nightly paper grades by Eastern game date: NO RUN IN SAMPLE
+- **.github/workflows/nightly_settlement_health.yml** — Verify overnight NBA grading completeness: [43636827758](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636827758) success; [43636295672](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636295672) success; [43635319012](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635319012) success; [43632158168](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632158168) success
+- **.github/workflows/official_nba_fixture_reconciliation.yml** — Reconcile official NBA games before picks: [43637489500](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637489500) success; [43634229813](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634229813) success
+- **.github/workflows/opponent_simulation_tests.yml** — Opponent-conditioned 20K simulation regression (no provider credits): NO RUN IN SAMPLE
+- **.github/workflows/pages-controlled.yml** — Controlled Sports-Bot GitHub Pages deployment: [43636686899](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636686899) success; [43635265728](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265728) success; [43635051164](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051164) success; [43633809796](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633809796) failure
+- **.github/workflows/pbpstats-connectivity-probe.yml** — Verify public PBP Stats API reachability (metadata only): NO RUN IN SAMPLE
+- **.github/workflows/pbpstats-current-season-probe.yml** — One-time 2026-27 PBP Stats historical ON-OFF availability (metadata only): NO RUN IN SAMPLE
+- **.github/workflows/pbpstats-onoff-coverage-probe.yml** — One-time PBP Stats current-season game-level overlap audit: NO RUN IN SAMPLE
+- **.github/workflows/pbpstats-wowy-validation.yml** — Validate PBP Stats WOWY adapter and full offline pipeline: NO RUN IN SAMPLE
+- **.github/workflows/phase1-e2e-grading.yml** — Phase 1 end-to-end grading acceptance (offline): NO RUN IN SAMPLE
+- **.github/workflows/phase1-free-recovery.yml** — Phase 1 credit-free source recovery coordinator: [43636887103](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636887103) success; [43632221115](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632221115) success
+- **.github/workflows/phase1-live-service-replit.yml** — Phase 1 deployable live service smoke (offline): NO RUN IN SAMPLE
+- **.github/workflows/phase1_board_readiness.yml** — Phase 1 pregame board readiness: NO RUN IN SAMPLE
+- **.github/workflows/phase1_dashboard_scoreboard.yml** — Phase 1 dashboard scoreboard integration: [43635265761](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265761) success; [43635051217](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051217) success
+- **.github/workflows/phase1_data_integrity.yml** — Phase 1 data integrity: NO RUN IN SAMPLE
+- **.github/workflows/phase1_feed_health.yml** — Phase 1 feed health audit: [43634141640](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634141640) failure
+- **.github/workflows/phase1_real_pp_join.yml** — Phase 1 real PrizePicks and AI join regression: [43635265615](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265615) success; [43635051172](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051172) success
+- **.github/workflows/pipeline-contracts.yml** — pipeline-contracts: [43635797731](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635797731) success; [43635600399](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635600399) success; [43635075449](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635075449) success; [43635051174](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051174) success
+- **.github/workflows/pipeline-heartbeat.yml** — Pipeline heartbeat - deployed lines picks live and grades: [43635695300](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635695300) failure; [43635297998](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635297998) failure; [43634968382](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634968382) failure; [43632154682](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632154682) failure
+- **.github/workflows/pregame_coverage_watchdog.yml** — NBA pretip per-game forecast freeze and comparison watchdog: [43634785861](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634785861) success
+- **.github/workflows/prizepicks-full-board-tests.yml** — PrizePicks NBA full board and UI validation (offline): NO RUN IN SAMPLE
+- **.github/workflows/prizepicks_nba_collector.yml** — PrizePicks NBA collector (manual and quota guarded): NO RUN IN SAMPLE
+- **.github/workflows/production_readiness.yml** — NBA production readiness and stability gate: [43637069247](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637069247) failure; [43635695332](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635695332) failure; [43635297956](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635297956) failure; [43635106250](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635106250) failure; [43634653009](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634653009) failure; [43634145676](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634145676) failure; [43633600810](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633600810) failure; [43633477842](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633477842) failure; [43632154672](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43632154672) failure
+- **.github/workflows/publish_live_pp_ai_join.yml** — Publish lightweight verified PrizePicks AI comparisons: [43637043333](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637043333) success; [43636918169](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636918169) success; [43633568616](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633568616) success
+- **.github/workflows/readiness.yml** — NBA Bot Readiness Check: NO RUN IN SAMPLE
+- **.github/workflows/refresh_ai_forecast_coverage_audit.yml** — Refresh immutable NBA AI grading coverage for merged Dame's Picks: [43636414160](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636414160) success
+- **.github/workflows/reliability_guardrails.yml** — Reliability guardrails tests: NO RUN IN SAMPLE
+- **.github/workflows/research-current-position-defense.yml** — Prospective NBA listed-position defensive research: NO RUN IN SAMPLE
+- **.github/workflows/research-defensive-rating-source.yml** — Verify current NBA team defensive rating source: NO RUN IN SAMPLE
+- **.github/workflows/research-matchup-asof-audit.yml** — Audit matchup pretip feature provenance (research only): NO RUN IN SAMPLE
+- **.github/workflows/research-matchup-hit-estimate.yml** — Research matchup hit estimate (not production): NO RUN IN SAMPLE
+- **.github/workflows/research-matchup-prospective-calibration.yml** — Prospective matchup probability accuracy and calibration: NO RUN IN SAMPLE
+- **.github/workflows/research-matchup-shadow-tests.yml** — Test analytical matchup shadow without sportsbook API: NO RUN IN SAMPLE
+- **.github/workflows/research-official-defense-history.yml** — Research official NBA opponent-defense history backfill: NO RUN IN SAMPLE
+- **.github/workflows/research-pregame-evidence.yml** — Capture sourced NBA pregame context for research: [43634831136](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634831136) success
+- **.github/workflows/research-safety-ci.yml** — Offline NBA research safety regressions: NO RUN IN SAMPLE
+- **.github/workflows/sanity-shadow-grading-research.yml** — Sanity Shadow Grading Research (offline): NO RUN IN SAMPLE
+- **.github/workflows/sanity-shadow-v1-research.yml** — Sanity Shadow V1 Research (offline): NO RUN IN SAMPLE
+- **.github/workflows/test_final_transition_grade_trigger.yml** — Test final-only NBA grade wake-up: NO RUN IN SAMPLE
+- **.github/workflows/test_hoopr_schedule_integrity.yml** — Protect verified NBA game counts from schedule overwrite: NO RUN IN SAMPLE
+- **.github/workflows/test_pregame_line_archive.yml** — Verify persistent pretip PrizePicks line archive: NO RUN IN SAMPLE
+- **.github/workflows/underdog-nba-injury-watch.yml** — Monitor authenticated Underdog NBA OUT reports: NO RUN IN SAMPLE
+- **.github/workflows/underdog-xurl-connection-test.yml** — Diagnose Underdog NBA X API connection with xurl: NO RUN IN SAMPLE
+- **.github/workflows/unified-dames-picks-readiness.yml** — Unified Dame's Picks NBA + NFL integrity: [43635265725](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265725) failure; [43634653018](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634653018) failure; [43634107622](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634107622) failure
+- **.github/workflows/unified-reliability-research.yml** — Unified NBA Reliability Research Tests: NO RUN IN SAMPLE
+- **.github/workflows/verified-research-no-play-tests.yml** — Verify source-linked NBA research no-play exclusions: NO RUN IN SAMPLE
+- **.github/workflows/verify-dames-picks-public.yml** — Verify live Dame's Picks layout: [43634872272](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43634872272) success
+- **.github/workflows/verify-live-tracker-espn.yml** — Verify deployed NBA live tracker and ESPN player stats: [43635051180](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635051180) success
+- **.github/workflows/verify-prizepicks-credits.yml** — Verify PrizePicks API credits once: NO RUN IN SAMPLE
+- **.github/workflows/verify-public-board-diagnostics.yml** — Verify clean public mobile board and opt-in diagnostics: [43635265762](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265762) failure
+- **.github/workflows/verify-public-dames-release.yml** — Verify PUBLIC Dame's Picks release matches main: [43635265792](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265792) success
+- **.github/workflows/verify-public-matchup-preview.yml** — Verify real public mobile matchup estimates are visible: NO RUN IN SAMPLE
+- **.github/workflows/verify_browser_dashboard.yml** — Verify rendered NBA PrizePicks AI cards in public mobile browser: [43636246677](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43636246677) success
+- **.github/workflows/verify_live_pregame_line_browser.yml** — Check saved pregame lines in started NBA matchup cards: NO RUN IN SAMPLE
+- **.github/workflows/verify_public_dashboard.yml** — Verify public Sports-Bot dashboard deployment and real JSON: [43637069260](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637069260) success; [43633869634](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633869634) success; [43633600809](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633600809) success
+- **.github/workflows/verify_unified_dames_browser.yml** — Verify public unified Dame's Picks NBA + NFL browser: [43637069288](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43637069288) success; [43635265733](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635265733) success; [43635225926](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635225926) success; [43635225926](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43635225926) success; [43633600800](https://github.com/damiensandoval77-lang/Sports-Bot/actions/runs/43633600800) success
