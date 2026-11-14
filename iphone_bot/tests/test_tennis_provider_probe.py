@@ -152,5 +152,9 @@ class CategorySafetyTest(unittest.TestCase):
         r['selections'].append({'side':'more','available':False,'tier':'standard'})
         now='2026-11-14T20:00:00+00:00'
         self.assertEqual(normalized_board(payload,now)['rejection_counts'],{'DUPLICATE_SELECTION_SIDE':1})
-        r['selections'].pop();r['event']['opponent']=r['player']['name']
+        r['selections'].pop();r['event']['opponent']=' '+r['player']['name'].swapcase()+' '
         self.assertEqual(normalized_board(payload,now)['rejection_counts'],{'EXPLICIT_IDENTITY_CONFLICT':1})
+
+    def test_malformed_market_rejected_before_telemetry(self):
+        payload=ProbeTest().payload();payload['data'][0]['market']='unexpected'
+        with self.assertRaises(ValueError):summary(payload)

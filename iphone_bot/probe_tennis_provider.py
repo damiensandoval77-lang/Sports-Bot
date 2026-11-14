@@ -37,7 +37,7 @@ def summary(payload):
         if not isinstance(row,dict) or str(row.get('league','')).upper()!='TENNIS':
             raise ValueError('Unexpected league or record')
         event=row.get('event') or {}; player=row.get('player') or {}; fields=row.get('source_fields') or {}
-        if not all(isinstance(o,dict) for o in [event,player,fields]):
+        if not all(isinstance(o,dict) for o in [event,player,fields,row.get('market') or {}]):
             raise ValueError('Unexpected source shape')
         shapes.append({'keys':sorted(row),'event_keys':sorted(event),'player_keys':sorted(player),
             'source_field_keys':sorted(fields),
@@ -111,7 +111,7 @@ def normalized_board(payload, captured_at):
             identities=[row.get('id'),player.get('id'),player.get('name'),fixture,event.get('opponent')]
             if not all(isinstance(v,str) and 0<len(v.strip())<=200 for v in identities):
                 reject('EXACT_IDENTITY_UNVERIFIED');continue
-            if player['name'].strip()==event['opponent'].strip():
+            if player['name'].strip().casefold()==event['opponent'].strip().casefold():
                 reject('EXPLICIT_IDENTITY_CONFLICT');continue
             out['quotes'].append({'id':str(row['id']),'player_id':str(player['id']),
                 'fixture_id':str(fixture),'player':player['name'],'opponent':event['opponent'],
