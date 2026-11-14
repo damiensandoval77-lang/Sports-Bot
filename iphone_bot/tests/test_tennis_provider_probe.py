@@ -87,3 +87,52 @@ class ProbeTest(unittest.TestCase):
         self.assertEqual(normalized_board(p,now)['accepted_quote_count'],0)
         r['fixture_id']='f1';del p['meta']['next_cursor']
         self.assertFalse(normalized_board(p,now)['complete_pagination'])
+
+class ProbeDiagnosticsTest(unittest.TestCase):
+    def payload(self):
+        return {'meta':{'mode':'live','source_status':'fresh','next_cursor':None},'data':[{
+            'id':'q1','fixture_id':'f1','league':'TENNIS','status':'active',
+            'player':{'id':'p1','name':'Not included in diagnostics'},
+            'event':{'starts_at':'2026-11-15T00:00:00Z','opponent':'Private opponent'},
+            'market':{'stat':'Total Games','period':'Full match'},
+            'source_fields':{'projection_type':'Single Stat'},'line':22.5,
+            'observed_at':'2026-11-14T20:00:01Z',
+            'selections':[{'side':s,'available':True,'tier':'standard'} for s in ['more','less']]}]}
+    def test_receipt_time_accepts_observation_during_request(self):
+        from unittest.mock import patch
+        from iphone_bot import probe_tennis_provider as module
+        with patch.object(module,'utc_now',side_effect=['2026-11-14T20:00:00+00:00','2026-11-14T20:00:02+00:00']):
+            result,payload=module.probe('test-only-placeholder',lambda *a,**k:Reply(self.payload()))
+        self.assertEqual(result['checked_at'],result['response_received_at'])
+        self.assertNotEqual(result['request_started_at'],result['response_received_at'])
+        board=module.normalized_board(payload,result['response_received_at'])
+        self.assertEqual(board['accepted_quote_count'],1)
+        self.assertEqual(board['quotes'][0]['captured_at'],result['response_received_at'])
+        self.assertEqual(module.normalized_board(payload,result['request_started_at'])['rejection_counts'],{'OBSERVED_AFTER_RECEIPT':1})
+    def test_rejection_counts_are_fixed_labels_and_account_every_row(self):
+        import copy
+        from iphone_bot.probe_tennis_provider import normalized_board
+        p=self.payload();base=p['data'][0]
+        rejected=[]
+        for field,value in [('line',float('nan')),('status','closed'),('is_combo',True),('selections',[])]:
+            row=copy.deepcopy(base);row[field]=value;rejected.append(row)
+        row=copy.deepcopy(base);del row['event']['starts_at'];rejected.append(row)
+        row=copy.deepcopy(base);row['market']['period']='First Set';rejected.append(row)
+        row=copy.deepcopy(base);row['source_fields']['projection_type']='unknown';rejected.append(row)
+        p['data']+=rejected
+        board=normalized_board(p,'2026-11-14T20:00:02+00:00')
+        self.assertEqual(board['accepted_quote_count'],1)
+        self.assertEqual(board['rejected_quote_count'],7)
+        self.assertEqual(sum(board['rejection_counts'].values()),7)
+        self.assertEqual(board['rejection_counts']['MISSING_OR_MALFORMED_FIELDS'],1)
+        diagnostics=json.dumps(board['rejection_counts'])
+        for private in ['Not included','Private opponent','q1','f1','p1']:
+            self.assertNotIn(private,diagnostics)
+    def test_metadata_presence_not_values_and_stale_provider_count(self):
+        from iphone_bot.probe_tennis_provider import normalized_board,summary
+        p=self.payload();del p['meta']['next_cursor']
+        self.assertEqual(summary(p)['metadata_present'],{'mode':True,'source_status':True,'next_cursor':False})
+        p['meta']['source_status']='stale'
+        board=normalized_board(p,'2026-11-14T20:00:02+00:00')
+        self.assertEqual(board['rejection_counts'],{'PROVIDER_NOT_FRESH_LIVE':1})
+        self.assertEqual(board['accepted_quote_count'],0)
