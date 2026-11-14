@@ -29,3 +29,5 @@ jobs:
           python -m pip_audit -r requirements.txt --no-deps --disable-pip
       - name: Run contract tests shifted out of publishing jobs
         run: python scripts/run_pipeline_contracts.py
+      - name: Test tennis offline match identity
+        run: python -m unittest discover -s tests -p 'test_tennis_match_identity.py' -v
