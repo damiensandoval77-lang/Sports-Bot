@@ -261,6 +261,14 @@ jobs:
           for i in 1 2 3 4 5 6 7 8; do
             git fetch origin main
             git reset --hard origin/main
+            # Main's already published originals win, then our genuine earlier
+            # captures. Both quote AND injury regeneration must start from this
+            # merged ledger so a tip crossing cannot erase an earlier capture.
+            python -m iphone_bot.merge_new_ai_publishing \
+              --current docs/lagged_matchup_all_market_ledger.json \
+              --incoming "$RUNNER_TEMP/new-ai-ledger.json" \
+              --finals docs/ai_forecast_actual_ledger.json \
+              --output docs/lagged_matchup_all_market_ledger.json
             # A provider refresh may land while training/research is running.
             # Rebuild against that exact latest board before publishing, rather
             # than waiting for another complete scheduled run near tipoff.
@@ -275,13 +283,6 @@ jobs:
               python -m iphone_bot.build_prizepicks_model_input
               python -u iphone_bot/live_multimarket_matchup.py
               python -u iphone_bot/multimarket_forecast_ledger.py
-              # Preserve authentic pretip captures from the earlier generation
-              # even if a game tipped while regeneration was running.
-              python -m iphone_bot.merge_new_ai_publishing \
-                --current docs/lagged_matchup_all_market_ledger.json \
-                --incoming "$RUNNER_TEMP/new-ai-ledger.json" \
-                --finals docs/ai_forecast_actual_ledger.json \
-                --output docs/lagged_matchup_all_market_ledger.json
               cp docs/lagged_matchup_live_all_markets.json "$RUNNER_TEMP/new-ai.json"
               cp docs/lagged_matchup_all_market_ledger.json "$RUNNER_TEMP/new-ai-ledger.json"
               continue
