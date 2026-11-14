@@ -29,6 +29,8 @@ on:
       - 'iphone_bot/tests/test_pretip_matchup_shadow.py'
       - 'iphone_bot/new_ai_injury_context.py'
       - 'iphone_bot/injury_refresh_integrity.py'
+      - 'iphone_bot/quote_refresh_integrity.py'
+      - 'iphone_bot/tests/test_quote_refresh_integrity.py'
       - 'iphone_bot/tests/test_injury_refresh_integrity.py'
       - 'iphone_bot/tests/test_underdog_injury_watch.py'
       - 'iphone_bot/multimarket_forecast_ledger.py'
@@ -109,7 +111,9 @@ jobs:
         run: python -m unittest discover -s iphone_bot/tests -p 'test_free_official_nba_injury_watch.py' -v
       - name: Test report version and stale-publish guard
         if: github.event_name == 'pull_request'
-        run: python -m unittest discover -s iphone_bot/tests -p 'test_injury_refresh_integrity.py' -v
+        run: |
+          python -m unittest discover -s iphone_bot/tests -p 'test_injury_refresh_integrity.py' -v
+          python -m unittest discover -s iphone_bot/tests -p 'test_quote_refresh_integrity.py' -v
       # These trained older-season models do not change when a provider line
       # moves. Cache immutable training inputs, never provider quotes/grades.
       - name: Verify pretip model cache and schedule wiring
@@ -253,9 +257,35 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           regen=0
+          quote_regen=0
           for i in 1 2 3 4 5 6 7 8; do
             git fetch origin main
             git reset --hard origin/main
+            # A provider refresh may land while training/research is running.
+            # Rebuild against that exact latest board before publishing, rather
+            # than waiting for another complete scheduled run near tipoff.
+            if ! python -m iphone_bot.quote_refresh_integrity \
+                 --provider docs/prizepicks_site.json \
+                 --model "$RUNNER_TEMP/new-ai.json"; then
+              quote_regen=$((quote_regen + 1))
+              if [ "$quote_regen" -gt 3 ]; then
+                echo "::error::Provider changed across three regenerations; refusing stale publish."
+                exit 1
+              fi
+              python -m iphone_bot.build_prizepicks_model_input
+              python -u iphone_bot/live_multimarket_matchup.py
+              python -u iphone_bot/multimarket_forecast_ledger.py
+              # Preserve authentic pretip captures from the earlier generation
+              # even if a game tipped while regeneration was running.
+              python -m iphone_bot.merge_new_ai_publishing \
+                --current docs/lagged_matchup_all_market_ledger.json \
+                --incoming "$RUNNER_TEMP/new-ai-ledger.json" \
+                --finals docs/ai_forecast_actual_ledger.json \
+                --output docs/lagged_matchup_all_market_ledger.json
+              cp docs/lagged_matchup_live_all_markets.json "$RUNNER_TEMP/new-ai.json"
+              cp docs/lagged_matchup_all_market_ledger.json "$RUNNER_TEMP/new-ai-ledger.json"
+              continue
+            fi
             # Rebuild against the latest official injury report if it changed
             # during model execution. Never publish stale injury projections.
             if ! python -m iphone_bot.injury_refresh_integrity \
