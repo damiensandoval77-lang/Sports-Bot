@@ -76,12 +76,39 @@ class RecoveryTests(unittest.TestCase):
             Mock(return_value=(page,{})),clock=lambda:recovery.END)
         self.assertIsNone(board);self.assertFalse(receipt['fresh_quotes_published'])
 
+    def test_exact_one_time_push_trigger(self):
+        request={'authorization_id':recovery.AUTHORIZATION,
+            'action':'EXECUTE_SINGLE_AUTHORIZED_COMPACT_READ','requested_at':NOW.isoformat()}
+        event={'ref':'refs/heads/main','before':'a'*40,'after':'b'*40,'commits':[{'id':'b'*40}]}
+        recovery.authorize_trigger('push','refs/heads/main','1',NOW,request,event,[recovery.REQUEST_PATH])
+        recovery.authorize_trigger('workflow_dispatch','refs/heads/main','1',NOW)
+        cases=[('push','refs/heads/main','1',NOW,None,event),
+            ('push','refs/heads/main','1',NOW,{**request,'authorization_id':'other'},event),
+            ('push','refs/heads/main','1',NOW,request,{'ref':'refs/heads/main','commits':[{'modified':['.github/workflows/nba-prizepicks-one-time-recovery.yml']}]}),
+            ('push','refs/heads/main','1',NOW,request,{**event,'deleted':True}),
+            ('push','refs/heads/other','1',NOW,request,event),
+            ('schedule','refs/heads/main','1',NOW,request,event),
+            ('push','refs/heads/main','1',NOW,{**request,'requested_at':(NOW+dt.timedelta(seconds=1)).isoformat()},event),
+            ('push','refs/heads/main','1',NOW,{**request,'requested_at':(recovery.START-dt.timedelta(seconds=1)).isoformat()},event),
+            ('push','refs/heads/main','1',recovery.END,request,event)]
+        for args in cases:
+            with self.assertRaises(ValueError):recovery.authorize_trigger(*args,changed_paths=() if args[5].get('commits')==[{'modified':['.github/workflows/nba-prizepicks-one-time-recovery.yml']}] else [recovery.REQUEST_PATH])
+
+    def test_push_diff_uses_verified_sha_range(self):
+        from unittest.mock import patch
+        event={'before':'a'*40,'after':'b'*40}
+        with patch.object(recovery.subprocess,'check_output',return_value=recovery.REQUEST_PATH+'\n') as git:
+            self.assertEqual(recovery.changed_request_paths(event,'b'*40),[recovery.REQUEST_PATH])
+            self.assertEqual(git.call_args.args[0],['git','diff','--name-only','--diff-filter=AM','a'*40,'b'*40,'--',recovery.REQUEST_PATH])
+            with self.assertRaises(ValueError):recovery.changed_request_paths(event,'c'*40)
+
     def test_workflow_manual_only_pinned_and_preclaim_before_call(self):
         root=Path(__file__).resolve().parents[2]
         text=(root/'.github/workflows/nba-prizepicks-one-time-recovery.yml').read_text()
         self.assertIn('workflow_dispatch:',text)
-        for forbidden in ('  schedule:', '  push:', '  pull_request:'):
+        for forbidden in ('  schedule:', '  pull_request:'):
             self.assertNotIn(forbidden,text)
+        self.assertIn('    branches: [main]\n    paths:\n      - docs/prizepicks_one_time_recovery_request.json\npermissions:', text)
         self.assertIn('group: nba-independent-prizepicks-feed',text)
         self.assertLess(text.index('git push origin HEAD:main'),text.index('one_time_prizepicks_recovery fetch'))
         self.assertIn("always() && steps.claim.outputs.claimed == 'true'",text)
