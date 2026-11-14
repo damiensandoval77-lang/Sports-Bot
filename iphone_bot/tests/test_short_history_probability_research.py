@@ -117,3 +117,27 @@ class OutcomeRepeatTests(unittest.TestCase):
    a=settle_pending(a,NOW)
    self.assertEqual(settle_pending(a,'2026-11-13T23:01:00+00:00'),a)
 if __name__=='__main__':unittest.main()
+
+class ContextTests(unittest.TestCase):
+ def context(self,inj):
+  from iphone_bot.short_history_probability_research import capture_context,stamp
+  return capture_context({**row(),'opponent':'BBB'},inj,{}, {},{},[],stamp(NOW))
+ def injury(self):
+  return {'status':'OFFICIAL_NBA_REPORT_VERIFIED','injury_data_verified':True,'report_issued_at':'2026-11-13T22:30:00+00:00','generated_at':'2026-11-13T22:40:00+00:00','source_pdf':'https://example.test/report.pdf','players':[{'player_id':'2','team':'AAA','game_date':'2026-11-13','status':'Out'},{'player_id':'3','team':'CCC','game_date':'2026-11-13','status':'Out'}]}
+ def test_absent_is_unknown_not_available(self):
+  c=self.context(self.injury())['official_report']
+  self.assertTrue(c['verified_at_capture']);self.assertEqual(c['own_status_interpretation'],'UNKNOWN_NOT_LISTED');self.assertEqual(c['own_reported_statuses'],[])
+  self.assertEqual(len(c['matched_fixture_rows']),1)
+ def test_future_generated_or_issued_not_verified(self):
+  for field in ['generated_at','report_issued_at']:
+   inj=self.injury();inj[field]='2026-11-13T23:01:00+00:00'
+   self.assertFalse(self.context(inj)['official_report']['verified_at_capture'])
+ def test_explicit_entry_and_deepcopy(self):
+  inj=self.injury();inj['players'].append({'player_id':'1','team':'AAA','game_date':'2026-11-13','status':'Available'})
+  c=self.context(inj);inj['players'][-1]['status']='Out'
+  self.assertEqual(c['official_report']['own_reported_statuses'],['AVAILABLE'])
+  self.assertEqual(c['official_report']['matched_fixture_rows'][-1]['status'],'Available')
+  self.assertNotEqual(c['official_report']['parsed_feed_sha256'],self.context(inj)['official_report']['parsed_feed_sha256'])
+ def test_old_receipt_not_retroactively_enriched(self):
+  a=merge(None,{'records':[row()]},NOW);r={**row(),'capture_context':self.context(self.injury())}
+  self.assertNotIn('capture_context',merge(a,{'records':[r]},NOW)['records'][0])
