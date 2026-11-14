@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.11'
       - name: Validate 30-team source, dates, defensive rating and no promotion
@@ -30,7 +30,7 @@ jobs:
       - name: Download external current-season source and verify all 30 team ratings
         run: python -m research.source_def_rating_2026
       - name: Preserve only source-linked research artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: source-verified-team-defensive-ratings
           path: defensive-rating-research.json

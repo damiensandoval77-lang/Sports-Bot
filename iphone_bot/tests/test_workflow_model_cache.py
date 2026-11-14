@@ -1,5 +1,6 @@
 """Regression contract: new provider quotes must never require historical ML retraining."""
 import unittest
+import re
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -7,15 +8,18 @@ ROOT=Path(__file__).resolve().parents[2]
 class FastPretipPipelineTests(unittest.TestCase):
     def test_historical_models_are_reused_when_training_code_is_unchanged(self):
         text=(ROOT/".github/workflows/nba-new-ai-all-markets.yml").read_text()
-        self.assertIn("actions/cache/restore@v4",text)
-        self.assertIn("actions/cache/save@v4",text)
+        self.assertRegex(text,r"actions/cache/restore@[0-9a-f]{40}\b")
+        self.assertRegex(text,r"actions/cache/save@[0-9a-f]{40}\b")
+        restore=re.search(r"actions/cache/restore@([0-9a-f]{40})\b",text).group(1)
+        save=re.search(r"actions/cache/save@([0-9a-f]{40})\b",text).group(1)
+        self.assertEqual(restore,save,"Restore/save must use the same verified cache revision")
         self.assertIn("steps.historical_cache.outputs.cache-hit != 'true'",text)
         self.assertIn("models/nba/research/lagged_matchup_all_markets.joblib",text)
         self.assertIn("models/nba/research/lagged_matchup_2022_24.joblib",text)
         self.assertIn("docs/lagged_matchup_all_market_validation.json",text)
         self.assertLess(text.index("Verify four-market backtest completeness"),
-                        text.index("actions/cache/save@v4"))
-        self.assertLess(text.index("actions/cache/save@v4"),
+                        text.index("actions/cache/save@"))
+        self.assertLess(text.index("actions/cache/save@"),
                         text.index("Fetch current season and verify actual standard PrizePicks lines"))
 
     def test_real_line_ingestion_dispatches_current_model_producer(self):
