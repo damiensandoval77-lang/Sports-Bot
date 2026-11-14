@@ -7,6 +7,7 @@ import sys
 import urllib.request
 from pathlib import Path
 from mobile_board_health import board_rendered
+from stalled_feed_probe import stalled_feed_deadline
 from playwright.sync_api import sync_playwright
 
 BASE=(sys.argv[1] if len(sys.argv)>1 else "https://damiensandoval77-lang.github.io/Sports-Bot").rstrip("/")
@@ -87,16 +88,7 @@ def main():
           })""")
         # Fault injection against the actual deployed helper. Route only this
         # synthetic same-origin request; no provider request or data is changed.
-        page.route("**/__audit_stalled_feed__*", lambda route: None)
-        deadline_evidence=page.evaluate("""async () => {
-          const started=performance.now();
-          try {
-            await fetchData(new URL('__audit_stalled_feed__',location.href).href,'json',120);
-            return {rejected:false,elapsed_ms:performance.now()-started};
-          } catch(error) {
-            return {rejected:true,error:String(error.message),elapsed_ms:performance.now()-started};
-          }
-        }""")
+        deadline_evidence=stalled_feed_deadline(page)
         check("deployed_stalled_feed_deadline",deadline_evidence.get("rejected") is True
               and deadline_evidence.get("error")=="Feed request timed out"
               and 80<=deadline_evidence.get("elapsed_ms",0)<3000,deadline_evidence)
