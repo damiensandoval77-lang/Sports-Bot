@@ -17,6 +17,11 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise urllib.error.HTTPError(URL, 302, 'Redirect refused', {}, None)
 
 
+def category(value, allowed):
+    """Fixed labels only; never retain arbitrary provider strings."""
+    if value is None or value == "": return "MISSING"
+    return value if isinstance(value,str) and value in allowed else "OTHER"
+
 def summary(payload):
     if not isinstance(payload,dict) or not isinstance(payload.get('data'),list):
         raise ValueError('Invalid provider response')
@@ -32,10 +37,14 @@ def summary(payload):
         if not isinstance(row,dict) or str(row.get('league','')).upper()!='TENNIS':
             raise ValueError('Unexpected league or record')
         event=row.get('event') or {}; player=row.get('player') or {}; fields=row.get('source_fields') or {}
-        if not all(isinstance(o,dict) for o in [event,player,fields]):
+        if not all(isinstance(o,dict) for o in [event,player,fields,row.get('market') or {}]):
             raise ValueError('Unexpected source shape')
         shapes.append({'keys':sorted(row),'event_keys':sorted(event),'player_keys':sorted(player),
             'source_field_keys':sorted(fields),
+            'period_category':category((row.get('market') or {}).get('period'), {'full game','Full Game','full match','Full Match','full_game','full_match','full','game','match'}),
+            'projection_type_category':category(fields.get('projection_type'), {'Single Stat','Fantasy Score'}),
+            'period_source_present':{'market':'period' in (row.get('market') or {}),'source_fields':'period' in fields},
+            'has_fixture_id':bool(row.get('fixture_id') or event.get('id')),
             'has_player_id':bool(player.get('id')),'has_player_name':bool(player.get('name')),
             'has_opponent':bool(event.get('opponent')),'has_start':bool(event.get('starts_at')),
             'has_surface':bool(event.get('surface') or fields.get('surface')),
@@ -82,6 +91,9 @@ def normalized_board(payload, captured_at):
             line=row.get('line')
             if isinstance(line,bool) or not isinstance(line,(int,float)) or not math.isfinite(line) or line<0:
                 reject('INVALID_LINE');continue
+            selection_rows=[s for s in row.get('selections',[]) if isinstance(s,dict) and s.get('side') in ('more','less')]
+            if len(selection_rows)!=len({s['side'] for s in selection_rows}):
+                reject('DUPLICATE_SELECTION_SIDE');continue
             sides={s['side']:s for s in row.get('selections',[]) if isinstance(s,dict) and s.get('side') in ('more','less')}
             if any(sides.get(k,{}).get('available') is not True or sides.get(k,{}).get('tier')!='standard' for k in ('more','less')):
                 reject('TWO_STANDARD_SIDES_UNVERIFIED');continue
@@ -99,6 +111,8 @@ def normalized_board(payload, captured_at):
             identities=[row.get('id'),player.get('id'),player.get('name'),fixture,event.get('opponent')]
             if not all(isinstance(v,str) and 0<len(v.strip())<=200 for v in identities):
                 reject('EXACT_IDENTITY_UNVERIFIED');continue
+            if player['name'].strip().casefold()==event['opponent'].strip().casefold():
+                reject('EXPLICIT_IDENTITY_CONFLICT');continue
             out['quotes'].append({'id':str(row['id']),'player_id':str(player['id']),
                 'fixture_id':str(fixture),'player':player['name'],'opponent':event['opponent'],
                 'stat':market['stat'],'period':'full_match','line':line,'status':'active','is_demo':False,'is_combo':False,

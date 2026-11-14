@@ -1,5 +1,5 @@
 import unittest,json,urllib.error
-from iphone_bot.probe_tennis_provider import probe,summary,URL
+from iphone_bot.probe_tennis_provider import probe,summary,URL,category
 
 class Reply:
     headers={'X-Credits-Cost':'3','X-Credits-Remaining':'70'}
@@ -136,3 +136,25 @@ class ProbeDiagnosticsTest(unittest.TestCase):
         board=normalized_board(p,'2026-11-14T20:00:02+00:00')
         self.assertEqual(board['rejection_counts'],{'PROVIDER_NOT_FRESH_LIVE':1})
         self.assertEqual(board['accepted_quote_count'],0)
+
+class CategorySafetyTest(unittest.TestCase):
+    def test_categories_never_retain_unknown_values(self):
+        for value in ["private name", {}, [], 42]:
+            self.assertEqual(category(value,{"full"}),"OTHER")
+        self.assertEqual(category(None,{"full"}),"MISSING")
+        self.assertEqual(category("full",{"full"}),"full")
+
+    def test_conflicting_duplicates_and_same_opponent_withheld(self):
+        from iphone_bot.probe_tennis_provider import normalized_board
+        payload=ProbeTest().payload();r=payload['data'][0]
+        r.update(id='q1',fixture_id='f1',status='active',is_demo=False,line=22.5,observed_at='2026-11-14T19:59:00Z',selections=[{'side':x,'available':True,'tier':'standard'} for x in ['more','less']])
+        r['market']['period']='Full game';r['source_fields']['projection_type']='Single Stat'
+        r['selections'].append({'side':'more','available':False,'tier':'standard'})
+        now='2026-11-14T20:00:00+00:00'
+        self.assertEqual(normalized_board(payload,now)['rejection_counts'],{'DUPLICATE_SELECTION_SIDE':1})
+        r['selections'].pop();r['event']['opponent']=' '+r['player']['name'].swapcase()+' '
+        self.assertEqual(normalized_board(payload,now)['rejection_counts'],{'EXPLICIT_IDENTITY_CONFLICT':1})
+
+    def test_malformed_market_rejected_before_telemetry(self):
+        payload=ProbeTest().payload();payload['data'][0]['market']='unexpected'
+        with self.assertRaises(ValueError):summary(payload)
