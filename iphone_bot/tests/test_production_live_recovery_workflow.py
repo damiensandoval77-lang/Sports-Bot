@@ -96,7 +96,8 @@ class ProductionLiveRecoveryContract(unittest.TestCase):
         for filename in ("nba-schedule.yml", "nba-no-line-daily-projections.yml",
                          "nba-prizepicks-full-slate.yml", "nba-new-ai-all-markets.yml",
                          "nba-prizepicks-site-publish.yml", "independent_scoreboard_refresh.yml",
-                         "independent_nba_player_boxscores.yml", "nba-live-tracker-backup.yml"):
+                         "independent_nba_player_boxscores.yml", "nba-live-tracker-backup.yml",
+                         "verify_unified_dames_browser.yml"):
             with self.subTest(workflow=filename):
                 name=(ROOT/".github/workflows"/filename).read_text().splitlines()[0].removeprefix("name: ").strip()
                 self.assertIn("- "+name, subscribed)
