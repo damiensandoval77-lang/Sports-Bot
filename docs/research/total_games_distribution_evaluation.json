@@ -1,0 +1,125 @@
+{
+  "mode": "offline_distribution_research_only",
+  "live_ready": false,
+  "production_activation_allowed": false,
+  "offered_lines_used": false,
+  "target": "total_games",
+  "as_of": "2026-11-14 19:30:00+00:00",
+  "maturity_assumption_hours": 48,
+  "partition_rule": "whole UTC days: 70% train / 15% calibration / 15% test; 48h purge before each boundary",
+  "calibration_start": "2026-08-15 00:00:00+00:00",
+  "test_start": "2026-09-29 00:00:00+00:00",
+  "train_matches": 45331,
+  "calibration_matches": 11102,
+  "test_matches": 12312,
+  "purged_matches": 984,
+  "model_parameters": {
+    "categorical_features": "from_dtype",
+    "early_stopping": "auto",
+    "interaction_cst": null,
+    "l2_regularization": 10,
+    "learning_rate": 0.1,
+    "loss": "squared_error",
+    "max_bins": 255,
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_iter": 100,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 20,
+    "monotonic_cst": null,
+    "n_iter_no_change": 10,
+    "quantile": null,
+    "random_state": 42,
+    "scoring": "loss",
+    "tol": 1e-07,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "features": [
+    "surface_code",
+    "is_atp",
+    "history_count",
+    "opp_history_count",
+    "total_games_L10",
+    "total_sets_L10",
+    "total_tiebreaks_L10",
+    "opp_total_games_L10",
+    "opp_total_sets_L10",
+    "opp_total_tiebreaks_L10"
+  ],
+  "feature_protocol": "rolling as-of histories; earlier calibration/test outcomes enter later histories only after assumed48h lag; model and residual distribution remain frozen",
+  "distribution": "rounded nonnegative point forecast + empirical calibration-only residuals",
+  "model": {
+    "crps": 2.8047430534734636,
+    "coverage_50": 0.5544184535412605,
+    "coverage_80": 0.8398310591293048,
+    "coverage_90": 0.9251949317738791,
+    "width_50": 6.614441195581547,
+    "width_80": 13.428849902534113,
+    "width_90": 16.689327485380115
+  },
+  "training_climatology_baseline": {
+    "crps": 3.0282106350833873,
+    "coverage_50": 0.5912118258609487,
+    "coverage_80": 0.8170890188434048,
+    "coverage_90": 0.9115497076023392,
+    "width_50": 8.0,
+    "width_80": 15.0,
+    "width_90": 18.0
+  },
+  "test_by_tour": {
+    "atp": {
+      "matches": 7077,
+      "crps": 2.7903961688895254,
+      "coverage_50": 0.5541896283736046,
+      "coverage_80": 0.8404691253355941,
+      "coverage_90": 0.9217182421930197,
+      "width_50": 6.606047760350431,
+      "width_80": 13.417973717676983,
+      "width_90": 16.691959870001412
+    },
+    "wta": {
+      "matches": 5235,
+      "crps": 2.8241380682204666,
+      "coverage_50": 0.5547277936962751,
+      "coverage_80": 0.8389684813753582,
+      "coverage_90": 0.9298949379178606,
+      "width_50": 6.625787965616046,
+      "width_80": 13.44355300859599,
+      "width_90": 16.685768863419295
+    }
+  },
+  "source": "https://www.valuebetennis.com/en/donnees.htm",
+  "license": "CC BY 4.0",
+  "attribution": "Valuebetennis, Tennis results and odds since 2021; transformed score-only research",
+  "source_sha256": "ad16d85e9af1b0bcda91bff0834c9398e1dbf6397dce39f1558082e317f64652",
+  "import": {
+    "input_matches": 79079,
+    "accepted_matches": 69901,
+    "rejected_matches": 9178,
+    "reasons": {
+      "Unsupported match length": 1094,
+      "Unsupported score token": 437,
+      "Incomplete or unsupported set": 7646,
+      "Missing required value": 1
+    },
+    "score_orientation": "unverified; symmetric targets only",
+    "timestamp_semantics": "match time UTC, not result availability"
+  },
+  "limitations": [
+    "48h maturity is not observed publication provenance",
+    "Mixed competition levels and unverified scheduled match format",
+    "Pooled residuals may miscalibrate tour/surface/format subgroups",
+    "Rounded residual distribution may assign mass to impossible tennis scores",
+    "One final holdout; no prospective validation, offered quotes or betting hit rates",
+    "No production fixture context, identity crosswalk or calibrated quote probability contract"
+  ],
+  "release_gates": [
+    "Observed result-availability receipts and as-of feature reconstruction",
+    "Verified future opponent, surface, tour and scheduled format",
+    "Independent prospective distribution validation and score-support checks",
+    "Actual immutable standard-line capture and held-out Over/Under/Push validation",
+    "Verified result matching and retirement/void policy; no fabricated historical quotes"
+  ]
+}
