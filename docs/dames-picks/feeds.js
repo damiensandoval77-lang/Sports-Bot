@@ -786,4 +786,4 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-readable-market-tabs-20261114-r41";
+globalThis.__damesRunningAssets["feeds.js"]="dp-live-kickoff-cache-safe-20261114-r42";

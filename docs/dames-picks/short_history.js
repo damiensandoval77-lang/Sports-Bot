@@ -74,4 +74,4 @@ const api={select,render};root.DamesShortHistory=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window!=="undefined"?window:globalThis);
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["short_history.js"]="dp-readable-market-tabs-20261114-r41";
+globalThis.__damesRunningAssets["short_history.js"]="dp-live-kickoff-cache-safe-20261114-r42";
