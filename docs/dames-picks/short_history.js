@@ -74,4 +74,4 @@ const api={select,render};root.DamesShortHistory=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window!=="undefined"?window:globalThis);
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["short_history.js"]="dp-tennis-explicit-standard-sides-20261114-r45";
+globalThis.__damesRunningAssets["short_history.js"]="dp-nba-saved-quote-freshness-20261114-r46";
