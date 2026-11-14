@@ -23,7 +23,8 @@ class PublicationHandoffTests(unittest.TestCase):
         self.assertIn("MAX_PAGES=4", (ROOT/"iphone_bot/fetch_prizepicks.py").read_text())
         self.assertIn("if err.code!=429:raise", (ROOT/"iphone_bot/fetch_prizepicks.py").read_text())
         self.assertIn("gh workflow run nba-prizepicks-site-publish.yml --ref main",COLLECT)
-        self.assertIn("PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}",COLLECT)
+        self.assertNotIn("PRIZEPICKS_API_KEY",COLLECT)
+        self.assertIn("python -m iphone_bot.fetch_native_prizepicks",COLLECT)
 
     def test_both_model_paths_trigger_when_real_lines_published(self):
         self.assertIn("gh workflow run nba-prizepicks-ai-board.yml --ref main",SITE)
