@@ -452,6 +452,8 @@ async function liveTick(force=false){
 }
 setInterval(()=>{if(!document.hidden)liveTick().catch(()=>{})},30000);
 const RELEASE_ID=document.querySelector('meta[name="dames-release"]')?.content||"UNKNOWN";
+setInterval(refreshNBAQuoteNotice,5000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshNBAQuoteNotice()});
 /* OPEN_TAB_RELEASE_WATCH_START */
 let releaseCheckBusy=false;
 async function checkAppRelease(){
@@ -482,8 +484,6 @@ async function checkAppRelease(){
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){checkAppRelease();refreshTennisView()}});
 function refreshTennisView(){if(state.league!=="TENNIS")return;if(state.picked)renderDetail();else render()}
 setInterval(refreshTennisView,30000);
-setInterval(refreshNBAQuoteNotice,5000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshNBAQuoteNotice()});
 setInterval(checkAppRelease,120000);
 checkAppRelease();
 /* OPEN_TAB_RELEASE_WATCH_END */
