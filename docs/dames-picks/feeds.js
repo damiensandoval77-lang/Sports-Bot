@@ -836,7 +836,7 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-coherent-live-pace-20261115-r47";
+globalThis.__damesRunningAssets["feeds.js"]="dp-accent-exact-player-actual-20261115-r48";
 
 /* Snapshot freshness is separate from immutable saved forecast validity. */
 (function(root){
