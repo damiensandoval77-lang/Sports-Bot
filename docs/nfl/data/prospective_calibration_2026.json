@@ -11,24 +11,36 @@
     "Legacy event/training support was not attested; cohorts remain separate from later repaired captures."
   ],
   "summary": {
-    "rows": 55,
-    "games": 1,
-    "players": 16,
-    "wins": 21,
-    "losses": 34,
+    "rows": 104,
+    "games": 2,
+    "players": 32,
+    "wins": 47,
+    "losses": 57,
     "pushes": 0,
-    "settled_hit_rate": 0.38181818181818183,
-    "predicted_unconditional_win": 0.5993504674853943,
-    "observed_unconditional_win": 0.38181818181818183,
-    "brier_unconditional": 0.30572906293456226
+    "settled_hit_rate": 0.4519230769230769,
+    "predicted_unconditional_win": 0.5833304741726946,
+    "observed_unconditional_win": 0.4519230769230769,
+    "brier_unconditional": 0.28560806231612923
   },
   "excluded": {
-    "no_probability_evidence": 80,
+    "no_probability_evidence": 85,
     "not_graded": 2,
-    "not_standard": 946
+    "not_standard": 1427
   },
   "by": {
     "game": {
+      "2026_10_NE_DET": {
+        "rows": 49,
+        "games": 1,
+        "players": 16,
+        "wins": 26,
+        "losses": 23,
+        "pushes": 0,
+        "settled_hit_rate": 0.5306122448979592,
+        "predicted_unconditional_win": 0.5653488490257867,
+        "observed_unconditional_win": 0.5306122448979592,
+        "brier_unconditional": 0.26302326570360224
+      },
       "2026_10_WAS_NYG": {
         "rows": 55,
         "games": 1,
@@ -43,6 +55,18 @@
       }
     },
     "market": {
+      "ANY_TD": {
+        "rows": 1,
+        "games": 1,
+        "players": 1,
+        "wins": 1,
+        "losses": 0,
+        "pushes": 0,
+        "settled_hit_rate": 1.0,
+        "predicted_unconditional_win": 0.3328482751142161,
+        "observed_unconditional_win": 1.0,
+        "brier_unconditional": 0.44509142401807666
+      },
       "FPTS": {
         "rows": 10,
         "games": 1,
@@ -56,212 +80,212 @@
         "brier_unconditional": 0.286814964816286
       },
       "PASS_ATT": {
-        "rows": 1,
-        "games": 1,
-        "players": 1,
-        "wins": 0,
+        "rows": 3,
+        "games": 2,
+        "players": 3,
+        "wins": 2,
         "losses": 1,
         "pushes": 0,
-        "settled_hit_rate": 0.0,
-        "predicted_unconditional_win": 0.6005917159763314,
-        "observed_unconditional_win": 0.0,
-        "brier_unconditional": 0.36071040929939435
+        "settled_hit_rate": 0.6666666666666666,
+        "predicted_unconditional_win": 0.5750764657119173,
+        "observed_unconditional_win": 0.6666666666666666,
+        "brier_unconditional": 0.24808669457917923
       },
       "PASS_CMP": {
-        "rows": 1,
-        "games": 1,
-        "players": 1,
-        "wins": 1,
-        "losses": 0,
+        "rows": 3,
+        "games": 2,
+        "players": 3,
+        "wins": 2,
+        "losses": 1,
         "pushes": 0,
-        "settled_hit_rate": 1.0,
-        "predicted_unconditional_win": 0.5887573964497042,
-        "observed_unconditional_win": 1.0,
-        "brier_unconditional": 0.1691204789748258
+        "settled_hit_rate": 0.6666666666666666,
+        "predicted_unconditional_win": 0.5382814509904811,
+        "observed_unconditional_win": 0.6666666666666666,
+        "brier_unconditional": 0.2309726668346388
       },
       "PASS_INT": {
-        "rows": 1,
-        "games": 1,
-        "players": 1,
-        "wins": 0,
+        "rows": 2,
+        "games": 2,
+        "players": 2,
+        "wins": 1,
         "losses": 1,
         "pushes": 0,
-        "settled_hit_rate": 0.0,
-        "predicted_unconditional_win": 0.5163254311653083,
-        "observed_unconditional_win": 0.0,
-        "brier_unconditional": 0.2665919508680415
+        "settled_hit_rate": 0.5,
+        "predicted_unconditional_win": 0.5082259682996184,
+        "observed_unconditional_win": 0.5,
+        "brier_unconditional": 0.2582327307188688
       },
       "PASS_RUSH_YDS": {
-        "rows": 2,
-        "games": 1,
-        "players": 2,
-        "wins": 1,
-        "losses": 1,
-        "pushes": 0,
-        "settled_hit_rate": 0.5,
-        "predicted_unconditional_win": 0.5207100591715976,
-        "observed_unconditional_win": 0.5,
-        "brier_unconditional": 0.2624032771961766
-      },
-      "PASS_YDS": {
-        "rows": 2,
-        "games": 1,
-        "players": 2,
-        "wins": 1,
-        "losses": 1,
-        "pushes": 0,
-        "settled_hit_rate": 0.5,
-        "predicted_unconditional_win": 0.5769230769230769,
-        "observed_unconditional_win": 0.5,
-        "brier_unconditional": 0.21350793039459406
-      },
-      "REC": {
         "rows": 4,
-        "games": 1,
+        "games": 2,
         "players": 4,
         "wins": 2,
         "losses": 2,
         "pushes": 0,
         "settled_hit_rate": 0.5,
-        "predicted_unconditional_win": 0.5921537651395472,
+        "predicted_unconditional_win": 0.5509347397307264,
         "observed_unconditional_win": 0.5,
-        "brier_unconditional": 0.2790455939643963
+        "brier_unconditional": 0.23283154828092806
       },
-      "REC_YDS": {
-        "rows": 14,
-        "games": 1,
-        "players": 14,
-        "wins": 6,
-        "losses": 8,
-        "pushes": 0,
-        "settled_hit_rate": 0.42857142857142855,
-        "predicted_unconditional_win": 0.5850447604002106,
-        "observed_unconditional_win": 0.42857142857142855,
-        "brier_unconditional": 0.2908599857380583
-      },
-      "RUSH_ATT": {
+      "PASS_YDS": {
         "rows": 4,
-        "games": 1,
+        "games": 2,
         "players": 4,
-        "wins": 0,
-        "losses": 4,
-        "pushes": 0,
-        "settled_hit_rate": 0.0,
-        "predicted_unconditional_win": 0.734073359073359,
-        "observed_unconditional_win": 0.0,
-        "brier_unconditional": 0.5464298758217678
-      },
-      "RUSH_REC_YDS": {
-        "rows": 4,
-        "games": 1,
-        "players": 4,
-        "wins": 1,
-        "losses": 3,
-        "pushes": 0,
-        "settled_hit_rate": 0.25,
-        "predicted_unconditional_win": 0.6038244353182752,
-        "observed_unconditional_win": 0.25,
-        "brier_unconditional": 0.36724122619313654
-      },
-      "RUSH_YDS": {
-        "rows": 6,
-        "games": 1,
-        "players": 6,
         "wins": 2,
-        "losses": 4,
-        "pushes": 0,
-        "settled_hit_rate": 0.3333333333333333,
-        "predicted_unconditional_win": 0.6674710424710425,
-        "observed_unconditional_win": 0.3333333333333333,
-        "brier_unconditional": 0.3455550317278116
-      },
-      "TGT": {
-        "rows": 6,
-        "games": 1,
-        "players": 6,
-        "wins": 3,
-        "losses": 3,
+        "losses": 2,
         "pushes": 0,
         "settled_hit_rate": 0.5,
-        "predicted_unconditional_win": 0.5990872388976655,
+        "predicted_unconditional_win": 0.5891861761426979,
         "observed_unconditional_win": 0.5,
-        "brier_unconditional": 0.2137444640495635
+        "brier_unconditional": 0.24800580304648837
+      },
+      "REC": {
+        "rows": 8,
+        "games": 2,
+        "players": 8,
+        "wins": 4,
+        "losses": 4,
+        "pushes": 0,
+        "settled_hit_rate": 0.5,
+        "predicted_unconditional_win": 0.5511135126064036,
+        "observed_unconditional_win": 0.5,
+        "brier_unconditional": 0.2617858128031867
+      },
+      "REC_YDS": {
+        "rows": 26,
+        "games": 2,
+        "players": 26,
+        "wins": 11,
+        "losses": 15,
+        "pushes": 0,
+        "settled_hit_rate": 0.4230769230769231,
+        "predicted_unconditional_win": 0.5878373690727213,
+        "observed_unconditional_win": 0.4230769230769231,
+        "brier_unconditional": 0.2962172686193125
+      },
+      "RUSH_ATT": {
+        "rows": 10,
+        "games": 2,
+        "players": 10,
+        "wins": 4,
+        "losses": 6,
+        "pushes": 0,
+        "settled_hit_rate": 0.4,
+        "predicted_unconditional_win": 0.6633812520262902,
+        "observed_unconditional_win": 0.4,
+        "brier_unconditional": 0.324552534939161
+      },
+      "RUSH_REC_YDS": {
+        "rows": 6,
+        "games": 2,
+        "players": 6,
+        "wins": 1,
+        "losses": 5,
+        "pushes": 0,
+        "settled_hit_rate": 0.16666666666666666,
+        "predicted_unconditional_win": 0.6230806568619383,
+        "observed_unconditional_win": 0.16666666666666666,
+        "brier_unconditional": 0.3921571517608007
+      },
+      "RUSH_YDS": {
+        "rows": 11,
+        "games": 2,
+        "players": 11,
+        "wins": 6,
+        "losses": 5,
+        "pushes": 0,
+        "settled_hit_rate": 0.5454545454545454,
+        "predicted_unconditional_win": 0.6366288961708808,
+        "observed_unconditional_win": 0.5454545454545454,
+        "brier_unconditional": 0.28088024324120686
+      },
+      "TGT": {
+        "rows": 16,
+        "games": 2,
+        "players": 16,
+        "wins": 7,
+        "losses": 9,
+        "pushes": 0,
+        "settled_hit_rate": 0.4375,
+        "predicted_unconditional_win": 0.5497165842883512,
+        "observed_unconditional_win": 0.4375,
+        "brier_unconditional": 0.25180737722314633
       }
     },
     "direction": {
       "LESS": {
-        "rows": 30,
-        "games": 1,
-        "players": 9,
-        "wins": 10,
-        "losses": 20,
+        "rows": 61,
+        "games": 2,
+        "players": 20,
+        "wins": 30,
+        "losses": 31,
         "pushes": 0,
-        "settled_hit_rate": 0.3333333333333333,
-        "predicted_unconditional_win": 0.5899101300665783,
-        "observed_unconditional_win": 0.3333333333333333,
-        "brier_unconditional": 0.30445224764323264
+        "settled_hit_rate": 0.4918032786885246,
+        "predicted_unconditional_win": 0.5839587476046413,
+        "observed_unconditional_win": 0.4918032786885246,
+        "brier_unconditional": 0.2709312024145407
       },
       "MORE": {
-        "rows": 25,
-        "games": 1,
-        "players": 11,
-        "wins": 11,
-        "losses": 14,
+        "rows": 43,
+        "games": 2,
+        "players": 22,
+        "wins": 17,
+        "losses": 26,
         "pushes": 0,
-        "settled_hit_rate": 0.44,
-        "predicted_unconditional_win": 0.6106788723879735,
-        "observed_unconditional_win": 0.44,
-        "brier_unconditional": 0.30726124128415805
+        "settled_hit_rate": 0.3953488372093023,
+        "predicted_unconditional_win": 0.5824392025599331,
+        "observed_unconditional_win": 0.3953488372093023,
+        "brier_unconditional": 0.30642872403698734
       }
     },
     "position": {
       "QB": {
-        "rows": 9,
-        "games": 1,
-        "players": 2,
-        "wins": 4,
-        "losses": 5,
+        "rows": 21,
+        "games": 2,
+        "players": 4,
+        "wins": 12,
+        "losses": 9,
         "pushes": 0,
-        "settled_hit_rate": 0.4444444444444444,
-        "predicted_unconditional_win": 0.5830517680339766,
-        "observed_unconditional_win": 0.4444444444444444,
-        "brier_unconditional": 0.24912229229554153
+        "settled_hit_rate": 0.5714285714285714,
+        "predicted_unconditional_win": 0.5745267221086895,
+        "observed_unconditional_win": 0.5714285714285714,
+        "brier_unconditional": 0.23409366585703215
       },
       "RB": {
-        "rows": 21,
-        "games": 1,
-        "players": 4,
-        "wins": 5,
-        "losses": 16,
+        "rows": 37,
+        "games": 2,
+        "players": 8,
+        "wins": 13,
+        "losses": 24,
         "pushes": 0,
-        "settled_hit_rate": 0.23809523809523808,
-        "predicted_unconditional_win": 0.6194125978329167,
-        "observed_unconditional_win": 0.23809523809523808,
-        "brier_unconditional": 0.36803827487722734
+        "settled_hit_rate": 0.35135135135135137,
+        "predicted_unconditional_win": 0.6056673782091022,
+        "observed_unconditional_win": 0.35135135135135137,
+        "brier_unconditional": 0.33242557936506945
       },
       "TE": {
-        "rows": 7,
-        "games": 1,
-        "players": 3,
-        "wins": 5,
-        "losses": 2,
+        "rows": 14,
+        "games": 2,
+        "players": 6,
+        "wins": 7,
+        "losses": 7,
         "pushes": 0,
-        "settled_hit_rate": 0.7142857142857143,
-        "predicted_unconditional_win": 0.5613855013117395,
-        "observed_unconditional_win": 0.7142857142857143,
-        "brier_unconditional": 0.2528201440187759
+        "settled_hit_rate": 0.5,
+        "predicted_unconditional_win": 0.5505589388894049,
+        "observed_unconditional_win": 0.5,
+        "brier_unconditional": 0.25153236087755193
       },
       "WR": {
-        "rows": 18,
-        "games": 1,
-        "players": 7,
-        "wins": 7,
-        "losses": 11,
+        "rows": 32,
+        "games": 2,
+        "players": 14,
+        "wins": 15,
+        "losses": 17,
         "pushes": 0,
-        "settled_hit_rate": 0.3888888888888889,
-        "predicted_unconditional_win": 0.5988581519843038,
-        "observed_unconditional_win": 0.3888888888888889,
-        "brier_unconditional": 0.28191405834376954
+        "settled_hit_rate": 0.46875,
+        "predicted_unconditional_win": 0.5776184378590411,
+        "observed_unconditional_win": 0.46875,
+        "brier_unconditional": 0.2801897502839522
       }
     },
     "role": {
@@ -276,9 +300,33 @@
         "predicted_unconditional_win": 0.5993504674853943,
         "observed_unconditional_win": 0.38181818181818183,
         "brier_unconditional": 0.30572906293456226
+      },
+      "training_supported": {
+        "rows": 49,
+        "games": 1,
+        "players": 16,
+        "wins": 26,
+        "losses": 23,
+        "pushes": 0,
+        "settled_hit_rate": 0.5306122448979592,
+        "predicted_unconditional_win": 0.5653488490257867,
+        "observed_unconditional_win": 0.5306122448979592,
+        "brier_unconditional": 0.26302326570360224
       }
     },
     "artifact": {
+      "03dbf36452a8f3a799ef827f64300ab1659f97c5c71cc6d0291e395ecd14ae1a": {
+        "rows": 12,
+        "games": 1,
+        "players": 12,
+        "wins": 5,
+        "losses": 7,
+        "pushes": 0,
+        "settled_hit_rate": 0.4166666666666667,
+        "predicted_unconditional_win": 0.5910954125239839,
+        "observed_unconditional_win": 0.4166666666666667,
+        "brier_unconditional": 0.3024674319807758
+      },
       "2371b94ef89fec08c1313cec1c35c374db5f35b683454b03cd75665ed03c8db1": {
         "rows": 4,
         "games": 1,
@@ -291,6 +339,18 @@
         "observed_unconditional_win": 0.5,
         "brier_unconditional": 0.2790455939643963
       },
+      "2c7dc5f03c54c704f5ab0513f82a2d6523a98e4dc372fc572e93c31f6f217b96": {
+        "rows": 4,
+        "games": 1,
+        "players": 4,
+        "wins": 2,
+        "losses": 2,
+        "pushes": 0,
+        "settled_hit_rate": 0.5,
+        "predicted_unconditional_win": 0.51007326007326,
+        "observed_unconditional_win": 0.5,
+        "brier_unconditional": 0.24452603164197695
+      },
       "44b5ca18a547bf6c0d509a31ef945e1cd965779e3b77c93c337baec7ec684494": {
         "rows": 2,
         "games": 1,
@@ -302,6 +362,30 @@
         "predicted_unconditional_win": 0.5207100591715976,
         "observed_unconditional_win": 0.5,
         "brier_unconditional": 0.2624032771961766
+      },
+      "4adf3456f3ef870cdd7260a475a9d2e85bd32422ddcd63b5326b41b06b581d61": {
+        "rows": 5,
+        "games": 1,
+        "players": 5,
+        "wins": 4,
+        "losses": 1,
+        "pushes": 0,
+        "settled_hit_rate": 0.8,
+        "predicted_unconditional_win": 0.599618320610687,
+        "observed_unconditional_win": 0.8,
+        "brier_unconditional": 0.20327049705728104
+      },
+      "5019c0e4c627a865119550f0651a438245a024e98a9711d37d3d4ef7ce6bfb72": {
+        "rows": 2,
+        "games": 1,
+        "players": 2,
+        "wins": 1,
+        "losses": 1,
+        "pushes": 0,
+        "settled_hit_rate": 0.5,
+        "predicted_unconditional_win": 0.5811594202898551,
+        "observed_unconditional_win": 0.5,
+        "brier_unconditional": 0.2032598193656795
       },
       "709e157b91c6810e6b77938a799f4b9ea945b0fa855d729631a9f23be4ea3dc1": {
         "rows": 14,
@@ -339,6 +423,18 @@
         "observed_unconditional_win": 1.0,
         "brier_unconditional": 0.1691204789748258
       },
+      "85180a2fa2806cb3ecb5c9d658de2ab5ad3cc92d50305b275a694c9c0cbbfb1e": {
+        "rows": 1,
+        "games": 1,
+        "players": 1,
+        "wins": 1,
+        "losses": 0,
+        "pushes": 0,
+        "settled_hit_rate": 1.0,
+        "predicted_unconditional_win": 0.5001265054339287,
+        "observed_unconditional_win": 1.0,
+        "brier_unconditional": 0.24987351056969614
+      },
       "85fc38286b11a8aedd0a38fd1299d28c48d9273e687ae4cfe1e4f8d909299025": {
         "rows": 10,
         "games": 1,
@@ -362,6 +458,54 @@
         "predicted_unconditional_win": 0.6005917159763314,
         "observed_unconditional_win": 0.0,
         "brier_unconditional": 0.36071040929939435
+      },
+      "8c1905491bd42d809091f10e60d1f2bb090c2dce3c07d20179a9c599d37f5557": {
+        "rows": 2,
+        "games": 1,
+        "players": 2,
+        "wins": 1,
+        "losses": 1,
+        "pushes": 0,
+        "settled_hit_rate": 0.5,
+        "predicted_unconditional_win": 0.5130434782608696,
+        "observed_unconditional_win": 0.5,
+        "brier_unconditional": 0.26189876076454527
+      },
+      "8d0049c05fa9546b58364284b9e87b7e7a91016521a7b65f92238d7fbefd88c9": {
+        "rows": 1,
+        "games": 1,
+        "players": 1,
+        "wins": 1,
+        "losses": 0,
+        "pushes": 0,
+        "settled_hit_rate": 1.0,
+        "predicted_unconditional_win": 0.3328482751142161,
+        "observed_unconditional_win": 1.0,
+        "brier_unconditional": 0.44509142401807666
+      },
+      "9236588edcdb4edb2bcf63d10687ee1c5e00efb95ead9b1fb2e5b6dfafab5d01": {
+        "rows": 2,
+        "games": 1,
+        "players": 2,
+        "wins": 1,
+        "losses": 1,
+        "pushes": 0,
+        "settled_hit_rate": 0.5,
+        "predicted_unconditional_win": 0.6014492753623188,
+        "observed_unconditional_win": 0.5,
+        "brier_unconditional": 0.2825036756983827
+      },
+      "953581cbcdee69b1ecc3215a807b663d47ac43a7f8c2183a00a89959e24c9285": {
+        "rows": 10,
+        "games": 1,
+        "players": 10,
+        "wins": 4,
+        "losses": 6,
+        "pushes": 0,
+        "settled_hit_rate": 0.4,
+        "predicted_unconditional_win": 0.5200941915227629,
+        "observed_unconditional_win": 0.4,
+        "brier_unconditional": 0.274645125127296
       },
       "9773f4a838411421b810316231bd1c6e99ff1920d62bdc22b922c25915506a8f": {
         "rows": 2,
@@ -411,6 +555,30 @@
         "observed_unconditional_win": 0.5,
         "brier_unconditional": 0.2137444640495635
       },
+      "c39f2b7871fc8c372c86546a36bef117023a828f99270937e50c5a04beda1a18": {
+        "rows": 6,
+        "games": 1,
+        "players": 6,
+        "wins": 4,
+        "losses": 2,
+        "pushes": 0,
+        "settled_hit_rate": 0.6666666666666666,
+        "predicted_unconditional_win": 0.6162531806615775,
+        "observed_unconditional_win": 0.6666666666666666,
+        "brier_unconditional": 0.17663430768408986
+      },
+      "d11a95c8a046a7fcc11599df9ae0fe20be2146fc23d9208cf744366fbf5cdd04": {
+        "rows": 2,
+        "games": 1,
+        "players": 2,
+        "wins": 2,
+        "losses": 0,
+        "pushes": 0,
+        "settled_hit_rate": 1.0,
+        "predicted_unconditional_win": 0.5623188405797102,
+        "observed_unconditional_win": 1.0,
+        "brier_unconditional": 0.19177483721907168
+      },
       "dfc1c306a6390de946795d07bf36732df3bb28ff5e00e061b91c0656fe8c1919": {
         "rows": 1,
         "games": 1,
@@ -422,9 +590,33 @@
         "predicted_unconditional_win": 0.5163254311653083,
         "observed_unconditional_win": 0.0,
         "brier_unconditional": 0.2665919508680415
+      },
+      "ec374577c18c9b2aa19c74ed7538c457b40f4c4336d3386a701387f2890f46bb": {
+        "rows": 2,
+        "games": 1,
+        "players": 2,
+        "wins": 0,
+        "losses": 2,
+        "pushes": 0,
+        "settled_hit_rate": 0.0,
+        "predicted_unconditional_win": 0.6615930999492643,
+        "observed_unconditional_win": 0.0,
+        "brier_unconditional": 0.44198900289612886
       }
     },
     "evidence_cohort": {
+      "event_attested/training_support_attested": {
+        "rows": 49,
+        "games": 1,
+        "players": 16,
+        "wins": 26,
+        "losses": 23,
+        "pushes": 0,
+        "settled_hit_rate": 0.5306122448979592,
+        "predicted_unconditional_win": 0.5653488490257867,
+        "observed_unconditional_win": 0.5306122448979592,
+        "brier_unconditional": 0.26302326570360224
+      },
       "legacy_event_unattested/legacy_training_support_unknown": {
         "rows": 55,
         "games": 1,
@@ -443,74 +635,88 @@
     {
       "lower": 0,
       "upper": 0.5,
-      "rows": 0,
-      "games": 0,
-      "players": 0
+      "rows": 8,
+      "games": 1,
+      "players": 7,
+      "wins": 5,
+      "losses": 3,
+      "pushes": 0,
+      "settled_hit_rate": 0.625,
+      "predicted_unconditional_win": 0.4463679391511818,
+      "observed_unconditional_win": 0.625,
+      "brier_unconditional": 0.2785326790438347
     },
     {
       "lower": 0.5,
       "upper": 0.6,
-      "rows": 33,
-      "games": 1,
-      "players": 13,
-      "wins": 13,
-      "losses": 20,
+      "rows": 61,
+      "games": 2,
+      "players": 26,
+      "wins": 26,
+      "losses": 35,
       "pushes": 0,
-      "settled_hit_rate": 0.3939393939393939,
-      "predicted_unconditional_win": 0.5454297745478301,
-      "observed_unconditional_win": 0.3939393939393939,
-      "brier_unconditional": 0.26907365391478183
+      "settled_hit_rate": 0.4262295081967213,
+      "predicted_unconditional_win": 0.5430609736109939,
+      "observed_unconditional_win": 0.4262295081967213,
+      "brier_unconditional": 0.2631120520270068
     },
     {
       "lower": 0.6,
       "upper": 0.7,
-      "rows": 15,
-      "games": 1,
-      "players": 11,
-      "wins": 6,
-      "losses": 9,
+      "rows": 25,
+      "games": 2,
+      "players": 19,
+      "wins": 13,
+      "losses": 12,
       "pushes": 0,
-      "settled_hit_rate": 0.4,
-      "predicted_unconditional_win": 0.6382186358037238,
-      "observed_unconditional_win": 0.4,
-      "brier_unconditional": 0.3073670240944873
+      "settled_hit_rate": 0.52,
+      "predicted_unconditional_win": 0.6412817669358496,
+      "observed_unconditional_win": 0.52,
+      "brier_unconditional": 0.27034535908637014
     },
     {
       "lower": 0.7,
       "upper": 0.8,
-      "rows": 5,
-      "games": 1,
-      "players": 5,
+      "rows": 6,
+      "games": 2,
+      "players": 6,
       "wins": 2,
-      "losses": 3,
+      "losses": 4,
       "pushes": 0,
-      "settled_hit_rate": 0.4,
-      "predicted_unconditional_win": 0.7460237149810609,
-      "observed_unconditional_win": 0.4,
-      "brier_unconditional": 0.3888870329448445
+      "settled_hit_rate": 0.3333333333333333,
+      "predicted_unconditional_win": 0.7428601142515098,
+      "observed_unconditional_win": 0.3333333333333333,
+      "brier_unconditional": 0.4121708992192308
     },
     {
       "lower": 0.8,
       "upper": 0.9,
-      "rows": 2,
-      "games": 1,
-      "players": 2,
+      "rows": 3,
+      "games": 2,
+      "players": 3,
       "wins": 0,
-      "losses": 2,
+      "losses": 3,
       "pushes": 0,
       "settled_hit_rate": 0.0,
-      "predicted_unconditional_win": 0.8308475198285625,
+      "predicted_unconditional_win": 0.8532180744435314,
       "observed_unconditional_win": 0.0,
-      "brier_unconditional": 0.6903636780358
+      "brier_unconditional": 0.7290193505383744
     },
     {
       "lower": 0.9,
       "upper": 1,
-      "rows": 0,
-      "games": 0,
-      "players": 0
+      "rows": 1,
+      "games": 1,
+      "players": 1,
+      "wins": 1,
+      "losses": 0,
+      "pushes": 0,
+      "settled_hit_rate": 1.0,
+      "predicted_unconditional_win": 0.9198473282442748,
+      "observed_unconditional_win": 1.0,
+      "brier_unconditional": 0.006424450789581021
     }
   ],
-  "source_sha256": "1617656cfc1b0c21b6b1f632df04199b42b0d359a74efacf361555c12d0504a3",
-  "schedule_sha256": "5fd360cb077d5d1cfc86138f13db33fea943a742ebe142aa98926fe15a5bcc2b"
+  "source_sha256": "f967af11ed052a0542d7426f366ba9866293d04c73f881944d4d7c5980210603",
+  "schedule_sha256": "9e2053251bb4f93532302bcf3788b881a2c04cbb1141f90b6867d1ee79961820"
 }
