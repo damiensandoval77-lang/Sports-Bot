@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-11-15T00:40:50.132565+00:00",
-  "status": "READY",
-  "browser_render_verified": true,
+  "checked_at": "2026-11-15T00:46:10.310791+00:00",
+  "status": "DEGRADED",
+  "browser_render_verified": false,
   "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
   "app_title": "Dame's Picks \u00b7 NBA + NFL + Tennis",
   "NBA": {
@@ -9,12 +9,12 @@
     "loaded": true,
     "rows": 2717,
     "rendered": 227,
-    "live_expected": 1,
-    "live_missing": 0,
-    "score_missing": 0,
-    "player_missing": 0,
+    "live_expected": 2,
+    "live_missing": 1,
+    "score_missing": 1,
+    "player_missing": 1,
     "errors": [],
-    "status": "Checked 7:40 PM \u00b7 41 provider standard markets withheld from AI picks \u00b7 2026-11-13 NBA AI-only: 700 graded, 0 pending, 204 exclusions \u00b7 Live values show only fresh verified player snapshots",
+    "status": "Checked 7:46 PM \u00b7 41 provider standard markets withheld from AI picks \u00b7 2026-11-13 NBA AI-only: 700 graded, 0 pending, 204 exclusions \u00b7 Live values show only fresh verified player snapshots",
     "live_order": {
       "sport": "NBA",
       "selected": "NBA",
@@ -71,7 +71,7 @@
     "score_missing": 0,
     "player_missing": 0,
     "errors": [],
-    "status": "Checked 7:40 PM \u00b7 41 provider standard markets withheld from AI picks \u00b7 2026-11-13 NBA AI-only: 700 graded, 0 pending, 204 exclusions \u00b7 Live values show only fresh verified player snapshots",
+    "status": "Checked 7:46 PM \u00b7 41 provider standard markets withheld from AI picks \u00b7 2026-11-13 NBA AI-only: 700 graded, 0 pending, 204 exclusions \u00b7 Live values show only fresh verified player snapshots",
     "live_order": {
       "sport": "NFL",
       "selected": "NFL",
@@ -258,7 +258,11 @@
       "reasons": []
     }
   },
-  "reasons": [],
+  "reasons": [
+    "NBA_STARTED_GAMES_MISSING_LIVE_DATA",
+    "NBA_STARTED_GAMES_MISSING_SCORES",
+    "NBA_STARTED_GAMES_MISSING_PLAYERS"
+  ],
   "browser_errors": [],
   "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
   "browser_direct_probe": {
@@ -336,15 +340,15 @@
       },
       {
         "id": "NBA|203999|Denver Nuggets @ New Orleans Pelicans|2026-11-15T00:00:00+00:00|AST|10|2026-11-14T13:53:16.618468+00:00",
-        "text": "Nikola Joki\u0107 \u00b7 ASTLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 UNDERFROZEN LINE10.0FROZEN PROJ9.0ACTUAL\u2014UNDERActual unavailable \u00b7 Pace unavailable: needs a fresh regulation clock and at least 5 elapsed minutes. \u00b7 Saved Nov 14, 8:53 AMDetails"
+        "text": "Nikola Joki\u0107 \u00b7 ASTLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 UNDERFROZEN LINE10.0FROZEN PROJ9.0ACTUAL0.0UNDERActual 0.0 \u00b7 Game-clock pace (estimate) 0.0 over 48 min; not an AI forecast \u00b7 Saved Nov 14, 8:53 AMDetails"
       },
       {
         "id": "NBA|203999|Denver Nuggets @ New Orleans Pelicans|2026-11-15T00:00:00+00:00|PRA|49.5|2026-11-14T08:52:24.199133+00:00",
-        "text": "Nikola Joki\u0107 \u00b7 PRALIVE \u00b7 NOT GRADEDPrizePicks \u00b7 UNDERFROZEN LINE49.5FROZEN PROJ43.6ACTUAL\u2014UNDERActual unavailable \u00b7 Pace unavailable: needs a fresh regulation clock and at least 5 elapsed minutes. \u00b7 Saved Nov 14, 3:52 AMDetails"
+        "text": "Nikola Joki\u0107 \u00b7 PRALIVE \u00b7 NOT GRADEDPrizePicks \u00b7 UNDERFROZEN LINE49.5FROZEN PROJ43.6ACTUAL10.0UNDERActual 10.0 \u00b7 Game-clock pace (estimate) 74.0 over 48 min; not an AI forecast \u00b7 Saved Nov 14, 3:52 AMDetails"
       },
       {
         "id": "NBA|203999|Denver Nuggets @ New Orleans Pelicans|2026-11-15T00:00:00+00:00|PTS|27.5|2026-11-14T12:00:30.886521+00:00",
-        "text": "Nikola Joki\u0107 \u00b7 PTSLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 UNDERFROZEN LINE27.5FROZEN PROJ23.8ACTUAL\u2014UNDERActual unavailable \u00b7 Pace unavailable: needs a fresh regulation clock and at least 5 elapsed minutes. \u00b7 Saved Nov 14, 7:00 AMDetails"
+        "text": "Nikola Joki\u0107 \u00b7 PTSLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 UNDERFROZEN LINE27.5FROZEN PROJ23.8ACTUAL7.0UNDERActual 7.0 \u00b7 Game-clock pace (estimate) 51.8 over 48 min; not an AI forecast \u00b7 Saved Nov 14, 7:00 AMDetails"
       },
       {
         "id": "NBA|cameronjohnson|Denver Nuggets @ New Orleans Pelicans|2026-11-15T00:00:00+00:00|PRA|18.5|2026-11-14T06:56:45.582000+00:00",
@@ -424,11 +428,11 @@
       },
       {
         "id": "NBA|1631255|Denver Nuggets @ New Orleans Pelicans|2026-11-15T00:00:00+00:00|PTS|5.5|2026-11-14T22:33:49.242712+00:00",
-        "text": "Karlo Matkovi\u0107 \u00b7 PTSLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 OVERFROZEN LINE5.5FROZEN PROJ7.4ACTUAL\u2014OVERActual unavailable \u00b7 Pace unavailable: needs a fresh regulation clock and at least 5 elapsed minutes. \u00b7 Saved Nov 14, 5:33 PMDetails"
+        "text": "Karlo Matkovi\u0107 \u00b7 PTSLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 OVERFROZEN LINE5.5FROZEN PROJ7.4ACTUAL0.0OVERActual 0.0 \u00b7 Game-clock pace (estimate) 0.0 over 48 min; not an AI forecast \u00b7 Saved Nov 14, 5:33 PMDetails"
       },
       {
         "id": "NBA|1631255|Denver Nuggets @ New Orleans Pelicans|2026-11-15T00:00:00+00:00|REB|3.5|2026-11-14T22:33:49.242712+00:00",
-        "text": "Karlo Matkovi\u0107 \u00b7 REBLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 OVERFROZEN LINE3.5FROZEN PROJ4.2ACTUAL\u2014OVERActual unavailable \u00b7 Pace unavailable: needs a fresh regulation clock and at least 5 elapsed minutes. \u00b7 Saved Nov 14, 5:33 PMDetails"
+        "text": "Karlo Matkovi\u0107 \u00b7 REBLIVE \u00b7 NOT GRADEDPrizePicks \u00b7 OVERFROZEN LINE3.5FROZEN PROJ4.2ACTUAL0.0OVERActual 0.0 \u00b7 Game-clock pace (estimate) 0.0 over 48 min; not an AI forecast \u00b7 Saved Nov 14, 5:33 PMDetails"
       },
       {
         "id": "NBA|deandrejordan|Denver Nuggets @ New Orleans Pelicans|2026-11-15T00:00:00+00:00|PTS|4.5|2026-11-14T08:51:24.986000+00:00",
