@@ -9,6 +9,7 @@ on:
       - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
+      - 'tests/test_nfl_archive_storage.py'
       - '.github/workflows/nfl-pick-grading.yml'
   push:
     branches: [main]
@@ -20,6 +21,7 @@ on:
       - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
+      - 'tests/test_nfl_archive_storage.py'
       - '.github/workflows/nfl-pick-grading.yml'
       - 'docs/nfl/data/latest_2026*.csv'
       - 'docs/nfl/data/latest_2026.json'
@@ -83,7 +85,9 @@ jobs:
           python-version: '3.11'
       - name: Run deterministic public NFL grading unit tests
         if: github.event_name == 'pull_request'
-        run: python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_nfl_public_grading.py' -v
+          python -m unittest discover -s tests -p 'test_nfl_archive_storage.py' -v
       - name: Verify prospective real-line calibration safeguards
         run: python -m unittest discover -s tests -p 'test_nfl_prospective_calibration.py' -v
       - name: Verify complete official gamebook safeguards
@@ -127,7 +131,7 @@ jobs:
           git config user.email actions@users.noreply.github.com
           for attempt in 1 2 3; do
             git add docs/nfl/data/verified_zero_snap_stats_2026.json 2>/dev/null || true
-            git add docs/nfl/data/frozen_pick_history_2026.csv \
+            git add 'docs/nfl/data/frozen_pick_history_2026.csv*' \
                     docs/nfl/data/pp_graded_2026.csv \
                     docs/nfl/data/pp_grading_pending_2026.csv \
                     docs/nfl/data/grading_health_2026.json \

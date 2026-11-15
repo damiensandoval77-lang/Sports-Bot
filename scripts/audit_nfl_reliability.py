@@ -5,7 +5,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from reconcile_nfl_picks import closing
+from reconcile_nfl_picks import closing, read_csv
 
 ROOT = Path("docs/nfl/data")
 
@@ -89,10 +89,13 @@ def audit(root=ROOT, now=None):
 
     health = load(root / "grading_health_2026.json")
     try:
-        archive = rows(root / "frozen_pick_history_2026.csv")
+        archive_path = root / "frozen_pick_history_2026.csv"
+        if not archive_path.exists() and not archive_path.with_suffix(".csv.gz").exists():
+            raise FileNotFoundError("NFL frozen history is missing")
+        archive = read_csv(archive_path)
         graded = rows(root / "pp_graded_2026.csv")
         pending = rows(root / "pp_grading_pending_2026.csv")
-    except (OSError, UnicodeError, csv.Error) as exc:
+    except (OSError, UnicodeError, csv.Error, ValueError) as exc:
         problems.append(f"grading CSV unavailable: {type(exc).__name__}")
         archive, graded, pending = [], [], []
     counts = {
