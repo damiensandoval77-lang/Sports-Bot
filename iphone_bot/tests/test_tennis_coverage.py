@@ -26,6 +26,11 @@ class CoverageTests(unittest.TestCase):
         out=self.run_probe(op)
         op.open.assert_called_once();self.assertEqual(op.open.call_args.args[0].full_url,p.URL)
         self.assertEqual(out['credits_cost'],'0');self.assertFalse(out['live_ready'])
+    def test_header_echo_never_output(self):
+        op=MagicMock();r=op.open.return_value.__enter__.return_value
+        r.read.return_value=b'{}';r.status=200;r.headers={'X-Credits-Cost':'secret'}
+        out=self.run_probe(op);self.assertNotIn('secret',json.dumps(out))
+        self.assertEqual(out['credits_cost'],'UNVERIFIED')
     def test_error_no_retry_no_secret(self):
         op=MagicMock();op.open.side_effect=ValueError('secret')
         out=self.run_probe(op);op.open.assert_called_once();self.assertNotIn('secret',json.dumps(out))
