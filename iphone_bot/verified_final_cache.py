@@ -53,7 +53,15 @@ def merge_rows(prior, new):
             continue
         ident = row_key(row)
         if ident in chosen and chosen[ident] != row:
-            conflicts.add(ident)
+            # New official identity metadata may enrich an otherwise identical
+            # old cache row; conflicting stats or two different IDs still fail.
+            old=chosen[ident]
+            strip=lambda r:{k:v for k,v in r.items() if k!="nba_person_id"}
+            ids={str(r["nba_person_id"]) for r in (old,row) if r.get("nba_person_id")}
+            if strip(old)==strip(row) and len(ids)==1:
+                chosen[ident]={**old,**row,"nba_person_id":ids.pop()}
+            else:
+                conflicts.add(ident)
         else:
             chosen.setdefault(ident, row)
     return [chosen[k] for k in sorted(chosen) if k not in conflicts]
