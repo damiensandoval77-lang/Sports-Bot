@@ -1,6 +1,6 @@
 {
-  "status": "NO_OVERDUE_PENDING",
-  "checked_at": "2026-11-15T03:55:46.989064+00:00",
+  "status": "OVERDUE_UNGRADED",
+  "checked_at": "2026-11-15T04:58:04.249535+00:00",
   "threshold_minutes": 240,
   "games": [
     {
@@ -18,6 +18,22 @@
       "settled_verified": 104,
       "overdue_unresolved": 0,
       "status": "SETTLED"
+    },
+    {
+      "game": "Dallas Mavericks @ Cleveland Cavaliers",
+      "start": "2026-11-15T00:30:00+00:00",
+      "eligible_saved_forecasts": 104,
+      "settled_verified": 100,
+      "overdue_unresolved": 4,
+      "status": "OVERDUE_UNGRADED"
+    },
+    {
+      "game": "Denver Nuggets @ New Orleans Pelicans",
+      "start": "2026-11-15T00:00:00+00:00",
+      "eligible_saved_forecasts": 96,
+      "settled_verified": 92,
+      "overdue_unresolved": 4,
+      "status": "OVERDUE_UNGRADED"
     },
     {
       "game": "Golden State Warriors @ San Antonio Spurs",
@@ -76,13 +92,16 @@
       "status": "SETTLED"
     }
   ],
-  "issues": [],
+  "issues": [
+    "Dallas Mavericks @ Cleveland Cavaliers: 4 FORECASTS_OVERDUE_FINAL_VERIFICATION",
+    "Denver Nuggets @ New Orleans Pelicans: 4 FORECASTS_OVERDUE_FINAL_VERIFICATION"
+  ],
   "schedule_source": "VERIFIED_PUBLISHED_NBA_2026_27_SEASON_BASELINE",
   "note": "Persistent season schedule preserves games after rolling schedule resets. Overdue age is not proof of completion; only verified final player rows settle grades.",
   "totals": {
-    "scanned_game_count": 9,
-    "overdue_game_count": 0,
-    "overdue_forecasts": 0,
-    "settled_forecasts": 904
+    "scanned_game_count": 11,
+    "overdue_game_count": 2,
+    "overdue_forecasts": 8,
+    "settled_forecasts": 1096
   }
 }
