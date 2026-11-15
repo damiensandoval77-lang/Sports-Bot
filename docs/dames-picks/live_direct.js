@@ -240,4 +240,4 @@ root.DamesPicksLive={fetchNFL,mergeNFL,nflPlayers,etDate,matchup,playerRows,buil
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["live_direct.js"]="dp-accent-exact-player-actual-20261115-r48";
+globalThis.__damesRunningAssets["live_direct.js"]="dp-coherent-fallback-scores-20261115-r49";
