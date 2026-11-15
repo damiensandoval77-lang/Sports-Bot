@@ -107,6 +107,13 @@ function csv(text){
  const headers=cells.shift()||[];
  return cells.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??""])));
 }
+// Display genuine unsupported quotes separately from ranked model picks.
+function upcomingQuoteOnly(rows,now=Date.now(),term=""){
+ return displayCurrentPicks(rows,now).filter(p=>p.sport==="NBA"&&p.quoteOnly===true&&
+  p.grade==="UNMODELED"&&n(p.line)!==null&&p.projection===null&&p.direction===null&&
+  p.chance===null&&stamp(p.start)>now&&
+  (!term||(p.player+" "+p.team+" "+p.opponent+" "+p.stat).toLowerCase().includes(term.toLowerCase())));
+}
 function nba(ledger,form){
  if(ledger?.status!=="FROZEN_NEW_AI_ALL_MARKET"||!Array.isArray(ledger.records))return [];
  const people=new Map((form?.players||[]).map(p=>[p.player_id+"|"+p.team,p]));
@@ -843,7 +850,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflSettlementCoverageWarning,nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,attachNBAConfidence,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,sortLiveGames,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={upcomingQuoteOnly,nflSettlementCoverageWarning,nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,attachNBAConfidence,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,sortLiveGames,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */

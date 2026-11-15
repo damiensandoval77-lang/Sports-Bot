@@ -876,3 +876,19 @@ test("Official same-boxscore pair requires exact NBA source and game ID",()=>{
  const board={is_live_score_source:true,generated_at:"2026-11-15T00:55:00Z",games:[{id,game:g.game,game_state:"in",away_score:13,home_score:9}]};
  assert.equal(m.gameCatalog({games:[g]},null,null,null,now,board)[0].awayScore,36);
 });
+
+test("Separate quote-only panel preserves authentic lines without predictions",()=>{
+ const q={sport:"NBA",player:"Keegan Murray",team:"SAC",opponent:"OKC",game:"OKC @ SAC",stat:"PTS",line:11.5,start:"2026-11-16T02:00:00Z",captured:"2026-11-15T21:50:00Z",quoteOnly:true,grade:"UNMODELED",projection:null,direction:null,chance:null};
+ const now=Date.parse("2026-11-15T22:00:00Z");
+ assert.equal(m.upcomingQuoteOnly([q],now,"keegan").length,1);
+ assert.equal(m.upcomingQuoteOnly([q],now,"brunson").length,0);
+ assert.equal(m.upcomingQuoteOnly([q],Date.parse(q.start)).length,0);
+ assert.equal(m.upcomingQuoteOnly([{...q,captured:q.start}],now).length,0);
+ assert.equal(m.upcomingQuoteOnly([{...q,projection:12}],now).length,0);
+ const modeled={...q,quoteOnly:false,projection:12,direction:"MORE",chance:.5,grade:"PENDING"};
+ assert.equal(m.upcomingQuoteOnly([q,modeled],now).length,0);
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('Standard lines · no model estimate'));
+ assert.ok(html.includes('renderQuoteOnlyLines();'));
+ assert.ok(html.includes('NO ESTIMATE'));
+});
