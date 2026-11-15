@@ -173,14 +173,20 @@ def nba_boxscore_rows(score_event,box):
                 dnp=verified_dnp_player(name,tcode,opp,day,
                       str(player.get("notPlayingReason") or player.get("status")),
                       "NBA_CDN_FINAL",game_id)
-                if dnp:rows.append(dnp)
+                if dnp:
+                    if str(player.get("personId") or "").isdigit():
+                        dnp["nba_person_id"]=str(player["personId"])
+                    rows.append(dnp)
                 continue
             if not isinstance(stats,dict):continue
             row=box_player(name,tcode,opp,day,stats.get("points"),
                   stats.get("reboundsTotal"),stats.get("assists"),
                   stats.get("minutes") or stats.get("minutesCalculated"),
                   "NBA_CDN_FINAL",game_id)
-            if row:rows.append(row)
+            if row:
+                if str(player.get("personId") or "").isdigit():
+                    row["nba_person_id"]=str(player["personId"])
+                rows.append(row)
     return rows
 
 

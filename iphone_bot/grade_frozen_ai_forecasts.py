@@ -91,6 +91,8 @@ def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=
     """No missing player or unverified DNP is ever a zero-stat observation."""
     retained={key(r):dict(r) for r in (existing or []) if r.get("status") in ("GRADED","EXCLUDED_VERIFIED_DNP","EXCLUDED_VERIFIED_NONPARTICIPANT")}
     by_name=defaultdict(list)
+    by_nba_id=defaultdict(list)
+    dnp_by_nba_id=defaultdict(list)
     for row in final_rows:
         if (row.get("final_confirmed") is not True or
             row.get("source") not in APPROVED_SOURCES or
@@ -101,6 +103,8 @@ def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=
         if not n:continue
         ident=(n,row.get("team"),row.get("date"),row.get("opponent"))
         by_name[ident].append(row)
+        if row.get("source")=="NBA_CDN_FINAL" and str(row.get("nba_person_id") or "").isdigit():
+            by_nba_id[(str(row["nba_person_id"]),row.get("team"),row.get("date"),row.get("opponent"))].append(row)
     dnp_by_name=defaultdict(list)
     for row in list(final_rows)+list(confirmed_inactives or []):
         if (row.get("final_confirmed") is not True or
@@ -111,6 +115,8 @@ def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=
         n=strict_player_name(row.get("player"))
         if n:
             dnp_by_name[(n,row.get("team"),row.get("date"),row.get("opponent"))].append(row)
+        if row.get("source")=="NBA_CDN_FINAL" and str(row.get("nba_person_id") or "").isdigit():
+            dnp_by_nba_id[(str(row["nba_person_id"]),row.get("team"),row.get("date"),row.get("opponent"))].append(row)
     transferred={
         (strict_player_name(r.get("player")),r.get("team"),r.get("date"),r.get("opponent")):r
         for r in (confirmed_transfers or [])
@@ -131,6 +137,21 @@ def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=
         # Conflicting played/DNP identities remain unresolved.
         match=(strict_player_name(p["player"]),p["team"],day,opponents[0])
         inactive=dnp_by_name.get(match,[])
+        # NBA archive IDs and NBA personId share a namespace; ESPN IDs do not.
+        # Only use unique exact IDs with the same date/team/opponent, never fuzzy names.
+        idmatch=(str(p["player_id"]),p["team"],day,opponents[0])
+        idrows=by_nba_id.get(idmatch,[])
+        iddnps=dnp_by_nba_id.get(idmatch,[])
+        if len(idrows)>1 or len(iddnps)>1 or (idrows and iddnps):continue
+        if (candidates and iddnps) or (inactive and idrows):continue
+        if candidates and idrows:
+            fields=("PTS","REB","AST","PRA","MIN","source_game_id")
+            if any(any(a.get(k)!=b.get(k) for k in fields) for a in candidates for b in idrows):continue
+        if not candidates and not inactive:
+            candidates=idrows
+            inactive=iddnps
+        elif any(r.get("nba_person_id") and str(r["nba_person_id"])!=str(p["player_id"]) for r in candidates+inactive):
+            continue
         transfer=transferred.get(match)
         if transfer and not candidates and not inactive:
             retained[ident]={
@@ -185,6 +206,9 @@ def settle_predictions(predictions,final_rows,existing=None,confirmed_inactives=
             "source_game_id":str(actual_row["source_game_id"]),
             "minutes":minutes,"line":None,"betting_grade":None
         }
+        if actual_row.get("nba_person_id"):
+            retained[ident]["final_nba_person_id"]=str(actual_row["nba_person_id"])
+            retained[ident]["final_player_name"]=actual_row["player"]
         new_grades+=1
     return {"records":sorted(retained.values(),key=lambda x:(x["start"],x["game"],x["player"],x["stat"])),
             "new_grades":new_grades,"new_exclusions":new_exclusions,"new_transfers":new_transfers}
