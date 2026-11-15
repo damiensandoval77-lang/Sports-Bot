@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-15T17:35:58.092411+00:00",
+  "checked_at": "2026-11-15T18:11:49.731676+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -11,7 +11,8 @@
     "nba_production",
     "nba_capture",
     "nba_grading",
-    "published_pick_settlement"
+    "published_pick_settlement",
+    "nfl_grading"
   ],
   "checks": {
     "unified_artifacts": {
@@ -56,8 +57,10 @@
       ]
     },
     "nfl_grading": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "NFL_PENDING_GRADES_UNRESOLVED"
+      ]
     }
   },
   "scope": "UNIFIED_DAMES_PICKS_NBA_NFL_RELEASE_GATE",
