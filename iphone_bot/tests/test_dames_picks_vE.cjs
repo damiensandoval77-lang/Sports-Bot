@@ -862,3 +862,13 @@ test("Fresh exact-summary NBA scores survive older independent scoreboard",()=>{
   r=m.liveGames({games:[{...g,...patch}]},null,now)[0];assert.equal(r.awayScore,null);assert.equal(r.homeScore,null);assert.equal(r.scoreFresh,false);
  }
 });
+
+
+test("Official same-boxscore pair requires exact NBA source and game ID",()=>{
+ const now=Date.parse("2026-11-15T01:00:00Z"),id="0022600231";
+ const g={id,game:"Denver Nuggets @ New Orleans Pelicans",state:"in",observed_at:"2026-11-15T00:59:00Z",away_score:36,home_score:31,source_url:"https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_"+id+".json"};
+ assert.equal(m.liveGames({games:[g]},null,now)[0].awayScore,36);
+ for(const patch of [{id:"0022600232"},{source_url:g.source_url.replace("amazonaws.com","evil.com")},{id:"123"}]) assert.equal(m.liveGames({games:[{...g,...patch}]},null,now)[0].awayScore,null);
+ const board={is_live_score_source:true,generated_at:"2026-11-15T00:55:00Z",games:[{id,game:g.game,game_state:"in",away_score:13,home_score:9}]};
+ assert.equal(m.gameCatalog({games:[g]},null,null,null,now,board)[0].awayScore,36);
+});
