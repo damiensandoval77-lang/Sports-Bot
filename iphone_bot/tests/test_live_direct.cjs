@@ -104,3 +104,26 @@ test("real live and final scoreboard observations override preserved pregame sta
   assert.equal(g.awayScore,35);assert.equal(g.homeScore,33);assert.equal(g.players.length,0);
  }
 });
+test("summary clock and score stay coherent with newer player totals",()=>{
+ const e=event("1","in","A","B","0","0");e.status={period:1,displayClock:"12:00",clock:720,type:{state:"in"}};
+ const s=summary("A","B","AAA",[player("9","Tester",["3","5","2","1"])]);
+ s.header.id="1";Object.assign(s.header.competitions[0],{id:"1",status:{period:1,displayClock:"9:27",type:{state:"in",shortDetail:"9:27 - 1st"}},competitors:competitors("A","B","5","5")});
+ const x=L.build(NOW,[e],{"1":s});assert.equal(x.feed.games[0].displayClock,"9:27");assert.equal(x.feed.games[0].clock,null);assert.equal(x.board.games[0].away_score,5);
+ assert.equal(m.livePace(5,"NBA",1,x.feed.games[0].displayClock),null);
+ s.header.competitions[0].status.displayClock="6:00";
+ assert.equal(m.livePace(5,"NBA",1,L.build(NOW,[e],{"1":s}).feed.games[0].displayClock).value,40);
+ delete s.header.competitions[0].status;assert.equal(L.build(NOW,[e],{"1":s}).feed.games[0].period,null);
+ s.header.id="2";assert.equal(L.build(NOW,[e],{"1":s}).feed.games.length,0);
+});
+test("final summary cannot produce live pace or overwrite frozen grades",()=>{
+ const s=summary("A","B","AAA",[player("9","Tester",["30","20","2","1"])]);
+ s.header.competitions[0].status={period:4,displayClock:"0:00",type:{state:"post"}};
+ const x=L.build(NOW,[event("1","in","A","B","10","10")],{"1":s});
+ assert.equal(x.feed.games[0].state,"post");
+ assert.equal(m.attachLive([{sport:"NBA",player:"Tester",team:"AAA",game:"A @ B",stat:"PTS"}],x.feed,null,NOW)[0].live,null);
+});
+test("UI surfaces guarded pace on game rows and pick detail",()=>{
+ const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ assert.ok(html.includes('escapeText(versus+paceLabel)'));
+ assert.equal((html.match(/Pace unavailable: needs a fresh regulation clock and at least 5 elapsed minutes\./g)||[]).length,2);
+});
