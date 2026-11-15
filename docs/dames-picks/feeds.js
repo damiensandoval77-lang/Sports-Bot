@@ -657,9 +657,14 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
    const isCurrent=fresh(at)&&g.stale!==true;
    const state=g.state==="in"?"in":g.state==="post"?"final":g.state==="pre"?"scheduled":"unknown";
    const players=Array.isArray(g.player_rows)?g.player_rows:[];
-   // Scores must come from the same validated ESPN summary as these players.
-   const scoreSource=typeof g.event_id==="string"&&/^\d+$/.test(g.event_id)&&
+   // Scores must come from the same validated ESPN summary or NBA boxscore as these players.
+   const espnScoreSource=typeof g.event_id==="string"&&/^\d+$/.test(g.event_id)&&
     g.source_url==="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event="+g.event_id;
+   const nbaScoreSource=typeof g.id==="string"&&/^\d{10}$/.test(g.id)&&[
+    "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_"+g.id+".json",
+    "https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_"+g.id+".json"
+   ].includes(g.source_url);
+   const scoreSource=espnScoreSource||nbaScoreSource;
    const awayScore=n(g.away_score),homeScore=n(g.home_score);
    const scoreFresh=isCurrent&&["in","final"].includes(state)&&scoreSource&&
     typeof g.away_score==="number"&&typeof g.home_score==="number"&&
