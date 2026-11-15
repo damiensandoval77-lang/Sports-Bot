@@ -6,6 +6,7 @@ and make unsupported markets/pending stat rows explicit rather than losses.
 No connection to private GitHub credentials or live PrizePicks is required.
 """
 import csv
+import gzip
 import io
 import json
 import math
@@ -17,6 +18,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 ROOT=Path("docs/nfl/data")
+ARCHIVE_COMPRESS_BYTES=80*1024*1024
 ARCHIVE=ROOT/"frozen_pick_history_2026.csv"
 GRADES=ROOT/"pp_graded_2026.csv"
 PENDING=ROOT/"pp_grading_pending_2026.csv"
@@ -41,6 +43,11 @@ OUTPUT_FIELDS=FIELDS+["actual","result","won","grade_status"]
 
 def read_csv(path):
     path=Path(path)
+    compressed=path.with_suffix(path.suffix+".gz")
+    if path.name==ARCHIVE.name and compressed.exists():
+        if path.exists():raise ValueError("Ambiguous NFL archive: both CSV and gzip exist")
+        with gzip.open(compressed,"rt",newline="",encoding="utf-8") as file:
+            return list(csv.DictReader(file))
     if not path.exists():return []
     with path.open(newline="",encoding="utf-8") as file:
         return list(csv.DictReader(file))
@@ -388,6 +395,26 @@ def write_csv_if_changed(path,rows,fields):
     w.writeheader()
     w.writerows(rows)
     content=buf.getvalue()
+    # Keep the append-only history losslessly while avoiding GitHub's 100 MiB
+    # blob limit. Once migrated, remain compressed even if input size changes.
+    compressed=file.with_suffix(file.suffix+".gz")
+    if file.name==ARCHIVE.name and (compressed.exists() or len(content.encode("utf-8")) >= ARCHIVE_COMPRESS_BYTES):
+        payload=gzip.compress(content.encode("utf-8"),mtime=0)
+        if len(payload)>=90*1024*1024:
+            raise ValueError("Compressed NFL archive requires partitioning before publication")
+        if gzip.decompress(payload).decode("utf-8")!=content:
+            raise ValueError("NFL archive compression verification failed")
+        if compressed.exists() and compressed.read_bytes()==payload and not file.exists():return False
+        file.parent.mkdir(parents=True,exist_ok=True)
+        with tempfile.NamedTemporaryFile("wb",dir=str(file.parent),delete=False) as tmp:
+            tmp.write(payload)
+            name=tmp.name
+        os.replace(name,compressed)
+        # Verify the durable equivalent before removing the legacy working copy.
+        if gzip.decompress(compressed.read_bytes()).decode("utf-8")!=content:
+            raise ValueError("Persisted NFL archive failed lossless verification")
+        file.unlink(missing_ok=True)
+        return True
     if file.exists() and file.read_text(encoding="utf-8")==content:return False
     file.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.NamedTemporaryFile("w",dir=str(file.parent),delete=False,encoding="utf-8",newline="") as tmp:
