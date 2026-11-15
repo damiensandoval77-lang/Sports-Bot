@@ -591,6 +591,23 @@ function reconcileNFLSettlementCards(latest,gradedRows,pendingRows,schedule){
  }
  return [...existing.values()];
 }
+/* Explain ledger/UI coverage without weakening pregame provenance checks. */
+function nflSettlementCoverageWarning(cards,gradedRows,schedule,health){
+ const shown=cards.filter(p=>p.grade==="GRADED"&&p.hit!==null).length;
+ const expected=n(health?.standard_settled);
+ if(expected===null||expected<=shown)return null;
+ const games=new Map((schedule?.games||[]).map(g=>[g.game_id,g]));
+ const withheld=(gradedRows||[]).filter(r=>{
+  const game=games.get(r.game_id);
+  return game?.status==="final"&&r.odds_type==="standard"&&
+   String(r.grade_status).toLowerCase()==="graded"&&n(r.actual)!==null&&
+   ["0","1"].includes(String(r.won))&&nflRequiresProviderEvent(game.kickoff_utc)&&
+   !nflFutureEvidenceVerified(r,game.kickoff_utc);
+ }).length;
+ if(withheld===expected-shown)
+  return `NFL: ${withheld} historical grades withheld because pregame provenance is unverified`;
+ return "NFL published standard grades not fully displayed";
+}
 function fmtQuote(v){return n(v)===null?"":String(n(v))}
 /* Official NBA injury labels are context only; do not retroactively alter picks. */
 function attachInjuries(rows,report){
@@ -826,7 +843,7 @@ function gradingAuditSummary(payload,now=Date.now()){
   pending:d.pending,voided:d.void_dnp+d.excluded_nonparticipant,
   stale:now-checked>4*3600000||now-checked< -120000,checkedAt:payload.checked_at};
 }
-root.DamesPicksModel={nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,attachNBAConfidence,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,sortLiveGames,currentSlateGames,gradingAuditSummary};
+root.DamesPicksModel={nflSettlementCoverageWarning,nflTrainingSupportVerified,nflFutureEvidenceVerified,nflRequiresProviderEvent,nflProviderEventVerified,nflMatchupPreview,nbaTeam:nbaTeamCode,hitEstimate,displayedHitRate,sortByHitEstimate,attachMatchupPreview,attachNBAConfidence,displayCurrentPicks,csv,nba,nfl,summarize,key,preferredNBALiveFeed,attachLive,attachNFLGrades,reconcileNFLSettlementCards,attachInjuries,includeArchivedStandard,livePace,sortByTeamPosition,liveGames,attachNBAFinals,gameCatalog,sortLiveGames,currentSlateGames,gradingAuditSummary};
 })(typeof window!=="undefined"?window:globalThis);
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
@@ -853,7 +870,7 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-quote-freshness-20261115-r50";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-grade-provenance-20261115-r51";
 
 /* Snapshot freshness is separate from immutable saved forecast validity. */
 (function(root){

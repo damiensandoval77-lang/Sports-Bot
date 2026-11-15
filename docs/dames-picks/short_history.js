@@ -74,4 +74,4 @@ const api={select,render};root.DamesShortHistory=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window!=="undefined"?window:globalThis);
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["short_history.js"]="dp-nfl-quote-freshness-20261115-r50";
+globalThis.__damesRunningAssets["short_history.js"]="dp-nfl-grade-provenance-20261115-r51";

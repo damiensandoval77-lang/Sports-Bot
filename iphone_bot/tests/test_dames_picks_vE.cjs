@@ -366,7 +366,7 @@ test("Bad grading math and stale audit never look healthy",()=>{
  assert.equal(m.gradingAuditSummary({...valid,days:{"2026-11-09":{...valid.days["2026-11-09"],pending:0}}},now),null);
 });
 
-test("Production NFL grades in immutable archive all join Tracker, including older frozen prices",()=>{
+test("Production NFL eligible archive grades join Tracker; unverifiable historical evidence stays withheld",()=>{
  const root="docs/nfl/data/";
  const manifest=JSON.parse(fs.readFileSync(root+"latest_2026.json","utf8"));
  const schedule=JSON.parse(fs.readFileSync(root+"schedule_2026.json","utf8"));
@@ -377,15 +377,19 @@ test("Production NFL grades in immutable archive all join Tracker, including old
  const health=JSON.parse(fs.readFileSync(root+"grading_health_2026.json","utf8"));
  const directional=rows.filter(p=>p.grade==="GRADED"&&typeof p.hit==="boolean");
  const winners=directional.filter(p=>p.hit).length;
- assert.equal(directional.length,health.standard_settled,"A published standard NFL win/loss was hidden in the player UI");
- assert.equal(winners,health.standard_wins);
+ const games=new Map(schedule.games.map(g=>[g.game_id,g]));
+ const withheld=p=>{const g=games.get(p.game_id);return g&&m.nflRequiresProviderEvent(g.kickoff_utc)&&!m.nflFutureEvidenceVerified(p,g.kickoff_utc)};
+ const excluded=graded.filter(p=>p.odds_type==="standard"&&p.grade_status==="graded"&&["0","1"].includes(p.won)&&withheld(p));
+ for(const p of excluded)assert.ok(!directional.some(x=>x.gameId===p.game_id&&x.playerId===p.player_id&&x.stat===p.stat&&x.line===Number(p.line)&&x.captured===p.captured_at),"Unverified historical grade leaked into UI");
+ assert.equal(directional.length,health.standard_settled-excluded.length,"A published standard NFL win/loss was hidden in the player UI");
+ assert.equal(winners,health.standard_wins-excluded.filter(p=>p.won==="1").length);
  assert.ok(rows.some(p=>p.frozenSettlementArchive===true&&p.captured==="2026-11-09T19:58:51.614124+00:00"&&p.player==="Ray Davis"&&p.grade==="GRADED"),
    "Historic Ray Davis standard prop not retained after latest snapshot rolled");
  const pendingCards=rows.filter(p=>p.grade==="PENDING"&&p.frozenSettlementArchive===true&&p.pendingReason);
- const standardPending=pending.filter(p=>p.odds_type==="standard");
+ const standardPending=pending.filter(p=>p.odds_type==="standard"&&!withheld(p));
  assert.equal(pendingCards.length,standardPending.length,
    "Every published standard NFL pending record must be represented by a pending reason, without inventing missing players");
- if(health.standard_pending_picks!==undefined)assert.equal(pendingCards.length,health.standard_pending_picks);
+ if(health.standard_pending_picks!==undefined)assert.equal(pendingCards.length,health.standard_pending_picks-pending.filter(p=>p.odds_type==="standard"&&withheld(p)).length);
  console.log("NFL standard outcomes rendered",directional.length,"wins",winners,"pending",rows.filter(p=>p.pendingReason).length);
 });
 test("Source-mismatched final prop is never attached as a real grade",()=>{
