@@ -1,7 +1,7 @@
 {
   "season": 2026,
-  "captured_at": "2026-11-15T17:46:51.033791+00:00",
-  "rows": 3631,
+  "captured_at": "2026-11-15T19:17:34.495991+00:00",
+  "rows": 1742,
   "files": [
     "latest_2026_00.csv",
     "latest_2026_01.csv",
@@ -9,15 +9,7 @@
     "latest_2026_03.csv",
     "latest_2026_04.csv",
     "latest_2026_05.csv",
-    "latest_2026_06.csv",
-    "latest_2026_07.csv",
-    "latest_2026_08.csv",
-    "latest_2026_09.csv",
-    "latest_2026_10.csv",
-    "latest_2026_11.csv",
-    "latest_2026_12.csv",
-    "latest_2026_13.csv",
-    "latest_2026_14.csv"
+    "latest_2026_06.csv"
   ],
   "schema": [
     "captured_at",
@@ -70,29 +62,29 @@
     "ok": true,
     "issues": [],
     "warnings": [],
-    "rows": 3631,
-    "games": 11,
-    "players": 175,
-    "captured_at": "2026-11-15T17:46:51.033791+00:00",
+    "rows": 1742,
+    "games": 5,
+    "players": 77,
+    "captured_at": "2026-11-15T19:17:34.495991+00:00",
     "age_hours": 0.02
   },
   "pipeline_health": {
-    "checked_at": "2026-11-15T17:48:00.612310+00:00",
-    "latest_capture": "2026-11-15T17:46:51.033791+00:00",
-    "capture_rows": 180020,
+    "checked_at": "2026-11-15T19:18:35.823429+00:00",
+    "latest_capture": "2026-11-15T19:17:34.495991+00:00",
+    "capture_rows": 181762,
     "graded_rows": 1247,
     "grading": {
-      "final_games": 2,
-      "expected_lines": 1248,
+      "final_games": 3,
+      "expected_lines": 1885,
       "graded_lines": 1247,
-      "missing_lines": 1,
+      "missing_lines": 638,
       "status": "needs_review",
       "reconciliation": {
         "status": "missing_stats",
-        "expected": 1248,
+        "expected": 1885,
         "graded": 1227,
         "preserved": 0,
-        "pending": 1,
+        "pending": 638,
         "pushes": 3,
         "voids": 20,
         "settled": 1224
@@ -101,7 +93,7 @@
     "schedule": {
       "season": 2026,
       "scheduled_games": 272,
-      "games_with_lines": 11,
+      "games_with_lines": 5,
       "games_with_projections": 0,
       "weeks": [
         {
@@ -469,10 +461,16 @@
         {
           "week": 10,
           "scheduled_games": 14,
-          "games_with_lines": 11,
+          "games_with_lines": 5,
           "games_with_projections": 0,
           "games_missing_lines": [
+            "2026_10_BUF_NYJ",
+            "2026_10_CAR_NO",
+            "2026_10_HOU_CLE",
+            "2026_10_JAX_TEN",
+            "2026_10_KC_ATL",
             "2026_10_MIA_IND",
+            "2026_10_MIN_GB",
             "2026_10_NE_DET",
             "2026_10_WAS_NYG"
           ],
@@ -820,13 +818,10 @@
       ],
       "unknown_line_games": [],
       "next_week": 10,
-      "next_week_games": 12,
-      "next_week_games_with_props": 11,
-      "next_week_missing_props": [
-        "2026_10_MIA_IND"
-      ]
+      "next_week_games": 5,
+      "next_week_games_with_props": 5,
+      "next_week_missing_props": []
     },
-    "status": "needs_review",
-    "schedule_note": "Missing PrizePicks props does not mean missing NFL games; game schedule is complete"
+    "status": "needs_review"
   }
 }
