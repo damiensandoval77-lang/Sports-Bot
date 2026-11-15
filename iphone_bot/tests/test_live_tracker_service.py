@@ -12,7 +12,9 @@ def event():
                 {"homeAway":"away","team":{"displayName":"Brooklyn Nets"}},
                 {"homeAway":"home","team":{"displayName":"Dallas Mavericks"}}]}]}
 def summary():
-    return {"header":{"competitions":[{"competitors":[
+    return {"header":{"id":EVENT_ID,"competitions":[{"id":EVENT_ID,
+        "status":{"type":{"state":"in","shortDetail":"Q2 8:00"},"period":2,"displayClock":"8:00"},
+        "competitors":[
         {"homeAway":"away","team":{"displayName":"Brooklyn Nets"}},
         {"homeAway":"home","team":{"displayName":"Dallas Mavericks"}}]}]},
         "boxscore":{"players":[{"team":{"abbreviation":"DAL"},
@@ -30,6 +32,7 @@ class AlwaysOnLiveDataTests(unittest.TestCase):
         self.assertEqual(report["games"][0]["player_rows"][0]["PRA"],13)
         self.assertEqual(report["games"][0]["observed_at"],NOW.isoformat())
         self.assertFalse(report["games"][0]["stale"])
+        self.assertEqual(report["games"][0]["clock"],480) # summary, not older scoreboard550
     def test_errored_boxscore_is_explicit_missing(self):
         def request(path):
             if "summary" in path:raise OSError("blocked")

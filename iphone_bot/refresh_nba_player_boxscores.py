@@ -68,12 +68,16 @@ def collect_game_boxscore(raw, parsed, fetch, now):
             if str(box.get("gameId")) != gid:
                 raise ValueError("Boxscore/game id mismatch")
             timing = boxscore_time(box, parsed)
+            scores = {}
             rows = []
             for kind in ("awayTeam", "homeTeam"):
                 team = box[kind]
                 tricode = team["teamTricode"]
                 if not tricode or tricode != raw[kind]["teamTricode"]:
                     raise ValueError("Boxscore team mismatch")
+                value = team.get("score")
+                scores[("away_score" if kind == "awayTeam" else "home_score")] = (
+                    int(value) if type(value) in (int, float) and 0 <= value <= 300 and value == int(value) else None)
                 team_rows = []
                 for player in team.get("players") or []:
                     stats = player.get("statistics") or {}
@@ -89,8 +93,10 @@ def collect_game_boxscore(raw, parsed, fetch, now):
                 if not team_rows:
                     raise ValueError("Empty team player boxscore")
                 rows.extend(team_rows)
+            if any(value is None for value in scores.values()):
+                scores = {"away_score": None, "home_score": None}
             return {"game": parsed["game"], "id": parsed["id"],
-                    **timing, "source_url": prefix + gid + ".json",
+                    **timing, **scores, "source_url": prefix + gid + ".json",
                     "observed_at": now.isoformat(), "player_rows": rows}, failures
         except SOURCE_ERRORS as err:
             failures.append(f"BOXSCORE_{gid}_{type(err).__name__}: {err}")

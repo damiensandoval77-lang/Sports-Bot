@@ -80,6 +80,16 @@ class LiveBoxscoreTests(unittest.TestCase):
         self.assertEqual(len(seen),2)
         self.assertTrue(all("s3.amazonaws.com" in url for url in seen))
 
+    def test_scores_come_from_same_box_and_invalid_pair_is_null(self):
+        for value, expected in [(25,25),(25.0,25),(0,0),(None,None),(True,None),(-1,None),(301,None),(float("nan"),None),(float("inf"),None),("25",None),(1.5,None)]:
+            with self.subTest(value=value):
+                b=box();b["game"]["homeTeam"]["score"]=value;b["game"]["awayTeam"]["score"]=20
+                r=collect_boxscores(DAY,fetch=lambda url:{"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else b,now=NOW)
+                g=r["games"][0]
+                self.assertEqual(g["home_score"],expected)
+                self.assertEqual(g["away_score"],20 if expected is not None else None)
+                self.assertEqual(g["clock"],"PT06M59.00S")
+
     def test_pregame_has_no_player_rows(self):
         result=collect_boxscores(DAY,fetch=lambda _:{"scoreboard":{"games":[game(1)]}},now=NOW)
         self.assertEqual(result["games"],[])
