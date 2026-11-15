@@ -211,6 +211,23 @@ def observe_confidence(page):
     obs['reasons']=assess_confidence(obs)
     return obs
 
+def assess_pace(obs):
+    """Separate absent saved quotes from missing rendered pace labels."""
+    reasons=[]
+    if obs.get('viewport_width')!=390 or obs.get('overflow',0)>1:
+        reasons.append('LIVE_PACE_PHONE_OVERFLOW')
+    rows=obs.get('rows',[])
+    expected=obs.get('expected_rows')
+    if not isinstance(expected,int) or expected<0:
+        reasons.append('LIVE_PACE_COVERAGE_NOT_TESTED')
+    elif len(rows)!=expected:
+        reasons.append('LIVE_PACE_PROP_RENDER_MISMATCH')
+    elif expected==0 and not obs.get('empty_notice'):
+        reasons.append('LIVE_PACE_EMPTY_STATE_MISSING')
+    if any('Game-clock pace (estimate)' not in r.get('text','') and 'Pace unavailable:' not in r.get('text','') for r in rows):
+        reasons.append('LIVE_PACE_LABEL_MISSING')
+    return reasons
+
 def observe_pace(page):
     page.locator('button[data-league="NBA"]').click(timeout=10000)
     page.locator('button[data-view="live"]').click(timeout=10000)
@@ -224,12 +241,11 @@ def observe_pace(page):
     page.locator(selector).click(timeout=10000)
     obs=page.evaluate("""() => ({game:state.gamePicked.game,viewport_width:innerWidth,
       overflow:document.documentElement.scrollWidth-innerWidth,
+      expected_rows:m.displayCurrentPicks(rows().filter(p=>p.gameId===state.gamePicked.gameId||p.game===state.gamePicked.game)).length,
+      empty_notice:document.querySelector('#detail-content').textContent.includes('No verified pregame standard quotes were archived for this game.'),
       rows:[...document.querySelectorAll('#detail-content [data-prop]')].map(e=>({id:e.dataset.prop,text:e.textContent}))})""")
-    obs['reasons']=[]
-    if obs['viewport_width']!=390 or obs['overflow']>1:
-        obs['reasons'].append('LIVE_PACE_PHONE_OVERFLOW')
-    if not obs['rows'] or any('Game-clock pace (estimate)' not in r['text'] and 'Pace unavailable:' not in r['text'] for r in obs['rows']):
-        obs['reasons'].append('LIVE_PACE_LABEL_MISSING')
+    obs['scope']='NO_SAVED_PROPS' if obs['expected_rows']==0 else 'SAVED_PROP_PACE'
+    obs['reasons']=assess_pace(obs)
     page.locator('#back').click(timeout=10000)
     return obs
 
