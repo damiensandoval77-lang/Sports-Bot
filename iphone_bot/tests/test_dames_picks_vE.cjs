@@ -856,8 +856,9 @@ test("Fresh exact-summary NBA scores survive older independent scoreboard",()=>{
  const board={is_live_score_source:true,generated_at:"2026-11-15T00:45:00Z",games:[{id:g.event_id,game,game_state:"in",away_score:0,home_score:0}]};
  let r=m.gameCatalog(f,null,null,null,now,board)[0];assert.equal(r.awayScore,15);assert.equal(r.homeScore,19);assert.equal(r.scoreObservedAt,g.observed_at);
  board.generated_at="2026-11-15T00:54:00Z";board.games[0].away_score=17;
+ const final=m.gameCatalog({games:[{...g,state:"post"}]},null,null,null,now,board)[0];assert.equal(final.state,"final");assert.equal(final.awayScore,15);
  r=m.gameCatalog(f,null,null,null,now,board)[0];assert.equal(r.awayScore,17);
- for(const patch of [{away_score:null},{home_score:-1},{away_score:1.5},{source_url:g.source_url+'0'},{observed_at:"2026-11-15T00:00:00Z"},{stale:true},{state:"pre"}]){
+ for(const patch of [{away_score:null},{away_score:true},{away_score:[]},{away_score:NaN},{away_score:Infinity},{away_score:301},{home_score:-1},{away_score:1.5},{source_url:g.source_url+'0'},{observed_at:"2026-11-15T00:00:00Z"},{stale:true},{state:"pre"}]){
   r=m.liveGames({games:[{...g,...patch}]},null,now)[0];assert.equal(r.awayScore,null);assert.equal(r.homeScore,null);assert.equal(r.scoreFresh,false);
  }
 });
