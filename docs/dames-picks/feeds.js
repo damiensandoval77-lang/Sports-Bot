@@ -662,7 +662,8 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
     g.source_url==="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event="+g.event_id;
    const awayScore=n(g.away_score),homeScore=n(g.home_score);
    const scoreFresh=isCurrent&&["in","final"].includes(state)&&scoreSource&&
-    awayScore!==null&&homeScore!==null&&Number.isInteger(awayScore)&&Number.isInteger(homeScore)&&awayScore>=0&&homeScore>=0;
+    typeof g.away_score==="number"&&typeof g.home_score==="number"&&
+    Number.isInteger(awayScore)&&Number.isInteger(homeScore)&&awayScore>=0&&homeScore>=0&&awayScore<=300&&homeScore<=300;
    result.push({sport:"NBA",gameId:g.event_id||g.game,game:g.game,observedAt:g.observed_at||nbaFeed.captured_at,
     state:!isCurrent&&state==="in"?"stale":state,sourceState:state,fresh:isCurrent,
     statusText:isCurrent?(g.shortDetail||g.displayClock||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
@@ -746,7 +747,8 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
        (g.gameId===score.id||g.game===score.game));
    if(!match||match.game!==score.game)continue;
    // A later coherent summary must not regress to an older scoreboard.
-   if(match.scoreFresh&&stamp(match.scoreObservedAt)>seenAt)continue;
+   if(match.scoreFresh&&(stamp(match.scoreObservedAt)>seenAt||
+      (match.state==="final"&&score.game_state!=="post")))continue;
    match.awayScore=away;match.homeScore=home;
    match.scoreObservedAt=nbaScoreFeed.generated_at;
    match.scoreFresh=true;
