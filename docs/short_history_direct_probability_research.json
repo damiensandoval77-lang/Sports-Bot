@@ -2998,15 +2998,21 @@
   "official_grade_eligible": false,
   "calibrated": false,
   "last_outcome_check": {
-    "checked_at": "2026-11-14T21:02:32.996497+00:00",
-    "pending_matchups": 0,
+    "checked_at": "2026-11-15T01:54:55.616701+00:00",
+    "pending_matchups": 1,
     "final_nba_games": 0,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
     "retrieved_player_lines": 0,
-    "errors": [],
+    "errors": [
+      "NBA scoreboard unavailable: The read operation timed out",
+      "NBA schedule unavailable: The read operation timed out",
+      "NBA schedule unavailable: The read operation timed out",
+      "ESPN scoreboard unavailable: HTTP Error 403: Forbidden"
+    ],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "status": "NO_ELIGIBLE_PENDING_MATCHUPS",
+    "cached_official_id_candidates": 0,
+    "status": "NO_FINAL_BOXSCORES_AVAILABLE",
     "verified_cached_outcomes_recovered": 0
   },
   "last_capture_blocker": null,
