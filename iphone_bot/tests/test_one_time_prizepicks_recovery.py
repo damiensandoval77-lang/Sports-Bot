@@ -12,14 +12,21 @@ PRIOR = {'authorization_id':recovery.AUTHORIZATION,'status':'UNUSED','last_paid_
 def fixture():
     row={'id':'test','is_demo':False,'league':'NBA','status':'active',
         'player':{'name':'Test Player','team':'BOS'},
-        'event':{'opponent':'MIA','starts_at':'2026-11-15T00:00:00Z'},
+        'event':{'opponent':'MIA','starts_at':'2026-11-15T23:00:00Z'},
         'market':{'stat':'Points','period':'Full game'},'line':20.5,
         'observed_at':NOW.isoformat(),'sides':['more','less'],'tier':'standard'}
     page={'meta':{'mode':'live','source_status':'fresh','next_cursor':'do_not_fetch'},'data':[row]}
-    schedule={'games':[{'game':'Boston Celtics @ Miami Heat','start':'2026-11-15T00:00:00Z'}]}
+    schedule={'games':[{'game':'Boston Celtics @ Miami Heat','start':'2026-11-15T23:00:00Z'}]}
     return page,schedule
 
 class RecoveryTests(unittest.TestCase):
+    def test_previous_authorization_cannot_be_reused(self):
+        root=Path(__file__).resolve().parents[2]
+        prior=json.loads((root/'docs/prizepicks_one_time_recovery_20261114.json').read_text())
+        self.assertEqual(prior['status'], 'FRESH_PARTIAL_BOARD_PUBLISHED')
+        self.assertEqual(prior['charged_credits'], '10')
+        with self.assertRaises(ValueError): recovery.claim(prior,NOW,'run')
+
     def test_window_and_one_shot_cooldown(self):
         for when in (recovery.START-dt.timedelta(seconds=1), recovery.END):
             with self.assertRaises(ValueError): recovery.claim(PRIOR,when,'run')
