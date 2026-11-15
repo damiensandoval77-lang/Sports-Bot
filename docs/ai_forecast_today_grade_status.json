@@ -1,47 +1,56 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-15T02:04:21.163972+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-15T02:51:34.696010+00:00",
   "game_date_eastern": "2026-11-14",
   "recorded_pregame_forecasts": 504,
-  "graded": 0,
-  "verified_dnp_exclusions": 0,
+  "graded": 60,
+  "verified_dnp_exclusions": 32,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 504,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 92,
+  "ungraded": 412,
+  "new_grades": 60,
+  "new_verified_dnp_exclusions": 32,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 15,
+      "mae": 2.753,
+      "mean_signed_error": -0.833
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 15,
+      "mae": 1.447,
+      "mean_signed_error": 0.1
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 15,
+      "mae": 1.48,
+      "mean_signed_error": -0.653
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 15,
+      "mae": 4.42,
+      "mean_signed_error": -1.14
     }
   },
   "ungraded_by_game": {
     "Brooklyn Nets @ Memphis Grizzlies": 108,
     "Chicago Bulls @ Minnesota Timberwolves": 100,
     "Dallas Mavericks @ Cleveland Cavaliers": 104,
-    "Denver Nuggets @ New Orleans Pelicans": 96,
+    "Denver Nuggets @ New Orleans Pelicans": 4,
     "Detroit Pistons @ Miami Heat": 96
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "AJ Johnson",
+    "Bennedict Mathurin",
+    "Bryce Hopkins",
+    "Bryce McGowens",
+    "Dejounte Murray",
+    "Julian Reese",
+    "Trendon Watford",
+    "Trey Murphy III"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Brooklyn Nets @ Memphis Grizzlies": [
       "Cam Spencer",
@@ -128,30 +137,7 @@
       "Zaccharie Risacher"
     ],
     "Denver Nuggets @ New Orleans Pelicans": [
-      "AJ Johnson",
-      "Aaron Gordon",
-      "Bennedict Mathurin",
-      "Bryce Hopkins",
-      "Bryce McGowens",
-      "Cameron Johnson",
-      "Christian Braun",
-      "DeMar DeRozan",
-      "Dejounte Murray",
-      "Derik Queen",
-      "Herbert Jones",
-      "Jamal Murray",
-      "Jeremiah Fears",
-      "Jordan Poole",
-      "Julian Reese",
-      "Karlo Matkovi\u0107",
-      "Marvin Bagley III",
-      "Nikola Joki\u0107",
-      "Saddiq Bey",
-      "Trendon Watford",
-      "Trevon Brazile",
-      "Trey Murphy III",
-      "Tyus Jones",
-      "Zion Williamson"
+      "Cameron Johnson"
     ],
     "Detroit Pistons @ Miami Heat": [
       "Andrew Wiggins",
@@ -180,28 +166,29 @@
       "Tim Hardaway Jr."
     ]
   },
-  "ungraded_distinct_player_markets": 504,
+  "ungraded_distinct_player_markets": 412,
   "final_feed": {
-    "pending_matchups": 12,
+    "pending_matchups": 14,
     "final_nba_games": 10,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 334,
+    "retrieved_player_lines": 332,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 12,
-    "final_cached_id_nba_games": 10,
-    "secondary_espn_dnp_discovered_game_hints": 8,
-    "secondary_verified_explicit_dnp_players": 30,
-    "secondary_dnp_still_unverified": 0,
+    "cached_official_id_candidates": 13,
+    "final_cached_id_nba_games": 9,
+    "secondary_espn_dnp_discovered_game_hints": 7,
+    "secondary_verified_explicit_dnp_players": 29,
+    "secondary_dnp_still_unverified": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 1032,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 1064,
+    "newly_retrieved_verified_rows": 31,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 504
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 4,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 408
     },
     "players": [
       {
@@ -2389,676 +2376,32 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "AJ Johnson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Johnson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Johnson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Johnson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Gordon",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennedict Mathurin",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennedict Mathurin",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennedict Mathurin",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennedict Mathurin",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bryce McGowens",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Cameron Johnson",
         "team": "DEN",
         "game": "Denver Nuggets @ New Orleans Pelicans",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Cameron Johnson",
         "team": "DEN",
         "game": "Denver Nuggets @ New Orleans Pelicans",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Cameron Johnson",
         "team": "DEN",
         "game": "Denver Nuggets @ New Orleans Pelicans",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Cameron Johnson",
         "team": "DEN",
         "game": "Denver Nuggets @ New Orleans Pelicans",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Braun",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "DeMar DeRozan",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dejounte Murray",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derik Queen",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Herbert Jones",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Murray",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jeremiah Fears",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Poole",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Reese",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Reese",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Reese",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Julian Reese",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karlo Matkovi\u0107",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marvin Bagley III",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Joki\u0107",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Saddiq Bey",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trendon Watford",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trendon Watford",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trendon Watford",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trendon Watford",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trevon Brazile",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Murphy III",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Murphy III",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Murphy III",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Murphy III",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyus Jones",
-        "team": "DEN",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zion Williamson",
-        "team": "NOP",
-        "game": "Denver Nuggets @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Andrew Wiggins",
