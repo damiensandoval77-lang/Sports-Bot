@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/nba_scoreboard_independent.json"
 EASTERN = ZoneInfo("America/New_York")
 NBA_LIVE_URLS = (
-    "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
     "https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/scoreboard/todaysScoreboard_00.json",
+    "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
 )
 
 def nba_live_scoreboard(days, requester=request_json, validate_rows=None):
@@ -42,7 +42,7 @@ def nba_live_scoreboard(days, requester=request_json, validate_rows=None):
                 raise ValueError("Incomplete or stale live scoreboard; try next endpoint")
             return {"events": sorted(rows, key=lambda g:g["start"]),
                     "source": "NBA official liveData scoreboard via "+
-                              ("NBA CDN" if url == NBA_LIVE_URLS[0] else "mediaops S3"),
+                              ("mediaops S3" if "s3.amazonaws.com" in url else "NBA CDN"),
                     "rejected": len(raw)-len(rows)}
         except (OSError, ValueError, TypeError, KeyError, RuntimeError, TimeoutError) as e:
             failures.append(type(e).__name__)

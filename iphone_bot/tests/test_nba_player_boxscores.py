@@ -1,7 +1,7 @@
 import datetime as dt
 import unittest
 
-from iphone_bot.refresh_nba_player_boxscores import collect_boxscores, waiting_for_tipoff, NBA_LIVE_URLS, BOX_BASES, publishable_observations, verified_started
+from iphone_bot.refresh_nba_player_boxscores import collect_boxscores, waiting_for_tipoff, NBA_LIVE_URLS, BOX_BASES, publishable_observations, verified_started, PLAYER_SCOREBOARD_URLS
 
 DAY=dt.date(2026,11,9)
 NOW=dt.datetime(2026,11,9,23,30,tzinfo=dt.timezone.utc)
@@ -13,7 +13,8 @@ def game(status=2):
             "awayTeam":{"teamTricode":"NYK","teamName":"Knicks","teamCity":"New York","score":42}}
 
 def box():
-    return {"game":{"gameId":"0022600200",
+    return {"game":{"gameId":"0022600200", "gameTimeUTC":"2026-11-09T23:00:00Z",
+            "gameStatus":2,"period":2,"gameClock":"PT06M59.00S","gameStatusText":"Q2 6:59",
             "homeTeam":{"teamTricode":"BOS","players":[{"personId":11,"name":"Home Player",
                   "statistics":{"points":12,"reboundsTotal":4,"assists":5}}]},
             "awayTeam":{"teamTricode":"NYK","players":[{"personId":22,"name":"Away Player",
@@ -28,6 +29,56 @@ class LiveBoxscoreTests(unittest.TestCase):
         self.assertEqual(next(p["PRA"] for p in result["games"][0]["player_rows"] if p["player"]=="Home Player"),21)
         self.assertEqual(result["coverage"]["observed_game_count"],1)
         self.assertTrue(result["not_sportsbook_lines"])
+
+    def test_totals_use_box_clock_not_older_scoreboard(self):
+        raw=game(); raw.update(period=1,gameClock="PT12M000.00S",gameStatusText="Start 1st")
+        result=collect_boxscores(DAY,fetch=lambda url: {"scoreboard":{"games":[raw]}} if url in NBA_LIVE_URLS else box(),now=NOW)
+        observed=result["games"][0]
+        self.assertEqual((observed["state"],observed["period"],observed["clock"],observed["shortDetail"]),
+                         ("in",2,"PT06M59.00S","Q2 6:59"))
+        self.assertTrue(observed["source_url"].startswith(BOX_BASES[0]))
+
+    def test_final_box_does_not_keep_stale_live_scoreboard_state(self):
+        final=box(); final["game"].update(gameStatus=3,period=4,gameClock="PT00M00.00S",gameStatusText="Final")
+        result=collect_boxscores(DAY,fetch=lambda url: {"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else final,now=NOW)
+        self.assertEqual(result["games"][0]["state"],"post")
+
+    def test_bad_clock_or_start_fails_closed(self):
+        for patch in ({"gameClock":None},{"gameClock":"12:00"},{"gameClock":"PT13M00S"},
+                      {"gameClock":"PT01M60S"},{"period":0},{"period":True},{"gameStatus":1},
+                      {"gameStatus":True},{"gameTimeUTC":"2026-11-08T23:00:00Z"},
+                      {"gameTimeUTC":"2026-11-09T23:00:00"},{"gameStatus":3},
+                      {"period":5,"gameClock":"PT06M00S"}):
+            with self.subTest(patch=patch):
+                bad=box(); bad["game"].update(patch)
+                result=collect_boxscores(DAY,fetch=lambda url: {"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else bad,now=NOW)
+                self.assertEqual(result["games"],[])
+                self.assertFalse(result["coverage"]["complete"])
+
+    def test_final_scoreboard_rejects_lagging_live_box(self):
+        result=collect_boxscores(DAY,fetch=lambda url: {"scoreboard":{"games":[game(3)]}} if url in NBA_LIVE_URLS else box(),now=NOW)
+        self.assertEqual(result["games"],[])
+        self.assertFalse(result["coverage"]["complete"])
+
+    def test_halftime_zero_clock_remains_live_not_final(self):
+        half=box(); half["game"].update(period=2,gameClock="PT00M00.00S",gameStatusText="Halftime")
+        result=collect_boxscores(DAY,fetch=lambda url: {"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else half,now=NOW)
+        self.assertEqual((result["games"][0]["state"],result["games"][0]["period"]),("in",2))
+
+    def test_valid_overtime_clock(self):
+        overtime=box(); overtime["game"].update(period=5,gameClock="PT04M59.50S")
+        result=collect_boxscores(DAY,fetch=lambda url: {"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else overtime,now=NOW)
+        self.assertEqual(result["games"][0]["period"],5)
+
+    def test_healthy_s3_avoids_cdn_timeout_without_duplicate_calls(self):
+        seen=[]
+        def fetch(url):
+            seen.append(url)
+            return {"scoreboard":{"games":[game()]}} if url in NBA_LIVE_URLS else box()
+        result=collect_boxscores(DAY,fetch=fetch,now=NOW)
+        self.assertTrue(result["coverage"]["complete"])
+        self.assertEqual(len(seen),2)
+        self.assertTrue(all("s3.amazonaws.com" in url for url in seen))
 
     def test_pregame_has_no_player_rows(self):
         result=collect_boxscores(DAY,fetch=lambda _:{"scoreboard":{"games":[game(1)]}},now=NOW)
@@ -136,10 +187,10 @@ class LiveBoxscoreTests(unittest.TestCase):
         seen=[]
         def fetch(url):
             seen.append(url)
-            if url==NBA_LIVE_URLS[0]:raise OSError("blocked")
+            if url==PLAYER_SCOREBOARD_URLS[0]:raise OSError("blocked")
             return {"scoreboard":{"games":[]}}
         result=collect_boxscores(DAY,fetch=fetch,now=NOW)
-        self.assertEqual(seen[:2],list(NBA_LIVE_URLS))
+        self.assertEqual(seen[:2],list(PLAYER_SCOREBOARD_URLS))
         self.assertEqual(result["games"],[])
 
 if __name__=="__main__":
