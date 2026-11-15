@@ -5,6 +5,8 @@ supports browsers where ESPN direct requests fail. Never claims 45s freshness,
 never stores model forecasts, and never invents player totals.
 """
 import json
+import math
+import re
 import urllib.request
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
@@ -24,6 +26,43 @@ def get(path):
     # Share JSON validation / retry behavior with immutable research capture.
     # A broken ESPN scoreboard must not overwrite the last verified snapshot.
     return fetch_espn(path)
+
+def summary_observation(event, summary):
+    """Identity, scores and clock belong to the exact summary carrying totals."""
+    header=summary.get("header",{})
+    comps=header.get("competitions") or []
+    if len(comps)!=1:raise ValueError("DIFFERENT_EVENT")
+    comp=comps[0]; ident=str(event.get("id",""))
+    if str(header.get("id",""))!=ident or str(comp.get("id",""))!=ident:
+        raise ValueError("DIFFERENT_EVENT")
+    competitors=comp.get("competitors") or []
+    if len(competitors)!=2 or {c.get("homeAway") for c in competitors}!={"home","away"}:
+        raise ValueError("DIFFERENT_GAME")
+    status=comp.get("status") or {}; state=(status.get("type") or {}).get("state")
+    if state not in ("in","post"):raise ValueError("NON_LIVE_SUMMARY")
+    if event.get("status",{}).get("type",{}).get("state")=="post" and state!="post":
+        raise ValueError("FINAL_STATE_REGRESSION")
+    # A missing or malformed clock never inherits an older scoreboard clock.
+    period=status.get("period"); display=status.get("displayClock")
+    match=re.fullmatch(r"(\d{1,2}):(\d{2})(?:\.(\d+))?",display or "") if isinstance(display,str) else None
+    clock=None
+    if type(period) is int and 1<=period<=20 and match:
+        minutes,seconds=int(match[1]),int(match[2]); clock=minutes*60+seconds
+        if match[3]:clock+=float("0."+match[3])
+        if seconds>=60 or clock>(720 if period<=4 else 300):clock=None
+    if state=="post" and (type(period) is not int or period<4 or clock!=0):clock=None
+    scores={}
+    for c in competitors:
+        value=c.get("score")
+        try:n=float(value)
+        except (ValueError,TypeError):n=float("nan")
+        scores[c["homeAway"]+"_score"]=(int(n) if not isinstance(value,bool) and math.isfinite(n) and 0<=n<=300 and n.is_integer() else None)
+    return {"state":state,"period":period if clock is not None else None,
+            "displayClock":display if clock is not None else None,"clock":clock,
+            "shortDetail":status.get("type",{}).get("shortDetail"),**scores,
+            "source_url":BASE+"/summary?event="+ident,
+            "source_label":"ESPN exact verified game summary (server fallback)"}
+
 
 def build(now,scoreboard,summaries,previous=None):
     data={"status":"OBSERVED_ESPN_LIVE_BOX_SCORES_SERVER_FALLBACK",
@@ -47,16 +86,17 @@ def build(now,scoreboard,summaries,previous=None):
         if not headers or matchup(headers[0].get("competitors",[]))!=expected:
             data["errors"].append({"event_id":event_id,"reason":"DIFFERENT_GAME"})
             continue
+        try:
+            observation=summary_observation(event,summary)
+        except (ValueError,TypeError,KeyError,AttributeError) as error:
+            data["errors"].append({"event_id":event_id,"reason":str(error)})
+            continue
         rows=players(summary)
         if not rows:
             data["errors"].append({"event_id":event_id,"reason":"NO_VERIFIED_STATS"})
             continue
-        status=event["status"]
         data["games"].append({"game":expected,"event_id":event_id,
-            "state":state,"period":status.get("period"),
-            "displayClock":status.get("displayClock"),
-            "clock":status.get("clock"),
-            "shortDetail":status.get("type",{}).get("shortDetail"),
+            **observation,
             "player_rows":rows,"observed_at":now.isoformat(),"stale":False})
     active={}
     for event in scoreboard.get("events",[]):
@@ -65,7 +105,7 @@ def build(now,scoreboard,summaries,previous=None):
         name=matchup(comps[0].get("competitors",[])) if comps else None
         ident=str(event.get("id",""))
         if name and ident.isdecimal():active[name]=ident
-    observed={g["game"] for g in data["games"] if g["state"]=="in"}
+    observed={g["game"] for g in data["games"] if g["state"] in ("in","post") and g["game"] in active}
     missing=sorted(set(active)-observed)
     old=previous or {}
     if old.get("date_eastern")==data["date_eastern"] and old.get("status")==data["status"]:

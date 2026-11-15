@@ -228,6 +228,64 @@ class IndependentScoreboardTests(unittest.TestCase):
 
 
 class PartialCurrentScoreTests(unittest.TestCase):
+    def test_current_official_fallback_partial_survives_with_truthful_source(self):
+        now=dt.datetime(2026,11,10,0,30,tzinfo=UTC)
+        live={"id":"0022600231","game":"A @ B","date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z","game_state":"in","home_score":15,"away_score":12}
+        delayed={"id":"0022600232","game":"C @ D","date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z","game_state":"pre","home_score":None,"away_score":None}
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],"games":[live,delayed]}
+        def fail(_):raise OSError("ESPN blocked")
+        result=snapshot([DAY],reader=fail,fallback=lambda _: {"events":[live,delayed],"source":"NBA official liveData scoreboard via mediaops S3"},schedule=schedule,now=now)
+        self.assertEqual(result["status"],"OBSERVED_NBA_LIVE_SCOREBOARD")
+        self.assertIn("mediaops S3",result["source"]);self.assertNotIn("ESPN",result["source"])
+        self.assertEqual(result["error"],"PARTIAL_CURRENT_SCOREBOARD")
+        self.assertFalse(result["coverage_complete"])
+        self.assertEqual(result["games"][0]["home_score"],15)
+        self.assertEqual(result["games"][1]["game_state"],"unknown")
+        self.assertIsNone(result["games"][1]["home_score"])
+
+    def test_schedule_cache_scores_cannot_be_salvaged_as_current(self):
+        def fail(_):raise OSError("blocked")
+        cached={"id":"1","game":"A @ B","date_eastern":DAY.isoformat(),"game_state":"in","home_score":15,"away_score":12}
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],"games":[{"game":"M @ N","date_eastern":DAY.isoformat()}]}
+        previous={"generated_at":"2026-11-09T01:00:00Z","games":[cached]}
+        result=snapshot([DAY],reader=fail,fallback=lambda _:{"events":[cached],"source":"Previously verified NBA schedule cache (NOT live scores)"},schedule=schedule,previous=previous,now=NOW)
+        self.assertEqual(result["status"],"STALE_UPSTREAM_ERROR")
+        self.assertEqual(result["generated_at"],previous["generated_at"])
+
+    def test_official_mirrors_tried_before_returning_validated_partial(self):
+        raw={"gameId":"0022600231","gameTimeUTC":"2026-11-09T23:00:00Z","gameStatus":2,"period":1,
+             "homeTeam":{"teamName":"Home","teamCity":"B","teamTricode":"B","score":15},
+             "awayTeam":{"teamName":"Away","teamCity":"A","teamTricode":"A","score":12}}
+        seen=[]
+        def request(url):seen.append(url);return {"scoreboard":{"games":[raw]}}
+        result=nba_live_scoreboard([DAY],requester=request,validate_rows=lambda _:False,allow_partial=True)
+        self.assertEqual(seen,list(NBA_LIVE_URLS))
+        self.assertEqual(result["events"][0]["home_score"],15)
+        self.assertIn("mediaops S3",result["source"])
+        second={**raw,"gameId":"0022600232","homeTeam":{**raw["homeTeam"],"teamName":"Other"}}
+        richer=nba_live_scoreboard([DAY],requester=lambda url:{"scoreboard":{"games":[raw] if url==NBA_LIVE_URLS[0] else [raw,second]}},validate_rows=lambda _:False,allow_partial=True)
+        self.assertEqual(len(richer["events"]),2)
+        self.assertIn("NBA CDN",richer["source"])
+        with self.assertRaises(RuntimeError):
+            nba_live_scoreboard([DAY],requester=lambda _:{"scoreboard":{"games":[]}},validate_rows=lambda _:False,allow_partial=True)
+
+    def test_richer_primary_partial_wins_and_is_classified_as_observed(self):
+        now=dt.datetime(2026,11,10,0,30,tzinfo=UTC)
+        first=event("one"); second=event("two")
+        for e in (first,second):
+            e["status"]["type"]["state"]="in"
+            e["competitions"][0]["competitors"][0]["score"]="20"
+            e["competitions"][0]["competitors"][1]["score"]="18"
+        second["competitions"][0]["competitors"][0]["team"]["displayName"]="Other Home"
+        missing={"game":"Missing @ Matchup","date_eastern":DAY.isoformat(),"start":"2026-11-10T00:00:00Z"}
+        schedule={"coverage_complete":True,"dates_eastern":[DAY.isoformat()],"games":[missing]}
+        live={"id":"official","game":"A @ B","date_eastern":DAY.isoformat(),"game_state":"in","home_score":12,"away_score":11}
+        r=snapshot([DAY],reader=lambda _:[first,second],fallback=lambda _:{"events":[live],"source":"NBA official liveData scoreboard via mediaops S3"},schedule=schedule,now=now)
+        self.assertEqual(len(r["games"]),2)
+        self.assertEqual(r["status"],"OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES")
+        self.assertNotIn("NBA official",r["source"])
+        self.assertEqual(r["error"],"PARTIAL_CURRENT_SCOREBOARD")
+
     def test_valid_peer_survives_failed_fallback_without_old_scores(self):
         now=dt.datetime(2026,11,10,0,30,tzinfo=UTC)
         live=event("live")

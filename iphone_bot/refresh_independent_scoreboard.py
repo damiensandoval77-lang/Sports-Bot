@@ -21,9 +21,11 @@ NBA_LIVE_URLS = (
     "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
 )
 
-def nba_live_scoreboard(days, requester=request_json, validate_rows=None):
+def nba_live_scoreboard(days, requester=request_json, validate_rows=None, allow_partial=False):
     """Fetch live NBA scoreboard via CDN or original mediaops S3 source."""
     failures = []
+    partial = None
+    partial_score_count = 0
     for url in NBA_LIVE_URLS:
         try:
             result = requester(url)
@@ -38,7 +40,19 @@ def nba_live_scoreboard(days, requester=request_json, validate_rows=None):
                 if parsed is not None and parsed["id"] not in seen:
                     seen.add(parsed["id"])
                     rows.append(parsed)
+            candidate = {"events": sorted(rows, key=lambda g:g["start"]),
+                         "source": "NBA official liveData scoreboard via "+
+                                   ("mediaops S3" if "s3.amazonaws.com" in url else "NBA CDN"),
+                         "rejected": len(raw)-len(rows)}
             if validate_rows is not None and not validate_rows(rows):
+                # Keep only this newly fetched official payload, never cached rows.
+                verified_partial = (salvage_current_scores(
+                    {"games": rows}, days, None, dt.datetime.now(dt.timezone.utc)) if allow_partial else None)
+                if verified_partial:
+                    score_count = sum(g.get("home_score") is not None and g.get("away_score") is not None
+                                      for g in verified_partial["games"])
+                    if score_count > partial_score_count:
+                        partial, partial_score_count = candidate, score_count
                 raise ValueError("Incomplete or stale live scoreboard; try next endpoint")
             return {"events": sorted(rows, key=lambda g:g["start"]),
                     "source": "NBA official liveData scoreboard via "+
@@ -46,6 +60,8 @@ def nba_live_scoreboard(days, requester=request_json, validate_rows=None):
                     "rejected": len(raw)-len(rows)}
         except (OSError, ValueError, TypeError, KeyError, RuntimeError, TimeoutError) as e:
             failures.append(type(e).__name__)
+    if partial is not None:
+        return partial
     raise RuntimeError("All NBA live scoreboard endpoints failed: "+", ".join(failures))
 
 
@@ -129,8 +145,9 @@ def salvage_current_scores(report, days, schedule, now):
     if not valid_scores:
         return None
     return {"generated_at": now.isoformat(),
-            "status": "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES",
-            "source": "ESPN public scoreboard (partial current observations)",
+            "status": ("OBSERVED_NBA_LIVE_SCOREBOARD" if report.get("status")=="OBSERVED_NBA_LIVE_SCOREBOARD"
+                       else "OBSERVED_THIRD_PARTY_SCHEDULE_AND_SCORES"),
+            "source": report.get("source", "ESPN public scoreboard") + " (partial current observations)",
             "is_live_score_source": True, "dates_eastern": sorted(dates),
             "total_games": len(clean), "games": clean,
             "source_records_rejected": report.get("source_records_rejected", 0),
@@ -141,6 +158,7 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
     now = now or dt.datetime.now(dt.timezone.utc)
     dates = [d.isoformat() for d in days]
     primary_report = None
+    fallback_report = None
     try:
         try:
             report = collect(days, reader=reader)
@@ -168,6 +186,8 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
             source = backup.get("source") or "NBA public CDN season schedule"
             status = ("OBSERVED_NBA_LIVE_SCOREBOARD" if source.startswith("NBA official liveData")
                       else "NBA_CDN_SCHEDULE_FALLBACK_NOT_CONFIRMED_LIVE")
+            if status == "OBSERVED_NBA_LIVE_SCOREBOARD":
+                fallback_report = {**report, "games": rows, "source": source, "status": status}
         if not isinstance(rows, list):
             raise ValueError("Scoreboard games must be a list")
         if started_games_missing_scores(rows,schedule,days,now):
@@ -195,7 +215,11 @@ def snapshot(days, reader=read_schedule, now=None, previous=None, schedule=None,
             "error": None,
         }
     except (OSError, TimeoutError, RuntimeError, ValueError, KeyError, TypeError) as e:
-        partial = salvage_current_scores(primary_report, days, schedule, now)
+        candidates = [salvage_current_scores(r, days, schedule, now)
+                      for r in (fallback_report, primary_report)]
+        partial = max((r for r in candidates if r is not None),
+                      key=lambda r: sum(g.get("home_score") is not None and g.get("away_score") is not None
+                                        for g in r["games"]), default=None)
         if partial is not None:
             return partial
         # A stale snapshot remains stale; do not update its generated_at field.
@@ -243,12 +267,13 @@ def main():
                 return ((not expected or expected.issubset(actual)) and
                         not started_games_missing_scores(rows,baseline,dates,
                                                          dt.datetime.now(dt.timezone.utc)))
-            observed = nba_live_scoreboard(dates, validate_rows=valid_live_rows)
+            observed = nba_live_scoreboard(dates, validate_rows=valid_live_rows, allow_partial=True)
             actual = {(str(g.get("date_eastern")), str(g.get("game", "")).strip().casefold())
                       for g in observed["events"]}
             # NBA liveData can still carry yesterday's games before its date rollover.
             # Do not report an empty/previous-day result as today's live scoreboard.
-            if not expected or expected.issubset(actual):
+            if (not expected or expected.issubset(actual) or
+                salvage_current_scores({"games":observed["events"]}, dates, baseline, dt.datetime.now(dt.timezone.utc))):
                 return observed
         except RuntimeError:
             pass
