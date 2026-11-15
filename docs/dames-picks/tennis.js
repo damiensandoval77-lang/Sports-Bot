@@ -54,4 +54,4 @@
 
 /* Runtime identity only; all tennis estimates remain withheld. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["tennis.js"]="dp-coherent-live-pace-20261115-r47";
+globalThis.__damesRunningAssets["tennis.js"]="dp-accent-exact-player-actual-20261115-r48";
