@@ -1,11 +1,12 @@
 {
   "season": 2026,
-  "captured_at": "2026-11-15T21:06:11.870378+00:00",
-  "rows": 746,
+  "captured_at": "2026-11-15T23:40:49.206287+00:00",
+  "rows": 757,
   "files": [
     "latest_2026_00.csv",
     "latest_2026_01.csv",
-    "latest_2026_02.csv"
+    "latest_2026_02.csv",
+    "latest_2026_03.csv"
   ],
   "schema": [
     "captured_at",
@@ -58,32 +59,32 @@
     "ok": true,
     "issues": [],
     "warnings": [],
-    "rows": 746,
+    "rows": 757,
     "games": 2,
-    "players": 30,
-    "captured_at": "2026-11-15T21:06:11.870378+00:00",
-    "age_hours": 0.01
+    "players": 31,
+    "captured_at": "2026-11-15T23:40:49.206287+00:00",
+    "age_hours": 0.05
   },
   "pipeline_health": {
-    "checked_at": "2026-11-15T21:06:47.732309+00:00",
-    "latest_capture": "2026-11-15T21:06:11.870378+00:00",
-    "capture_rows": 187702,
-    "graded_rows": 1247,
+    "checked_at": "2026-11-15T23:43:32.507006+00:00",
+    "latest_capture": "2026-11-15T23:40:49.206287+00:00",
+    "capture_rows": 188459,
+    "graded_rows": 5941,
     "grading": {
-      "final_games": 3,
-      "expected_lines": 1885,
-      "graded_lines": 1247,
-      "missing_lines": 638,
+      "final_games": 10,
+      "expected_lines": 6349,
+      "graded_lines": 5941,
+      "missing_lines": 408,
       "status": "needs_review",
       "reconciliation": {
         "status": "missing_stats",
-        "expected": 1885,
-        "graded": 1227,
+        "expected": 6349,
+        "graded": 5921,
         "preserved": 0,
-        "pending": 638,
-        "pushes": 3,
+        "pending": 408,
+        "pushes": 10,
         "voids": 20,
-        "settled": 1224
+        "settled": 5911
       }
     },
     "schedule": {
@@ -817,13 +818,10 @@
       ],
       "unknown_line_games": [],
       "next_week": 10,
-      "next_week_games": 3,
+      "next_week_games": 2,
       "next_week_games_with_props": 2,
-      "next_week_missing_props": [
-        "2026_10_SF_DAL"
-      ]
+      "next_week_missing_props": []
     },
-    "status": "needs_review",
-    "schedule_note": "Missing PrizePicks props does not mean missing NFL games; game schedule is complete"
+    "status": "needs_review"
   }
 }
