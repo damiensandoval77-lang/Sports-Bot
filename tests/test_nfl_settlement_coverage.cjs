@@ -1,0 +1,10 @@
+const {test}=require('node:test'),a=require('node:assert/strict');
+require('../docs/dames-picks/feeds.js');const m=globalThis.DamesPicksModel;
+const schedule={games:[{game_id:'G',status:'final',kickoff_utc:'2026-11-15T14:30:00Z'}]};
+const legacy={game_id:'G',odds_type:'standard',grade_status:'graded',actual:'4',won:'0',matchup_evidence:''};
+const shown=[{grade:'GRADED',hit:true},{grade:'GRADED',hit:null}];
+test('explains verified withholding without counting pushes as settled',()=>a.equal(m.nflSettlementCoverageWarning(shown,[legacy],schedule,{standard_settled:2}),'NFL: 1 historical grades withheld because pregame provenance is unverified'));
+test('does not disguise an unexplained missing card',()=>a.equal(m.nflSettlementCoverageWarning(shown,[legacy],schedule,{standard_settled:3}),'NFL published standard grades not fully displayed'));
+test('pending, void and alternative tiers cannot explain settled shortage',()=>{for(const extra of [{grade_status:'pending'},{grade_status:'void_verified_inactive'},{odds_type:'demon'},{won:''}])a.equal(m.nflSettlementCoverageWarning(shown,[{...legacy,...extra}],schedule,{standard_settled:2}),'NFL published standard grades not fully displayed')});
+test('fully displayed ledger has no warning',()=>a.equal(m.nflSettlementCoverageWarning(shown,[],schedule,{standard_settled:1}),null));
+test('unavailable health produces no invented coverage warning',()=>a.equal(m.nflSettlementCoverageWarning([],undefined,undefined,null),null));
