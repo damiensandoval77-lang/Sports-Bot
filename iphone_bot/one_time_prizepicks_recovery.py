@@ -14,13 +14,13 @@ import urllib.request
 import urllib.parse
 from iphone_bot import fetch_prizepicks as provider
 
-AUTHORIZATION = 'nba-2026-11-14-2228-single-compact'
-START = provider.timeparse('2026-11-14T22:28:00Z')
-END = provider.timeparse('2026-11-15T00:00:00Z')
-LAST_PAID = '2026-11-14T19:12:37Z'
+AUTHORIZATION = 'nba-2026-11-15-2154-single-compact'
+START = provider.timeparse('2026-11-15T21:54:00Z')
+END = provider.timeparse('2026-11-15T23:00:00Z')
+LAST_PAID = '2026-11-14T22:32:57.897512+00:00'
 MAX_PAGES = 1
 MAX_TARGETED_READS = 0
-MAX_CREDITS = 10  # Documented compact limit1000 cost; below authorized40 ceiling.
+MAX_CREDITS = 10  # Documented compact limit1000 cost; authorized ceiling 10 credits.
 RECEIPT = 'prizepicks_one_time_recovery.json'
 
 
