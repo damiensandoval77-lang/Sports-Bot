@@ -657,11 +657,19 @@ function liveGames(nbaFeed,nflFeed,now=Date.now()){
    const isCurrent=fresh(at)&&g.stale!==true;
    const state=g.state==="in"?"in":g.state==="post"?"final":g.state==="pre"?"scheduled":"unknown";
    const players=Array.isArray(g.player_rows)?g.player_rows:[];
+   // Scores must come from the same validated ESPN summary as these players.
+   const scoreSource=typeof g.event_id==="string"&&/^\d+$/.test(g.event_id)&&
+    g.source_url==="https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event="+g.event_id;
+   const awayScore=n(g.away_score),homeScore=n(g.home_score);
+   const scoreFresh=isCurrent&&["in","final"].includes(state)&&scoreSource&&
+    awayScore!==null&&homeScore!==null&&Number.isInteger(awayScore)&&Number.isInteger(homeScore)&&awayScore>=0&&homeScore>=0;
    result.push({sport:"NBA",gameId:g.event_id||g.game,game:g.game,observedAt:g.observed_at||nbaFeed.captured_at,
     state:!isCurrent&&state==="in"?"stale":state,sourceState:state,fresh:isCurrent,
     statusText:isCurrent?(g.shortDetail||g.displayClock||state):(state==="final"?"Final · last snapshot":"Last observed · refresh pending"),
     players:players.map(p=>({player:p.player,team:nbaTeamCode(p.team),position:p.position||"",stats:{PTS:n(p.PTS),REB:n(p.REB),AST:n(p.AST),PRA:n(p.PRA)}})),
-    away:g.game.split(" @ ")[0]||"",home:g.game.split(" @ ")[1]||""});
+    away:g.game.split(" @ ")[0]||"",home:g.game.split(" @ ")[1]||"",
+    awayScore:scoreFresh?awayScore:null,homeScore:scoreFresh?homeScore:null,
+    scoreFresh,scoreObservedAt:scoreFresh?(g.observed_at||nbaFeed.captured_at):null});
   }
  }
  if(Array.isArray(nflFeed?.games)){
@@ -737,6 +745,8 @@ function gameCatalog(nbaFeed,nflFeed,nbaSchedule,nflSchedule,now=Date.now(),nbaS
    const match=[...result.values()].find(g=>g.sport==="NBA"&&
        (g.gameId===score.id||g.game===score.game));
    if(!match||match.game!==score.game)continue;
+   // A later coherent summary must not regress to an older scoreboard.
+   if(match.scoreFresh&&stamp(match.scoreObservedAt)>seenAt)continue;
    match.awayScore=away;match.homeScore=home;
    match.scoreObservedAt=nbaScoreFeed.generated_at;
    match.scoreFresh=true;
@@ -836,7 +846,7 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-accent-exact-player-actual-20261115-r48";
+globalThis.__damesRunningAssets["feeds.js"]="dp-coherent-fallback-scores-20261115-r49";
 
 /* Snapshot freshness is separate from immutable saved forecast validity. */
 (function(root){
