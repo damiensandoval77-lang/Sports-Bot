@@ -84,7 +84,7 @@ test("fresh pregame status survives advertised tip without invented live scores 
  const schedule={games:[{id:"7",game:"A @ B",start:"2026-11-11T01:00:00Z"}]};
  const [g]=m.gameCatalog(L.mergeFeeds(null,feed,NOW),null,schedule,null,NOW,board);
  assert.equal(g.state,"scheduled");assert.equal(g.players.length,0);
- assert.equal(g.awayScore,undefined);assert.equal(g.homeScore,undefined);
+ assert.equal(g.awayScore,null);assert.equal(g.homeScore,null);
  const [stale]=m.gameCatalog(L.mergeFeeds(null,feed,NOW+21*60000),null,schedule,null,NOW+21*60000,board);
  assert.equal(stale.state,"unknown");
 });
