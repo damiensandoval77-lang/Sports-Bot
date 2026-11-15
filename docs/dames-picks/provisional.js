@@ -74,4 +74,4 @@ const api={select,render};root.DamesProvisional=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window!=="undefined"?window:globalThis);
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["provisional.js"]="dp-nfl-grade-provenance-20261115-r51";
+globalThis.__damesRunningAssets["provisional.js"]="dp-tennis-match-list-20261115-r52";

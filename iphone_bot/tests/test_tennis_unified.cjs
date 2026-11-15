@@ -30,7 +30,7 @@ test('expired or missing quote is withheld even in saved/detail views',()=>{
  ctx.renderTennisDetail({id:'expired'});assert.match(nodes['detail-content'].innerHTML,/expired or the match started/);
 });
 test('feed load remains independently settled; periodic expiry and runtime checking are installed',()=>{
- assert.match(html,/finalPlayers,tennisBoard\]=await Promise.allSettled/);
+ assert.match(html,/finalPlayers,tennisBoard,tennisFixtures\]=await Promise.allSettled/);
  assert.match(html,/getJSON\("tennis_board.json"\)/);
  assert.match(html,/setInterval\(refreshTennisView,30000\)/);
  assert.match(html,/state.tennisFeed=tennisBoard.status==="fulfilled"\?tennisBoard.value:null/);
@@ -41,4 +41,12 @@ test('Old cached tennis adapter cannot crash new side-aware HTML or invent sides
  const {ctx,state,nodes}=setup();ctx.window.DamesPicksTennis.tennis=()=>[{id:'old',player:'Player',opponent:'Opponent',line:22.5}];
  ctx.renderTennis();assert.equal(ctx.rows().length,0);assert.match(nodes.coverage.textContent,/app files need an update/);assert.doesNotMatch(nodes.cards.innerHTML,/LINE ONLY/);
  ctx.renderTennisDetail({id:'old'});assert.match(nodes['detail-content'].innerHTML,/Quote unavailable/);
+});
+test('fixture names render only on board, searchable and never saved as picks',()=>{
+ const {ctx,state,nodes}=setup();state.tennisFixtures={observed_at:'2026-11-15T22:20:50Z'};
+ ctx.window.DamesPicksTennis.fixtures=()=>[{id:'fixture',players:['Alcaraz','Tiafoe'],starts_at:'2026-11-16T13:00:00Z'}];
+ ctx.renderTennis();assert.match(nodes.cards.innerHTML,/Alcaraz vs Tiafoe/);assert.match(nodes.cards.innerHTML,/MATCH LIST/);assert.doesNotMatch(nodes.cards.innerHTML,/data-id=/);assert.match(nodes.coverage.textContent,/Partial list, not a live schedule/);
+ nodes.query.value='other';ctx.renderTennis();assert.doesNotMatch(nodes.cards.innerHTML,/Alcaraz/);
+ nodes.query.value='';state.mode='saved';ctx.renderTennis();assert.doesNotMatch(nodes.cards.innerHTML,/Alcaraz/);
+ state.mode='live';ctx.renderTennis();assert.doesNotMatch(nodes.cards.innerHTML,/Alcaraz/);
 });

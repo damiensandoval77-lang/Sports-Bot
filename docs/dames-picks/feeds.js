@@ -870,7 +870,7 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-grade-provenance-20261115-r51";
+globalThis.__damesRunningAssets["feeds.js"]="dp-tennis-match-list-20261115-r52";
 
 /* Snapshot freshness is separate from immutable saved forecast validity. */
 (function(root){

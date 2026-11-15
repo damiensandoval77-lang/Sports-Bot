@@ -49,9 +49,16 @@
   }
   return [...rows.values()].sort((a,b)=>stamp(a.start)-stamp(b.start)||a.player.localeCompare(b.player)||a.stat.localeCompare(b.stat));
  }
- root.DamesPicksTennis=Object.freeze({tennis,MAX_AGE_MS});
+ function fixtures(feed,now=Date.now()){
+  if(!finite(now)||!feed||feed.schema_version!=="tennis_fixture_snapshot_v1"||feed.source!=="PrizePicks public board"||feed.complete!==false||!Array.isArray(feed.matches))return [];
+  const observed=stamp(feed.observed_at);
+  if(!Number.isFinite(observed)||observed>now||now-observed>24*60*60*1000)return [];
+  const seen=new Set();
+  return feed.matches.filter(q=>q&&text(q.id)&&!seen.has(q.id)&&Array.isArray(q.players)&&q.players.length===2&&q.players.every(text)&&q.players[0]!==q.players[1]&&stamp(q.starts_at)>now&&stamp(q.starts_at)>observed&&seen.add(q.id)).sort((a,b)=>stamp(a.starts_at)-stamp(b.starts_at));
+ }
+ root.DamesPicksTennis=Object.freeze({tennis,fixtures,MAX_AGE_MS});
 })(typeof globalThis!=="undefined"?globalThis:this);
 
 /* Runtime identity only; all tennis estimates remain withheld. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["tennis.js"]="dp-nfl-grade-provenance-20261115-r51";
+globalThis.__damesRunningAssets["tennis.js"]="dp-tennis-match-list-20261115-r52";
