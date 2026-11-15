@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-15T02:07:17.096448+00:00",
+  "checked_at": "2026-11-15T03:21:38.171064+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -8,7 +8,10 @@
   "required_consecutive_hours": 72,
   "blocking_checks": [
     "unified_artifacts",
-    "nba_capture"
+    "public_unified_browser",
+    "nba_production",
+    "nba_capture",
+    "nba_grading"
   ],
   "checks": {
     "unified_artifacts": {
@@ -19,12 +22,17 @@
       ]
     },
     "public_unified_browser": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "MERGED_BROWSER_NOT_VERIFIED"
+      ]
     },
     "nba_production": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "NBA_PRODUCTION_NOT_READY",
+        "NBA_FAILED_PUBLIC_BROWSER"
+      ]
     },
     "nba_capture": {
       "state": "DEGRADED",
@@ -33,8 +41,10 @@
       ]
     },
     "nba_grading": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "GRADING_INCOMPLETE:2026-11-14"
+      ]
     },
     "published_pick_settlement": {
       "state": "READY",
