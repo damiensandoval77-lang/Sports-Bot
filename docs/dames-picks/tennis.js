@@ -54,4 +54,4 @@
 
 /* Runtime identity only; all tennis estimates remain withheld. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["tennis.js"]="dp-nba-saved-quote-freshness-20261114-r46";
+globalThis.__damesRunningAssets["tennis.js"]="dp-coherent-live-pace-20261115-r47";
