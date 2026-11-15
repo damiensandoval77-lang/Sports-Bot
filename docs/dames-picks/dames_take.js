@@ -159,4 +159,4 @@ root.DamesTake={POOL,tierFor,support,damesTake,forSlate};
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["dames_take.js"]="dp-nba-saved-quote-freshness-20261114-r46";
+globalThis.__damesRunningAssets["dames_take.js"]="dp-coherent-live-pace-20261115-r47";
