@@ -34,7 +34,7 @@ def main():
             if len(raw)>1000000: raise ValueError('Oversize metadata')
             payload = safe(json.loads(raw),key)
             result.update(status='RECEIVED',http_status=response.status,
-                          credits_cost=response.headers.get('X-Credits-Cost'),
+                          credits_cost='0' if response.headers.get('X-Credits-Cost') == '0' else 'UNVERIFIED',
                           coverage=payload)
     except urllib.error.HTTPError as exc:
         result.update(status='HTTP_ERROR',http_status=exc.code)
