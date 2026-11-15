@@ -74,4 +74,4 @@ const api={select,render};root.DamesShortHistory=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window!=="undefined"?window:globalThis);
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["short_history.js"]="dp-nba-saved-quote-freshness-20261114-r46";
+globalThis.__damesRunningAssets["short_history.js"]="dp-coherent-live-pace-20261115-r47";
