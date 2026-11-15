@@ -848,3 +848,16 @@ test("game-detail NBA player teams normalize provider aliases without changing o
  }]},null,now);
  for(const row of games[0].players){assert.equal(row.team,teams[row.player]);assert.equal(row.stats.PRA,12);}
 });
+
+test("Fresh exact-summary NBA scores survive older independent scoreboard",()=>{
+ const now=Date.parse("2026-11-15T00:55:00Z"),game="Dallas Mavericks @ Cleveland Cavaliers";
+ const g={game,event_id:"401909981",state:"in",observed_at:"2026-11-15T00:50:00Z",source_url:"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401909981",away_score:15,home_score:19,player_rows:[]};
+ const f={games:[g]};
+ const board={is_live_score_source:true,generated_at:"2026-11-15T00:45:00Z",games:[{id:g.event_id,game,game_state:"in",away_score:0,home_score:0}]};
+ let r=m.gameCatalog(f,null,null,null,now,board)[0];assert.equal(r.awayScore,15);assert.equal(r.homeScore,19);assert.equal(r.scoreObservedAt,g.observed_at);
+ board.generated_at="2026-11-15T00:54:00Z";board.games[0].away_score=17;
+ r=m.gameCatalog(f,null,null,null,now,board)[0];assert.equal(r.awayScore,17);
+ for(const patch of [{away_score:null},{home_score:-1},{away_score:1.5},{source_url:g.source_url+'0'},{observed_at:"2026-11-15T00:00:00Z"},{stale:true},{state:"pre"}]){
+  r=m.liveGames({games:[{...g,...patch}]},null,now)[0];assert.equal(r.awayScore,null);assert.equal(r.homeScore,null);assert.equal(r.scoreFresh,false);
+ }
+});
