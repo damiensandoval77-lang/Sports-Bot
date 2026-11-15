@@ -1,0 +1,39 @@
+name: Inspect zero-credit tennis coverage metadata
+on:
+  push:
+    branches: [main]
+    paths: ['docs/tennis/coverage_request_20261115.json']
+permissions:
+  contents: read
+concurrency:
+  group: tennis-coverage-inspect
+  cancel-in-progress: false
+jobs:
+  inspect:
+    if: github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Offline safety tests
+        run: python -m unittest discover -s iphone_bot/tests -p test_tennis_coverage.py -v
+      - name: Only run when one-shot marker is first added
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: git diff --name-status "$BEFORE" "$AFTER" -- docs/tennis/coverage_request_20261115.json | grep -Fx $'A\tdocs/tennis/coverage_request_20261115.json'
+      - name: One metadata request, no paid data or retries
+        env:
+          PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
+        run: python iphone_bot/probe_tennis_coverage.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tennis-coverage-metadata
+          path: tennis-coverage-status.json
+          retention-days: 3
