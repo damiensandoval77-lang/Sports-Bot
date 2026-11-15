@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.verify_unified_dames_browser import assess, assess_live_order, assess_tennis, assess_confidence
+from iphone_bot.verify_unified_dames_browser import assess, assess_live_order, assess_tennis, assess_confidence, assess_pace
 
 class UnifiedBrowserAssessmentTests(unittest.TestCase):
     def test_both_sports_rendered(self):
@@ -153,3 +153,21 @@ class ConfidenceBrowserTests(unittest.TestCase):
 if __name__=="__main__":unittest.main()
 
 
+
+class PaceAssessmentTests(unittest.TestCase):
+    def obs(self, expected=0, rows=None, empty=True):
+        return dict(viewport_width=390,overflow=0,expected_rows=expected,rows=rows or [],empty_notice=empty)
+    def test_no_quotes_is_not_missing_label(self):
+        self.assertEqual(assess_pace(self.obs()),[])
+    def test_missing_expected_prop_still_fails(self):
+        self.assertIn('LIVE_PACE_PROP_RENDER_MISMATCH',assess_pace(self.obs(1)))
+    def test_empty_notice_required(self):
+        self.assertIn('LIVE_PACE_EMPTY_STATE_MISSING',assess_pace(self.obs(empty=False)))
+    def test_missing_label_on_real_prop_fails(self):
+        self.assertIn('LIVE_PACE_LABEL_MISSING',assess_pace(self.obs(1,[{'text':'Actual 2'}])))
+    def test_available_and_unavailable_labels_pass(self):
+        for label in ('Game-clock pace (estimate) 18','Pace unavailable: clock missing'):
+            self.assertEqual(assess_pace(self.obs(1,[{'text':label}])),[])
+    def test_missing_expectation_fails(self):
+        o=self.obs();del o['expected_rows']
+        self.assertIn('LIVE_PACE_COVERAGE_NOT_TESTED',assess_pace(o))
