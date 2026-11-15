@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+require('../docs/dames-picks/feeds.js');
+const notice=globalThis.DamesPicksQuoteFreshness.notice;
+const now=Date.parse('2026-11-15T12:00:00Z');
+const feed={season:2026,rows:100,files:['latest.csv'],captured_at:'2026-11-15T11:00:00Z',generated_at:'2026-11-15T12:00:00Z',health:{age_hours:0}};
+assert.equal(notice(feed,'NFL','board',now),'');
+assert.match(notice(feed,'NFL','board',now+1),/NFL provider quotes are over 60 minutes old/);
+assert.match(notice({...feed,captured_at:'2026-11-14T15:32:07Z'},'NFL','saved',now),/Saved forecasts are unchanged/);
+for(const invalid of [null,{...feed,rows:0},{...feed,files:[]},{...feed,captured_at:'2026-11-15T13:00:00Z'},{...feed,captured_at:'invalid'},{...feed,captured_at:'2026-11-15T11:00:00'}])assert.match(notice(invalid,'NFL','board',now),/freshness is unavailable/);
+for(const league of ['NBA','NFL'])for(const mode of ['live','tracker'])assert.equal(notice(null,league,mode,now),'');
+assert.equal(notice(null,'TENNIS','board',now),'');
+const nba={status:'LIVE_NATIVE_PRIZEPICKS_LINES',generated_at:'2026-11-15T11:00:00Z'};
+assert.equal(notice(nba,'NBA','board',now),'');
+assert.match(notice(nba,'NBA','board',now+1),/NBA provider quotes are over 60 minutes old/);
+console.log('quote freshness regression checks passed');

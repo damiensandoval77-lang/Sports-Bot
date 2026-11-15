@@ -54,4 +54,4 @@
 
 /* Runtime identity only; all tennis estimates remain withheld. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["tennis.js"]="dp-coherent-fallback-scores-20261115-r49";
+globalThis.__damesRunningAssets["tennis.js"]="dp-nfl-quote-freshness-20261115-r50";

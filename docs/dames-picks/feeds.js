@@ -853,16 +853,17 @@ function message(c,formatTime){
 }
 root.DamesPicksCoverage={tonight,message};
 })(typeof window!=="undefined"?window:globalThis);
-globalThis.__damesRunningAssets["feeds.js"]="dp-coherent-fallback-scores-20261115-r49";
+globalThis.__damesRunningAssets["feeds.js"]="dp-nfl-quote-freshness-20261115-r50";
 
 /* Snapshot freshness is separate from immutable saved forecast validity. */
 (function(root){
  function notice(feed,league,mode,now=Date.now()){
-  if(league!=="NBA"||!["board","saved"].includes(mode))return "";
-  const raw=feed?.generated_at,t=typeof raw==="string"&&/(Z|[+-]\d{2}:\d{2})$/.test(raw)?Date.parse(raw):NaN;
-  const valid=["LIVE_NATIVE_PRIZEPICKS_LINES","LIVE_THIRD_PARTY_PRIZEPICKS_LINES"].includes(feed?.status)&&Number.isFinite(t)&&t<=now;
+  if(!["NBA","NFL"].includes(league)||!["board","saved"].includes(mode))return "";
+  const raw=league==="NFL"?feed?.captured_at:feed?.generated_at,t=typeof raw==="string"&&/(Z|[+-]\d{2}:\d{2})$/.test(raw)?Date.parse(raw):NaN;
+  const sourceValid=league==="NFL"?feed?.season===2026&&Number(feed?.rows)>0&&Array.isArray(feed?.files)&&feed.files.length>0:["LIVE_NATIVE_PRIZEPICKS_LINES","LIVE_THIRD_PARTY_PRIZEPICKS_LINES"].includes(feed?.status);
+  const valid=sourceValid&&Number.isFinite(t)&&t<=now;
   if(valid&&now-t<=60*60*1000)return "";
-  return (valid?"NBA provider quotes are over 60 minutes old. ":"Current NBA provider quote freshness is unavailable. ")+"Saved forecasts are unchanged; current line availability is unverified. Check the provider before using a saved line.";
+  return (valid?league+" provider quotes are over 60 minutes old. ":"Current "+league+" provider quote freshness is unavailable. ")+"Saved forecasts are unchanged; current line availability is unverified. Check the provider before using a saved line.";
  }
  root.DamesPicksQuoteFreshness={notice};
 })(typeof window!=="undefined"?window:globalThis);
