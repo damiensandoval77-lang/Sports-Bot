@@ -211,6 +211,28 @@ def observe_confidence(page):
     obs['reasons']=assess_confidence(obs)
     return obs
 
+def observe_pace(page):
+    page.locator('button[data-league="NBA"]').click(timeout=10000)
+    page.locator('button[data-view="live"]').click(timeout=10000)
+    target=page.evaluate("""() => {
+      const g=m.currentSlateGames(state.liveGames,'NBA').find(g=>g.state==='in'&&g.fresh);
+      return g?g.sport+'|'+g.gameId:null;
+    }""")
+    if not target:
+        return {"scope":"NO_FRESH_LIVE_GAME", "reasons":[]}
+    selector=page.evaluate("""id => '#cards [data-game="'+CSS.escape(id)+'"]'""",target)
+    page.locator(selector).click(timeout=10000)
+    obs=page.evaluate("""() => ({game:state.gamePicked.game,viewport_width:innerWidth,
+      overflow:document.documentElement.scrollWidth-innerWidth,
+      rows:[...document.querySelectorAll('#detail-content [data-prop]')].map(e=>({id:e.dataset.prop,text:e.textContent}))})""")
+    obs['reasons']=[]
+    if obs['viewport_width']!=390 or obs['overflow']>1:
+        obs['reasons'].append('LIVE_PACE_PHONE_OVERFLOW')
+    if not obs['rows'] or any('Game-clock pace (estimate)' not in r['text'] and 'Pace unavailable:' not in r['text'] for r in obs['rows']):
+        obs['reasons'].append('LIVE_PACE_LABEL_MISSING')
+    page.locator('#back').click(timeout=10000)
+    return obs
+
 def probe():
     from playwright.sync_api import sync_playwright
     errors=[]
@@ -280,6 +302,8 @@ def probe():
                 result[sport]=observation
             report=assess(result["NBA"],result["NFL"],errors,app_title=title)
             report["browser_direct_probe"]=direct
+            report["live_pace"]=observe_pace(page)
+            report["reasons"].extend(report["live_pace"]["reasons"])
             report["TENNIS"]=observe_tennis(page)
             report["nba_confidence"]=observe_confidence(page)
             report["reasons"].extend(report["nba_confidence"]["reasons"])

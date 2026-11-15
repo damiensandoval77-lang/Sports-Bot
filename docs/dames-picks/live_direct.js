@@ -76,10 +76,26 @@ function build(nowMs,events,summaries){
   }
   const rows=playerRows(summary);
   if(!rows.length){feed.errors.push({event_id:id,reason:"NO_VERIFIED_STATS"});continue}
-  const score=scoresOf(competitors);
-  feed.games.push({game,event_id:id,state:st,period:e.status?.period,
-   displayClock:e.status?.displayClock,clock:e.status?.clock,
-   shortDetail:e.status?.type?.shortDetail,away_score:score.away,home_score:score.home,
+  // Player totals and timing must describe the same fetched summary, not an
+  // older scoreboard request. Missing summary timing must suppress pace.
+  const competition=summary.header.competitions[0];
+  if((summary.header.id!=null&&String(summary.header.id)!==id)||
+     (competition.id!=null&&String(competition.id)!==id)){
+   feed.errors.push({event_id:id,reason:"DIFFERENT_EVENT"});continue;
+  }
+  const status=competition.status||{},summaryState=status.type?.state;
+  if(summaryState&&summaryState!=="in"&&summaryState!=="post"){
+   feed.errors.push({event_id:id,reason:"NON_LIVE_SUMMARY"});continue;
+  }
+  const score=scoresOf(competition.competitors);
+  if(score.away!==null&&score.home!==null&&summaryState){
+   const item=board.games.find(g=>g.id===id);
+   if(item)Object.assign(item,{away_score:score.away,home_score:score.home,
+    game_state:summaryState,period:status.period??null,short_detail:status.type?.shortDetail||null});
+  }
+  feed.games.push({game,event_id:id,state:summaryState||st,period:status.period??null,
+   displayClock:status.displayClock??null,clock:status.clock??null,
+   shortDetail:status.type?.shortDetail||"Live · clock unavailable",away_score:score.away,home_score:score.home,
    player_rows:rows,observed_at:iso,stale:false,source_label:SOURCE});
  }
  return {feed,board};
@@ -224,4 +240,4 @@ root.DamesPicksLive={fetchNFL,mergeNFL,nflPlayers,etDate,matchup,playerRows,buil
 
 /* Runtime execution identity: fail closed if any cached asset predates this release. */
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["live_direct.js"]="dp-nba-saved-quote-freshness-20261114-r46";
+globalThis.__damesRunningAssets["live_direct.js"]="dp-coherent-live-pace-20261115-r47";
