@@ -1,6 +1,6 @@
 {
   "status": "OBSERVED_NBA_LIVEDATA_PLAYER_BOXSCORES",
-  "captured_at": "2026-11-15T00:12:09.719397+00:00",
+  "captured_at": "2026-11-15T00:25:53.458583+00:00",
   "date_eastern": "2026-11-14",
   "source": "NBA public liveData scoreboard and game boxscore",
   "games": [
@@ -9,67 +9,69 @@
       "id": "0022600231",
       "state": "in",
       "period": 1,
-      "shortDetail": "Start of 1st Qtr    ",
-      "clock": "PT12M000.00S",
-      "observed_at": "2026-11-15T00:12:09.719397+00:00",
+      "clock": "PT05M31.00S",
+      "shortDetail": "Q1 5:31",
+      "game_start": "2026-11-15T00:00:00+00:00",
+      "source_url": "https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_0022600231.json",
+      "observed_at": "2026-11-15T00:25:53.458583+00:00",
       "player_rows": [
         {
           "player": "Cam Johnson",
           "player_id": "1629661",
           "team": "DEN",
           "PTS": 0,
-          "REB": 0,
+          "REB": 1,
           "AST": 0,
-          "PRA": 0
+          "PRA": 1
         },
         {
           "player": "Aaron Gordon",
           "player_id": "203932",
           "team": "DEN",
-          "PTS": 0,
+          "PTS": 4,
           "REB": 0,
-          "AST": 0,
-          "PRA": 0
+          "AST": 1,
+          "PRA": 5
         },
         {
           "player": "Nikola Jokic",
           "player_id": "203999",
           "team": "DEN",
-          "PTS": 1,
-          "REB": 0,
+          "PTS": 7,
+          "REB": 3,
           "AST": 0,
-          "PRA": 1
+          "PRA": 10
         },
         {
           "player": "Christian Braun",
           "player_id": "1631128",
           "team": "DEN",
-          "PTS": 0,
-          "REB": 0,
-          "AST": 0,
-          "PRA": 0
+          "PTS": 2,
+          "REB": 1,
+          "AST": 1,
+          "PRA": 4
         },
         {
           "player": "Jamal Murray",
           "player_id": "1627750",
           "team": "DEN",
-          "PTS": 0,
+          "PTS": 2,
           "REB": 0,
-          "AST": 0,
-          "PRA": 0
-        },
-        {
-          "player": "Marvin Bagley III",
-          "player_id": "1628963",
-          "team": "DEN",
-          "PTS": 0,
-          "REB": 0,
-          "AST": 0,
-          "PRA": 0
+          "AST": 4,
+          "PRA": 6
         },
         {
           "player": "Trevon Brazile",
           "player_id": "1642350",
+          "team": "DEN",
+          "PTS": 2,
+          "REB": 1,
+          "AST": 0,
+          "PRA": 3
+        },
+        {
+          "player": "Marvin Bagley III",
+          "player_id": "1628963",
           "team": "DEN",
           "PTS": 0,
           "REB": 0,
@@ -179,19 +181,19 @@
           "player": "Zion Williamson",
           "player_id": "1629627",
           "team": "NOP",
-          "PTS": 0,
-          "REB": 0,
-          "AST": 1,
-          "PRA": 1
+          "PTS": 2,
+          "REB": 4,
+          "AST": 2,
+          "PRA": 8
         },
         {
           "player": "Yves Missi",
           "player_id": "1642274",
           "team": "NOP",
-          "PTS": 0,
+          "PTS": 2,
           "REB": 1,
           "AST": 0,
-          "PRA": 1
+          "PRA": 3
         },
         {
           "player": "Herbert Jones",
@@ -206,10 +208,19 @@
           "player": "Jeremiah Fears",
           "player_id": "1642847",
           "team": "NOP",
-          "PTS": 3,
-          "REB": 1,
+          "PTS": 5,
+          "REB": 2,
+          "AST": 1,
+          "PRA": 8
+        },
+        {
+          "player": "Derik Queen",
+          "player_id": "1642852",
+          "team": "NOP",
+          "PTS": 2,
+          "REB": 0,
           "AST": 0,
-          "PRA": 4
+          "PRA": 2
         },
         {
           "player": "Malik Dia",
@@ -259,15 +270,6 @@
         {
           "player": "Jordan Poole",
           "player_id": "1629673",
-          "team": "NOP",
-          "PTS": 0,
-          "REB": 0,
-          "AST": 0,
-          "PRA": 0
-        },
-        {
-          "player": "Derik Queen",
-          "player_id": "1642852",
           "team": "NOP",
           "PTS": 0,
           "REB": 0,
@@ -331,10 +333,7 @@
       ]
     }
   ],
-  "errors": [
-    "The read operation timed out",
-    "BOXSCORE_0022600231_TimeoutError: The read operation timed out"
-  ],
+  "errors": [],
   "coverage": {
     "observed_game_count": 1,
     "active_or_final_count": 1,
