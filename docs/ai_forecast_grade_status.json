@@ -1,95 +1,89 @@
 {
-  "status": "AI_PRETIP_FORECASTS_GRADED",
-  "generated_at": "2026-11-15T04:54:59.874983+00:00",
-  "game_date_eastern": "2026-11-13",
-  "recorded_pregame_forecasts": 904,
-  "graded": 700,
-  "verified_dnp_exclusions": 204,
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-15T05:27:37.480130+00:00",
+  "game_date_eastern": "2026-11-14",
+  "recorded_pregame_forecasts": 504,
+  "graded": 356,
+  "verified_dnp_exclusions": 140,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 904,
-  "ungraded": 0,
+  "accounted_for": 496,
+  "ungraded": 8,
   "new_grades": 0,
   "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 175,
-      "mae": 5.438,
-      "mean_signed_error": -0.104
+      "graded": 89,
+      "mae": 4.574,
+      "mean_signed_error": -1.579
     },
     "REB": {
-      "graded": 175,
-      "mae": 1.837,
-      "mean_signed_error": 0.015
+      "graded": 89,
+      "mae": 2.201,
+      "mean_signed_error": -0.345
     },
     "AST": {
-      "graded": 175,
-      "mae": 1.428,
-      "mean_signed_error": -0.022
+      "graded": 89,
+      "mae": 1.518,
+      "mean_signed_error": -0.57
     },
     "PRA": {
-      "graded": 175,
-      "mae": 6.959,
-      "mean_signed_error": -0.115
+      "graded": 89,
+      "mae": 6.801,
+      "mean_signed_error": -2.558
     }
   },
-  "ungraded_by_game": {},
+  "ungraded_by_game": {
+    "Dallas Mavericks @ Cleveland Cavaliers": 4,
+    "Denver Nuggets @ New Orleans Pelicans": 4
+  },
   "excluded_verified_dnp_players": [
-    "Ajay Mitchell",
-    "Alex Karaban",
-    "Alex Morales",
-    "Asa Newell",
-    "Baba Miller",
-    "Braden Smith",
-    "Brandon Williams",
-    "Brooks Barnhizer",
-    "Bruce Thornton",
+    "AJ Johnson",
+    "Bennedict Mathurin",
+    "Bryce Hopkins",
     "Bryce McGowens",
     "Caleb Wilson",
-    "Cam Christie",
-    "Chris Youngblood",
-    "Corey Kispert",
+    "Cody Williams",
     "Dejounte Murray",
+    "Donovan Mitchell",
+    "Dru Smith",
+    "Ebuka Okorie",
     "Evan Mobley",
-    "Isaiah Crawford",
-    "Jae'Sean Tate",
-    "Jalen Pickett",
-    "James Wiseman",
-    "Jarace Walker",
-    "Jase Richardson",
+    "Isaiah Evans",
+    "Jalen Smith",
+    "James Harden",
+    "Jarrett Allen",
     "Jaylin Sellers",
-    "Jericho Sims",
-    "Jonathan Mogbo",
+    "Jerami Grant",
+    "Jett Howard",
     "Jordan Hawkins",
-    "Jose Alvarado",
-    "Kasparas Jaku\u010dionis",
-    "Klay Thompson",
-    "Kobe Brown",
-    "Lauri Markkanen",
-    "Leonard Miller",
-    "Marcus Smart",
-    "Micah Peavy",
-    "Micah Potter",
-    "Mohamed Diawara",
-    "Nick Martinelli",
+    "Julian Reese",
+    "Marcus Sasser",
+    "Max Christie",
+    "Michael Porter Jr.",
+    "Moussa Ciss\u00e9",
     "Nick Richards",
-    "Nikola Jovi\u0107",
     "Pelle Larsson",
-    "Precious Achiuwa",
+    "Peyton Watson",
     "Quinten Post",
     "Sam Merrill",
-    "Stephen Curry",
+    "Tim Hardaway Jr.",
+    "Tobi Lawal",
     "Trendon Watford",
     "Trey Murphy III",
-    "V\u00edt Krej\u010d\u00ed",
-    "Yang Hansen",
-    "Zach Collins",
-    "Zach Edey",
-    "Zuby Ejiofor"
+    "Ty Jerome",
+    "Zach Edey"
   ],
-  "ungraded_distinct_player_names_by_game": {},
-  "ungraded_distinct_player_markets": 0,
+  "ungraded_distinct_player_names_by_game": {
+    "Dallas Mavericks @ Cleveland Cavaliers": [
+      "P.J. Washington"
+    ],
+    "Denver Nuggets @ New Orleans Pelicans": [
+      "Cameron Johnson"
+    ]
+  },
+  "ungraded_distinct_player_markets": 8,
   "final_feed": {
     "pending_matchups": 14,
     "final_nba_games": 14,
@@ -100,7 +94,7 @@
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 9,
     "final_cached_id_nba_games": 9,
-    "secondary_espn_dnp_discovered_game_hints": 7,
+    "secondary_espn_dnp_discovered_game_hints": 11,
     "secondary_verified_explicit_dnp_players": 41,
     "secondary_dnp_still_unverified": 2,
     "status": "FINAL_BOXSCORES_FOUND",
@@ -109,8 +103,67 @@
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {},
-    "players": [],
+    "by_reason": {
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 8
+    },
+    "players": [
+      {
+        "player": "P.J. Washington",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Cleveland Cavaliers",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "P.J. Washington",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Cleveland Cavaliers",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "P.J. Washington",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Cleveland Cavaliers",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "P.J. Washington",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Cleveland Cavaliers",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ New Orleans Pelicans",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ New Orleans Pelicans",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ New Orleans Pelicans",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ New Orleans Pelicans",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      }
+    ],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,
