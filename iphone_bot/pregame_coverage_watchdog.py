@@ -50,6 +50,11 @@ def check(now,schedule,forecast,archive,quick):
             statuses.append("NO_IMMUTABLE_PRETIP_FORECAST_CAPTURE")
         if upcoming and counts.get(name,0)<=0:
             statuses.append("NO_PUBLISHED_PRIZEPICKS_AI_COMPARISON")
+        # Current comparisons may disappear after tipoff. This watchdog reads
+        # only the no-line forecast archive, not immutable provider quotes.
+        # Never promote that narrower evidence to complete delivery coverage.
+        if not upcoming and saved:
+            statuses.append("POST_TIP_QUOTE_CAPTURE_NOT_ASSESSED")
         # All three should be observable before imminent tipoff.
         imminent=0<secs<=1800
         if upcoming and imminent and not saved:
@@ -61,19 +66,20 @@ def check(now,schedule,forecast,archive,quick):
                      "current_forecasts":len(model),"frozen_forecasts":len(saved),
                      "published_prizepicks_matches":counts.get(name,0),
                      "state":"AT_RISK" if (imminent and statuses) or (secs<=0 and not saved)
+                        else "FORECAST_ONLY" if not upcoming and saved
                         else "WATCH" if statuses else "COVERED",
                      "reasons":statuses})
     critical=[r["game"] for r in rows if r["state"]=="AT_RISK"]
     full=bool(games) and schedule.get("coverage_complete") is True and          schedule.get("official_fixture_reconciliation",{}).get("verified_daily_counts",{}).get(day,{}).get("complete") is True
     return {"checked_at":now.isoformat(),"date_eastern":day,
-            "status":"AT_RISK" if critical else "MONITORING" if not full or any(r["state"]=="WATCH" for r in rows) else "COVERED",
+            "status":"AT_RISK" if critical else "MONITORING" if not full or any(r["state"] in ("WATCH", "FORECAST_ONLY") for r in rows) else "COVERED",
             "official_slate_complete":full,"scheduled_games":len(games),
             "games_with_forecasts":sum(x["current_forecasts"]>0 for x in rows),
             "games_with_frozen_forecasts":sum(x["frozen_forecasts"]>0 for x in rows),
             "games_with_published_comparisons":sum(x["published_prizepicks_matches"]>0 for x in rows),
             "critical_games":critical,"games":rows,
             "provider_board_partial":quick.get("partial_provider_board") is True,
-            "note":"A snapshot coverage audit, not proof of live browser rendering or of quote completeness. Missing offers on a partial board are not assumed unavailable."}
+            "note":"A snapshot coverage audit, not proof of live browser rendering or of quote completeness. FORECAST_ONLY verifies no-line pretip forecasts, not saved provider quotes or gradeable picks. Current comparison counts cannot establish historical quote capture. Missing offers on a partial board are not assumed unavailable."}
 
 def main():
     def read(filename):

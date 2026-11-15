@@ -56,6 +56,26 @@ class CoverageWatchdogTests(unittest.TestCase):
         self.assertEqual(r["status"],"MONITORING")
         self.assertFalse(r["critical_games"])
 
+    def test_started_forecast_only_is_not_complete_quote_coverage(self):
+        # Regress IND-PHI: 92 frozen no-line forecasts but zero provider matches.
+        later=NOW+dt.timedelta(hours=1)
+        r=check(later,SCHEDULE,{},ARCHIVE,{"matched_by_game":{}})
+        self.assertEqual(r["status"],"MONITORING")
+        self.assertEqual(r["games"][0]["state"],"FORECAST_ONLY")
+        self.assertEqual(r["games"][0]["published_prizepicks_matches"],0)
+        self.assertEqual(r["games"][0]["reasons"],["POST_TIP_QUOTE_CAPTURE_NOT_ASSESSED"])
+        self.assertEqual(r["critical_games"],[])
+
+    def test_current_matches_cannot_prove_historical_quote_capture(self):
+        r=check(NOW+dt.timedelta(hours=1),SCHEDULE,{},ARCHIVE,QUICK)
+        self.assertEqual(r["games"][0]["state"],"FORECAST_ONLY")
+        self.assertEqual(r["status"],"MONITORING")
+
+    def test_exact_tipoff_does_not_promote_forecast_to_covered(self):
+        tip=dt.datetime.fromisoformat(START)
+        r=check(tip,SCHEDULE,FORECAST,ARCHIVE,QUICK)
+        self.assertEqual(r["games"][0]["state"],"FORECAST_ONLY")
+
     def test_after_tipoff_missing_capture_is_critical(self):
         later=NOW+dt.timedelta(hours=1)
         r=check(later,SCHEDULE,FORECAST,{},QUICK)
