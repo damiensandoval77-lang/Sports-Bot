@@ -44,3 +44,12 @@ test('Only explicitly available standard sides are shown, never the missing othe
  const row=tennis(feed([{...quote,stat:'Fantasy Score',less_available:null}]),now)[0];
  assert.equal(row.stat,'Fantasy Score');assert.equal(row.projection,null);assert.equal(row.chance,null);
 });
+test('fixture snapshot is separate from quotes and expires without fabricated estimates',()=>{
+ const {fixtures}=context.DamesPicksTennis;
+ const f={schema_version:'tennis_fixture_snapshot_v1',source:'PrizePicks public board',complete:false,observed_at:'2026-11-15T22:20:50Z',matches:[{id:'test-match',players:['A','B'],starts_at:'2026-11-16T13:00:00Z'}]};
+ const t=Date.parse('2026-11-15T23:00:00Z');assert.equal(fixtures(f,t).length,1);assert.equal(tennis(f,t).length,0);
+ assert.equal(fixtures(f,Date.parse('2026-11-16T13:00:00Z')).length,0);
+ assert.equal(fixtures({...f,observed_at:'2026-11-14T22:20:50Z'},t).length,0);
+ assert.equal(fixtures({...f,observed_at:'2026-11-16T22:20:50Z'},t).length,0);
+ assert.equal(fixtures({...f,matches:[{...f.matches[0],players:['A','A']}]},t).length,0);
+});
