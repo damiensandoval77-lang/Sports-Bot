@@ -6,6 +6,7 @@ projections or player availability. Empty pregame slates aren't live stats.
 """
 import datetime as dt
 import json
+import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -17,11 +18,42 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs/nba_player_tracking_independent.json"
 EASTERN = ZoneInfo("America/New_York")
 BOX_BASES = (
-    "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_",
     "https://nba-prod-us-east-1-mediaops-stats.s3.amazonaws.com/NBA/liveData/boxscore/boxscore_",
+    "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_",
 )
 
+# The official S3 mirror currently responds while CDN requests time out.
+# Prefer it without racing/duplicating requests or changing the poll cadence.
+PLAYER_SCOREBOARD_URLS = NBA_LIVE_URLS
+
 SOURCE_ERRORS = (OSError, ValueError, TypeError, KeyError, AttributeError)
+
+
+def boxscore_time(box, parsed):
+    """Validate clock and identity from the same payload as the player totals."""
+    start = dt.datetime.fromisoformat(str(box["gameTimeUTC"]).replace("Z", "+00:00"))
+    expected = dt.datetime.fromisoformat(parsed["start"])
+    if start.tzinfo is None or start != expected:
+        raise ValueError("Boxscore start time mismatch")
+    status, period, clock = box.get("gameStatus"), box.get("period"), box.get("gameClock")
+    if type(status) is not int or status not in (2, 3):
+        raise ValueError("Boxscore is not live or final")
+    if parsed.get("game_state") == "post" and status != 3:
+        raise ValueError("Boxscore regresses verified final state")
+    if type(period) is not int or not 1 <= period <= 20:
+        raise ValueError("Invalid boxscore period")
+    match = re.fullmatch(r"PT(\d{1,2})M(\d{1,3}(?:\.\d+)?)S", clock or "") if isinstance(clock, str) else None
+    if not match:
+        raise ValueError("Invalid boxscore clock")
+    minutes, seconds = int(match[1]), float(match[2])
+    remaining = minutes * 60 + seconds
+    if seconds >= 60 or remaining > (720 if period <= 4 else 300):
+        raise ValueError("Boxscore clock outside period")
+    if status == 3 and (period < 4 or remaining != 0):
+        raise ValueError("Invalid final boxscore time")
+    return {"state": "in" if status == 2 else "post", "period": period,
+            "clock": clock, "shortDetail": box.get("gameStatusText"),
+            "game_start": start.isoformat()}
 
 
 def collect_game_boxscore(raw, parsed, fetch, now):
@@ -35,6 +67,7 @@ def collect_game_boxscore(raw, parsed, fetch, now):
             box = fetch(prefix + gid + ".json")["game"]
             if str(box.get("gameId")) != gid:
                 raise ValueError("Boxscore/game id mismatch")
+            timing = boxscore_time(box, parsed)
             rows = []
             for kind in ("awayTeam", "homeTeam"):
                 team = box[kind]
@@ -57,8 +90,7 @@ def collect_game_boxscore(raw, parsed, fetch, now):
                     raise ValueError("Empty team player boxscore")
                 rows.extend(team_rows)
             return {"game": parsed["game"], "id": parsed["id"],
-                    "state": parsed["game_state"], "period": parsed.get("period"),
-                    "shortDetail": raw.get("gameStatusText"), "clock": raw.get("gameClock"),
+                    **timing, "source_url": prefix + gid + ".json",
                     "observed_at": now.isoformat(), "player_rows": rows}, failures
         except SOURCE_ERRORS as err:
             failures.append(f"BOXSCORE_{gid}_{type(err).__name__}: {err}")
@@ -70,7 +102,7 @@ def collect_boxscores(day, fetch=request_json, now=None, max_games=15):
     if not (1 <= max_games <= 15):
         raise ValueError("max_games must be between 1 and 15")
     failures = []
-    for url in NBA_LIVE_URLS:
+    for url in PLAYER_SCOREBOARD_URLS:
         try:
             scoreboard = fetch(url)["scoreboard"]
             raw_games = scoreboard["games"]

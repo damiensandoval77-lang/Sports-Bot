@@ -170,7 +170,7 @@ class IndependentScoreboardTests(unittest.TestCase):
         self.assertTrue(started_games_missing_scores(
             rows,schedule,[DAY],now+dt.timedelta(minutes=10)))
 
-    def test_s3_fallback_after_nba_cdn_http_error(self):
+    def test_cdn_fallback_after_s3_http_error(self):
         visited=[]
         def response(url):
             visited.append(url)
@@ -178,7 +178,17 @@ class IndependentScoreboardTests(unittest.TestCase):
             return {"scoreboard":{"games":[]}}
         r=nba_live_scoreboard([DAY],requester=response)
         self.assertEqual(visited,list(NBA_LIVE_URLS))
-        self.assertIn("mediaops S3",r["source"])
+        self.assertIn("NBA CDN",r["source"])
+
+    def test_healthy_s3_first_has_truthful_source_and_no_duplicate_request(self):
+        seen=[]
+        def response(url):
+            seen.append(url)
+            return {"scoreboard":{"games":[]}}
+        result=nba_live_scoreboard([DAY],requester=response)
+        self.assertEqual(seen,[NBA_LIVE_URLS[0]])
+        self.assertIn("s3.amazonaws.com",seen[0])
+        self.assertIn("mediaops S3",result["source"])
 
     def test_both_live_sources_fail_without_false_scores(self):
         def fail(_):raise OSError("blocked")
@@ -194,7 +204,7 @@ class IndependentScoreboardTests(unittest.TestCase):
         result=nba_live_scoreboard([DAY],requester=response,
                                   validate_rows=lambda rows:next(decisions))
         self.assertEqual(visited,list(NBA_LIVE_URLS))
-        self.assertIn('mediaops S3',result['source'])
+        self.assertIn('NBA CDN',result['source'])
 
     def test_both_http_successes_with_stale_rows_fail_closed(self):
         with self.assertRaises(RuntimeError):
