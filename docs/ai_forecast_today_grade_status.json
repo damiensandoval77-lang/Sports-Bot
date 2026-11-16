@@ -1,42 +1,43 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-16T01:59:47.930654+00:00",
+  "generated_at": "2026-11-16T02:31:37.647277+00:00",
   "game_date_eastern": "2026-11-15",
-  "recorded_pregame_forecasts": 804,
-  "graded": 500,
-  "verified_dnp_exclusions": 112,
+  "recorded_pregame_forecasts": 900,
+  "graded": 584,
+  "verified_dnp_exclusions": 116,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 612,
-  "ungraded": 192,
+  "accounted_for": 700,
+  "ungraded": 200,
   "new_grades": 84,
-  "new_verified_dnp_exclusions": 16,
+  "new_verified_dnp_exclusions": 4,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 125,
-      "mae": 5.235,
-      "mean_signed_error": 0.21
+      "graded": 146,
+      "mae": 5.408,
+      "mean_signed_error": 0.253
     },
     "REB": {
-      "graded": 125,
-      "mae": 2.01,
-      "mean_signed_error": 0.305
+      "graded": 146,
+      "mae": 1.999,
+      "mean_signed_error": 0.38
     },
     "AST": {
-      "graded": 125,
-      "mae": 1.469,
-      "mean_signed_error": -0.152
+      "graded": 146,
+      "mae": 1.477,
+      "mean_signed_error": -0.195
     },
     "PRA": {
-      "graded": 125,
-      "mae": 6.138,
-      "mean_signed_error": 0.407
+      "graded": 146,
+      "mae": 6.425,
+      "mean_signed_error": 0.46
     }
   },
   "ungraded_by_game": {
     "Atlanta Hawks @ Milwaukee Bucks": 96,
-    "Houston Rockets @ Washington Wizards": 96
+    "Houston Rockets @ Washington Wizards": 8,
+    "Oklahoma City Thunder @ Sacramento Kings": 96
   },
   "excluded_verified_dnp_players": [
     "Andrew Nembhard",
@@ -66,7 +67,8 @@
     "Nick Martinelli",
     "Santi Aldama",
     "Tarris Reed Jr.",
-    "Trayce Jackson-Davis"
+    "Trayce Jackson-Davis",
+    "Tre Johnson"
   ],
   "ungraded_distinct_player_names_by_game": {
     "Atlanta Hawks @ Milwaukee Bucks": [
@@ -96,53 +98,58 @@
       "Zuby Ejiofor"
     ],
     "Houston Rockets @ Washington Wizards": [
-      "AJ Dybantsa",
-      "Alex Sarr",
-      "Alperen Sengun",
-      "Amen Thompson",
-      "Anthony Davis",
-      "Bilal Coulibaly",
-      "Bogdan Bogdanovi\u0107",
-      "Bruce Thornton",
-      "Bub Carrington",
-      "Deandre Ayton",
       "Fred VanVleet",
-      "Isaiah Crawford",
-      "Jabari Smith Jr.",
-      "Jae'Sean Tate",
-      "Kevin Durant",
-      "Kyshawn George",
-      "Marcus Smart",
-      "Oscar Tshiebwe",
-      "Reed Sheppard",
-      "Tari Eason",
-      "Trae Young",
-      "Tre Johnson",
-      "Tre Mann",
-      "Will Riley"
+      "Marcus Smart"
+    ],
+    "Oklahoma City Thunder @ Sacramento Kings": [
+      "Aday Mara",
+      "Ajay Mitchell",
+      "Alex Caruso",
+      "Alex Karaban",
+      "Bennett Stirtz",
+      "Brooks Barnhizer",
+      "Daeqwon Plowden",
+      "Darius Acuff Jr.",
+      "De'Andre Hunter",
+      "Domantas Sabonis",
+      "Dylan Cardwell",
+      "Emanuel Sharp",
+      "Isaiah Hartenstein",
+      "Jared McCain",
+      "Jonathan Mogbo",
+      "Josh Dix",
+      "Keegan Murray",
+      "Kenrich Williams",
+      "Leaky Black",
+      "Malik Monk",
+      "Micah Peavy",
+      "Precious Achiuwa",
+      "Shai Gilgeous-Alexander",
+      "Zach LaVine"
     ]
   },
-  "ungraded_distinct_player_markets": 192,
+  "ungraded_distinct_player_markets": 200,
   "final_feed": {
-    "pending_matchups": 15,
-    "final_nba_games": 14,
+    "pending_matchups": 16,
+    "final_nba_games": 15,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 472,
+    "retrieved_player_lines": 505,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 10,
     "final_cached_id_nba_games": 9,
     "secondary_espn_dnp_discovered_game_hints": 6,
     "secondary_verified_explicit_dnp_players": 37,
-    "secondary_dnp_still_unverified": 2,
+    "secondary_dnp_still_unverified": 4,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 1396,
+    "verified_cache_rows": 1429,
     "newly_retrieved_verified_rows": 33,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 8,
       "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 192
     },
     "players": [
@@ -819,674 +826,730 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "AJ Dybantsa",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Sarr",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Davis",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bilal Coulibaly",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bilal Coulibaly",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bilal Coulibaly",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bilal Coulibaly",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bub Carrington",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deandre Ayton",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Fred VanVleet",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Fred VanVleet",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Fred VanVleet",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Fred VanVleet",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyshawn George",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Marcus Smart",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Marcus Smart",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Marcus Smart",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Marcus Smart",
         "team": "HOU",
         "game": "Houston Rockets @ Washington Wizards",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Aday Mara",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Aday Mara",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Aday Mara",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Aday Mara",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Ajay Mitchell",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Ajay Mitchell",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Ajay Mitchell",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Ajay Mitchell",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Caruso",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Caruso",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Caruso",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Caruso",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Trae Young",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Alex Karaban",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Bennett Stirtz",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Bennett Stirtz",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Bennett Stirtz",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Johnson",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Bennett Stirtz",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Mann",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Brooks Barnhizer",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Mann",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Brooks Barnhizer",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Mann",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Brooks Barnhizer",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Tre Mann",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Brooks Barnhizer",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "AST",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PRA",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "PTS",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Will Riley",
-        "team": "WAS",
-        "game": "Houston Rockets @ Washington Wizards",
+        "player": "Daeqwon Plowden",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Acuff Jr.",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Andre Hunter",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Domantas Sabonis",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Cardwell",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Cardwell",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Cardwell",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Dylan Cardwell",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Emanuel Sharp",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Hartenstein",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Hartenstein",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Hartenstein",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Hartenstein",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jared McCain",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jared McCain",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jared McCain",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jared McCain",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jonathan Mogbo",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Dix",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Dix",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Dix",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Dix",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keegan Murray",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keegan Murray",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keegan Murray",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keegan Murray",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kenrich Williams",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kenrich Williams",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kenrich Williams",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kenrich Williams",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Leaky Black",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malik Monk",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Peavy",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Peavy",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Peavy",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Peavy",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Precious Achiuwa",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Shai Gilgeous-Alexander",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Shai Gilgeous-Alexander",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Shai Gilgeous-Alexander",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Shai Gilgeous-Alexander",
+        "team": "OKC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zach LaVine",
+        "team": "SAC",
+        "game": "Oklahoma City Thunder @ Sacramento Kings",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       }
