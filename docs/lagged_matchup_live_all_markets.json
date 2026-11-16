@@ -1,6 +1,6 @@
 {
   "status": "LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
-  "generated_at": "2026-11-15T23:38:25.659834+00:00",
+  "generated_at": "2026-11-16T00:03:02.290950+00:00",
   "source_provider_generated_at": "2026-11-15T21:55:21.804068+00:00",
   "source_model_input_generated_at": "2026-11-15T21:55:21.804068+00:00",
   "model": "LAGGED_MATCHUP_2022_24_THREE_MODELS_PRA_SUM",
@@ -9,881 +9,12 @@
   "component_consistency": true,
   "correlated_pra_scenarios": true,
   "market_counts": {
-    "PTS": 34,
-    "REB": 14,
-    "AST": 11,
-    "PRA": 35
+    "PTS": 22,
+    "REB": 8,
+    "AST": 7,
+    "PRA": 23
   },
   "predictions": [
-    {
-      "player": "Alex Sarr",
-      "player_id": "1642259",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 10.5,
-      "projection": 12.184,
-      "components": {
-        "PTS": 12.184,
-        "REB": 7.502,
-        "AST": 1.4
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 12.184,
-        "modeled_more_probability": 0.5641,
-        "modeled_less_probability": 0.4359,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5641,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 12.184,
-          "REB": 7.502,
-          "AST": 1.4
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Reed Sheppard",
-      "player_id": "1642263",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 14.0,
-      "projection": 8.376,
-      "components": {
-        "PTS": 8.376,
-        "REB": 1.676,
-        "AST": 2.256
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 8.376,
-        "modeled_more_probability": 0.1583,
-        "modeled_less_probability": 0.8091,
-        "modeled_push_probability": 0.0326,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.8091,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 8.376,
-          "REB": 1.676,
-          "AST": 2.256
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "AJ Dybantsa",
-      "player_id": "1643407",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 15.5,
-      "projection": 17.021,
-      "components": {
-        "PTS": 17.021,
-        "REB": 5.852,
-        "AST": 2.605
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 17.021,
-        "modeled_more_probability": 0.5564,
-        "modeled_less_probability": 0.4436,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5564,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 17.021,
-          "REB": 5.852,
-          "AST": 2.605
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Kevin Durant",
-      "player_id": "201142",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 21.5,
-      "projection": 21.593,
-      "components": {
-        "PTS": 21.593,
-        "REB": 5.868,
-        "AST": 4.778
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 21.593,
-        "modeled_more_probability": 0.4538,
-        "modeled_less_probability": 0.5462,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5462,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 21.593,
-          "REB": 5.868,
-          "AST": 4.778
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Kyshawn George",
-      "player_id": "1642273",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 14.5,
-      "projection": 17.521,
-      "components": {
-        "PTS": 17.521,
-        "REB": 4.123,
-        "AST": 5.053
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 17.521,
-        "modeled_more_probability": 0.6713,
-        "modeled_less_probability": 0.3287,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6713,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 17.521,
-          "REB": 4.123,
-          "AST": 5.053
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Jabari Smith Jr.",
-      "player_id": "1631095",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 14.5,
-      "projection": 13.754,
-      "components": {
-        "PTS": 13.754,
-        "REB": 6.498,
-        "AST": 1.874
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 13.754,
-        "modeled_more_probability": 0.4084,
-        "modeled_less_probability": 0.5916,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5916,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.754,
-          "REB": 6.498,
-          "AST": 1.874
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Anthony Davis",
-      "player_id": "203076",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 22.5,
-      "projection": 26.123,
-      "components": {
-        "PTS": 26.123,
-        "REB": 10.464,
-        "AST": 1.733
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 26.123,
-        "modeled_more_probability": 0.7177,
-        "modeled_less_probability": 0.2823,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.7177,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 26.123,
-          "REB": 10.464,
-          "AST": 1.733
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Alperen \u015eeng\u00fcn",
-      "player_id": "1630578",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 20.5,
-      "projection": 23.516,
-      "components": {
-        "PTS": 23.516,
-        "REB": 9.144,
-        "AST": 7.348
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 23.516,
-        "modeled_more_probability": 0.6724,
-        "modeled_less_probability": 0.3276,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6724,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 23.516,
-          "REB": 9.144,
-          "AST": 7.348
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Amen Thompson",
-      "player_id": "1641708",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 17.5,
-      "projection": 13.563,
-      "components": {
-        "PTS": 13.563,
-        "REB": 5.968,
-        "AST": 2.817
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 13.563,
-        "modeled_more_probability": 0.2434,
-        "modeled_less_probability": 0.7565,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.7565,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.563,
-          "REB": 5.968,
-          "AST": 2.817
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Trae Young",
-      "player_id": "1629027",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 18.5,
-      "projection": 19.034,
-      "components": {
-        "PTS": 19.034,
-        "REB": 3.656,
-        "AST": 7.598
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 19.034,
-        "modeled_more_probability": 0.4798,
-        "modeled_less_probability": 0.5202,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5202,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 19.034,
-          "REB": 3.656,
-          "AST": 7.598
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Bogdan Bogdanovi\u0107",
-      "player_id": "203992",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 6.5,
-      "projection": 4.976,
-      "components": {
-        "PTS": 4.976,
-        "REB": 1.619,
-        "AST": 1.124
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 4.976,
-        "modeled_more_probability": 0.357,
-        "modeled_less_probability": 0.643,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.643,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 4.976,
-          "REB": 1.619,
-          "AST": 1.124
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
     {
       "player": "Nickeil Alexander-Walker",
       "player_id": "1629638",
@@ -900,7 +31,7 @@
         "AST": 3.216
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -908,11 +39,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 22.085,
-        "modeled_more_probability": 0.4829,
-        "modeled_less_probability": 0.5171,
+        "modeled_more_probability": 0.4826,
+        "modeled_less_probability": 0.5174,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5171,
+        "modeled_selected_probability": 0.5174,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 22.085,
@@ -935,7 +66,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -944,7 +75,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -979,7 +110,7 @@
         "AST": 2.966
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -987,11 +118,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 7.795,
-        "modeled_more_probability": 0.3471,
-        "modeled_less_probability": 0.653,
+        "modeled_more_probability": 0.3462,
+        "modeled_less_probability": 0.6538,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.653,
+        "modeled_selected_probability": 0.6538,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.795,
@@ -1014,7 +145,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1023,7 +154,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1058,7 +189,7 @@
         "AST": 2.326
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1066,11 +197,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 11.366,
-        "modeled_more_probability": 0.3812,
-        "modeled_less_probability": 0.5565,
-        "modeled_push_probability": 0.0622,
+        "modeled_more_probability": 0.3731,
+        "modeled_less_probability": 0.5651,
+        "modeled_push_probability": 0.0618,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5565,
+        "modeled_selected_probability": 0.5651,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.366,
@@ -1093,7 +224,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1102,7 +233,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1137,7 +268,7 @@
         "AST": 7.149
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1145,11 +276,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 22.662,
-        "modeled_more_probability": 0.5373,
-        "modeled_less_probability": 0.4627,
+        "modeled_more_probability": 0.5278,
+        "modeled_less_probability": 0.4723,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5373,
+        "modeled_selected_probability": 0.5278,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 22.662,
@@ -1172,7 +303,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1181,7 +312,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1216,7 +347,7 @@
         "AST": 4.122
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1224,11 +355,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 15.1,
-        "modeled_more_probability": 0.4346,
-        "modeled_less_probability": 0.5654,
+        "modeled_more_probability": 0.4211,
+        "modeled_less_probability": 0.5789,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5654,
+        "modeled_selected_probability": 0.5789,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 15.1,
@@ -1251,7 +382,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1260,7 +391,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1295,7 +426,7 @@
         "AST": 2.416
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1303,11 +434,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 14.17,
-        "modeled_more_probability": 0.4963,
-        "modeled_less_probability": 0.5037,
+        "modeled_more_probability": 0.49,
+        "modeled_less_probability": 0.51,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5037,
+        "modeled_selected_probability": 0.51,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.17,
@@ -1330,7 +461,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1339,7 +470,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1374,7 +505,7 @@
         "AST": 2.955
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1382,11 +513,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 16.401,
-        "modeled_more_probability": 0.5805,
-        "modeled_less_probability": 0.4195,
+        "modeled_more_probability": 0.5817,
+        "modeled_less_probability": 0.4183,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5805,
+        "modeled_selected_probability": 0.5817,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.401,
@@ -1409,7 +540,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1418,7 +549,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1453,7 +584,7 @@
         "AST": 1.001
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1461,11 +592,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 8.527,
-        "modeled_more_probability": 0.4533,
-        "modeled_less_probability": 0.5467,
+        "modeled_more_probability": 0.4551,
+        "modeled_less_probability": 0.5448,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5467,
+        "modeled_selected_probability": 0.5448,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.527,
@@ -1488,7 +619,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1497,7 +628,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1532,7 +663,7 @@
         "AST": 4.048
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1540,11 +671,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 20.925,
-        "modeled_more_probability": 0.417,
-        "modeled_less_probability": 0.5829,
+        "modeled_more_probability": 0.4179,
+        "modeled_less_probability": 0.582,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5829,
+        "modeled_selected_probability": 0.582,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.925,
@@ -1567,7 +698,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1576,7 +707,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1611,7 +742,7 @@
         "AST": 2.186
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1619,11 +750,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 9.566,
-        "modeled_more_probability": 0.3281,
-        "modeled_less_probability": 0.672,
+        "modeled_more_probability": 0.3322,
+        "modeled_less_probability": 0.6679,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.672,
+        "modeled_selected_probability": 0.6679,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.566,
@@ -1646,7 +777,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1655,7 +786,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1690,7 +821,7 @@
         "AST": 2.753
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1698,11 +829,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 13.67,
-        "modeled_more_probability": 0.533,
-        "modeled_less_probability": 0.467,
+        "modeled_more_probability": 0.5363,
+        "modeled_less_probability": 0.4637,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.533,
+        "modeled_selected_probability": 0.5363,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.67,
@@ -1725,7 +856,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -1734,7 +865,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -1769,7 +900,7 @@
         "AST": 5.221
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1826,7 +957,7 @@
         "AST": 1.698
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1883,7 +1014,7 @@
         "AST": 3.29
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1940,7 +1071,7 @@
         "AST": 7.07
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1997,7 +1128,7 @@
         "AST": 1.19
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2054,7 +1185,7 @@
         "AST": 3.151
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2111,7 +1242,7 @@
         "AST": 1.881
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2168,7 +1299,7 @@
         "AST": 1.579
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2225,7 +1356,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2282,7 +1413,7 @@
         "AST": 1.431
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2339,7 +1470,7 @@
         "AST": 4.239
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2381,480 +1512,6 @@
       "production_replaced": false
     },
     {
-      "player": "Tari Eason",
-      "player_id": "1631106",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PTS",
-      "line": 11.5,
-      "projection": 11.172,
-      "components": {
-        "PTS": 11.172,
-        "REB": 6.406,
-        "AST": 1.685
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 11.172,
-        "modeled_more_probability": 0.4298,
-        "modeled_less_probability": 0.5703,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5703,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.172,
-          "REB": 6.406,
-          "AST": 1.685
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Alex Sarr",
-      "player_id": "1642259",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "REB",
-      "line": 7.0,
-      "projection": 7.502,
-      "components": {
-        "PTS": 12.184,
-        "REB": 7.502,
-        "AST": 1.4
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 7.502,
-        "modeled_more_probability": 0.444,
-        "modeled_less_probability": 0.3821,
-        "modeled_push_probability": 0.1739,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.444,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 12.184,
-          "REB": 7.502,
-          "AST": 1.4
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Amen Thompson",
-      "player_id": "1641708",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "REB",
-      "line": 7.0,
-      "projection": 5.968,
-      "components": {
-        "PTS": 13.563,
-        "REB": 5.968,
-        "AST": 2.817
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 5.968,
-        "modeled_more_probability": 0.2384,
-        "modeled_less_probability": 0.6347,
-        "modeled_push_probability": 0.1269,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6347,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.563,
-          "REB": 5.968,
-          "AST": 2.817
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Jabari Smith Jr.",
-      "player_id": "1631095",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "REB",
-      "line": 6.5,
-      "projection": 6.498,
-      "components": {
-        "PTS": 13.754,
-        "REB": 6.498,
-        "AST": 1.874
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 6.498,
-        "modeled_more_probability": 0.4546,
-        "modeled_less_probability": 0.5454,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5454,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.754,
-          "REB": 6.498,
-          "AST": 1.874
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Alperen \u015eeng\u00fcn",
-      "player_id": "1630578",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "REB",
-      "line": 9.0,
-      "projection": 9.144,
-      "components": {
-        "PTS": 23.516,
-        "REB": 9.144,
-        "AST": 7.348
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 9.144,
-        "modeled_more_probability": 0.3874,
-        "modeled_less_probability": 0.4486,
-        "modeled_push_probability": 0.164,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.4486,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 23.516,
-          "REB": 9.144,
-          "AST": 7.348
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Trae Young",
-      "player_id": "1629027",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "REB",
-      "line": 2.5,
-      "projection": 3.656,
-      "components": {
-        "PTS": 19.034,
-        "REB": 3.656,
-        "AST": 7.598
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 3.656,
-        "modeled_more_probability": 0.6536,
-        "modeled_less_probability": 0.3464,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6536,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 19.034,
-          "REB": 3.656,
-          "AST": 7.598
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
       "player": "Jalen Johnson",
       "player_id": "1630552",
       "team": "ATL",
@@ -2870,7 +1527,7 @@
         "AST": 7.149
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2878,11 +1535,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 8.836,
-        "modeled_more_probability": 0.349,
-        "modeled_less_probability": 0.651,
+        "modeled_more_probability": 0.3477,
+        "modeled_less_probability": 0.6523,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.651,
+        "modeled_selected_probability": 0.6523,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 22.662,
@@ -2905,7 +1562,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -2914,7 +1571,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -2949,7 +1606,7 @@
         "AST": 2.416
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -2957,11 +1614,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 7.79,
-        "modeled_more_probability": 0.5012,
-        "modeled_less_probability": 0.4988,
+        "modeled_more_probability": 0.5077,
+        "modeled_less_probability": 0.4923,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5012,
+        "modeled_selected_probability": 0.5077,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.17,
@@ -2984,7 +1641,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -2993,7 +1650,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -3028,7 +1685,7 @@
         "AST": 2.966
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3036,11 +1693,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 5.964,
-        "modeled_more_probability": 0.3636,
-        "modeled_less_probability": 0.4694,
-        "modeled_push_probability": 0.1669,
+        "modeled_more_probability": 0.365,
+        "modeled_less_probability": 0.47,
+        "modeled_push_probability": 0.165,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.4694,
+        "modeled_selected_probability": 0.47,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.795,
@@ -3063,7 +1720,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -3072,7 +1729,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -3107,7 +1764,7 @@
         "AST": 1.001
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3115,11 +1772,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 2.896,
-        "modeled_more_probability": 0.3521,
-        "modeled_less_probability": 0.6479,
+        "modeled_more_probability": 0.3578,
+        "modeled_less_probability": 0.6422,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6479,
+        "modeled_selected_probability": 0.6422,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.527,
@@ -3142,7 +1799,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -3151,7 +1808,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -3186,7 +1843,7 @@
         "AST": 2.753
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3194,11 +1851,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 3.608,
-        "modeled_more_probability": 0.4732,
-        "modeled_less_probability": 0.5269,
+        "modeled_more_probability": 0.4644,
+        "modeled_less_probability": 0.5355,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5269,
+        "modeled_selected_probability": 0.5355,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.67,
@@ -3221,7 +1878,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -3230,7 +1887,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -3265,7 +1922,7 @@
         "AST": 2.186
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3273,11 +1930,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 5.061,
-        "modeled_more_probability": 0.3851,
-        "modeled_less_probability": 0.4511,
-        "modeled_push_probability": 0.1638,
+        "modeled_more_probability": 0.3761,
+        "modeled_less_probability": 0.4563,
+        "modeled_push_probability": 0.1676,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.4511,
+        "modeled_selected_probability": 0.4563,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.566,
@@ -3300,7 +1957,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -3309,7 +1966,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -3329,85 +1986,6 @@
       "production_replaced": false
     },
     {
-      "player": "Tari Eason",
-      "player_id": "1631106",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "REB",
-      "line": 6.0,
-      "projection": 6.406,
-      "components": {
-        "PTS": 11.172,
-        "REB": 6.406,
-        "AST": 1.685
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "REB",
-        "projection": 6.406,
-        "modeled_more_probability": 0.4306,
-        "modeled_less_probability": 0.4023,
-        "modeled_push_probability": 0.1671,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.4306,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.172,
-          "REB": 6.406,
-          "AST": 1.685
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
       "player": "Domantas Sabonis",
       "player_id": "1627734",
       "team": "SAC",
@@ -3423,7 +2001,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3480,7 +2058,7 @@
         "AST": 4.239
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3522,322 +2100,6 @@
       "production_replaced": false
     },
     {
-      "player": "Trae Young",
-      "player_id": "1629027",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "AST",
-      "line": 8.0,
-      "projection": 7.598,
-      "components": {
-        "PTS": 19.034,
-        "REB": 3.656,
-        "AST": 7.598
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 7.598,
-        "modeled_more_probability": 0.252,
-        "modeled_less_probability": 0.5421,
-        "modeled_push_probability": 0.206,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5421,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 19.034,
-          "REB": 3.656,
-          "AST": 7.598
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Tari Eason",
-      "player_id": "1631106",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "AST",
-      "line": 1.5,
-      "projection": 1.685,
-      "components": {
-        "PTS": 11.172,
-        "REB": 6.406,
-        "AST": 1.685
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 1.685,
-        "modeled_more_probability": 0.4785,
-        "modeled_less_probability": 0.5215,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5215,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.172,
-          "REB": 6.406,
-          "AST": 1.685
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Alex Sarr",
-      "player_id": "1642259",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "AST",
-      "line": 1.5,
-      "projection": 1.4,
-      "components": {
-        "PTS": 12.184,
-        "REB": 7.502,
-        "AST": 1.4
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 1.4,
-        "modeled_more_probability": 0.4134,
-        "modeled_less_probability": 0.5866,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5866,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 12.184,
-          "REB": 7.502,
-          "AST": 1.4
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Amen Thompson",
-      "player_id": "1641708",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "AST",
-      "line": 4.5,
-      "projection": 2.817,
-      "components": {
-        "PTS": 13.563,
-        "REB": 5.968,
-        "AST": 2.817
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "AST",
-        "projection": 2.817,
-        "modeled_more_probability": 0.1592,
-        "modeled_less_probability": 0.8408,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.8408,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.563,
-          "REB": 5.968,
-          "AST": 2.817
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
       "player": "Dyson Daniels",
       "player_id": "1630700",
       "team": "ATL",
@@ -3853,7 +2115,7 @@
         "AST": 5.232
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3861,11 +2123,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 5.232,
-        "modeled_more_probability": 0.3785,
-        "modeled_less_probability": 0.6214,
+        "modeled_more_probability": 0.3871,
+        "modeled_less_probability": 0.6129,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6214,
+        "modeled_selected_probability": 0.6129,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.462,
@@ -3888,7 +2150,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -3897,7 +2159,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -3932,7 +2194,7 @@
         "AST": 2.955
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -3940,11 +2202,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 2.955,
-        "modeled_more_probability": 0.3165,
-        "modeled_less_probability": 0.6835,
+        "modeled_more_probability": 0.3155,
+        "modeled_less_probability": 0.6845,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6835,
+        "modeled_selected_probability": 0.6845,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.401,
@@ -3967,7 +2229,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -3976,7 +2238,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -4011,7 +2273,7 @@
         "AST": 4.048
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4019,11 +2281,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 4.048,
-        "modeled_more_probability": 0.1837,
-        "modeled_less_probability": 0.668,
-        "modeled_push_probability": 0.1482,
+        "modeled_more_probability": 0.1842,
+        "modeled_less_probability": 0.6672,
+        "modeled_push_probability": 0.1487,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.668,
+        "modeled_selected_probability": 0.6672,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.925,
@@ -4046,7 +2308,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -4055,7 +2317,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -4090,7 +2352,7 @@
         "AST": 3.29
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4147,7 +2409,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4204,7 +2466,7 @@
         "AST": 3.151
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4261,7 +2523,7 @@
         "AST": 2.326
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -4269,11 +2531,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 2.326,
-        "modeled_more_probability": 0.3942,
-        "modeled_less_probability": 0.6058,
+        "modeled_more_probability": 0.3993,
+        "modeled_less_probability": 0.6007,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6058,
+        "modeled_selected_probability": 0.6007,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.366,
@@ -4296,7 +2558,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -4305,7 +2567,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -4321,875 +2583,6 @@
       "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Amen Thompson",
-      "player_id": "1641708",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 29.5,
-      "projection": 22.348,
-      "components": {
-        "PTS": 13.563,
-        "REB": 5.968,
-        "AST": 2.817
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 22.348,
-        "modeled_more_probability": 0.1769,
-        "modeled_less_probability": 0.8231,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.8231,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.563,
-          "REB": 5.968,
-          "AST": 2.817
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Kevin Durant",
-      "player_id": "201142",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 31.5,
-      "projection": 32.24,
-      "components": {
-        "PTS": 21.593,
-        "REB": 5.868,
-        "AST": 4.778
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 32.24,
-        "modeled_more_probability": 0.5062,
-        "modeled_less_probability": 0.4938,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5062,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 21.593,
-          "REB": 5.868,
-          "AST": 4.778
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Trae Young",
-      "player_id": "1629027",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 29.5,
-      "projection": 30.289,
-      "components": {
-        "PTS": 19.034,
-        "REB": 3.656,
-        "AST": 7.598
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 30.289,
-        "modeled_more_probability": 0.5119,
-        "modeled_less_probability": 0.4881,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5119,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 19.034,
-          "REB": 3.656,
-          "AST": 7.598
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Kyshawn George",
-      "player_id": "1642273",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 22.5,
-      "projection": 26.698,
-      "components": {
-        "PTS": 17.521,
-        "REB": 4.123,
-        "AST": 5.053
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 26.698,
-        "modeled_more_probability": 0.6885,
-        "modeled_less_probability": 0.3115,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6885,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 17.521,
-          "REB": 4.123,
-          "AST": 5.053
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Jabari Smith Jr.",
-      "player_id": "1631095",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 23.5,
-      "projection": 22.127,
-      "components": {
-        "PTS": 13.754,
-        "REB": 6.498,
-        "AST": 1.874
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 22.127,
-        "modeled_more_probability": 0.3945,
-        "modeled_less_probability": 0.6055,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6055,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 13.754,
-          "REB": 6.498,
-          "AST": 1.874
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "AJ Dybantsa",
-      "player_id": "1643407",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 22.5,
-      "projection": 25.477,
-      "components": {
-        "PTS": 17.021,
-        "REB": 5.852,
-        "AST": 2.605
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 25.477,
-        "modeled_more_probability": 0.6229,
-        "modeled_less_probability": 0.3771,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6229,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 17.021,
-          "REB": 5.852,
-          "AST": 2.605
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Alex Sarr",
-      "player_id": "1642259",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 19.0,
-      "projection": 21.086,
-      "components": {
-        "PTS": 12.184,
-        "REB": 7.502,
-        "AST": 1.4
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 21.086,
-        "modeled_more_probability": 0.5561,
-        "modeled_less_probability": 0.3922,
-        "modeled_push_probability": 0.0517,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5561,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 12.184,
-          "REB": 7.502,
-          "AST": 1.4
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Anthony Davis",
-      "player_id": "203076",
-      "team": "WAS",
-      "opponent": "HOU",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 34.5,
-      "projection": 38.32,
-      "components": {
-        "PTS": 26.123,
-        "REB": 10.464,
-        "AST": 1.733
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 38.32,
-        "modeled_more_probability": 0.6684,
-        "modeled_less_probability": 0.3316,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6684,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 26.123,
-          "REB": 10.464,
-          "AST": 1.733
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "MULTIPLE_TEAMMATES_OUT",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 10,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Alperen \u015eeng\u00fcn",
-      "player_id": "1630578",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 36.5,
-      "projection": 40.008,
-      "components": {
-        "PTS": 23.516,
-        "REB": 9.144,
-        "AST": 7.348
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 40.008,
-        "modeled_more_probability": 0.6509,
-        "modeled_less_probability": 0.3492,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.6509,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 23.516,
-          "REB": 9.144,
-          "AST": 7.348
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Reed Sheppard",
-      "player_id": "1642263",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 21.5,
-      "projection": 12.308,
-      "components": {
-        "PTS": 8.376,
-        "REB": 1.676,
-        "AST": 2.256
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 12.308,
-        "modeled_more_probability": 0.1285,
-        "modeled_less_probability": 0.8715,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.8715,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 8.376,
-          "REB": 1.676,
-          "AST": 2.256
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 9,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "Tari Eason",
-      "player_id": "1631106",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 19.5,
-      "projection": 19.263,
-      "components": {
-        "PTS": 11.172,
-        "REB": 6.406,
-        "AST": 1.685
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 19.263,
-        "modeled_more_probability": 0.4521,
-        "modeled_less_probability": 0.548,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.548,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 11.172,
-          "REB": 6.406,
-          "AST": 1.685
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 12,
       "research_only": true,
       "production_replaced": false
     },
@@ -5209,7 +2602,7 @@
         "AST": 2.416
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5217,11 +2610,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 24.375,
-        "modeled_more_probability": 0.4607,
-        "modeled_less_probability": 0.4882,
-        "modeled_push_probability": 0.0512,
+        "modeled_more_probability": 0.4606,
+        "modeled_less_probability": 0.4889,
+        "modeled_push_probability": 0.0505,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.4882,
+        "modeled_selected_probability": 0.4889,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.17,
@@ -5244,7 +2637,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5253,7 +2646,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5288,7 +2681,7 @@
         "AST": 4.122
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5296,11 +2689,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 22.555,
-        "modeled_more_probability": 0.4215,
-        "modeled_less_probability": 0.5785,
+        "modeled_more_probability": 0.4248,
+        "modeled_less_probability": 0.5752,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5785,
+        "modeled_selected_probability": 0.5752,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 15.1,
@@ -5323,7 +2716,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5332,7 +2725,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5367,7 +2760,7 @@
         "AST": 2.326
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5375,11 +2768,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 17.636,
-        "modeled_more_probability": 0.3356,
-        "modeled_less_probability": 0.623,
-        "modeled_push_probability": 0.0414,
+        "modeled_more_probability": 0.3388,
+        "modeled_less_probability": 0.6194,
+        "modeled_push_probability": 0.0418,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.623,
+        "modeled_selected_probability": 0.6194,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 11.366,
@@ -5402,7 +2795,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5411,7 +2804,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5446,7 +2839,7 @@
         "AST": 2.966
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5454,11 +2847,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 16.725,
-        "modeled_more_probability": 0.3831,
-        "modeled_less_probability": 0.6169,
+        "modeled_more_probability": 0.3859,
+        "modeled_less_probability": 0.6141,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6169,
+        "modeled_selected_probability": 0.6141,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 7.795,
@@ -5481,7 +2874,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5490,7 +2883,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5525,7 +2918,7 @@
         "AST": 2.955
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5533,11 +2926,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 24.203,
-        "modeled_more_probability": 0.4456,
-        "modeled_less_probability": 0.5544,
+        "modeled_more_probability": 0.4489,
+        "modeled_less_probability": 0.5511,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5544,
+        "modeled_selected_probability": 0.5511,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.401,
@@ -5560,7 +2953,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5569,7 +2962,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5604,7 +2997,7 @@
         "AST": 3.216
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5612,11 +3005,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 29.28,
-        "modeled_more_probability": 0.504,
-        "modeled_less_probability": 0.496,
+        "modeled_more_probability": 0.5085,
+        "modeled_less_probability": 0.4915,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.504,
+        "modeled_selected_probability": 0.5085,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 22.085,
@@ -5639,7 +3032,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5648,7 +3041,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5683,7 +3076,7 @@
         "AST": 1.001
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5691,11 +3084,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 12.424,
-        "modeled_more_probability": 0.3792,
-        "modeled_less_probability": 0.6208,
+        "modeled_more_probability": 0.3836,
+        "modeled_less_probability": 0.6163,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6208,
+        "modeled_selected_probability": 0.6163,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.527,
@@ -5718,7 +3111,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5727,7 +3120,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5762,7 +3155,7 @@
         "AST": 5.232
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5770,11 +3163,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 21.79,
-        "modeled_more_probability": 0.427,
-        "modeled_less_probability": 0.573,
+        "modeled_more_probability": 0.428,
+        "modeled_less_probability": 0.572,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.573,
+        "modeled_selected_probability": 0.572,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.462,
@@ -5797,7 +3190,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5806,7 +3199,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5841,7 +3234,7 @@
         "AST": 2.186
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5849,11 +3242,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 16.813,
-        "modeled_more_probability": 0.3019,
-        "modeled_less_probability": 0.6981,
+        "modeled_more_probability": 0.2996,
+        "modeled_less_probability": 0.7004,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6981,
+        "modeled_selected_probability": 0.7004,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.566,
@@ -5876,7 +3269,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5885,7 +3278,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5920,7 +3313,7 @@
         "AST": 4.048
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -5928,11 +3321,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 29.232,
-        "modeled_more_probability": 0.3619,
-        "modeled_less_probability": 0.6381,
+        "modeled_more_probability": 0.36,
+        "modeled_less_probability": 0.64,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6381,
+        "modeled_selected_probability": 0.64,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 20.925,
@@ -5955,7 +3348,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -5964,7 +3357,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -5999,7 +3392,7 @@
         "AST": 7.149
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6007,11 +3400,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 38.647,
-        "modeled_more_probability": 0.4251,
-        "modeled_less_probability": 0.5748,
+        "modeled_more_probability": 0.4237,
+        "modeled_less_probability": 0.5764,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5748,
+        "modeled_selected_probability": 0.5764,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 22.662,
@@ -6034,7 +3427,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -6043,7 +3436,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -6078,7 +3471,7 @@
         "AST": 2.753
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6086,11 +3479,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 20.031,
-        "modeled_more_probability": 0.5426,
-        "modeled_less_probability": 0.4574,
+        "modeled_more_probability": 0.5386,
+        "modeled_less_probability": 0.4613,
         "modeled_push_probability": 0.0,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.5426,
+        "modeled_selected_probability": 0.5386,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.67,
@@ -6113,7 +3506,7 @@
             "team": "ATL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           },
           {
@@ -6122,7 +3515,7 @@
             "team": "MIL",
             "status": "OUT",
             "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
+            "reported_at": "2026-11-15T23:45:00+00:00",
             "official": true
           }
         ],
@@ -6157,7 +3550,7 @@
         "AST": 4.239
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6214,7 +3607,7 @@
         "AST": 5.221
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6271,7 +3664,7 @@
         "AST": 1.698
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6328,7 +3721,7 @@
         "AST": 1.881
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6385,7 +3778,7 @@
         "AST": 3.29
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6442,7 +3835,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6499,7 +3892,7 @@
         "AST": 1.19
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6556,7 +3949,7 @@
         "AST": 3.151
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6613,7 +4006,7 @@
         "AST": 7.07
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6670,7 +4063,7 @@
         "AST": 1.579
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6712,85 +4105,6 @@
       "production_replaced": false
     },
     {
-      "player": "Bogdan Bogdanovi\u0107",
-      "player_id": "203992",
-      "team": "HOU",
-      "opponent": "WAS",
-      "game": "Houston Rockets @ Washington Wizards",
-      "start": "2026-11-16T00:00:00+00:00",
-      "stat": "PRA",
-      "line": 9.5,
-      "projection": 7.72,
-      "components": {
-        "PTS": 4.976,
-        "REB": 1.619,
-        "AST": 1.124
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 7.72,
-        "modeled_more_probability": 0.3928,
-        "modeled_less_probability": 0.6072,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6072,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 4.976,
-          "REB": 1.619,
-          "AST": 1.124
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
-      "injury_context": {
-        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
-        "factor": 1.0,
-        "affected": [
-          {
-            "player_id": "1642848",
-            "player": "Tre Johnson",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          },
-          {
-            "player_id": "1643590",
-            "player": "Felix Okpara",
-            "team": "WAS",
-            "status": "OUT",
-            "source": "OFFICIAL_NBA_REPORT",
-            "reported_at": "2026-11-15T23:30:00+00:00",
-            "official": true
-          }
-        ],
-        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
-        "injury_adjusted": false,
-        "probability_actionable": false
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": true,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": false,
-      "calibrated_probability": null,
-      "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
       "player": "Aday Mara",
       "player_id": "1643530",
       "team": "OKC",
@@ -6806,7 +4120,7 @@
         "AST": 1.431
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-15T23:38:25.659834+00:00",
+      "captured_at": "2026-11-16T00:03:02.290950+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -6848,9 +4162,9 @@
       "production_replaced": false
     }
   ],
-  "published_projections": 94,
+  "published_projections": 60,
   "excluded": {
-    "REPORTED_OUT_PLAYER_SUPPRESSED": 8,
+    "REPORTED_OUT_PLAYER_SUPPRESSED": 6,
     "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY": 3
   },
   "game_diagnostics": {
@@ -6860,14 +4174,6 @@
       "frozen_forecasts": 33,
       "excluded": {
         "REPORTED_OUT_PLAYER_SUPPRESSED": 6
-      }
-    },
-    "Houston Rockets @ Washington Wizards": {
-      "observed_provider_quote_rows": 72,
-      "verified_standard_offers": 36,
-      "frozen_forecasts": 34,
-      "excluded": {
-        "REPORTED_OUT_PLAYER_SUPPRESSED": 2
       }
     },
     "Oklahoma City Thunder @ Sacramento Kings": {
@@ -6882,7 +4188,7 @@
   "calibrated": false,
   "injury_news_processed": false,
   "official_injury_processed": true,
-  "official_report_issued_at": "2026-11-15T23:30:00+00:00",
+  "official_report_issued_at": "2026-11-15T23:45:00+00:00",
   "free_official_injury_transition_watch": true,
   "production_replaced": false,
   "existing_grades_modified": false,
