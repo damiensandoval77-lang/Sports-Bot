@@ -1,42 +1,40 @@
 {
-  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-16T02:35:17.461099+00:00",
+  "status": "AI_PRETIP_FORECASTS_GRADED",
+  "generated_at": "2026-11-16T03:07:08.025932+00:00",
   "game_date_eastern": "2026-11-14",
   "recorded_pregame_forecasts": 504,
-  "graded": 360,
+  "graded": 364,
   "verified_dnp_exclusions": 140,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 500,
-  "ungraded": 4,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 8,
+  "accounted_for": 504,
+  "ungraded": 0,
+  "new_grades": 4,
+  "new_verified_dnp_exclusions": 0,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 90,
-      "mae": 4.533,
-      "mean_signed_error": -1.571
+      "graded": 91,
+      "mae": 4.514,
+      "mean_signed_error": -1.523
     },
     "REB": {
-      "graded": 90,
-      "mae": 2.192,
-      "mean_signed_error": -0.357
+      "graded": 91,
+      "mae": 2.195,
+      "mean_signed_error": -0.326
     },
     "AST": {
-      "graded": 90,
-      "mae": 1.502,
-      "mean_signed_error": -0.564
+      "graded": 91,
+      "mae": 1.491,
+      "mean_signed_error": -0.553
     },
     "PRA": {
-      "graded": 90,
-      "mae": 6.749,
-      "mean_signed_error": -2.553
+      "graded": 91,
+      "mae": 6.744,
+      "mean_signed_error": -2.456
     }
   },
-  "ungraded_by_game": {
-    "Dallas Mavericks @ Cleveland Cavaliers": 4
-  },
+  "ungraded_by_game": {},
   "excluded_verified_dnp_players": [
     "AJ Johnson",
     "Bennedict Mathurin",
@@ -74,12 +72,8 @@
     "Ty Jerome",
     "Zach Edey"
   ],
-  "ungraded_distinct_player_names_by_game": {
-    "Dallas Mavericks @ Cleveland Cavaliers": [
-      "P.J. Washington"
-    ]
-  },
-  "ungraded_distinct_player_markets": 4,
+  "ungraded_distinct_player_names_by_game": {},
+  "ungraded_distinct_player_markets": 0,
   "final_feed": {
     "pending_matchups": 16,
     "final_nba_games": 15,
@@ -88,50 +82,19 @@
     "retrieved_player_lines": 507,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 10,
-    "final_cached_id_nba_games": 9,
+    "cached_official_id_candidates": 9,
+    "final_cached_id_nba_games": 8,
     "secondary_espn_dnp_discovered_game_hints": 6,
     "secondary_verified_explicit_dnp_players": 39,
     "secondary_dnp_still_unverified": 2,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 1431,
-    "newly_retrieved_verified_rows": 2,
+    "verified_cache_rows": 1428,
+    "newly_retrieved_verified_rows": 0,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 4
-    },
-    "players": [
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Cleveland Cavaliers",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Cleveland Cavaliers",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Cleveland Cavaliers",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Cleveland Cavaliers",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      }
-    ],
+    "by_reason": {},
+    "players": [],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,
