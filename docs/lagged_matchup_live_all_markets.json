@@ -1,6 +1,6 @@
 {
   "status": "LIVE_ALL_MARKET_NEW_AI_UNCALIBRATED",
-  "generated_at": "2026-11-16T01:50:56.178714+00:00",
+  "generated_at": "2026-11-16T01:58:36.732383+00:00",
   "source_provider_generated_at": "2026-11-15T21:55:21.804068+00:00",
   "source_model_input_generated_at": "2026-11-15T21:55:21.804068+00:00",
   "model": "LAGGED_MATCHUP_2022_24_THREE_MODELS_PRA_SUM",
@@ -9,10 +9,10 @@
   "component_consistency": true,
   "correlated_pra_scenarios": true,
   "market_counts": {
-    "PTS": 9,
+    "PTS": 8,
     "REB": 2,
     "AST": 2,
-    "PRA": 9
+    "PRA": 8
   },
   "predictions": [
     {
@@ -31,7 +31,7 @@
         "AST": 5.221
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -39,11 +39,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 29.812,
-        "modeled_more_probability": 0.35,
-        "modeled_less_probability": 0.65,
+        "modeled_more_probability": 0.3514,
+        "modeled_less_probability": 0.6486,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.65,
+        "modeled_selected_probability": 0.6486,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 29.812,
@@ -55,18 +55,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -88,7 +110,7 @@
         "AST": 1.698
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -96,11 +118,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 8.263,
-        "modeled_more_probability": 0.4326,
-        "modeled_less_probability": 0.5674,
+        "modeled_more_probability": 0.4345,
+        "modeled_less_probability": 0.5655,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5674,
+        "modeled_selected_probability": 0.5655,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.263,
@@ -112,18 +134,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -145,7 +189,7 @@
         "AST": 3.29
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -153,11 +197,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 16.859,
-        "modeled_more_probability": 0.4109,
-        "modeled_less_probability": 0.589,
+        "modeled_more_probability": 0.4133,
+        "modeled_less_probability": 0.5867,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.589,
+        "modeled_selected_probability": 0.5867,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.859,
@@ -169,18 +213,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -202,7 +268,7 @@
         "AST": 7.07
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -210,11 +276,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 23.443,
-        "modeled_more_probability": 0.4409,
-        "modeled_less_probability": 0.5592,
+        "modeled_more_probability": 0.4497,
+        "modeled_less_probability": 0.5503,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5592,
+        "modeled_selected_probability": 0.5503,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 23.443,
@@ -226,18 +292,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "MULTIPLE_TEAMMATES_OUT",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
       "research_only": true,
@@ -259,7 +347,7 @@
         "AST": 1.881
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -267,11 +355,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 14.212,
-        "modeled_more_probability": 0.3691,
-        "modeled_less_probability": 0.6309,
+        "modeled_more_probability": 0.3709,
+        "modeled_less_probability": 0.6291,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6309,
+        "modeled_selected_probability": 0.6291,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.212,
@@ -283,77 +371,42 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "De'Andre Hunter",
-      "player_id": "1629631",
-      "team": "SAC",
-      "opponent": "OKC",
-      "game": "Oklahoma City Thunder @ Sacramento Kings",
-      "start": "2026-11-16T02:00:00+00:00",
-      "stat": "PTS",
-      "line": 13.5,
-      "projection": 14.734,
-      "components": {
-        "PTS": 14.734,
-        "REB": 4.426,
-        "AST": 1.579
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PTS",
-        "projection": 14.734,
-        "modeled_more_probability": 0.5376,
-        "modeled_less_probability": 0.4624,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5376,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 14.734,
-          "REB": 4.426,
-          "AST": 1.579
-        },
-        "PRA_joint_distribution": false,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
-      "injury_context": {
-        "status": "NO_REPORTED_OUT",
-        "factor": 1.0,
-        "affected": []
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
       "research_only": true,
       "production_replaced": false
     },
@@ -373,7 +426,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -381,11 +434,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 13.192,
-        "modeled_more_probability": 0.4997,
-        "modeled_less_probability": 0.5003,
+        "modeled_more_probability": 0.4994,
+        "modeled_less_probability": 0.5007,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5003,
+        "modeled_selected_probability": 0.5007,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.192,
@@ -397,18 +450,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "MULTIPLE_TEAMMATES_OUT",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -430,7 +505,7 @@
         "AST": 1.431
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -438,11 +513,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 9.284,
-        "modeled_more_probability": 0.439,
-        "modeled_less_probability": 0.561,
+        "modeled_more_probability": 0.4325,
+        "modeled_less_probability": 0.5675,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.561,
+        "modeled_selected_probability": 0.5675,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.284,
@@ -454,18 +529,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -487,7 +584,7 @@
         "AST": 4.239
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -495,11 +592,11 @@
         "draws": 20000,
         "market": "PTS",
         "projection": 10.53,
-        "modeled_more_probability": 0.4471,
-        "modeled_less_probability": 0.553,
+        "modeled_more_probability": 0.4556,
+        "modeled_less_probability": 0.5444,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.553,
+        "modeled_selected_probability": 0.5444,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.53,
@@ -511,18 +608,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -544,7 +663,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -552,11 +671,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 11.586,
-        "modeled_more_probability": 0.315,
-        "modeled_less_probability": 0.535,
-        "modeled_push_probability": 0.15,
+        "modeled_more_probability": 0.3148,
+        "modeled_less_probability": 0.5356,
+        "modeled_push_probability": 0.1495,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.535,
+        "modeled_selected_probability": 0.5356,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.192,
@@ -568,18 +687,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "MULTIPLE_TEAMMATES_OUT",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -601,7 +742,7 @@
         "AST": 4.239
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -609,11 +750,11 @@
         "draws": 20000,
         "market": "REB",
         "projection": 10.104,
-        "modeled_more_probability": 0.3819,
-        "modeled_less_probability": 0.6181,
+        "modeled_more_probability": 0.3868,
+        "modeled_less_probability": 0.6132,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6181,
+        "modeled_selected_probability": 0.6132,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.53,
@@ -625,18 +766,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -658,7 +821,7 @@
         "AST": 3.29
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -666,11 +829,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 3.29,
-        "modeled_more_probability": 0.3916,
-        "modeled_less_probability": 0.6083,
+        "modeled_more_probability": 0.3906,
+        "modeled_less_probability": 0.6095,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6083,
+        "modeled_selected_probability": 0.6095,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.859,
@@ -682,18 +845,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -715,7 +900,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -723,11 +908,11 @@
         "draws": 20000,
         "market": "AST",
         "projection": 5.237,
-        "modeled_more_probability": 0.3747,
-        "modeled_less_probability": 0.3583,
-        "modeled_push_probability": 0.267,
+        "modeled_more_probability": 0.3805,
+        "modeled_less_probability": 0.3614,
+        "modeled_push_probability": 0.2581,
         "modeled_direction": "More",
-        "modeled_selected_probability": 0.3747,
+        "modeled_selected_probability": 0.3805,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.192,
@@ -739,18 +924,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "MULTIPLE_TEAMMATES_OUT",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -772,7 +979,7 @@
         "AST": 4.239
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -780,11 +987,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 24.873,
-        "modeled_more_probability": 0.4299,
-        "modeled_less_probability": 0.5701,
+        "modeled_more_probability": 0.4343,
+        "modeled_less_probability": 0.5657,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5701,
+        "modeled_selected_probability": 0.5657,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 10.53,
@@ -796,18 +1003,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -829,7 +1058,7 @@
         "AST": 5.221
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -837,11 +1066,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 39.629,
-        "modeled_more_probability": 0.379,
-        "modeled_less_probability": 0.621,
+        "modeled_more_probability": 0.3822,
+        "modeled_less_probability": 0.6178,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.621,
+        "modeled_selected_probability": 0.6178,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 29.812,
@@ -853,18 +1082,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -886,7 +1137,7 @@
         "AST": 1.698
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -894,11 +1145,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 13.702,
-        "modeled_more_probability": 0.3784,
-        "modeled_less_probability": 0.6217,
+        "modeled_more_probability": 0.3835,
+        "modeled_less_probability": 0.6166,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.6217,
+        "modeled_selected_probability": 0.6166,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 8.263,
@@ -910,18 +1161,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -943,7 +1216,7 @@
         "AST": 1.881
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -951,11 +1224,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 20.239,
-        "modeled_more_probability": 0.4068,
-        "modeled_less_probability": 0.5933,
+        "modeled_more_probability": 0.4009,
+        "modeled_less_probability": 0.599,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5933,
+        "modeled_selected_probability": 0.599,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 14.212,
@@ -967,18 +1240,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
@@ -1000,7 +1295,7 @@
         "AST": 3.29
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1008,11 +1303,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 24.095,
-        "modeled_more_probability": 0.4006,
-        "modeled_less_probability": 0.5994,
+        "modeled_more_probability": 0.3991,
+        "modeled_less_probability": 0.6009,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5994,
+        "modeled_selected_probability": 0.6009,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 16.859,
@@ -1024,18 +1319,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -1057,7 +1374,7 @@
         "AST": 5.237
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1065,11 +1382,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 30.016,
-        "modeled_more_probability": 0.4328,
-        "modeled_less_probability": 0.5672,
+        "modeled_more_probability": 0.4431,
+        "modeled_less_probability": 0.5569,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5672,
+        "modeled_selected_probability": 0.5569,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 13.192,
@@ -1081,18 +1398,40 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "MULTIPLE_TEAMMATES_OUT",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 11,
       "research_only": true,
@@ -1114,7 +1453,7 @@
         "AST": 7.07
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1122,11 +1461,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 34.706,
-        "modeled_more_probability": 0.4693,
-        "modeled_less_probability": 0.5307,
+        "modeled_more_probability": 0.4686,
+        "modeled_less_probability": 0.5314,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5307,
+        "modeled_selected_probability": 0.5314,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 23.443,
@@ -1138,77 +1477,42 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "MULTIPLE_TEAMMATES_OUT",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": false,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 12,
-      "research_only": true,
-      "production_replaced": false
-    },
-    {
-      "player": "De'Andre Hunter",
-      "player_id": "1629631",
-      "team": "SAC",
-      "opponent": "OKC",
-      "game": "Oklahoma City Thunder @ Sacramento Kings",
-      "start": "2026-11-16T02:00:00+00:00",
-      "stat": "PRA",
-      "line": 19.5,
-      "projection": 20.739,
-      "components": {
-        "PTS": 14.734,
-        "REB": 4.426,
-        "AST": 1.579
-      },
-      "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
-      "pickem_tier": "standard",
-      "standard_line_two_sided_verified": true,
-      "estimated_hit_chance": {
-        "method": "JOINT_2024_25_VALIDATION_RESIDUALS_20K_UNCALIBRATED",
-        "draws": 20000,
-        "market": "PRA",
-        "projection": 20.739,
-        "modeled_more_probability": 0.5318,
-        "modeled_less_probability": 0.4682,
-        "modeled_push_probability": 0.0,
-        "modeled_direction": "More",
-        "modeled_selected_probability": 0.5318,
-        "reference_player_games": 20062,
-        "component_projections": {
-          "PTS": 14.734,
-          "REB": 4.426,
-          "AST": 1.579
-        },
-        "PRA_joint_distribution": true,
-        "calibrated": false,
-        "verified_betting_edge": false,
-        "note": "Historical residual-based estimate only; not a verified live hit percentage."
-      },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
-      "injury_context": {
-        "status": "NO_REPORTED_OUT",
-        "factor": 1.0,
-        "affected": []
-      },
-      "opponent_context_unavailable": false,
-      "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
-      "opponent_adjustment_verified": false,
-      "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
-      "calibrated_probability": null,
-      "source_prior_games": 11,
       "research_only": true,
       "production_replaced": false
     },
@@ -1228,7 +1532,7 @@
         "AST": 1.431
       },
       "market_updated": "2026-11-15T21:50:01.616000+00:00",
-      "captured_at": "2026-11-16T01:50:56.178714+00:00",
+      "captured_at": "2026-11-16T01:58:36.732383+00:00",
       "pickem_tier": "standard",
       "standard_line_two_sided_verified": true,
       "estimated_hit_chance": {
@@ -1236,11 +1540,11 @@
         "draws": 20000,
         "market": "PRA",
         "projection": 17.021,
-        "modeled_more_probability": 0.4466,
-        "modeled_less_probability": 0.5534,
+        "modeled_more_probability": 0.4511,
+        "modeled_less_probability": 0.549,
         "modeled_push_probability": 0.0,
         "modeled_direction": "Less",
-        "modeled_selected_probability": 0.5534,
+        "modeled_selected_probability": 0.549,
         "reference_player_games": 20062,
         "component_projections": {
           "PTS": 9.284,
@@ -1252,36 +1556,58 @@
         "verified_betting_edge": false,
         "note": "Historical residual-based estimate only; not a verified live hit percentage."
       },
-      "injury_reprojection_status": "NO_REPORTED_OUT",
+      "injury_reprojection_status": "BASELINE_WITH_UNRESOLVED_INJURY",
       "injury_context": {
-        "status": "NO_REPORTED_OUT",
+        "status": "BASELINE_WITH_UNRESOLVED_INJURY",
         "factor": 1.0,
-        "affected": []
+        "affected": [
+          {
+            "player_id": "1630173",
+            "player": "Precious Achiuwa",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          },
+          {
+            "player_id": "1629631",
+            "player": "De'Andre Hunter",
+            "team": "SAC",
+            "status": "OUT",
+            "source": "OFFICIAL_NBA_REPORT",
+            "reported_at": "2026-11-16T01:45:00+00:00",
+            "official": true
+          }
+        ],
+        "reason": "OPPONENT_ABSENCE_NOT_MODELED",
+        "injury_adjusted": false,
+        "probability_actionable": false
       },
       "opponent_context_unavailable": false,
       "single_source_history": false,
-      "injury_uncertainty_unresolved": false,
+      "injury_uncertainty_unresolved": true,
       "opponent_adjustment_verified": true,
       "prediction_quality": "VERIFIED_PRIOR_OPPONENT_CONTEXT",
-      "injury_adjustment_verified": true,
+      "injury_adjustment_verified": false,
       "calibrated_probability": null,
       "source_prior_games": 13,
       "research_only": true,
       "production_replaced": false
     }
   ],
-  "published_projections": 22,
+  "published_projections": 20,
   "excluded": {
-    "REPORTED_OUT_PLAYER_SUPPRESSED": 5,
+    "REPORTED_OUT_PLAYER_SUPPRESSED": 7,
     "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY": 3
   },
   "game_diagnostics": {
     "Oklahoma City Thunder @ Sacramento Kings": {
       "observed_provider_quote_rows": 60,
       "verified_standard_offers": 30,
-      "frozen_forecasts": 22,
+      "frozen_forecasts": 20,
       "excluded": {
-        "REPORTED_OUT_PLAYER_SUPPRESSED": 5,
+        "REPORTED_OUT_PLAYER_SUPPRESSED": 7,
         "INSUFFICIENT_PLAYER_OPPORTUNITY_HISTORY": 3
       }
     }
@@ -1289,7 +1615,7 @@
   "calibrated": false,
   "injury_news_processed": false,
   "official_injury_processed": true,
-  "official_report_issued_at": "2026-11-16T01:00:00+00:00",
+  "official_report_issued_at": "2026-11-16T01:45:00+00:00",
   "free_official_injury_transition_watch": true,
   "production_replaced": false,
   "existing_grades_modified": false,
