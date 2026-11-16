@@ -1,8 +1,8 @@
 {
-  "checked_at": "2026-11-16T05:06:58.871146+00:00",
-  "status": "READY",
+  "checked_at": "2026-11-16T05:10:50.372160+00:00",
+  "status": "DEGRADED",
   "complete": false,
-  "reconciled": true,
+  "reconciled": false,
   "scope": "PUBLISHED_STANDARD_FROZEN_PICKS_ONLY",
   "counts": {
     "graded": 2183,
@@ -10,8 +10,10 @@
     "verified_dnp_excluded": 126,
     "pending": 29
   },
-  "actionable_verified_finals": 0,
+  "actionable_verified_finals": 27,
   "overdue_missing_verified_finals": 0,
-  "issues": {},
+  "issues": {
+    "VERIFIED_FINAL_NOT_APPLIED": 27
+  },
   "note": "Provider lines without a validated frozen prediction are not published picks. Every saved pick requires an original pretip line and a verified final or independently crosschecked DNP; live scores never grade bets."
 }
