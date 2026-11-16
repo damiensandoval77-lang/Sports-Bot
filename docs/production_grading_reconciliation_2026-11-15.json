@@ -1,0 +1,154 @@
+{
+  "status": "BLOCKED",
+  "scope": "ONE_EASTERN_GAME_DATE_TWO_INDEPENDENT_FORECAST_LEDGERS",
+  "game_date_eastern": "2026-11-15",
+  "checked_at": "2026-11-16T11:27:43.786013+00:00",
+  "ai_only": {
+    "frozen": 900,
+    "graded": 740,
+    "verified_exclusion": 160,
+    "unresolved": 0,
+    "overdue": 0
+  },
+  "standard_line": {
+    "frozen": 191,
+    "graded": 174,
+    "verified_exclusion": 15,
+    "unresolved": 2,
+    "overdue": 2,
+    "push": 2
+  },
+  "published_report_reconciliation": {
+    "ai_status_mismatch": {},
+    "standard_report_mismatch": {}
+  },
+  "blockers": {
+    "STANDARD_OVERDUE_WITHOUT_VERIFIED_FINAL": 2
+  },
+  "unresolved_ai_only": [],
+  "unresolved_standard": [
+    {
+      "player_id": "1630567",
+      "player": "Scottie Barnes",
+      "team": "TOR",
+      "game": "New York Knicks @ Toronto Raptors",
+      "start": "2026-11-15T23:00:00+00:00",
+      "stat": "PRA",
+      "line": 29.5,
+      "reason": "VERIFIED_PLAYER_PLAYED_BUT_GRADE_IDENTITY_NOT_MATCHED",
+      "verified_game_id": "0022600241",
+      "overdue": true
+    },
+    {
+      "player_id": "1630567",
+      "player": "Scottie Barnes",
+      "team": "TOR",
+      "game": "New York Knicks @ Toronto Raptors",
+      "start": "2026-11-15T23:00:00+00:00",
+      "stat": "PTS",
+      "line": 17.5,
+      "reason": "VERIFIED_PLAYER_PLAYED_BUT_GRADE_IDENTITY_NOT_MATCHED",
+      "verified_game_id": "0022600241",
+      "overdue": true
+    }
+  ],
+  "missing_final_evidence_categories": {
+    "VERIFIED_PLAYER_PLAYED_BUT_GRADE_IDENTITY_NOT_MATCHED": 2
+  },
+  "verified_team_final_games": {
+    "ATL": {
+      "game_id": "0022600243",
+      "opponent": "MIL",
+      "observed_players": 10
+    },
+    "BOS": {
+      "game_id": "0022600240",
+      "opponent": "DAL",
+      "observed_players": 14
+    },
+    "CHA": {
+      "game_id": "0022600238",
+      "opponent": "LAC",
+      "observed_players": 12
+    },
+    "DAL": {
+      "game_id": "0022600240",
+      "opponent": "BOS",
+      "observed_players": 12
+    },
+    "HOU": {
+      "game_id": "0022600242",
+      "opponent": "WAS",
+      "observed_players": 12
+    },
+    "IND": {
+      "game_id": "0022600236",
+      "opponent": "PHI",
+      "observed_players": 12
+    },
+    "LAC": {
+      "game_id": "0022600238",
+      "opponent": "CHA",
+      "observed_players": 11
+    },
+    "LAL": {
+      "game_id": "0022600237",
+      "opponent": "PHX",
+      "observed_players": 9
+    },
+    "MIL": {
+      "game_id": "0022600243",
+      "opponent": "ATL",
+      "observed_players": 11
+    },
+    "NYK": {
+      "game_id": "0022600241",
+      "opponent": "TOR",
+      "observed_players": 12
+    },
+    "OKC": {
+      "game_id": "0022600244",
+      "opponent": "SAC",
+      "observed_players": 12
+    },
+    "PHI": {
+      "game_id": "0022600236",
+      "opponent": "IND",
+      "observed_players": 10
+    },
+    "PHX": {
+      "game_id": "0022600237",
+      "opponent": "LAL",
+      "observed_players": 11
+    },
+    "SAC": {
+      "game_id": "0022600244",
+      "opponent": "OKC",
+      "observed_players": 10
+    },
+    "SAS": {
+      "game_id": "0022600239",
+      "opponent": "UTA",
+      "observed_players": 10
+    },
+    "TOR": {
+      "game_id": "0022600241",
+      "opponent": "NYK",
+      "observed_players": 10
+    },
+    "UTA": {
+      "game_id": "0022600239",
+      "opponent": "SAS",
+      "observed_players": 9
+    },
+    "WAS": {
+      "game_id": "0022600242",
+      "opponent": "HOU",
+      "observed_players": 12
+    }
+  },
+  "uses_real_verified_final_sources_only": true,
+  "no_fabricated_dnp_or_final": true,
+  "betting_hit_rate_reported": false,
+  "notice": "A clean job is not a complete grading night. Missing final player rows remain pending, never losses or inferred DNPs. Each original standard line is a separate quote."
+}
