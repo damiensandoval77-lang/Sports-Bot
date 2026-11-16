@@ -54,6 +54,19 @@ class FrozenFinalCacheTests(unittest.TestCase):
         self.assertEqual(result["records"][0]["status"],"EXCLUDED_VERIFIED_DNP")
         self.assertIsNone(result["records"][0]["actual"])
         self.assertEqual(augment_final_outcomes(ledger(PICK),{"records":[]},[{**dnp,"dnp_reason":""}])["records"],[])
+    def test_direct_script_entrypoint_recovers_cached_final(self):
+        import json, shutil, subprocess, sys, tempfile
+        from pathlib import Path
+        root=Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as tmp:
+            target=Path(tmp)
+            shutil.copytree(root/"iphone_bot",target/"iphone_bot",ignore=shutil.ignore_patterns("tests","__pycache__"))
+            (target/"docs").mkdir()
+            (target/"docs/lagged_matchup_all_market_ledger.json").write_text(json.dumps(ledger(PICK)))
+            (target/"docs/verified_final_player_cache.json").write_text(json.dumps({"version":1,"rows":[ROW]}))
+            result=subprocess.run([sys.executable,str(target/"iphone_bot/multimarket_forecast_ledger.py")],cwd=tmp,text=True,capture_output=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertEqual(json.loads((target/"docs/lagged_matchup_all_market_ledger.json").read_text())["records"][0]["actual"],30)
     def test_malformed_frozen_rows_remain_for_audit_without_crash(self):
         self.assertEqual(augment_final_outcomes(ledger(None, 7, {**PICK,"start":7}), {"records":[]}, [ROW])["records"], [])
     def test_wrong_frozen_opponent_and_naive_start_rejected(self):

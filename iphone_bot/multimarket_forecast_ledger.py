@@ -9,6 +9,10 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
+# Production supports both python -m and direct script invocation.
+if __package__ in (None, ""):
+    import sys
+    sys.path.insert(0, str(ROOT))
 SOURCE=ROOT/"docs/lagged_matchup_live_all_markets.json"
 LEDGER=ROOT/"docs/lagged_matchup_all_market_ledger.json"
 FINAL=ROOT/"docs/ai_forecast_actual_ledger.json"
