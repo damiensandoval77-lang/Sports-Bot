@@ -1,24 +1,23 @@
 {
   "calibration_certified": false,
-  "checked_at": "2026-11-16T01:58:55.279181+00:00",
+  "checked_at": "2026-11-16T10:19:16.516411+00:00",
   "completed_distinct_dates": 5,
   "eligibility_gate_passed": false,
   "exclusions": {
-    "awaiting_independently_verified_final_grade": 1295,
-    "future_game_not_played": 307,
+    "awaiting_independently_verified_final_grade": 494,
     "original_line_or_side_not_unique": 844,
-    "repeated_model_snapshot_same_outcome": 24890,
-    "verified_dnp_void": 1352
+    "repeated_model_snapshot_same_outcome": 25772,
+    "verified_dnp_void": 1461
   },
   "first_graded_date": "2026-11-11",
   "forecast_archive_count": 30355,
   "last_graded_date": "2026-11-15",
   "line_policy": "ORIGINAL_VERIFIED_STANDARD_ONLY_NO_DEMON_OR_GOBLIN",
   "note": "Strict prospective accuracy measurement. Passing descriptive thresholds alone does not train or certify a calibrated replacement; separate date-ordered calibration required.",
-  "paired_final_grades": 1667,
+  "paired_final_grades": 1784,
   "per_market": {
     "AST": {
-      "baseline_brier": 0.25998,
+      "baseline_brier": 0.26156,
       "bins": [
         {
           "mean_prediction": null,
@@ -33,32 +32,32 @@
           "range": "20-40%"
         },
         {
-          "mean_prediction": 0.5228,
-          "n": 78,
-          "observed_hit_rate": 0.4231,
+          "mean_prediction": 0.5243,
+          "n": 84,
+          "observed_hit_rate": 0.4286,
           "range": "40-60%"
         },
         {
-          "mean_prediction": 0.6776,
-          "n": 75,
-          "observed_hit_rate": 0.5467,
+          "mean_prediction": 0.6769,
+          "n": 79,
+          "observed_hit_rate": 0.557,
           "range": "60-80%"
         },
         {
-          "mean_prediction": 0.8511,
-          "n": 13,
-          "observed_hit_rate": 0.6923,
+          "mean_prediction": 0.8505,
+          "n": 14,
+          "observed_hit_rate": 0.6429,
           "range": "80-100%"
         }
       ],
-      "brier": 0.26323,
-      "ece_5_bin": 0.125,
-      "log_loss": 0.7227,
-      "n": 174,
-      "observed_hit_rate": 0.50575
+      "brier": 0.26391,
+      "ece_5_bin": 0.12168,
+      "log_loss": 0.72521,
+      "n": 185,
+      "observed_hit_rate": 0.50811
     },
     "PRA": {
-      "baseline_brier": 0.25815,
+      "baseline_brier": 0.25789,
       "bins": [
         {
           "mean_prediction": null,
@@ -67,38 +66,38 @@
           "range": "0-20%"
         },
         {
-          "mean_prediction": 0.3612,
-          "n": 31,
-          "observed_hit_rate": 0.4516,
+          "mean_prediction": 0.364,
+          "n": 34,
+          "observed_hit_rate": 0.4412,
           "range": "20-40%"
         },
         {
-          "mean_prediction": 0.5232,
-          "n": 309,
-          "observed_hit_rate": 0.534,
+          "mean_prediction": 0.5235,
+          "n": 330,
+          "observed_hit_rate": 0.5333,
           "range": "40-60%"
         },
         {
           "mean_prediction": 0.6768,
-          "n": 253,
-          "observed_hit_rate": 0.5178,
+          "n": 273,
+          "observed_hit_rate": 0.5201,
           "range": "60-80%"
         },
         {
-          "mean_prediction": 0.8422,
-          "n": 21,
-          "observed_hit_rate": 0.5238,
+          "mean_prediction": 0.8434,
+          "n": 23,
+          "observed_hit_rate": 0.5217,
           "range": "80-100%"
         }
       ],
-      "brier": 0.26332,
-      "ece_5_bin": 0.08638,
-      "log_loss": 0.72637,
-      "n": 614,
-      "observed_hit_rate": 0.5228
+      "brier": 0.26396,
+      "ece_5_bin": 0.08489,
+      "log_loss": 0.72771,
+      "n": 660,
+      "observed_hit_rate": 0.52273
     },
     "PTS": {
-      "baseline_brier": 0.26032,
+      "baseline_brier": 0.26135,
       "bins": [
         {
           "mean_prediction": null,
@@ -107,38 +106,38 @@
           "range": "0-20%"
         },
         {
-          "mean_prediction": 0.3568,
-          "n": 14,
-          "observed_hit_rate": 0.5,
+          "mean_prediction": 0.3574,
+          "n": 15,
+          "observed_hit_rate": 0.5333,
           "range": "20-40%"
         },
         {
-          "mean_prediction": 0.5203,
-          "n": 313,
-          "observed_hit_rate": 0.5016,
+          "mean_prediction": 0.5191,
+          "n": 336,
+          "observed_hit_rate": 0.503,
           "range": "40-60%"
         },
         {
-          "mean_prediction": 0.6704,
-          "n": 243,
-          "observed_hit_rate": 0.5021,
+          "mean_prediction": 0.6699,
+          "n": 261,
+          "observed_hit_rate": 0.4943,
           "range": "60-80%"
         },
         {
-          "mean_prediction": 0.8355,
-          "n": 12,
-          "observed_hit_rate": 0.5833,
+          "mean_prediction": 0.835,
+          "n": 13,
+          "observed_hit_rate": 0.6154,
           "range": "80-100%"
         }
       ],
-      "brier": 0.26433,
-      "ece_5_bin": 0.08901,
-      "log_loss": 0.7266,
-      "n": 582,
-      "observed_hit_rate": 0.50344
+      "brier": 0.26673,
+      "ece_5_bin": 0.09081,
+      "log_loss": 0.73151,
+      "n": 625,
+      "observed_hit_rate": 0.5024
     },
     "REB": {
-      "baseline_brier": 0.25207,
+      "baseline_brier": 0.25425,
       "bins": [
         {
           "mean_prediction": null,
@@ -153,29 +152,29 @@
           "range": "20-40%"
         },
         {
-          "mean_prediction": 0.5289,
-          "n": 150,
-          "observed_hit_rate": 0.4867,
+          "mean_prediction": 0.5254,
+          "n": 161,
+          "observed_hit_rate": 0.4845,
           "range": "40-60%"
         },
         {
-          "mean_prediction": 0.6799,
-          "n": 121,
-          "observed_hit_rate": 0.5372,
+          "mean_prediction": 0.6808,
+          "n": 125,
+          "observed_hit_rate": 0.536,
           "range": "60-80%"
         },
         {
-          "mean_prediction": 0.8552,
-          "n": 18,
-          "observed_hit_rate": 0.6111,
+          "mean_prediction": 0.8499,
+          "n": 20,
+          "observed_hit_rate": 0.55,
           "range": "80-100%"
         }
       ],
-      "brier": 0.26118,
-      "ece_5_bin": 0.09604,
-      "log_loss": 0.72735,
-      "n": 297,
-      "observed_hit_rate": 0.50842
+      "brier": 0.26482,
+      "ece_5_bin": 0.09941,
+      "log_loss": 0.73545,
+      "n": 314,
+      "observed_hit_rate": 0.50318
     }
   },
   "promotion_blockers": [
@@ -185,7 +184,7 @@
   ],
   "status": "PROSPECTIVE_MATCHUP_CALIBRATION_AUDIT",
   "total": {
-    "baseline_brier": 0.25801,
+    "baseline_brier": 0.25885,
     "bins": [
       {
         "mean_prediction": null,
@@ -194,35 +193,35 @@
         "range": "0-20%"
       },
       {
-        "mean_prediction": 0.3547,
-        "n": 61,
-        "observed_hit_rate": 0.459,
+        "mean_prediction": 0.3566,
+        "n": 65,
+        "observed_hit_rate": 0.4615,
         "range": "20-40%"
       },
       {
-        "mean_prediction": 0.5231,
-        "n": 850,
-        "observed_hit_rate": 0.5035,
+        "mean_prediction": 0.5223,
+        "n": 911,
+        "observed_hit_rate": 0.5038,
         "range": "40-60%"
       },
       {
-        "mean_prediction": 0.6752,
-        "n": 692,
-        "observed_hit_rate": 0.5188,
+        "mean_prediction": 0.675,
+        "n": 738,
+        "observed_hit_rate": 0.5176,
         "range": "60-80%"
       },
       {
-        "mean_prediction": 0.8464,
-        "n": 64,
-        "observed_hit_rate": 0.5938,
+        "mean_prediction": 0.8451,
+        "n": 70,
+        "observed_hit_rate": 0.5714,
         "range": "80-100%"
       }
     ],
-    "brier": 0.26328,
-    "ece_5_bin": 0.08843,
-    "log_loss": 0.72624,
-    "n": 1667,
-    "observed_hit_rate": 0.5117
+    "brier": 0.26508,
+    "ece_5_bin": 0.0891,
+    "log_loss": 0.73015,
+    "n": 1784,
+    "observed_hit_rate": 0.51065
   },
   "unique_outcome_policy": "ONE_EARLIEST_ELIGIBLE_PREGAME_SNAPSHOT_PER_PLAYER_GAME_MARKET_LINE_SIDE"
 }
