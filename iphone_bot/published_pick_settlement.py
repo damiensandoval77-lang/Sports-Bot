@@ -169,8 +169,11 @@ def main():
     def read(name):
         try:return json.loads((ROOT/name).read_text(encoding="utf-8"))
         except (OSError,ValueError):return {}
-    result=evaluate(read("lagged_matchup_all_market_ledger.json"),
-                    read("ai_forecast_actual_ledger.json"))
+    from iphone_bot.frozen_pick_final_cache import with_cached_outcomes
+    ledger=read("lagged_matchup_all_market_ledger.json")
+    finals=with_cached_outcomes(ledger,read("ai_forecast_actual_ledger.json"),
+                               ROOT/"verified_final_player_cache.json")
+    result=evaluate(ledger,finals)
     target=ROOT/"dames-picks/published_pick_settlement.json"
     target.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8")
     print("PUBLISHED_PICK_SETTLEMENT",json.dumps(result))
