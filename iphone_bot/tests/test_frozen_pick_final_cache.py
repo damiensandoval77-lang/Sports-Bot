@@ -68,7 +68,7 @@ class FrozenFinalCacheTests(unittest.TestCase):
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertEqual(json.loads((target/"docs/lagged_matchup_all_market_ledger.json").read_text())["records"][0]["actual"],30)
     def test_malformed_frozen_rows_remain_for_audit_without_crash(self):
-        self.assertEqual(augment_final_outcomes(ledger(None, 7, {**PICK,"start":7}), {"records":[]}, [ROW])["records"], [])
+        self.assertEqual(augment_final_outcomes(ledger(None, 7, {**PICK,"start":7}, {**PICK,"player_id":None}, {**PICK,"player":None}), {"records":[]}, [ROW])["records"], [])
     def test_wrong_frozen_opponent_and_naive_start_rejected(self):
         for change in [{"opponent":"BOS"},{"start":"2026-11-15T23:00:00"}]:
             self.assertEqual(augment_final_outcomes(ledger({**PICK,**change}),{"records":[]},[ROW])["records"],[])

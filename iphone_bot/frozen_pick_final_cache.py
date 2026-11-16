@@ -23,6 +23,8 @@ def augment_final_outcomes(frozen, finals, cache_rows):
     for pick in frozen.get("records", []):
         if not isinstance(pick, dict) or not isinstance(pick.get("start"), str):
             continue
+        if not all(pick.get(field) for field in FIELDS) or not str(pick["player_id"]).isdigit() or not strict_player_name(pick.get("player")):
+            continue
         key = identity(pick)
         if key in existing or pick.get("stat") not in {"PTS", "REB", "AST", "PRA"}:
             continue
