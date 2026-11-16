@@ -94,14 +94,19 @@ def observe_live_order(page, sport):
     return observed
 
 def assess_tennis(observation):
-    """Tennis is quote-only: empty is honest, cross-league rows/estimates are not."""
+    """Validate distinct fixture-list and quote-only contracts, never forecasts."""
     reasons=[]
     mode=observation.get("mode")
     if observation.get("selected")!="TENNIS" or mode!=observation.get("requested_mode"):
         reasons.append("TENNIS_VIEW_NOT_SELECTED")
     if observation.get("metrics") != ["—","—","—"]:
         reasons.append("TENNIS_UNSUPPORTED_METRICS")
-    if "Projections, hit estimates and grading are unavailable" not in observation.get("notice",""):
+    fixtures=observation.get("fixtures",[])
+    fixture_cards=observation.get("fixture_cards",[])
+    notice=observation.get("notice", "")
+    notice_ok=(all(x in notice for x in ("Partial list, not a live schedule", "Lines and estimates are unavailable"))
+               if fixtures else "Projections, hit estimates and grading are unavailable" in notice)
+    if not notice_ok:
         reasons.append("TENNIS_LIMITATION_NOTICE_MISSING")
     cards=observation.get("cards",[])
     ids=[c.get("id") for c in cards]
@@ -110,11 +115,19 @@ def assess_tennis(observation):
         reasons.append("TENNIS_CROSS_LEAGUE_OR_MISSING_CARDS")
     if any(c.get("projection")!="—" or c.get("estimate")!="—" or c.get("grade")!="LINE ONLY" for c in cards):
         reasons.append("TENNIS_UNSUPPORTED_ESTIMATE_OR_GRADE")
+    expected_fixtures=[(f.get("name"),f.get("date")) for f in fixtures]
+    actual_fixtures=[(f.get("name"),f.get("date")) for f in fixture_cards]
+    if (mode!="board" and (fixtures or fixture_cards)) or len(set(expected_fixtures))!=len(expected_fixtures) or actual_fixtures!=expected_fixtures:
+        reasons.append("TENNIS_FIXTURE_IDENTITY_MISMATCH")
+    if any(f.get("grade")!="MATCH LIST" or f.get("projection") is not None or f.get("estimate") is not None
+           or f.get("has_quote_id") or f.get("has_stats") or "start time unconfirmed" not in f.get("context", "")
+           or "no pick or hit estimate" not in f.get("note", "") for f in fixture_cards):
+        reasons.append("TENNIS_UNSUPPORTED_FIXTURE_ESTIMATE_OR_GRADE")
     empty=observation.get("empty","")
     if mode in ("live","tracker"):
         if cards or "not connected" not in empty or "does not mean no matches" not in empty:
             reasons.append("TENNIS_UNSUPPORTED_LIVE_OR_GRADING")
-    elif not cards and "not evidence that no tennis matches exist" not in empty:
+    elif not cards and not fixture_cards and "not evidence that no tennis matches exist" not in empty:
         reasons.append("TENNIS_EMPTY_STATE_NOT_HONEST")
     if observation.get("research_visible"):
         reasons.append("TENNIS_CROSS_LEAGUE_RESEARCH_VISIBLE")
@@ -131,12 +144,23 @@ def observe_tennis(page):
         page.locator('button[data-league="TENNIS"]').click(timeout=10000)
         for mode in ("board","live","tracker","saved"):
             page.locator('button[data-view="'+mode+'"]').click(timeout=10000)
-            obs=page.evaluate("""mode => ({
+            obs=page.evaluate(r"""mode => ({
               selected:state.league, mode:state.mode, requested_mode:mode,
               metrics:['wl','rate','games'].map(id=>document.getElementById(id).textContent.trim()),
               notice:document.querySelector('#coverage')?.textContent||'',
               expected_ids:['live','tracker'].includes(mode)?[]:shown().map(p=>m.key(p)),
-              cards:[...document.querySelectorAll('#cards .pick')].map(el=>({
+              fixtures:mode==='board'?(window.DamesPicksTennis?.fixtures?.(state.tennisFixtures,Date.now())||[])
+                .filter(q=>q.players.join(' ').toLowerCase().includes(document.getElementById('query').value.toLowerCase().trim()))
+                .map(q=>({id:q.id,name:q.players.join(' vs '),date:q.starts_at.slice(0,10)})):[],
+              fixture_cards:[...document.querySelectorAll('#cards article.pick')].map(el=>({
+                name:el.querySelector('.name')?.textContent,
+                date:el.querySelector('.context')?.textContent.match(/Provider-listed date: (\d{4}-\d{2}-\d{2})/)?.[1],
+                context:el.querySelector('.context')?.textContent||'',note:el.querySelector('.note')?.textContent||'',
+                grade:el.querySelector('.grade')?.textContent,has_quote_id:el.hasAttribute('data-id'),
+                has_stats:!!el.querySelector('.stat-grid'),
+                projection:el.querySelectorAll('.stat-grid strong')[1]?.textContent,
+                estimate:el.querySelectorAll('.stat-grid strong')[2]?.textContent})),
+              cards:[...document.querySelectorAll('#cards .pick:not(article)')].map(el=>({
                 id:el.dataset.id,grade:el.querySelector('.grade')?.textContent,
                 projection:el.querySelectorAll('.stat-grid strong')[1]?.textContent,
                 estimate:el.querySelectorAll('.stat-grid strong')[2]?.textContent})),

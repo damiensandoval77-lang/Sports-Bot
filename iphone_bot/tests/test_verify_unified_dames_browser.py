@@ -131,6 +131,39 @@ class TennisBrowserTests(unittest.TestCase):
         self.assertIn("TENNIS_EMPTY_STATE_NOT_HONEST",r)
         self.assertIn("TENNIS_LIMITATION_NOTICE_MISSING",r)
 
+class TennisFixtureBrowserTests(TennisBrowserTests):
+    def fixture_obs(self):
+        o=self.obs();o.update(notice="Partial list, not a live schedule. Lines and estimates are unavailable",
+            fixtures=[dict(id="f1",name="A vs B",date="2026-11-16")],
+            fixture_cards=[dict(name="A vs B",date="2026-11-16",grade="MATCH LIST",projection=None,estimate=None,
+                context="Provider-listed date: 2026-11-16 · start time unconfirmed",note="Schedule snapshot only · no pick or hit estimate")])
+        return o
+    def test_source_backed_list(self):
+        self.assertEqual(assess_tennis(self.fixture_obs()),[])
+    def test_wrong_name_date_missing_duplicate(self):
+        for field,value in (("name","NBA player"),("date","2026-11-17")):
+            o=self.fixture_obs();o['fixture_cards'][0][field]=value
+            self.assertIn("TENNIS_FIXTURE_IDENTITY_MISMATCH",assess_tennis(o))
+        for cards in ([],[self.fixture_obs()['fixture_cards'][0]]*2):
+            o=self.fixture_obs();o['fixture_cards']=cards
+            self.assertIn("TENNIS_FIXTURE_IDENTITY_MISMATCH",assess_tennis(o))
+    def test_fixture_must_never_forecast(self):
+        for field,value in (("grade","WIN"),("estimate","80%"),("projection","12"),("has_stats",True),("has_quote_id",True),("context","confirmed"),("note","pick")):
+            o=self.fixture_obs();o['fixture_cards'][0][field]=value
+            self.assertIn("TENNIS_UNSUPPORTED_FIXTURE_ESTIMATE_OR_GRADE",assess_tennis(o))
+    def test_fixture_in_saved_or_live_fails(self):
+        for mode in ('saved','live','tracker'):
+            o=self.fixture_obs();o.update(mode=mode,requested_mode=mode)
+            self.assertIn("TENNIS_FIXTURE_IDENTITY_MISMATCH",assess_tennis(o))
+    def test_mixed_quotes_keep_safeguards(self):
+        o=self.fixture_obs();o.update(expected_ids=['t1'],cards=[dict(id='t1',projection='—',estimate='—',grade='LINE ONLY')])
+        self.assertEqual(assess_tennis(o),[])
+        o['cards'][0]['estimate']='80%'
+        self.assertIn("TENNIS_UNSUPPORTED_ESTIMATE_OR_GRADE",assess_tennis(o))
+    def test_snapshot_notice_required(self):
+        o=self.fixture_obs();o['notice']='Live schedule'
+        self.assertIn("TENNIS_LIMITATION_NOTICE_MISSING",assess_tennis(o))
+
 class ConfidenceBrowserTests(unittest.TestCase):
     def obs(self):
         return dict(eligible_count=1,viewport_width=390,overflow=0,estimates=[80,62],
