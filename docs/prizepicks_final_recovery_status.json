@@ -1,57 +1,75 @@
 {
-  "pending_matchups": 1,
-  "final_nba_games": 0,
+  "pending_matchups": 3,
+  "final_nba_games": 2,
   "final_schedule_discovered_nba_games": 0,
   "final_espn_games": 0,
-  "retrieved_player_lines": 0,
+  "retrieved_player_lines": 65,
   "errors": [],
   "source": "NBA live CDN; ESPN completed boxscore fallback",
   "cached_official_id_candidates": 1,
-  "status": "NO_FINAL_BOXSCORES_AVAILABLE",
+  "status": "FINAL_BOXSCORES_FOUND",
   "archived_espn_game_id_hints": 0,
-  "requested_matchups": 1,
-  "verified_rows": 58,
-  "verified_dnp_rows": 58,
-  "verified_played_rows": 0,
+  "requested_matchups": 3,
+  "verified_rows": 124,
+  "verified_dnp_rows": 81,
+  "verified_played_rows": 45,
   "recovery_source": "VERIFIED_FINAL_BOXSCORES_ONLY",
-  "verified_cache_rows_reused": 0,
+  "verified_cache_rows_reused": 1,
   "historical_source_confirmed_dnp_rows": 24,
   "manual_crosschecked_official_inactive_rows": 0,
-  "recent_research_pending_before_recovery": 27,
-  "recent_research_settlement_matches": 0,
+  "recent_research_pending_before_recovery": 87,
+  "recent_research_settlement_matches": 53,
   "recent_research_verified_dnp_voids": 0,
-  "recent_research_unmatched_after_recovery": 27,
-  "unmatched_player_stat_markets": 27,
+  "recent_research_unmatched_after_recovery": 34,
+  "unmatched_player_stat_markets": 34,
   "unmatched_games": {
-    "San Antonio Spurs @ Utah Jazz": 27
+    "New York Knicks @ Toronto Raptors": 28,
+    "San Antonio Spurs @ Utah Jazz": 6
   },
   "unmatched_distinct_players_by_game": {
+    "New York Knicks @ Toronto Raptors": [
+      "Andre Drummond",
+      "Immanuel Quickley",
+      "Ja'Kobe Walter",
+      "Jakob Poeltl",
+      "Jalen Brunson",
+      "Josh Hart",
+      "Karl-Anthony Towns",
+      "Landry Shamet",
+      "Mikal Bridges",
+      "Miles McBride",
+      "OG Anunoby",
+      "RJ Barrett"
+    ],
     "San Antonio Spurs @ Utah Jazz": [
-      "Ace Bailey",
-      "Darryn Peterson",
       "Devin Vassell",
-      "Dylan Harper",
-      "Josh Okogie",
-      "Julian Champagnie",
-      "Keldon Johnson",
-      "Keyonte George",
-      "Luke Kornet",
-      "Mo Bamba",
-      "Stephon Castle",
       "Victor Wembanyama"
     ]
   },
   "unmatched_reason_counts": {
-    "NO_FINAL_FOR_EASTERN_DATE": 27
+    "PLAYER_NAME_MISMATCH": 6,
+    "TEAM_NOT_FOUND_IN_FINALS": 28
   },
   "unmatched_reason_examples": {
-    "NO_FINAL_FOR_EASTERN_DATE": {
-      "sample_research_name": "Keldon Johnson",
+    "PLAYER_NAME_MISMATCH": {
+      "sample_research_name": "Victor Wembanyama",
       "game": "San Antonio Spurs @ Utah Jazz",
-      "sample_official_names": [],
+      "sample_official_names": [
+        "Carter Bryant",
+        "De'Aaron Fox",
+        "Dylan Harper",
+        "Harrison Barnes"
+      ],
       "research_team": "SAS",
+      "date": "2026-11-15"
+    },
+    "TEAM_NOT_FOUND_IN_FINALS": {
+      "sample_research_name": "OG Anunoby",
+      "game": "New York Knicks @ Toronto Raptors",
+      "sample_official_names": [],
+      "research_team": "NYK",
       "date": "2026-11-15"
     }
   },
-  "checked_at": "2026-11-16T00:08:32.588522+00:00"
+  "checked_at": "2026-11-16T01:53:29.629764+00:00"
 }
