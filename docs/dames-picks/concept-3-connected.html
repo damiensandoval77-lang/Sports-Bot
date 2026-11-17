@@ -21,6 +21,13 @@
 .sport-nav{display:flex;gap:4px;padding:4px;border:1px solid #483453;background:#181022;border-radius:9px}
 .sport-nav button{background:transparent;color:#cbb7dc;border:0;border-radius:6px;font-size:10px;padding:7px}
 .sport-nav button.selected{background:#7f36d1;color:white}
+.connected-tools{display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:1600px;margin:auto;padding:10px 16px;border-bottom:1px solid #2b1a3d}
+.connected-back{font-size:11px;color:#c9a5ff;text-decoration:none;white-space:nowrap}
+.mobile-search{display:none;flex:1;max-width:480px;gap:7px}
+.mobile-search input{min-width:0;flex:1;padding:9px;background:#140e20;color:#eee;border:1px solid #68468c;border-radius:8px}
+.mobile-search button{padding:9px;background:#7025ae;border:0;color:white;border-radius:8px}
+@media(max-width:1010px){.mobile-search{display:flex}}
+@media(max-width:680px){.legacy-link{display:none}.connected-tools{padding:9px;gap:8px;flex-wrap:wrap}.sport-nav{order:1}.mobile-search{order:3;flex-basis:100%;max-width:none}.connected-back{order:2}}
 @media(max-width:1000px){.sport-nav{flex-wrap:wrap}}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="dames-stage" content="concept3-connected-20261117"></head>
