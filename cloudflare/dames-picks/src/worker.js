@@ -113,7 +113,7 @@ export async function ensureStagingSchema(db) {
     // All unexpected DB errors are treated as failures unless the migration
     // succeeds and the expected source rows are independently verified below.
   }
-  const oneTimeSql = BOOTSTRAP_0001_SQL.replace(/^PRAGMA foreign_keys = ON;\\s*/m,"");
+  const oneTimeSql = BOOTSTRAP_0001_SQL.replace("PRAGMA foreign_keys = ON;","");
   await db.exec(oneTimeSql);
   const result = await db.prepare("SELECT COUNT(*) AS count FROM source_health").first();
   await db.prepare("SELECT COUNT(*) AS count FROM scheduler_runs").first();
