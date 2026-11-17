@@ -115,7 +115,7 @@ async function loadBudget(){
 function wire(){
  nodes("[data-league]").forEach(b=>b.addEventListener("click",()=>{
   state.league=b.dataset.league;nodes("[data-league]").forEach(x=>x.classList.toggle("active",x===b));
-  state.market="all";redrawCatalog();loadBoard();
+  state.market="all";state.search="";state.tier="all";$("search").value="";$("tier").value="all";redrawCatalog();loadBoard();
  }));
  $("search").addEventListener("input",e=>{state.search=e.target.value;redrawCatalog()});
  $("tier").addEventListener("change",e=>{state.tier=e.target.value;redrawCatalog()});
