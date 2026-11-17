@@ -47,7 +47,7 @@
   status.textContent=fresh.length
    ?fresh.length+" source-verified standard "+sport+" market rows · last cache check "+readableTime(state.lastFetch)
    :"No recent source-verified standard "+sport+" lines are available. Unverified lines are not displayed.";
-  for(const q of fresh.slice(0,8)){
+  for(const q of fresh.slice(0,4)){
     const row=el("article","ds5-odds-row");
     const player=el("div","ds5-odds-player");
     player.append(el("strong","",q.player),el("small","",q.matchup||"Upcoming game"));
@@ -57,8 +57,8 @@
     const number=el("strong","ds5-odds-line",String(q.line));
     row.append(player,market,number);grid.append(row);
   }
-  if(fresh.length>8)grid.append(el("p","ds5-odds-more",
-    "Showing 8 of "+fresh.length+" verified lines · open Market Explorer for all"));
+  if(fresh.length>4)grid.append(el("p","ds5-odds-more",
+    "Showing 4 of "+fresh.length+" verified lines · open Market Explorer for all"));
  }
  async function get(sport){
    const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),10000);
