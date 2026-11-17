@@ -1,0 +1,27 @@
+name: Verify real Dame's Picks Cloudflare D1 and Cron heartbeat
+on:
+  pull_request:
+    paths:
+      - "scripts/check_dames_d1_live.py"
+      - ".github/workflows/dames-d1-live-audit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-live-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Check actual Worker binding, schema and durable scheduled heartbeat
+        run: python scripts/check_dames_d1_live.py
+      - name: Publish evidence, even if staging setup is incomplete
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dames-d1-staging-real-heartbeat-evidence
+          path: test-artifacts/dames-d1-live-proof.json
+          if-no-files-found: ignore
