@@ -29,6 +29,8 @@ def verify():
     print("CLOUDFLARE D1 LIVE HTTP",hcode,scode,flush=True)
     print("Health:",json.dumps(health,sort_keys=True),flush=True)
     print("Status:",json.dumps(status,sort_keys=True)[:5000],flush=True)
+    ocode,odds=fetch("/api/v1/odds/budget")
+    print("Odds D1 cache:",ocode,json.dumps(odds,sort_keys=True)[:900],flush=True)
     proof={
       "checked_at":datetime.now(timezone.utc).isoformat(),
       "site":ROOT,"health_http":hcode,"status_http":scode,
@@ -39,9 +41,12 @@ def verify():
       "source_states":[{k:x.get(k) for k in ("source","league","status","records")}
            for x in status.get("sources",[])],
       "paid_calls":health.get("paid_provider_calls"),
+      "odds_d1_http":ocode,"odds_d1_status":odds.get("status"),
       "result":"incomplete"
     }
     errors=[]
+    if ocode!=200 or odds.get("status")!="ok" or odds.get("config",{}).get("collection_enabled") is not False:
+        errors.append("Odds D1 0002 schema or explicit no-spend gate is not ready")
     if hcode!=200 or health.get("service")!="dames-picks-staging" or health.get("stage")!="staging":
         errors.append("Cloudflare Worker health check not correct")
     if health.get("database_binding_present") is not True:
