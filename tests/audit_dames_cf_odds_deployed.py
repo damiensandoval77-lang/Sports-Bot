@@ -41,13 +41,14 @@ def probe():
     code,raw=get("/healthz")
     try:health=json.loads(raw)
     except Exception:health={}
-    check("Worker cost controls remain disabled",code==200 and health.get("service")=="dames-picks-staging"
-      and health.get("paid_provider_calls")=="disabled" and health.get("provider_collection_configured") is False,
+    check("Worker budgeted collection configured",code==200 and health.get("service")=="dames-picks-staging"
+      and health.get("paid_provider_calls")=="enabled" and health.get("provider_collection_configured") is True,
       {"status":code,"configured":health.get("provider_collection_configured")})
     code,raw=get("/api/v1/odds/budget")
     try:budget=json.loads(raw)
     except Exception:budget={}
-    check("budget reports no paid collection",code in (200,503) and budget.get("config",{}).get("collection_enabled") is False,
+    check("staging budget capped for free starter key",code==200 and budget.get("config",{}).get("collection_enabled") is True and
+      budget.get("config",{}).get("monthly_cap")==100 and budget.get("config",{}).get("daily_cap")==12,
       {"http":code,"state":budget.get("status")})
 
     for league in ("NBA","NFL"):
