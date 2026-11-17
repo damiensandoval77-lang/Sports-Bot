@@ -60,7 +60,7 @@ def check():
                     request.continue_()
                 page.route('**/*',route)
                 page.on('pageerror',lambda e:errors.append(str(e)))
-                page.goto(base+'/dames-picks/',wait_until='domcontentloaded')
+                page.goto(base+'/dames-picks/classic.html',wait_until='domcontentloaded')
                 page.wait_for_function('() => !state.loading && !!state.updated')
                 panel=page.locator('#trained-short-history')
                 assert panel.is_visible()

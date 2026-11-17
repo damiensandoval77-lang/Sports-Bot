@@ -13,7 +13,7 @@ test('duplicate exact identities fail closed',()=>{const f=fixture();f.estimates
 test('renderer is disclosed, escaped, no links/buttons and hidden outside NBA board',()=>{const element={innerHTML:'',hidden:false,querySelector:()=>null},f=fixture();f.estimates[0].player='<script>bad</script>';ui.render(element,f,{now});assert.match(element.innerHTML,/Short-history model \(research\)/);assert.match(element.innerHTML,/not prospectively validated/);assert.match(element.innerHTML,/&lt;script&gt;/);assert.doesNotMatch(element.innerHTML,/<button|<a\s|<script/);for(const opts of [{league:'NFL'},{mode:'live'},{mode:'saved'}]){ui.render(element,f,{now,...opts});assert.equal(element.hidden,true);assert.equal(element.innerHTML,'')}});
 test('optional integration is separate from primary cards and saved/grading adapters',()=>{
  const fs=require('node:fs');
- const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
+ const html=fs.readFileSync('docs/dames-picks/classic.html','utf8');
  const source=fs.readFileSync('docs/dames-picks/short_history.js','utf8');
  assert.match(html,/<section id="trained-short-history" aria-label="Short-history trained research model" hidden><\/section>/);
  assert.match(html,/state\.shortHistoryFeed=shortHistory\.status==="fulfilled"\?shortHistory\.value:null/);

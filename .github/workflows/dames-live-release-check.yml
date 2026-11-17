@@ -1,0 +1,49 @@
+name: Dame's Picks public deployment smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/dames-picks/index.html"
+      - "docs/dames-picks/unified-shell.js"
+      - "docs/dames-picks/classic.html"
+      - "docs/dames-picks/concept-3-connected.js"
+  workflow_dispatch:
+jobs:
+  verify-public-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      DAME_SITE_URL: https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Wait until the new release marker is publicly served
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 36); do
+            if curl -fsSL --max-time 12 "$DAME_SITE_URL?verification=$(date +%s)" -o /tmp/dame-home.html &&
+               grep -q 'dp-concept3-unified-20261117-r1' /tmp/dame-home.html; then
+              echo "New homepage is publicly served"; exit 0
+            fi
+            echo "Old release or fetch failed (attempt $attempt)"
+            sleep 10
+          done
+          echo "::error::Public Pages site did not serve new release marker"; exit 1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Install Chromium and WebKit browsers
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium webkit
+      - name: Verify actual deployed site in mobile-sized and desktop browsers
+        run: python tests/test_dames_production_release.py
+      - name: Attach production screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dames-picks-deployed-release-screenshots
+          path: test-artifacts/dames-LIVE-*.png
+          if-no-files-found: ignore

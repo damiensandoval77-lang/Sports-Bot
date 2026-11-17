@@ -44,7 +44,7 @@ test("NFL uses only verified pretip standard offers and avoids false final grade
  assert.equal(r[0].logs[0].actual,7);
 });
 test("No demo fixture, hardcoded sample player, or automatic grades in UI",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  for(const p of ["lagged_matchup_all_market_ledger.json","nfl/data/latest_2026.json",
  "current_form.json","nfl/data/grading_health_2026.json","nfl/data/schedule_2026.json"])
  assert.ok(html.includes(p));
@@ -52,7 +52,7 @@ test("No demo fixture, hardcoded sample player, or automatic grades in UI",()=>{
  assert.ok(html.includes("No sample data is substituted"));
 });
 test("Version E design primitives and sport navigation exist",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  for(const p of ["--lime:#c5fa29","--pink:#fa70b5","--mint:#72efc3",
  'data-league="NBA"','data-league="NFL"','data-view="live"','data-view="tracker"','id="markets"'])
   assert.ok(html.includes(p),p);
@@ -156,7 +156,7 @@ test("Production source feeds keep expected real stat keys and health flags",()=
  assert.ok(Array.isArray(liveNBA.games));
  assert.ok(Array.isArray(liveNFL.games));
  assert.ok(nba.summary&&typeof nba.summary.total_standard_markets_without_frozen_model==="number");
- const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const page=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  for(const name of ["live_player_tracking.json","nfl/data/live_2026.json","pp_graded_2026.csv",
  "tonight_capture_gradeability.json","ai_forecast_today_grade_status.json","dames-picks-bookmarks-v1"])
  assert.ok(page.includes(name),name);
@@ -223,7 +223,7 @@ test("Published standard quote archive coverage is not silently lost in the comb
  const k=x=>[norm(x.player),x.team,x.game,x.stat,Number(x.line)].join("|");
  const offered=new Set(valid.map(k)),shown=new Set(rows.map(k));
  for(const key of offered)assert.ok(shown.has(key),"Missing archived standard prop "+key);
- const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const page=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(!page.includes(".slice(0,240)"),"Silently truncated player cards");
  assert.ok(page.includes("prizepicks_pregame_line_archive.json"));
  console.log("Standard source markets",offered.size,"all represented; total cards",rows.length);
@@ -291,14 +291,14 @@ test("Real published scoreboard game count is independent of model records",()=>
  const games=m.liveGames(nba,nfl,Date.parse("2026-11-10T04:00:00Z"));
  assert.equal(games.filter(g=>g.sport==="NBA").length,nba.games.length);
  assert.equal(games.filter(g=>g.sport==="NFL").length,nfl.games.length);
- const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const page=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(page.includes("renderLiveGames()"));
  assert.ok(page.includes("function openGame(game)"));
  assert.ok(page.includes("No verified pregame standard quotes were archived for this game. Its scoreboard and box score remain visible."));
 });
 
 test("Every game detail exposes original locked model, observed actual, ungraded state and full box score",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  for(const text of ["FROZEN LINE","FROZEN PROJ","ACTUAL","LIVE · NOT GRADED",
  "Full published player box score","Scoreboard","data-prop","Actual unavailable",
  "No verified pregame standard quotes were archived for this game"])assert.ok(html.includes(text),text);
@@ -351,7 +351,7 @@ test("Historic AI-only backlog persists even if today's grade report says zero",
  assert.equal(previous.pending,counts.pending);
  assert.equal(previous.voided,counts.void_dnp+counts.excluded_nonparticipant);
  assert.equal(previous.stale,false);
- const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const page=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(page.includes("ai_forecast_coverage_audit.json"));
  assert.ok(page.includes("NBA AI-only: "));
  assert.ok(!page.includes('+" AI-only forecasts still ungraded"'));
@@ -407,7 +407,7 @@ test("Source-mismatched final prop is never attached as a real grade",()=>{
 });
 
 test("Dame's Take immediately follows Dame's projection in expanded player details",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  const projection=html.indexOf("<h2>Dame’s projection</h2>");
  const take=html.indexOf("<strong>Dame’s Take</strong>");
  const games=html.indexOf("<h2>Last games</h2>",projection);
@@ -419,7 +419,7 @@ test("Dame's Take immediately follows Dame's projection in expanded player detai
 });
 
 test("Unified top-picks board excludes quote-only records without a frozen model",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('timestamp(x.start)>now&&!x.quoteOnly&&x.projection!==null&&x.direction!==null'));
  assert.ok(html.includes('state.mode==="tracker"'));
  assert.ok(html.includes('No sample data is substituted'));
@@ -438,14 +438,14 @@ test("Official verified DNP is a VOID, never an unresolved NBA pending or lost p
  assert.equal(summary.pending,0);
  assert.equal(summary.graded,0);
  assert.equal(summary.hitRate,null);
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('"DNP · VOID"'));
  assert.ok(html.includes('"VERIFIED DNP · VOID"'));
 });
 
 
 test("Merged dashboard shows independently verified pick-settlement health, not every quote as a failed pick",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('getJSON("dames-picks/published_pick_settlement.json")'));
  assert.ok(html.includes('NBA published picks awaiting verified settlement'));
  assert.ok(html.includes('provider standard markets withheld from AI picks'));
@@ -494,7 +494,7 @@ test("Old or mismatched NBA score source cannot pose as live matchup",()=>{
  assert.equal(pregame.awayScore,null);
 });
 test("Merged app loads separate official score and player feeds",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('getJSON("nba_scoreboard_independent.json")'));
  assert.ok(html.includes('nbaScores:nbaScores.status==="fulfilled"?nbaScores.value:null'));
  assert.ok(html.includes('L.mergeScores(state.raw.nbaScores,state.direct?.board)'));
@@ -550,7 +550,7 @@ test("Stale independent NBA player feed never looks live and never changes froze
  assert.equal(joined.projection,26);
 });
 test("Merged page includes independent source not just old empty NBA tracker",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('getJSON("nba_player_tracking_independent.json")'));
  assert.ok(html.includes('m.preferredNBALiveFeed('));
 });
@@ -589,7 +589,7 @@ test("Current tracker excludes previous slate without deleting historical grade 
  assert.equal(visible[0].game,today.game);
  assert.equal(raw.length,2);
  assert.equal(raw[1].grade,"GRADED");
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('m.displayCurrentPicks(data,now,state.mode==="tracker")'));
  assert.ok(html.includes('m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game)&&!p.quoteOnly))'));
 });
@@ -667,7 +667,7 @@ test("HIT EST requires matching original standard line, pick side and six pretip
  }
 });
 test("App shows model HIT EST, separates past games and does not misrepresent calibration",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes("<small>Hit est.</small>"));
  assert.ok(html.includes("<label>HIT EST.</label>"));
  assert.ok(html.includes("m.hitEstimate(p)"));
@@ -683,7 +683,7 @@ test("App shows model HIT EST, separates past games and does not misrepresent ca
 
 
 test("Live player and scoreboard observations bypass delayed Pages using verified raw Github snapshots",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  for(const name of ["live_player_tracking.json","nba_scoreboard_independent.json",
                     "nba_player_tracking_independent.json"])
    assert.ok(html.includes('"'+name+'"'));
@@ -736,7 +736,7 @@ test("Matchup probability preview attaches to exact original standard line witho
  assert.equal(m.attachMatchupPreview(cards,fakeCalibration,Date.parse("2026-11-11T21:05:00Z"))[0].matchupPreview,undefined);
 });
 test("Hit estimate displays only the percentage without a redundant label underneath",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(!html.includes("<small>Matchup model</small>"));
  assert.ok(html.includes("Accuracy and probability calibration are being tracked prospectively"));
  assert.ok(html.includes("getMatchupResearch()"));
@@ -749,7 +749,7 @@ test("Hit estimate displays only the percentage without a redundant label undern
 
 
 test("Public board hides internal diagnostics; opt-in page retains full release verifier",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('<details id="diagnostics" class="stamp" style="display:none;'));
  assert.ok(html.includes('<summary>Diagnostics</summary>'));
  assert.ok(html.includes('new URLSearchParams(window.location.search).get("diagnostics")==="1"'));
@@ -770,12 +770,12 @@ test("Public board hides internal diagnostics; opt-in page retains full release 
 });
 
 test("Closed developer diagnostic disclosure hides all child controls on mobile",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes("#diagnostics:not([open]) > :not(summary){display:none!important}"));
 });
 
 test("Live game detail includes real archived standard quotes even when no AI pick exists",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.match(html,/gameId===g\.gameId\|\|p\.game===g\.game\)\)\)/);
  assert.ok(html.includes("const related=m.sortByTeamPosition(m.displayCurrentPicks(rows().filter(p=>(p.gameId===g.gameId||p.game===g.game))));"));
  assert.ok(html.includes('SAVED STANDARD LINE · NO AI'));
@@ -821,7 +821,7 @@ test("CSV-only complete history forecasts show a projection with unsupported hit
 });
 
 test("Board footer contains only actual OVER UNDER historical split, no frozen status or dots",()=>{
- const page=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const page=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(page.includes("function cardOverUnder(p)"));
  assert.ok(page.includes('p.logs.filter(x=>Number.isFinite(Number(x.actual)))'));
  assert.ok(page.includes("Number(x.actual)>Number(p.line)"));
@@ -834,7 +834,7 @@ test("Board footer contains only actual OVER UNDER historical split, no frozen s
 });
 
 test("Visible direction labels use Over/Under without mutating stored provider direction",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  const fn=html.match(/function directionLabel\(value\)\{[^}]+\}/)[0];
  const c={};vm.createContext(c);vm.runInContext(fn,c);
  assert.equal(c.directionLabel("MORE"),"OVER");assert.equal(c.directionLabel("LESS"),"UNDER");

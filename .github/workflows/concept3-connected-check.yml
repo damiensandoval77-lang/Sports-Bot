@@ -1,0 +1,55 @@
+name: Concept 3 connected staging checks
+on:
+  pull_request:
+    paths:
+      - "docs/dames-picks/concept-3-connected*"
+      - "docs/dames-picks/index.html"
+      - "docs/dames-picks/classic.html"
+      - "docs/dames-picks/unified-shell.js"
+      - "tests/test_concept3_connected_playwright.py"
+      - "tests/test_concept3_real_artifacts_playwright.py"
+      - "tests/test_dames_unified_site.py"
+      - ".github/workflows/concept3-connected-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/dames-picks/index.html"
+      - "docs/dames-picks/classic.html"
+      - "docs/dames-picks/unified-shell.js"
+  workflow_dispatch:
+jobs:
+  validate-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Syntax check connected runtime
+        run: |
+          node --check docs/dames-picks/concept-3-connected.js
+          node --check docs/dames-picks/unified-shell.js
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Install browser test requirements
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Run isolated connected view tests
+        run: python tests/test_concept3_connected_playwright.py
+
+      - name: Run actual-repository-artifact browser checks (no paid APIs)
+        run: python tests/test_concept3_real_artifacts_playwright.py
+      - name: Verify unified site workflows, mobile and desktop
+        run: python tests/test_dames_unified_site.py
+      - name: Attach staging screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: concept3-connected-staging-screenshots
+          path: |
+            test-artifacts/concept3-connected-real-*.png
+            test-artifacts/dames-unified-*.png
+          if-no-files-found: ignore

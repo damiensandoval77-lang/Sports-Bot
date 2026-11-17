@@ -14,7 +14,7 @@ def check():
     server=http.server.ThreadingHTTPServer(("127.0.0.1",0),handler)
     runner=threading.Thread(target=server.serve_forever,daemon=True)
     runner.start()
-    url=f"http://127.0.0.1:{server.server_port}/dames-picks/"
+    url=f"http://127.0.0.1:{server.server_port}/dames-picks/classic.html"
     errors=[]
     try:
         with sync_playwright() as p:
