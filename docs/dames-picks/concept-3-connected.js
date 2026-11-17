@@ -58,6 +58,7 @@ function setTable(selector,span,message){
 function rowTable(selector,rows){const tb=one(selector);if(!tb)return;tb.replaceChildren(...rows.map(cells=>{const tr=document.createElement("tr");for(const v of cells){const td=document.createElement("td");td.textContent=String(v??"—");tr.append(td)}return tr}))}
 function changeNotice(s){
  state.notice=s;status.textContent=s;window.DamesConcept3Status={league:state.league,loaded:state.load,status:s,player:state.selected?.player||state.nflSelected?.player||null,modelCount:state.picks.length,photoSource:state.playerPhoto?.source||null};
+ document.dispatchEvent(new Event("ds5:data-updated"));
 }
 async function get(path,kind="json",timeout=14000){
  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeout);
@@ -265,6 +266,7 @@ function render(){
  renderNum++;renderGames();renderPlayer();makeStats();renderProp();answer(); 
  const available=(state.league==="NBA"?state.form?.players||[]:state.nflPicks);
  list.replaceChildren(...available.slice(0,1000).map(p=>{const o=document.createElement("option");o.value=p.player;return o}));
+ document.dispatchEvent(new Event("ds5:data-updated"));
 }
 async function resolvePhoto(item,seq){
  // Development-only: ESPN roster headshot URL is NOT a license for commercial use.
@@ -341,10 +343,10 @@ async function refreshDirectScores(){
   if(state.league==="NBA"){
    const observed=await live.fetchNBA({timeoutMs:7000});
    const merged=live.mergeScores(state.scores,observed?.board||null);
-   if(merged?.is_live_score_source===true){state.scores=merged;renderGames()}
+   if(merged?.is_live_score_source===true){state.scores=merged;renderGames();document.dispatchEvent(new Event("ds5:data-updated"))}
   }else if(state.league==="NFL"&&state.nflSchedule){
    const observed=await live.fetchNFL(state.nflSchedule,{timeoutMs:7000});
-   if(observed?.status==="ok"&&Array.isArray(observed.games)){state.nflLive=live.mergeNFL(state.nflLive,observed);renderGames()}
+   if(observed?.status==="ok"&&Array.isArray(observed.games)){state.nflLive=live.mergeNFL(state.nflLive,observed);renderGames();document.dispatchEvent(new Event("ds5:data-updated"))}
   }
  }catch(_){/* Preserve last genuinely verified observation; never invent scores. */}
  finally{directBusy=false}
@@ -373,5 +375,12 @@ async function loadNBA(){
  if(state.selected)render();
  changeNotice("NBA connected · "+(state.form?.players.length||0)+" logged players · "+state.picks.length+" validated standard-line records · "+(ledger.status==="fulfilled"?"model ledger read":"model ledger unavailable")+" · "+(archive.status==="fulfilled"?"standard archive read":"standard archive unavailable")+". Photos from ESPN rosters require licensing review.");
 }
+/* Read-only, source-grounded adapter for the DS5 summary cards. The underlying model and ledgers are not modified. */
+window.DS5DashboardSource=()=>({
+ league:state.league,status:state.load,
+ picks:state.league==="NBA"?state.picks:state.nflPicks,
+ games:gameRows(),selectedPick:chosenPick(),
+ selectedPlayer:(state.league==="NBA"?state.selected:state.nflSelected)?.player||null
+});
 loadNBA().catch(e=>{document.body.classList.add("is-connected");changeNotice("Connected view failed safely: "+(e?.message||"unknown error")+". No example numbers displayed.")});
 })();
