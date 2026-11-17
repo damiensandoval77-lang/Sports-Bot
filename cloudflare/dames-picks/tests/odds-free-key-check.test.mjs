@@ -157,3 +157,33 @@ test("an absent D1 binding yields a clear unavailable result, not free authentic
  assert.equal(res.status,200);
  assert.equal((await res.json()).status,"database_not_connected");
 });
+
+test("real scheduled zero-credit authentication remains visible when HTTP worker lacks its binding",async()=>{
+ const db=fakeD1(),now=Date.now();
+ const run=await probeFreeKeyOnCron({DB:db,ODDS_API_KEY:KEY,PAID_PROVIDER_REQUESTS:"disabled"},
+  {now,fetcher:async(url,opts)=>{assert.equal(url,FREE_SPORTS_ENDPOINT);return apiReply()}});
+ assert.equal(run.status,"authenticated");
+ const publicStatus=await freeKeyProbeStatus({DB:db,PAID_PROVIDER_REQUESTS:"disabled"});
+ assert.equal(publicStatus.secret_configured,false);
+ assert.equal(publicStatus.http_handler_secret_visible,false);
+ assert.equal(publicStatus.scheduled_cron_authentication_verified,true);
+ assert.equal(publicStatus.http_cron_binding_mismatch,true);
+ assert.equal(publicStatus.key_authentication_verified,true);
+ assert.equal(publicStatus.status,"authenticated_by_cron_http_binding_mismatch");
+ assert.equal(publicStatus.http_status,200);
+ assert.equal(publicStatus.last_call_credits,0);
+ assert.equal(publicStatus.quota_remaining,500);
+ assert.equal(publicStatus.paid_collection,"disabled");
+ assert.ok(!JSON.stringify(publicStatus).includes(KEY));
+});
+test("a stale scheduled receipt cannot be reported as valid authentication without current secret",async()=>{
+ const db=fakeD1(),now=Date.now();
+ await probeFreeKeyOnCron({DB:db,ODDS_API_KEY:KEY},{now,fetcher:async()=>apiReply()});
+ db.rows[0].completed_at=new Date(now-9*60*60*1000).toISOString();
+ const status=await freeKeyProbeStatus({DB:db});
+ assert.equal(status.secret_configured,false);
+ assert.equal(status.key_authentication_verified,false);
+ assert.equal(status.scheduled_cron_authentication_verified,false);
+ assert.equal(status.http_cron_binding_mismatch,false);
+ assert.equal(status.status,"secret_not_configured");
+});
