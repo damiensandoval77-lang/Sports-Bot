@@ -29,7 +29,7 @@ function walk(dir,prefix=""){
   if(IGNORE.test(rel)||d.isSymbolicLink())continue;
   const full=join(dir,d.name);
   if(d.isDirectory()) {
-   if(rel==="dames-picks"||rel==="nfl"||rel.startsWith("dames-picks/")||rel.startsWith("nfl/data/"))walk(full,rel);
+   if(rel==="dames-picks"||rel==="nfl"||rel==="nfl/data"||rel.startsWith("dames-picks/")||rel.startsWith("nfl/data/"))walk(full,rel);
    continue;
   }
   if(!d.isFile()||!ALLOWED.has(extname(d.name).toLowerCase()))continue;
