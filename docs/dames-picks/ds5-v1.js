@@ -51,6 +51,7 @@
  const feature=el("div","ds5-feature-grid");
  const left=el("div","ds5-player-feature"),right=el("div","ds5-matchup-feature");
  const next=hero.querySelector(".hero-tile:not(.focus)");
+ recent.classList.add("ds5-recent");
  left.append(hero,recent);
  const rows=el("div","ds5-matchup-rows");rows.append(matchup,distribution);
  const take=el("section","ds5-take");take.setAttribute("aria-label","Dame's Take");
@@ -75,7 +76,7 @@
  researchTitle.id="ds5-research";
  const footer=el("footer","ds5-footer");
  footer.innerHTML='<span><strong>DS<em>5</em></strong> SPORTS MEDIA &nbsp; | &nbsp; DAME\'S PICKS ANALYTICS</span><span>NBA &nbsp; · &nbsp; NFL &nbsp; · &nbsp; PROJECTIONS &nbsp; · &nbsp; VERIFIED GRADES</span>';
- wrap.insertBefore(board,hero);
+ wrap.insertBefore(board,tabs);
  board.append(sidebar,main);
  const foot=$(".footnote");
  main.append(title,feature,lower,tabs,researchTitle,gridtop,gridmid,gridbottom);
