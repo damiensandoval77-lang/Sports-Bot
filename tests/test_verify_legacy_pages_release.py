@@ -121,7 +121,7 @@ class RetryBudgetTests(unittest.TestCase):
         self.assertEqual(report['status'], 'FAIL')
         self.assertEqual(report['elapsed_seconds'], 360)
         self.assertEqual(report['attempt'], 30)
-        self.assertFalse(next(c for c in report['checks'] if c['name'] == 'served_asset_index.html')['pass'])
+        self.assertFalse(next(c for c in report['checks'] if c['name'] == 'served_asset_classic.html')['pass'])
 
     def test_persistent_404_never_pass(self):
         import urllib.error
