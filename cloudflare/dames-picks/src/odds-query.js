@@ -5,6 +5,14 @@
 import {catalogFor,apiCatalog} from "./odds-catalog.js";
 import {creditBudget} from "./odds-collector.js";
 
+export function noVigMarketOverProbability(overPrice,underPrice){
+ const implied=p=>{
+  if(typeof p!=="number"||!Number.isFinite(p)||Math.abs(p)<100)return null;
+  return p<0?Math.abs(p)/(Math.abs(p)+100):100/(p+100);
+ };
+ const o=implied(overPrice),u=implied(underPrice);
+ return o===null||u===null||o+u<=0?null:Number((o/(o+u)).toFixed(4));
+}
 export async function readMarketBoard(db,{league="NBA",limit=60,now=Date.now()}={}){
  const cat=catalogFor(league);
  if(!cat)return {status:"invalid_league",quotes:[],source:"the_odds_api"};
@@ -32,6 +40,7 @@ export async function readMarketBoard(db,{league="NBA",limit=60,now=Date.now()}=
    line:p.standard_line,
    over_price:p.price_type==="indicative_dfs"?null:p.over_price,
    under_price:p.price_type==="indicative_dfs"?null:p.under_price,
+   sportsbook_no_vig_over:p.price_type==="indicative_dfs"?null:noVigMarketOverProbability(p.over_price,p.under_price),
    bookmaker_price_type:p.price_type,
    previous_line:p.previous_line,
    line_change:p.previous_line===null?null:Number((p.standard_line-p.previous_line).toFixed(2)),
@@ -58,7 +67,7 @@ export async function readOddsBudget(db,env={},now=Date.now()){
   return {status:"ok",config,usage:row||{
    month_utc:month,used_credits:0,reserved_credits:0,
    daily_used:0,daily_reserved:0,provider_remaining:null
-  },independently_verified_provider_balance:row?.provider_remaining!==null};
+  },independently_verified_provider_balance:Boolean(row&&row.provider_remaining!==null)};
  }catch(_){
   return {status:"market_schema_unavailable",config,usage:null};
  }
