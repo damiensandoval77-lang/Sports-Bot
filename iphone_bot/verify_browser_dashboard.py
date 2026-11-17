@@ -75,8 +75,19 @@ def probe():
             page=browser.new_page(viewport={"width":390,"height":844},
                                   locale="en-US",timezone_id="America/New_York")
             page.on("pageerror",lambda e:errors.append(str(e)[:240]))
+            # Verify the public DS5 wrapper and route the probe into its
+            # actual saved pick renderer. The full-page DS5 dashboard is
+            # player intelligence, not the classic #cards DOM.
             response=page.goto(URL,wait_until="domcontentloaded",timeout=45000)
-            if response is None or response.status!=200:raise RuntimeError("Public dashboard HTTP status not 200")
+            if response is None or response.status!=200:raise RuntimeError("Public DS5 HTTP status not 200")
+            page.locator("body.ds5-first-concept .ds5-dashboard").wait_for(timeout=45000)
+            if not page.title().startswith("DS5 Sports Media"):
+                raise RuntimeError("DS5 parent brand missing")
+            page.locator(".ds5-side-nav button").filter(has_text="Dame's Picks").first.click(timeout=10000)
+            page.frame_locator("#unified-frame").locator('button[data-league="NBA"]').wait_for(timeout=45000)
+            if not page.locator("body.unified-tool-mode #unified-workspace").is_visible():
+                raise RuntimeError("DS5 unified workspace is not visible")
+            page.goto(URL.rstrip("/")+"/classic.html",wait_until="domcontentloaded",timeout=45000)
             page.wait_for_function("() => typeof state!=='undefined' && !!state.updated && !state.loading",timeout=60000)
             page.locator('button[data-league="NBA"]').click()
             page.locator('button[data-view="board"]').click()
