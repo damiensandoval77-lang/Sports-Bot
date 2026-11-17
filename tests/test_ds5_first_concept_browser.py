@@ -45,7 +45,16 @@ try:
                 "window.DAMES_DISABLE_DIRECT_SCORES=true;"
             )
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
-            page.wait_for_selector("body.ds5-first-concept .ds5-dashboard", timeout=35000)
+            try:
+                page.wait_for_selector("body.ds5-first-concept .ds5-dashboard", timeout=15000)
+            except Exception:
+                print("DEBUG title:", page.title(), flush=True)
+                print("DEBUG body class:", page.locator("body").get_attribute("class"), flush=True)
+                print("DEBUG dashboard count:", page.locator(".ds5-dashboard").count(), flush=True)
+                print("DEBUG scripts:", [x.get_attribute("src") for x in page.locator("script[src]").all()], flush=True)
+                print("DEBUG page errors:", errors[:10], flush=True)
+                page.screenshot(path=str(OUT / f"ds5-{name}-failed.png"), full_page=True)
+                raise
             assert page.locator(".ds5-sidebar").count()==1, "missing DS5 sidebar"
             assert page.locator(".ds5-main .ds5-titlebar").is_visible(), "missing first-concept heading"
             assert page.locator(".ds5-player-feature .hero").count()==1, "missing connected player profile"
