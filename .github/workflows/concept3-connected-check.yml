@@ -4,6 +4,7 @@ on:
     paths:
       - "docs/dames-picks/concept-3-connected*"
       - "tests/test_concept3_connected_playwright.py"
+      - "tests/test_concept3_real_artifacts_playwright.py"
       - ".github/workflows/concept3-connected-check.yml"
   workflow_dispatch:
 jobs:
@@ -26,3 +27,13 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Run isolated connected view tests
         run: python tests/test_concept3_connected_playwright.py
+
+      - name: Run actual-repository-artifact browser checks (no paid APIs)
+        run: python tests/test_concept3_real_artifacts_playwright.py
+      - name: Attach staging screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: concept3-connected-staging-screenshots
+          path: test-artifacts/concept3-connected-real-*.png
+          if-no-files-found: ignore
