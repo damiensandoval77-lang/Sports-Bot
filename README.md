@@ -2,7 +2,7 @@
 
 A multi-sport prop betting analysis engine. Uses XGBoost + LightGBM ensemble models trained on historical data to project player stats, then compares those projections against PrizePicks lines and FanDuel odds to find positive expected value (+EV) opportunities.
 
-Supports NBA (21 stat models) and Tennis (7 market models).
+Supports NBA analysis models and the DS5 Sports Media NBA/NFL website.
 
 ---
 
@@ -12,7 +12,7 @@ Three independent analysis layers, usable alone or combined:
 
 ### 1. AI Scanner
 
-Trains XGBoost + LightGBM ensemble models on historical player data to predict stat lines. For NBA, uses nba_api game logs with 451 engineered features per player-game (rolling averages, streak/consistency signals, opponent-allowed stats by position, usage rate, expected possessions, rest days, home/away splits). For Tennis, uses Jeff Sackmann's open match data with 150+ features (surface, rank, H2H, recent form, fatigue).
+Trains XGBoost + LightGBM ensemble models on historical player data to predict stat lines. For NBA, uses nba_api game logs with engineered features per player-game (rolling averages, consistency signals, opponent-allowed stats by position, usage rate, possessions, rest days, and home/away splits).
 
 Each model outputs a projected stat value. The scanner compares this projection to the PrizePicks line and shows the delta.
 
@@ -35,8 +35,7 @@ sports_ev_bot/
 ├── main.py                          # entry point, sport selection menu
 ├── src/
 │   ├── cli/
-│   │   ├── nba_cli.py               # NBA menu (super/odds/ai scanner)
-│   │   └── tennis_cli.py            # Tennis menu (scanner + setup tools)
+│   │   └── nba_cli.py               # NBA menu (super/odds/ai scanner)
 │   ├── core/
 │   │   ├── analyzers/
 │   │   │   └── analyzer.py          # PropsAnalyzer: vig removal, line diff adjustment
@@ -47,7 +46,7 @@ sports_ev_bot/
 │   │   ├── utils.py                 # shared utilities
 │   │   └── visualizer.py            # accuracy plot generation
 │   └── sports/
-│       ├── nba/
+│       └── nba/
 │       │   ├── builder.py           # download game logs + 1H splits via nba_api
 │       │   ├── features.py          # engineer 451 training features
 │       │   ├── train.py             # train 21 XGBoost+LightGBM ensemble models
@@ -57,26 +56,12 @@ sports_ev_bot/
 │       │   ├── backtester.py        # historical backtesting
 │       │   ├── config.py            # NBA-specific constants
 │       │   └── mappings.py          # stat name normalization maps
-│       └── tennis/
-│           ├── builder.py           # download ATP/WTA data from Sackmann GitHub
-│           ├── features.py          # engineer 150+ training features
-│           ├── train.py             # train 7 XGBoost models
-│           ├── scanner.py           # tennis scanner + scout
-│           ├── rankings.py          # live ATP/WTA ranking lookups
-│           ├── config.py            # tennis-specific constants
-│           └── mappings.py          # stat name normalization maps
 ├── data/
-│   ├── nba/
+│   └── nba/
 │   │   ├── raw/                     # raw game logs (gitignored)
 │   │   └── processed/               # engineered features (gitignored)
-│   └── tennis/
-│       ├── raw/                     # ATP/WTA match CSVs
-│       ├── processed/               # training dataset (gitignored, 1.2GB)
-│       ├── rankings_cache/          # cached ATP/WTA rankings
-│       └── projections/             # scan output
 ├── models/
-│   ├── nba/                         # XGBoost .json models (gitignored)
-│   └── tennis/                      # XGBoost .json models (gitignored)
+│   └── nba/                         # XGBoost .json models (gitignored)
 └── output/                          # scan results, CSVs (gitignored)
 ```
 
@@ -148,31 +133,6 @@ MAE = Mean Absolute Error. R² = coefficient of determination. Directional Accur
 
 ---
 
-## Tennis Models
-
-7 XGBoost regression models. Trained on ~1M ATP/WTA matches.
-
-| Target          | MAE   | R²    | Directional Accuracy |
-|-----------------|-------|-------|----------------------|
-| Total Sets      | 0.30  | 0.696 | 85.0%                |
-| Total Games     | 2.99  | 0.697 | 84.0%                |
-| Games Won       | 2.03  | 0.658 | 80.7%                |
-| Aces            | 2.45  | 0.476 | 76.4%                |
-| Break Pts Won   | 1.11  | 0.463 | 76.1%                |
-| Double Faults   | 1.61  | 0.282 | 71.0%                |
-| Total Tiebreaks | 0.43  | 0.211 | 67.7%                |
-
-### Key Features Used
-
-- Surface type (hard, clay, grass, carpet)
-- ATP/WTA ranking with fuzzy name matching
-- Head-to-head record
-- Recent form (last 5/10/20 matches)
-- Slam vs non-slam (best-of-5 vs best-of-3)
-- Fatigue: days since last match, matches in last 7/14/30 days
-
----
-
 ## Line Difference Handling
 
 When PrizePicks and FanDuel have different lines for the same player/stat, the system adjusts the implied probability using logarithmic scaling:
@@ -217,12 +177,6 @@ Run these in order from the main menu:
 1. **Build Data** — downloads 4 seasons of game logs + 1st-half splits via nba_api
 2. **Engineer Features** — computes 451 features per player-game
 3. **Train Models** — trains 21 XGBoost + LightGBM ensemble models (~10 min)
-
-### First-time Setup (Tennis)
-
-1. **Build Data** — downloads ATP/WTA match history from Sackmann GitHub
-2. **Engineer Features** — computes 150+ features per match (~5 min)
-3. **Train Models** — trains 7 XGBoost models (~3 min)
 
 ---
 
