@@ -42,7 +42,9 @@ export function maximumCost(league,env={}){
  return keys.length;
 }
 export function chooseUpcomingEvent(events,now=Date.now(),lastAttemptById=new Map()){
- const min=now+15*60000,max=now+5*3600000;
+ // Inspect a broader pregame window; only one event per Cron is paid, with
+ // an atomic D1 budget reservation and 90-minute event retry cooldown.
+ const min=now+15*60000,max=now+12*3600000;
  return (Array.isArray(events)?events:[])
   .filter(e=>typeof e?.id==="string"&&/^[a-zA-Z0-9]{8,80}$/.test(e.id)&&
    Number.isFinite(scoreTime(e.commence_time))&&scoreTime(e.commence_time)>=min&&
