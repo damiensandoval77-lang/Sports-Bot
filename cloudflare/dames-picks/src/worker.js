@@ -4,7 +4,7 @@ import {readOddsCatalog,readMarketBoard,readOddsBudget} from "./odds-query.js";
 import {collectOddsIfEnabled,isCollectionEnabled} from "./odds-collector.js";
 import {freeKeyProbeStatus,probeFreeKeyOnCron} from "./odds-free-key-check.js";
 /**
- * Dame's Picks staging Worker. Zero paid provider calls. No changes to
+ * Dame's Picks staging Worker with hard-capped optional odds requests. No changes to
  * Federal Briefing or to the current GitHub Pages production deployment.
  *
  * Phase 1: serve the approved unified site, expose honest D1 readiness and
@@ -79,7 +79,8 @@ async function status(env) {
       database: "connected",
       scheduled_heartbeat: heartbeat || null,
       automatic_collectors: "not_connected",
-      paid_provider_calls: "disabled",
+      odds_collector_configured: isCollectionEnabled(env),
+      paid_provider_calls: isCollectionEnabled(env) ? "enabled" : "disabled",
       sources: rows,
       missing_source_rows: EXPECTED.filter(id=>!byId.has(id))
     }, 200);
@@ -88,15 +89,36 @@ async function status(env) {
     return json({service:SERVICE,status:"database_unavailable",message:"D1 migration or binding unavailable"},503);
   }
 }
+async function lastCollectorReceipt(env) {
+  if(!hasD1(env))return null;
+  try {
+    const row=await env.DB.prepare(
+      "SELECT completed_at,outcome,detail FROM scheduler_runs WHERE job=? ORDER BY run_id DESC LIMIT 1"
+    ).bind("odds-api-budgeted-collector").first();
+    if(!row)return null;
+    let details={};
+    try{details=JSON.parse(row.detail||"{}")}catch(_){}
+    return {
+      completed_at:row.completed_at||null,
+      outcome:row.outcome,
+      status:typeof details.status==="string"?details.status:null,
+      credits_charged:Number.isSafeInteger(details.credits)?details.credits:null,
+      quotes_stored:Number.isSafeInteger(details.quotes)?details.quotes:null
+    };
+  }catch(_){return null}
+}
 async function health(env) {
+  const collectorConfigured=isCollectionEnabled(env);
+  const receipt=await lastCollectorReceipt(env);
   return json({
     service: SERVICE,
     stage: "staging",
     worker_reachable: true,
     database_binding_present: hasD1(env),
-    provider_collection_active: false,
-    provider_collection_configured: isCollectionEnabled(env),
-    paid_provider_calls: isCollectionEnabled(env) ? "enabled" : "disabled",
+    provider_collection_active: Boolean(collectorConfigured && receipt?.status==="ok" && receipt?.quotes_stored>0),
+    provider_collection_configured: collectorConfigured,
+    paid_provider_calls: collectorConfigured ? "enabled" : "disabled",
+    odds_collector_last_run: receipt,
     schema_bootstrap_version: "0001 + 0002 odds",
     scheduler_mode: "cloudflare_cron_d1_heartbeat",
     current_public_site_unchanged: true
@@ -255,7 +277,8 @@ export default {
         await env.DB.prepare(
          "INSERT INTO scheduler_runs(job,scheduled_at,completed_at,outcome,detail) VALUES(?,?,?,?,?)"
         ).bind("odds-api-budgeted-collector",new Date(Number(controller?.scheduledTime)||Date.now()).toISOString(),
-         at,["ok","empty","no_eligible_events","budget_blocked","disabled"].includes(run.status)?"skipped":"failure",
+         at,run.status==="ok"?"success":
+         ["empty","no_eligible_events","budget_blocked","disabled"].includes(run.status)?"skipped":"failure",
          JSON.stringify({status:run.status,credits:run.credits_charged??0,quotes:run.quotes_stored??0}).slice(0,240)).run();
       }catch(_){console.error("Dame's Picks optional Odds API collector failed safely")}
     })());

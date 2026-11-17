@@ -6,6 +6,7 @@
  * This does NOT enable the paid odds collector, verify availability of
  * PrizePicks props, test game quotes or grade an AI pick.
  */
+import {isCollectionEnabled} from "./odds-collector.js";
 export const FREE_SPORTS_ENDPOINT="https://api.the-odds-api.com/v4/sports/";
 export const MIN_PROBE_INTERVAL_MS=6*60*60*1000;
 const JOB="odds-api-free-key-check";
@@ -34,10 +35,11 @@ function parseDetail(row){
 /** Read-only endpoint. Never calls The Odds API from an HTTP request. */
 export async function freeKeyProbeStatus(env){
   const configured=hasKey(env);
+  const paidCollection=isCollectionEnabled(env)?"configured":"disabled";
   const httpWorkerVersion=typeof env?.CF_VERSION_METADATA?.id==="string"?env.CF_VERSION_METADATA.id:null;
   if(typeof env?.DB?.prepare!=="function")
     return {status:"database_not_connected",secret_configured:configured,
-      http_worker_version:httpWorkerVersion,paid_collection:"disabled"};
+      http_worker_version:httpWorkerVersion,paid_collection:paidCollection};
   try{
     const row=await env.DB.prepare(
       "SELECT scheduled_at,completed_at,outcome,detail FROM scheduler_runs WHERE job=? ORDER BY run_id DESC LIMIT 1"
@@ -45,7 +47,7 @@ export async function freeKeyProbeStatus(env){
     if(!row)return {
       status:configured?"awaiting_free_check":"secret_not_configured",
       secret_configured:configured,http_worker_version:httpWorkerVersion,
-      probe_time:null,paid_collection:"disabled",
+      probe_time:null,paid_collection:paidCollection,
       key_authentication_verified:false
     };
     const details=parseDetail(row);
@@ -75,10 +77,10 @@ export async function freeKeyProbeStatus(env){
       nba_active:details.nba_active,
       nfl_active:details.nfl_active,
       sports_count:details.sports_count,
-      paid_collection:"disabled",
-      note:"Free sports discovery only; does not verify PrizePicks/Underdog line access or activate paid quotes."
+      paid_collection:paidCollection,
+      note:"Credential probe verifies free sports discovery only; real prop quotes require separate, budgeted Cron collection."
     };
-  }catch(_){return {status:"database_unavailable",secret_configured:configured,paid_collection:"disabled"}}
+  }catch(_){return {status:"database_unavailable",secret_configured:configured,paid_collection:paidCollection}}
 }
 export async function probeFreeSportsEndpoint(key,{fetcher=fetch,now=Date.now(),timeoutMs=8000}={}){
   if(typeof key!=="string"||key.trim().length<12)

@@ -154,11 +154,14 @@ test("all other assets use the provided public site asset binding",async()=>{
  const r=await worker.fetch(request("/dames-picks/index.html"),{ASSETS:assets});
  assert.equal(await r.text(),"existing sports homepage");
 });
-test("only the owner's Dame's Picks D1 is bound and paid collectors remain disabled",()=>{
+test("only owner staging D1 is bound and provider collection is hard capped",()=>{
  const config=JSON.parse(readFileSync(new URL("../wrangler.jsonc",import.meta.url),"utf8"));
  assert.equal(config.name,"dames-picks-staging");
  assert.notEqual(config.name,"federal-briefing-mvp");
- assert.equal(config.vars.PAID_PROVIDER_REQUESTS,"disabled");
+ assert.equal(config.vars.PAID_PROVIDER_REQUESTS,"enabled");
+ assert.equal(config.vars.ODDS_API_COLLECTION,"enabled");
+ assert.equal(config.vars.ODDS_API_MONTHLY_CREDIT_CAP,"100");
+ assert.equal(config.vars.ODDS_API_DAILY_CREDIT_CAP,"12");
  assert.deepEqual(config.triggers.crons,["*/15 * * * *"]);
  assert.deepEqual(config.d1_databases,[{
   binding:"DB",
@@ -167,4 +170,21 @@ test("only the owner's Dame's Picks D1 is bound and paid collectors remain disab
   migrations_dir:"migrations"
  }]);
  assert.ok(!JSON.stringify(config).includes("api_key"));
+});
+
+test("configured collector is reported as configured, not falsely marked active without a real receipt",async()=>{
+ const {db}=fakeDb();
+ const env={DB:db,APP_STAGE:"staging",PAID_PROVIDER_REQUESTS:"enabled",
+  ODDS_API_COLLECTION:"enabled",ODDS_API_KEY:"valid_test_only_secret_123",
+  ODDS_API_MONTHLY_CREDIT_CAP:"100",ODDS_API_DAILY_CREDIT_CAP:"12"};
+ const h=await worker.fetch(request("/healthz"),env);
+ assert.equal(h.status,200);
+ const x=await h.json();
+ assert.equal(x.provider_collection_configured,true);
+ assert.equal(x.provider_collection_active,false);
+ assert.equal(x.paid_provider_calls,"enabled");
+ assert.equal(x.odds_collector_last_run,null);
+ const st=await worker.fetch(request("/api/v1/status"),env);
+ assert.equal(st.status,200);
+ assert.equal((await st.json()).odds_collector_configured,true);
 });

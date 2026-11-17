@@ -209,3 +209,19 @@ test("read-only status distinguishes HTTP version from the Cron version without 
  assert.equal(same.http_cron_binding_mismatch,false);
  assert.equal(same.status,"authenticated");
 });
+
+test("free-key status reports budgeted collection only when all gates and D1 are configured",async()=>{
+ const db=fakeD1();
+ const env={DB:db,ODDS_API_KEY:KEY,APP_STAGE:"staging",
+  PAID_PROVIDER_REQUESTS:"enabled",ODDS_API_COLLECTION:"enabled",
+  ODDS_API_MONTHLY_CREDIT_CAP:"100",ODDS_API_DAILY_CREDIT_CAP:"12"};
+ const before=await freeKeyProbeStatus(env);
+ assert.equal(before.status,"awaiting_free_check");
+ assert.equal(before.paid_collection,"configured");
+ const check=await probeFreeKeyOnCron(env,{fetcher:async()=>apiReply()});
+ assert.equal(check.status,"authenticated");
+ const after=await freeKeyProbeStatus(env);
+ assert.equal(after.paid_collection,"configured");
+ assert.equal(after.last_call_credits,0);
+ assert.ok(!JSON.stringify(after).includes(KEY));
+});
