@@ -1,0 +1,58 @@
+name: Verify public DS5 renders real Cloudflare odds
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-public-ds5-odds-bridge.yml"
+permissions:
+  contents: read
+jobs:
+  live-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - name: Install Playwright Chromium
+        run: |
+          python3 -m pip install --quiet playwright
+          python3 -m playwright install --with-deps chromium
+      - name: Prove live standard NBA lines appear in both desktop and mobile DS5 website
+        run: |
+          python3 - <<'PY'
+          import json,time,urllib.request,sys
+          from playwright.sync_api import sync_playwright
+          SITE="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
+          CLOUD="https://dames-picks-staging.damiensandoval77.workers.dev"
+          for attempt in range(12):
+            try:
+              req=urllib.request.Request(CLOUD+"/api/v1/odds/board?league=NBA&limit=100",
+                headers={"Origin":"https://damiensandoval77-lang.github.io","Cache-Control":"no-cache"})
+              with urllib.request.urlopen(req,timeout=18) as res:
+                assert res.headers.get("Access-Control-Allow-Origin")=="https://damiensandoval77-lang.github.io","Cloudflare CORS missing"
+                body=json.load(res)
+              quotes=body.get("quotes",[])
+              assert quotes and all(q.get("is_standard") is True for q in quotes)
+              with urllib.request.urlopen(SITE+"live-odds-bridge.js?t="+str(int(time.time())),timeout=15) as r:
+                assert b'ds5-odds-market' in r.read(200000),"Public script not deployed"
+              with sync_playwright() as p:
+                browser=p.chromium.launch()
+                for size,label in [({"width":1280,"height":800},"desktop"),({"width":390,"height":844},"phone")]:
+                  page=browser.new_page(viewport=size)
+                  page.goto(SITE,wait_until="domcontentloaded",timeout=45000)
+                  page.locator("body.ds5-first-concept #ds5-odds-market").wait_for(timeout=20000)
+                  page.wait_for_function("""() => {
+                    const e=document.querySelector('#ds5-odds-market .ds5-odds-status');
+                    return e && e.textContent.includes('source-verified standard NBA market rows');
+                  }""",timeout=30000)
+                  rows=page.locator(".ds5-odds-row").count()
+                  assert rows>0,(label,page.locator(".ds5-odds-status").inner_text())
+                  print("PASS",label,"rows",rows,"source quotes",len(quotes),flush=True)
+                  page.close()
+                browser.close()
+              print("PASS: PUBLIC DS5 DISPLAYING REAL D1 PLAYER PROPS",flush=True)
+              sys.exit(0)
+            except Exception as e:
+              print("NOT VERIFIED",attempt+1,type(e).__name__,str(e)[:220],flush=True)
+              if attempt<11:time.sleep(15)
+          sys.exit("FAIL: no real source quote rendered by public DS5 in a browser")
+          PY
