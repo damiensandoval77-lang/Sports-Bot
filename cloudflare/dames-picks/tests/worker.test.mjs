@@ -54,6 +54,8 @@ test("staging Worker reachable without D1 but cannot claim automatic data collec
  assert.equal(x.provider_collection_active,false);
  assert.equal(x.database_binding_present,false);
  assert.equal(x.paid_provider_calls,"disabled");
+ assert.equal(x.schema_bootstrap_version,"0001");
+ assert.equal(x.scheduler_mode,"cloudflare_cron_d1_heartbeat");
 });
 test("readiness returns 503 without D1 and all sources disclosed as not connected",async()=>{
  const r=await worker.fetch(request("/api/v1/status"),{});
