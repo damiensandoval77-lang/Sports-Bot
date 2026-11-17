@@ -200,3 +200,67 @@ test("bookmaker quote collector never runs if it is not explicitly enabled for s
  const r=await collectOddsIfEnabled(e,{fetcher:()=>{throw Error("NO")},now:Date.parse(iso)});
  assert.deepEqual(r,{status:"disabled",paid_requests:0,reason:"not_staging"});
 });
+
+test("with explicit staging opt-in, exactly one paid event request is made and charged by provider headers",async()=>{
+ const now=Date.now(),start=new Date(now+3*3600000).toISOString();
+ const observed=new Date(now-60000).toISOString();
+ const event={...fixture,commence_time:start,bookmakers:[{
+  key:"prizepicks",markets:[{key:"player_points",last_update:observed,outcomes:[
+   {name:"Over",description:"Player Example",point:24.5,price:-110},
+   {name:"Under",description:"Player Example",point:24.5,price:-110}
+  ]}]
+ }]};
+ let paidRequests=0,freeRequests=0,saved=0,attempts=0,settled;
+ const db={
+  prepare(sql){
+   const statement={bind(...args){statement.args=args;return statement},
+    async all(){return{results:[]}},
+    async run(){
+     if(sql.includes("UPDATE odds_api_budget SET used_credits"))settled=statement.args;
+     if(sql.startsWith("INSERT INTO odds_api_attempts"))attempts++;
+     return {meta:{changes:1}};
+    }};
+   return statement;
+  },
+  async batch(statements){saved+=statements.length;return statements.map(()=>({meta:{changes:1}}))}
+ };
+ const env={APP_STAGE:"staging",DB:db,PAID_PROVIDER_REQUESTS:"enabled",
+  ODDS_API_COLLECTION:"enabled",ODDS_API_KEY:"a_valid_test_only_key",
+  ODDS_API_MONTHLY_CREDIT_CAP:"100",ODDS_API_DAILY_CREDIT_CAP:"20"};
+ const mock=async(url,opts)=>{
+  assert.equal(opts.headers["x-api-key"],env.ODDS_API_KEY);
+  assert.ok(!url.includes(env.ODDS_API_KEY));
+  if(url.endsWith("/events")){freeRequests++;return{
+   ok:true,headers:new Headers({"x-requests-last":"0"}),json:async()=>[{id:event.id,commence_time:start}]};}
+  paidRequests++;
+  assert.equal(new URL(url).searchParams.get("bookmakers"),"prizepicks,underdog,fanduel,draftkings");
+  assert.equal(new URL(url).searchParams.get("markets"),CORE_MARKET_KEYS.NBA.join(","));
+  return {ok:true,headers:new Headers({"x-requests-last":"1","x-requests-remaining":"499"}),
+   json:async()=>event};
+ };
+ const result=await collectOddsIfEnabled(env,{fetcher:mock,now,leagueOrder:["NBA"]});
+ assert.equal(result.status,"ok");
+ assert.equal(result.paid_requests,1);
+ assert.equal(result.credits_charged,1);
+ assert.equal(result.quotes_stored,1);
+ assert.equal(freeRequests,1);
+ assert.equal(paidRequests,1);
+ assert.equal(saved,1);
+ assert.equal(attempts,1);
+ assert.equal(settled[0],1,"D1 settlement must use actual header cost, not 4 reserved credits");
+});
+test("the monthly or daily D1 credit ceiling blocks every paid request after free event discovery",async()=>{
+ const now=Date.now(),start=new Date(now+3*3600000).toISOString();
+ let requests=0;
+ const db={
+  prepare(sql){return{bind(){return this},async all(){return{results:[]}},
+   async run(){return {meta:{changes:sql.startsWith("UPDATE odds_api_budget")?0:1}}}}}
+ };
+ const env={APP_STAGE:"staging",DB:db,PAID_PROVIDER_REQUESTS:"enabled",
+  ODDS_API_COLLECTION:"enabled",ODDS_API_KEY:"another_test_key_12",
+  ODDS_API_MONTHLY_CREDIT_CAP:"8",ODDS_API_DAILY_CREDIT_CAP:"5"};
+ const mock=async(url)=>{requests++;assert.ok(url.endsWith("/events"),"A blocked budget must not send a paid request");
+  return{ok:true,headers:new Headers(),json:async()=>[{id:fixture.id,commence_time:start}]}};
+ const r=await collectOddsIfEnabled(env,{fetcher:mock,now,leagueOrder:["NBA"]});
+ assert.equal(r.status,"budget_blocked");assert.equal(r.paid_requests,0);assert.equal(requests,1);
+});
