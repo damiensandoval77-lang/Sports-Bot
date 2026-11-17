@@ -123,7 +123,7 @@ test("final summary cannot produce live pace or overwrite frozen grades",()=>{
  assert.equal(m.attachLive([{sport:"NBA",player:"Tester",team:"AAA",game:"A @ B",stat:"PTS"}],x.feed,null,NOW)[0].live,null);
 });
 test("UI surfaces guarded pace on game rows and pick detail",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(html.includes('escapeText(versus+paceLabel)'));
  assert.equal((html.match(/Pace unavailable: needs a fresh regulation clock and at least 5 elapsed minutes\./g)||[]).length,2);
 });
