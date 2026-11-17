@@ -298,7 +298,7 @@ test("frozen or AI-only market is not duplicated by quote-only tracker fallback"
 test("combined app never turns a quote-only standard line into an AI projection",()=>{
  const fs=require("node:fs");
  const model=fs.readFileSync("docs/dames-picks/feeds.js","utf8");
- const app=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const app=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.ok(model.includes("function includeArchivedStandard(rows,archive)"));
  assert.ok(model.includes("projection:null,direction:null,chance:null"));
  assert.ok(model.includes("quoteOnly:true"));
