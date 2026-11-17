@@ -1,0 +1,55 @@
+name: Confirm DS5 supports NBA and NFL only
+on:
+  pull_request:
+    paths:
+      - "docs/dames-picks/**"
+      - "src/sports/**"
+      - "src/cli/**"
+      - "iphone_bot/verify_unified_dames_browser.py"
+      - "iphone_bot/tests/test_verify_unified_dames_browser.py"
+      - "tests/test_ds5_nba_nfl_only.py"
+      - ".github/workflows/nba-nfl-only-release-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/dames-picks/**"
+      - "src/sports/**"
+      - "tests/test_ds5_nba_nfl_only.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no-retired-sport:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Verify no sport-specific artifacts, release hash drift or removed navigation
+        run: python -m unittest discover -s tests -p 'test_ds5_nba_nfl_only.py' -v
+      - name: Verify NBA/NFL-only embedded browser assessment contracts
+        run: python -m unittest discover -s iphone_bot/tests -p 'test_verify_unified_dames_browser.py' -v
+      - name: Parse inline Classic and public browser scripts
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const html=fs.readFileSync('docs/dames-picks/classic.html','utf8');
+          const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).filter(x=>x.trim());
+          if(scripts.length<1)throw Error("Missing classic runtime script");
+          scripts.forEach((source,i)=>new vm.Script(source,{filename:"classic-inline-"+i+".js"}));
+          console.log("PASS: "+scripts.length+" Classic scripts parse after removal");
+          NODE
+          for source in docs/dames-picks/unified-shell.js docs/dames-picks/concept-3-connected.js docs/dames-picks/feeds.js docs/dames-picks/live_direct.js docs/dames-picks/ds5-v1.js; do
+            node --check "$source"
+          done
+      - name: Install local browser test
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify unified NBA/NFL site at 393, 768 and 1448 pixels (local, no provider calls)
+        run: python tests/test_dames_unified_site.py
