@@ -57,7 +57,11 @@ jobs:
           from pathlib import Path
           import re
           landing=Path('docs/index.html').read_text()
-          html=Path('docs/dames-picks/index.html').read_text()
+          html=Path('docs/dames-picks/classic.html').read_text()
+          parent=Path('docs/dames-picks/index.html').read_text()
+          shell=Path('docs/dames-picks/unified-shell.js').read_text()
+          assert 'ds5-v1.js' in parent and 'unified-shell.js' in parent
+          assert 'new URL("classic.html"' in shell, 'DS5 homepage must mount exactly the production analytics renderer'
           live=Path('docs/dames-picks/live_direct.js').read_text()
           model=Path('docs/dames-picks/feeds.js').read_text()
           assert 'url=./dames-picks/' in landing
@@ -74,7 +78,9 @@ jobs:
           assert 'root.DamesPicksLive=' in live
           scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
           assert scripts, 'Active app script missing'
-          Path('/tmp/live-tracker-v2.js').write_text(scripts[-1])
+          runtime=next((s for s in scripts if 'async function liveTick(force=false)' in s),None)
+          assert runtime is not None, 'Active 30-second ESPN live tracker runtime missing'
+          Path('/tmp/live-tracker-v2.js').write_text(runtime)
           print('Unified iPhone app refreshes ESPN live totals every 30s, preserves newer snapshots and separates quote-only records')
           PY
           node --check /tmp/live-tracker-v2.js
