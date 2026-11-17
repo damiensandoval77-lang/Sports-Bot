@@ -325,7 +325,7 @@ def probe():
             # Public DS5 controls must really switch the embedded NBA/NFL tool.
             for workspace in ("tracker","live","saved","board"):
                 host.locator('.unified-navigation button[data-workspace="'+workspace+'"]').click(timeout=10000)
-                page.wait_for_function("() => state.mode === '"+workspace+"'",timeout=15000)
+                page.wait_for_function("() => typeof state !== 'undefined' && state.mode === '"+workspace+"'",timeout=15000)
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
             # Initial page load may complete before the app's asynchronous
             # browser-direct scoreboard/boxscore refresh. Test live state
