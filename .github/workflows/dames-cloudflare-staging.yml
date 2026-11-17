@@ -24,6 +24,11 @@ jobs:
       - name: Test Worker, Cron and isolated static staging build
         working-directory: cloudflare/dames-picks
         run: npm run check
+      - name: Verify Wrangler can package the actual Worker without Cloudflare credentials
+        working-directory: cloudflare/dames-picks
+        run: |
+          npm install --no-audit --no-fund
+          npx wrangler deploy --dry-run --outdir /tmp/dames-worker-build
       - name: Validate D1 migrations with real SQLite
         run: |
           python3 - <<'PY'
