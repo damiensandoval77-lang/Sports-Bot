@@ -7,7 +7,7 @@ import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 DOCS=Path(__file__).resolve().parents[1]/"docs"
 OUT=Path(__file__).resolve().parents[1]/"test-artifacts"
@@ -40,19 +40,19 @@ def main():
             assert page.locator("#unified-workspace").is_visible()
             old=page.frame_locator("#unified-frame")
             old.locator('[data-view="board"]').wait_for(timeout=35000)
-            assert old.locator('[data-view="board"]').get_attribute("class")=="active"
-            assert old.locator('[data-league="NBA"]').get_attribute("class")=="active"
+            expect(old.locator('[data-view="board"]')).to_have_class("active",timeout=10000)
+            expect(old.locator('[data-league="NBA"]')).to_have_class("active",timeout=10000)
             page.locator('[data-workspace="saved"]').click()
             for i in range(70):
                 if "active" in (old.locator('[data-view="saved"]').get_attribute("class") or ""):break
                 time.sleep(.1)
             else:raise AssertionError("Saved not switched within same website")
             page.locator('[data-workspace="live"]').click()
-            assert old.locator('[data-view="live"]').get_attribute("class")=="active"
+            expect(old.locator('[data-view="live"]')).to_have_class("active",timeout=10000)
             page.locator('[data-workspace="tracker"]').click()
-            assert old.locator('[data-view="tracker"]').get_attribute("class")=="active"
+            expect(old.locator('[data-view="tracker"]')).to_have_class("active",timeout=10000)
             page.locator('[data-workspace="tennis"]').click()
-            assert old.locator('[data-league="TENNIS"]').get_attribute("class")=="active"
+            expect(old.locator('[data-league="TENNIS"]')).to_have_class("active",timeout=10000)
             page.screenshot(path=str(OUT/f"dames-unified-tools-{w}.png"),full_page=True)
             page.locator('[data-workspace="player"]').click()
             assert page.locator(".wrap").is_visible()
