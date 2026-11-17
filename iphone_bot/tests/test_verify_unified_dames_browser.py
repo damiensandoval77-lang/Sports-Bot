@@ -92,7 +92,7 @@ class LiveOrderTests(unittest.TestCase):
     def test_warm_reload_same_page_is_exercised(self):
         from pathlib import Path
         source=(Path(__file__).resolve().parents[1]/"verify_unified_dames_browser.py").read_text()
-        self.assertIn('page.reload(wait_until="domcontentloaded"',source)
+        self.assertIn('host.reload(wait_until="domcontentloaded"',source)
         self.assertIn('"WARM_RELOAD"',source)
 
     def test_wrong_view_empty_slate_fails(self):
