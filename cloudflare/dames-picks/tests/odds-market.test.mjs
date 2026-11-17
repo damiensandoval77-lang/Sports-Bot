@@ -131,6 +131,15 @@ test("free discovery picks only eligible upcoming games and throttles repeated e
  assert.equal(chooseUpcomingEvent(events,now)?.id,"fedcba0987654321");
  assert.equal(chooseUpcomingEvent(events,now,new Map([["fedcba0987654321",now]]))?.id,fixture.id);
 });
+test("early afternoon Cron accepts genuine evening games without losing budget or pregame checks",()=>{
+ const base=Date.parse("2026-11-17T19:15:00Z");
+ const evening=new Date(base+5.25*3600000).toISOString();
+ const tomorrow=new Date(base+13*3600000).toISOString();
+ const eligible=[{id:"earlyevening123456",commence_time:evening}];
+ assert.equal(chooseUpcomingEvent(eligible,base)?.id,"earlyevening123456");
+ assert.equal(chooseUpcomingEvent([{id:"nextday123456789",commence_time:tomorrow}],base),null);
+ assert.equal(chooseUpcomingEvent(eligible,base,new Map([["earlyevening123456",base]])),null);
+});
 test("provider auth stays in a header, and absent quota headers are UNKNOWN rather than zero cost",async()=>{
  let urlSeen,headers;
  const mocked=async(u,args)=>{urlSeen=u;headers=args.headers;return {
