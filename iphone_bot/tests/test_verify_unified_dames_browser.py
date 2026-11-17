@@ -1,5 +1,5 @@
 import unittest
-from iphone_bot.verify_unified_dames_browser import assess, assess_live_order, assess_tennis, assess_confidence, assess_pace
+from iphone_bot.verify_unified_dames_browser import assess, assess_live_order, assess_confidence, assess_pace
 
 class UnifiedBrowserAssessmentTests(unittest.TestCase):
     def test_both_sports_rendered(self):
@@ -92,77 +92,11 @@ class LiveOrderTests(unittest.TestCase):
     def test_warm_reload_same_page_is_exercised(self):
         from pathlib import Path
         source=(Path(__file__).resolve().parents[1]/"verify_unified_dames_browser.py").read_text()
-        self.assertIn('page.reload(wait_until="domcontentloaded"',source)
+        self.assertIn('host.reload(wait_until="domcontentloaded"',source)
         self.assertIn('"WARM_RELOAD"',source)
 
     def test_wrong_view_empty_slate_fails(self):
         self.assertIn("LIVE_VIEW_NOT_SELECTED",assess_live_order({"sport":"NFL","selected":"NBA","mode":"tracker","expected_ids":[],"cards":[]}))
-
-class TennisBrowserTests(unittest.TestCase):
-    def obs(self,mode="board"):
-        return dict(selected="TENNIS",mode=mode,requested_mode=mode,metrics=["—"]*3,
-                    notice="Projections, hit estimates and grading are unavailable",cards=[],expected_ids=[],
-                    empty="Missing quotes are not evidence that no tennis matches exist",viewport_width=390,overflow=0)
-    def test_honest_empty(self):
-        self.assertEqual(assess_tennis(self.obs()),[])
-    def test_valid_quote_only(self):
-        o=self.obs();o.update(cards=[dict(id="t1",projection="—",estimate="—",grade="LINE ONLY")],expected_ids=["t1"])
-        self.assertEqual(assess_tennis(o),[])
-        o["cards"][0]["estimate"]="80%"
-        self.assertIn("TENNIS_UNSUPPORTED_ESTIMATE_OR_GRADE",assess_tennis(o))
-    def test_contamination(self):
-        o=self.obs();o.update(cards=[dict(id="NBA1")],metrics=["1–0","100%","5"],research_visible=True)
-        r=assess_tennis(o)
-        self.assertIn("TENNIS_CROSS_LEAGUE_OR_MISSING_CARDS",r)
-        self.assertIn("TENNIS_UNSUPPORTED_METRICS",r)
-        self.assertIn("TENNIS_CROSS_LEAGUE_RESEARCH_VISIBLE",r)
-    def test_unsupported_views(self):
-        for mode in ("live","tracker"):
-            o=self.obs(mode);self.assertIn("TENNIS_UNSUPPORTED_LIVE_OR_GRADING",assess_tennis(o))
-            o['empty']='Tennis scores not connected. This does not mean no matches are playing.'
-            self.assertEqual(assess_tennis(o),[])
-    def test_wrong_league_or_view(self):
-        o=self.obs();o['selected']='NBA';self.assertIn("TENNIS_VIEW_NOT_SELECTED",assess_tennis(o))
-        o=self.obs();o['mode']='live';self.assertIn("TENNIS_VIEW_NOT_SELECTED",assess_tennis(o))
-    def test_phone_and_honesty(self):
-        o=self.obs();o.update(viewport_width=1200,empty='No matches',notice='')
-        r=assess_tennis(o)
-        self.assertIn("TENNIS_PHONE_LAYOUT_FAILED",r)
-        self.assertIn("TENNIS_EMPTY_STATE_NOT_HONEST",r)
-        self.assertIn("TENNIS_LIMITATION_NOTICE_MISSING",r)
-
-class TennisFixtureBrowserTests(TennisBrowserTests):
-    def fixture_obs(self):
-        o=self.obs();o.update(notice="Partial list, not a live schedule. Lines and estimates are unavailable",
-            fixtures=[dict(id="f1",name="A vs B",date="2026-11-16")],
-            fixture_cards=[dict(name="A vs B",date="2026-11-16",grade="MATCH LIST",projection=None,estimate=None,
-                context="Provider-listed date: 2026-11-16 · start time unconfirmed",note="Schedule snapshot only · no pick or hit estimate")])
-        return o
-    def test_source_backed_list(self):
-        self.assertEqual(assess_tennis(self.fixture_obs()),[])
-    def test_wrong_name_date_missing_duplicate(self):
-        for field,value in (("name","NBA player"),("date","2026-11-17")):
-            o=self.fixture_obs();o['fixture_cards'][0][field]=value
-            self.assertIn("TENNIS_FIXTURE_IDENTITY_MISMATCH",assess_tennis(o))
-        for cards in ([],[self.fixture_obs()['fixture_cards'][0]]*2):
-            o=self.fixture_obs();o['fixture_cards']=cards
-            self.assertIn("TENNIS_FIXTURE_IDENTITY_MISMATCH",assess_tennis(o))
-    def test_fixture_must_never_forecast(self):
-        for field,value in (("grade","WIN"),("estimate","80%"),("projection","12"),("has_stats",True),("has_quote_id",True),("context","confirmed"),("note","pick")):
-            o=self.fixture_obs();o['fixture_cards'][0][field]=value
-            self.assertIn("TENNIS_UNSUPPORTED_FIXTURE_ESTIMATE_OR_GRADE",assess_tennis(o))
-    def test_fixture_in_saved_or_live_fails(self):
-        for mode in ('saved','live','tracker'):
-            o=self.fixture_obs();o.update(mode=mode,requested_mode=mode)
-            self.assertIn("TENNIS_FIXTURE_IDENTITY_MISMATCH",assess_tennis(o))
-    def test_mixed_quotes_keep_safeguards(self):
-        o=self.fixture_obs();o.update(expected_ids=['t1'],cards=[dict(id='t1',projection='—',estimate='—',grade='LINE ONLY')])
-        self.assertEqual(assess_tennis(o),[])
-        o['cards'][0]['estimate']='80%'
-        self.assertIn("TENNIS_UNSUPPORTED_ESTIMATE_OR_GRADE",assess_tennis(o))
-    def test_snapshot_notice_required(self):
-        o=self.fixture_obs();o['notice']='Live schedule'
-        self.assertIn("TENNIS_LIMITATION_NOTICE_MISSING",assess_tennis(o))
 
 class ConfidenceBrowserTests(unittest.TestCase):
     def obs(self):

@@ -80,7 +80,7 @@ def evaluate(root=DOCS, now=None):
     home=root/"dames-picks/index.html"
     if home.exists():
         html=home.read_text(encoding="utf-8")
-        # DS5 is the only public homepage. The real connected NBA/NFL/Tennis
+        # DS5 is the only public homepage. The real connected NBA/NFL
         # renderer is mounted inside its unified same-origin workspace. Check
         # both files and the mount, rather than expecting the old all-in-one
         # HTML program in the new branded homepage.

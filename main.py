@@ -1,26 +1,9 @@
+"""Sports-Bot command-line entry point for the NBA research scanner.
+
+The public DS5 Sports Media website supports NBA and NFL analytics.
+The separate local command-line menu currently launches the NBA scanner.
 """
-sports_ev_bot - Multi-Sport Entry Point
 
-Interactive menu system for NBA, Tennis, CBB, and upcoming sports betting analysis.
-
-Features:
-    - Sport selection menu
-    - Separate workflows for each sport
-    - Shared core functionality (FanDuel, PrizePicks APIs)
-    
-Sports Supported:
-    - NBA    (Professional Basketball)  - ACTIVE
-    - Tennis (ATP + WTA)                - ACTIVE
-    - CBB    (College Basketball)       - COMING SOON
-    - WNBA   (Women's Basketball)      - COMING SOON
-    - MLB    (Major League Baseball)    - COMING SOON
-    - NFL    (Football)                 - COMING SOON
-
-Usage:
-    $ python main.py
-    
-Then select your sport and follow the prompts.
-"""
 
 import sys
 import os
@@ -48,9 +31,6 @@ def main():
         print("\n1. NBA")
         print("   21 models  |  PTS, REB, AST, FGA, FG3A, PRA, and more")
 
-        print("\n2. Tennis")
-        print("   7 models   |  ATP + WTA")
-
         print("\n" + "-" * 50)
         print("0. Exit")
         print("-" * 50)
@@ -70,17 +50,6 @@ def main():
                 input("\nPress Enter to continue...")
             except Exception as e:
                 print(f"\nNBA module error: {e}")
-                input("\nPress Enter to continue...")
-
-        elif choice == '2':
-            try:
-                from src.cli.tennis_cli import main_menu as tennis_menu
-                tennis_menu()
-            except ImportError as e:
-                print(f"\nError loading Tennis module: {e}")
-                input("\nPress Enter to continue...")
-            except Exception as e:
-                print(f"\nTennis module error: {e}")
                 input("\nPress Enter to continue...")
 
         # ================================================================
