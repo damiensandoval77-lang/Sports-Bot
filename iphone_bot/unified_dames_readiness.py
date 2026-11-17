@@ -80,10 +80,20 @@ def evaluate(root=DOCS, now=None):
     home=root/"dames-picks/index.html"
     if home.exists():
         html=home.read_text(encoding="utf-8")
-        if "feeds.js" not in html or "dames_take.js" not in html:
+        # DS5 is the only public homepage. The real connected NBA/NFL/Tennis
+        # renderer is mounted inside its unified same-origin workspace. Check
+        # both files and the mount, rather than expecting the old all-in-one
+        # HTML program in the new branded homepage.
+        classic=root/"dames-picks/classic.html"
+        shell=root/"dames-picks/unified-shell.js"
+        original=classic.read_text(encoding="utf-8") if classic.is_file() else ""
+        shell_js=shell.read_text(encoding="utf-8") if shell.is_file() else ""
+        if not ('feeds.js' in html and 'dames_take.js' in original
+                and 'feeds.js' in original and 'unified-shell.js' in html
+                and 'new URL("classic.html"' in shell_js):
             fail("app","FRONTEND_ADAPTER_MISSING")
-        if not ('getJSON("nfl/data/latest_2026.json")' in html and
-                'getJSON("lagged_matchup_all_market_ledger.json")' in html):
+        if not ('getJSON("nfl/data/latest_2026.json")' in original and
+                'getJSON("lagged_matchup_all_market_ledger.json")' in original):
             fail("app","NBA_OR_NFL_HANDOFF_MISSING")
         if '../index.html' in html or '../nfl/index.html' in html:
             fail("app","RETIRED_DASHBOARD_LINK_REINTRODUCED")
