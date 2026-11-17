@@ -110,14 +110,17 @@ export async function probeFreeKeyOnCron(env,{fetcher=fetch,now=Date.now()}={}){
   if(typeof env?.DB?.prepare!=="function")return {status:"skipped",reason:"db_missing"};
   // The free probe never alters flags, even if an owner later opts in.
   const last=await env.DB.prepare(
-    "SELECT completed_at FROM scheduler_runs WHERE job=? ORDER BY run_id DESC LIMIT 1"
+    "SELECT completed_at,outcome FROM scheduler_runs WHERE job=? ORDER BY run_id DESC LIMIT 1"
   ).bind(JOB).first();
+  const configured=hasKey(env);
   if(last?.completed_at){
     const age=now-Date.parse(last.completed_at);
-    if(Number.isFinite(age)&&age>=0&&age<MIN_PROBE_INTERVAL_MS)
+    const interval=last.outcome==="success" ? MIN_PROBE_INTERVAL_MS : 30*60*1000;
+    // A newly entered key must be tested even if an earlier check saw no key.
+    const needNewKeyProbe=last.outcome==="skipped" && configured;
+    if(!needNewKeyProbe && Number.isFinite(age)&&age>=0&&age<interval)
       return {status:"skipped",reason:"recently_checked"};
   }
-  const configured=hasKey(env);
   const start=iso(now);
   const probe=configured?await probeFreeSportsEndpoint(env.ODDS_API_KEY,{fetcher,now}):
     {state:"secret_not_configured",http_status:null,last_call_credits:null,quota_remaining:null,
