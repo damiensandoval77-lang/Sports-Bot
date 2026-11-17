@@ -392,7 +392,7 @@ def probe():
             # Keep the same context/service-worker/cache and reload as a returning
             # user does. This tests a warm reload, not an invented historical cache.
             host.reload(wait_until="domcontentloaded",timeout=45000)
-            host.locator("body.ds5-first-concept .ds5-dashboard").wait_for(timeout=45000)
+            host.locator("body.ds5-first-concept .ds5-dashboard").wait_for(state="attached",timeout=45000)
             host.frame_locator("#unified-frame").locator('button[data-league="NBA"]').wait_for(timeout=45000)
             frames=[f for f in host.frames if "/dames-picks/classic.html" in f.url]
             if len(frames)!=1: raise RuntimeError("DS5 workspace iframe not restored on warm reload")
