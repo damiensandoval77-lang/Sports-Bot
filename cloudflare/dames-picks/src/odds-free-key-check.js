@@ -26,22 +26,26 @@ function parseDetail(row){
       quota_remaining:detail.quota_remaining??null,
       nba_active:detail.nba_active??null,
       nfl_active:detail.nfl_active??null,
-      sports_count:detail.sports_count??null
+      sports_count:detail.sports_count??null,
+      worker_version:typeof detail.worker_version==="string"?detail.worker_version:null
     };
   }catch(_){return {state:"invalid_saved_receipt",http_status:null,last_call_credits:null,quota_remaining:null,nba_active:null,nfl_active:null,sports_count:null}}
 }
 /** Read-only endpoint. Never calls The Odds API from an HTTP request. */
 export async function freeKeyProbeStatus(env){
   const configured=hasKey(env);
+  const httpWorkerVersion=typeof env?.CF_VERSION_METADATA?.id==="string"?env.CF_VERSION_METADATA.id:null;
   if(typeof env?.DB?.prepare!=="function")
-    return {status:"database_not_connected",secret_configured:configured,paid_collection:"disabled"};
+    return {status:"database_not_connected",secret_configured:configured,
+      http_worker_version:httpWorkerVersion,paid_collection:"disabled"};
   try{
     const row=await env.DB.prepare(
       "SELECT scheduled_at,completed_at,outcome,detail FROM scheduler_runs WHERE job=? ORDER BY run_id DESC LIMIT 1"
     ).bind(JOB).first();
     if(!row)return {
       status:configured?"awaiting_free_check":"secret_not_configured",
-      secret_configured:configured,probe_time:null,paid_collection:"disabled",
+      secret_configured:configured,http_worker_version:httpWorkerVersion,
+      probe_time:null,paid_collection:"disabled",
       key_authentication_verified:false
     };
     const details=parseDetail(row);
@@ -58,6 +62,9 @@ export async function freeKeyProbeStatus(env){
         configured?(recent?details.state:"stale_check"):"secret_not_configured",
       secret_configured:configured,
       http_handler_secret_visible:configured,
+      http_worker_version:httpWorkerVersion,
+      scheduled_cron_worker_version:details.worker_version??null,
+      http_cron_version_mismatch:Boolean(httpWorkerVersion&&details.worker_version&&httpWorkerVersion!==details.worker_version),
       scheduled_cron_authentication_verified:cronVerified,
       http_cron_binding_mismatch:bindingMismatch,
       key_authentication_verified:cronVerified,
@@ -141,6 +148,7 @@ export async function probeFreeKeyOnCron(env,{fetcher=fetch,now=Date.now()}={}){
   // Persist only sanitized metadata; never store API keys, headers, or raw URLs.
   await env.DB.prepare(
     "INSERT INTO scheduler_runs(job,scheduled_at,completed_at,outcome,detail) VALUES(?,?,?,?,?)"
-  ).bind(JOB,start,iso(Date.now()),outcome,JSON.stringify(probe).slice(0,1000)).run();
+  ).bind(JOB,start,iso(Date.now()),outcome,JSON.stringify({...probe,
+    worker_version:typeof env?.CF_VERSION_METADATA?.id==="string"?env.CF_VERSION_METADATA.id:null}).slice(0,1000)).run();
   return {status:probe.state,performed_request:configured,last_call_credits:probe.last_call_credits};
 }
