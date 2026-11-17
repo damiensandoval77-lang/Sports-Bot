@@ -30,13 +30,14 @@ def main():
             page.add_init_script("window.DAMES_DISABLE_EXTERNAL_PHOTOS=true;window.DAMES_DISABLE_DIRECT_SCORES=true")
             page.route("**/*",lambda route:route.continue_() if route.request.url.startswith(host) else route.abort())
             page.goto(url,wait_until="domcontentloaded")
-            page.locator(".unified-navigation .unified-tab").first.wait_for(timeout=30000)
+            page.locator(".unified-navigation .unified-tab").first.wait_for(state="attached",timeout=30000)
             assert page.locator(".unified-tab").count()==5
             assert page.locator('[data-workspace="tennis"]').count()==0
             assert page.locator(".panel").count()==10, "Concept3 panel layout must remain unchanged"
             assert page.locator("#unified-workspace").is_hidden()
             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"), "Landing page overflow"
             page.screenshot(path=str(OUT/f"dames-unified-home-{w}.png"),full_page=True)
+            page.locator(".ds5-side-nav button").filter(has_text="Dame\'s Picks").first.click()
             page.locator('[data-workspace="board"]').click()
             assert page.locator("#unified-workspace").is_visible()
             old=page.frame_locator("#unified-frame")
