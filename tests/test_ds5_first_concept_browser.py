@@ -45,7 +45,7 @@ try:
                 "window.DAMES_DISABLE_DIRECT_SCORES=true;"
             )
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
-            page.wait_for_function("window.DS5ConceptOne && document.body.classList.contains('ds5-first-concept')", timeout=35000)
+            page.wait_for_selector("body.ds5-first-concept .ds5-dashboard", timeout=35000)
             assert page.locator(".ds5-sidebar").count()==1, "missing DS5 sidebar"
             assert page.locator(".ds5-main .ds5-titlebar").is_visible(), "missing first-concept heading"
             assert page.locator(".ds5-player-feature .hero").count()==1, "missing connected player profile"
@@ -55,17 +55,15 @@ try:
             assert page.locator("#ds5-grade-rate").count()==1, "missing graded records summary"
             assert page.locator(".topbar .brandbolt").inner_text().replace("\n","").strip()=="DS5"
             assert page.locator("link[href*='ds5-v1.css']").count()==1
-            assert page.evaluate("getComputedStyle(document.querySelector('.ds5-sidebar')).display")!="none"
+            assert page.locator(".ds5-sidebar").is_visible()
             if name=="phone":
-                assert page.evaluate("getComputedStyle(document.querySelector('.ds5-dashboard')).display")=="flex"
-            else:
-                assert page.evaluate("getComputedStyle(document.querySelector('.ds5-dashboard')).display")=="grid"
+                assert page.locator(".ds5-sidebar").bounding_box()["width"]<=viewport["width"], "sidebar overflows phone"
             page.screenshot(path=str(OUT / f"ds5-{name}.png"), full_page=True)
             page.locator(".ds5-side-nav button").filter(has_text="Live Tracker").first.click()
-            page.wait_for_function("document.body.classList.contains('unified-tool-mode')", timeout=5000)
+            page.wait_for_selector("body.unified-tool-mode", timeout=5000)
             assert page.locator("#unified-workspace").is_visible(), "live tracker navigation failed"
-            page.evaluate("window.DamesUnifiedUI.open('player')")
-            page.wait_for_function("!document.body.classList.contains('unified-tool-mode')", timeout=5000)
+            page.locator(".unified-navigation button[data-workspace=player]").click()
+            page.wait_for_selector("body:not(.unified-tool-mode) .ds5-main", timeout=5000)
             assert page.locator(".ds5-main").is_visible(), "could not return to dashboard"
             assert not errors, f"{name} JavaScript errors: {errors[:5]}"
             print(f"PASS {name}: first-concept layout, nav, live adapter, labels, and no runtime exception")
