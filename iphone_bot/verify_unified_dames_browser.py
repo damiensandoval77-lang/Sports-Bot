@@ -75,9 +75,27 @@ def assess_live_order(observation):
         previous=key
     return list(dict.fromkeys(reasons))
 
+
+def select_embedded_view(frame, view):
+    """Exercise embedded handlers after verifying the real DS5 controls.
+
+    The old bottom navigation can be outside the visible embedded viewport.
+    The parent site's public workspace tabs are clicked separately in probe().
+    """
+    if view not in ("board","live","tracker","saved"):
+        raise ValueError("Unknown embedded view")
+    result=frame.evaluate("""mode => {
+      const b=document.querySelector('button[data-view="'+mode+'"]');
+      if(!b)return {found:false};
+      b.click();
+      return {found:true, selected:state.mode};
+    }""",view)
+    if not result.get("found") or result.get("selected")!=view:
+        raise RuntimeError("Embedded "+view+" handler failed to select correct view")
+
 def observe_live_order(page, sport):
     page.locator('button[data-league="'+sport+'"]').click(timeout=10000)
-    page.locator('button[data-view="live"]').click(timeout=10000)
+    select_embedded_view(page,"live")
     # Rendering is synchronous. A click throwing inside the application must
     # not pass merely because Tracker's archived cards still remain visible.
     observed=page.evaluate("""sport => {
@@ -140,10 +158,10 @@ def observe_tennis(page):
     # Enter from each populated league to detect retained cards and metrics.
     for previous in ("NBA","NFL"):
         page.locator('button[data-league="'+previous+'"]').click(timeout=10000)
-        page.locator('button[data-view="board"]').click(timeout=10000)
+        select_embedded_view(page,"board")
         page.locator('button[data-league="TENNIS"]').click(timeout=10000)
         for mode in ("board","live","tracker","saved"):
-            page.locator('button[data-view="'+mode+'"]').click(timeout=10000)
+            select_embedded_view(page,"'+mode+'")
             obs=page.evaluate(r"""mode => ({
               selected:state.league, mode:state.mode, requested_mode:mode,
               metrics:['wl','rate','games'].map(id=>document.getElementById(id).textContent.trim()),
@@ -203,7 +221,7 @@ def assess_confidence(obs):
 
 def observe_confidence(page):
     page.locator('button[data-league="NBA"]').click(timeout=10000)
-    page.locator('button[data-view="board"]').click(timeout=10000)
+    select_embedded_view(page,"board")
     obs=page.evaluate("""() => {
       const rows=shown(), candidates=rows.filter(p=>m.hitEstimate(p)?.confidenceCorrected);
       const p=candidates.find(p=>p.player==='Jamal Murray'&&p.stat==='AST')||candidates[0];
@@ -254,7 +272,7 @@ def assess_pace(obs):
 
 def observe_pace(page):
     page.locator('button[data-league="NBA"]').click(timeout=10000)
-    page.locator('button[data-view="live"]').click(timeout=10000)
+    select_embedded_view(page,"live")
     target=page.evaluate("""() => {
       const g=m.currentSlateGames(state.liveGames,'NBA').find(g=>g.state==='in'&&g.fresh);
       return g?g.sport+'|'+g.gameId:null;
@@ -304,6 +322,10 @@ def probe():
             if len(frames)!=1:
                 raise RuntimeError("DS5 saved-tools frame missing or duplicated")
             page=frames[0]
+            # Public DS5 controls must really switch the embedded NBA/NFL tool.
+            for workspace in ("tracker","live","saved","board"):
+                host.locator('.unified-navigation button[data-workspace="'+workspace+'"]').click(timeout=10000)
+                page.wait_for_function("() => state.mode === '"+workspace+"'",timeout=15000)
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
             # Initial page load may complete before the app's asynchronous
             # browser-direct scoreboard/boxscore refresh. Test live state
@@ -325,7 +347,7 @@ def probe():
                 page.locator('button[data-league="'+sport+'"]').click(timeout=10000)
                 # Tracker shows original saved records even when today's
                 # pregame board is intentionally empty after tipoff.
-                page.locator('button[data-view="tracker"]').click(timeout=10000)
+                select_embedded_view(page,"tracker")
                 page.wait_for_timeout(400)
                 observation=page.evaluate("""sport => ({
                   selected:state.league,
