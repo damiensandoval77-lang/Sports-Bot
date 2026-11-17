@@ -71,7 +71,16 @@ class PhoneRuntimeBundleTests(unittest.TestCase):
         manifest = json.loads((root / "release.json").read_text())
         version = manifest["release_id"]
         self.assertEqual(version, manifest["runtime_bundle_id"])
-        html = (root / "index.html").read_text()
+        # DS5 is the only public homepage; the original signed player-card
+        # runtime is the same-origin classic.html workspace reached by its
+        # unified shell. Validate its exact release pins instead of requiring
+        # the legacy runtime to execute in the branded homepage itself.
+        parent = (root / "index.html").read_text()
+        shell = (root / "unified-shell.js").read_text()
+        self.assertIn("DS5 Sports Media", parent)
+        self.assertIn("unified-shell.js", parent)
+        self.assertIn('new URL("classic.html"', shell)
+        html = (root / "classic.html").read_text()
         self.assertIn("activeScriptsCorrect", html)
         self.assertIn("runtime[name]===RELEASE_ID", html)
         self.assertIn("latest?.runtime_bundle_id===RELEASE_ID", html)
