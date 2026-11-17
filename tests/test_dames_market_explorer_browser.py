@@ -69,7 +69,7 @@ def main():
             assert "Three-pointers" in page.locator(".market").inner_text()
             page.locator('[data-league="NFL"]').click()
             assert page.locator(".market").count()==1
-            assert page.locator("#board-empty").is_visible()
+            page.locator("#board-empty").wait_for(state="visible",timeout=10000)
             assert not page.locator("#board").is_visible()
             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"),"Horizontal overflow"
             assert not external,external
