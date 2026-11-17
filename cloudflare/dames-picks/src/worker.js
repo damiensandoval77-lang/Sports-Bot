@@ -28,7 +28,7 @@ export function hasD1(env) {
 function ageInMinutes(when, now) {
   if (!when) return null;
   const raw=String(when).trim();
-  const iso=/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/.test(raw)?raw.replace(" ","T")+"Z":raw;
+  const iso = raw.includes(" ") && !raw.includes("T") ? raw.replace(" ","T")+"Z" : raw;
   const ms=Date.parse(iso);
   if (!Number.isFinite(ms) || ms > now + 120000) return null;
   return Math.max(0, Math.round((now - ms) / 60000));
