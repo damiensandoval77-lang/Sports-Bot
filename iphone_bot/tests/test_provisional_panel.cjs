@@ -46,7 +46,7 @@ test('search and repeated renders retain explicit disclosure-open state',()=>{
  m.render(el,feed(),{now:NOW,term:'no match'});assert.match(el.innerHTML,/No provisional estimates match/);
 });
 test('integration is optional and disjoint from primary statistics/adapters',()=>{
- const html=fs.readFileSync('docs/dames-picks/index.html','utf8'),source=fs.readFileSync('docs/dames-picks/provisional.js','utf8');
+ const html=fs.readFileSync('docs/dames-picks/classic.html','utf8'),source=fs.readFileSync('docs/dames-picks/provisional.js','utf8');
  assert.match(html,/<div class="cards" id="cards"><\/div><section id="provisional-short-history"/);
  assert.match(html,/state\.provisionalFeed=provisional\.status==="fulfilled"\?provisional\.value:null/);
  assert.match(html,/getJSON\("provisional_short_history.json"\)/);
@@ -64,7 +64,7 @@ test('cohort and capture/report timestamps remain independently verified',()=>{
 });
 
 test('compact archived matchup evidence is preferred without loading the full archive',()=>{
- const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
+ const html=fs.readFileSync('docs/dames-picks/classic.html','utf8');
  const body=html.slice(html.indexOf('async function getMatchupResearch(){'),html.indexOf('async function refresh(){'));
  assert.match(body,/\["matchup_card_estimates.json","matchup_shadow_estimates.json"\]/);
  assert.match(body,/production_approved===false/);assert.match(body,/calibrated===false/);
