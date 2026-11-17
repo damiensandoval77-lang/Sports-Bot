@@ -265,7 +265,7 @@ test("the monthly or daily D1 credit ceiling blocks every paid request after fre
  assert.equal(r.status,"budget_blocked");assert.equal(r.paid_requests,0);assert.equal(requests,1);
 });
 
-test("staging 0002 D1 migration executes five entire SQL statements atomically, not split on newlines",async()=>{
+test("staging 0002 D1 migration executes six entire SQL statements atomically, not split on newlines",async()=>{
  let ready=false,attempts=0;
  const db={
   prepare(sql){return{sql,async all(){
@@ -274,7 +274,7 @@ test("staging 0002 D1 migration executes five entire SQL statements atomically, 
   }}},
   async batch(statements){
    attempts++;
-   assert.equal(statements.length,5,"three tables and two indexes");
+   assert.equal(statements.length,6,"three tables and three indexes");
    const sql=statements.map(x=>x.sql);
    assert.ok(sql.some(s=>s.includes("CREATE TABLE IF NOT EXISTS odds_api_budget")));
    assert.ok(sql.some(s=>s.includes("CREATE TABLE IF NOT EXISTS odds_api_quotes")));
