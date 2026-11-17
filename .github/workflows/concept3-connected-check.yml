@@ -1,0 +1,28 @@
+name: Concept 3 connected staging checks
+on:
+  pull_request:
+    paths:
+      - "docs/dames-picks/concept-3-connected*"
+      - "tests/test_concept3_connected_playwright.py"
+      - ".github/workflows/concept3-connected-check.yml"
+  workflow_dispatch:
+jobs:
+  validate-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax check connected runtime
+        run: node --check docs/dames-picks/concept-3-connected.js
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser test requirements
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Run isolated connected view tests
+        run: python tests/test_concept3_connected_playwright.py
