@@ -45,14 +45,19 @@ def verify():
       "result":"incomplete"
     }
     errors=[]
-    if ocode!=200 or odds.get("status")!="ok" or odds.get("config",{}).get("collection_enabled") is not False:
-        errors.append("Odds D1 0002 schema or explicit no-spend gate is not ready")
+    caps=odds.get("config",{})
+    if ocode!=200 or odds.get("status")!="ok" or caps.get("collection_enabled") is not True:
+        errors.append("Odds D1 0002 schema or capped collector not ready")
+    if caps.get("daily_cap")!=12 or caps.get("monthly_cap")!=100:
+        errors.append("Odds staging quota differs from approved 12/day 100/month caps")
     if hcode!=200 or health.get("service")!="dames-picks-staging" or health.get("stage")!="staging":
         errors.append("Cloudflare Worker health check not correct")
     if health.get("database_binding_present") is not True:
         errors.append("DB binding not deployed or not visible in Worker runtime")
-    if health.get("paid_provider_calls")!="disabled" or health.get("provider_collection_active") is not False:
-        errors.append("No-spend and no-provider-collection safeguards are not intact")
+    if health.get("paid_provider_calls")!="enabled" or health.get("provider_collection_configured") is not True:
+        errors.append("Capped odds collector not configured on active Worker")
+    if health.get("provider_collection_active") is True:
+        print("NOTE: active odds collection reported; D1 quote verification is a separate gate",flush=True)
     if scode!=200 or status.get("database")!="connected":
         errors.append("D1 database cannot be queried; first migration not initialized or deploy not finished")
     if status.get("status") not in ("collectors_not_ready","data_ready"):
@@ -83,8 +88,8 @@ def verify():
     if errors:
         print("NOT COMPLETE: D1/Cron unverified. No sports source is being automatically refreshed.",flush=True)
         return 1
-    print("PASS: live Cloudflare D1 binding, exact seven source rows, persistent Cron heartbeat; no paid sports/odds calls.",flush=True)
-    print("LIMIT: actual player stats, lines, model inference and grading collectors NOT running.",flush=True)
+    print("PASS: live Cloudflare D1 binding, seven source rows, persisted heartbeat, bounded odds configuration.",flush=True)
+    print("LIMIT: this D1 readiness check does NOT verify new player-prop quotes or production cutover.",flush=True)
     return 0
 
 if __name__=="__main__":

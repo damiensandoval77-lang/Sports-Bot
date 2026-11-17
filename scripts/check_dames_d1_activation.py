@@ -27,13 +27,20 @@ def scan():
     h_code,health=fetch("/healthz")
     s_code,status=fetch("/api/v1/status")
     assert h_code==200 and health.get("service")=="dames-picks-staging",("Wrong Worker or health",h_code,health)
-    assert health.get("paid_provider_calls")=="disabled" and not health.get("provider_collection_active"),"Unexpected paid-provider activity"
+    # Provider opt-in is now intentional and capped; do not require the old no-spend state.
+    assert health.get("provider_collection_configured") is True and health.get("paid_provider_calls")=="enabled", (
+        "Capped odds collector not configured on deployed Worker",health)
+    b_code,budget=fetch("/api/v1/odds/budget")
+    caps=budget.get("config",{})
+    assert b_code==200 and caps.get("collection_enabled") is True and (
+        caps.get("daily_cap"),caps.get("monthly_cap"))==(12,100), (
+        "Expected protected 12/day 100/month staging odds limits",budget)
     assert status.get("service")=="dames-picks-staging",("Wrong status service",status)
     print("HEALTH",h_code,json.dumps(health),flush=True)
     print("STATUS",s_code,json.dumps(status)[:4000],flush=True)
     assert health.get("database_binding_present") is True,"D1 binding not active in current deployed Worker"
     if os.getenv("DAMES_CF_REQUIRE_BOOTSTRAP_VERSION")=="true":
-        assert health.get("schema_bootstrap_version")=="0001","Updated Worker bootstrap code is not published yet"
+        assert health.get("schema_bootstrap_version")=="0001 + 0002 odds","Updated Worker odds schema code is not published yet"
     print("DEPLOYED_BOOTSTRAP_VERSION",health.get("schema_bootstrap_version") or "not_yet_published",flush=True)
     if s_code==503:
         assert status.get("status")=="database_unavailable",("Unexpected D1 response",s_code,status)
