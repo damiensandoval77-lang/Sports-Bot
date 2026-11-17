@@ -7,6 +7,10 @@ on:
       - "cloudflare/dames-picks/src/worker.js"
       - "cloudflare/dames-picks/static/market-explorer.*"
       - "cloudflare/dames-picks/scripts/build-assets.mjs"
+  pull_request:
+    paths:
+      - ".github/workflows/dames-cf-odds-deployed.yml"
+      - "tests/audit_dames_cf_odds_deployed.py"
   workflow_dispatch:
 permissions:
   contents: read
