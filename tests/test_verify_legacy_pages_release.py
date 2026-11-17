@@ -41,7 +41,7 @@ class PagesVerificationTests(unittest.TestCase):
 
     def test_unchanged_manifest_and_all_served_assets_pass(self):
         assets={name:(name+" real code").encode() for name in
-                ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","tennis.js","index.html")}
+                ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","tennis.js","classic.html")}
         pins={name:checker.git_blob_sha(data) for name,data in assets.items()}
         manifest={"release_id":"dp-test-r1","asset_blob_sha1":pins}
         report=checker.evaluate(manifest,manifest,assets)
@@ -50,7 +50,7 @@ class PagesVerificationTests(unittest.TestCase):
 
     def test_stale_bundle_cannot_fake_live_release(self):
         assets={name:(name+" latest").encode() for name in
-                ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","tennis.js","index.html")}
+                ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","tennis.js","classic.html")}
         manifest={"release_id":"dp-test-r2","asset_blob_sha1":
                   {name:checker.git_blob_sha(data) for name,data in assets.items()}}
         stale={**assets,"feeds.js":b"old code"}
@@ -58,7 +58,7 @@ class PagesVerificationTests(unittest.TestCase):
 
     def test_old_release_id_cannot_pass_even_with_matching_assets(self):
         assets={name:bytes(name,"utf8") for name in
-                ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","tennis.js","index.html")}
+                ("feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","tennis.js","classic.html")}
         manifest={"release_id":"dp-test-r3","asset_blob_sha1":
                   {name:checker.git_blob_sha(data) for name,data in assets.items()}}
         previous={**manifest,"release_id":"dp-test-r2"}
@@ -75,7 +75,7 @@ class RetryBudgetTests(unittest.TestCase):
         self.now = 0.0
         self.assets = {name: name.encode() for name in
                        ('feeds.js', 'live_direct.js', 'dames_take.js',
-                        'provisional.js', 'short_history.js', 'tennis.js', 'index.html')}
+                        'provisional.js', 'short_history.js', 'tennis.js', 'classic.html')}
         self.manifest = {'release_id': 'test-exact', 'asset_blob_sha1':
                          {name: checker.git_blob_sha(data)
                           for name, data in self.assets.items()}}
@@ -116,7 +116,7 @@ class RetryBudgetTests(unittest.TestCase):
     def test_persistent_stale_bytes_never_pass(self):
         def fetch(name, timeout):
             data = self.fetch(name, timeout)
-            return b'stale' if name == 'index.html' else data
+            return b'stale' if name == 'classic.html' else data
         report = self.run_checker(fetch)
         self.assertEqual(report['status'], 'FAIL')
         self.assertEqual(report['elapsed_seconds'], 360)
