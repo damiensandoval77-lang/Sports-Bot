@@ -9,6 +9,10 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
+# Production supports both python -m and direct script invocation.
+if __package__ in (None, ""):
+    import sys
+    sys.path.insert(0, str(ROOT))
 SOURCE=ROOT/"docs/lagged_matchup_live_all_markets.json"
 LEDGER=ROOT/"docs/lagged_matchup_all_market_ledger.json"
 FINAL=ROOT/"docs/ai_forecast_actual_ledger.json"
@@ -149,6 +153,8 @@ def main():
     older=json.loads(LEDGER.read_text()) if LEDGER.exists() else {}
     fresh=json.loads(SOURCE.read_text()) if SOURCE.exists() else {}
     final=with_voids(json.loads(FINAL.read_text()) if FINAL.exists() else {})
+    from iphone_bot.frozen_pick_final_cache import with_cached_outcomes
+    final=with_cached_outcomes(older,final,FINAL.with_name("verified_final_player_cache.json"))
     out=merge(older,fresh,final)
     LEDGER.write_text(json.dumps(out,indent=2)+"\n")
     print("FROZEN_NEW_AI_ALL_MARKET",json.dumps({

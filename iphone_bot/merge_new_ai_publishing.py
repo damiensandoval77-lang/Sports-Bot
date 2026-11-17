@@ -73,7 +73,12 @@ def main():
     def load(path):
         f=Path(path)
         return json.loads(f.read_text()) if f.exists() else {}
-    result=durable_merge(load(args.current),load(args.incoming),with_voids(load(args.finals),Path(args.finals).with_name("espn_injury_void_ledger.json")))
+    from iphone_bot.frozen_pick_final_cache import with_cached_outcomes
+    current,incoming=load(args.current),load(args.incoming)
+    finals=with_voids(load(args.finals),Path(args.finals).with_name("espn_injury_void_ledger.json"))
+    finals=with_cached_outcomes({"records":current.get("records",[])+incoming.get("records",[])},
+                               finals,Path(args.finals).with_name("verified_final_player_cache.json"))
+    result=durable_merge(current,incoming,finals)
     dest=Path(args.output)
     dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
     print("DURABLE NEW AI RECORDS",len(result["records"]),"NEW",result["new_pregame_frozen"],

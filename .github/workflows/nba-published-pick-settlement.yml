@@ -13,11 +13,15 @@ on:
   push:
     branches: [main]
     paths:
+      - 'iphone_bot/frozen_pick_final_cache.py'
+      - 'iphone_bot/tests/test_frozen_pick_final_cache.py'
       - 'iphone_bot/published_pick_settlement.py'
       - 'iphone_bot/tests/test_published_pick_settlement.py'
       - '.github/workflows/nba-published-pick-settlement.yml'
   pull_request:
     paths:
+      - 'iphone_bot/frozen_pick_final_cache.py'
+      - 'iphone_bot/tests/test_frozen_pick_final_cache.py'
       - 'iphone_bot/published_pick_settlement.py'
       - 'iphone_bot/tests/test_published_pick_settlement.py'
       - '.github/workflows/nba-published-pick-settlement.yml'
@@ -43,6 +47,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           python -m py_compile iphone_bot/published_pick_settlement.py
+          python -m unittest iphone_bot.tests.test_frozen_pick_final_cache -v
           python -m unittest discover -s iphone_bot/tests -p 'test_published_pick_settlement.py' -v
       - name: Publish actual persisted pick settlement health
         if: github.event_name != 'pull_request'
