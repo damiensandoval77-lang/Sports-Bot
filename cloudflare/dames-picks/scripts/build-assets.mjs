@@ -46,8 +46,15 @@ const existing=join(output,"dames-picks/index.html");
 let html=readFileSync(existing,"utf8");
 if(!html.includes("</head>")||!html.includes("<body>"))throw Error("Unexpected new homepage markup");
 html=html.replace("</head>",'<meta name="robots" content="noindex,nofollow"><meta name="cf-stage" content="read-only-snapshot"></head>');
-html=html.replace("<body>",'<body><div id="cloudflare-staging-banner" role="status" style="background:#321850;color:#f5ddff;text-align:center;padding:9px 12px;font:12px system-ui;position:relative;z-index:999">Cloudflare STAGING — published snapshot mirror; independent sports collectors and D1 are not yet connected. Not the production site.</div>');
+html=html.replace("<body>",'<body><div id="cloudflare-staging-banner" role="status" style="background:#321850;color:#f5ddff;text-align:center;padding:9px 12px;font:12px system-ui;position:relative;z-index:999">Cloudflare STAGING — published snapshot mirror; paid odds collection remains off by default. <a style="color:#e2b6ff;font-weight:700;text-decoration:underline" href="/dames-picks/market-explorer.html">Explore NBA/NFL markets</a>.</div>');
 writeFileSync(existing,html);
+for(const name of ["market-explorer.html","market-explorer.js"]){
+ const src=join(project,"static",name);
+ if(!existsSync(src))throw Error("Missing Cloudflare market explorer asset: "+name);
+ cpSync(src,join(output,"dames-picks",name));
+ report.copied++;report.bytes+=statSync(src).size;
+}
+
 writeFileSync(join(output,"index.html"),'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta http-equiv="refresh" content="0; url=/dames-picks/"><title>Dame\'s Picks staging</title></head><body><a href="/dames-picks/">Open Dame\'s Picks staging</a></body></html>\n');
 writeFileSync(join(output,"_headers"),'/*\n  X-Robots-Tag: noindex, nofollow\n/*.json\n  Cache-Control: no-store\n/*.csv\n  Cache-Control: no-store\n');
 writeFileSync(join(output,"staging-build-status.json"),JSON.stringify(report,null,2)+"\n");
