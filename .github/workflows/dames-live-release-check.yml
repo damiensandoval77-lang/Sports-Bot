@@ -7,6 +7,10 @@ on:
       - "docs/dames-picks/unified-shell.js"
       - "docs/dames-picks/classic.html"
       - "docs/dames-picks/concept-3-connected.js"
+  pull_request:
+    paths:
+      - ".github/workflows/dames-live-release-check.yml"
+      - "tests/test_dames_production_release.py"
   workflow_dispatch:
 jobs:
   verify-public-site:
