@@ -130,7 +130,7 @@ function renderPlayer(){
  const item=state.league==="NBA"?state.selected:state.nflSelected;
  if(!item){text(one(".hero h1"),"No player selected");return}
  const games=gameRows(),team=String(item.team||"").toUpperCase();
- const next=games.filter(g=>(g.home_code===team||g.away_code===team)&&validDate(g.start)>Date.now()-3*3600000).sort((a,b)=>validDate(a.start)-validDate(b.start)[0])||null;
+ const next=games.filter(g=>(g.home_code===team||g.away_code===team)&&validDate(g.start)>Date.now()-3*3600000).sort((a,b)=>validDate(a.start)-validDate(b.start))[0]||null;
  text(one(".hero h1"),item.player+" ☆");
  text(one(".hero .player-name small"),(state.league==="NBA"?"NBA":"NFL")+" · "+team+(item.position?" · "+item.position:""));
  text(one(".hero .subline"),"Published "+(state.league==="NBA"?"player logs":"frozen NFL records")+" · "+(state.form?.updated_at?new Date(state.form.updated_at).toLocaleDateString():"source time unavailable"));
@@ -254,7 +254,7 @@ function choose(name){
  if(!Array.isArray(group))return;
  const found=group.find(p=>norm(p.player)===norm(name));
  if(!found){changeNotice("Player not found in available "+state.league+" feed");return}
- if(state.league==="NBA")state.selected=found;else state.nflSelected=found;
+ if(state.league==="NBA")state.selected=found;else {state.nflSelected=found;state.stat=found.stat;wireNFLStat()}
  $("search").value=found.player;
  render();
 }
@@ -299,8 +299,8 @@ function wire(){
  all("[data-action]").forEach(b=>b.addEventListener("click",()=>answer(b.dataset.action)));
  const sourceLink=document.createElement("a");sourceLink.href="index.html";sourceLink.className="legacy-link";sourceLink.textContent="Original live app ↗";sourceLink.setAttribute("aria-label","Open current NBA NFL Tennis website");one(".headicons")?.replaceWith(sourceLink);
  const leagueNav=document.createElement("div");leagueNav.className="sport-nav";leagueNav.setAttribute("aria-label","Sport");
- for(const sport of ["NBA","NFL","TENNIS"]){const b=document.createElement("button");b.type="button";b.textContent=sport;b.className=sport===state.league?"selected":"";b.addEventListener("click",()=>{if(sport==="TENNIS"){window.location.href="index.html";return}state.league=sport;all(".sport-nav button").forEach(btn=>btn.classList.toggle("selected",btn.textContent===sport));if(sport==="NFL")loadNFL();else if(state.form)render();});leagueNav.append(b)}
- one(".topbar").append(leagueNav);
+ for(const sport of ["NBA","NFL","TENNIS"]){const b=document.createElement("button");b.type="button";b.textContent=sport;b.className=sport===state.league?"selected":"";b.addEventListener("click",()=>{if(sport==="TENNIS"){window.location.href="index.html";return}state.league=sport;all(".sport-nav button").forEach(btn=>btn.classList.toggle("selected",btn.textContent===sport));if(sport==="NFL")loadNFL();else if(state.form){state.stat="PTS";wireNBAStat();render();}});leagueNav.append(b)}
+ const toolsBar=document.createElement("div");toolsBar.className="connected-tools";toolsBar.append(leagueNav);const mobile=document.createElement("div");mobile.className="mobile-search";const search=document.createElement("input");search.id="mobile-player-search";search.setAttribute("list","concept3-players");search.placeholder="Find player…";search.setAttribute("aria-label","Find player");search.addEventListener("keydown",e=>{if(e.key==="Enter")choose(search.value)});const go=document.createElement("button");go.type="button";go.textContent="Search";go.addEventListener("click",()=>choose(search.value));mobile.append(search,go);toolsBar.append(mobile);const back=document.createElement("a");back.href="index.html";back.className="connected-back";back.textContent="Current live app ↗";toolsBar.append(back);status.after(toolsBar);
 }
 async function loadNFL(){
  changeNotice("Loading archived NFL standard props and 2026 schedule…");
@@ -322,6 +322,7 @@ async function loadNFL(){
  render();
  changeNotice("NFL linked: "+state.nflPicks.length+" valid standard-line records. No fabricated NFL game logs or probabilities.");
 }
+function wireNBAStat(){const keys=["PTS","REB","AST","PRA"];$("stat").replaceChildren(...keys.map(k=>{const o=document.createElement("option");o.value=k;o.textContent=k;return o}));$("stat").value=state.stat;}
 function wireNFLStat(){
  const keys=[...new Set(state.nflPicks.filter(p=>norm(p.player)===norm(state.nflSelected?.player)).map(p=>p.stat))];
  $("stat").replaceChildren(...keys.map(k=>{const o=document.createElement("option");o.value=k;o.textContent=k;return o}));
