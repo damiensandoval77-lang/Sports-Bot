@@ -32,6 +32,7 @@ def scan():
     print("HEALTH",h_code,json.dumps(health),flush=True)
     print("STATUS",s_code,json.dumps(status)[:4000],flush=True)
     assert health.get("database_binding_present") is True,"D1 binding not active in current deployed Worker"
+    assert health.get("schema_bootstrap_version")=="0001","Updated Worker bootstrap code is not published yet"
     if s_code==503:
         assert status.get("status")=="database_unavailable",("Unexpected D1 response",s_code,status)
         return "binding_active_schema_pending"
