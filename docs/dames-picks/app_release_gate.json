@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-17T10:00:28.164442+00:00",
+  "checked_at": "2026-11-17T11:00:05.391969+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -8,6 +8,7 @@
   "required_consecutive_hours": 72,
   "blocking_checks": [
     "unified_artifacts",
+    "public_unified_browser",
     "nba_production",
     "nba_capture",
     "published_pick_settlement",
@@ -22,8 +23,12 @@
       ]
     },
     "public_unified_browser": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "MERGED_BROWSER_NOT_VERIFIED",
+        "NBA_BROWSER_MISSING_CARDS",
+        "NFL_BROWSER_MISSING_CARDS"
+      ]
     },
     "nba_production": {
       "state": "DEGRADED",
@@ -33,6 +38,7 @@
         "NBA_FAILED_PREGAME_CAPTURE",
         "NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE",
         "NBA_FAILED_PUBLISHED_PICK_SETTLEMENT",
+        "NBA_FAILED_PUBLIC_BROWSER",
         "NBA_FAILED_NIGHTLY_GRADES"
       ]
     },
