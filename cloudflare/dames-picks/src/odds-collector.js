@@ -32,7 +32,8 @@ export function requestMarketKeys(league,env={}){
  // Exactly the markets with proven model/export contracts are first.
  const core=CORE_MARKET_KEYS[league]||[];
  const allowed=new Set(catalog.markets.filter(m=>m.tier==="expanded"&&m.bet_type==="over_under").map(x=>x.key));
- const extras=String(env.ODDS_API_EXTRA_MARKETS||"").split(",").map(s=>s.trim()).filter(x=>allowed.has(x)).slice(0,2);
+ const extraSetting=env["ODDS_API_EXTRA_MARKETS_"+league]??env.ODDS_API_EXTRA_MARKETS??"";
+ const extras=String(extraSetting).split(",").map(s=>s.trim()).filter(x=>allowed.has(x)).slice(0,2);
  return [...new Set([...core,...extras])].slice(0,7);
 }
 export function maximumCost(league,env={}){
