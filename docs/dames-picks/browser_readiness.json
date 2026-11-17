@@ -1,9 +1,9 @@
 {
   "checked_at": "2026-11-17T19:34:34.225555+00:00",
-  "status": "READY",
-  "browser_render_verified": true,
+  "status": "DEGRADED",
+  "browser_render_verified": false,
   "site_url": "https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/",
-  "app_title": "Dame's Picks · NBA + NFL + Tennis",
+  "app_title": null,
   "NBA": {
     "selected": "NBA",
     "loaded": true,
@@ -217,9 +217,11 @@
       "reasons": []
     }
   },
-  "reasons": [],
+  "reasons": [
+    "NBA_NFL_ONLY_BROWSER_REVALIDATION_REQUIRED"
+  ],
   "browser_errors": [],
-  "note": "Real merged-app DOM check. Not proof every live prop has a line, that feeds are fresh, or that grades are complete.",
+  "note": "Last browser evidence predates the NBA/NFL-only UI release. A fresh deployed phone test must replace it before readiness is claimed.",
   "parent_title": "DS5 Sports Media | Dame's Picks Player Intelligence",
   "parent_design": "DS5 first concept",
   "browser_direct_probe": {
