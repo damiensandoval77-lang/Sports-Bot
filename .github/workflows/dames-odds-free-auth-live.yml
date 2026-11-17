@@ -1,0 +1,27 @@
+name: Verify Cloudflare Odds API secret without credits
+on:
+  pull_request:
+    paths:
+      - "scripts/check_dames_odds_free_auth_live.py"
+      - ".github/workflows/dames-odds-free-auth-live.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-real-cloudflare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 19
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Confirm real Worker secret and its scheduled zero-credit authentication receipt
+        run: python scripts/check_dames_odds_free_auth_live.py
+      - name: Save sanitized live evidence without API key or response bodies
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dames-odds-free-api-key-verification
+          path: test-artifacts/dames-odds-free-auth-live.json
+          if-no-files-found: ignore
