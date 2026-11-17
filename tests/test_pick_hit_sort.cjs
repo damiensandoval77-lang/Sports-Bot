@@ -16,7 +16,7 @@ test('ties use start time then deterministic identity',()=>{
  assert.equal(m.sortByHitEstimate([row('Z',.6),row('A',.6),row('early',.6,'2026-11-14T00:00:00Z')]).map(p=>p.player).join(','),'early,A,Z');
 });
 test('board and saved picks use estimate sorting but tracker keeps team-position sorting',()=>{
- const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
+ const html=fs.readFileSync('docs/dames-picks/classic.html','utf8');
  assert.match(html,/if\(state.mode==="tracker"\)return m.sortByTeamPosition\(data\);\s*return m.sortByHitEstimate\(data\);/);
 });
 test('verified selected-side probability outranks preview and sorting ignores legacy modelPct',()=>{
