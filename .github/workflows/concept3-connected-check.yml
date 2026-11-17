@@ -3,21 +3,33 @@ on:
   pull_request:
     paths:
       - "docs/dames-picks/concept-3-connected*"
+      - "docs/dames-picks/index.html"
+      - "docs/dames-picks/classic.html"
+      - "docs/dames-picks/unified-shell.js"
       - "tests/test_concept3_connected_playwright.py"
       - "tests/test_concept3_real_artifacts_playwright.py"
+      - "tests/test_dames_unified_site.py"
       - ".github/workflows/concept3-connected-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/dames-picks/index.html"
+      - "docs/dames-picks/classic.html"
+      - "docs/dames-picks/unified-shell.js"
   workflow_dispatch:
 jobs:
   validate-stage:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - name: Syntax check connected runtime
-        run: node --check docs/dames-picks/concept-3-connected.js
+        run: |
+          node --check docs/dames-picks/concept-3-connected.js
+          node --check docs/dames-picks/unified-shell.js
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -30,10 +42,14 @@ jobs:
 
       - name: Run actual-repository-artifact browser checks (no paid APIs)
         run: python tests/test_concept3_real_artifacts_playwright.py
+      - name: Verify unified site workflows, mobile and desktop
+        run: python tests/test_dames_unified_site.py
       - name: Attach staging screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: concept3-connected-staging-screenshots
-          path: test-artifacts/concept3-connected-real-*.png
+          path: |
+            test-artifacts/concept3-connected-real-*.png
+            test-artifacts/dames-unified-*.png
           if-no-files-found: ignore
