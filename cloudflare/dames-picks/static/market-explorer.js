@@ -96,8 +96,9 @@ async function loadBoard(){
 }
 async function loadBudget(){
  try{
-  const [result,catalog]=await Promise.all([
-   json("/api/v1/odds/budget"),json("/api/v1/odds/catalog")
+  const [result,catalog,diagnostics]=await Promise.all([
+   json("/api/v1/odds/budget"),json("/api/v1/odds/catalog"),
+   json("/api/v1/odds/diagnostics").catch(()=>null)
   ]);
   if(catalog.status===200&&catalog.body?.leagues){state.catalog=catalog.body;redrawCatalog()}
   else text($("catalog"),"Market catalog not available");
@@ -106,10 +107,15 @@ async function loadBudget(){
   text($("collection"),config.collection_enabled?"Configured":"Off");
   const used=v.usage?.used_credits;
   text($("credits"),typeof used==="number"?used:"—");
-  text($("budget-status"),result.status===200
+  const latest=diagnostics?.body?.recent_runs?.[0];
+  const lastSummary=diagnostics?.status===200
+   ?(latest?" Last scheduled collection: "+latest.status+" ("+(latest.quotes_stored??0)+" new lines, "+(latest.credits_charged??0)+" credits)."
+     :" No odds collector runs recorded yet.")
+   :" Collector diagnostic status unavailable.";
+  text($("budget-status"),(result.status===200
    ?"D1 recorded usage: "+(used??0)+" credits this month. "+(config.collection_enabled?"Provider opt-in configured.":"No automatic paid requests enabled.")+
      " Monthly ceiling: "+(config.monthly_cap??"not set")+". Daily ceiling: "+(config.daily_cap??"not set")+"."
-   :"D1 odds ledger is not initialized. Paid collection remains disabled.");
+   :"D1 odds ledger is not initialized.")+lastSummary);
  }catch(_){text($("budget-status"),"Budget ledger unavailable · paid collection not confirmed")}
 }
 function wire(){
