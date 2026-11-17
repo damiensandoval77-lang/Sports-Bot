@@ -152,14 +152,26 @@ export async function collectOddsIfEnabled(env,{
  const db=env.DB;
  try{await db.prepare("SELECT month_utc FROM odds_api_budget LIMIT 1").all()}
  catch(_){return {status:"unavailable",paid_requests:0,reason:"odds_d1_schema_not_installed"}}
+ const discovery=[];
  for(const league of leagueOrder){
   if(!catalogFor(league))continue;
-  // Events endpoint costs 0 credits; it does not expose player quotes.
+  // Free event discovery is mandatory before reserving any paid credits.
   let events;
-  try{events=(await fetchOddsJSON(fetcher,eventsURL(league),env.ODDS_API_KEY)).body}
-  catch(_){continue}
+  try {
+   events=(await fetchOddsJSON(fetcher,eventsURL(league),env.ODDS_API_KEY)).body;
+   if(!Array.isArray(events))throw Error("ODDS_API_INVALID_EVENTS_RESPONSE");
+  }catch(error){
+   // Only internally generated error codes are returned, never provider payloads,
+   // request headers, URLs or credentials.
+   const message=String(error?.message||"");
+   const code=/^ODDS_API_HTTP_[0-9]{3}$/.test(message)?message:
+    message==="ODDS_API_INVALID_EVENTS_RESPONSE"?message:"ODDS_API_DISCOVERY_FAILED";
+   discovery.push({league,status:"discovery_error",reason:code});
+   continue;
+  }
   const prior=await recentAttempts(db,league,now);
   const event=chooseUpcomingEvent(events,now,prior);
+  discovery.push({league,status:event?"eligible":"no_eligible_event",event_count:events.length});
   if(!event)continue;
   const keys=requestMarketKeys(league,env),max=keys.length;
   if(!await reserveCredits(db,now,max,monthly,daily))
@@ -174,7 +186,7 @@ export async function collectOddsIfEnabled(env,{
    normalized=normalizeEventQuotes(response.body,{league,collectedAt:iso(Date.now())});
    if(normalized.records.length){
     stored=await insertQuotes(db,normalized.records);
-    outcome="ok";
+    outcome=stored>0?"ok":"empty";
    }else outcome="empty";
   }catch(error){outcome="error";note=String(error?.message||"request failed").slice(0,120)}
   finally{
@@ -189,7 +201,11 @@ export async function collectOddsIfEnabled(env,{
    }catch(_){return {status:"attempt_log_failed",paid_requests:1,league}}
   }
   return {status:outcome,paid_requests:1,league,event_id:event.id,requested_markets:keys,
-   credits_charged:charged,quotes_stored:stored};
+   credits_charged:charged,quotes_stored:stored,
+   providers_seen:normalized?.providers||[],
+   rejected:normalized?.rejected||null,discovery};
  }
- return {status:"no_eligible_events",paid_requests:0};
+ return discovery.some(x=>x.status==="discovery_error")?
+  {status:"discovery_failed",paid_requests:0,discovery}:
+  {status:"no_eligible_events",paid_requests:0,discovery};
 }
