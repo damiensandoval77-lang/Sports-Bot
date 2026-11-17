@@ -21,7 +21,7 @@ server = subprocess.Popen(
     stderr=subprocess.DEVNULL
 )
 try:
-    url = f"http://127.0.0.1:{port}/dames-picks/"
+    url = os.environ.get("DS5_BASE_URL", f"http://127.0.0.1:{port}/dames-picks/")
     for _ in range(70):
         try:
             with socket.create_connection(("127.0.0.1", port), timeout=1):
