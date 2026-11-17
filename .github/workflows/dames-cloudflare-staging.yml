@@ -1,0 +1,58 @@
+name: Cloudflare Dame's Picks staging readiness
+on:
+  pull_request:
+    paths:
+      - "cloudflare/dames-picks/**"
+      - ".github/workflows/dames-cloudflare-staging.yml"
+  push:
+    branches: [main]
+    paths:
+      - "cloudflare/dames-picks/**"
+      - ".github/workflows/dames-cloudflare-staging.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staging-checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Test Worker, Cron and isolated static staging build
+        working-directory: cloudflare/dames-picks
+        run: npm run check
+      - name: Validate D1 migrations with real SQLite
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import sqlite3
+          migration=Path('cloudflare/dames-picks/migrations/0001_bootstrap.sql').read_text()
+          db=sqlite3.connect(':memory:')
+          db.executescript(migration)
+          rows=db.execute('SELECT source_id,status FROM source_health').fetchall()
+          assert len(rows)==7,rows
+          assert all(row[1]=='not_connected' for row in rows), rows
+          db.execute("INSERT INTO scheduler_runs(job,scheduled_at,completed_at,outcome,detail) VALUES(?,?,?,?,?)",
+                     ("staging-heartbeat","2026-11-17T09:00:00Z","2026-11-17T09:00:01Z","success","smoke"))
+          db.execute("SELECT * FROM scheduler_runs").fetchone()
+          print('PASS: D1 schema, seven disconnected sources and Cron writes')
+          PY
+      - name: Verify snapshot bundle does not silently omit essential site data
+        working-directory: cloudflare/dames-picks
+        run: |
+          node --input-type=module <<'NODE'
+          import {existsSync,readFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const d='dist/';
+          for (const f of ['dames-picks/index.html','dames-picks/classic.html','dames-picks/feeds.js','dames-picks/live_direct.js','dames-picks/unified-shell.js','current_form.json','nba_schedule.json','lagged_matchup_all_market_ledger.json','nfl/data/latest_2026.json']) {
+            assert.ok(existsSync(d+f),'missing required '+f);
+          }
+          assert.match(readFileSync(d+'dames-picks/index.html','utf8'),/cloudflare-staging-banner/);
+          assert.match(readFileSync(d+'dames-picks/index.html','utf8'),/noindex,nofollow/);
+          const report=JSON.parse(readFileSync(d+'staging-build-status.json','utf8'));
+          assert.equal(report.not_automated,true);
+          console.log('PASS: staged UI and source snapshots present; staging clearly disclosed');
+          NODE
