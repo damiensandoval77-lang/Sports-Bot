@@ -8,6 +8,7 @@ on:
       - "iphone_bot/verify_unified_dames_browser.py"
       - "iphone_bot/tests/test_verify_unified_dames_browser.py"
       - "tests/test_ds5_nba_nfl_only.py"
+      - "tests/test_ds5_nba_nfl_only_browser.py"
       - ".github/workflows/nba-nfl-only-release-check.yml"
   push:
     branches: [main]
@@ -52,4 +53,4 @@ jobs:
           python -m pip install --quiet playwright
           python -m playwright install --with-deps chromium
       - name: Verify unified NBA/NFL site at 393, 768 and 1448 pixels (local, no provider calls)
-        run: python tests/test_dames_unified_site.py
+        run: python tests/test_ds5_nba_nfl_only_browser.py
