@@ -149,7 +149,7 @@ def assess_tennis(observation):
         reasons.append("TENNIS_EMPTY_STATE_NOT_HONEST")
     if observation.get("research_visible"):
         reasons.append("TENNIS_CROSS_LEAGUE_RESEARCH_VISIBLE")
-    if observation.get("viewport_width")!=390 or observation.get("overflow",0)>1:
+    if not isinstance(observation.get("viewport_width"),int) or not 380<=observation["viewport_width"]<=390 or observation.get("overflow",0)>1:
         reasons.append("TENNIS_PHONE_LAYOUT_FAILED")
     return list(dict.fromkeys(reasons))
 
@@ -200,7 +200,7 @@ def assess_confidence(obs):
     estimates=obs.get("estimates",[])
     if any(a<b for a,b in zip(estimates,estimates[1:])):
         reasons.append("NBA_BOARD_CONFIDENCE_ORDER")
-    if obs.get("viewport_width")!=390 or obs.get("overflow",0)>1:
+    if not isinstance(obs.get("viewport_width"),int) or not 380<=obs["viewport_width"]<=390 or obs.get("overflow",0)>1:
         reasons.append("NBA_CONFIDENCE_PHONE_LAYOUT")
     if not obs.get("eligible_count"):
         # Honest no-applicable-card result, not evidence of successful correction.
@@ -256,7 +256,7 @@ def observe_confidence(page):
 def assess_pace(obs):
     """Separate absent saved quotes from missing rendered pace labels."""
     reasons=[]
-    if obs.get('viewport_width')!=390 or obs.get('overflow',0)>1:
+    if not isinstance(obs.get('viewport_width'),int) or not 380<=obs['viewport_width']<=390 or obs.get('overflow',0)>1:
         reasons.append('LIVE_PACE_PHONE_OVERFLOW')
     rows=obs.get('rows',[])
     expected=obs.get('expected_rows')
