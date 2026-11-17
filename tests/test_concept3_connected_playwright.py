@@ -75,6 +75,9 @@ def main():
             assert "PHI" in page.locator(".hero .player-name small").inner_text()
             assert "BOS" in page.locator(".next-match").inner_text()
             assert page.locator(".bar").count()==2
+            photo=page.locator(".portrait img")
+            photo.wait_for(state="visible",timeout=10000)
+            assert "/1966.png" in photo.get_attribute("src"), "Must use ESPN roster's verified ID, not a non-ESPN player ID"
             assert page.locator("#model-proj").inner_text()=="—"
             assert page.locator("#games-avg").inner_text()=="20.0"
             assert "Unavail" in page.locator("#teammates").inner_text() or "Not available" in page.locator("#teammates").inner_text()
