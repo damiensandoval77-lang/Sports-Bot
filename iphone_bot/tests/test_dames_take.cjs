@@ -72,7 +72,7 @@ test("Identical slate always rotates uniquely and deterministically",()=>{
  assert.ok(first.every(x=>x.split(/\s+/).length<=20));
 });
 test("No sportsbook is guessed when its prop feed is absent",()=>{
- const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
  assert.match(html, /src="dames_take[.]js[?]bundle=[^"]+"/);
  assert.ok(html.includes("DamesTake.forSlate"));
  assert.ok(html.includes("No verified model lean for this line."));
