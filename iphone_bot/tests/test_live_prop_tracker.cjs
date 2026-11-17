@@ -298,12 +298,16 @@ test("frozen or AI-only market is not duplicated by quote-only tracker fallback"
 test("combined app never turns a quote-only standard line into an AI projection",()=>{
  const fs=require("node:fs");
  const model=fs.readFileSync("docs/dames-picks/feeds.js","utf8");
- const app=fs.readFileSync("docs/dames-picks/index.html","utf8");
+ const app=fs.readFileSync("docs/dames-picks/classic.html","utf8");
+ const shell=fs.readFileSync("docs/dames-picks/unified-shell.js","utf8");
+ const ds5=fs.readFileSync("docs/dames-picks/ds5-v1.js","utf8");
  assert.ok(model.includes("function includeArchivedStandard(rows,archive)"));
  assert.ok(model.includes("projection:null,direction:null,chance:null"));
  assert.ok(model.includes("quoteOnly:true"));
  assert.ok(app.includes('p.quoteOnly?"NO AI"'));
- assert.ok(app.includes('p.quoteOnly?"NO AI"')); // quote-only identity remains labeled on card badge; footer is OVER/UNDER only
+ assert.ok(shell.includes('new URL("classic.html"')); // the unified DS5 host mounts this renderer
+ assert.ok(ds5.includes('p.quoteOnly!==true')); // DS5 summary blocks quote-only model cards
+ assert.ok(ds5.includes('num(p.projection)!==null')); // DS5 requires a real numeric model projection
 });
 test('Native public pretip quote keeps its real source in live tracker',()=>{
  const start='2026-11-15T00:00:00Z', game=GAME;
