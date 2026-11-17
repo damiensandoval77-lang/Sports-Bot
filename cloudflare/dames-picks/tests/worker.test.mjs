@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import worker,{normalizeSource,cronHeartbeat,ensureStagingSchema} from "../src/worker.js";
+import worker,{normalizeSource,cronHeartbeat,ensureStagingSchema,bootstrapStatements} from "../src/worker.js";
 import {BOOTSTRAP_0001_SQL} from "../src/bootstrap-0001.js";
 
 const request=(path,method="GET")=>new Request("https://dames-picks-staging.example"+path,{method});
@@ -12,7 +12,7 @@ function fakeDb({empty=false,broken=false}={}){
  let seeded=!empty,bootstraps=0;
  const db={
   prepare(sql) {
-   const stmt={bind(...args){stmt.args=args;return stmt},
+   const stmt={sql,bind(...args){stmt.args=args;return stmt},
     async all(){
      if(!seeded)throw Error("no such table: source_health");
      assert.match(sql,/FROM source_health/);
@@ -34,14 +34,18 @@ function fakeDb({empty=false,broken=false}={}){
    };
    return stmt;
   },
-  async exec(sql){
+  async batch(statements){
    if(broken)throw Error("simulated D1 failure");
-   assert.ok(!sql.includes("PRAGMA foreign_keys = ON;"),"D1 migration must not change runtime pragma");
-   assert.match(sql,/CREATE TABLE IF NOT EXISTS source_health/);
-   assert.match(sql,/CREATE TABLE IF NOT EXISTS scheduler_runs/);
-   assert.match(sql,/INSERT OR IGNORE INTO source_health/);
+   assert.equal(statements.length,4,"0001 schema must send four complete statements");
+   const sqls=statements.map(stmt=>stmt.sql);
+   assert.ok(!sqls.some(sql=>sql.includes("PRAGMA foreign_keys = ON;")));
+   assert.ok(sqls.some(sql=>/CREATE TABLE IF NOT EXISTS source_health/.test(sql)));
+   assert.ok(sqls.some(sql=>/CREATE TABLE IF NOT EXISTS scheduler_runs/.test(sql)));
+   assert.ok(sqls.some(sql=>/INSERT OR IGNORE INTO source_health/.test(sql)));
+   assert.ok(!sqls.some(sql=>/^\s*(?:note|status|records)\s+TEXT/i.test(sql)),
+     "Multiline column definitions cannot become standalone D1 statements");
    seeded=true;bootstraps++;
-   return {count:4};
+   return statements.map(()=>({success:true,meta:{changes:1}}));
   }
  };
  return {db,runs,bootstraps:()=>bootstraps};
@@ -108,6 +112,18 @@ test("one-time bootstrap SQL matches versioned migration bytes precisely",()=>{
  assert.equal(BOOTSTRAP_0001_SQL,sql);
  assert.match(sql,/postgame_grades/);
  assert.match(sql,/prizepicks_standard_lines/);
+});
+test("bootstrap splits multiline D1 SQL into complete prepared statements, not individual lines",()=>{
+ const one=bootstrapStatements(BOOTSTRAP_0001_SQL);
+ assert.equal(one.length,4);
+ assert.ok(one[0].includes("note TEXT NOT NULL DEFAULT"));
+ assert.ok(one[0].includes("max_age_minutes INTEGER"));
+ assert.ok(one[0].includes(");")===false);
+ assert.ok(one.every(sql=>!sql.trim().startsWith("--")));
+ assert.throws(()=>bootstrapStatements("DROP TABLE scheduler_runs;"),/Non-idempotent/);
+ assert.throws(()=>bootstrapStatements("CREATE TABLE IF NOT EXISTS incomplete (id TEXT"),/Unterminated/);
+ const snippet="CREATE TABLE IF NOT EXISTS tricky (label TEXT DEFAULT 'an embedded ; separator');";
+ assert.equal(bootstrapStatements(snippet).length,1,"Quoted semicolons must not split SQL");
 });
 test("D1 initialization failures do not write heartbeat or claim success",async()=>{
  const {db,runs}=fakeDb({empty:true,broken:true});
