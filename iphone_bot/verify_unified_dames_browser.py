@@ -161,7 +161,7 @@ def observe_tennis(page):
         select_embedded_view(page,"board")
         page.locator('button[data-league="TENNIS"]').click(timeout=10000)
         for mode in ("board","live","tracker","saved"):
-            select_embedded_view(page,"'+mode+'")
+            select_embedded_view(page,mode)
             obs=page.evaluate(r"""mode => ({
               selected:state.league, mode:state.mode, requested_mode:mode,
               metrics:['wl','rate','games'].map(id=>document.getElementById(id).textContent.trim()),
