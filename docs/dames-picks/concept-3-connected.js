@@ -74,7 +74,10 @@ async function remote(url,timeout=8000){
 }
 function gameRows(){
  const ss=state.league==="NBA"?state.schedule:state.nflSchedule;
- if(state.league==="NFL")return (ss?.games||[]).filter(g=>Number.isFinite(validDate(g.kickoff_utc))).map(g=>({start:g.kickoff_utc,away:g.away||g.away_team||g.away_abbreviation||"",home:g.home||g.home_team||g.home_abbreviation||"",away_code:g.away||g.away_team||g.away_abbreviation||"",home_code:g.home||g.home_team||g.home_abbreviation||"",id:g.game_id,state:"scheduled"}));
+ if(state.league==="NFL")return (ss?.games||[]).filter(g=>Number.isFinite(validDate(g.kickoff_utc))).map(g=>{
+  const live=(state.nflLive?.games||[]).find(x=>x.game_id===g.game_id&&Date.now()-validDate(x.observed_at||state.nflLive.checked_at)<20*60000&&validDate(x.observed_at||state.nflLive.checked_at)<=Date.now()+120000);
+  return {start:g.kickoff_utc,away:g.away||g.away_team||g.away_abbreviation||"",home:g.home||g.home_team||g.home_abbreviation||"",away_code:g.away||g.away_team||g.away_abbreviation||"",home_code:g.home||g.home_team||g.home_abbreviation||"",id:g.game_id,state:live?.status==="in"?"live":live?.status==="post"?"final":"scheduled",awayScore:live&&n(live.away_score)!==null?n(live.away_score):null,homeScore:live&&n(live.home_score)!==null?n(live.home_score):null};
+ });
  return (ss?.games||[]).filter(g=>Number.isFinite(validDate(g.start))).map(g=>{
   const score=state.scores?.is_live_score_source===true&&validDate(state.scores.generated_at)>Date.now()-1200000&&
    (state.scores.games||[]).find(s=>s.id===g.id&&s.game===g.game);
@@ -320,6 +323,7 @@ async function loadNFL(){
  if(!supported[state.stat]){const newStat=state.stat;supported[newStat]=[newStat.toLowerCase(),2];}
  wireNFLStat();
  render();
+ refreshDirectScores();
  changeNotice("NFL linked: "+state.nflPicks.length+" valid standard-line records. No fabricated NFL game logs or probabilities.");
 }
 function wireNBAStat(){const keys=["PTS","REB","AST","PRA"];$("stat").replaceChildren(...keys.map(k=>{const o=document.createElement("option");o.value=k;o.textContent=k;return o}));$("stat").value=state.stat;}
@@ -328,6 +332,25 @@ function wireNFLStat(){
  $("stat").replaceChildren(...keys.map(k=>{const o=document.createElement("option");o.value=k;o.textContent=k;return o}));
  $("stat").value=state.stat;
 }
+let directBusy=false;
+async function refreshDirectScores(){
+ if(directBusy||window.DAMES_DISABLE_DIRECT_SCORES===true||document.hidden)return;
+ const live=window.DamesPicksLive;if(!live)return;
+ directBusy=true;
+ try{
+  if(state.league==="NBA"){
+   const observed=await live.fetchNBA({timeoutMs:7000});
+   const merged=live.mergeScores(state.scores,observed?.board||null);
+   if(merged?.is_live_score_source===true){state.scores=merged;renderGames()}
+  }else if(state.league==="NFL"&&state.nflSchedule){
+   const observed=await live.fetchNFL(state.nflSchedule,{timeoutMs:7000});
+   if(observed?.status==="ok"&&Array.isArray(observed.games)){state.nflLive=live.mergeNFL(state.nflLive,observed);renderGames()}
+  }
+ }catch(_){/* Preserve last genuinely verified observation; never invent scores. */}
+ finally{directBusy=false}
+}
+setInterval(()=>{if(!document.hidden)refreshDirectScores()},30000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshDirectScores()});
 async function loadNBA(){
  resetPreview();wire();changeNotice("Loading verified NBA schedule and published completed-game statistics…");
  const [form,schedule,scores]=await Promise.allSettled([get("current_form.json"),get("nba_schedule.json"),get("nba_scoreboard_independent.json")]);
@@ -337,6 +360,7 @@ async function loadNBA(){
  state.selected=state.form?.players.find(p=>norm(p.player)==="lebronjames")||state.form?.players[0]||null;
  state.load=state.form?"partial":"failed";
  if(state.form)render();else renderGames();
+ refreshDirectScores();
  changeNotice(state.form?"NBA player logs linked; fetching frozen forecasts and standard lines…":"NBA player feed unavailable; no example statistics shown");
  const [ledger,archive,confidence]=await Promise.allSettled([get("lagged_matchup_all_market_ledger.json","json",24000),get("prizepicks_pregame_line_archive.json","json",20000),get("nba_confidence_calibration.json")]);
  const m=window.DamesPicksModel;let picks=[];
