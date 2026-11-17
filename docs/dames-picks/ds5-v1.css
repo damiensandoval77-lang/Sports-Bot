@@ -130,3 +130,32 @@ body:not(.unified-tool-mode) .unified-navigation{display:none}
   body:not(.unified-tool-mode) .connected-tools .connected-back{display:none}
   body:not(.unified-tool-mode) .connected-tools .sport-nav{display:none}
 }
+
+/* D1-confirmed The Odds API market quotes; no substitute for projected or graded picks. */
+.ds5-odds-market{border:1px solid #5c2d7d;border-radius:14px;background:linear-gradient(120deg,#23112f,#100c1c);
+  padding:12px 14px;margin:0 0 12px;box-shadow:0 8px 24px #0005;min-width:0}
+.ds5-odds-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.ds5-odds-head h2{font-size:14px;font-weight:950;color:#f5e1ff;letter-spacing:.8px}
+.ds5-odds-head p,.ds5-odds-status{font-size:10px;color:#beafd0;margin:3px 0 0}
+.ds5-odds-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.ds5-odds-actions select,.ds5-odds-actions button,.ds5-odds-actions a{
+ background:#291735;color:#e7ccfa;border:1px solid #794394;border-radius:8px;
+ padding:7px 9px;font-size:10px;font-weight:750;min-height:32px}
+.ds5-odds-actions a{background:#58217e;color:#fff}
+.ds5-odds-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}
+.ds5-odds-row{display:flex;align-items:center;gap:12px;padding:9px 11px;background:#110c1c;
+ border:1px solid #443058;border-radius:9px;min-width:0}
+.ds5-odds-player,.ds5-odds-market-info{display:flex;flex-direction:column;min-width:0;flex:1}
+.ds5-odds-player strong,.ds5-odds-market-info strong{font-size:11px;color:#f8efff;
+ white-space:nowrap;text-overflow:ellipsis;overflow:hidden;text-transform:capitalize}
+.ds5-odds-market-info strong{color:#d7a9fa}
+.ds5-odds-player small,.ds5-odds-market-info small{font-size:9px;color:#a89ab7;
+ white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.ds5-odds-line{font-size:19px;color:#38f1b7;letter-spacing:-.5px;flex:none}
+.ds5-odds-more{font-size:10px;color:#d9b9ef;padding:6px 2px}
+@media(max-width:780px){
+ .ds5-odds-head{align-items:flex-start;flex-direction:column}
+ .ds5-odds-rows{grid-template-columns:minmax(0,1fr)}
+ .ds5-odds-market{padding:11px}
+ .ds5-odds-player strong,.ds5-odds-market-info strong{font-size:10px}
+}

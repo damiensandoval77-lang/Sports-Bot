@@ -250,8 +250,13 @@ export default {
       const league=String(url.searchParams.get("league")||"NBA").toUpperCase();
       const limit=Number(url.searchParams.get("limit")||60);
       const state=await readMarketBoard(env.DB,{league,limit});
+      // Public DS5 GitHub Pages may read VERIFIED cached quotes only. Never
+      // expose the provider key, internal D1 tables or any paid fetch route.
+      const origin=request.headers.get("origin");
+      const cors=origin==="https://damiensandoval77-lang.github.io"?
+       {"access-control-allow-origin":origin,"vary":"Origin"}:{};
       return json(state,state.status==="invalid_league"?400:
-       ["database_not_connected","market_schema_unavailable"].includes(state.status)?503:200);
+       ["database_not_connected","market_schema_unavailable"].includes(state.status)?503:200,cors);
     }
     if (api) return json({error:"unknown_api_endpoint"},404);
     if (request.method !== "GET" && request.method !== "HEAD") {
