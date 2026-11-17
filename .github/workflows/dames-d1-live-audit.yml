@@ -4,6 +4,13 @@ on:
     paths:
       - "scripts/check_dames_d1_activation.py"
       - ".github/workflows/dames-d1-live-audit.yml"
+  push:
+    branches: [main]
+    paths:
+      - "cloudflare/dames-picks/src/worker.js"
+      - "cloudflare/dames-picks/wrangler.jsonc"
+      - "scripts/check_dames_d1_activation.py"
+      - ".github/workflows/dames-d1-live-audit.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,4 +26,5 @@ jobs:
       - name: Check the ACTUAL deployed staging database binding and readiness
         env:
           DAMES_CF_BINDING_WAIT_SECONDS: "150"
+          DAMES_CF_REQUIRE_BOOTSTRAP_VERSION: ${{ github.event_name == 'pull_request' && 'false' || 'true' }}
         run: python scripts/check_dames_d1_activation.py
