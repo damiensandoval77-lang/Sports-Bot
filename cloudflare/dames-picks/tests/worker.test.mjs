@@ -54,7 +54,7 @@ test("staging Worker reachable without D1 but cannot claim automatic data collec
  assert.equal(x.provider_collection_active,false);
  assert.equal(x.database_binding_present,false);
  assert.equal(x.paid_provider_calls,"disabled");
- assert.equal(x.schema_bootstrap_version,"0001");
+ assert.equal(x.schema_bootstrap_version,"0001 + 0002 odds");
  assert.equal(x.scheduler_mode,"cloudflare_cron_d1_heartbeat");
 });
 test("readiness returns 503 without D1 and all sources disclosed as not connected",async()=>{
@@ -119,7 +119,7 @@ test("D1 initialization failures do not write heartbeat or claim success",async(
 test("cron fails closed with unbound database or a misconfigured paid mode",async()=>{
  assert.equal((await cronHeartbeat({scheduledTime:0},{})).status,"skipped");
  const {db,runs,bootstraps}=fakeDb({empty:true});
- const r=await cronHeartbeat({scheduledTime:0},{DB:db,PAID_PROVIDER_REQUESTS:"enabled"});
+ const r=await cronHeartbeat({scheduledTime:0},{DB:db,PAID_PROVIDER_REQUESTS:"invalid"});
  assert.equal(r.status,"skipped");
  assert.equal(runs.length,0);
  assert.equal(bootstraps(),0);
