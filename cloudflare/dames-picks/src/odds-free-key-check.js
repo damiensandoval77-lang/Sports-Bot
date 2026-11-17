@@ -45,9 +45,11 @@ export async function freeKeyProbeStatus(env){
       key_authentication_verified:false
     };
     const details=parseDetail(row);
-    const authenticated=configured&&row.outcome==="success"&&details.state==="authenticated"&&details.last_call_credits===0;
+    const at=Date.parse(row.completed_at||"");
+    const recent=Number.isFinite(at)&&Date.now()-at>=0&&Date.now()-at<8*60*60*1000;
+    const authenticated=configured&&recent&&row.outcome==="success"&&details.state==="authenticated"&&details.last_call_credits===0;
     return {
-      status:configured?details.state:"secret_not_configured",
+      status:configured?(recent?details.state:"stale_check"):"secret_not_configured",
       secret_configured:configured,
       key_authentication_verified:authenticated,
       probe_time:row.completed_at||null,
