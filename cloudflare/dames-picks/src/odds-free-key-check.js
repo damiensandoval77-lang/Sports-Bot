@@ -47,11 +47,20 @@ export async function freeKeyProbeStatus(env){
     const details=parseDetail(row);
     const at=Date.parse(row.completed_at||"");
     const recent=Number.isFinite(at)&&Date.now()-at>=0&&Date.now()-at<8*60*60*1000;
-    const authenticated=configured&&recent&&row.outcome==="success"&&details.state==="authenticated"&&details.last_call_credits===0;
+    // The encrypted key is never returned. Persisted Cron evidence must
+    // remain distinct from HTTP-handler binding visibility. These can differ
+    // temporarily during Worker version propagation or configuration drift.
+    const cronVerified=recent&&row.outcome==="success"&&details.state==="authenticated"&&
+      details.http_status===200&&details.last_call_credits===0;
+    const bindingMismatch=cronVerified&&!configured;
     return {
-      status:configured?(recent?details.state:"stale_check"):"secret_not_configured",
+      status:bindingMismatch?"authenticated_by_cron_http_binding_mismatch":
+        configured?(recent?details.state:"stale_check"):"secret_not_configured",
       secret_configured:configured,
-      key_authentication_verified:authenticated,
+      http_handler_secret_visible:configured,
+      scheduled_cron_authentication_verified:cronVerified,
+      http_cron_binding_mismatch:bindingMismatch,
+      key_authentication_verified:cronVerified,
       probe_time:row.completed_at||null,
       http_status:details.http_status,
       last_call_credits:details.last_call_credits,
