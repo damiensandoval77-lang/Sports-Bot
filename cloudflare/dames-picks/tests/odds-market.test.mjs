@@ -298,3 +298,30 @@ test("staging 0002 D1 migration executes six entire SQL statements atomically, n
  assert.deepEqual(await ensureOddsSchema(db),{initialized:false});
  assert.equal(attempts,1,"scheduled runs must never replay a completed migration");
 });
+
+test("public DS5 website reads only sanitized D1 odds with narrowly scoped CORS",async()=>{
+ const good=new Request("https://stage.example/api/v1/odds/board?league=NBA",{
+  headers:{"Origin":"https://damiensandoval77-lang.github.io"}});
+ const a=await worker.fetch(good,{});
+ assert.equal(a.status,503);
+ assert.equal(a.headers.get("access-control-allow-origin"),"https://damiensandoval77-lang.github.io");
+ assert.equal(a.headers.get("vary"),"Origin");
+ assert.equal((await a.json()).status,"database_not_connected");
+ const evil=await worker.fetch(new Request("https://stage.example/api/v1/odds/board?league=NBA",{
+  headers:{"Origin":"https://not-our-site.example"}}),{});
+ assert.equal(evil.headers.get("access-control-allow-origin"),null);
+ const post=await worker.fetch(new Request("https://stage.example/api/v1/odds/board",{method:"POST",headers:{
+  "Origin":"https://damiensandoval77-lang.github.io"
+ }}),{});
+ assert.equal(post.status,405);
+});
+test("DS5 public dashboard includes source-verified board integration without exposing an API key",()=>{
+ const root=new URL("../../../docs/dames-picks/",import.meta.url);
+ const html=readFileSync(new URL("index.html",root),"utf8");
+ const bridge=readFileSync(new URL("live-odds-bridge.js",root),"utf8");
+ assert.match(html,/live-odds-bridge\.js/);
+ assert.match(html,/connect-src 'self' https:\/\/site\.api\.espn\.com https:\/\/dames-picks-staging\.damiensandoval77\.workers\.dev/);
+ assert.match(bridge,/api\/v1\/odds\/board/);
+ assert.match(bridge,/is_standard===true/);
+ assert.doesNotMatch(bridge,/ODDS_API_KEY|apiKey=|x-api-key/);
+});
