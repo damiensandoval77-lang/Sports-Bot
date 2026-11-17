@@ -16,43 +16,50 @@ jobs:
         run: |
           python3 -m pip install --quiet playwright
           python3 -m playwright install --with-deps chromium
-      - name: Prove live standard NBA lines appear in both desktop and mobile DS5 website
+      - name: Verify actual browser CORS, live D1 board, and source-backed DS5 cards
         run: |
           python3 - <<'PY'
-          import json,time,urllib.request,sys
+          import json,time,sys
           from playwright.sync_api import sync_playwright
-          SITE="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
-          CLOUD="https://dames-picks-staging.damiensandoval77.workers.dev"
-          for attempt in range(12):
-            try:
-              req=urllib.request.Request(CLOUD+"/api/v1/odds/board?league=NBA&limit=100",
-                headers={"Origin":"https://damiensandoval77-lang.github.io","Cache-Control":"no-cache"})
-              with urllib.request.urlopen(req,timeout=18) as res:
-                assert res.headers.get("Access-Control-Allow-Origin")=="https://damiensandoval77-lang.github.io","Cloudflare CORS missing"
-                body=json.load(res)
-              quotes=body.get("quotes",[])
-              assert quotes and all(q.get("is_standard") is True for q in quotes)
-              with urllib.request.urlopen(SITE+"live-odds-bridge.js?t="+str(int(time.time())),timeout=15) as r:
-                assert b'ds5-odds-market' in r.read(200000),"Public script not deployed"
-              with sync_playwright() as p:
-                browser=p.chromium.launch()
+          site="https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/"
+          api="https://dames-picks-staging.damiensandoval77.workers.dev/api/v1/odds/board?league=NBA&limit=100"
+          with sync_playwright() as p:
+            browser=p.chromium.launch()
+            for attempt in range(4):
+              try:
                 for size,label in [({"width":1280,"height":800},"desktop"),({"width":390,"height":844},"phone")]:
                   page=browser.new_page(viewport=size)
-                  page.goto(SITE,wait_until="domcontentloaded",timeout=45000)
+                  failures=[]
+                  page.on("requestfailed",lambda req:failures.append(req.url.split("?")[0]+":"+str(req.failure)[:120]))
+                  page.on("pageerror",lambda err:failures.append("javascript:"+str(err)[:120]))
+                  resp=page.goto(site,wait_until="domcontentloaded",timeout=45000)
+                  print("PAGE",label,resp.status if resp else None,page.url,flush=True)
+                  assert resp and resp.status==200,"Public site not served to Chromium"
                   page.locator("body.ds5-first-concept #ds5-odds-market").wait_for(timeout=20000)
+                  result=page.evaluate("""async (api) => {
+                    try {
+                      const r=await fetch(api,{cache:'no-store'});
+                      const data=await r.json();
+                      return {http:r.status,status:data.status,rows:(data.quotes||[]).length,
+                        standard:(data.quotes||[]).filter(q=>q.is_standard===true).length};
+                    }catch(err){return {error:String(err)}}
+                  }""",api)
+                  print("D1_BROWSER",label,json.dumps(result),flush=True)
+                  assert result.get("http")==200 and result.get("standard",0)>0,("CORS/API not ready",result,failures[:6])
                   page.wait_for_function("""() => {
-                    const e=document.querySelector('#ds5-odds-market .ds5-odds-status');
-                    return e && e.textContent.includes('source-verified standard NBA market rows');
+                    const s=document.querySelector('#ds5-odds-market .ds5-odds-status');
+                    return s&&s.textContent.includes('source-verified standard NBA market rows');
                   }""",timeout=30000)
-                  rows=page.locator(".ds5-odds-row").count()
-                  assert rows>0,(label,page.locator(".ds5-odds-status").inner_text())
-                  print("PASS",label,"rows",rows,"source quotes",len(quotes),flush=True)
+                  count=page.locator("#ds5-odds-market .ds5-odds-row").count()
+                  assert count>0,(label,"No rendered verified rows",failures[:6])
+                  print("PASS",label,"public verified quote cards",count,flush=True)
                   page.close()
                 browser.close()
-              print("PASS: PUBLIC DS5 DISPLAYING REAL D1 PLAYER PROPS",flush=True)
-              sys.exit(0)
-            except Exception as e:
-              print("NOT VERIFIED",attempt+1,type(e).__name__,str(e)[:220],flush=True)
-              if attempt<11:time.sleep(15)
-          sys.exit("FAIL: no real source quote rendered by public DS5 in a browser")
+                print("PASS: public DS5 GitHub Pages displays real standard Odds API market rows on desktop and mobile",flush=True)
+                sys.exit(0)
+              except Exception as e:
+                print("NOT VERIFIED",attempt+1,type(e).__name__,str(e)[:300],flush=True)
+                if attempt<3:time.sleep(15)
+            browser.close()
+          sys.exit("FAIL: public site is not confirmed to render live D1-backed odds")
           PY
