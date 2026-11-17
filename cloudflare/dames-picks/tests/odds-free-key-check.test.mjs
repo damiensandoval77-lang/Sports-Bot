@@ -187,3 +187,25 @@ test("a stale scheduled receipt cannot be reported as valid authentication witho
  assert.equal(status.http_cron_binding_mismatch,false);
  assert.equal(status.status,"secret_not_configured");
 });
+
+test("read-only status distinguishes HTTP version from the Cron version without exposing secrets",async()=>{
+ const db=fakeD1(),now=Date.now();
+ const cronVersion="cron-release-123",httpVersion="http-release-456";
+ const verified=await probeFreeKeyOnCron({DB:db,ODDS_API_KEY:KEY,
+  CF_VERSION_METADATA:{id:cronVersion}},{now,fetcher:async()=>apiReply()});
+ assert.equal(verified.status,"authenticated");
+ const row=JSON.parse(db.rows.at(-1).detail);
+ assert.equal(row.worker_version,cronVersion);
+ assert.ok(!JSON.stringify(row).includes(KEY));
+ const publicStatus=await freeKeyProbeStatus({DB:db,CF_VERSION_METADATA:{id:httpVersion}});
+ assert.equal(publicStatus.http_worker_version,httpVersion);
+ assert.equal(publicStatus.scheduled_cron_worker_version,cronVersion);
+ assert.equal(publicStatus.http_cron_version_mismatch,true);
+ assert.equal(publicStatus.http_cron_binding_mismatch,true);
+ assert.equal(publicStatus.key_authentication_verified,true);
+ assert.equal(publicStatus.last_call_credits,0);
+ const same=await freeKeyProbeStatus({DB:db,ODDS_API_KEY:KEY,CF_VERSION_METADATA:{id:cronVersion}});
+ assert.equal(same.http_cron_version_mismatch,false);
+ assert.equal(same.http_cron_binding_mismatch,false);
+ assert.equal(same.status,"authenticated");
+});

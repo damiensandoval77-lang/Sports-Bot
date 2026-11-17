@@ -1,0 +1,62 @@
+name: Audit live Cloudflare Odds API bindings (read only)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/dames-cf-odds-binding-audit.yml"
+      - "cloudflare/dames-picks/wrangler.jsonc"
+      - "cloudflare/dames-picks/src/odds-free-key-check.js"
+permissions:
+  contents: read
+jobs:
+  read-only-binding-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Compare live Worker version, HTTP secret visibility, and persisted Cron auth
+        env:
+          ROOT: https://dames-picks-staging.damiensandoval77.workers.dev
+        run: |
+          python3 - <<'PY'
+          import json,os,sys,time,urllib.request
+          root=os.environ["ROOT"]
+          def get(path):
+              with urllib.request.urlopen(urllib.request.Request(root+path,
+                headers={"Cache-Control":"no-cache","User-Agent":"DS5-ReadOnlyBindingAudit/1"}),timeout=15) as r:
+                  return json.load(r)
+          connection=None
+          for attempt in range(8):
+              try:
+                  connection=get("/api/v1/odds/connection")
+                  if connection.get("http_worker_version"):break
+              except Exception as e:
+                  print("Staging Worker read-only check not yet reachable:",type(e).__name__,flush=True)
+              if attempt<7:time.sleep(15)
+          if connection is None:
+              sys.exit("FAIL: staging Worker did not return connection JSON")
+          health=get("/healthz")
+          budget=get("/api/v1/odds/budget")
+          report={
+              "http_worker_version":connection.get("http_worker_version"),
+              "cron_worker_version":connection.get("scheduled_cron_worker_version"),
+              "http_secret_visible":connection.get("http_handler_secret_visible"),
+              "cron_auth_verified":connection.get("scheduled_cron_authentication_verified"),
+              "http_cron_binding_mismatch":connection.get("http_cron_binding_mismatch"),
+              "http_cron_version_mismatch":connection.get("http_cron_version_mismatch"),
+              "free_probe_http_status":connection.get("http_status"),
+              "free_probe_credits_used":connection.get("last_call_credits"),
+              "worker_D1_bound":health.get("database_binding_present"),
+              "collector_enabled":budget.get("config",{}).get("collection_enabled"),
+              "monthly_credit_cap":budget.get("config",{}).get("monthly_cap"),
+              "daily_credit_cap":budget.get("config",{}).get("daily_cap")
+          }
+          print(json.dumps(report,indent=2),flush=True)
+          if not connection.get("http_worker_version"):
+              sys.exit("FAIL: new Cloudflare version metadata was not deployed; check Deployments")
+          if connection.get("http_cron_binding_mismatch"):
+              sys.exit("FAIL: active HTTP Worker does not see Odds API key, even though prior Cron authenticated")
+          if not connection.get("scheduled_cron_authentication_verified"):
+              sys.exit("FAIL: no recent authenticated zero-credit Cron receipt")
+          print("PASS: HTTP and Cron agree on Odds API binding (no paid calls made)")
+          PY
