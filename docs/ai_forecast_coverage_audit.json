@@ -1,6 +1,6 @@
 {
-  "status": "ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR",
-  "checked_at": "2026-11-16T23:45:50.159861+00:00",
+  "status": "VERIFIED_FINAL_ROWS_OUTSTANDING",
+  "checked_at": "2026-11-17T01:00:24.769574+00:00",
   "days": {
     "2026-11-14": {
       "captured": 504,
@@ -19,12 +19,37 @@
       "pending": 0,
       "pending_by_game": {},
       "accounted_for": 900
+    },
+    "2026-11-16": {
+      "captured": 712,
+      "graded": 0,
+      "void_dnp": 0,
+      "excluded_nonparticipant": 0,
+      "pending": 712,
+      "pending_by_game": {
+        "Chicago Bulls @ Cleveland Cavaliers": 100,
+        "Golden State Warriors @ New Orleans Pelicans": 116,
+        "Houston Rockets @ Miami Heat": 104,
+        "Memphis Grizzlies @ Washington Wizards": 104,
+        "Orlando Magic @ Boston Celtics": 92,
+        "Philadelphia 76ers @ Brooklyn Nets": 100,
+        "Portland Trail Blazers @ Minnesota Timberwolves": 96
+      },
+      "accounted_for": 0
     }
   },
   "daily_status_reports_crosschecked": [
-    "2026-11-15"
+    "2026-11-15",
+    "2026-11-16"
   ],
-  "daily_report_time_adjustments": [],
+  "daily_report_time_adjustments": [
+    {
+      "report": "today",
+      "date": "2026-11-16",
+      "generated_at": "2026-11-17T00:59:18.857860+00:00",
+      "newly_started_unresolved_forecasts": 212
+    }
+  ],
   "verified_historical_outcomes_not_in_rolling_archive": 4044,
   "note": "Unresolved is not a loss or DNP. Final settlement requires verified player-level results. This audit never changes outcomes."
 }
