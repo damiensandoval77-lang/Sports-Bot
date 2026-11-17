@@ -61,7 +61,7 @@ class NBAAndNFLOnly(unittest.TestCase):
         for name in expected:
             blob = (PUBLIC / name).read_bytes()
             sha = hashlib.sha1(
-                f"blob {len(blob)}\\0".encode("ascii") + blob
+                f"blob {len(blob)}".encode("ascii") + bytes([0]) + blob
             ).hexdigest()
             self.assertEqual(release["asset_blob_sha1"][name], sha, name)
         self.assertNotIn("tennis", json.dumps(release).lower())
