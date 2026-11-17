@@ -74,4 +74,4 @@ const api={select,render};root.DamesShortHistory=api;
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 })(typeof window!=="undefined"?window:globalThis);
 globalThis.__damesRunningAssets=globalThis.__damesRunningAssets||Object.create(null);
-globalThis.__damesRunningAssets["short_history.js"]="dp-tennis-match-list-20261115-r52";
+globalThis.__damesRunningAssets["short_history.js"]="dp-nba-nfl-only-20261117-r53";
