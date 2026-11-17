@@ -1,3 +1,4 @@
+import {BOOTSTRAP_0001_SQL} from "./bootstrap-0001.js";
 /**
  * Dame's Picks staging Worker. Zero paid provider calls. No changes to
  * Federal Briefing or to the current GitHub Pages production deployment.
@@ -94,10 +95,42 @@ async function health(env) {
     current_public_site_unchanged: true
   });
 }
+/**
+ * Bootstrap the *new staging database only* from the versioned 0001 migration.
+ * No public HTTP route is allowed to run this mutation. Replays are safe:
+ * the CREATE statements use IF NOT EXISTS; source seeds use OR IGNORE.
+ *
+ * Existing tables never get dropped or replaced. Later migrations must still
+ * go through reviewed versioned D1 migration commands, not this initializer.
+ */
+export async function ensureStagingSchema(db) {
+  try {
+    const source = await db.prepare("SELECT COUNT(*) AS count FROM source_health").first();
+    await db.prepare("SELECT COUNT(*) AS count FROM scheduler_runs").first();
+    if (Number(source?.count) >= 7) return {initialized:false,source_rows:Number(source.count)};
+  } catch (_) {
+    // A new empty D1 database has no tables, so it needs the first migration.
+    // All unexpected DB errors are treated as failures unless the migration
+    // succeeds and the expected source rows are independently verified below.
+  }
+  const oneTimeSql = BOOTSTRAP_0001_SQL.replace("PRAGMA foreign_keys = ON;","");
+  await db.exec(oneTimeSql);
+  const result = await db.prepare("SELECT COUNT(*) AS count FROM source_health").first();
+  await db.prepare("SELECT COUNT(*) AS count FROM scheduler_runs").first();
+  if (Number(result?.count) < 7) throw new Error("D1 bootstrap verification failed");
+  return {initialized:true,source_rows:Number(result.count)};
+}
 export async function cronHeartbeat(controller, env) {
   if (!hasD1(env)) return {status:"skipped",reason:"d1_not_bound"};
   if (env.PAID_PROVIDER_REQUESTS !== "disabled")
     return {status:"skipped",reason:"paid_calls_must_remain_disabled_in_staging"};
+  // Prepare the initial seven-source readiness schema before inserting any heartbeat.
+  // No odds, player statistics, or prediction APIs are called here.
+  try { await ensureStagingSchema(env.DB); }
+  catch (_) {
+    console.error("Dame\'s Picks staging D1 initialization failed; no external provider was contacted.");
+    return {status:"failure",reason:"d1_bootstrap_failed"};
+  }
   const time = Number(controller?.scheduledTime) || Date.now();
   const scheduledAt = new Date(time).toISOString();
   const completedAt = new Date().toISOString();

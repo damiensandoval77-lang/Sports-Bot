@@ -1,6 +1,6 @@
 # Dame's Picks on Cloudflare — safe migration, phase 1
 
-**Status:** Repository staging infrastructure only. No Cloudflare account credentials or billing changes used; **no Worker is deployed yet**. The existing GitHub Pages sports website and the existing Federal Briefing Cloudflare Worker remain unchanged.
+**Status (November 17, 2026):** The separate `dames-picks-staging` Worker is deployed and its public website verified. The owner created D1 database `dames-picks-staging-db` and connected it through the Cloudflare dashboard as `DB`. The database ID is versioned in `wrangler.jsonc` and the scheduled Worker will perform a one-time, idempotent staging-schema bootstrap. Actual table creation and Cron writes must be verified on the live Worker after this configuration deploys. The existing GitHub Pages sports website and Federal Briefing remain unchanged.
 
 ## Keep both sites in one Cloudflare account — without coupling them
 
@@ -33,17 +33,18 @@ Use the **same Cloudflare account** to create the second Worker, but **different
 
 Cloudflare's Build configuration uses **Root directory**, **Build command** and **Deploy command**. GitHub remains the repository, but Cloudflare becomes the public application host after verified cutover.
 
-## D1 / independent automation — next owner setup
+## D1 / independent automation — bound database and one-time initialization
 
-The D1 database **does not exist yet**. Once the staged Worker is live:
-- Create one new database (suggested name `dames-picks-staging-db`) in **D1**, not in Federal Briefing.
-- Bind it to the Worker as `DB`; record the returned nonsecret database ID in `wrangler.jsonc` under `d1_databases` (we must not invent a UUID).
-- Apply the checked-in D1 migration using Wrangler, e.g. from `cloudflare/dames-picks` after the binding exists:
-  `npx wrangler d1 migrations apply dames-picks-staging-db --remote`
-- Check `/api/v1/status` reads seven `not_connected` source rows and reports the latest `staging-heartbeat` scheduled run within a few Cron intervals.
-- Do **not** mark the model, odds, grading, or game feeds healthy based on a scheduler heartbeat alone. The success criteria are independent data observations and completed frozen/graded game nights.
-
-Any API tokens should be Cloudflare **runtime secrets**, never GitHub commits or browser code. No key is needed in this phase.
+- Database name: `dames-picks-staging-db`; binding: `DB`; Cloudflare D1 database ID: `7ccf157d-aab6-4efd-afb8-d9dfb69d8af8`. The ID is a public configuration identifier, **not a secret**.
+- This database is wholly separate from Federal Briefing and is tracked in `wrangler.jsonc` so future automated Worker deployments retain the binding.
+- The first successful Cloudflare scheduled Cron with D1 attached will initialize *only the first bootstrap schema* using the checked-in versioned `0001_bootstrap.sql`, if the tables or seven source rows are missing. It then writes the first `staging-heartbeat` event. Subsequent Crons skip the bootstrap and write only new heartbeats every 15 minutes.
+- This bootstrap runs only from Cloudflare's **internal scheduled handler**; there is no public migration or write endpoint. On failure, `/api/v1/status` reports `database_unavailable` and Cron records no false success.
+- Verify the live `/healthz` endpoint changes to `database_binding_present: true` after the GitHub-triggered deployment.
+- After the scheduled trigger runs, `/api/v1/status` must respond HTTP 200 with `database: connected`, exactly seven source records (initially `not_connected`), and a real `scheduled_heartbeat`. Do **not** mistake `collectors_not_ready` for failure: no game or paid-data collectors have been activated yet.
+- A Cloudflare Cron trigger may take time to propagate; no claim of autonomous operation is made until a real scheduled heartbeat is observed and its timestamp is within the expected interval.
+- If the internal first-Cron bootstrap fails, use the versioned remote migration in the Cloudflare account, from this directory: `npx wrangler d1 migrations apply dames-picks-staging-db --remote`. Applying the idempotent initial migration after Cron bootstrapping is safe and records it in `d1_migrations`.
+- Later schema changes **must** use regular reviewed versioned migrations; the Worker auto-bootstrap intentionally handles *only* `0001_bootstrap.sql`.
+- Keep `PAID_PROVIDER_REQUESTS=disabled`. Do not add secrets or enable API polling during schema verification.
 
 ## Migration phases and launch gates
 
