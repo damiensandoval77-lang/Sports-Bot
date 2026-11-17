@@ -23,7 +23,7 @@ permissions:
 jobs:
   first-concept:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -40,6 +40,37 @@ jobs:
           python -m pip install playwright
           python -m playwright install --with-deps chromium
       - name: Verify desktop and iPhone DS5 first-concept UI
+        run: python tests/test_ds5_first_concept_browser.py
+      - name: Verify public Pages serves the new DS5 assets (not just source)
+        run: |
+          python - <<'PY'
+          from urllib.request import urlopen
+          from time import sleep
+          base='https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/'
+          expected={
+            '':'ds5-first-concept-20261117-r1',
+            'ds5-v1.css':'ds5-dashboard',
+            'ds5-v1.js':'ds5-first-concept'
+          }
+          for path,marker in expected.items():
+            last=None
+            for attempt in range(12):
+              try:
+                with urlopen(base+path,timeout=15) as r: raw=r.read().decode('utf-8')
+                if marker in raw:
+                  print('PASS',base+path,'includes',marker)
+                  break
+                last='marker not found'
+              except Exception as e:
+                last=str(e)
+              sleep(6)
+            else:
+              raise SystemExit('FAILED public Pages '+path+': '+str(last))
+          PY
+      - name: Verify actual public DS5 desktop and phone browser experience
+        env:
+          DS5_BASE_URL: https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/
+          DS5_SCREENSHOT_DIR: /tmp/ds5-first-concept/public
         run: python tests/test_ds5_first_concept_browser.py
       - name: Publish screenshots for review
         if: always()
