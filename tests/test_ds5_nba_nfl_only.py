@@ -1,6 +1,7 @@
 """Regression guard: DS5 serves NBA and NFL only, with no retired provider jobs."""
 import hashlib
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -27,7 +28,7 @@ class NBAAndNFLOnly(unittest.TestCase):
         connected = (PUBLIC / "concept-3-connected.js").read_text(encoding="utf-8")
         self.assertIn('data-league="NBA"', classic)
         self.assertIn('data-league="NFL"', classic)
-        self.assertEqual(classic.count('data-league="'), 2)
+        self.assertEqual(re.findall(r'<button data-league="([A-Z]+)"', classic), ["NBA", "NFL"])
         self.assertIn('["NBA","NFL"]', connected)
         for mode in ("player", "board", "live", "tracker", "saved"):
             self.assertIn(mode, shell)
