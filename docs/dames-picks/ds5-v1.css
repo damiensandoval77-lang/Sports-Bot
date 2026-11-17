@@ -1,0 +1,124 @@
+/* DS5 Sports Media — FIRST concept reference, not Miami-skyline concept.
+   Presentation only. Live figures remain sourced by existing Dame's Picks adapters.
+   Reversible: remove ds5-v1.css + ds5-v1.js references to restore previous layout. */
+:root{--ds5-purple:#b72ef4;--ds5-bright:#d65cff;--ds5-ink:#f9f4ff;--ds5-line:#51266d;--ds5-soft:#9e8db0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse at 51% 6%,#1f0c2c 0%,#080510 42%,#07050d 85%)!important;color:var(--ds5-ink)}
+.topbar{height:76px;padding:0 22px;gap:15px;max-width:100%;background:linear-gradient(105deg,#08050eea,#170a1de8,#09050fe8);border-bottom:1px solid #553066;box-shadow:0 8px 26px #0008}
+.topbar .brand{min-width:255px;gap:13px}
+.topbar .brandbolt{font-size:44px;letter-spacing:-4px;transform:skew(-9deg);text-shadow:0 2px 20px #a41ed477}
+.topbar .brandname{font-size:14px;letter-spacing:1.8px;font-weight:900;color:white}
+.topbar .brandname em{color:white}
+.topbar .brand-sub{font-size:9px;letter-spacing:1.3px;text-transform:uppercase;color:#ae9aba;margin-top:2px}
+.topbar .nav{gap:7px}
+.topbar .nav button{font-size:12px;font-weight:780;padding:9px 13px;border-radius:9px}
+.topbar .nav button.active,.topbar .nav button:hover{border:1px solid #bc6ce8;box-shadow:0 0 18px #a127ef76,inset 0 0 0 1px #bc67ee44;background:linear-gradient(120deg,#6a238f,#41165c)}
+.topbar .searchbox{border-color:#554368;background:#130e1c}
+.topbar .sport-nav{margin-left:auto;white-space:nowrap;flex:none;padding:2px 4px}
+.topbar .sport-nav button{font-size:12px;font-weight:850;padding:9px 11px}
+.topbar .sport-nav button.selected{box-shadow:0 0 12px #ad4aeb88;border:1px solid #d47dff;background:linear-gradient(135deg,#8329bf,#4e1479)}
+.topbar .legacy-link{display:none}
+.connected-banner{background:#130b1f;color:#b5a0cc;padding:5px 12px;border-bottom:1px solid #342041;font-size:10px;line-height:1.35}
+.connected-tools{display:none}
+body.unified-tool-mode .connected-tools{display:flex}
+body:not(.unified-tool-mode) .unified-navigation{display:none}
+.unified-navigation{border-color:#4e2865;background:#100a19}
+.wrap{max-width:1920px;padding:8px 12px 28px}
+.slate{display:flex!important;grid-template-columns:none!important;align-items:stretch;gap:8px;min-width:0;overflow-x:auto;margin-top:0;padding:2px 0 9px;scrollbar-width:thin}
+.slate .slate-label{flex:0 0 178px;min-height:75px;background:linear-gradient(115deg,#281034,#140a1e);border-color:#6f287e;border-radius:11px;gap:9px}
+.slate-label .icon{color:#ca55f9}
+.slate-label b{font-size:13px}
+.slate .game{flex:1 0 146px;min-width:146px;min-height:75px;background:linear-gradient(145deg,#1d1028,#0e0b18);border-color:#5b306c;border-radius:10px;box-shadow:inset 0 1px #b673d622}
+.slate .gamebtn{flex:0 0 115px;height:auto;min-height:72px;padding:8px;margin:0;border-radius:11px;border-color:#683a84;background:#251039}
+.slate .dataempty{flex:1 0 200px}
+.ds5-dashboard{display:grid;grid-template-columns:212px minmax(0,1fr);align-items:start;gap:15px;margin-top:6px}
+.ds5-sidebar{position:sticky;top:85px;min-height:690px;display:flex;flex-direction:column;border:1px solid #512366;border-radius:14px;background:linear-gradient(155deg,#1f0b2c,#0d0918 46%,#1b0d2b 87%,#46146c);box-shadow:0 12px 30px #0005;overflow:hidden;padding:12px 9px 20px}
+.ds5-side-logo{display:block;padding:10px 10px 13px;border-bottom:1px solid #513169;margin-bottom:10px}
+.ds5-side-logo strong{display:block;font-style:italic;font-weight:1000;font-size:36px;line-height:1;letter-spacing:-3px;transform:skew(-8deg);width:max-content}
+.ds5-side-logo strong em{font-style:inherit;color:var(--ds5-purple)}
+.ds5-side-logo small{display:block;font-size:11px;letter-spacing:1px;font-style:italic;font-weight:800}
+.ds5-side-nav{display:flex;flex-direction:column;gap:5px}
+.ds5-side-nav button{display:flex;align-items:center;text-align:left;gap:10px;width:100%;border:1px solid transparent;border-radius:9px;padding:10px 10px;color:#e6daf0;font-size:12px;font-weight:600;line-height:1.2;min-height:39px}
+.ds5-side-nav button span.ico{font-size:17px;width:21px;text-align:center;font-family:system-ui,sans-serif;color:#f6e5ff}
+.ds5-side-nav button:hover,.ds5-side-nav button.active{background:linear-gradient(110deg,#9a2bd6,#64208e);border-color:#ce76fb;color:#fff;box-shadow:0 0 11px #c32aff8a,inset 0 0 6px #f8a9ff40}
+.ds5-side-nav .ds5-subnav{padding-left:25px;font-size:11px;color:#cbb7da}
+.ds5-side-footer{margin-top:auto;padding:13px 10px 0;border-top:1px solid #53336d;color:#bcaacb;font-size:10px;line-height:1.6}
+.ds5-main{min-width:0}
+.ds5-titlebar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:0 0 10px;padding:0 4px}
+.ds5-titlebar h1{font-size:clamp(27px,3vw,39px);line-height:1.03;letter-spacing:-1.2px;text-transform:uppercase;font-weight:1000;font-style:italic}
+.ds5-titlebar h1 span{color:#bf46f4}
+.ds5-titlebar p{font-size:14px;font-style:italic;color:#e1d2ee;margin-top:4px}
+.ds5-dames-stamp{font-size:16px;font-weight:1000;font-style:italic;text-transform:uppercase;letter-spacing:-.4px;border:2px solid #c244ed;background:#120b20;padding:9px 15px;transform:skew(-7deg);border-radius:5px;white-space:nowrap;box-shadow:0 0 12px #7c21ae44}
+.ds5-dames-stamp small{display:block;font-style:normal;letter-spacing:1px;color:#ab93be;font-size:8px;font-weight:700}
+.ds5-feature-grid{display:grid;grid-template-columns:1.04fr 1fr;gap:11px;align-items:stretch}
+.ds5-player-feature,.ds5-matchup-feature{min-width:0;display:flex;flex-direction:column;gap:9px}
+.ds5-player-feature{background:linear-gradient(150deg,#271039,#100b1c 75%);border:1px solid #712c8f;border-radius:12px;overflow:hidden}
+.ds5-player-feature .hero{display:grid;grid-template-columns:38% minmax(0,1fr);grid-template-rows:auto auto;gap:0;min-height:246px;margin:0;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none}
+.ds5-player-feature .hero .portrait{grid-row:1 / span 2;grid-column:1;min-height:245px;align-self:stretch;border-bottom:0;background:linear-gradient(120deg,#642090,#150a24)}
+.ds5-player-feature .hero .portrait-fallback{font-size:80px;background:radial-gradient(ellipse at 40% 35%,#69328d,#1c0d2d)}
+.ds5-player-feature .hero .player-name{grid-row:1;grid-column:2;padding:15px 12px 5px}
+.ds5-player-feature .hero .player-name h1{font-size:clamp(17px,2vw,25px);font-weight:950;letter-spacing:-.6px;overflow-wrap:anywhere}
+.ds5-player-feature .hero .player-name small{margin-top:2px}
+.ds5-player-feature .hero .player-stats{margin-top:8px}
+.ds5-player-feature .hero .focus{grid-row:2;grid-column:2;padding:10px 12px;margin:0;background:none;border:0;border-radius:0;align-self:end}
+.ds5-player-feature .hero .focus h2{display:none}
+.ds5-player-feature .hero .focus-line{font-size:12px;padding:7px;border-color:#6e2f91}
+.ds5-player-feature .focus-stats{gap:5px}
+.ds5-player-feature .focus-stats>div{padding:8px 2px}
+.ds5-player-feature .focus-stats small{font-size:8px}
+.ds5-player-feature .focus-stats b{font-size:17px}
+.ds5-player-feature .ds5-recent{border:0;border-top:1px solid #592578;border-radius:0;margin-top:auto;background:#140d22;box-shadow:none}
+.ds5-player-feature .ds5-recent .panelhead{background:#1e112c}
+.ds5-player-feature .ds5-recent .chartbararea{height:115px}
+.ds5-matchup-feature{background:linear-gradient(155deg,#1c0d2b,#0c0917);border:1px solid #712c8f;border-radius:12px;padding:10px}
+.ds5-matchup-feature .hero-tile{margin:0;border:0;background:none;padding:1px 4px 11px;border-bottom:1px solid #4a255b;border-radius:0}
+.ds5-matchup-feature .hero-tile h2{margin-bottom:5px;font-size:14px;text-transform:uppercase}
+.ds5-matchup-feature .hero-tile .next-match{justify-content:flex-start;font-size:14px}
+.ds5-matchup-feature .hero-tile .tilebottom{margin:7px 0 0;border:0;padding:0;justify-content:flex-start}
+.ds5-matchup-rows{display:grid;grid-template-columns:1.06fr 1fr;gap:10px;flex:1}
+.ds5-matchup-rows .panel{border:1px solid #4d2a65;border-radius:11px;background:#100d1b;box-shadow:none;min-width:0}
+.ds5-matchup-rows .panelhead{background:#1b102b;padding:8px}
+.ds5-matchup-rows .panelhead h2{font-size:12px}
+.ds5-matchup-rows .panelbody{padding:8px}
+.ds5-matchup-rows .charttitle{overflow-wrap:anywhere}
+.ds5-matchup-rows .table{font-size:10px}
+.ds5-matchup-rows .table td{padding:4px}
+.ds5-matchup-rows .hist{height:115px}
+.ds5-take{background:linear-gradient(120deg,#28113f,#120b1e);border:1px solid #aa49e6;border-radius:10px;box-shadow:inset 0 1px #e7a4fc35;padding:10px 14px}
+.ds5-take b{display:block;text-transform:uppercase;color:#d35df9;font-size:12px}
+.ds5-take p{font-size:11px;color:#f0e3f9;line-height:1.4;margin-top:3px}
+.ds5-lower-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,.91fr) minmax(0,.88fr);gap:11px;margin-top:11px;align-items:stretch}
+.ds5-summary{border:1px solid #682c86;background:linear-gradient(150deg,#20102c,#100c1c 48%,#130d1b);border-radius:12px;min-width:0;overflow:hidden;box-shadow:0 9px 19px #0005}
+.ds5-summary-head{display:flex;justify-content:space-between;gap:6px;align-items:center;padding:10px 12px;border-bottom:1px solid #4e2c67}
+.ds5-summary-head h2{font-size:14px;font-weight:950;font-style:italic;text-transform:uppercase;letter-spacing:-.3px}
+.ds5-summary-head button{font-size:10px;color:#deb5f8;border:1px solid #643587;background:#271435;border-radius:8px;padding:5px 7px}
+.ds5-summary-head button:hover{background:#5a2183;color:white}
+.ds5-summary table{width:100%;border-collapse:collapse;font-size:11px}
+.ds5-summary th{text-align:left;font-size:9px;color:#ab97bc;font-weight:700;padding:7px 8px;white-space:nowrap;border-bottom:1px solid #33203f;text-transform:uppercase}
+.ds5-summary td{padding:9px 8px;border-bottom:1px solid #37223f;color:#f1e7f6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds5-summary tr:last-child td{border-bottom:0}
+.ds5-summary td em{display:block;color:#a9a0b7;font-size:9px;font-style:normal}
+.ds5-summary td.ds5-good{color:#3fe7a7;font-weight:850}
+.ds5-summary td.ds5-bad{color:#ff667f;font-weight:850}
+.ds5-lean{display:inline-block;border:1px solid currentColor;border-radius:6px;padding:2px 7px;font-size:9px;font-weight:850}
+.ds5-empty{font-size:11px;color:#baa7c8;line-height:1.5;padding:16px 12px}
+.ds5-grade-meter{display:flex;align-items:center;gap:15px;padding:18px 14px}
+.ds5-grade-ring{display:grid;place-content:center;text-align:center;flex:0 0 92px;width:92px;height:92px;border-radius:50%;border:10px solid #34273c}
+.ds5-grade-ring strong{font-size:19px}
+.ds5-grade-ring small{color:#c5b5d0;font-size:8px}
+.ds5-grade-stats{display:grid;gap:8px;font-size:11px}
+.ds5-grade-stats b{color:white}
+.ds5-subtitle{padding:0 12px 12px;font-size:10px;color:#ae9abf}
+.ds5-research-title{font-size:17px;letter-spacing:.4px;font-weight:900;text-transform:uppercase;font-style:italic;margin:22px 2px 9px;color:#d8a1f3}
+.ds5-main .gridtop{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:0}
+.ds5-main .gridmiddle{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:11px}
+.ds5-main .gridbottom{grid-template-columns:1.6fr 1fr;gap:11px;margin-top:11px}
+.ds5-main .tabs{margin:18px 0 11px;max-width:100%}
+.ds5-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:17px 10px 2px;border-top:1px solid #4c275f;margin-top:16px;color:#c1a3d5;font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.ds5-footer strong{font-size:19px;font-weight:1000;font-style:italic;color:white}
+.ds5-footer strong em{color:var(--ds5-purple);font-style:inherit}
+.ds5-main .footnote{text-align:left;font-size:10px;color:#9d87b1;margin-top:11px}
+@media(max-width:1390px){.topbar{gap:8px}.topbar .brand{min-width:190px}.topbar .brandbolt{font-size:33px}.topbar .brandname{font-size:10px}.topbar .brand-sub{font-size:8px}.topbar .nav button{font-size:10px;padding:9px 6px}.topbar .searchbox{flex-basis:200px}.ds5-dashboard{grid-template-columns:188px minmax(0,1fr);gap:10px}.ds5-sidebar{padding:10px 7px}.ds5-side-nav button{padding:9px 7px}.ds5-titlebar h1{font-size:29px}.ds5-feature-grid{grid-template-columns:1fr 1fr}.ds5-player-feature .hero{grid-template-columns:34% 1fr}}
+@media(max-width:1080px){.topbar .nav{display:none}.ds5-feature-grid{grid-template-columns:1fr}.ds5-matchup-rows{grid-template-columns:1fr 1fr}.ds5-lower-grid{grid-template-columns:1fr 1fr}.ds5-lower-grid .ds5-summary:first-child{grid-column:span 2}.topbar .brand{min-width:225px}}
+@media(max-width:720px){.topbar{height:62px;padding:0 10px}.topbar .brand{min-width:0;gap:8px}.topbar .brandbolt{font-size:31px}.topbar .brandname{font-size:10px;letter-spacing:1px}.topbar .brand-sub{font-size:8px;letter-spacing:.2px}.topbar .searchbox{display:none}.topbar .sport-nav{padding:2px;margin-left:auto}.topbar .sport-nav button{font-size:10px;padding:7px}.wrap{padding:5px 8px 20px}.slate .slate-label{flex-basis:140px}.slate .game{flex-basis:132px;min-width:132px}.ds5-dashboard{display:flex;flex-direction:column;gap:10px}.ds5-sidebar{position:static;width:100%;min-height:0;display:block;padding:6px 8px;border-radius:11px;background:#160a24}.ds5-side-logo{display:none}.ds5-side-nav{flex-direction:row;overflow-x:auto;gap:5px;padding:3px 0;scrollbar-width:thin}.ds5-side-nav button{min-width:max-content;width:auto;padding:8px 9px;font-size:10px;min-height:32px}.ds5-side-nav .ds5-subnav{padding-left:8px}.ds5-side-footer{display:none}.ds5-titlebar h1{font-size:29px}.ds5-titlebar p{font-size:11px}.ds5-dames-stamp{font-size:10px;padding:6px;white-space:normal;max-width:125px}.ds5-dames-stamp small{font-size:7px}.ds5-feature-grid{grid-template-columns:1fr}.ds5-player-feature .hero{grid-template-columns:35% 1fr;min-height:220px}.ds5-player-feature .hero .portrait{min-height:220px}.ds5-player-feature .hero .player-name{padding:11px 8px 4px}.ds5-player-feature .hero .player-name h1{font-size:17px}.ds5-player-feature .hero .focus{padding:6px 8px}.ds5-player-feature .focus-stats b{font-size:14px}.ds5-matchup-rows{grid-template-columns:1fr}.ds5-lower-grid{grid-template-columns:1fr}.ds5-lower-grid .ds5-summary:first-child{grid-column:auto}.ds5-main .gridtop,.ds5-main .gridmiddle,.ds5-main .gridbottom{grid-template-columns:1fr}.ds5-summary{overflow-x:auto}.ds5-footer{font-size:9px}.ds5-take{padding:9px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
