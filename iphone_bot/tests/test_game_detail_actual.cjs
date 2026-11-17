@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
-const html=fs.readFileSync(path.join(__dirname,'../../docs/dames-picks/index.html'),'utf8');
+const html=fs.readFileSync(path.join(__dirname,'../../docs/dames-picks/classic.html'),'utf8');
 const render=html.slice(html.indexOf('function renderGameDetail(){'));
 const actualBlock=render.slice(render.indexOf(' const normalize='),render.indexOf(' const watched='));
 function actual(g,p){return vm.runInNewContext(actualBlock+'\nactualFor(p)',{g,p});}
