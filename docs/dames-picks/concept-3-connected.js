@@ -269,9 +269,11 @@ function render(){
  document.dispatchEvent(new Event("ds5:data-updated"));
 }
 async function resolvePhoto(item,seq){
- // Development-only: ESPN roster headshot URL is NOT a license for commercial use.
- // Athlete ID from a non-ESPN feed is never used to construct an ESPN image URL.
- if(window.DAMES_DISABLE_EXTERNAL_PHOTOS===true)return;
+ // External roster headshots require an explicit licensed-media opt-in.
+ // On public DS5 the verified-data initials fallback remains visible instead
+ // of a blocked CORS lookup or unlicensed player photo.
+ // Never derive a roster ID from an unrelated player feed.
+ if(window.DAMES_ENABLE_LICENSED_PLAYER_PHOTOS!==true)return;
  const sport=state.league==="NBA"?"basketball/nba":"football/nfl";
  const head="https://site.api.espn.com/apis/site/v2/sports/"+sport+"/teams";
  try{
@@ -373,7 +375,7 @@ async function loadNBA(){
  state.picks=Array.isArray(picks)?picks:[];
  state.load=state.form?"complete":"failed";
  if(state.selected)render();
- changeNotice("NBA connected · "+(state.form?.players.length||0)+" logged players · "+state.picks.length+" validated standard-line records · "+(ledger.status==="fulfilled"?"model ledger read":"model ledger unavailable")+" · "+(archive.status==="fulfilled"?"standard archive read":"standard archive unavailable")+". Photos from ESPN rosters require licensing review.");
+ changeNotice("NBA connected · "+(state.form?.players.length||0)+" logged players · "+state.picks.length+" validated standard-line records · "+(ledger.status==="fulfilled"?"model ledger read":"model ledger unavailable")+" · "+(archive.status==="fulfilled"?"standard archive read":"standard archive unavailable")+". Player photos are disabled until image rights are cleared.");
 }
 /* Read-only, source-grounded adapter for the DS5 summary cards. The underlying model and ledgers are not modified. */
 window.DS5DashboardSource=()=>({
