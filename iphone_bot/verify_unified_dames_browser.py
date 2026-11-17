@@ -111,90 +111,6 @@ def observe_live_order(page, sport):
     observed["reasons"]=assess_live_order(observed)
     return observed
 
-def assess_tennis(observation):
-    """Validate distinct fixture-list and quote-only contracts, never forecasts."""
-    reasons=[]
-    mode=observation.get("mode")
-    if observation.get("selected")!="TENNIS" or mode!=observation.get("requested_mode"):
-        reasons.append("TENNIS_VIEW_NOT_SELECTED")
-    if observation.get("metrics") != ["—","—","—"]:
-        reasons.append("TENNIS_UNSUPPORTED_METRICS")
-    fixtures=observation.get("fixtures",[])
-    fixture_cards=observation.get("fixture_cards",[])
-    notice=observation.get("notice", "")
-    notice_ok=(all(x in notice for x in ("Partial list, not a live schedule", "Lines and estimates are unavailable"))
-               if fixtures else "Projections, hit estimates and grading are unavailable" in notice)
-    if not notice_ok:
-        reasons.append("TENNIS_LIMITATION_NOTICE_MISSING")
-    cards=observation.get("cards",[])
-    ids=[c.get("id") for c in cards]
-    expected=observation.get("expected_ids",[])
-    if len(ids)!=len(set(ids)) or set(ids)!=set(expected) or observation.get("game_cards",0):
-        reasons.append("TENNIS_CROSS_LEAGUE_OR_MISSING_CARDS")
-    if any(c.get("projection")!="—" or c.get("estimate")!="—" or c.get("grade")!="LINE ONLY" for c in cards):
-        reasons.append("TENNIS_UNSUPPORTED_ESTIMATE_OR_GRADE")
-    expected_fixtures=[(f.get("name"),f.get("date")) for f in fixtures]
-    actual_fixtures=[(f.get("name"),f.get("date")) for f in fixture_cards]
-    if (mode!="board" and (fixtures or fixture_cards)) or len(set(expected_fixtures))!=len(expected_fixtures) or actual_fixtures!=expected_fixtures:
-        reasons.append("TENNIS_FIXTURE_IDENTITY_MISMATCH")
-    if any(f.get("grade")!="MATCH LIST" or f.get("projection") is not None or f.get("estimate") is not None
-           or f.get("has_quote_id") or f.get("has_stats") or "start time unconfirmed" not in f.get("context", "")
-           or "no pick or hit estimate" not in f.get("note", "") for f in fixture_cards):
-        reasons.append("TENNIS_UNSUPPORTED_FIXTURE_ESTIMATE_OR_GRADE")
-    empty=observation.get("empty","")
-    if mode in ("live","tracker"):
-        if cards or "not connected" not in empty or "does not mean no matches" not in empty:
-            reasons.append("TENNIS_UNSUPPORTED_LIVE_OR_GRADING")
-    elif not cards and not fixture_cards and "not evidence that no tennis matches exist" not in empty:
-        reasons.append("TENNIS_EMPTY_STATE_NOT_HONEST")
-    if observation.get("research_visible"):
-        reasons.append("TENNIS_CROSS_LEAGUE_RESEARCH_VISIBLE")
-    if not isinstance(observation.get("viewport_width"),int) or not 380<=observation["viewport_width"]<=390 or observation.get("overflow",0)>1:
-        reasons.append("TENNIS_PHONE_LAYOUT_FAILED")
-    return list(dict.fromkeys(reasons))
-
-def observe_tennis(page):
-    observations=[]
-    # Enter from each populated league to detect retained cards and metrics.
-    for previous in ("NBA","NFL"):
-        page.locator('button[data-league="'+previous+'"]').click(timeout=10000)
-        select_embedded_view(page,"board")
-        page.locator('button[data-league="TENNIS"]').click(timeout=10000)
-        for mode in ("board","live","tracker","saved"):
-            select_embedded_view(page,mode)
-            obs=page.evaluate(r"""mode => ({
-              selected:state.league, mode:state.mode, requested_mode:mode,
-              metrics:['wl','rate','games'].map(id=>document.getElementById(id).textContent.trim()),
-              notice:document.querySelector('#coverage')?.textContent||'',
-              expected_ids:['live','tracker'].includes(mode)?[]:shown().map(p=>m.key(p)),
-              fixtures:mode==='board'?(window.DamesPicksTennis?.fixtures?.(state.tennisFixtures,Date.now())||[])
-                .filter(q=>q.players.join(' ').toLowerCase().includes(document.getElementById('query').value.toLowerCase().trim()))
-                .map(q=>({id:q.id,name:q.players.join(' vs '),date:q.starts_at.slice(0,10)})):[],
-              fixture_cards:[...document.querySelectorAll('#cards article.pick')].map(el=>({
-                name:el.querySelector('.name')?.textContent,
-                date:el.querySelector('.context')?.textContent.match(/Provider-listed date: (\d{4}-\d{2}-\d{2})/)?.[1],
-                context:el.querySelector('.context')?.textContent||'',note:el.querySelector('.note')?.textContent||'',
-                grade:el.querySelector('.grade')?.textContent,has_quote_id:el.hasAttribute('data-id'),
-                has_stats:!!el.querySelector('.stat-grid'),
-                projection:el.querySelectorAll('.stat-grid strong')[1]?.textContent,
-                estimate:el.querySelectorAll('.stat-grid strong')[2]?.textContent})),
-              cards:[...document.querySelectorAll('#cards .pick:not(article)')].map(el=>({
-                id:el.dataset.id,grade:el.querySelector('.grade')?.textContent,
-                projection:el.querySelectorAll('.stat-grid strong')[1]?.textContent,
-                estimate:el.querySelectorAll('.stat-grid strong')[2]?.textContent})),
-              game_cards:document.querySelectorAll('#cards [data-game]').length,
-              empty:document.querySelector('#cards .empty')?.textContent||'',
-              research_visible:['provisional-short-history','trained-short-history'].some(id=>{
-                const el=document.getElementById(id);return el&&el.getClientRects().length>0;
-              }),
-              viewport_width:innerWidth,
-              overflow:document.documentElement.scrollWidth-innerWidth
-            })""",mode)
-            obs['previous_league']=previous
-            obs['reasons']=assess_tennis(obs)
-            observations.append(obs)
-    return observations
-
 def assess_confidence(obs):
     reasons=[]
     estimates=obs.get("estimates",[])
@@ -298,7 +214,7 @@ def probe():
         browser=pw.chromium.launch(headless=True,args=["--no-sandbox"])
         try:
             # The user-facing DS5 homepage is the ONLY public entry point.
-            # The existing NBA/NFL/Tennis tools mount inside its workspace frame.
+            # The existing NBA/NFL tools mount inside its workspace frame.
             # Verify both layers, not a standalone classic.html URL or a stale
             # homepage assumption. No paid odds APIs are exercised here.
             host=browser.new_page(viewport={"width":390,"height":844},
@@ -309,6 +225,8 @@ def probe():
             if response is None or response.status != 200:
                 raise RuntimeError("DS5 unified homepage HTTP status not 200")
             host.locator("body.ds5-first-concept .ds5-dashboard").wait_for(timeout=45000)
+            assert host.locator(".unified-navigation button[data-workspace]").count()==5, (
+                "Expected only the five NBA/NFL public workspaces")
             if (not host.title().startswith("DS5 Sports Media")
                     or not host.locator(".ds5-sidebar").is_visible()
                     or not host.locator(".ds5-feature-grid").is_visible()
@@ -322,6 +240,7 @@ def probe():
             if len(frames)!=1:
                 raise RuntimeError("DS5 saved-tools frame missing or duplicated")
             page=frames[0]
+            assert page.locator("button[data-league]").count()==2, "NBA and NFL should be the only embedded sport tabs"
             # Public DS5 controls must really switch the embedded NBA/NFL tool.
             for workspace in ("tracker","live","saved","board"):
                 host.locator('.unified-navigation button[data-workspace="'+workspace+'"]').click(timeout=10000)
@@ -386,7 +305,6 @@ def probe():
             report["browser_direct_probe"]=direct
             report["live_pace"]=observe_pace(page)
             report["reasons"].extend(report["live_pace"]["reasons"])
-            report["TENNIS"]=observe_tennis(page)
             report["nba_confidence"]=observe_confidence(page)
             report["reasons"].extend(report["nba_confidence"]["reasons"])
             # Keep the same context/service-worker/cache and reload as a returning
@@ -400,10 +318,6 @@ def probe():
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
             page.wait_for_function("() => !state.liveBusy",timeout=45000)
             report["warm_reload"]={sport:observe_live_order(page,sport) for sport in ("NBA","NFL")}
-            report["tennis_warm_reload"]=observe_tennis(page)
-            for phase, observations in (("FIRST_LOAD",report["TENNIS"]),("WARM_RELOAD",report["tennis_warm_reload"])):
-                for obs in observations:
-                    report["reasons"].extend(phase+"_"+reason for reason in obs["reasons"])
             report["cache_test_scope"]="Same-context warm reload; historical-version cache compatibility is tested offline."
             for sport in ("NBA","NFL"):
                 for phase,obs in (("FIRST_LOAD",result[sport]["live_order"]),("WARM_RELOAD",report["warm_reload"][sport])):
