@@ -1,0 +1,43 @@
+name: Snapshot Cloudflare Odds API collector receipts now (read only)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/dames-odds-live-now-diagnostic.yml"
+permissions:
+  contents: read
+jobs:
+  snapshot-collector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Read live D1 collector diagnostics and actual NBA/NFL lines
+        run: |
+          python3 - <<'PY'
+          import json,urllib.request,urllib.error,datetime
+          base="https://dames-picks-staging.damiensandoval77.workers.dev"
+          print("AUDIT_UTC",datetime.datetime.now(datetime.timezone.utc).isoformat(),flush=True)
+          for name,path in [
+            ("DIAGNOSTICS","/api/v1/odds/diagnostics"),
+            ("BUDGET","/api/v1/odds/budget"),
+            ("HEALTH","/healthz"),
+            ("NBA_BOARD","/api/v1/odds/board?league=NBA&limit=100"),
+            ("NFL_BOARD","/api/v1/odds/board?league=NFL&limit=100")]:
+            try:
+              req=urllib.request.Request(base+path,headers={"Cache-Control":"no-cache","User-Agent":"DamesPicks-ImmediateReadOnlyAudit"})
+              with urllib.request.urlopen(req,timeout=15) as r:
+                body=json.load(r)
+              if "BOARD" in name:
+                output={"status":body.get("status"),"count":len(body.get("quotes") or []),
+                  "first":(body.get("quotes") or [None])[0]}
+              elif name=="BUDGET":
+                output={"status":body.get("status"),"config":body.get("config"),"usage":body.get("usage")}
+              elif name=="HEALTH":
+                output={"collection_configured":body.get("provider_collection_configured"),
+                  "collection_active":body.get("provider_collection_active"),
+                  "last_run":body.get("odds_collector_last_run")}
+              else:output=body
+              print(name,json.dumps(output),flush=True)
+            except Exception as e:print(name,"UNAVAILABLE",type(e).__name__,str(e)[:100],flush=True)
+          PY
