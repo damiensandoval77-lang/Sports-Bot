@@ -1,4 +1,4 @@
-"""Verify the deployed Dame's Picks app with a real mobile-size browser."""
+"""Verify the preserved real-data Board/Tracker workspace on the deployed unified Dame's Picks site."""
 import datetime as dt
 import hashlib
 import json
@@ -67,7 +67,7 @@ def main():
         page=browser.new_page(viewport={"width":390,"height":844},device_scale_factor=2,is_mobile=True,has_touch=True,timezone_id="America/New_York")
         errors=[]
         page.on("pageerror",lambda error:errors.append(str(error)))
-        page.goto(f"{BASE}/dames-picks/?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
+        page.goto(f"{BASE}/dames-picks/classic.html?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
         page.wait_for_timeout(5000)
         if expected_upcoming_picks:
             try:
