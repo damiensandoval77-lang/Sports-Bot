@@ -279,13 +279,31 @@ def probe():
     with sync_playwright() as pw:
         browser=pw.chromium.launch(headless=True,args=["--no-sandbox"])
         try:
-            page=browser.new_page(viewport={"width":390,"height":844},
+            # The user-facing DS5 homepage is the ONLY public entry point.
+            # The existing NBA/NFL/Tennis tools mount inside its workspace frame.
+            # Verify both layers, not a standalone classic.html URL or a stale
+            # homepage assumption. No paid odds APIs are exercised here.
+            host=browser.new_page(viewport={"width":390,"height":844},
                                   device_scale_factor=2,
                                   locale="en-US",timezone_id="America/New_York")
-            page.on("pageerror",lambda e: errors.append(str(e)[:240]))
-            response=page.goto(URL,wait_until="domcontentloaded",timeout=45000)
+            host.on("pageerror",lambda e: errors.append(str(e)[:240]))
+            response=host.goto(URL,wait_until="domcontentloaded",timeout=45000)
             if response is None or response.status != 200:
-                raise RuntimeError("Unified app HTTP status not 200")
+                raise RuntimeError("DS5 unified homepage HTTP status not 200")
+            host.locator("body.ds5-first-concept .ds5-dashboard").wait_for(timeout=45000)
+            if (not host.title().startswith("DS5 Sports Media")
+                    or not host.locator(".ds5-sidebar").is_visible()
+                    or not host.locator(".ds5-feature-grid").is_visible()
+                    or host.locator(".ds5-lower-grid .ds5-summary").count()!=3):
+                raise RuntimeError("DS5 homepage layout or branding did not render")
+            # The sidebar must open the SAME app's embedded real-data tools.
+            host.locator(".ds5-side-nav button").filter(has_text="Dame's Picks").first.click(timeout=10000)
+            host.locator("body.unified-tool-mode #unified-frame").wait_for(timeout=15000)
+            host.frame_locator("#unified-frame").locator('button[data-league="NBA"]').wait_for(timeout=45000)
+            frames=[f for f in host.frames if "/dames-picks/classic.html" in f.url]
+            if len(frames)!=1:
+                raise RuntimeError("DS5 saved-tools frame missing or duplicated")
+            page=frames[0]
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
             # Initial page load may complete before the app's asynchronous
             # browser-direct scoreboard/boxscore refresh. Test live state
@@ -301,7 +319,7 @@ def probe():
                 at:state.directAt||null};
             }""")
             page.wait_for_function("() => !state.liveBusy",timeout=45000)
-            title=page.title()
+            title=page.evaluate("document.title")
             result={}
             for sport in ("NBA","NFL"):
                 page.locator('button[data-league="'+sport+'"]').click(timeout=10000)
@@ -341,6 +359,8 @@ def probe():
                 observation["live_order"]=observe_live_order(page,sport)
                 result[sport]=observation
             report=assess(result["NBA"],result["NFL"],errors,app_title=title)
+            report["parent_title"]=host.title()
+            report["parent_design"]="DS5 first concept"
             report["browser_direct_probe"]=direct
             report["live_pace"]=observe_pace(page)
             report["reasons"].extend(report["live_pace"]["reasons"])
@@ -349,7 +369,12 @@ def probe():
             report["reasons"].extend(report["nba_confidence"]["reasons"])
             # Keep the same context/service-worker/cache and reload as a returning
             # user does. This tests a warm reload, not an invented historical cache.
-            page.reload(wait_until="domcontentloaded",timeout=45000)
+            host.reload(wait_until="domcontentloaded",timeout=45000)
+            host.locator("body.ds5-first-concept .ds5-dashboard").wait_for(timeout=45000)
+            host.frame_locator("#unified-frame").locator('button[data-league="NBA"]').wait_for(timeout=45000)
+            frames=[f for f in host.frames if "/dames-picks/classic.html" in f.url]
+            if len(frames)!=1: raise RuntimeError("DS5 workspace iframe not restored on warm reload")
+            page=frames[0]
             page.wait_for_function("() => typeof state !== 'undefined' && !!state.updated && !state.loading",timeout=60000)
             page.wait_for_function("() => !state.liveBusy",timeout=45000)
             report["warm_reload"]={sport:observe_live_order(page,sport) for sport in ("NBA","NFL")}
