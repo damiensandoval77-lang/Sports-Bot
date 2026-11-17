@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const html=fs.readFileSync('docs/dames-picks/index.html','utf8');
+const html=fs.readFileSync('docs/dames-picks/classic.html','utf8');
 const code=html.split('/* OPEN_TAB_RELEASE_WATCH_START */')[1].split('/* OPEN_TAB_RELEASE_WATCH_END */')[0];
 function setup({next='dp-new-r2',runtime=next,page=next,hidden=false,fail=false}={}){
  const el={'release-update':{hidden:true},'load-update':{}};let calls=0,assigned=null;
