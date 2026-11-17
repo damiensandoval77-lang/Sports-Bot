@@ -12,8 +12,7 @@ import {CORE_MARKET_KEYS,BOOKMAKERS,catalogFor,isStandardPlayerMarket} from "./o
 import {normalizeEventQuotes} from "./odds-normalize.js";
 
 const ODDS_HOST="https://api.the-odds-api.com";
-const sleep=()=>{};
-const boundedInt=(v,min,max)=>Number.isSafeInteger(Number(v))&&Number(v)>=min&&Number(v)<=max?Number(v):null;
+const boundedInt=(v,min,max)=>v!==null&&v!==undefined&&String(v).trim()!==""&&Number.isSafeInteger(Number(v))&&Number(v)>=min&&Number(v)<=max?Number(v):null;
 const utcDay=ms=>new Date(ms).toISOString().slice(0,10);
 const utcMonth=ms=>utcDay(ms).slice(0,7);
 const iso=ms=>new Date(ms).toISOString();
