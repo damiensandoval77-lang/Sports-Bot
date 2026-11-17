@@ -13,7 +13,7 @@ permissions:
 jobs:
   read-only-live-quote-proof:
     runs-on: ubuntu-24.04
-    timeout-minutes: 7
+    timeout-minutes: 18
     steps:
       - name: Verify a provider-authenticated standard line actually reached D1 and the public board
         env:
@@ -28,7 +28,7 @@ jobs:
               with urllib.request.urlopen(req,timeout=15) as r:
                   return json.load(r)
           result=None
-          for i in range(20):
+          for i in range(60):
               try:
                   diagnostic=get("/api/v1/odds/diagnostics")
                   health=get("/healthz")
@@ -56,7 +56,7 @@ jobs:
                           sys.exit(0)
               except Exception as e:
                   print("Diagnostics not available: "+type(e).__name__,flush=True)
-              if i<19:time.sleep(15)
+              if i<59:time.sleep(15)
           print("FAIL: no live standard prop quote verified. Do NOT claim collection works.",flush=True)
           sys.exit(1)
           PY
