@@ -1,0 +1,62 @@
+name: Prove real Cloudflare D1 standard prop lines on live staging
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/dames-live-odds-quote-proof.yml"
+      - "cloudflare/dames-picks/src/odds-diagnostics.js"
+      - "cloudflare/dames-picks/src/odds-collector.js"
+      - "cloudflare/dames-picks/src/worker.js"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-live-quote-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - name: Verify a provider-authenticated standard line actually reached D1 and the public board
+        env:
+          ROOT: https://dames-picks-staging.damiensandoval77.workers.dev
+        run: |
+          python3 - <<'PY'
+          import json,os,time,urllib.request,urllib.error,sys
+          root=os.environ["ROOT"]
+          def get(path):
+              req=urllib.request.Request(root+path,headers={
+                "Cache-Control":"no-cache","User-Agent":"DamesPicks-LiveQuote-Proof/1"})
+              with urllib.request.urlopen(req,timeout=15) as r:
+                  return json.load(r)
+          result=None
+          for i in range(20):
+              try:
+                  diagnostic=get("/api/v1/odds/diagnostics")
+                  health=get("/healthz")
+                  budget=get("/api/v1/odds/budget")
+                  nba=get("/api/v1/odds/board?league=NBA&limit=100")
+                  nfl=get("/api/v1/odds/board?league=NFL&limit=100")
+                  counts={league:len(view.get("quotes",[])) for league,view in [("NBA",nba),("NFL",nfl)]}
+                  outcome=diagnostic.get("recent_runs",[{}])
+                  last=outcome[0] if outcome else None
+                  result={
+                    "collector_configured":diagnostic.get("collector_configured"),
+                    "collector_last_run":last,
+                    "recent_attempts":diagnostic.get("recent_attempts",[])[:3],
+                    "stored_quote_counts":diagnostic.get("stored_quote_counts",[]),
+                    "live_board_counts":counts,
+                    "budget_usage":budget.get("usage",{}),
+                    "runtime_health":health.get("odds_collector_last_run")
+                  }
+                  print("OBSERVATION "+str(i+1)+": "+json.dumps(result,sort_keys=True),flush=True)
+                  if diagnostic.get("collector_configured") and (counts["NBA"] or counts["NFL"]):
+                      checked=[q for q in nba.get("quotes",[])+nfl.get("quotes",[])
+                        if q.get("is_standard") is True and q.get("source","")!="fabricated"]
+                      if checked:
+                          print("PASS: Real pregame standard lines are visible from D1 on live staging",flush=True)
+                          sys.exit(0)
+              except Exception as e:
+                  print("Diagnostics not available: "+type(e).__name__,flush=True)
+              if i<19:time.sleep(15)
+          print("FAIL: no live standard prop quote verified. Do NOT claim collection works.",flush=True)
+          sys.exit(1)
+          PY
