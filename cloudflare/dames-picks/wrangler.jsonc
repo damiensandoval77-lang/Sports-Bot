@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dames-picks-staging",
+  "main": "./src/worker.js",
+  "compatibility_date": "2026-11-17",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/",
+      "/healthz",
+      "/api/*"
+    ]
+  },
+  "triggers": {
+    "crons": [
+      "*/15 * * * *"
+    ]
+  },
+  "vars": {
+    "APP_STAGE": "staging",
+    "PAID_PROVIDER_REQUESTS": "disabled"
+  },
+  "observability": {
+    "enabled": false
+  }
+}
