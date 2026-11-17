@@ -31,7 +31,8 @@ def main():
             page.route("**/*",lambda route:route.continue_() if route.request.url.startswith(host) else route.abort())
             page.goto(url,wait_until="domcontentloaded")
             page.locator(".unified-navigation .unified-tab").first.wait_for(timeout=30000)
-            assert page.locator(".unified-tab").count()==6
+            assert page.locator(".unified-tab").count()==5
+            assert page.locator('[data-workspace="tennis"]').count()==0
             assert page.locator(".panel").count()==10, "Concept3 panel layout must remain unchanged"
             assert page.locator("#unified-workspace").is_hidden()
             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"), "Landing page overflow"
@@ -51,14 +52,13 @@ def main():
             expect(old.locator('[data-view="live"]')).to_have_class("active",timeout=10000)
             page.locator('[data-workspace="tracker"]').click()
             expect(old.locator('[data-view="tracker"]')).to_have_class("active",timeout=10000)
-            page.locator('[data-workspace="tennis"]').click()
-            expect(old.locator('[data-league="TENNIS"]')).to_have_class("active",timeout=10000)
+            assert old.locator('[data-league="TENNIS"]').count()==0
             page.screenshot(path=str(OUT/f"dames-unified-tools-{w}.png"),full_page=True)
             page.locator('[data-workspace="player"]').click()
             assert page.locator(".wrap").is_visible()
             assert page.locator("#unified-workspace").is_hidden()
             assert not errors, errors
-            print(f"PASS {w}px: Concept3 homepage; Board, Saved, Live, Tracker, Tennis; no JS exceptions")
+            print(f"PASS {w}px: Concept3 homepage; Board, Saved, Live, Tracker; no JS exceptions")
             page.close()
         browser.close()
     server.shutdown()
