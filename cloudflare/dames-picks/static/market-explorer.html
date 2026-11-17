@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Dame's Picks — Market Explorer (Cloudflare staging)</title>
+<style>
+:root{color-scheme:dark;--bg:#080611;--card:#151023;--line:#39244f;--muted:#b6a7c7;--ink:#f8f4ff;--violet:#ab4ff1;--mint:#52dba8;--danger:#ff7d96;font:14px/1.5 Inter,system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(ellipse at top,#1d0b33 0%,var(--bg) 60%);min-height:100vh}a{color:#cca2ff}button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding:16px max(16px,calc((100vw - 1440px)/2));border-bottom:1px solid #493062;background:#10091c}
+.brand{font-size:19px;font-weight:850;letter-spacing:-.6px}.brand span{color:#b36cf3}.back{padding:9px 14px;border:1px solid #6b4b86;border-radius:9px;text-decoration:none;font-size:12px}
+main{max-width:1440px;margin:0 auto;padding:24px 18px 40px}
+.kicker{color:#c789fc;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:1.3px}.intro{max-width:910px}
+h1{font-size:clamp(28px,4vw,44px);letter-spacing:-1.5px;line-height:1.15;margin:8px 0 12px}
+h2{font-size:18px;margin:0}p{margin:6px 0;color:var(--muted);line-height:1.65}.small{font-size:11px;color:#ae9abc}
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:14px;margin-top:22px}
+.card{padding:20px;background:linear-gradient(145deg,#1b122c,#110d1e);border:1px solid #51316d;border-radius:15px;box-shadow:0 8px 26px #0004;min-width:0}
+.pills{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pills button,.control{background:#251435;border:1px solid #633d83;border-radius:9px;padding:9px 14px;font-size:12px}
+.pills button.active{background:#792bcb;color:white;border-color:#b365f5}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.stat{padding:12px 15px;background:#211430;border-radius:11px;min-width:110px;flex:1;border:1px solid #402557}
+.stat strong{display:block;font-size:19px}.stat span{display:block;color:#b9a9cc;font-size:10px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.controls input{min-width:150px;flex:1;background:#0f0a1c;border:1px solid #644181;border-radius:9px;padding:10px}
+.controls select{background:#0f0a1c;border:1px solid #644181;border-radius:9px;padding:10px}
+.grid-market{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.market{padding:11px;border:1px solid #442b5d;border-radius:10px;background:#170e26}
+.market b{display:block;font-size:12px;overflow-wrap:anywhere}.market small{display:block;color:#b3a0c5;margin-top:4px}
+.tag{display:inline-flex;background:#3b214d;padding:3px 8px;border-radius:999px;color:#d5b4ff;font-size:10px}
+.good{color:var(--mint)}.warn{color:#ffd38b}
+table{width:100%;border-collapse:collapse;font-size:11px;line-height:1.5}th{text-transform:uppercase;font-size:10px;color:#b6a4c9;text-align:left;font-weight:650;white-space:nowrap}td,th{padding:10px 7px;border-bottom:1px solid #372546}td{color:#f0e8f5}td small{display:block;color:#ad9abb}
+.scroll{overflow-x:auto}
+.empty{padding:36px 18px;border:1px dashed #5d4075;text-align:center;border-radius:12px;color:#d3bedf;margin-top:15px}.empty b{display:block;font-size:14px;margin-bottom:6px}
+footer{margin-top:28px;color:#a392b8;font-size:11px;max-width:1040px;line-height:1.6}
+#status{font-size:11px;margin:9px 0;color:#d3baff}#updated{font-size:10px;color:#9d8aaf}#staging-note{padding:10px 14px;background:#352046;color:#d4baee;font-size:11px;text-align:center}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.card{padding:15px}.grid-market{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.grid-market{grid-template-columns:1fr}main{padding:20px 12px 32px}header{padding:14px}.back{font-size:10px}.stat{min-width:100px}td,th{padding:7px 5px}}
+</style>
+<script defer src="market-explorer.js?v=20261117"></script>
+</head>
+<body>
+<div id="staging-note">CLOUDFLARE STAGING · No paid API calls occur when viewing this page · Verified quotes only</div>
+<header><div class="brand">ϟ Dame's <span>Picks</span> <small class="tag">Market Explorer</small></div><a class="back" href="/dames-picks/">← Player Intelligence</a></header>
+<main>
+<section class="intro">
+<div class="kicker">NBA · NFL · Source-verified markets</div>
+<h1>More markets. Better comparisons.<br><span style="color:#c077ff">No invented statistics.</span></h1>
+<p>Explore the NBA and NFL prop markets documented by The Odds API. Actual standard PrizePicks, Underdog, FanDuel and DraftKings lines appear only after they are securely collected, validated and stored. Player usage, assists and game logs still come from separate sports-statistics sources.</p>
+</section>
+<div class="pills" aria-label="Sport"><button type="button" data-league="NBA" class="active">NBA</button><button type="button" data-league="NFL">NFL</button></div>
+<div class="grid">
+<section class="card" aria-label="Market catalog">
+<h2>Available market categories</h2><p class="small">Documented API market keys, not a guarantee of live availability for every provider or game</p>
+<div class="meta">
+<div class="stat"><strong id="count-total">—</strong><span>Documented categories</span></div>
+<div class="stat"><strong id="count-core">—</strong><span>Core markets first</span></div>
+<div class="stat"><strong id="count-extra">—</strong><span>Additional / milestone</span></div>
+</div>
+<div class="controls"><input id="search" type="search" placeholder="Find a market, e.g. turnovers" aria-label="Search markets"><select id="tier" aria-label="Market category"><option value="all">All categories</option><option value="core">Core</option><option value="expanded">Expanded</option><option value="milestone">Milestones (not standard O/U)</option></select></div>
+<div id="catalog" class="grid-market" aria-live="polite"></div>
+</section>
+<section class="card" aria-label="Budget and provider status">
+<h2>Provider and credit guardrails</h2>
+<div class="meta">
+<div class="stat"><strong id="collection">Off</strong><span>Paid collection</span></div>
+<div class="stat"><strong id="credits">—</strong><span>Recorded credit usage</span></div>
+</div>
+<div id="budget-status" class="small">Checking the Cloudflare D1 ledger…</div>
+<p class="small">Provider group: PrizePicks, Underdog, FanDuel, DraftKings. Standard lines only; demon/goblin and non-default multipliers excluded. Market-implied percentages are never displayed as AI hit estimates.</p>
+<div class="meta" id="books"></div>
+<h2 style="margin-top:20px">Data boundaries</h2>
+<p class="small"><b class="good">From The Odds API:</b> prop lines, bookmaker comparisons, market changes, team odds.</p>
+<p class="small"><b class="warn">Not from The Odds API:</b> actual player totals, minutes, defensive matchups, usage, final grading or our model projections.</p>
+</section>
+</div>
+<section class="card" style="margin-top:14px" aria-label="Verified quote board">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2>Verified pregame standard lines</h2><div id="updated">Only new Cloudflare D1 observations; no historical example data</div></div><button class="control" id="refresh" type="button">Check stored data</button></div>
+<div class="controls"><select id="provider" aria-label="Bookmaker filter"><option value="all">All providers</option><option value="prizepicks">PrizePicks</option><option value="underdog">Underdog</option><option value="fanduel">FanDuel</option><option value="draftkings">DraftKings</option></select><select id="market" aria-label="Market filter"><option value="all">All markets</option></select></div>
+<div id="status" role="status" aria-live="polite">Checking verified D1 records…</div>
+<div id="board-empty" class="empty" hidden><b>No verified standard lines yet</b><span>Provider collection is disabled or the D1 market cache has not been populated. No alternate line or old snapshot will be represented as current.</span></div>
+<div class="scroll"><table id="board" hidden><thead><tr><th>Player / game</th><th>Provider</th><th>Market</th><th>Standard line</th><th>Change</th><th>Over / Under</th><th>No-vig market probability</th><th>Observed</th></tr></thead><tbody></tbody></table></div>
+</section>
+<footer>This is a read-only staging research interface. Refreshing this page reads Cloudflare D1 and spends <b>zero Odds API credits</b>. Provider odds are indicative, especially DFS prices. An original frozen AI forecast, matchup-conditioned estimate or official grade must be supported by its own independently verified data.</footer>
+</main>
+</body>
+</html>

@@ -1,4 +1,7 @@
 import {BOOTSTRAP_0001_SQL} from "./bootstrap-0001.js";
+import {BOOTSTRAP_0002_ODDS_SQL} from "./bootstrap-0002-odds.js";
+import {readOddsCatalog,readMarketBoard,readOddsBudget} from "./odds-query.js";
+import {collectOddsIfEnabled,isCollectionEnabled} from "./odds-collector.js";
 /**
  * Dame's Picks staging Worker. Zero paid provider calls. No changes to
  * Federal Briefing or to the current GitHub Pages production deployment.
@@ -91,8 +94,9 @@ async function health(env) {
     worker_reachable: true,
     database_binding_present: hasD1(env),
     provider_collection_active: false,
-    paid_provider_calls: "disabled",
-    schema_bootstrap_version: "0001",
+    provider_collection_configured: isCollectionEnabled(env),
+    paid_provider_calls: isCollectionEnabled(env) ? "enabled" : "disabled",
+    schema_bootstrap_version: "0001 + 0002 odds",
     scheduler_mode: "cloudflare_cron_d1_heartbeat",
     current_public_site_unchanged: true
   });
@@ -122,10 +126,27 @@ export async function ensureStagingSchema(db) {
   if (Number(result?.count) < 7) throw new Error("D1 bootstrap verification failed");
   return {initialized:true,source_rows:Number(result.count)};
 }
+/**
+ * Private scheduled initialization of the versioned, idempotent 0002 odds
+ * cache and credit reservations. Never initialized from a public URL.
+ */
+export async function ensureOddsSchema(db){
+ try{
+  await db.prepare("SELECT month_utc FROM odds_api_budget LIMIT 1").all();
+  await db.prepare("SELECT quote_key FROM odds_api_quotes LIMIT 1").all();
+  await db.prepare("SELECT id FROM odds_api_attempts LIMIT 1").all();
+  return {initialized:false};
+ }catch(_){/* fresh D1 requires the second migration */}
+ await db.exec(BOOTSTRAP_0002_ODDS_SQL);
+ await db.prepare("SELECT month_utc FROM odds_api_budget LIMIT 1").all();
+ await db.prepare("SELECT quote_key FROM odds_api_quotes LIMIT 1").all();
+ await db.prepare("SELECT id FROM odds_api_attempts LIMIT 1").all();
+ return {initialized:true};
+}
 export async function cronHeartbeat(controller, env) {
   if (!hasD1(env)) return {status:"skipped",reason:"d1_not_bound"};
-  if (env.PAID_PROVIDER_REQUESTS !== "disabled")
-    return {status:"skipped",reason:"paid_calls_must_remain_disabled_in_staging"};
+  if (!["disabled","enabled"].includes(env.PAID_PROVIDER_REQUESTS))
+    return {status:"skipped",reason:"invalid_paid_configuration"};
   // Prepare the initial seven-source readiness schema before inserting any heartbeat.
   // No odds, player statistics, or prediction APIs are called here.
   try { await ensureStagingSchema(env.DB); }
@@ -156,6 +177,18 @@ export default {
     }
     if (path === "/healthz" || path === "/api/v1/health") return health(env);
     if (path === "/api/v1/status") return status(env);
+    if (path === "/api/v1/odds/catalog")return json(readOddsCatalog());
+    if (path === "/api/v1/odds/budget"){
+      const state=await readOddsBudget(env.DB,env);
+      return json(state,state.status==="ok"?200:503);
+    }
+    if (path === "/api/v1/odds/board"){
+      const league=String(url.searchParams.get("league")||"NBA").toUpperCase();
+      const limit=Number(url.searchParams.get("limit")||60);
+      const state=await readMarketBoard(env.DB,{league,limit});
+      return json(state,state.status==="invalid_league"?400:
+       ["database_not_connected","market_schema_unavailable"].includes(state.status)?503:200);
+    }
     if (api) return json({error:"unknown_api_endpoint"},404);
     if (request.method !== "GET" && request.method !== "HEAD") {
       return json({error:"method_not_allowed"},405,{"allow":"GET, HEAD"});
@@ -165,6 +198,23 @@ export default {
     return env.ASSETS.fetch(request);
   },
   scheduled(controller, env, context) {
-    context.waitUntil(cronHeartbeat(controller,env));
+    context.waitUntil((async()=>{
+      const heartbeat=await cronHeartbeat(controller,env);
+      if(heartbeat.status!=="success")return;
+      try{await ensureOddsSchema(env.DB)}
+      catch(_){console.error("Dame's Picks staging odds D1 schema is not ready");return}
+      // Paid requests require three explicit opt-ins, a Worker secret and
+      // positive persisted monthly/daily caps. Defaults spend exactly zero.
+      if(!isCollectionEnabled(env))return;
+      try{
+        const run=await collectOddsIfEnabled(env);
+        const at=new Date().toISOString();
+        await env.DB.prepare(
+         "INSERT INTO scheduler_runs(job,scheduled_at,completed_at,outcome,detail) VALUES(?,?,?,?,?)"
+        ).bind("odds-api-budgeted-collector",new Date(Number(controller?.scheduledTime)||Date.now()).toISOString(),
+         at,["ok","empty","no_eligible_events","budget_blocked","disabled"].includes(run.status)?"skipped":"failure",
+         JSON.stringify({status:run.status,credits:run.credits_charged??0,quotes:run.quotes_stored??0}).slice(0,240)).run();
+      }catch(_){console.error("Dame's Picks optional Odds API collector failed safely")}
+    })());
   }
 };
