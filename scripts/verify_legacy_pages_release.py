@@ -43,7 +43,7 @@ def evaluate(expected,served,assets):
                        "expected":digest,"actual":git_blob_sha(blob) if blob is not None else None})
     checks.append({"name":"all_pinned_assets_listed",
                    "pass":set(expected.get("asset_blob_sha1",{}))==
-                   {"feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","tennis.js","classic.html"}})
+                   {"feeds.js","live_direct.js","dames_take.js","provisional.js","short_history.js","classic.html"}})
     return {"expected_release":expected.get("release_id"),
             "served_release":served.get("release_id"),
             "checks":checks,"status":"PASS" if all(x["pass"] for x in checks) else "FAIL"}
@@ -53,7 +53,7 @@ def verify_with_retry(expected, *, fetcher=fetch, clock=time.monotonic,
                       interval=RETRY_INTERVAL_SECONDS):
     """Wait for native Pages convergence, never relax release or byte checks.
 
-    Use elapsed time rather than attempt count: seven slow HTTP requests must
+    Use elapsed time rather than attempt count: six real asset HTTP requests must
     share the same six-minute budget. Each request receives only time remaining.
     """
     started = clock()
