@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "cloudflare/dames-picks/**"
+      - "tests/test_dames_market_explorer_browser.py"
       - ".github/workflows/dames-cloudflare-staging.yml"
   push:
     branches: [main]
@@ -64,6 +65,12 @@ jobs:
           assert q.rowcount==0
           print('PASS: D1 0001/0002 idempotent schemas, credit reservation, seven disconnected sources and Cron writes')
           PY
+      - name: Install isolated Chromium browser regression dependency
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify Market Explorer desktop/phone and zero browser-side provider calls
+        run: python tests/test_dames_market_explorer_browser.py
       - name: Verify snapshot bundle does not silently omit essential site data
         working-directory: cloudflare/dames-picks
         run: |
