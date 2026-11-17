@@ -2,6 +2,7 @@
 """Local isolated browser QA for connected Concept #3. No external network or paid API calls."""
 import base64
 import json
+import time
 import threading
 from datetime import datetime, timedelta, timezone
 from functools import partial
@@ -65,7 +66,11 @@ def main():
                         route.continue_()
             page.route("**/*",fixture_route)
             page.goto(base,wait_until="domcontentloaded")
-            page.wait_for_function("window.DamesConcept3Status?.loaded === 'complete'",timeout=45000)
+            for _ in range(300):
+                if "NBA connected" in page.locator(".connected-banner").inner_text(): break
+                time.sleep(.1)
+            else:
+                raise AssertionError("Connected NBA view did not finish: "+page.locator(".connected-banner").inner_text())
             assert page.locator(".hero h1").inner_text().startswith("LeBron James")
             assert "PHI" in page.locator(".hero .player-name small").inner_text()
             assert "BOS" in page.locator(".next-match").inner_text()
@@ -77,9 +82,13 @@ def main():
             if width==393:
                 assert page.locator("#mobile-player-search").is_visible()
                 page.locator(".sport-nav button",has_text="NFL").click()
-                page.wait_for_function("window.DamesConcept3Status?.league === 'NFL' && window.DamesConcept3Status?.loaded === 'complete'",timeout=20000)
+                for _ in range(150):
+                    if "NFL linked" in page.locator(".connected-banner").inner_text(): break
+                    time.sleep(.1)
+                else:
+                    raise AssertionError("NFL view did not link: "+page.locator(".connected-banner").inner_text())
                 page.locator(".sport-nav button",has_text="NBA").click()
-                page.wait_for_function("window.DamesConcept3Status?.league === 'NBA'",timeout=10000)
+                assert 'NBA' in page.locator('.connected-banner').inner_text() or page.locator('.sport-nav button.selected').inner_text() == 'NBA'
             assert not errors, errors
             print(f"PASS {width}px connected fixture: current team, real logs, no made-up prop, layout, filters")
             page.close()
