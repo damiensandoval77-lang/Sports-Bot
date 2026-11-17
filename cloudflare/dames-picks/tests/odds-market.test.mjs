@@ -264,3 +264,28 @@ test("the monthly or daily D1 credit ceiling blocks every paid request after fre
  const r=await collectOddsIfEnabled(env,{fetcher:mock,now,leagueOrder:["NBA"]});
  assert.equal(r.status,"budget_blocked");assert.equal(r.paid_requests,0);assert.equal(requests,1);
 });
+
+test("staging 0002 D1 migration executes five entire SQL statements atomically, not split on newlines",async()=>{
+ let ready=false,attempts=0;
+ const db={
+  prepare(sql){return{sql,async all(){
+    if(!ready)throw Error("no such table: odds_api_budget");
+    return{results:[]};
+  }}},
+  async batch(statements){
+   attempts++;
+   assert.equal(statements.length,5,"three tables and two indexes");
+   const sql=statements.map(x=>x.sql);
+   assert.ok(sql.some(s=>s.includes("CREATE TABLE IF NOT EXISTS odds_api_budget")));
+   assert.ok(sql.some(s=>s.includes("CREATE TABLE IF NOT EXISTS odds_api_quotes")));
+   assert.ok(sql.some(s=>s.includes("CREATE TABLE IF NOT EXISTS odds_api_attempts")));
+   assert.ok(sql.every(s=>!s.startsWith("--")));
+   assert.ok(sql.every(s=>!s.endsWith(";")));
+   ready=true;
+   return statements.map(()=>({success:true}));
+  }
+ };
+ assert.deepEqual(await ensureOddsSchema(db),{initialized:true});
+ assert.deepEqual(await ensureOddsSchema(db),{initialized:false});
+ assert.equal(attempts,1,"scheduled runs must never replay a completed migration");
+});
