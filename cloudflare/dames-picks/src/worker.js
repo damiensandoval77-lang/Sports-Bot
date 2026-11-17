@@ -3,6 +3,7 @@ import {BOOTSTRAP_0002_ODDS_SQL} from "./bootstrap-0002-odds.js";
 import {readOddsCatalog,readMarketBoard,readOddsBudget} from "./odds-query.js";
 import {collectOddsIfEnabled,isCollectionEnabled} from "./odds-collector.js";
 import {freeKeyProbeStatus,probeFreeKeyOnCron} from "./odds-free-key-check.js";
+import {readOddsDiagnostics} from "./odds-diagnostics.js";
 /**
  * Dame's Picks staging Worker with hard-capped optional odds requests. No changes to
  * Federal Briefing or to the current GitHub Pages production deployment.
@@ -237,6 +238,10 @@ export default {
     if (path === "/api/v1/status") return status(env);
     if (path === "/api/v1/odds/catalog")return json(readOddsCatalog());
     if (path === "/api/v1/odds/connection")return json(await freeKeyProbeStatus(env));
+    if (path === "/api/v1/odds/diagnostics"){
+      const state=await readOddsDiagnostics(env);
+      return json(state,state.status==="ok"?200:503);
+    }
     if (path === "/api/v1/odds/budget"){
       const state=await readOddsBudget(env.DB,env);
       return json(state,state.status==="ok"?200:503);
@@ -279,7 +284,11 @@ export default {
         ).bind("odds-api-budgeted-collector",new Date(Number(controller?.scheduledTime)||Date.now()).toISOString(),
          at,run.status==="ok"?"success":
          ["empty","no_eligible_events","budget_blocked","disabled"].includes(run.status)?"skipped":"failure",
-         JSON.stringify({status:run.status,credits:run.credits_charged??0,quotes:run.quotes_stored??0}).slice(0,240)).run();
+         JSON.stringify({
+           status:run.status,league:run.league??null,credits:run.credits_charged??0,
+           quotes:run.quotes_stored??0,discovery:run.discovery??[],
+           providers_seen:run.providers_seen??[],rejected:run.rejected??null
+         }).slice(0,2000)).run();
       }catch(_){console.error("Dame's Picks optional Odds API collector failed safely")}
     })());
   }
