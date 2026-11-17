@@ -69,6 +69,21 @@ Cloudflare's Build configuration uses **Root directory**, **Build command** and 
 4. After owner approves actual credit use, enable both switches only on this staging Worker. Observe request receipts, `x-requests-last`, D1 line coverage and source freshness. Never enable the production site while tests are incomplete.
 5. Keep heavy Python model training and inference in appropriate compute, not Cloudflare's odds collector. Keep Federal Briefing untouched.
 
+## Existing The Odds API key — verification without credit usage
+
+The owner entered an existing API key into **Cloudflare → `dames-picks-staging` → Settings → Variables and Secrets**, using the encrypted secret name `ODDS_API_KEY`. The secret value must **never** be committed, displayed in browser JSON, pasted into chat, or copied into GitHub Actions.
+
+The next Cloudflare scheduled run checks this key **using `GET https://api.the-odds-api.com/v4/sports/` only**. The Odds API v4 documentation identifies that endpoint as costing **zero usage credits**, with authentication via the `x-api-key` HTTP header. An authentic zero-credit response must contain `x-requests-last: 0`. A successful response reports NBA/NFL sport availability and the quota remaining from response headers; no raw response or key is stored.
+
+- Only Cloudflare's **private 15-minute scheduled handler** makes the request. Opening or refreshing the website makes no Odds API request.
+- Verification results are written to the existing D1 `scheduler_runs` table as job `odds-api-free-key-check` (safe status, provider HTTP code, last-call credits, remaining credits and NBA/NFL active flags; never the secret).
+- After success, the free probe runs at most **once every six hours**. Failed checks can retry after 30 minutes; adding a new key after a missing-key result allows an immediate next-Cron retry. A status older than eight hours is marked stale and must not count as current authentication.
+- `GET /api/v1/odds/connection` reads the saved receipt and reports `key_authentication_verified` without any upstream request. The endpoint is **read-only**.
+- **This verifies only credentials and a free list-of-sports endpoint.** It does not confirm access to PrizePicks, Underdog, betting lines, paid prop markets, injuries, actual player performance or AI forecasts. The existing collector remains disabled.
+- The staging `wrangler.jsonc` explicitly retains `PAID_PROVIDER_REQUESTS=disabled`; `ODDS_API_COLLECTION` remains unset. Do not authorize or enable paid odds requests until we separately set a small daily/monthly allowance and verify real standard-line coverage.
+- To inspect the deployed key check after a Cron: `https://dames-picks-staging.damiensandoval77.workers.dev/api/v1/odds/connection`. `awaiting_free_check` means the deployed Worker hasn't completed its first verification yet; `secret_not_configured` means the Worker cannot see a valid secret under that name; `authentication_rejected` indicates an invalid/refused credential; `authenticated` + `last_call_credits: 0` confirms a live free check.
+- The live D1 schemas, periodic heartbeats and other services are independent from this credential validation. Federal Briefing and the GitHub Pages sports production site are not changed.
+
 ## Migration phases and launch gates
 
 1. **Staging Worker and site:** Git-connected, public test at Workers URL, real phone+desktop screenshot comparison to Concept #3, existing sports dashboard still live on GitHub Pages.

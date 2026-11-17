@@ -2,6 +2,7 @@ import {BOOTSTRAP_0001_SQL} from "./bootstrap-0001.js";
 import {BOOTSTRAP_0002_ODDS_SQL} from "./bootstrap-0002-odds.js";
 import {readOddsCatalog,readMarketBoard,readOddsBudget} from "./odds-query.js";
 import {collectOddsIfEnabled,isCollectionEnabled} from "./odds-collector.js";
+import {freeKeyProbeStatus,probeFreeKeyOnCron} from "./odds-free-key-check.js";
 /**
  * Dame's Picks staging Worker. Zero paid provider calls. No changes to
  * Federal Briefing or to the current GitHub Pages production deployment.
@@ -213,6 +214,7 @@ export default {
     if (path === "/healthz" || path === "/api/v1/health") return health(env);
     if (path === "/api/v1/status") return status(env);
     if (path === "/api/v1/odds/catalog")return json(readOddsCatalog());
+    if (path === "/api/v1/odds/connection")return json(await freeKeyProbeStatus(env));
     if (path === "/api/v1/odds/budget"){
       const state=await readOddsBudget(env.DB,env);
       return json(state,state.status==="ok"?200:503);
@@ -239,6 +241,11 @@ export default {
       if(heartbeat.status!=="success")return;
       try{await ensureOddsSchema(env.DB)}
       catch(_){console.error("Dame's Picks staging odds D1 schema is not ready");throw new Error("D1 odds bootstrap failed")}
+      // Zero-credit authentication check on Cloudflare's internal Cron only.
+      // This runs independently from the paid collector and is throttled in D1.
+      // It never reveals the key or performs event-odds requests.
+      try{ await probeFreeKeyOnCron(env); }
+      catch(_){ console.error("Dame's Picks free Odds API credential check failed safely"); }
       // Paid requests require three explicit opt-ins, a Worker secret and
       // positive persisted monthly/daily caps. Defaults spend exactly zero.
       if(!isCollectionEnabled(env))return;
