@@ -1,6 +1,6 @@
 /* Exercise the actual unified game detail renderer, not retired NFL redirect. */
 const fs=require("fs"),vm=require("vm"),assert=require("assert");
-const html=fs.readFileSync("docs/dames-picks/index.html","utf8");
+const html=fs.readFileSync("docs/dames-picks/classic.html","utf8");
 const from=html.indexOf("function renderGameDetail(){");
 const to=html.indexOf("function ",from+10);
 assert(from>=0&&to>from,"Unified game detail renderer missing");
