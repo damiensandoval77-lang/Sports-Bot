@@ -43,7 +43,26 @@ jobs:
           db.execute("INSERT INTO scheduler_runs(job,scheduled_at,completed_at,outcome,detail) VALUES(?,?,?,?,?)",
                      ("staging-heartbeat","2026-11-17T09:00:00Z","2026-11-17T09:00:01Z","success","smoke"))
           db.execute("SELECT * FROM scheduler_runs").fetchone()
-          print('PASS: D1 schema, seven disconnected sources and Cron writes')
+          second=Path('cloudflare/dames-picks/migrations/0002_odds_markets.sql').read_text()
+          db.executescript(second)
+          assert {row[0] for row in db.execute(
+             "SELECT name FROM sqlite_master WHERE type='table'"
+          )}.issuperset({'odds_api_budget','odds_api_quotes','odds_api_attempts'})
+          # Migration must be safe to rerun without erasing saved historic quotes.
+          db.executescript(second)
+          db.execute("INSERT OR IGNORE INTO odds_api_budget(month_utc,day_utc) VALUES('2026-11','2026-11-17')")
+          q=db.execute("""
+              UPDATE odds_api_budget SET reserved_credits=reserved_credits+4
+              WHERE month_utc='2026-11' AND used_credits+reserved_credits+4<=100
+          """)
+          assert q.rowcount==1
+          assert db.execute("SELECT reserved_credits FROM odds_api_budget").fetchone()[0]==4
+          q=db.execute("""
+              UPDATE odds_api_budget SET reserved_credits=reserved_credits+101
+              WHERE month_utc='2026-11' AND used_credits+reserved_credits+101<=100
+          """)
+          assert q.rowcount==0
+          print('PASS: D1 0001/0002 idempotent schemas, credit reservation, seven disconnected sources and Cron writes')
           PY
       - name: Verify snapshot bundle does not silently omit essential site data
         working-directory: cloudflare/dames-picks
@@ -59,5 +78,8 @@ jobs:
           assert.match(readFileSync(d+'dames-picks/index.html','utf8'),/noindex,nofollow/);
           const report=JSON.parse(readFileSync(d+'staging-build-status.json','utf8'));
           assert.equal(report.not_automated,true);
+          assert.ok(existsSync(d+'dames-picks/market-explorer.html'));
+          assert.ok(existsSync(d+'dames-picks/market-explorer.js'));
+          assert.match(readFileSync(d+'dames-picks/index.html','utf8'),/market-explorer.html/);
           console.log('PASS: staged UI and source snapshots present; staging clearly disclosed');
           NODE
