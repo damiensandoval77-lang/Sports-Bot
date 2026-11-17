@@ -10,14 +10,26 @@ permissions:
 jobs:
   read-only-live-check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 13
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.12"
-      - name: Check actual Worker binding, schema and durable scheduled heartbeat
-        run: python scripts/check_dames_d1_live.py
+      - name: Wait for Git-connected release and a real Cloudflare 15-minute Cron, then verify D1 and no-spend gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 48); do
+            echo "Read-only production staging D1 audit: attempt $attempt"
+            if python scripts/check_dames_d1_live.py; then
+              echo "Verified: real D1 bootstrap, both schemas, scheduled heartbeat, paid collection disabled"
+              exit 0
+            fi
+            if [ "$attempt" -lt 48 ]; then sleep 15; fi
+          done
+          echo "::error::D1/Cron still not verified after release + Cron observation window"
+          exit 1
       - name: Publish evidence, even if staging setup is incomplete
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
