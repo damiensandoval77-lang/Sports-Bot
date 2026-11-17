@@ -92,6 +92,8 @@ async function health(env) {
     database_binding_present: hasD1(env),
     provider_collection_active: false,
     paid_provider_calls: "disabled",
+    schema_bootstrap_version: "0001",
+    scheduler_mode: "cloudflare_cron_d1_heartbeat",
     current_public_site_unchanged: true
   });
 }
