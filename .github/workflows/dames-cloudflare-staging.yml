@@ -30,6 +30,10 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npx wrangler deploy --dry-run --outdir /tmp/dames-worker-build
+      - name: Run the actual local Cloudflare D1 + Cron bootstrap (no remote credentials)
+        working-directory: cloudflare/dames-picks
+        timeout-minutes: 3
+        run: node tests/smoke-d1-cron-local.mjs
       - name: Validate D1 migrations with real SQLite
         run: |
           python3 - <<'PY'

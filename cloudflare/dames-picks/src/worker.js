@@ -109,6 +109,42 @@ async function health(env) {
  * Existing tables never get dropped or replaced. Later migrations must still
  * go through reviewed versioned D1 migration commands, not this initializer.
  */
+/** Parse reviewed migration SQL into independent prepared statements.
+ * D1Database.exec() splits at newlines, even inside multiline CREATE TABLE,
+ * so it cannot safely consume these formatted .sql files directly.
+ * D1.batch() executes independent prepared statements in a transaction.
+ */
+export function bootstrapStatements(sql) {
+  if(typeof sql!=="string")throw Error("Invalid SQL source");
+  const noComments=sql.split(/\r?\n/).filter(line=>!line.trimStart().startsWith("--")).join("\n");
+  const out=[];let buf="",quote=null;
+  for(let i=0;i<noComments.length;i++){
+    const ch=noComments[i];
+    if(quote){
+      buf+=ch;
+      if(ch===quote){
+        if(noComments[i+1]===quote){buf+=noComments[++i]}
+        else quote=null;
+      }
+    }else if(ch==="'"||ch==='"'){quote=ch;buf+=ch}
+    else if(ch===";"){
+      const statement=buf.trim();
+      if(statement)out.push(statement);
+      buf="";
+    }else buf+=ch;
+  }
+  if(quote||buf.trim())throw Error("Unterminated migration statement");
+  const filtered=out.filter(x=>!/^\s*PRAGMA\s+foreign_keys\s*=\s*ON$/i.test(x));
+  if(!filtered.length||filtered.some(x=>!/^CREATE\s+(?:TABLE|INDEX)\s+IF\s+NOT\s+EXISTS\b/i.test(x)
+    && !/^INSERT\s+OR\s+IGNORE\s+INTO\s+source_health\b/i.test(x)))
+    throw Error("Non-idempotent operation in bootstrap SQL");
+  return filtered;
+}
+async function batchInitialMigration(db,sql){
+  const statements=bootstrapStatements(sql).map(statement=>db.prepare(statement));
+  if(typeof db?.batch!=="function")throw Error("D1 batch unsupported");
+  await db.batch(statements);
+}
 export async function ensureStagingSchema(db) {
   try {
     const source = await db.prepare("SELECT COUNT(*) AS count FROM source_health").first();
@@ -119,8 +155,7 @@ export async function ensureStagingSchema(db) {
     // All unexpected DB errors are treated as failures unless the migration
     // succeeds and the expected source rows are independently verified below.
   }
-  const oneTimeSql = BOOTSTRAP_0001_SQL.replace("PRAGMA foreign_keys = ON;","");
-  await db.exec(oneTimeSql);
+  await batchInitialMigration(db, BOOTSTRAP_0001_SQL);
   const result = await db.prepare("SELECT COUNT(*) AS count FROM source_health").first();
   await db.prepare("SELECT COUNT(*) AS count FROM scheduler_runs").first();
   if (Number(result?.count) < 7) throw new Error("D1 bootstrap verification failed");
@@ -137,7 +172,7 @@ export async function ensureOddsSchema(db){
   await db.prepare("SELECT id FROM odds_api_attempts LIMIT 1").all();
   return {initialized:false};
  }catch(_){/* fresh D1 requires the second migration */}
- await db.exec(BOOTSTRAP_0002_ODDS_SQL);
+ await batchInitialMigration(db, BOOTSTRAP_0002_ODDS_SQL);
  await db.prepare("SELECT month_utc FROM odds_api_budget LIMIT 1").all();
  await db.prepare("SELECT quote_key FROM odds_api_quotes LIMIT 1").all();
  await db.prepare("SELECT id FROM odds_api_attempts LIMIT 1").all();
@@ -200,9 +235,10 @@ export default {
   scheduled(controller, env, context) {
     context.waitUntil((async()=>{
       const heartbeat=await cronHeartbeat(controller,env);
+      if(heartbeat.status==="failure")throw new Error("D1 bootstrap heartbeat failed");
       if(heartbeat.status!=="success")return;
       try{await ensureOddsSchema(env.DB)}
-      catch(_){console.error("Dame's Picks staging odds D1 schema is not ready");return}
+      catch(_){console.error("Dame's Picks staging odds D1 schema is not ready");throw new Error("D1 odds bootstrap failed")}
       // Paid requests require three explicit opt-ins, a Worker secret and
       // positive persisted monthly/daily caps. Defaults spend exactly zero.
       if(!isCollectionEnabled(env))return;
