@@ -27,7 +27,9 @@ export function hasD1(env) {
 }
 function ageInMinutes(when, now) {
   if (!when) return null;
-  const ms = Date.parse(String(when).replace(" ", "T").replace(/(?<!Z)$/, "Z"));
+  const raw=String(when).trim();
+  const iso=/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/.test(raw)?raw.replace(" ","T")+"Z":raw;
+  const ms=Date.parse(iso);
   if (!Number.isFinite(ms) || ms > now + 120000) return null;
   return Math.max(0, Math.round((now - ms) / 60000));
 }
@@ -114,7 +116,6 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     const api = path.startsWith("/api/");
-    const operational = path === "/healthz" || path === "/api/v1/health" || path === "/api/v1/status";
     if ((api || path === "/healthz") && request.method !== "GET") {
       return json({error:"method_not_allowed"},405,{"allow":"GET"});
     }
