@@ -12,47 +12,60 @@ permissions:
 jobs:
   live-layout:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 9
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Verify intended source layout
+      - name: Verify approved DS5 first-concept source architecture
         run: |
           python - <<'PY'
           from pathlib import Path
-          s=Path('docs/dames-picks/index.html').read_text()
-          p=s.index('<h2>Dame’s projection</h2>')
-          t=s.index('<strong>Dame’s Take</strong>')
-          g=s.index('<h2>Last games</h2>')
-          assert p<t<g, 'Source has wrong projection / take / last-games order'
-          print('PASS: checked-in source layout')
+          html=Path('docs/dames-picks/index.html').read_text()
+          js=Path('docs/dames-picks/ds5-v1.js').read_text()
+          css=Path('docs/dames-picks/ds5-v1.css').read_text()
+          shell=Path('docs/dames-picks/unified-shell.js').read_text()
+          assert '<title>DS5 Sports Media' in html
+          assert 'ds5-v1.css' in html and 'ds5-v1.js' in html
+          assert 'unified-shell.js' in html and 'new URL("classic.html"' in shell
+          assert '.ds5-dashboard' in css and '.ds5-sidebar' in css
+          assert 'const feature=el("div","ds5-feature-grid")' in js
+          assert 'left.append(hero,recent)' in js
+          assert 'right.append(next,rows,take)' in js
+          assert 'lower.append(props,live,grade)' in js
+          assert 'p.quoteOnly!==true' in js, 'Quote-only markets must not become model picks'
+          assert 'num(p.projection)!==null' in js, 'No invented projections'
+          print('PASS: approved first DS5 design, verified-data protections and embedded tools')
           PY
-      - name: Verify actual GitHub Pages response is updated
+      - name: Verify actual GitHub Pages first-concept assets are published
         env:
           PUBLIC_URL: https://damiensandoval77-lang.github.io/Sports-Bot/dames-picks/
         run: |
           python - <<'PY'
           import os,time,urllib.request,urllib.error
-          url=os.environ['PUBLIC_URL']
-          last=''
-          for attempt in range(6):
-              try:
-                  req=urllib.request.Request(
-                      url+'?layout_verify='+str(int(time.time()))+'-'+str(attempt),
-                      headers={'Cache-Control':'no-cache','Pragma':'no-cache','User-Agent':'Sports-Bot-Dames-Picks-Layout-Check'})
-                  with urllib.request.urlopen(req,timeout=18) as res:
-                      html=res.read().decode('utf-8')
-                      assert res.status==200
-                  p=html.index('<h2>Dame’s projection</h2>')
-                  t=html.index('<strong>Dame’s Take</strong>')
-                  g=html.index('<h2>Last games</h2>')
-                  assert p<t<g, 'Published page still has the old layout'
-                  assert html.count('<strong>Dame’s Take</strong>')==1, 'Take is duplicated or missing'
-                  print('PASS: live public Dame\'s Picks has projection -> take -> last games')
-                  break
-              except (urllib.error.URLError,ValueError,AssertionError,UnicodeError) as e:
-                  last=str(e)
-                  print(f'Attempt {attempt+1}/6: {last}')
-                  if attempt==5:
-                      raise SystemExit('FAIL: Public deployment unverified: '+last)
-                  time.sleep(15)
+          base=os.environ['PUBLIC_URL']
+          expected={
+             '':'ds5-first-concept-20261117-r1',
+             'ds5-v1.css':'.ds5-dashboard',
+             'ds5-v1.js':'left.append(hero,recent)'
+          }
+          for path,marker in expected.items():
+              last=''
+              for attempt in range(6):
+                  try:
+                      sep='&' if '?' in path else '?'
+                      url=base+path+sep+'layout_verify='+str(int(time.time()))+'-'+str(attempt)
+                      req=urllib.request.Request(url,headers={
+                          'Cache-Control':'no-cache','Pragma':'no-cache',
+                          'User-Agent':'DS5-First-Concept-Live-Audit'})
+                      with urllib.request.urlopen(req,timeout=18) as res:
+                          body=res.read().decode('utf-8')
+                          assert res.status==200
+                      assert marker in body, 'Expected DS5 first-concept marker missing: '+marker
+                      print('PASS live:',base+path)
+                      break
+                  except (urllib.error.URLError,ValueError,AssertionError,UnicodeError) as e:
+                      last=str(e)
+                      print('Attempt',attempt+1,'for',path,'failed:',last)
+                      if attempt==5:
+                          raise SystemExit('FAIL: Public DS5 layout or asset unverified: '+last)
+                      time.sleep(10)
           PY
