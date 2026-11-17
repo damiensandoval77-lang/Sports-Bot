@@ -64,10 +64,30 @@ def main():
         browser=getattr(browser_tool,engine).launch(headless=True,**({"args":["--no-sandbox"]} if engine=="chromium" else {}))
         check("canary_excludes_retained_hidden_detail_cards",verify_board_scope(browser),
               {"scope":"isolated synthetic selector regression; not live-site evidence"})
+        # Verify the user-facing DS5 entry and its real unified workspace.
+        # Detailed saved-card tests below exercise that workspace renderer at
+        # its same-origin route, without relying on the old homepage layout.
+        host=browser.new_page(viewport={"width":390,"height":844},device_scale_factor=2,
+                              is_mobile=True,has_touch=True,timezone_id="America/New_York")
+        parent_errors=[]
+        host.on("pageerror",lambda error:parent_errors.append(str(error)))
+        host.goto(f"{BASE}/dames-picks/?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
+        host.locator("body.ds5-first-concept .ds5-dashboard").wait_for(timeout=45000)
+        parent_ok=(host.title().startswith("DS5 Sports Media")
+                   and host.locator(".ds5-sidebar").is_visible()
+                   and host.locator(".ds5-feature-grid").is_visible())
+        if parent_ok:
+            host.locator(".ds5-side-nav button").filter(has_text="Dame's Picks").first.click(timeout=10000)
+            host.frame_locator("#unified-frame").locator('button[data-league="NBA"]').wait_for(timeout=45000)
+            parent_ok=(host.locator("body.unified-tool-mode #unified-workspace").is_visible()
+                       and not parent_errors)
+        check("ds5_public_homepage_and_unified_workspace",parent_ok,
+              {"title":host.title(),"errors":parent_errors[:6]})
+        host.close()
         page=browser.new_page(viewport={"width":390,"height":844},device_scale_factor=2,is_mobile=True,has_touch=True,timezone_id="America/New_York")
         errors=[]
         page.on("pageerror",lambda error:errors.append(str(error)))
-        page.goto(f"{BASE}/dames-picks/?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
+        page.goto(f"{BASE}/dames-picks/classic.html?e2e={int(now.timestamp())}",wait_until="domcontentloaded",timeout=60000)
         page.wait_for_timeout(5000)
         if expected_upcoming_picks:
             try:
