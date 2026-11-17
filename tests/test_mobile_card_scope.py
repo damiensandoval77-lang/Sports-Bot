@@ -55,7 +55,7 @@ class BrowserMarketTabTests(unittest.TestCase):
     def test_long_market_names_fit_production_tab_buttons(self):
         import re
         from playwright.sync_api import sync_playwright
-        html=(Path(__file__).parents[1]/'docs/dames-picks/index.html').read_text()
+        html=(Path(__file__).parents[1]/'docs/dames-picks/classic.html').read_text()
         css=re.search(r'<style>(.*?)</style>',html,re.S).group(1)
         labels=['Fantasy Score · 15.0','Pass Attempts · 29.5','Pass Completions · 18.0','INT · 0.5','Pass+Rush Yds · 225.5']
         with sync_playwright() as p:

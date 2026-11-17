@@ -8,7 +8,7 @@ from scripts.stalled_feed_probe import stalled_feed_deadline
 
 class StalledFeedProbeTest(unittest.TestCase):
     def test_deadline_and_clean_browser_teardown(self):
-        html = (Path(__file__).resolve().parents[1] / "docs/dames-picks/index.html").read_text()
+        html = (Path(__file__).resolve().parents[1] / "docs/dames-picks/classic.html").read_text()
         helper = html.split("async function fetchData", 1)[1].split("async function getJSON", 1)[0]
         errors = []
         with sync_playwright() as pw:
