@@ -149,6 +149,8 @@ def main():
     older=json.loads(LEDGER.read_text()) if LEDGER.exists() else {}
     fresh=json.loads(SOURCE.read_text()) if SOURCE.exists() else {}
     final=with_voids(json.loads(FINAL.read_text()) if FINAL.exists() else {})
+    from iphone_bot.frozen_pick_final_evidence import augment_final_evidence
+    final=augment_final_evidence(final,older)
     out=merge(older,fresh,final)
     LEDGER.write_text(json.dumps(out,indent=2)+"\n")
     print("FROZEN_NEW_AI_ALL_MARKET",json.dumps({

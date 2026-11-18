@@ -73,7 +73,10 @@ def main():
     def load(path):
         f=Path(path)
         return json.loads(f.read_text()) if f.exists() else {}
-    result=durable_merge(load(args.current),load(args.incoming),with_voids(load(args.finals),Path(args.finals).with_name("espn_injury_void_ledger.json")))
+    from iphone_bot.frozen_pick_final_evidence import augment_final_evidence
+    current=load(args.current)
+    finals=with_voids(load(args.finals),Path(args.finals).with_name("espn_injury_void_ledger.json"))
+    result=durable_merge(current,load(args.incoming),augment_final_evidence(finals,current))
     dest=Path(args.output)
     dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
     print("DURABLE NEW AI RECORDS",len(result["records"]),"NEW",result["new_pregame_frozen"],

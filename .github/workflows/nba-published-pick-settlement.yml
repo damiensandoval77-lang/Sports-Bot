@@ -13,11 +13,15 @@ on:
   push:
     branches: [main]
     paths:
+      - 'iphone_bot/frozen_pick_final_evidence.py'
+      - 'iphone_bot/tests/test_frozen_pick_final_evidence.py'
       - 'iphone_bot/published_pick_settlement.py'
       - 'iphone_bot/tests/test_published_pick_settlement.py'
       - '.github/workflows/nba-published-pick-settlement.yml'
   pull_request:
     paths:
+      - 'iphone_bot/frozen_pick_final_evidence.py'
+      - 'iphone_bot/tests/test_frozen_pick_final_evidence.py'
       - 'iphone_bot/published_pick_settlement.py'
       - 'iphone_bot/tests/test_published_pick_settlement.py'
       - '.github/workflows/nba-published-pick-settlement.yml'
@@ -42,6 +46,7 @@ jobs:
       - name: Test every saved pick can settle without retroactive inference
         if: github.event_name == 'pull_request'
         run: |
+          python -m unittest iphone_bot.tests.test_frozen_pick_final_evidence -v
           python -m py_compile iphone_bot/published_pick_settlement.py
           python -m unittest discover -s iphone_bot/tests -p 'test_published_pick_settlement.py' -v
       - name: Publish actual persisted pick settlement health
