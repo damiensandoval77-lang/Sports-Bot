@@ -109,3 +109,27 @@ The next Cloudflare scheduled run checks this key **using `GET https://api.the-o
 - Workers limits: https://developers.cloudflare.com/workers/platform/limits/
 - D1 migrations: https://developers.cloudflare.com/d1/reference/migrations/
 - Cron handler: https://developers.cloudflare.com/workers/runtime-apis/handlers/scheduled/
+
+## Read-only coverage and research identity gate (2026-11-18)
+
+Bookmaker presence in a provider response does not establish accepted quote
+coverage. Inspect `/api/v1/odds/diagnostics` for accepted stored observations,
+bookmaker/event breakdown and freshness before considering a replacement source.
+Counts of history rows are not unique current selections or full-slate coverage.
+Public GET endpoints never refresh a provider or spend credits.
+
+`src/odds-identity.js` provides a pure, fail-closed NBA PrizePicks **research
+identity** adapter. It requires an explicit authoritative schedule mapping
+(provider event to canonical event, exact start and both teams) and an
+unambiguous authoritative roster identity valid through that event. Missing,
+conflicting, stale or ambiguous evidence rejects the quote. Evidence must be
+acquired by a trusted source adapter; callers must not manufacture verification
+flags or roster validity intervals. Existing app output does not currently
+supply that entire evidence contract.
+
+This module is deliberately not wired into capture or publication. Even a
+successful identity result has `eligible_for_frozen_capture:false`: native
+standard-tier equivalence, source rights, exact supported full-game stat mapping,
+fresh pretip model inference and immutable capture provenance still require
+separate validation and integration. It neither creates projections nor changes
+previous frozen picks, and cannot turn yesterday's quotes into fresh lines.
