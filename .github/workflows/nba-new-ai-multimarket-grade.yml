@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'iphone_bot/frozen_pick_final_evidence.py'
+      - 'iphone_bot/tests/test_frozen_pick_final_evidence.py'
       - 'iphone_bot/multimarket_forecast_ledger.py'
       - 'iphone_bot/merge_new_ai_publishing.py'
       - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
@@ -11,6 +13,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'iphone_bot/frozen_pick_final_evidence.py'
+      - 'iphone_bot/tests/test_frozen_pick_final_evidence.py'
       - 'iphone_bot/multimarket_forecast_ledger.py'
       - 'iphone_bot/merge_new_ai_publishing.py'
       - 'iphone_bot/tests/test_merge_new_ai_publishing.py'
@@ -41,6 +45,7 @@ jobs:
       - name: Verify first pretip snapshot stays immutable
         if: github.event_name == 'pull_request'
         run: |
+          python -m unittest iphone_bot.tests.test_frozen_pick_final_evidence -v
           python -m unittest discover -s iphone_bot/tests -p 'test_multimarket_forecast_ledger.py' -v
           python -m unittest discover -s iphone_bot/tests -p 'test_merge_new_ai_publishing.py' -v
       - name: Test ESPN final DNP rules

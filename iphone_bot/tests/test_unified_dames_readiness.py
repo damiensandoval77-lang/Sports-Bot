@@ -14,7 +14,10 @@ class UnifiedIntegrityTests(unittest.TestCase):
             file=self.root/path;file.parent.mkdir(parents=True,exist_ok=True)
             file.write_text(data,encoding="utf-8")
         self.put=put
-        put("dames-picks/index.html",'feeds.js dames_take.js getJSON("nfl/data/latest_2026.json") getJSON("lagged_matchup_all_market_ledger.json")')
+        # The branded homepage mounts the connected renderer in classic.html.
+        put("dames-picks/index.html",'feeds.js unified-shell.js')
+        put("dames-picks/classic.html",'feeds.js dames_take.js getJSON("nfl/data/latest_2026.json") getJSON("lagged_matchup_all_market_ledger.json")')
+        put("dames-picks/unified-shell.js",'new URL("classic.html", location.href)')
         put("dames-picks/feeds.js","adapter")
         put("dames-picks/dames_take.js","model")
         for path in ("index.html","nfl/index.html"):
@@ -28,6 +31,17 @@ class UnifiedIntegrityTests(unittest.TestCase):
         put("nfl/data/chunk.csv","player,line\n")
     def test_both_sports_and_redirects_healthy(self):
         self.assertEqual(evaluate(self.root)["status"],"READY")
+    def test_missing_classic_renderer_is_not_healthy(self):
+        (self.root/"dames-picks/classic.html").unlink()
+        result=evaluate(self.root)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertIn("FRONTEND_ADAPTER_MISSING",result["app"]["issues"])
+        self.assertIn("NBA_OR_NFL_HANDOFF_MISSING",result["app"]["issues"])
+    def test_shell_must_mount_connected_renderer(self):
+        self.put("dames-picks/unified-shell.js",'new URL("unconnected.html", location.href)')
+        result=evaluate(self.root)
+        self.assertEqual(result["status"],"DEGRADED")
+        self.assertIn("FRONTEND_ADAPTER_MISSING",result["app"]["issues"])
     def test_nfl_missing_shard_cannot_hide_behind_nba(self):
         (self.root/"nfl/data/chunk.csv").unlink()
         r=evaluate(self.root)
@@ -72,6 +86,6 @@ class UnifiedIntegrityTests(unittest.TestCase):
         self.assertEqual(r["sports"]["NBA"]["issues"],["ARCHIVED_STANDARD_THRESHOLDS_WITHOUT_PRIMARY_MODEL"])
         self.assertEqual(r["status"],"DEGRADED")
     def test_old_dashboard_link_is_regression(self):
-        self.put("dames-picks/index.html",'feeds.js dames_take.js getJSON("nfl/data/latest_2026.json") getJSON("lagged_matchup_all_market_ledger.json") ../nfl/index.html')
+        self.put("dames-picks/index.html",'feeds.js unified-shell.js ../nfl/index.html')
         self.assertIn("RETIRED_DASHBOARD_LINK_REINTRODUCED",evaluate(self.root)["app"]["issues"])
 if __name__=="__main__":unittest.main()

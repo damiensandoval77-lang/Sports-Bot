@@ -8,6 +8,11 @@ import json,math
 from datetime import datetime,timezone
 from pathlib import Path
 
+# Legacy publishing workflows also execute this file directly.
+if __package__ in (None, ""):
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"docs/lagged_matchup_live_all_markets.json"
 LEDGER=ROOT/"docs/lagged_matchup_all_market_ledger.json"
@@ -149,6 +154,8 @@ def main():
     older=json.loads(LEDGER.read_text()) if LEDGER.exists() else {}
     fresh=json.loads(SOURCE.read_text()) if SOURCE.exists() else {}
     final=with_voids(json.loads(FINAL.read_text()) if FINAL.exists() else {})
+    from iphone_bot.frozen_pick_final_evidence import augment_final_evidence
+    final=augment_final_evidence(final,older)
     out=merge(older,fresh,final)
     LEDGER.write_text(json.dumps(out,indent=2)+"\n")
     print("FROZEN_NEW_AI_ALL_MARKET",json.dumps({
