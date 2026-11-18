@@ -1,45 +1,50 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-18T02:26:22.832561+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-18T03:13:20.779778+00:00",
   "game_date_eastern": "2026-11-17",
   "recorded_pregame_forecasts": 296,
-  "graded": 0,
-  "verified_dnp_exclusions": 0,
+  "graded": 84,
+  "verified_dnp_exclusions": 20,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 296,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 104,
+  "ungraded": 192,
+  "new_grades": 84,
+  "new_verified_dnp_exclusions": 20,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 21,
+      "mae": 4.457,
+      "mean_signed_error": 1.248
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 21,
+      "mae": 1.986,
+      "mean_signed_error": 1.319
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 21,
+      "mae": 1.248,
+      "mean_signed_error": 0.39
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 21,
+      "mae": 6.181,
+      "mean_signed_error": 3.143
     }
   },
   "ungraded_by_game": {
     "Detroit Pistons @ San Antonio Spurs": 96,
-    "New York Knicks @ Toronto Raptors": 104,
     "Portland Trail Blazers @ Minnesota Timberwolves": 96
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Jaden Bradley",
+    "James Wiseman",
+    "Kyle Anderson",
+    "Mohamed Diawara",
+    "Trayce Jackson-Davis"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Detroit Pistons @ San Antonio Spurs": [
       "Ausar Thompson",
@@ -66,34 +71,6 @@
       "Tarris Reed Jr.",
       "Tolu Smith",
       "Victor Wembanyama"
-    ],
-    "New York Knicks @ Toronto Raptors": [
-      "Alijah Martin",
-      "Allen Graves",
-      "Andre Drummond",
-      "Collin Murray-Boyles",
-      "Immanuel Quickley",
-      "Ja'Kobe Walter",
-      "Jaden Bradley",
-      "Jakob Poeltl",
-      "Jalen Brunson",
-      "Jamal Shead",
-      "James Wiseman",
-      "Jamison Battle",
-      "Jordan Clarkson",
-      "Jose Alvarado",
-      "Josh Hart",
-      "Karl-Anthony Towns",
-      "Kyle Anderson",
-      "Landry Shamet",
-      "Mikal Bridges",
-      "Miles McBride",
-      "Mohamed Diawara",
-      "OG Anunoby",
-      "RJ Barrett",
-      "Scottie Barnes",
-      "Trayce Jackson-Davis",
-      "Tyler Kolek"
     ],
     "Portland Trail Blazers @ Minnesota Timberwolves": [
       "Ayo Dosunmu",
@@ -122,28 +99,28 @@
       "Yang Hansen"
     ]
   },
-  "ungraded_distinct_player_markets": 296,
+  "ungraded_distinct_player_markets": 192,
   "final_feed": {
     "pending_matchups": 11,
-    "final_nba_games": 8,
+    "final_nba_games": 9,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 267,
+    "retrieved_player_lines": 300,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 11,
+    "cached_official_id_candidates": 10,
     "final_cached_id_nba_games": 8,
     "secondary_espn_dnp_discovered_game_hints": 5,
-    "secondary_verified_explicit_dnp_players": 15,
+    "secondary_verified_explicit_dnp_players": 20,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 1770,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 1803,
+    "newly_retrieved_verified_rows": 33,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 296
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 192
     },
     "players": [
       {
@@ -815,734 +792,6 @@
         "player": "Victor Wembanyama",
         "team": "SAS",
         "game": "Detroit Pistons @ San Antonio Spurs",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alijah Martin",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Allen Graves",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Murray-Boyles",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Murray-Boyles",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Murray-Boyles",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Collin Murray-Boyles",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Immanuel Quickley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Immanuel Quickley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Immanuel Quickley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Immanuel Quickley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ja'Kobe Walter",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden Bradley",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jakob Poeltl",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Shead",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamison Battle",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyle Anderson",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "RJ Barrett",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scottie Barnes",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scottie Barnes",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scottie Barnes",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scottie Barnes",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trayce Jackson-Davis",
-        "team": "TOR",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Toronto Raptors",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
