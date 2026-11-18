@@ -8,6 +8,11 @@ import json,math
 from datetime import datetime,timezone
 from pathlib import Path
 
+# Legacy publishing workflows also execute this file directly.
+if __package__ in (None, ""):
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"docs/lagged_matchup_live_all_markets.json"
 LEDGER=ROOT/"docs/lagged_matchup_all_market_ledger.json"
