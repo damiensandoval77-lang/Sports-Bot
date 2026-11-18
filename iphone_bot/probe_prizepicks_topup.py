@@ -15,13 +15,15 @@ OUTPUT=ROOT/"docs/prizepicks_topup_probe.json"
 ENDPOINT="https://prizepicksapi.com/api/v1/projections"
 MAX_BYTES=256000
 
-def probe(key):
+def probe(key, *, allow_paid_request=False):
     result={"checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
         "source":"independent_prizepicksapi.com",
         "purpose":"ONE_TIME_TOPUP_ACCESS_VALIDATION",
         "requested_rows":100,"raw_offers_published":False,
         "ongoing_polling_enabled":False,
         "topup_credits_amount_from_api":None}
+    if not allow_paid_request:
+        return {**result, 'status':'PAID_REQUEST_NOT_AUTHORIZED', 'api_requests_made':0, 'request_cost':0}
     if not key:return {**result,"status":"NO_GITHUB_API_KEY"}
     req=urllib.request.Request(ENDPOINT+"?"+urllib.parse.urlencode({
         "league":"NBA","status":"active","view":"compact","limit":100}),
@@ -55,7 +57,10 @@ def probe(key):
                 "error_type":type(err).__name__}
 
 def main():
-    result=probe(os.getenv("PRIZEPICKS_API_KEY","").strip())
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--allow-paid-request', action='store_true')
+    result=probe(os.getenv("PRIZEPICKS_API_KEY","").strip(), allow_paid_request=parser.parse_args().allow_paid_request)
     OUTPUT.write_text(json.dumps(result,indent=2)+"\n")
     print(json.dumps(result,sort_keys=True))
 

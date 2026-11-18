@@ -1,11 +1,12 @@
 name: Check funded independent PrizePicks API key and current quota
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'iphone_bot/check_prizepicks_live_access.py'
-      - '.github/workflows/nba-prizepicks-current-balance.yml'
+    inputs:
+      allow_paid_request:
+        description: 'Explicitly authorize one credit-backed provider request'
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: write
 concurrency:
@@ -13,6 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   check:
+    if: github.event_name == 'workflow_dispatch' && inputs.allow_paid_request == true
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -25,7 +27,7 @@ jobs:
       - name: Perform one small authenticated PrizePicks request and read credit headers
         env:
           PRIZEPICKS_API_KEY: ${{ secrets.PRIZEPICKS_API_KEY }}
-        run: python -m iphone_bot.check_prizepicks_live_access
+        run: python -m iphone_bot.check_prizepicks_live_access --allow-paid-request
       - name: Publish quota-only status without storing offers or API key
         run: |
           set -euo pipefail
