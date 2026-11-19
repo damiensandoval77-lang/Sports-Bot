@@ -1,37 +1,37 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-19T01:52:50.444669+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-19T02:25:42.221942+00:00",
   "game_date_eastern": "2026-11-18",
   "recorded_pregame_forecasts": 936,
-  "graded": 0,
-  "verified_dnp_exclusions": 0,
+  "graded": 104,
+  "verified_dnp_exclusions": 4,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 936,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 108,
+  "ungraded": 828,
+  "new_grades": 104,
+  "new_verified_dnp_exclusions": 4,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 26,
+      "mae": 4.765,
+      "mean_signed_error": 2.242
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 26,
+      "mae": 2.096,
+      "mean_signed_error": 1.458
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 26,
+      "mae": 1.219,
+      "mean_signed_error": 0.35
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 26,
+      "mae": 6.65,
+      "mean_signed_error": 3.912
     }
   },
   "ungraded_by_game": {
@@ -39,13 +39,14 @@
     "Chicago Bulls @ Brooklyn Nets": 112,
     "Detroit Pistons @ New Orleans Pelicans": 100,
     "Golden State Warriors @ Dallas Mavericks": 120,
-    "Houston Rockets @ Indiana Pacers": 108,
     "Memphis Grizzlies @ Cleveland Cavaliers": 104,
     "Milwaukee Bucks @ Miami Heat": 108,
     "Philadelphia 76ers @ Orlando Magic": 92,
     "Washington Wizards @ Toronto Raptors": 104
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Andrew Nembhard"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Atlanta Hawks @ Oklahoma City Thunder": [
       "Aaron Wiggins",
@@ -160,35 +161,6 @@
       "Yaxel Lendeborg",
       "Zaccharie Risacher"
     ],
-    "Houston Rockets @ Indiana Pacers": [
-      "Aaron Nesmith",
-      "Alperen Sengun",
-      "Amen Thompson",
-      "Andrew Nembhard",
-      "Bogdan Bogdanovi\u0107",
-      "Braden Smith",
-      "Bruce Thornton",
-      "Fred VanVleet",
-      "Isaiah Crawford",
-      "Ivica Zubac",
-      "Jabari Smith Jr.",
-      "Jae'Sean Tate",
-      "Jalen Slawson",
-      "Jarace Walker",
-      "Jay Huff",
-      "Kelly Oubre Jr.",
-      "Kevin Durant",
-      "Kobe Brown",
-      "Larry Nance Jr.",
-      "Marcus Smart",
-      "Obi Toppin",
-      "Oscar Tshiebwe",
-      "Pascal Siakam",
-      "Quenton Jackson",
-      "Reed Sheppard",
-      "T.J. McConnell",
-      "Tari Eason"
-    ],
     "Memphis Grizzlies @ Cleveland Cavaliers": [
       "Cam Spencer",
       "Cameron Boozer",
@@ -300,28 +272,28 @@
       "Will Riley"
     ]
   },
-  "ungraded_distinct_player_markets": 936,
+  "ungraded_distinct_player_markets": 828,
   "final_feed": {
-    "pending_matchups": 19,
-    "final_nba_games": 13,
+    "pending_matchups": 14,
+    "final_nba_games": 6,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 438,
+    "retrieved_player_lines": 205,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 19,
-    "final_cached_id_nba_games": 13,
-    "secondary_espn_dnp_discovered_game_hints": 10,
-    "secondary_verified_explicit_dnp_players": 31,
+    "cached_official_id_candidates": 14,
+    "final_cached_id_nba_games": 6,
+    "secondary_espn_dnp_discovered_game_hints": 5,
+    "secondary_verified_explicit_dnp_players": 16,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 1939,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 1978,
+    "newly_retrieved_verified_rows": 34,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 936
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 828
     },
     "players": [
       {
@@ -3261,762 +3233,6 @@
         "player": "Zaccharie Risacher",
         "team": "DAL",
         "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Nesmith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Nesmith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Nesmith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Nesmith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alperen Sengun",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Amen Thompson",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Nembhard",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Nembhard",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Nembhard",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Nembhard",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bogdan Bogdanovi\u0107",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Braden Smith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Braden Smith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Braden Smith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Braden Smith",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bruce Thornton",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Fred VanVleet",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Crawford",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ivica Zubac",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ivica Zubac",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ivica Zubac",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ivica Zubac",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jabari Smith Jr.",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jae'Sean Tate",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Slawson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Slawson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Slawson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Slawson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarace Walker",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarace Walker",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarace Walker",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jarace Walker",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jay Huff",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jay Huff",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jay Huff",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jay Huff",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kelly Oubre Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kelly Oubre Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kelly Oubre Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kelly Oubre Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Durant",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kobe Brown",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kobe Brown",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kobe Brown",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kobe Brown",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Larry Nance Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Larry Nance Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Larry Nance Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Larry Nance Jr.",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Smart",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Obi Toppin",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Obi Toppin",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Obi Toppin",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Obi Toppin",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Oscar Tshiebwe",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pascal Siakam",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pascal Siakam",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pascal Siakam",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pascal Siakam",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quenton Jackson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quenton Jackson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quenton Jackson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Quenton Jackson",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Reed Sheppard",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "T.J. McConnell",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "T.J. McConnell",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "T.J. McConnell",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "T.J. McConnell",
-        "team": "IND",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tari Eason",
-        "team": "HOU",
-        "game": "Houston Rockets @ Indiana Pacers",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
