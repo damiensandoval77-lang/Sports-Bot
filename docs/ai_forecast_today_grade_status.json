@@ -1,41 +1,41 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-19T03:16:00.468557+00:00",
+  "generated_at": "2026-11-19T03:18:31.008534+00:00",
   "game_date_eastern": "2026-11-18",
   "recorded_pregame_forecasts": 1240,
-  "graded": 512,
-  "verified_dnp_exclusions": 116,
+  "graded": 576,
+  "verified_dnp_exclusions": 136,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 628,
-  "ungraded": 612,
-  "new_grades": 264,
-  "new_verified_dnp_exclusions": 60,
+  "accounted_for": 712,
+  "ungraded": 528,
+  "new_grades": 64,
+  "new_verified_dnp_exclusions": 20,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 128,
-      "mae": 4.959,
-      "mean_signed_error": 0.036
+      "graded": 144,
+      "mae": 4.826,
+      "mean_signed_error": 0.017
     },
     "REB": {
-      "graded": 128,
-      "mae": 2.046,
-      "mean_signed_error": 0.812
+      "graded": 144,
+      "mae": 2.027,
+      "mean_signed_error": 0.674
     },
     "AST": {
-      "graded": 128,
-      "mae": 1.335,
-      "mean_signed_error": -0.01
+      "graded": 144,
+      "mae": 1.412,
+      "mean_signed_error": -0.073
     },
     "PRA": {
-      "graded": 128,
-      "mae": 6.384,
-      "mean_signed_error": 0.754
+      "graded": 144,
+      "mae": 6.159,
+      "mean_signed_error": 0.523
     }
   },
   "ungraded_by_game": {
-    "Atlanta Hawks @ Oklahoma City Thunder": 88,
+    "Atlanta Hawks @ Oklahoma City Thunder": 4,
     "Boston Celtics @ Denver Nuggets": 96,
     "Detroit Pistons @ New Orleans Pelicans": 100,
     "Golden State Warriors @ Dallas Mavericks": 120,
@@ -46,7 +46,9 @@
     "Alex Morales",
     "Andrew Nembhard",
     "Anthony Gill",
+    "Brooks Barnhizer",
     "Bub Carrington",
+    "CJ McCollum",
     "Caleb Wilson",
     "Dean Wade",
     "Drake Powell",
@@ -59,8 +61,11 @@
     "Jaylen Brown",
     "Jaylin Sellers",
     "Jaylon Tyson",
+    "Jock Landale",
     "Jordan Hawkins",
+    "Josh Dix",
     "Karim L\u00f3pez",
+    "Micah Peavy",
     "Myron Gardner",
     "Nikola Vu\u010devi\u0107",
     "Ousmane Dieng",
@@ -75,28 +80,7 @@
   ],
   "ungraded_distinct_player_names_by_game": {
     "Atlanta Hawks @ Oklahoma City Thunder": [
-      "Aaron Wiggins",
-      "Aday Mara",
-      "Ajay Mitchell",
-      "Alex Caruso",
-      "Bennett Stirtz",
-      "Brooks Barnhizer",
-      "CJ McCollum",
-      "Corey Kispert",
-      "Dyson Daniels",
-      "Isaiah Hartenstein",
-      "Jalen Johnson",
-      "Jared McCain",
-      "Jock Landale",
-      "Josh Dix",
-      "Kenrich Williams",
-      "Kingston Flemings",
-      "Luguentz Dort",
-      "Micah Peavy",
-      "Nickeil Alexander-Walker",
-      "Onyeka Okongwu",
-      "Shai Gilgeous-Alexander",
-      "Zuby Ejiofor"
+      "Kingston Flemings"
     ],
     "Boston Celtics @ Denver Nuggets": [
       "Aaron Gordon",
@@ -240,645 +224,58 @@
       "Ziaire Williams"
     ]
   },
-  "ungraded_distinct_player_markets": 612,
+  "ungraded_distinct_player_markets": 528,
   "final_feed": {
     "pending_matchups": 14,
-    "final_nba_games": 11,
+    "final_nba_games": 12,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 376,
+    "retrieved_player_lines": 410,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 8,
-    "final_cached_id_nba_games": 5,
+    "final_cached_id_nba_games": 6,
     "secondary_espn_dnp_discovered_game_hints": 5,
-    "secondary_verified_explicit_dnp_players": 29,
-    "secondary_dnp_still_unverified": 0,
+    "secondary_verified_explicit_dnp_players": 30,
+    "secondary_dnp_still_unverified": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 2145,
-    "newly_retrieved_verified_rows": 105,
+    "verified_cache_rows": 2179,
+    "newly_retrieved_verified_rows": 34,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 612
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 4,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 524
     },
     "players": [
       {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aday Mara",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ajay Mitchell",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ajay Mitchell",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ajay Mitchell",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ajay Mitchell",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Caruso",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bennett Stirtz",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brooks Barnhizer",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "CJ McCollum",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Hartenstein",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jared McCain",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jock Landale",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Dix",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kenrich Williams",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Kingston Flemings",
         "team": "ATL",
         "game": "Atlanta Hawks @ Oklahoma City Thunder",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Kingston Flemings",
         "team": "ATL",
         "game": "Atlanta Hawks @ Oklahoma City Thunder",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Kingston Flemings",
         "team": "ATL",
         "game": "Atlanta Hawks @ Oklahoma City Thunder",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Kingston Flemings",
         "team": "ATL",
         "game": "Atlanta Hawks @ Oklahoma City Thunder",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Peavy",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Shai Gilgeous-Alexander",
-        "team": "OKC",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Oklahoma City Thunder",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Aaron Gordon",
