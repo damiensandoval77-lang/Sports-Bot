@@ -31,6 +31,7 @@ async function verify(browser,name,viewport){
  await page.waitForURL('**/dames-picks/**',{timeout:15000});
  // The production DS5 shell lazy-loads the shared board in an iframe.
  // Enter it through visible navigation, not a direct classic.html test URL.
+ await page.locator(".sport-nav").getByRole("button", {name:"NFL",exact:true}).click();
  await page.getByRole("button", {name:"Open Today's Player Props", exact:true}).click();
  const boardFrame=await (await page.locator('#unified-frame').elementHandle()).contentFrame();
  assert(boardFrame,name+' prop-board iframe missing');
@@ -87,7 +88,8 @@ async function verify(browser,name,viewport){
  await boardFrame.locator('#markets button').last().click();
  assert(await boardFrame.locator('#detail-content .hero').count()===1,name+' market switch broke detail');
  await boardFrame.locator('#back').click();
- await boardFrame.locator('[data-view="live"]').click();
+ await page.locator('[data-workspace="live"]').click();
+ await boardFrame.waitForFunction(()=>document.querySelector('[data-view="live"]')?.classList.contains("active"),null,{timeout:15000});
  const game=await boardFrame.evaluate(()=>{const g=state.liveGames.find(g=>g.sport==='NFL'&&state.nfl.some(p=>p.gameId===g.gameId));if(!g)return null;openGame(g);return {id:g.gameId,count:m.displayCurrentPicks(state.nfl.filter(p=>p.gameId===g.gameId)).length};});
  assert(game&&game.count>0,name+' no saved game comparison');
  assert.equal(await boardFrame.locator('#detail-content [data-prop]').count(),game.count,name+' saved comparison records missing');
@@ -114,7 +116,8 @@ async function verify(browser,name,viewport){
   assert((await boardFrame.locator('#matchup').innerText()).includes('Live feed unavailable'),name+' missing unavailable-source disclosure');
   await boardFrame.locator('#back').click();
  }
- await boardFrame.locator('[data-view="tracker"]').click();
+ await page.locator('[data-workspace="tracker"]').click();
+ await boardFrame.waitForFunction(()=>document.querySelector('[data-view="tracker"]')?.classList.contains("active"),null,{timeout:15000});
  assert(await boardFrame.locator('#board').isVisible(),name+' tracker navigation broken');
  const metrics=await boardFrame.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth}));
  assert(metrics.width<=metrics.screen+2,name+' horizontal overflow '+JSON.stringify(metrics));
