@@ -1,51 +1,52 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-19T03:18:31.008534+00:00",
+  "generated_at": "2026-11-19T03:27:06.236714+00:00",
   "game_date_eastern": "2026-11-18",
   "recorded_pregame_forecasts": 1240,
-  "graded": 576,
-  "verified_dnp_exclusions": 136,
+  "graded": 676,
+  "verified_dnp_exclusions": 156,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 712,
-  "ungraded": 528,
-  "new_grades": 64,
+  "accounted_for": 832,
+  "ungraded": 408,
+  "new_grades": 100,
   "new_verified_dnp_exclusions": 20,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 144,
-      "mae": 4.826,
-      "mean_signed_error": 0.017
+      "graded": 169,
+      "mae": 4.71,
+      "mean_signed_error": 0.207
     },
     "REB": {
-      "graded": 144,
-      "mae": 2.027,
-      "mean_signed_error": 0.674
+      "graded": 169,
+      "mae": 2.03,
+      "mean_signed_error": 0.669
     },
     "AST": {
-      "graded": 144,
-      "mae": 1.412,
-      "mean_signed_error": -0.073
+      "graded": 169,
+      "mae": 1.428,
+      "mean_signed_error": -0.1
     },
     "PRA": {
-      "graded": 144,
-      "mae": 6.159,
-      "mean_signed_error": 0.523
+      "graded": 169,
+      "mae": 6.121,
+      "mean_signed_error": 0.742
     }
   },
   "ungraded_by_game": {
     "Atlanta Hawks @ Oklahoma City Thunder": 4,
     "Boston Celtics @ Denver Nuggets": 96,
     "Detroit Pistons @ New Orleans Pelicans": 100,
-    "Golden State Warriors @ Dallas Mavericks": 120,
     "Phoenix Suns @ Sacramento Kings": 100,
     "Utah Jazz @ Los Angeles Lakers": 108
   },
   "excluded_verified_dnp_players": [
+    "Al Horford",
     "Alex Morales",
     "Andrew Nembhard",
     "Anthony Gill",
+    "Brandon Williams",
     "Brooks Barnhizer",
     "Bub Carrington",
     "CJ McCollum",
@@ -61,6 +62,7 @@
     "Jaylen Brown",
     "Jaylin Sellers",
     "Jaylon Tyson",
+    "Jett Howard",
     "Jock Landale",
     "Jordan Hawkins",
     "Josh Dix",
@@ -73,7 +75,9 @@
     "RJ Barrett",
     "Ryan Rollins",
     "Scottie Barnes",
+    "Stephen Curry",
     "Tim Hardaway Jr.",
+    "Tobi Lawal",
     "Tre Mann",
     "Ty Jerome",
     "Tyrese Maxey"
@@ -135,38 +139,6 @@
       "Tolu Smith",
       "Zion Williamson"
     ],
-    "Golden State Warriors @ Dallas Mavericks": [
-      "Al Horford",
-      "Brandin Podziemski",
-      "Brandon Williams",
-      "Caleb Martin",
-      "Charles Bassey",
-      "Cooper Flagg",
-      "Daniel Gafford",
-      "De'Anthony Melton",
-      "Draymond Green",
-      "Gary Payton II",
-      "Georges Niang",
-      "Graham Ike",
-      "Gui Santos",
-      "Jett Howard",
-      "Kyrie Irving",
-      "LJ Cryer",
-      "Malevy Leons",
-      "Marcus Sasser",
-      "Max Christie",
-      "Morez Johnson Jr.",
-      "Moussa Ciss\u00e9",
-      "Naji Marshall",
-      "P.J. Washington",
-      "Santi Aldama",
-      "Stephen Curry",
-      "Tobi Lawal",
-      "Walter Clayton Jr.",
-      "Will Richard",
-      "Yaxel Lendeborg",
-      "Zaccharie Risacher"
-    ],
     "Phoenix Suns @ Sacramento Kings": [
       "Alex Karaban",
       "Collin Gillespie",
@@ -224,29 +196,29 @@
       "Ziaire Williams"
     ]
   },
-  "ungraded_distinct_player_markets": 528,
+  "ungraded_distinct_player_markets": 408,
   "final_feed": {
     "pending_matchups": 14,
-    "final_nba_games": 12,
+    "final_nba_games": 13,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 410,
+    "retrieved_player_lines": 446,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 8,
+    "cached_official_id_candidates": 7,
     "final_cached_id_nba_games": 6,
     "secondary_espn_dnp_discovered_game_hints": 5,
     "secondary_verified_explicit_dnp_players": 30,
     "secondary_dnp_still_unverified": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 2179,
-    "newly_retrieved_verified_rows": 34,
+    "verified_cache_rows": 2215,
+    "newly_retrieved_verified_rows": 36,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
       "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 4,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 524
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 404
     },
     "players": [
       {
@@ -1646,846 +1618,6 @@
         "player": "Zion Williamson",
         "team": "NOP",
         "game": "Detroit Pistons @ New Orleans Pelicans",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Al Horford",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Al Horford",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Al Horford",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Al Horford",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandin Podziemski",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandin Podziemski",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandin Podziemski",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandin Podziemski",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Williams",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Williams",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Williams",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Williams",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Martin",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Martin",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Martin",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Caleb Martin",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Charles Bassey",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Charles Bassey",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Charles Bassey",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Charles Bassey",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cooper Flagg",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cooper Flagg",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cooper Flagg",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cooper Flagg",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniel Gafford",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniel Gafford",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniel Gafford",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniel Gafford",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Anthony Melton",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Anthony Melton",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Anthony Melton",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "De'Anthony Melton",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Draymond Green",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Draymond Green",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Draymond Green",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Draymond Green",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gary Payton II",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gary Payton II",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gary Payton II",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gary Payton II",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Georges Niang",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Georges Niang",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Georges Niang",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Georges Niang",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Graham Ike",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Graham Ike",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Graham Ike",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Graham Ike",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gui Santos",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gui Santos",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gui Santos",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Gui Santos",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jett Howard",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jett Howard",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jett Howard",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jett Howard",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyrie Irving",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyrie Irving",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyrie Irving",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kyrie Irving",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LJ Cryer",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LJ Cryer",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LJ Cryer",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LJ Cryer",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malevy Leons",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malevy Leons",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malevy Leons",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Malevy Leons",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Sasser",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Sasser",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Sasser",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Marcus Sasser",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Max Christie",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Max Christie",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Max Christie",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Max Christie",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Morez Johnson Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Morez Johnson Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Morez Johnson Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Morez Johnson Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Ciss\u00e9",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Ciss\u00e9",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Ciss\u00e9",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Ciss\u00e9",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naji Marshall",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naji Marshall",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naji Marshall",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naji Marshall",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "P.J. Washington",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Santi Aldama",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Santi Aldama",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Santi Aldama",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Santi Aldama",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephen Curry",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephen Curry",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephen Curry",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Stephen Curry",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walter Clayton Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walter Clayton Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walter Clayton Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Walter Clayton Jr.",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Richard",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Richard",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Richard",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Will Richard",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yaxel Lendeborg",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yaxel Lendeborg",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yaxel Lendeborg",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yaxel Lendeborg",
-        "team": "GSW",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zaccharie Risacher",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zaccharie Risacher",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zaccharie Risacher",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zaccharie Risacher",
-        "team": "DAL",
-        "game": "Golden State Warriors @ Dallas Mavericks",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
