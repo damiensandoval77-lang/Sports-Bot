@@ -47,5 +47,7 @@ class RamsCardinalsEvidenceTests(unittest.TestCase):
    self.assertEqual(c['game_id'],GAME);self.assertEqual(c['odds_type'],'standard');self.assertEqual(c['grade_status'],'graded')
    for field in r.FIELDS:self.assertEqual(a.get(field),c.get(field),field)
   self.assertEqual(sum(x['odds_type']=='standard' for x in oldp)-sum(x['odds_type']=='standard' for x in newp),16)
-  self.assertEqual(sum(x['odds_type']=='standard' and x['game_id']==GAME for x in newp),9)
+  # Wrong-team Brissett lines stay pending even when separate inactive evidence resolves others.
+  for x in (row for row in oldp if row['game_id']==GAME and row['player_id']=='00-0033119'):
+   self.assertEqual(new[identity(x)],x)
 if __name__=='__main__':unittest.main()
