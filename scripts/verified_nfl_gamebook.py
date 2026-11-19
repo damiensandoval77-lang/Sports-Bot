@@ -30,7 +30,7 @@ REVIEWED_GAMES.update({'2026_10_BUF_NYJ': {'excluded_targets': ['TGT'],
  '2026_10_SEA_LV': {'excluded_targets': ['TGT'],
                     'pdf_sha': '2e5c44630e0f55fa54b0794451168da1a88eccc42ea0dda90be5beb0221298d3',
                     'rows': 20,
-                    'sha': 'b702723b114a9a8b8a3596fbe439383a79a38ca1d916a999c45950ddac04e3cb',
+                    'sha': '2a9b61a5dca1d6d06a14b82c8da9ba23c4efdb55fe755e61c1ab717fa298daa9',
                     'url': 'https://static.www.nfl.com/image/upload/v1794829726/gamecenter/ab78a43c-4feb-11f1-abca-2c54536568a9.pdf'}})
 
 # Early-injury/Reboot outcome not established: preserve every original outcome.
@@ -83,7 +83,7 @@ REVIEWED_GAMES.update({'2026_10_CAR_NO': {'excluded_targets': ['TGT'],
                     'excluded_targets': ['TGT'],
                     'pdf_sha': 'c5378c33a7fcac7cc0c2dde42e6a89640252f86325f192692a577d37b4cdc651',
                     'rows': 22,
-                    'sha': '83614b14c3ae4860effe1094c69ddb173feb867614ee9edf4de1e9cf4cdf36c3',
+                    'sha': 'aa0cf288a117848a1ca57dbfd954ad200b96b8dfa5dcf74a9fe8e11030457bdc',
                     'url': 'https://static.www.nfl.com/image/upload/v1794829724/gamecenter/ab78a748-4feb-11f1-abca-2c54536568a9.pdf'}})
 
 def reviewed_spec(game):
@@ -124,6 +124,22 @@ def validate(data,scheduled):
             snap_proof=(type(snaps) is int and snaps>0 and type(p.get('offensive_snaps_page')) is int and p['offensive_snaps_page']>0)
             if not (p.get('offensive_starter') is True or snap_proof or any(p[k]>0 for k in ('attempts','carries','targets'))):
                 raise ValueError('No verified offensive participation')
+    for p in rows:
+        proof=p.get('verified_zero_targets')
+        if proof is not None:
+            totals=data['verified_team_totals'][p['team']]
+            n=totals['attempts']
+            if (proof.get('method')!='complete_team_targets_equal_pass_attempts_with_independent_pbp'
+                    or proof.get('game_id')!=data['game_id'] or proof.get('team')!=p['team']
+                    or proof.get('player_id')!=p['player_id'] or p['targets']!=0
+                    or proof.get('official_gamebook_page')!=2 or n<=0
+                    or totals['targets']!=n or proof.get('team_pass_attempts')!=n
+                    or proof.get('team_receiver_targets')!=n
+                    or len(proof.get('independent_pass_play_ids',[]))!=n
+                    or len(set(proof['independent_pass_play_ids']))!=n
+                    or len(proof.get('independent_receiver_ids',[]))!=n
+                    or any(not x or x==p['player_id'] for x in proof['independent_receiver_ids'])):
+                raise ValueError('Unproven zero target allocation')
     teams=(data['away'],data['home'])
     scoring=data['verified_game_scoring']
     conversions=scoring['two_point_conversions']
@@ -219,6 +235,11 @@ def supplement(boxroot,schedule,boxes):
                 # alternate-tier research must retain its prior outcome inputs.
                 updated[p['player_id']]['standard_recovery_only']=True
                 updated[p['player_id']]['excluded_recovery_targets']=sorted(set(spec.get('excluded_targets',[])) | set(p.get('unverified_market_targets',[])))
+                # Only exact, hash-pinned complete-allocation proof may release
+                # this player's TGT hold. Never release another market or tier.
+                if p.get('verified_zero_targets'):
+                    updated[p['player_id']]['excluded_recovery_targets']=[
+                        t for t in updated[p['player_id']]['excluded_recovery_targets'] if t!='TGT']
                 updated[p['player_id']]['prior_verified_boxscore']=old.get(p['player_id'])
         staged[game]=updated
     boxes.update(staged)
