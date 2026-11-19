@@ -29,9 +29,15 @@ async function verify(browser,name,viewport){
  const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
  assert(response?.ok(),name+' entry HTTP failure');
  await page.waitForURL('**/dames-picks/**',{timeout:15000});
- await page.waitForFunction(()=>typeof state!=='undefined'&&!state.loading&&state.updated,{timeout:45000});
- await page.locator('[data-league="NFL"]').click();
- const integrity=await page.evaluate(async()=>{
+ // The production DS5 shell lazy-loads the shared board in an iframe.
+ // Enter it through visible navigation, not a direct classic.html test URL.
+ await page.locator('[data-workspace="board"]').click();
+ const boardFrame=await (await page.locator('#unified-frame').elementHandle()).contentFrame();
+ assert(boardFrame,name+' prop-board iframe missing');
+ await boardFrame.waitForURL('**/classic.html**',{timeout:15000});
+ await boardFrame.waitForFunction(()=>typeof state!=='undefined'&&!state.loading&&state.updated,null,{timeout:45000});
+ await boardFrame.locator('[data-league="NFL"]').click();
+ const integrity=await boardFrame.evaluate(async()=>{
    const root=new URL('../nfl/data/',location.href);
    const json=async file=>{const r=await fetch(new URL(file,root),{cache:'no-store'});if(!r.ok)throw Error(file+' HTTP '+r.status);return r.json()};
    const manifest=await json('latest_2026.json');
@@ -62,39 +68,39 @@ async function verify(browser,name,viewport){
  if(requireDeployed)assert(integrity.build.includes(expectedRelease),name+' deployed release mismatch: '+integrity.build);
  // Board rendering and highest-estimate order: zero cards is valid only when
  // no eligible upcoming lines exist. Never substitute synthetic public picks.
- const board=await page.evaluate(()=>({expected:shown().length,rendered:document.querySelectorAll('#cards [data-id]').length,
+ const board=await boardFrame.evaluate(()=>({expected:shown().length,rendered:document.querySelectorAll('#cards [data-id]').length,
    rates:shown().map(p=>(m.hitEstimate(p)||p.matchupPreview)?.rate??null)}));
  assert.equal(board.rendered,board.expected,name+' board card count');
  let prior=Infinity;for(const value of board.rates){const rate=value===null?-Infinity:value;assert(rate<=prior,name+' hit-estimate ordering');prior=rate;}
  // Use a real saved player with multiple markets, even after kickoff.
- const sample=await page.evaluate(()=>{
+ const sample=await boardFrame.evaluate(()=>{
   const groups=new Map();for(const p of state.nfl){const k=[p.gameId,p.playerId||p.player].join('|');if(!groups.has(k))groups.set(k,[]);groups.get(k).push(p)}
   const group=[...groups.values()].find(g=>new Set(g.map(p=>p.stat)).size>=2);if(!group)return null;
   open(m.key(group[0]));return {player:group[0].player,line:group[0].line,projection:group[0].projection};
  });
  assert(sample,name+' no real multi-market NFL sample');
- assert(await page.locator('#detail').isVisible(),name+' detail missing');
- assert((await page.locator('#player').innerText()).includes(sample.player),name+' wrong detail identity');
- assert(await page.locator('#markets button').count()>=2,name+' market switching missing');
- const text=await page.locator('#detail-content').innerText();
+ assert(await boardFrame.locator('#detail').isVisible(),name+' detail missing');
+ assert((await boardFrame.locator('#player').innerText()).includes(sample.player),name+' wrong detail identity');
+ assert(await boardFrame.locator('#markets button').count()>=2,name+' market switching missing');
+ const text=await boardFrame.locator('#detail-content').innerText();
  for(const label of ['Matchup','Opponent','Saved at','Automatic grading','Pending results do not count as losses'])assert(text.includes(label),name+' missing detail '+label);
- await page.locator('#markets button').last().click();
- assert(await page.locator('#detail-content .hero').count()===1,name+' market switch broke detail');
- await page.locator('#back').click();
- await page.locator('[data-view="live"]').click();
- const game=await page.evaluate(()=>{const g=state.liveGames.find(g=>g.sport==='NFL'&&state.nfl.some(p=>p.gameId===g.gameId));if(!g)return null;openGame(g);return {id:g.gameId,count:m.displayCurrentPicks(state.nfl.filter(p=>p.gameId===g.gameId)).length};});
+ await boardFrame.locator('#markets button').last().click();
+ assert(await boardFrame.locator('#detail-content .hero').count()===1,name+' market switch broke detail');
+ await boardFrame.locator('#back').click();
+ await boardFrame.locator('[data-view="live"]').click();
+ const game=await boardFrame.evaluate(()=>{const g=state.liveGames.find(g=>g.sport==='NFL'&&state.nfl.some(p=>p.gameId===g.gameId));if(!g)return null;openGame(g);return {id:g.gameId,count:m.displayCurrentPicks(state.nfl.filter(p=>p.gameId===g.gameId)).length};});
  assert(game&&game.count>0,name+' no saved game comparison');
- assert.equal(await page.locator('#detail-content [data-prop]').count(),game.count,name+' saved comparison records missing');
- const before=await page.locator('#detail-content').innerText();
+ assert.equal(await boardFrame.locator('#detail-content [data-prop]').count(),game.count,name+' saved comparison records missing');
+ const before=await boardFrame.locator('#detail-content').innerText();
  assert(before.includes('FROZEN LINE')&&before.includes('FROZEN PROJ')&&before.includes('ACTUAL'),name+' missing frozen/live comparison');
  // Re-render/refresh must retain the selected game and immutable saved records.
- await page.evaluate(()=>renderGameDetail());
- assert.equal(await page.locator('#detail-content [data-prop]').count(),game.count,name+' redraw lost records');
- await page.locator('#detail-content [data-prop]').first().click();
- assert(await page.locator('#detail-content .hero').count()===1,name+' game-to-prop navigation broken');
- await page.locator('#back').click();
+ await boardFrame.evaluate(()=>renderGameDetail());
+ assert.equal(await boardFrame.locator('#detail-content [data-prop]').count(),game.count,name+' redraw lost records');
+ await boardFrame.locator('#detail-content [data-prop]').first().click();
+ assert(await boardFrame.locator('#detail-content .hero').count()===1,name+' game-to-prop navigation broken');
+ await boardFrame.locator('#back').click();
  if(!isLive){
-  const offline=await page.evaluate(()=>{
+  const offline=await boardFrame.evaluate(()=>{
    const g=state.liveGames.find(g=>g.sport==='NFL'&&state.nfl.some(p=>p.gameId===g.gameId));
    const saved=state.nfl.filter(p=>p.gameId===g.gameId);
    const original=JSON.stringify(saved.map(p=>[m.key(p),p.line,p.projection]));
@@ -103,15 +109,17 @@ async function verify(browser,name,viewport){
    return {count:m.displayCurrentPicks(saved).length,original,
     after:JSON.stringify(state.nfl.filter(p=>p.gameId===g.gameId).map(p=>[m.key(p),p.line,p.projection]))};
   });
-  assert.equal(await page.locator('#detail-content [data-prop]').count(),offline.count,name+' unavailable live feed hid saved lines');
+  assert.equal(await boardFrame.locator('#detail-content [data-prop]').count(),offline.count,name+' unavailable live feed hid saved lines');
   assert.equal(offline.after,offline.original,name+' missing live feed changed frozen evidence');
-  assert((await page.locator('#matchup').innerText()).includes('Live feed unavailable'),name+' missing unavailable-source disclosure');
-  await page.locator('#back').click();
+  assert((await boardFrame.locator('#matchup').innerText()).includes('Live feed unavailable'),name+' missing unavailable-source disclosure');
+  await boardFrame.locator('#back').click();
  }
- await page.locator('[data-view="tracker"]').click();
- assert(await page.locator('#board').isVisible(),name+' tracker navigation broken');
- const metrics=await page.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth}));
+ await boardFrame.locator('[data-view="tracker"]').click();
+ assert(await boardFrame.locator('#board').isVisible(),name+' tracker navigation broken');
+ const metrics=await boardFrame.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth}));
  assert(metrics.width<=metrics.screen+2,name+' horizontal overflow '+JSON.stringify(metrics));
+ const shellMetrics=await page.evaluate(()=>({screen:innerWidth,width:document.documentElement.scrollWidth}));
+ assert(shellMetrics.width<=shellMetrics.screen+2,name+' shell horizontal overflow '+JSON.stringify(shellMetrics));
  await page.screenshot({path:output+'/'+name+'-unified-nfl.png',fullPage:false});
  assert.deepEqual(errors,[],name+' browser errors');
  console.log(name+' OK '+JSON.stringify({manifestRows:integrity.latestCount,eligible:integrity.expected,board:board.rendered,game,build:integrity.build,metrics}));
