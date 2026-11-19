@@ -296,9 +296,10 @@ def verified_full_game_scoring(root=ROOT):
 
 def exact_fantasy_score(player,game_scoring):
     """PrizePicks offensive full-PPR, only when all components are proven."""
-    from verified_nfl_gamebook import REVIEWED_SHA
-    if player.get("verified_gamebook_sha256")==REVIEWED_SHA:
-        return number(player.get("verified_prizepicks_full_ppr"))
+    from verified_nfl_gamebook import verified_fantasy
+    reviewed=verified_fantasy(player)
+    if reviewed is not None:
+        return number(reviewed)
     if not game_scoring or player.get("team") not in ("BUF","MIN"):
         return None
     game_id=str(player.get("player_id") or "")
@@ -343,6 +344,9 @@ def grade_finals(history,schedule,boxes,box_problems,inactives=None,zero_snaps=N
         out=dict(r)
         gid=r["game_id"]
         p=boxes.get(gid,{}).get(r["player_id"])
+        if p and p.get("standard_recovery_only") and (r.get("odds_type")!="standard" or
+                r.get("target") in p.get("excluded_recovery_targets",[])):
+            p=p.get("prior_verified_boxscore")
         reason=None
         if (gid,r["player_id"]) in inactives and gid in boxes and gid not in box_problems:
             # Exact player ID and game must match the published inactive report;
