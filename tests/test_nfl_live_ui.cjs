@@ -31,7 +31,7 @@ async function verify(browser,name,viewport){
  await page.waitForURL('**/dames-picks/**',{timeout:15000});
  // The production DS5 shell lazy-loads the shared board in an iframe.
  // Enter it through visible navigation, not a direct classic.html test URL.
- await page.locator('[data-workspace="board"]').click();
+ await page.getByRole("button", {name:"Open Today's Player Props", exact:true}).click();
  const boardFrame=await (await page.locator('#unified-frame').elementHandle()).contentFrame();
  assert(boardFrame,name+' prop-board iframe missing');
  await boardFrame.waitForURL('**/classic.html**',{timeout:15000});
