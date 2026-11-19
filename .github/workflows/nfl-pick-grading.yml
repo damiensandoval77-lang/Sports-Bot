@@ -5,10 +5,12 @@ on:
       - 'scripts/audit_nfl_prospective_calibration.py'
       - 'tests/test_nfl_prospective_calibration.py'
       - 'scripts/verified_nfl_gamebook.py'
-      - 'tests/test_nfl_gamebook.py'
+      - 'tests/test_nfl*gamebook.py'
       - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
+      - 'docs/nfl/data/verified_inactives_2026.json'
+      - 'docs/nfl/data/boxscores/verified_gamebook_*.json'
       - 'tests/test_nfl_archive_storage.py'
       - '.github/workflows/nfl-pick-grading.yml'
   push:
@@ -17,7 +19,7 @@ on:
       - 'scripts/audit_nfl_prospective_calibration.py'
       - 'tests/test_nfl_prospective_calibration.py'
       - 'scripts/verified_nfl_gamebook.py'
-      - 'tests/test_nfl_gamebook.py'
+      - 'tests/test_nfl*gamebook.py'
       - 'scripts/export_nfl_espn_finals.py'
       - 'scripts/reconcile_nfl_picks.py'
       - 'tests/test_nfl_public_grading.py'
@@ -91,7 +93,7 @@ jobs:
       - name: Verify prospective real-line calibration safeguards
         run: python -m unittest discover -s tests -p 'test_nfl_prospective_calibration.py' -v
       - name: Verify complete official gamebook safeguards
-        run: python -m unittest discover -s tests -p 'test_nfl_gamebook.py' -v
+        run: python -m unittest discover -s tests -p 'test_nfl*gamebook.py' -v
       - name: Attempt independent snap-count zero-target recovery
         continue-on-error: true
         # A source outage must not discard already published grades.
