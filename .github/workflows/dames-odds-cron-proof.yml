@@ -1,0 +1,19 @@
+name: Verify live Cloudflare zero-credit Odds API Cron receipt
+on:
+  pull_request:
+    paths:
+      - "tests/verify_dames_odds_cron_proof.py"
+      - ".github/workflows/dames-odds-cron-proof.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-live:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with: {python-version: "3.12"}
+      - name: Verify deployed scheduled credential receipt, no paid calls
+        run: python tests/verify_dames_odds_cron_proof.py
