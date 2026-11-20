@@ -1,46 +1,52 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-20T03:10:07.622334+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-20T03:22:27.150194+00:00",
   "game_date_eastern": "2026-11-19",
   "recorded_pregame_forecasts": 428,
-  "graded": 0,
-  "verified_dnp_exclusions": 0,
+  "graded": 76,
+  "verified_dnp_exclusions": 24,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 428,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 100,
+  "ungraded": 328,
+  "new_grades": 76,
+  "new_verified_dnp_exclusions": 24,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 3.126,
+      "mean_signed_error": 1.084
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 1.816,
+      "mean_signed_error": 0.805
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 1.053,
+      "mean_signed_error": 0.337
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 4.595,
+      "mean_signed_error": 2.205
     }
   },
   "ungraded_by_game": {
     "Golden State Warriors @ Memphis Grizzlies": 120,
     "LA Clippers @ San Antonio Spurs": 104,
-    "New York Knicks @ Minnesota Timberwolves": 100,
     "Portland Trail Blazers @ Milwaukee Bucks": 104
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Cody Williams",
+    "Isaiah Evans",
+    "James Wiseman",
+    "Jaylen Clark",
+    "Jordan Clarkson",
+    "Mohamed Diawara"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Golden State Warriors @ Memphis Grizzlies": [
       "Al Horford",
@@ -102,33 +108,6 @@
       "Tarris Reed Jr.",
       "Victor Wembanyama"
     ],
-    "New York Knicks @ Minnesota Timberwolves": [
-      "Andre Drummond",
-      "Ayo Dosunmu",
-      "Bones Hyland",
-      "Cody Williams",
-      "Isaiah Evans",
-      "Jaden McDaniels",
-      "Jalen Brunson",
-      "James Wiseman",
-      "Jaylen Clark",
-      "Joan Beringer",
-      "Jonathan Kuminga",
-      "Jordan Clarkson",
-      "Jose Alvarado",
-      "Josh Hart",
-      "Karl-Anthony Towns",
-      "LaMelo Ball",
-      "Landry Shamet",
-      "Mikal Bridges",
-      "Miles McBride",
-      "Mohamed Diawara",
-      "OG Anunoby",
-      "Rudy Gobert",
-      "Terrence Shannon Jr",
-      "Trey Lyles",
-      "Tyler Kolek"
-    ],
     "Portland Trail Blazers @ Milwaukee Bucks": [
       "AJ Green",
       "Branden Carlson",
@@ -158,28 +137,28 @@
       "Yang Hansen"
     ]
   },
-  "ungraded_distinct_player_markets": 428,
+  "ungraded_distinct_player_markets": 328,
   "final_feed": {
     "pending_matchups": 18,
-    "final_nba_games": 14,
+    "final_nba_games": 15,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 482,
+    "retrieved_player_lines": 513,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 18,
-    "final_cached_id_nba_games": 14,
+    "final_cached_id_nba_games": 15,
     "secondary_espn_dnp_discovered_game_hints": 10,
-    "secondary_verified_explicit_dnp_players": 27,
+    "secondary_verified_explicit_dnp_players": 32,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 2348,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 2379,
+    "newly_retrieved_verified_rows": 31,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 428
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 328
     },
     "players": [
       {
@@ -1747,706 +1726,6 @@
         "player": "Victor Wembanyama",
         "team": "SAS",
         "game": "LA Clippers @ San Antonio Spurs",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ayo Dosunmu",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ayo Dosunmu",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ayo Dosunmu",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ayo Dosunmu",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bones Hyland",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bones Hyland",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bones Hyland",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bones Hyland",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cody Williams",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cody Williams",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cody Williams",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cody Williams",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Evans",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Evans",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Evans",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Evans",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden McDaniels",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden McDaniels",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden McDaniels",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaden McDaniels",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Clark",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Clark",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Clark",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylen Clark",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joan Beringer",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joan Beringer",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joan Beringer",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Joan Beringer",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Kuminga",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Kuminga",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Kuminga",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jonathan Kuminga",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LaMelo Ball",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LaMelo Ball",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LaMelo Ball",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "LaMelo Ball",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Rudy Gobert",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Rudy Gobert",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Rudy Gobert",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Rudy Gobert",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terrence Shannon Jr",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terrence Shannon Jr",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terrence Shannon Jr",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Terrence Shannon Jr",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Lyles",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Lyles",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Lyles",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Trey Lyles",
-        "team": "MIN",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "New York Knicks @ Minnesota Timberwolves",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
