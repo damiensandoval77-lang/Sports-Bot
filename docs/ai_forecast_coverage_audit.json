@@ -1,6 +1,6 @@
 {
-  "status": "ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR",
-  "checked_at": "2026-11-20T23:25:16.453417+00:00",
+  "status": "VERIFIED_FINAL_ROWS_OUTSTANDING",
+  "checked_at": "2026-11-21T00:20:59.136039+00:00",
   "days": {
     "2026-11-18": {
       "captured": 1240,
@@ -19,12 +19,31 @@
       "pending": 0,
       "pending_by_game": {},
       "accounted_for": 428
+    },
+    "2026-11-20": {
+      "captured": 88,
+      "graded": 0,
+      "void_dnp": 0,
+      "excluded_nonparticipant": 0,
+      "pending": 88,
+      "pending_by_game": {
+        "Charlotte Hornets @ Atlanta Hawks": 88
+      },
+      "accounted_for": 0
     }
   },
   "daily_status_reports_crosschecked": [
-    "2026-11-19"
+    "2026-11-19",
+    "2026-11-20"
   ],
-  "daily_report_time_adjustments": [],
+  "daily_report_time_adjustments": [
+    {
+      "report": "today",
+      "date": "2026-11-20",
+      "generated_at": "2026-11-20T23:23:49.380853+00:00",
+      "newly_started_unresolved_forecasts": 88
+    }
+  ],
   "verified_historical_outcomes_not_in_rolling_archive": 6756,
   "note": "Unresolved is not a loss or DNP. Final settlement requires verified player-level results. This audit never changes outcomes."
 }
