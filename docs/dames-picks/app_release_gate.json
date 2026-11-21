@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-21T20:16:16.698881+00:00",
+  "checked_at": "2026-11-21T21:15:26.454543+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -10,6 +10,7 @@
     "unified_artifacts",
     "nba_production",
     "nba_capture",
+    "nba_grading",
     "nfl_grading"
   ],
   "checks": {
@@ -42,8 +43,10 @@
       ]
     },
     "nba_grading": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "GRADING_INCOMPLETE:2026-11-21"
+      ]
     },
     "published_pick_settlement": {
       "state": "READY",
