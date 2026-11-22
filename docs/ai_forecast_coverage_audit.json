@@ -1,6 +1,6 @@
 {
-  "status": "ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR",
-  "checked_at": "2026-11-22T20:24:27.967861+00:00",
+  "status": "VERIFIED_FINAL_ROWS_OUTSTANDING",
+  "checked_at": "2026-11-22T21:18:55.601281+00:00",
   "days": {
     "2026-11-20": {
       "captured": 928,
@@ -19,12 +19,31 @@
       "pending": 0,
       "pending_by_game": {},
       "accounted_for": 624
+    },
+    "2026-11-22": {
+      "captured": 100,
+      "graded": 0,
+      "void_dnp": 0,
+      "excluded_nonparticipant": 0,
+      "pending": 100,
+      "pending_by_game": {
+        "Detroit Pistons @ Atlanta Hawks": 100
+      },
+      "accounted_for": 0
     }
   },
   "daily_status_reports_crosschecked": [
-    "2026-11-21"
+    "2026-11-21",
+    "2026-11-22"
   ],
-  "daily_report_time_adjustments": [],
+  "daily_report_time_adjustments": [
+    {
+      "report": "today",
+      "date": "2026-11-22",
+      "generated_at": "2026-11-22T20:22:45.291920+00:00",
+      "newly_started_unresolved_forecasts": 100
+    }
+  ],
   "verified_historical_outcomes_not_in_rolling_archive": 8424,
   "note": "Unresolved is not a loss or DNP. Final settlement requires verified player-level results. This audit never changes outcomes."
 }
