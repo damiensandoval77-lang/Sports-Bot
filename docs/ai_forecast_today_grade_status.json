@@ -1,52 +1,56 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-22T02:08:36.451399+00:00",
+  "generated_at": "2026-11-22T02:57:56.507689+00:00",
   "game_date_eastern": "2026-11-21",
   "recorded_pregame_forecasts": 524,
-  "graded": 72,
-  "verified_dnp_exclusions": 24,
+  "graded": 148,
+  "verified_dnp_exclusions": 44,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 96,
-  "ungraded": 428,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 192,
+  "ungraded": 332,
+  "new_grades": 76,
+  "new_verified_dnp_exclusions": 20,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 18,
-      "mae": 6.578,
-      "mean_signed_error": -2.156
+      "graded": 37,
+      "mae": 5.47,
+      "mean_signed_error": -0.773
     },
     "REB": {
-      "graded": 18,
-      "mae": 2.561,
-      "mean_signed_error": -0.317
+      "graded": 37,
+      "mae": 2.392,
+      "mean_signed_error": -0.424
     },
     "AST": {
-      "graded": 18,
-      "mae": 1.639,
-      "mean_signed_error": -0.294
+      "graded": 37,
+      "mae": 1.519,
+      "mean_signed_error": -0.043
     },
     "PRA": {
-      "graded": 18,
-      "mae": 8.717,
-      "mean_signed_error": -2.572
+      "graded": 37,
+      "mae": 7.451,
+      "mean_signed_error": -1.23
     }
   },
   "ungraded_by_game": {
     "LA Clippers @ Dallas Mavericks": 116,
     "Memphis Grizzlies @ Minnesota Timberwolves": 112,
-    "New Orleans Pelicans @ San Antonio Spurs": 104,
-    "Portland Trail Blazers @ New York Knicks": 96
+    "New Orleans Pelicans @ San Antonio Spurs": 104
   },
   "excluded_verified_dnp_players": [
     "Dean Wade",
     "Gary Trent Jr.",
     "Jaylen Brown",
     "Jericho Sims",
+    "Jordan Clarkson",
     "Justin Edwards",
-    "Ousmane Dieng"
+    "Karl-Anthony Towns",
+    "Micah Potter",
+    "OG Anunoby",
+    "Ousmane Dieng",
+    "Yang Hansen"
   ],
   "ungraded_distinct_player_names_by_game": {
     "LA Clippers @ Dallas Mavericks": [
@@ -137,56 +141,30 @@
       "Victor Wembanyama",
       "Yves Missi",
       "Zion Williamson"
-    ],
-    "Portland Trail Blazers @ New York Knicks": [
-      "Andre Drummond",
-      "Branden Carlson",
-      "Damian Lillard",
-      "Deni Avdija",
-      "Donovan Clingan",
-      "Jalen Brunson",
-      "James Wiseman",
-      "Jayson Kent",
-      "Jordan Clarkson",
-      "Jose Alvarado",
-      "Josh Hart",
-      "Jrue Holiday",
-      "Karl-Anthony Towns",
-      "Landry Shamet",
-      "Micah Potter",
-      "Mikal Bridges",
-      "Miles McBride",
-      "OG Anunoby",
-      "Robert Williams III",
-      "Scoot Henderson",
-      "Sidy Cissoko",
-      "Toumani Camara",
-      "Tyler Kolek",
-      "Yang Hansen"
     ]
   },
-  "ungraded_distinct_player_markets": 428,
+  "ungraded_distinct_player_markets": 332,
   "final_feed": {
-    "pending_matchups": 11,
-    "final_nba_games": 10,
+    "pending_matchups": 14,
+    "final_nba_games": 11,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 340,
+    "retrieved_player_lines": 372,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 10,
-    "final_cached_id_nba_games": 9,
+    "cached_official_id_candidates": 13,
+    "final_cached_id_nba_games": 10,
     "secondary_espn_dnp_discovered_game_hints": 8,
-    "secondary_verified_explicit_dnp_players": 37,
+    "secondary_verified_explicit_dnp_players": 39,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 2825,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 2857,
+    "newly_retrieved_verified_rows": 32,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 428
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 332
     },
     "players": [
       {
@@ -2510,678 +2488,6 @@
         "player": "Zion Williamson",
         "team": "NOP",
         "game": "New Orleans Pelicans @ San Antonio Spurs",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Branden Carlson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Damian Lillard",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Deni Avdija",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Donovan Clingan",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Kent",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Kent",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Kent",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Kent",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Clarkson",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jrue Holiday",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Micah Potter",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Robert Williams III",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Scoot Henderson",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sidy Cissoko",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Toumani Camara",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Yang Hansen",
-        "team": "POR",
-        "game": "Portland Trail Blazers @ New York Knicks",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       }
