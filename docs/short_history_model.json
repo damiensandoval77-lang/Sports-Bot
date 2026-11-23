@@ -1,19 +1,29 @@
 {
   "status": "SHORT_HISTORY_TRAINED_RESEARCH_PROJECTIONS",
   "model": "SEPARATE_SHORT_HISTORY_HGB_ABSOLUTE_V1",
-  "generated_at": "2026-11-23T05:19:53.689527+00:00",
+  "generated_at": "2026-11-23T05:42:37.657450+00:00",
   "estimates": [],
   "count": 0,
   "excluded": {},
-  "blocker": "SOURCE_OR_VALIDATION_ERROR:HTTPError",
   "trained_model": true,
   "historically_evaluated": true,
   "prospective_validation_verified": false,
   "primary_model_eligible": false,
   "official_grade_eligible": false,
-  "calibrated": false,
   "performance_metrics": null,
+  "calibrated": false,
+  "notice": "Separate short-history trained research projections. Historically evaluated, not prospectively validated or calibrated betting probabilities. Not primary picks and excluded from official grades and hit-rate metrics.",
   "official_report_issued_at": null,
-  "accepted_markets": [],
-  "notice": "Separate short-history trained research projections. Historically evaluated, not prospectively validated or calibrated betting probabilities. Not primary picks and excluded from official grades and hit-rate metrics."
+  "accepted_markets": [
+    "PTS",
+    "REB"
+  ],
+  "blocker": "VERIFIED_STANDARD_FEED_UNAVAILABLE",
+  "source_coverage": {
+    "MATCHED": 5050,
+    "NO_MATCHED_COMPLETE_BOX": 264,
+    "BELOW_MODEL_MINIMUM_MINUTES": 42,
+    "BOX_SCORE_DISAGREEMENT": 24
+  },
+  "model_artifact_sha256": "33e95e34564af0435e154521c904a3a479dd75b92f57b2d1ad2a050cb33c3746"
 }
