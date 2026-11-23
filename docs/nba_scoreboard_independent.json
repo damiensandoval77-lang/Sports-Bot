@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-23T00:08:05.857356+00:00",
+  "generated_at": "2026-11-23T00:15:14.271600+00:00",
   "status": "OBSERVED_NBA_LIVE_SCOREBOARD",
-  "source": "NBA official liveData scoreboard via mediaops S3",
+  "source": "NBA official liveData scoreboard via mediaops S3 (partial current observations)",
   "is_live_score_source": true,
   "dates_eastern": [
     "2026-11-22"
@@ -29,8 +29,8 @@
       "home": "Miami Heat",
       "away_abbreviation": "OKC",
       "home_abbreviation": "MIA",
-      "away_score": 47,
-      "home_score": 63,
+      "away_score": 54,
+      "home_score": 67,
       "period": 2,
       "start": "2026-11-22T23:00:00+00:00",
       "date_eastern": "2026-11-22",
@@ -48,7 +48,7 @@
       "period": null,
       "start": "2026-11-23T00:00:00+00:00",
       "date_eastern": "2026-11-22",
-      "game_state": "pre"
+      "game_state": "unknown"
     },
     {
       "id": "0022600283",
@@ -57,12 +57,12 @@
       "home": "Chicago Bulls",
       "away_abbreviation": "DEN",
       "home_abbreviation": "CHI",
-      "away_score": null,
-      "home_score": null,
-      "period": null,
+      "away_score": 0,
+      "home_score": 0,
+      "period": 1,
       "start": "2026-11-23T00:00:00+00:00",
       "date_eastern": "2026-11-22",
-      "game_state": "pre"
+      "game_state": "in"
     },
     {
       "id": "0022600284",
@@ -76,7 +76,7 @@
       "period": null,
       "start": "2026-11-23T00:00:00+00:00",
       "date_eastern": "2026-11-22",
-      "game_state": "pre"
+      "game_state": "unknown"
     },
     {
       "id": "0022600285",
@@ -110,5 +110,6 @@
   "source_records_rejected": 0,
   "is_sportsbook_feed": false,
   "is_prizepicks_feed": false,
-  "error": null
+  "error": "PARTIAL_CURRENT_SCOREBOARD",
+  "coverage_complete": false
 }
