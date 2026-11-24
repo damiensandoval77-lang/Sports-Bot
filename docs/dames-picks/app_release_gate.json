@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-24T02:19:08.311407+00:00",
+  "checked_at": "2026-11-24T03:28:17.676176+00:00",
   "status": "DEGRADED",
   "checks_passing": false,
   "release_certified": false,
@@ -10,6 +10,7 @@
     "unified_artifacts",
     "nba_production",
     "nba_capture",
+    "nba_grading",
     "nfl_grading"
   ],
   "checks": {
@@ -28,9 +29,8 @@
       "state": "DEGRADED",
       "issues": [
         "NBA_PRODUCTION_NOT_READY",
-        "NBA_FAILED_PRIZEPICKS_LINES",
-        "NBA_FAILED_PREGAME_CAPTURE",
-        "NBA_FAILED_CURRENT_PRIMARY_MODEL_COVERAGE",
+        "NBA_FAILED_SCOREBOARD",
+        "NBA_FAILED_LIVE_PLAYER_STATS",
         "NBA_FAILED_NIGHTLY_GRADES"
       ]
     },
@@ -42,8 +42,10 @@
       ]
     },
     "nba_grading": {
-      "state": "READY",
-      "issues": []
+      "state": "DEGRADED",
+      "issues": [
+        "GRADING_INCOMPLETE:2026-11-23"
+      ]
     },
     "published_pick_settlement": {
       "state": "READY",
