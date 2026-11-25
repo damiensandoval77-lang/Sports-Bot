@@ -1,44 +1,47 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-25T01:56:52.985829+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-25T02:31:39.839716+00:00",
   "game_date_eastern": "2026-11-24",
   "recorded_pregame_forecasts": 200,
-  "graded": 0,
-  "verified_dnp_exclusions": 0,
+  "graded": 80,
+  "verified_dnp_exclusions": 12,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 200,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 92,
+  "ungraded": 108,
+  "new_grades": 80,
+  "new_verified_dnp_exclusions": 12,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 20,
+      "mae": 4.935,
+      "mean_signed_error": 1.565
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 20,
+      "mae": 1.87,
+      "mean_signed_error": 0.37
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 20,
+      "mae": 1.51,
+      "mean_signed_error": 0.28
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 20,
+      "mae": 5.69,
+      "mean_signed_error": 2.23
     }
   },
   "ungraded_by_game": {
-    "Boston Celtics @ Washington Wizards": 108,
-    "Detroit Pistons @ Orlando Magic": 92
+    "Boston Celtics @ Washington Wizards": 108
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Cade Cunningham",
+    "Nikola Vu\u010devi\u0107",
+    "Tolu Smith"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Boston Celtics @ Washington Wizards": [
       "AJ Dybantsa",
@@ -68,55 +71,30 @@
       "Tre Johnson",
       "Tre Mann",
       "Will Riley"
-    ],
-    "Detroit Pistons @ Orlando Magic": [
-      "Alex Morales",
-      "Anthony Black",
-      "Ausar Thompson",
-      "Cade Cunningham",
-      "Chaz Lanier",
-      "Daniss Jenkins",
-      "Desmond Bane",
-      "Franz Wagner",
-      "Goga Bitadze",
-      "Isaiah Joe",
-      "Jalen Suggs",
-      "Jamal Cain",
-      "Jase Richardson",
-      "Javonte Green",
-      "Jevon Carter",
-      "John Collins",
-      "Kevin Huerter",
-      "Nikola Vu\u010devi\u0107",
-      "Paul Reed",
-      "Ronald Holland II",
-      "Tolu Smith",
-      "Tristan da Silva",
-      "Wendell Carter Jr."
     ]
   },
-  "ungraded_distinct_player_markets": 200,
+  "ungraded_distinct_player_markets": 108,
   "final_feed": {
-    "pending_matchups": 16,
-    "final_nba_games": 15,
+    "pending_matchups": 12,
+    "final_nba_games": 11,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 505,
+    "retrieved_player_lines": 373,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 16,
-    "final_cached_id_nba_games": 15,
-    "secondary_espn_dnp_discovered_game_hints": 11,
-    "secondary_verified_explicit_dnp_players": 32,
+    "cached_official_id_candidates": 11,
+    "final_cached_id_nba_games": 10,
+    "secondary_espn_dnp_discovered_game_hints": 7,
+    "secondary_verified_explicit_dnp_players": 27,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 3562,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 3607,
+    "newly_retrieved_verified_rows": 35,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 200
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 108
     },
     "players": [
       {
@@ -872,650 +850,6 @@
         "player": "Will Riley",
         "team": "WAS",
         "game": "Boston Celtics @ Washington Wizards",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Morales",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Morales",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Morales",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Alex Morales",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Black",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Black",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Black",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Anthony Black",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ausar Thompson",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Cade Cunningham",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaz Lanier",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaz Lanier",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaz Lanier",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chaz Lanier",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Daniss Jenkins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Desmond Bane",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Desmond Bane",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Desmond Bane",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Desmond Bane",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Franz Wagner",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Franz Wagner",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Franz Wagner",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Franz Wagner",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Goga Bitadze",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Goga Bitadze",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Goga Bitadze",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Goga Bitadze",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Joe",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Joe",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Joe",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaiah Joe",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Suggs",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Suggs",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Suggs",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Suggs",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jamal Cain",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jase Richardson",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jase Richardson",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jase Richardson",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jase Richardson",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Javonte Green",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jevon Carter",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jevon Carter",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jevon Carter",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jevon Carter",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "John Collins",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kevin Huerter",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Vu\u010devi\u0107",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Vu\u010devi\u0107",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Vu\u010devi\u0107",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Vu\u010devi\u0107",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul Reed",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ronald Holland II",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tolu Smith",
-        "team": "DET",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tristan da Silva",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Wendell Carter Jr.",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Wendell Carter Jr.",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Wendell Carter Jr.",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Wendell Carter Jr.",
-        "team": "ORL",
-        "game": "Detroit Pistons @ Orlando Magic",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       }
