@@ -1,14 +1,14 @@
 {
-  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-25T05:39:59.686974+00:00",
+  "status": "AI_PRETIP_FORECASTS_GRADED",
+  "generated_at": "2026-11-25T05:42:51.998950+00:00",
   "game_date_eastern": "2026-11-24",
   "recorded_pregame_forecasts": 304,
   "graded": 264,
-  "verified_dnp_exclusions": 32,
+  "verified_dnp_exclusions": 40,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 296,
-  "ungraded": 8,
-  "new_grades": 88,
+  "accounted_for": 304,
+  "ungraded": 0,
+  "new_grades": 0,
   "new_verified_dnp_exclusions": 8,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
@@ -34,106 +34,42 @@
       "mean_signed_error": 1.898
     }
   },
-  "ungraded_by_game": {
-    "Dallas Mavericks @ Denver Nuggets": 8
-  },
+  "ungraded_by_game": {},
   "excluded_verified_dnp_players": [
     "Anthony Gill",
+    "Bryce Hopkins",
     "Cade Cunningham",
     "Jett Howard",
     "Marcus Sasser",
     "Mike Conley",
     "Mitchell Robinson",
     "Nikola Vu\u010devi\u0107",
+    "Tobi Lawal",
     "Tolu Smith"
   ],
-  "ungraded_distinct_player_names_by_game": {
-    "Dallas Mavericks @ Denver Nuggets": [
-      "Bryce Hopkins",
-      "Tobi Lawal"
-    ]
-  },
-  "ungraded_distinct_player_markets": 8,
+  "ungraded_distinct_player_names_by_game": {},
+  "ungraded_distinct_player_markets": 0,
   "final_feed": {
     "pending_matchups": 13,
-    "final_nba_games": 12,
+    "final_nba_games": 13,
     "final_schedule_discovered_nba_games": 0,
-    "final_espn_games": 1,
-    "retrieved_player_lines": 436,
+    "final_espn_games": 0,
+    "retrieved_player_lines": 442,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 11,
+    "cached_official_id_candidates": 10,
     "final_cached_id_nba_games": 10,
-    "secondary_espn_dnp_discovered_game_hints": 9,
-    "secondary_verified_explicit_dnp_players": 29,
+    "secondary_espn_dnp_discovered_game_hints": 10,
+    "secondary_verified_explicit_dnp_players": 31,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 3670,
-    "newly_retrieved_verified_rows": 28,
+    "verified_cache_rows": 3702,
+    "newly_retrieved_verified_rows": 32,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 8
-    },
-    "players": [
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Bryce Hopkins",
-        "team": "DEN",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "AST",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "PRA",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "PTS",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      },
-      {
-        "player": "Tobi Lawal",
-        "team": "DAL",
-        "game": "Dallas Mavericks @ Denver Nuggets",
-        "stat": "REB",
-        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
-      }
-    ],
+    "by_reason": {},
+    "players": [],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,
