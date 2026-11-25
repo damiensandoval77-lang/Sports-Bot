@@ -1,113 +1,139 @@
 {
-  "status": "AI_PRETIP_FORECASTS_GRADED",
-  "generated_at": "2026-11-25T04:48:11.628379+00:00",
-  "game_date_eastern": "2026-11-23",
-  "recorded_pregame_forecasts": 1024,
-  "graded": 832,
-  "verified_dnp_exclusions": 192,
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-25T05:39:59.686974+00:00",
+  "game_date_eastern": "2026-11-24",
+  "recorded_pregame_forecasts": 304,
+  "graded": 264,
+  "verified_dnp_exclusions": 32,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 1024,
-  "ungraded": 0,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 296,
+  "ungraded": 8,
+  "new_grades": 88,
+  "new_verified_dnp_exclusions": 8,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 208,
-      "mae": 4.806,
-      "mean_signed_error": 0.108
+      "graded": 66,
+      "mae": 4.811,
+      "mean_signed_error": 1.28
     },
     "REB": {
-      "graded": 208,
-      "mae": 1.942,
-      "mean_signed_error": 0.254
+      "graded": 66,
+      "mae": 1.977,
+      "mean_signed_error": 0.368
     },
     "AST": {
-      "graded": 208,
-      "mae": 1.401,
-      "mean_signed_error": -0.024
+      "graded": 66,
+      "mae": 1.465,
+      "mean_signed_error": 0.208
     },
     "PRA": {
-      "graded": 208,
-      "mae": 6.375,
-      "mean_signed_error": 0.343
+      "graded": 66,
+      "mae": 5.959,
+      "mean_signed_error": 1.898
     }
   },
-  "ungraded_by_game": {},
+  "ungraded_by_game": {
+    "Dallas Mavericks @ Denver Nuggets": 8
+  },
   "excluded_verified_dnp_players": [
-    "AJ Johnson",
-    "Aaron Nesmith",
-    "Aday Mara",
-    "Adou Thiero",
-    "Alex Caruso",
-    "Bronny James",
-    "Bruce Thornton",
-    "Cam Christie",
-    "Cameron Boozer",
-    "Chaney Johnson",
-    "Craig Porter Jr.",
-    "De'Aaron Fox",
-    "DeAndre Jordan",
-    "Drake Powell",
-    "Dylan Harper",
-    "GG Jackson",
-    "Gradey Dick",
-    "Grayson Allen",
-    "Isaiah Crawford",
-    "Jaden Hardy",
-    "Jae'Sean Tate",
-    "Jahmai Mashack",
-    "Jalen Pickett",
-    "Jamaree Bouyea",
-    "Jaron Pierre Jr.",
-    "Jaxson Hayes",
-    "Jay Huff",
-    "Jaylen Clark",
-    "Jaylin Williams",
-    "Jerami Grant",
-    "Jericho Sims",
-    "Joel Embiid",
-    "Julian Reese",
-    "Karim L\u00f3pez",
-    "Kevon Looney",
-    "Koa Peat",
-    "Kyle Anderson",
-    "Leonard Miller",
-    "Nick Martinelli",
-    "Nolan Traore",
-    "Norman Powell",
-    "Oscar Tshiebwe",
-    "RJ Barrett",
-    "Rasheer Fleming",
-    "T.J. McConnell",
-    "Tony Bradley",
-    "Victor Wembanyama",
-    "Zach Collins"
+    "Anthony Gill",
+    "Cade Cunningham",
+    "Jett Howard",
+    "Marcus Sasser",
+    "Mike Conley",
+    "Mitchell Robinson",
+    "Nikola Vu\u010devi\u0107",
+    "Tolu Smith"
   ],
-  "ungraded_distinct_player_names_by_game": {},
-  "ungraded_distinct_player_markets": 0,
+  "ungraded_distinct_player_names_by_game": {
+    "Dallas Mavericks @ Denver Nuggets": [
+      "Bryce Hopkins",
+      "Tobi Lawal"
+    ]
+  },
+  "ungraded_distinct_player_markets": 8,
   "final_feed": {
     "pending_matchups": 13,
     "final_nba_games": 12,
     "final_schedule_discovered_nba_games": 0,
-    "final_espn_games": 0,
-    "retrieved_player_lines": 408,
+    "final_espn_games": 1,
+    "retrieved_player_lines": 436,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 11,
     "final_cached_id_nba_games": 10,
-    "secondary_espn_dnp_discovered_game_hints": 7,
+    "secondary_espn_dnp_discovered_game_hints": 9,
     "secondary_verified_explicit_dnp_players": 29,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 3642,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 3670,
+    "newly_retrieved_verified_rows": 28,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {},
-    "players": [],
+    "by_reason": {
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 8
+    },
+    "players": [
+      {
+        "player": "Bryce Hopkins",
+        "team": "DEN",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bryce Hopkins",
+        "team": "DEN",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bryce Hopkins",
+        "team": "DEN",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Bryce Hopkins",
+        "team": "DEN",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Tobi Lawal",
+        "team": "DAL",
+        "game": "Dallas Mavericks @ Denver Nuggets",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      }
+    ],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,
