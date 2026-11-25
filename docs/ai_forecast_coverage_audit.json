@@ -1,6 +1,6 @@
 {
-  "status": "ALL_ARCHIVED_FORECASTS_ACCOUNTED_FOR",
-  "checked_at": "2026-11-25T21:59:36.099415+00:00",
+  "status": "VERIFIED_FINAL_ROWS_OUTSTANDING",
+  "checked_at": "2026-11-25T22:28:02.497470+00:00",
   "days": {
     "2026-11-23": {
       "captured": 1024,
@@ -19,12 +19,31 @@
       "pending": 0,
       "pending_by_game": {},
       "accounted_for": 304
+    },
+    "2026-11-25": {
+      "captured": 96,
+      "graded": 0,
+      "void_dnp": 0,
+      "excluded_nonparticipant": 0,
+      "pending": 96,
+      "pending_by_game": {
+        "Miami Heat @ Philadelphia 76ers": 96
+      },
+      "accounted_for": 0
     }
   },
   "daily_status_reports_crosschecked": [
-    "2026-11-24"
+    "2026-11-24",
+    "2026-11-25"
   ],
-  "daily_report_time_adjustments": [],
+  "daily_report_time_adjustments": [
+    {
+      "report": "today",
+      "date": "2026-11-25",
+      "generated_at": "2026-11-25T21:32:44.025043+00:00",
+      "newly_started_unresolved_forecasts": 96
+    }
+  ],
   "verified_historical_outcomes_not_in_rolling_archive": 10696,
   "note": "Unresolved is not a loss or DNP. Final settlement requires verified player-level results. This audit never changes outcomes."
 }
