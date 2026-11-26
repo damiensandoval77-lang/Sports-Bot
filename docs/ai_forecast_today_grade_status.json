@@ -1,53 +1,58 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-26T01:56:19.016323+00:00",
+  "generated_at": "2026-11-26T02:30:14.419034+00:00",
   "game_date_eastern": "2026-11-25",
   "recorded_pregame_forecasts": 720,
-  "graded": 76,
-  "verified_dnp_exclusions": 20,
+  "graded": 152,
+  "verified_dnp_exclusions": 44,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 96,
-  "ungraded": 624,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 196,
+  "ungraded": 524,
+  "new_grades": 76,
+  "new_verified_dnp_exclusions": 24,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 19,
-      "mae": 4.311,
-      "mean_signed_error": 1.563
+      "graded": 38,
+      "mae": 4.034,
+      "mean_signed_error": 0.25
     },
     "REB": {
-      "graded": 19,
-      "mae": 1.984,
-      "mean_signed_error": 0.342
+      "graded": 38,
+      "mae": 1.855,
+      "mean_signed_error": 0.192
     },
     "AST": {
-      "graded": 19,
-      "mae": 1.316,
-      "mean_signed_error": 0.242
+      "graded": 38,
+      "mae": 1.376,
+      "mean_signed_error": 0.166
     },
     "PRA": {
-      "graded": 19,
-      "mae": 6.837,
-      "mean_signed_error": 2.174
+      "graded": 38,
+      "mae": 5.553,
+      "mean_signed_error": 0.495
     }
   },
   "ungraded_by_game": {
     "Brooklyn Nets @ Milwaukee Bucks": 100,
-    "Chicago Bulls @ Charlotte Hornets": 100,
     "Cleveland Cavaliers @ New York Knicks": 104,
     "LA Clippers @ Memphis Grizzlies": 116,
     "Minnesota Timberwolves @ Oklahoma City Thunder": 96,
     "Phoenix Suns @ Houston Rockets": 108
   },
   "excluded_verified_dnp_players": [
+    "Jalen Smith",
+    "Jaylin Sellers",
     "Joel Embiid",
     "Justin Edwards",
     "Labaron Philon Jr.",
+    "Leonard Miller",
+    "Liam McNeeley",
     "Nick Richards",
-    "Nikola Jovi\u0107"
+    "Nikola Jovi\u0107",
+    "Norman Powell",
+    "Ryan Kalkbrenner"
   ],
   "ungraded_distinct_player_names_by_game": {
     "Brooklyn Nets @ Milwaukee Bucks": [
@@ -76,33 +81,6 @@
       "Ryan Rollins",
       "Terance Mann",
       "Tyler Herro"
-    ],
-    "Chicago Bulls @ Charlotte Hornets": [
-      "Brandon Miller",
-      "Buddy Hield",
-      "Christian Anderson",
-      "Coby White",
-      "Hannes Steinbach",
-      "Isaac Okoro",
-      "Jalen Smith",
-      "Jaylin Sellers",
-      "Jordan Hawkins",
-      "Josh Giddey",
-      "Leonard Miller",
-      "Liam McNeeley",
-      "Matas Buzelis",
-      "Moussa Diabat\u00e9",
-      "Naz Reid",
-      "Nic Claxton",
-      "Noa Essengue",
-      "Norman Powell",
-      "Patrick Williams",
-      "Royce O'Neale",
-      "Ryan Kalkbrenner",
-      "Sion James",
-      "Tidjane Sala\u00fcn",
-      "Tre Jones",
-      "Zach Collins"
     ],
     "Cleveland Cavaliers @ New York Knicks": [
       "Andre Drummond",
@@ -219,28 +197,28 @@
       "Tari Eason"
     ]
   },
-  "ungraded_distinct_player_markets": 624,
+  "ungraded_distinct_player_markets": 524,
   "final_feed": {
-    "pending_matchups": 17,
-    "final_nba_games": 14,
+    "pending_matchups": 11,
+    "final_nba_games": 7,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 473,
+    "retrieved_player_lines": 237,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 16,
-    "final_cached_id_nba_games": 13,
-    "secondary_espn_dnp_discovered_game_hints": 10,
-    "secondary_verified_explicit_dnp_players": 35,
+    "cached_official_id_candidates": 10,
+    "final_cached_id_nba_games": 6,
+    "secondary_espn_dnp_discovered_game_hints": 4,
+    "secondary_verified_explicit_dnp_players": 18,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 3731,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 3764,
+    "newly_retrieved_verified_rows": 33,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 624
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 524
     },
     "players": [
       {
@@ -940,706 +918,6 @@
         "player": "Tyler Herro",
         "team": "MIL",
         "game": "Brooklyn Nets @ Milwaukee Bucks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Brandon Miller",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Buddy Hield",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Christian Anderson",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Coby White",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Coby White",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Coby White",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Coby White",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hannes Steinbach",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Isaac Okoro",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Smith",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jaylin Sellers",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Hawkins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Giddey",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Leonard Miller",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Liam McNeeley",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Matas Buzelis",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Diabat\u00e9",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Diabat\u00e9",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Diabat\u00e9",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Moussa Diabat\u00e9",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Naz Reid",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nic Claxton",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nic Claxton",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nic Claxton",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nic Claxton",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Noa Essengue",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Norman Powell",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Norman Powell",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Norman Powell",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Norman Powell",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Patrick Williams",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Patrick Williams",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Patrick Williams",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Patrick Williams",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Royce O'Neale",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Kalkbrenner",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sion James",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tidjane Sala\u00fcn",
-        "team": "CHA",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tre Jones",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zach Collins",
-        "team": "CHI",
-        "game": "Chicago Bulls @ Charlotte Hornets",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
