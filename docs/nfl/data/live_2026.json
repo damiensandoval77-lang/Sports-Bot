@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "checked_at": "2026-11-27T02:08:58.935841+00:00",
+  "checked_at": "2026-11-27T03:00:23.319446+00:00",
   "source": "espn_public_scoreboard",
   "status": "ok",
   "errors": [],
@@ -9,12 +9,12 @@
       "game_id": "2026_12_KC_BUF",
       "espn_event_id": "401873082",
       "status": "in",
-      "status_text": "14:32 - 2nd",
+      "status_text": "Halftime",
       "period": 2,
-      "clock": "14:32",
+      "clock": "0:00",
       "away": "KC",
       "home": "BUF",
-      "away_score": 0.0,
+      "away_score": 3.0,
       "home_score": 7.0,
       "players": [
         {
@@ -22,11 +22,15 @@
           "team": "KC",
           "espn_id": "3139477",
           "stats": {
-            "PASS_CMP": 2.0,
-            "PASS_ATT": 2.0,
-            "PASS_YDS": 5.0,
+            "PASS_CMP": 10.0,
+            "PASS_ATT": 15.0,
+            "PASS_YDS": 97.0,
             "PASS_TD": 0.0,
-            "PASS_INT": 0.0
+            "PASS_INT": 0.0,
+            "RUSH_ATT": 2.0,
+            "RUSH_YDS": 2.0,
+            "RUSH_TD": 0.0,
+            "PASS_RUSH_YDS": 99.0
           }
         },
         {
@@ -34,9 +38,37 @@
           "team": "KC",
           "espn_id": "4832955",
           "stats": {
-            "RUSH_ATT": 4.0,
-            "RUSH_YDS": 11.0,
-            "RUSH_TD": 0.0
+            "RUSH_ATT": 7.0,
+            "RUSH_YDS": 20.0,
+            "RUSH_TD": 0.0,
+            "REC": 2.0,
+            "REC_YDS": 8.0,
+            "REC_TD": 0.0,
+            "TGT": 2.0,
+            "RUSH_REC_YDS": 28.0,
+            "ANY_TD": 0.0
+          }
+        },
+        {
+          "player": "Travis Kelce",
+          "team": "KC",
+          "espn_id": "15847",
+          "stats": {
+            "REC": 4.0,
+            "REC_YDS": 71.0,
+            "REC_TD": 0.0,
+            "TGT": 5.0
+          }
+        },
+        {
+          "player": "Rashee Rice",
+          "team": "KC",
+          "espn_id": "4428331",
+          "stats": {
+            "REC": 1.0,
+            "REC_YDS": 9.0,
+            "REC_TD": 0.0,
+            "TGT": 2.0
           }
         },
         {
@@ -55,10 +87,32 @@
           "team": "KC",
           "espn_id": "4240472",
           "stats": {
-            "REC": 1.0,
+            "REC": 2.0,
+            "REC_YDS": 4.0,
+            "REC_TD": 0.0,
+            "TGT": 2.0
+          }
+        },
+        {
+          "player": "Xavier Worthy",
+          "team": "KC",
+          "espn_id": "4683062",
+          "stats": {
+            "REC": 0.0,
             "REC_YDS": 0.0,
             "REC_TD": 0.0,
             "TGT": 1.0
+          }
+        },
+        {
+          "player": "Josh Downs",
+          "team": "KC",
+          "espn_id": "4688813",
+          "stats": {
+            "REC": 0.0,
+            "REC_YDS": 0.0,
+            "REC_TD": 0.0,
+            "TGT": 2.0
           }
         },
         {
@@ -66,15 +120,15 @@
           "team": "BUF",
           "espn_id": "3918298",
           "stats": {
-            "PASS_CMP": 3.0,
-            "PASS_ATT": 6.0,
-            "PASS_YDS": 30.0,
+            "PASS_CMP": 5.0,
+            "PASS_ATT": 10.0,
+            "PASS_YDS": 41.0,
             "PASS_TD": 0.0,
-            "PASS_INT": 0.0,
+            "PASS_INT": 1.0,
             "RUSH_ATT": 2.0,
             "RUSH_YDS": 10.0,
             "RUSH_TD": 0.0,
-            "PASS_RUSH_YDS": 40.0
+            "PASS_RUSH_YDS": 51.0
           }
         },
         {
@@ -82,14 +136,14 @@
           "team": "BUF",
           "espn_id": "4379399",
           "stats": {
-            "RUSH_ATT": 13.0,
-            "RUSH_YDS": 42.0,
+            "RUSH_ATT": 19.0,
+            "RUSH_YDS": 71.0,
             "RUSH_TD": 1.0,
             "REC": 1.0,
             "REC_YDS": 8.0,
             "REC_TD": 0.0,
             "TGT": 1.0,
-            "RUSH_REC_YDS": 50.0,
+            "RUSH_REC_YDS": 79.0,
             "ANY_TD": 1.0
           }
         },
@@ -98,14 +152,14 @@
           "team": "BUF",
           "espn_id": "4429501",
           "stats": {
-            "RUSH_ATT": 1.0,
-            "RUSH_YDS": 4.0,
+            "RUSH_ATT": 3.0,
+            "RUSH_YDS": 6.0,
             "RUSH_TD": 0.0,
             "REC": 0.0,
             "REC_YDS": 0.0,
             "REC_TD": 0.0,
             "TGT": 1.0,
-            "RUSH_REC_YDS": 4.0,
+            "RUSH_REC_YDS": 6.0,
             "ANY_TD": 0.0
           }
         },
@@ -125,16 +179,38 @@
           "team": "BUF",
           "espn_id": "3915411",
           "stats": {
-            "REC": 1.0,
-            "REC_YDS": 5.0,
+            "REC": 2.0,
+            "REC_YDS": 12.0,
             "REC_TD": 0.0,
-            "TGT": 1.0
+            "TGT": 2.0
           }
         },
         {
           "player": "DJ Moore",
           "team": "BUF",
           "espn_id": "3915416",
+          "stats": {
+            "REC": 1.0,
+            "REC_YDS": 4.0,
+            "REC_TD": 0.0,
+            "TGT": 2.0
+          }
+        },
+        {
+          "player": "Dawson Knox",
+          "team": "BUF",
+          "espn_id": "3930086",
+          "stats": {
+            "REC": 0.0,
+            "REC_YDS": 0.0,
+            "REC_TD": 0.0,
+            "TGT": 1.0
+          }
+        },
+        {
+          "player": "Keon Coleman",
+          "team": "BUF",
+          "espn_id": "4635008",
           "stats": {
             "REC": 0.0,
             "REC_YDS": 0.0,
