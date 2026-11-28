@@ -1,41 +1,41 @@
 {
   "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
-  "generated_at": "2026-11-28T03:23:06.760140+00:00",
+  "generated_at": "2026-11-28T03:29:21.017568+00:00",
   "game_date_eastern": "2026-11-27",
   "recorded_pregame_forecasts": 1108,
-  "graded": 328,
-  "verified_dnp_exclusions": 68,
+  "graded": 404,
+  "verified_dnp_exclusions": 84,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 396,
-  "ungraded": 712,
-  "new_grades": 252,
-  "new_verified_dnp_exclusions": 44,
+  "accounted_for": 488,
+  "ungraded": 620,
+  "new_grades": 76,
+  "new_verified_dnp_exclusions": 16,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 82,
-      "mae": 4.509,
-      "mean_signed_error": 1.17
+      "graded": 101,
+      "mae": 4.519,
+      "mean_signed_error": 1.564
     },
     "REB": {
-      "graded": 82,
-      "mae": 2.101,
-      "mean_signed_error": 0.296
+      "graded": 101,
+      "mae": 2.121,
+      "mean_signed_error": 0.22
     },
     "AST": {
-      "graded": 82,
-      "mae": 1.456,
-      "mean_signed_error": 0.232
+      "graded": 101,
+      "mae": 1.418,
+      "mean_signed_error": 0.382
     },
     "PRA": {
-      "graded": 82,
-      "mae": 5.935,
-      "mean_signed_error": 1.64
+      "graded": 101,
+      "mae": 6.068,
+      "mean_signed_error": 2.138
     }
   },
   "ungraded_by_game": {
-    "Atlanta Hawks @ Boston Celtics": 96,
+    "Atlanta Hawks @ Boston Celtics": 4,
     "Dallas Mavericks @ Phoenix Suns": 104,
     "Denver Nuggets @ Utah Jazz": 96,
     "Golden State Warriors @ Portland Trail Blazers": 104,
@@ -47,11 +47,15 @@
   "excluded_verified_dnp_players": [
     "Andre Drummond",
     "Cade Cunningham",
+    "Chris Cenac Jr.",
     "Dean Wade",
+    "Dorian Finney-Smith",
     "Jaylen Brown",
+    "Jordan Walsh",
     "Kasparas Jaku\u010dionis",
     "Kobe Brown",
     "Kyle Anderson",
+    "Mike Conley",
     "Miles McBride",
     "Moritz Wagner",
     "Nick Richards",
@@ -65,30 +69,7 @@
   ],
   "ungraded_distinct_player_names_by_game": {
     "Atlanta Hawks @ Boston Celtics": [
-      "Aaron Wiggins",
-      "Baylor Scheierman",
-      "Chris Cenac Jr.",
-      "Corey Kispert",
-      "Derrick White",
-      "Dorian Finney-Smith",
-      "Dyson Daniels",
-      "Hugo Gonz\u00e1lez",
-      "Jalen Johnson",
-      "Jayson Tatum",
-      "Jordan Walsh",
-      "Kingston Flemings",
-      "Luguentz Dort",
-      "Luka Garza",
-      "Mike Conley",
-      "Mitchell Robinson",
-      "Neemias Queta",
-      "Nickeil Alexander-Walker",
-      "Onyeka Okongwu",
-      "Paul George",
-      "Payton Pritchard",
-      "Ron Harper Jr.",
-      "Sam Hauser",
-      "Zuby Ejiofor"
+      "Mitchell Robinson"
     ],
     "Dallas Mavericks @ Phoenix Suns": [
       "Caleb Martin",
@@ -259,702 +240,59 @@
       "Zion Williamson"
     ]
   },
-  "ungraded_distinct_player_markets": 712,
+  "ungraded_distinct_player_markets": 620,
   "final_feed": {
     "pending_matchups": 9,
     "final_nba_games": 6,
     "final_schedule_discovered_nba_games": 0,
-    "final_espn_games": 0,
-    "retrieved_player_lines": 198,
+    "final_espn_games": 1,
+    "retrieved_player_lines": 223,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 5,
     "final_cached_id_nba_games": 2,
+    "direct_espn_final_games": 1,
     "secondary_espn_dnp_discovered_game_hints": 2,
     "secondary_verified_explicit_dnp_players": 13,
     "secondary_dnp_still_unverified": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 4130,
-    "newly_retrieved_verified_rows": 101,
+    "verified_cache_rows": 4155,
+    "newly_retrieved_verified_rows": 25,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 4,
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 708
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 8,
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 612
     },
     "players": [
       {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Aaron Wiggins",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Baylor Scheierman",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Cenac Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Cenac Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Cenac Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Chris Cenac Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Corey Kispert",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Derrick White",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dorian Finney-Smith",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dorian Finney-Smith",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dorian Finney-Smith",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dorian Finney-Smith",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Dyson Daniels",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Hugo Gonz\u00e1lez",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Johnson",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jayson Tatum",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jordan Walsh",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Kingston Flemings",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luguentz Dort",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Luka Garza",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mike Conley",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mike Conley",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mike Conley",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mike Conley",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "Mitchell Robinson",
         "team": "BOS",
         "game": "Atlanta Hawks @ Boston Celtics",
         "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Mitchell Robinson",
         "team": "BOS",
         "game": "Atlanta Hawks @ Boston Celtics",
         "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Mitchell Robinson",
         "team": "BOS",
         "game": "Atlanta Hawks @ Boston Celtics",
         "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Mitchell Robinson",
         "team": "BOS",
         "game": "Atlanta Hawks @ Boston Celtics",
         "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Neemias Queta",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nickeil Alexander-Walker",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Onyeka Okongwu",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Paul George",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Payton Pritchard",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ron Harper Jr.",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Sam Hauser",
-        "team": "BOS",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Zuby Ejiofor",
-        "team": "ATL",
-        "game": "Atlanta Hawks @ Boston Celtics",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
       },
       {
         "player": "Caleb Martin",
