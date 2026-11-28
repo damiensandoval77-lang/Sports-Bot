@@ -1,49 +1,59 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-28T02:27:26.209779+00:00",
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-28T02:52:15.876237+00:00",
   "game_date_eastern": "2026-11-27",
-  "recorded_pregame_forecasts": 704,
-  "graded": 0,
-  "verified_dnp_exclusions": 0,
+  "recorded_pregame_forecasts": 1108,
+  "graded": 76,
+  "verified_dnp_exclusions": 24,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 704,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 100,
+  "ungraded": 1008,
+  "new_grades": 76,
+  "new_verified_dnp_exclusions": 24,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 3.505,
+      "mean_signed_error": 0.968
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 2.463,
+      "mean_signed_error": 0.105
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 1.568,
+      "mean_signed_error": 0.211
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 19,
+      "mae": 3.821,
+      "mean_signed_error": 1.126
     }
   },
   "ungraded_by_game": {
     "Atlanta Hawks @ Boston Celtics": 96,
     "Brooklyn Nets @ Toronto Raptors": 96,
     "Dallas Mavericks @ Phoenix Suns": 104,
+    "Denver Nuggets @ Utah Jazz": 96,
+    "Golden State Warriors @ Portland Trail Blazers": 104,
+    "Los Angeles Lakers @ San Antonio Spurs": 100,
     "Memphis Grizzlies @ Minnesota Timberwolves": 104,
-    "Miami Heat @ New York Knicks": 100,
     "Milwaukee Bucks @ Detroit Pistons": 100,
+    "New Orleans Pelicans @ LA Clippers": 104,
     "Philadelphia 76ers @ Indiana Pacers": 104
   },
-  "excluded_verified_dnp_players": [],
+  "excluded_verified_dnp_players": [
+    "Andre Drummond",
+    "Miles McBride",
+    "Nick Richards",
+    "Nikola Jovi\u0107",
+    "OG Anunoby",
+    "Simone Fontecchio"
+  ],
   "ungraded_distinct_player_names_by_game": {
     "Atlanta Hawks @ Boston Celtics": [
       "Aaron Wiggins",
@@ -125,6 +135,87 @@
       "Walter Clayton Jr.",
       "Zaccharie Risacher"
     ],
+    "Denver Nuggets @ Utah Jazz": [
+      "Aaron Gordon",
+      "Ace Bailey",
+      "Alpha Diallo",
+      "Brice Sensabaugh",
+      "Cameron Johnson",
+      "Christian Braun",
+      "DaRon Holmes II",
+      "Darryn Peterson",
+      "DeMar DeRozan",
+      "Isaiah Collier",
+      "Jamal Murray",
+      "Jaxson Hayes",
+      "Josh Green",
+      "Josh Okogie",
+      "Keyonte George",
+      "Kyle Filipowski",
+      "Marvin Bagley III",
+      "Mo Bamba",
+      "Nikola Joki\u0107",
+      "Spencer Jones",
+      "Svi Mykhailiuk",
+      "Tony Bradley",
+      "Trevon Brazile",
+      "Tyus Jones"
+    ],
+    "Golden State Warriors @ Portland Trail Blazers": [
+      "Al Horford",
+      "Branden Carlson",
+      "Brandin Podziemski",
+      "Brandon Williams",
+      "Charles Bassey",
+      "Damian Lillard",
+      "De'Anthony Melton",
+      "Deni Avdija",
+      "Donovan Clingan",
+      "Draymond Green",
+      "Gary Payton II",
+      "Georges Niang",
+      "Graham Ike",
+      "Gui Santos",
+      "Jayson Kent",
+      "Jrue Holiday",
+      "LJ Cryer",
+      "Malevy Leons",
+      "Micah Potter",
+      "Robert Williams III",
+      "Scoot Henderson",
+      "Sidy Cissoko",
+      "Toumani Camara",
+      "Will Richard",
+      "Yang Hansen",
+      "Yaxel Lendeborg"
+    ],
+    "Los Angeles Lakers @ San Antonio Spurs": [
+      "Adou Thiero",
+      "Bronny James",
+      "Cameron Carr",
+      "Carter Bryant",
+      "Collin Sexton",
+      "David Jones Garcia",
+      "De'Aaron Fox",
+      "Devin Vassell",
+      "Harrison Barnes",
+      "Jaden Hardy",
+      "Jake LaRavia",
+      "Jarred Vanderbilt",
+      "Jordan McLaughlin",
+      "Julian Champagnie",
+      "Keldon Johnson",
+      "Luka Don\u010di\u0107",
+      "Luke Kornet",
+      "Matisse Thybulle",
+      "Quentin Grimes",
+      "Sandro Mamukelashvili",
+      "Stephon Castle",
+      "Tarris Reed Jr.",
+      "Victor Wembanyama",
+      "Walker Kessler",
+      "Ziaire Williams"
+    ],
     "Memphis Grizzlies @ Minnesota Timberwolves": [
       "Ayo Dosunmu",
       "Bones Hyland",
@@ -153,33 +244,6 @@
       "Ty Jerome",
       "Zach Edey"
     ],
-    "Miami Heat @ New York Knicks": [
-      "Andre Drummond",
-      "Andrew Wiggins",
-      "Bam Adebayo",
-      "Bobby Portis Jr.",
-      "Davion Mitchell",
-      "Giannis Antetokounmpo",
-      "Jalen Brunson",
-      "James Wiseman",
-      "Jose Alvarado",
-      "Josh Hart",
-      "Karl-Anthony Towns",
-      "Klay Thompson",
-      "Landry Shamet",
-      "Mikal Bridges",
-      "Miles McBride",
-      "Mohamed Diawara",
-      "Myron Gardner",
-      "Nick Richards",
-      "Nikola Jovi\u0107",
-      "OG Anunoby",
-      "Pac\u00f4me Dadiet",
-      "Pelle Larsson",
-      "Ryan Conwell",
-      "Simone Fontecchio",
-      "Tyler Kolek"
-    ],
     "Milwaukee Bucks @ Detroit Pistons": [
       "AJ Green",
       "Ausar Thompson",
@@ -206,6 +270,34 @@
       "Ryan Rollins",
       "Tolu Smith",
       "Tyler Herro"
+    ],
+    "New Orleans Pelicans @ LA Clippers": [
+      "AJ Johnson",
+      "Baba Miller",
+      "Brook Lopez",
+      "Bryce McGowens",
+      "Cam Christie",
+      "Darius Garland",
+      "DeAndre Jordan",
+      "Derik Queen",
+      "Derrick Jones Jr.",
+      "Gradey Dick",
+      "Herbert Jones",
+      "Isaiah Jackson",
+      "Jalen Pickett",
+      "Jaron Pierre Jr.",
+      "Jeremiah Fears",
+      "Jordan Poole",
+      "Karlo Matkovi\u0107",
+      "Keaton Wagler",
+      "Kobe Sanders",
+      "Kris Dunn",
+      "Max Strus",
+      "Rui Hachimura",
+      "Saddiq Bey",
+      "Trey Murphy III",
+      "Yves Missi",
+      "Zion Williamson"
     ],
     "Philadelphia 76ers @ Indiana Pacers": [
       "Aaron Nesmith",
@@ -236,28 +328,28 @@
       "VJ Edgecombe"
     ]
   },
-  "ungraded_distinct_player_markets": 704,
+  "ungraded_distinct_player_markets": 1008,
   "final_feed": {
-    "pending_matchups": 7,
-    "final_nba_games": 2,
+    "pending_matchups": 8,
+    "final_nba_games": 3,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 66,
+    "retrieved_player_lines": 97,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
     "cached_official_id_candidates": 7,
     "final_cached_id_nba_games": 2,
     "secondary_espn_dnp_discovered_game_hints": 2,
-    "secondary_verified_explicit_dnp_players": 7,
+    "secondary_verified_explicit_dnp_players": 10,
     "secondary_dnp_still_unverified": 0,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 3998,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 4029,
+    "newly_retrieved_verified_rows": 31,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
     "by_reason": {
-      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 704
+      "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED": 1008
     },
     "players": [
       {
@@ -2333,6 +2425,2106 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
+        "player": "Aaron Gordon",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Aaron Gordon",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Aaron Gordon",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Aaron Gordon",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ace Bailey",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ace Bailey",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ace Bailey",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ace Bailey",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alpha Diallo",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alpha Diallo",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alpha Diallo",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Alpha Diallo",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brice Sensabaugh",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brice Sensabaugh",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brice Sensabaugh",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brice Sensabaugh",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Johnson",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Christian Braun",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Christian Braun",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Christian Braun",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Christian Braun",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DaRon Holmes II",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DaRon Holmes II",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DaRon Holmes II",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DaRon Holmes II",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darryn Peterson",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darryn Peterson",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darryn Peterson",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darryn Peterson",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeMar DeRozan",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeMar DeRozan",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeMar DeRozan",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeMar DeRozan",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Collier",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Collier",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Collier",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Collier",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Murray",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Murray",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Murray",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jamal Murray",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaxson Hayes",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaxson Hayes",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaxson Hayes",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaxson Hayes",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Green",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Green",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Green",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Green",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Okogie",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Okogie",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Okogie",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Josh Okogie",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keyonte George",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keyonte George",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keyonte George",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keyonte George",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kyle Filipowski",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kyle Filipowski",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kyle Filipowski",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kyle Filipowski",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Marvin Bagley III",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Marvin Bagley III",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Marvin Bagley III",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Marvin Bagley III",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Mo Bamba",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Mo Bamba",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Mo Bamba",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Mo Bamba",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Joki\u0107",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Joki\u0107",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Joki\u0107",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Nikola Joki\u0107",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Spencer Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Spencer Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Spencer Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Spencer Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Svi Mykhailiuk",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Svi Mykhailiuk",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Svi Mykhailiuk",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Svi Mykhailiuk",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tony Bradley",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tony Bradley",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tony Bradley",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tony Bradley",
+        "team": "UTA",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trevon Brazile",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trevon Brazile",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trevon Brazile",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trevon Brazile",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tyus Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tyus Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tyus Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tyus Jones",
+        "team": "DEN",
+        "game": "Denver Nuggets @ Utah Jazz",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Al Horford",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Branden Carlson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Branden Carlson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Branden Carlson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Branden Carlson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandin Podziemski",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brandon Williams",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Charles Bassey",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Anthony Melton",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Deni Avdija",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Deni Avdija",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Deni Avdija",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Deni Avdija",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Donovan Clingan",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Donovan Clingan",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Donovan Clingan",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Donovan Clingan",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Draymond Green",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gary Payton II",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Georges Niang",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Graham Ike",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gui Santos",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jayson Kent",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jayson Kent",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jayson Kent",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jayson Kent",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jrue Holiday",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jrue Holiday",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jrue Holiday",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jrue Holiday",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "LJ Cryer",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malevy Leons",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malevy Leons",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malevy Leons",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Malevy Leons",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Potter",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Potter",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Potter",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Micah Potter",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Robert Williams III",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Robert Williams III",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Robert Williams III",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Robert Williams III",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Scoot Henderson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Scoot Henderson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Scoot Henderson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Scoot Henderson",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sidy Cissoko",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sidy Cissoko",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sidy Cissoko",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sidy Cissoko",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Toumani Camara",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Toumani Camara",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Toumani Camara",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Toumani Camara",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Will Richard",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yang Hansen",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yang Hansen",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yang Hansen",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yang Hansen",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yaxel Lendeborg",
+        "team": "GSW",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Adou Thiero",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Adou Thiero",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Adou Thiero",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Adou Thiero",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bronny James",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Carr",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Carr",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Carr",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cameron Carr",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Carter Bryant",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Sexton",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Sexton",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Sexton",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Collin Sexton",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "David Jones Garcia",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "David Jones Garcia",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "David Jones Garcia",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "David Jones Garcia",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "De'Aaron Fox",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Devin Vassell",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Harrison Barnes",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaden Hardy",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jake LaRavia",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jake LaRavia",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jake LaRavia",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jake LaRavia",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jarred Vanderbilt",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jarred Vanderbilt",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jarred Vanderbilt",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jarred Vanderbilt",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan McLaughlin",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Julian Champagnie",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keldon Johnson",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luka Don\u010di\u0107",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luka Don\u010di\u0107",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luka Don\u010di\u0107",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luka Don\u010di\u0107",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Luke Kornet",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Matisse Thybulle",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Matisse Thybulle",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Matisse Thybulle",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Matisse Thybulle",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Quentin Grimes",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sandro Mamukelashvili",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sandro Mamukelashvili",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sandro Mamukelashvili",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Sandro Mamukelashvili",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Stephon Castle",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Tarris Reed Jr.",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Victor Wembanyama",
+        "team": "SAS",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Walker Kessler",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Walker Kessler",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Walker Kessler",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Walker Kessler",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ziaire Williams",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ziaire Williams",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ziaire Williams",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Ziaire Williams",
+        "team": "LAL",
+        "game": "Los Angeles Lakers @ San Antonio Spurs",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
         "player": "Ayo Dosunmu",
         "team": "MIN",
         "game": "Memphis Grizzlies @ Minnesota Timberwolves",
@@ -3061,706 +5253,6 @@
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
       {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andre Drummond",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Andrew Wiggins",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bam Adebayo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Bobby Portis Jr.",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Davion Mitchell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Giannis Antetokounmpo",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jalen Brunson",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "James Wiseman",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Jose Alvarado",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Josh Hart",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Karl-Anthony Towns",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Klay Thompson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Landry Shamet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mikal Bridges",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Miles McBride",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Mohamed Diawara",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Myron Gardner",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nick Richards",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Nikola Jovi\u0107",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "OG Anunoby",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pac\u00f4me Dadiet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pac\u00f4me Dadiet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pac\u00f4me Dadiet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pac\u00f4me Dadiet",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Pelle Larsson",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Ryan Conwell",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Simone Fontecchio",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Simone Fontecchio",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Simone Fontecchio",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Simone Fontecchio",
-        "team": "MIA",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "AST",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PRA",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "PTS",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
-        "player": "Tyler Kolek",
-        "team": "NYK",
-        "game": "Miami Heat @ New York Knicks",
-        "stat": "REB",
-        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
-      },
-      {
         "player": "AJ Green",
         "team": "MIL",
         "game": "Milwaukee Bucks @ Detroit Pistons",
@@ -4457,6 +5949,734 @@
         "player": "Tyler Herro",
         "team": "MIL",
         "game": "Milwaukee Bucks @ Detroit Pistons",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "AJ Johnson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "AJ Johnson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "AJ Johnson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "AJ Johnson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Baba Miller",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Baba Miller",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Baba Miller",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Baba Miller",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brook Lopez",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brook Lopez",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brook Lopez",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Brook Lopez",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Bryce McGowens",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cam Christie",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cam Christie",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cam Christie",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Cam Christie",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Garland",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Garland",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Garland",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Darius Garland",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeAndre Jordan",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeAndre Jordan",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeAndre Jordan",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "DeAndre Jordan",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derik Queen",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derrick Jones Jr.",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derrick Jones Jr.",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derrick Jones Jr.",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Derrick Jones Jr.",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gradey Dick",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gradey Dick",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gradey Dick",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Gradey Dick",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Herbert Jones",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Jackson",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Jackson",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Jackson",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Isaiah Jackson",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Pickett",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Pickett",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Pickett",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jalen Pickett",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaron Pierre Jr.",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaron Pierre Jr.",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaron Pierre Jr.",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jaron Pierre Jr.",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jeremiah Fears",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Poole",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Poole",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Poole",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Jordan Poole",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Karlo Matkovi\u0107",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keaton Wagler",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keaton Wagler",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keaton Wagler",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Keaton Wagler",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kobe Sanders",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kobe Sanders",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kobe Sanders",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kobe Sanders",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kris Dunn",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kris Dunn",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kris Dunn",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Kris Dunn",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Max Strus",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Max Strus",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Max Strus",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Max Strus",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Rui Hachimura",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Rui Hachimura",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Rui Hachimura",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Rui Hachimura",
+        "team": "LAC",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Saddiq Bey",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Trey Murphy III",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yves Missi",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yves Missi",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yves Missi",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Yves Missi",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "REB",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "AST",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PRA",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
+        "stat": "PTS",
+        "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
+      },
+      {
+        "player": "Zion Williamson",
+        "team": "NOP",
+        "game": "New Orleans Pelicans @ LA Clippers",
         "stat": "REB",
         "reason": "VERIFIED_FINAL_MATCHUP_NOT_RETRIEVED"
       },
