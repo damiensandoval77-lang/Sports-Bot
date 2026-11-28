@@ -1,64 +1,162 @@
 {
-  "status": "NO_VERIFIED_AI_FORECAST_ACTUALS",
-  "generated_at": "2026-11-28T04:46:20.061366+00:00",
-  "game_date_eastern": "2026-11-26",
-  "recorded_pregame_forecasts": 0,
-  "graded": 0,
-  "verified_dnp_exclusions": 0,
+  "status": "AI_PRETIP_FORECASTS_PARTIALLY_GRADED",
+  "generated_at": "2026-11-28T05:26:49.249593+00:00",
+  "game_date_eastern": "2026-11-27",
+  "recorded_pregame_forecasts": 1108,
+  "graded": 860,
+  "verified_dnp_exclusions": 244,
   "verified_pretip_transfer_exclusions": 0,
-  "accounted_for": 0,
-  "ungraded": 0,
-  "new_grades": 0,
-  "new_verified_dnp_exclusions": 0,
+  "accounted_for": 1104,
+  "ungraded": 4,
+  "new_grades": 304,
+  "new_verified_dnp_exclusions": 96,
   "new_verified_pretip_transfer_exclusions": 0,
   "excluded_verified_transfer_players": [],
   "by_stat": {
     "PTS": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 215,
+      "mae": 4.353,
+      "mean_signed_error": 1.024
     },
     "REB": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 215,
+      "mae": 1.917,
+      "mean_signed_error": 0.171
     },
     "AST": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 215,
+      "mae": 1.5,
+      "mean_signed_error": 0.261
     },
     "PRA": {
-      "graded": 0,
-      "mae": null,
-      "mean_signed_error": null
+      "graded": 215,
+      "mae": 5.696,
+      "mean_signed_error": 1.465
     }
   },
-  "ungraded_by_game": {},
-  "excluded_verified_dnp_players": [],
-  "ungraded_distinct_player_names_by_game": {},
-  "ungraded_distinct_player_markets": 0,
+  "ungraded_by_game": {
+    "Golden State Warriors @ Portland Trail Blazers": 4
+  },
+  "excluded_verified_dnp_players": [
+    "AJ Johnson",
+    "Adou Thiero",
+    "Alpha Diallo",
+    "Andre Drummond",
+    "Baba Miller",
+    "Bronny James",
+    "Bryce McGowens",
+    "Cade Cunningham",
+    "Cam Christie",
+    "Cameron Boozer",
+    "Cameron Carr",
+    "Chris Cenac Jr.",
+    "Cody Williams",
+    "DaRon Holmes II",
+    "David Jones Garcia",
+    "DeAndre Jordan",
+    "Dean Wade",
+    "Dorian Finney-Smith",
+    "Gary Trent Jr.",
+    "Gradey Dick",
+    "Graham Ike",
+    "Isaiah Collier",
+    "Isaiah Evans",
+    "Isaiah Stewart",
+    "Jaden Hardy",
+    "Jahmai Mashack",
+    "Jalen Pickett",
+    "Jamaree Bouyea",
+    "Jaron Pierre Jr.",
+    "Jaylen Brown",
+    "Jerami Grant",
+    "Jordan McLaughlin",
+    "Jordan Walsh",
+    "Karim L\u00f3pez",
+    "Karlo Matkovi\u0107",
+    "Kasparas Jaku\u010dionis",
+    "Koa Peat",
+    "Kobe Brown",
+    "Kyle Anderson",
+    "Kyrie Irving",
+    "LaMelo Ball",
+    "Marcus Sasser",
+    "Mike Conley",
+    "Miles McBride",
+    "Mitchell Robinson",
+    "Mo Bamba",
+    "Moritz Wagner",
+    "Moussa Ciss\u00e9",
+    "Nick Richards",
+    "Nikola Jovi\u0107",
+    "Nolan Traore",
+    "OG Anunoby",
+    "Rasheer Fleming",
+    "Simone Fontecchio",
+    "T.J. McConnell",
+    "Tarris Reed Jr.",
+    "Tolu Smith",
+    "Tony Bradley",
+    "Trayce Jackson-Davis",
+    "Tyus Jones",
+    "Yang Hansen"
+  ],
+  "ungraded_distinct_player_names_by_game": {
+    "Golden State Warriors @ Portland Trail Blazers": [
+      "Damian Lillard"
+    ]
+  },
+  "ungraded_distinct_player_markets": 4,
   "final_feed": {
-    "pending_matchups": 13,
-    "final_nba_games": 9,
+    "pending_matchups": 11,
+    "final_nba_games": 11,
     "final_schedule_discovered_nba_games": 0,
     "final_espn_games": 0,
-    "retrieved_player_lines": 302,
+    "retrieved_player_lines": 370,
     "errors": [],
     "source": "NBA live CDN; ESPN completed boxscore fallback",
-    "cached_official_id_candidates": 6,
-    "final_cached_id_nba_games": 2,
-    "secondary_espn_dnp_discovered_game_hints": 2,
-    "secondary_verified_explicit_dnp_players": 26,
-    "secondary_dnp_still_unverified": 0,
+    "cached_official_id_candidates": 0,
+    "secondary_espn_dnp_discovered_game_hints": 10,
+    "secondary_verified_explicit_dnp_players": 34,
+    "secondary_dnp_still_unverified": 1,
     "status": "FINAL_BOXSCORES_FOUND",
-    "verified_cache_rows": 4253,
-    "newly_retrieved_verified_rows": 0,
+    "verified_cache_rows": 4390,
+    "newly_retrieved_verified_rows": 134,
     "cache_recovery_used": true
   },
   "ungraded_diagnostics": {
-    "by_reason": {},
-    "players": [],
+    "by_reason": {
+      "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED": 4
+    },
+    "players": [
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "AST",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PRA",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "PTS",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      },
+      {
+        "player": "Damian Lillard",
+        "team": "POR",
+        "game": "Golden State Warriors @ Portland Trail Blazers",
+        "stat": "REB",
+        "reason": "PLAYER_NOT_IN_RETRIEVED_FINAL_ROWS_DNP_UNVERIFIED"
+      }
+    ],
     "source": "VERIFIED_FINAL_ROWS_ONLY_NO_DNP_INFERENCE"
   },
   "is_betting_hit_rate": false,
